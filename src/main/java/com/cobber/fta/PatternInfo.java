@@ -1,4 +1,4 @@
-package com.cobber.textanalysis;
+package com.cobber.fta;
 
 public class PatternInfo {
 	String pattern;

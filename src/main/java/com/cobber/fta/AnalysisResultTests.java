@@ -1,4 +1,4 @@
-package com.cobber.textanalysis;
+package com.cobber.fta;
 
 import java.io.BufferedReader;
 import java.io.File;

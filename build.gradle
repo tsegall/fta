@@ -16,6 +16,6 @@ dependencies {
 
 distributions {
     main{
-        baseName = 'textanalysis'
+        baseName = 'fta'
     }
 }
