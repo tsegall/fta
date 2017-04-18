@@ -1,0 +1,21 @@
+apply plugin: 'java'
+apply plugin: 'java-library-distribution'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-csv
+	compile group: 'org.apache.commons', name: 'commons-csv', version: '1.4'
+	// https://mvnrepository.com/artifact/org.testng/testng
+	compile group: 'org.testng', name: 'testng', version: '6.11'
+	// https://mvnrepository.com/artifact/javax.mail/mail
+	compile group: 'javax.mail', name: 'mail', version: '1.5.0-b01'
+}
+
+distributions {
+    main{
+        baseName = 'textanalysis'
+    }
+}
