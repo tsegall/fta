@@ -16,8 +16,9 @@ import javax.mail.internet.InternetAddress;
 public class TextAnalyzer {
 
 	static final int SAMPLE_DEFAULT = 20;
-	static final int MAX_CARDINALITY_DEFAULT = 100;
 	private int samples = SAMPLE_DEFAULT;
+	static final int MAX_CARDINALITY_DEFAULT = 100;
+	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
 
 	String name;
 	DecimalFormatSymbols format;
@@ -200,6 +201,22 @@ public class TextAnalyzer {
 		return ret;
 	}
 
+	/**
+	 * Set the maximum cardinality that we will track.
+	 * @param maxCardinality The maximum Cardinality that will be tracked (0 implies no tracking)
+	 * @return The previous value of this parameter
+	 */
+	public int setMaxCardinality(int maxCardinality) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot change maxCardinality once training has started");
+		if (samples < 0)
+			throw new IllegalArgumentException("Invalid value for maxCardinality " + maxCardinality);
+
+		int ret = maxCardinality;
+		this.maxCardinality = maxCardinality;
+		return ret;
+	}
+
 	private boolean trackLong(String rawInput) {					
 		long l;
 		String input = rawInput.trim();
@@ -268,8 +285,8 @@ public class TextAnalyzer {
 		return true;
 	}
 	
-	private boolean trackDate(String format, String input) {
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
+	private boolean trackDate(String dateFormat, String input) {
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 
 		try {
 			sdf.parse(input);
@@ -311,7 +328,7 @@ public class TextAnalyzer {
 
 		Integer seen = cardinality.get(input);
 		if (seen == null) {
-			if (cardinality.size() < MAX_CARDINALITY_DEFAULT)
+			if (cardinality.size() < maxCardinality)
 				cardinality.put(input, 1);
 		}
 		else
