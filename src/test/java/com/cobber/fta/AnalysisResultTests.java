@@ -21,7 +21,7 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 4);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\a{2}");
 		Assert.assertEquals(result.getConfidence(), 0.0);
@@ -45,7 +45,7 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 15);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{1,7}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -69,8 +69,8 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 30);
-		Assert.assertEquals(result.getMatchCount(), 30);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "[-]\\d{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -94,7 +94,7 @@ public class AnalysisResultTests {
 		TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), 6);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{6}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -118,7 +118,7 @@ public class AnalysisResultTests {
 		TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), 12);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{*}D\\d{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -142,7 +142,7 @@ public class AnalysisResultTests {
 		TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), 12);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{*}D\\d{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -166,7 +166,7 @@ public class AnalysisResultTests {
 		TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), 12);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "[-]\\d{*}D\\d{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -193,8 +193,8 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 9);
-		Assert.assertEquals(result.getMatchCount(), 9);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -215,8 +215,8 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 9);
-		Assert.assertEquals(result.getMatchCount(), 9);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{2} \\a{3} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -241,8 +241,8 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 9);
-		Assert.assertEquals(result.getMatchCount(), 9);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{4}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -263,8 +263,8 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 9);
-		Assert.assertEquals(result.getMatchCount(), 9);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{2}-\\d{2}-\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -285,8 +285,8 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 9);
-		Assert.assertEquals(result.getMatchCount(), 9);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{1,2}-\\d{1,2}-\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -299,8 +299,9 @@ public class AnalysisResultTests {
 
 		String[] inputs = "22/01/2010|12/01/2019|02/01/1996|02/01/1916|02/01/1993|02/01/1998|02/01/2001|14/01/2000|12/01/2008".split("\\|");
 		int locked = -1;
+		int iterations = 4;
 
-		for (int iters = 0; iters < 4; iters++) {
+		for (int iters = 0; iters < iterations; iters++) {
 			for (int i = 0; i < inputs.length; i++) {
 				if (analysis.train(inputs[i]) && locked == -1)
 					locked = i;
@@ -309,8 +310,8 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 36);
-		Assert.assertEquals(result.getMatchCount(), 36);
+		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
+		Assert.assertEquals(result.getMatchCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{2}/\\d{2}/\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -331,8 +332,8 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 10);
-		Assert.assertEquals(result.getMatchCount(), 10);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -353,8 +354,8 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 10);
-		Assert.assertEquals(result.getMatchCount(), 10);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -378,8 +379,8 @@ public class AnalysisResultTests {
 		TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), 13);
-		Assert.assertEquals(result.getMatchCount(), 11);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getPattern(), "(?i)true|false");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -390,8 +391,9 @@ public class AnalysisResultTests {
 	public void basicText() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 		int locked = -1;
+		int iterations = 1000;
 
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < iterations; i++) {
 			if (analysis.train("primary") && locked == -1)
 				locked = i;
 			if (analysis.train("secondary") && locked == -1)
@@ -407,9 +409,9 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, 5);
-		Assert.assertEquals(result.getSampleCount(), 5001);
-		Assert.assertEquals(result.getNullCount(), 1000);
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT/4);
+		Assert.assertEquals(result.getSampleCount(), 5 * iterations + 1);
+		Assert.assertEquals(result.getNullCount(), iterations);
 		Assert.assertEquals(result.getCardinality(), 5);
 		Assert.assertEquals(result.getPattern(), "\\a{7,9}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -420,21 +422,24 @@ public class AnalysisResultTests {
 		TextAnalyzer analysis = new TextAnalyzer();
 		Random random = new Random();
 		int locked = -1;
+		int nullIterations = 50;
+		int iterations = 10000;
+				
 
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < nullIterations; i++) {
 			analysis.train(null);
 		}
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < iterations; i++) {
 			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, 20);
-		Assert.assertEquals(result.getSampleCount(), 10050);
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getNullCount(), 50);
+		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), "Long");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
@@ -443,11 +448,13 @@ public class AnalysisResultTests {
 	public void manyKnownInts() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 		int locked = -1;
+		int nullIterations = 50;
+		int iterations = 100000;
 
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < nullIterations; i++) {
 			analysis.train(null);
 		}
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < iterations; i++) {
 			if (analysis.train(String.valueOf(i)) && locked == -1)
 				locked = i;
 		}
@@ -455,14 +462,14 @@ public class AnalysisResultTests {
 		TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, 20);
-		Assert.assertEquals(result.getSampleCount(), 100050);
+		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getNullCount(), 50);
+		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getPattern(), "\\d{1,5}");
 		Assert.assertEquals(result.getType(), "Long");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMin(), "0");
-		Assert.assertEquals(result.getMax(), "99999");
+		Assert.assertEquals(result.getMax(), String.valueOf(iterations - 1));
 	}
 
 	@Test

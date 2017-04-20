@@ -87,10 +87,14 @@ class Driver {
 					numFields = record.size();
 					header = new String[numFields];
 					analysis = new TextAnalyzer[numFields];
+					if (col > numFields) {
+						System.err.printf("Column %d does not exist.  Only %d field(s) in input.\n", col, numFields);
+						System.exit(1);
+					}
 					for (int i = 0; i < numFields; i++) {
 						header[i] = record.get(i);
 						if ((col == -1 || col == i) && verbose)
-							System.err.println(record.get(i));
+							System.out.println(record.get(i));
 						analysis[i] = new TextAnalyzer(header[i]);
 						if (samples != -1)
 							analysis[i].setSampleSize(samples);
@@ -105,7 +109,7 @@ class Driver {
 					for (int i = 0; i < numFields; i++) {
 						if (col == -1 || col == i) {
 							if (verbose)
-								System.err.printf("'%s'\n", record.get(i));
+								System.out.printf("\"%s\"\n", record.get(i));
 							analysis[i].train(record.get(i));
 						}
 					}

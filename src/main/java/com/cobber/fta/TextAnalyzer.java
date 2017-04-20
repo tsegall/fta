@@ -13,15 +13,28 @@ import java.util.Map;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+/**
+ * Analyze Text data to determine type information and other key metrics associated with a text stream.
+ * A key objective of the analysis is that it should be sufficiently fast to be in-line (e.g. as the
+ * data is input from some source it should be possible to stream the data through this class without
+ * undue performance degradation).
+ */
 public class TextAnalyzer {
 
-	static final int SAMPLE_DEFAULT = 20;
+	/** The default value for the number of samples to collect before making a type determination. */
+	public static final int SAMPLE_DEFAULT = 20;
 	private int samples = SAMPLE_DEFAULT;
-	static final int MAX_CARDINALITY_DEFAULT = 100;
+
+	/** The default value for the Maximum Cardinality tracked. */
+	public static final int MAX_CARDINALITY_DEFAULT = 100;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
 
+	/** The default value for the Maximum # of outliers tracked. */
+	public static final int MAX_OUTLIERS_DEFAULT = 50;
+	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
+
 	String name;
-	DecimalFormatSymbols format;
+	DecimalFormatSymbols formatSymbols;
 	char decimalSeparator;
 	char monetaryDecimalSeparator;
 	char groupingSeparator;
@@ -30,6 +43,7 @@ public class TextAnalyzer {
 	int nullCount;
 	int blankCount;
 	Map<String, Integer> cardinality = new HashMap<String, Integer>();
+	Map<String, Integer> outliers = new HashMap<String, Integer>();
 	ArrayList<String> raw;				// 0245-11-98
 	// 0: d{4}-d{2}-d{2}   1: d{+}-d{+}-d{+}    2: d{+}-d{+}-d{+}
 	// 0: d{4}             1: d{+}              2: [-]d{+}
@@ -37,7 +51,6 @@ public class TextAnalyzer {
 	ArrayList<StringBuilder>[] levels = new ArrayList[3];
 	
 	String type;
-	int matchLevel;
 	int matchCount;
 	String matchPattern;
 	PatternInfo matchPatternInfo;
@@ -168,27 +181,34 @@ public class TextAnalyzer {
 		addPattern("^$", null, null, "[BLANK]", null);
 	}
 	
-	TextAnalyzer(String name) {
+	/**
+	 * Construct a Text Analyzer for the named data stream. 
+	 * @param name The name of the data stream (e.g. the column of the CSV file)
+	 */
+	public TextAnalyzer(String name) {
 		if (patternInfo == null) {
 			initPatternInfo();
 		}
 
 		this.name = name;
-		format = new DecimalFormatSymbols();
-		decimalSeparator = format.getDecimalSeparator();
-		monetaryDecimalSeparator = format.getMonetaryDecimalSeparator();
-		groupingSeparator = format.getGroupingSeparator();
-		minusSign = format.getMinusSign();
+		formatSymbols = new DecimalFormatSymbols();
+		decimalSeparator = formatSymbols.getDecimalSeparator();
+		monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
+		groupingSeparator = formatSymbols.getGroupingSeparator();
+		minusSign = formatSymbols.getMinusSign();
 	}
 	
-	TextAnalyzer() {
+	/**
+	 * Construct an anonymous Text Analyzer for a data stream. 
+	 */
+	public TextAnalyzer() {
 		this("anonymous");
 	}
 
 	/**
 	 * Set the number of Samples to collect before attempting to determine the type.
 	 * @param samples The number of samples to collect
-	 * @return The previous value of this parameter
+	 * @return The previous value of this parameter.
 	 */
 	public int setSampleSize(int samples) {
 		if (trainingStarted)
@@ -202,9 +222,18 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Set the maximum cardinality that we will track.
+	 * Get the number of Samples used to collect before attempting to determine the type. 
+	 * @return The maximum cardinality.
+	 */
+	public int getSampleSize() {
+		return samples;
+	}
+
+	/**
+	 * Set the maximum cardinality that will be tracked.  Note: It is not possible to change the
+	 * cardinality once training has started.
 	 * @param maxCardinality The maximum Cardinality that will be tracked (0 implies no tracking)
-	 * @return The previous value of this parameter
+	 * @return The previous value of this parameter.
 	 */
 	public int setMaxCardinality(int maxCardinality) {
 		if (trainingStarted)
@@ -215,6 +244,15 @@ public class TextAnalyzer {
 		int ret = maxCardinality;
 		this.maxCardinality = maxCardinality;
 		return ret;
+	}
+
+	/**
+	 * Get the maximum cardinality that will be tracked.
+	 * See {@link #setMaxCardinality(int) setMaxCardinality()} method.
+	 * @return The maximum cardinality.
+	 */
+	public int getMaxCardinality() {
+		return maxCardinality;
 	}
 
 	private boolean trackLong(String rawInput) {					
@@ -298,6 +336,11 @@ public class TextAnalyzer {
 		return true;
 	}
 
+	/**
+	 * Train is the core entry point used to supply input to the Text Analyzer.
+	 * @param rawInput The raw input as a String
+	 * @return A boolean indicating if the resultant type is currently known.
+	 */
 	public boolean train(String rawInput) {
 		// Initialize if we have not already done so
 		if (!trainingStarted) {
@@ -320,8 +363,6 @@ public class TextAnalyzer {
 			return type != null;
 		}
 
-		raw.add(rawInput);
-		
 		String input = rawInput.trim();
 		
 		int length = input.length();
@@ -333,6 +374,14 @@ public class TextAnalyzer {
 		}
 		else
 			cardinality.put(input, seen + 1);
+
+		trackResult(rawInput);
+
+		// If we have determined a type, no need to further train
+		if (type != null)
+			return true;
+		
+		raw.add(rawInput);
 		
 		StringBuilder l0 = new StringBuilder(length);
 
@@ -340,6 +389,7 @@ public class TextAnalyzer {
 		boolean numericSigned = false;
 		int numericDecimalSeparators = 0;
 		boolean notNumericOnly = false;
+		int digitsSeen = 0;
 		int colons = 0;
 		int colonIndex = -1;
 		int commas = 0;
@@ -351,6 +401,7 @@ public class TextAnalyzer {
 				numericSigned = true;
 			} else if (Character.isDigit(ch)) {
 				l0.append('d');
+				digitsSeen++;
 			} else if (ch == decimalSeparator) { 
 				l0.append('D');
 				numericDecimalSeparators++;
@@ -424,7 +475,7 @@ public class TextAnalyzer {
 		levels[0].add(compressedl0);
 		
 		// Create the level 1 and 2
-		if (notNumericOnly == false && numericDecimalSeparators <= 1) {
+		if (digitsSeen > 0 && notNumericOnly == false && numericDecimalSeparators <= 1) {
 			StringBuilder l1 = new StringBuilder();
 			StringBuilder l2 = new StringBuilder().append('[').append(minusSign).append(']');
 			if (numericSigned)
@@ -466,8 +517,6 @@ public class TextAnalyzer {
 
 		}
 		
-		trackResult(rawInput);
-
 		if (sampleCount - (nullCount + blankCount) > samples) {
 			raw.remove(0);
 			levels[0].remove(0);
@@ -476,34 +525,6 @@ public class TextAnalyzer {
 		}
 		
 		return type != null;
-	}
-
-	String lastResult() {
-		int last = raw.size() - 1;
-		return raw.get(last).toString() + " --- " +
-				levels[0].get(last).toString() + " --- " +
-				levels[1].get(last).toString();
-	}
-	
-	Map.Entry<String, Integer> mergeable(int levelIndex, Map.Entry<String, Integer> larger, Map.Entry<String, Integer> smaller) {
-		String largerKey = larger.getKey();
-		String smallerKey = smaller.getKey();
-		
-		int offset = largerKey.lastIndexOf(smallerKey);
-		if (offset != -1) {
-			String missing = largerKey.substring(0, offset);
-			// Coalesce the common numeric case of '.43' being the same as 0.43 
-			if ("\\d{+}".equals(missing)) {
-				String newKey = "\\d{*}" + smallerKey;
-				return new AbstractMap.SimpleEntry<String, Integer>(String.valueOf(newKey.hashCode()) + "." + newKey, larger.getValue() + smaller.getValue());
-			// Coalesce the common optional minus sign	
-			} else if (missing.length() == 1 && missing.charAt(0) == minusSign)  {
-				String newKey = "[" + minusSign + "]" + smallerKey;
-				return new AbstractMap.SimpleEntry<String, Integer>(String.valueOf(newKey.hashCode()) + "." + newKey, larger.getValue() + smaller.getValue());
-			}
-		}
-
-		return larger.getValue() > smaller.getValue() ? larger : smaller;
 	}
 
 	private Map.Entry<String, Integer> getBest(int levelIndex) {
@@ -553,7 +574,7 @@ public class TextAnalyzer {
 				if (bestPattern.isNumeric() && secondBestPattern.isNumeric()) {
 					if (!bestPattern.type.equals(secondBestPattern.type)) {
 						// Promote Long to Double
-						String newKey = "Double".equals(bestKey) ? best.getKey() : secondBest.getKey();
+						String newKey = "Double".equals(bestPattern.type) ? best.getKey() : secondBest.getKey();
 						best = new AbstractMap.SimpleEntry<String, Integer>(newKey, best.getValue() + secondBest.getValue());
 					}
 				}
@@ -567,6 +588,14 @@ public class TextAnalyzer {
 		return best;
 	}
 	
+	/**
+	 * This is the core routine for determining the type of the field.
+	 * It is responsible for setting:
+	 *  - matchPattern
+	 *  - matchPatternInfo
+	 *  - matchCount
+	 *  - type
+	 */
 	private void determineType() {
 		// If we have fewer than 6 samples do not even pretend
 		if (sampleCount - (nullCount + blankCount) < 6) {
@@ -576,36 +605,56 @@ public class TextAnalyzer {
 			return;
 		}
 
-		Map.Entry<String, Integer> l0 = getBest(0);
-		Map.Entry<String, Integer> l1 = getBest(1);
-		Map.Entry<String, Integer> l2 = getBest(2);
-		Map.Entry<String, Integer> best = l0;
+		int level0value = 0, level1value = 0, level2value = 0;
+		String level0pattern = null, level1pattern = null, level2pattern = null;
+		PatternInfo level0patternInfo = null, level1patternInfo = null, level2patternInfo = null;
 		String pattern = null;
+		Map.Entry<String, Integer> level0 = getBest(0);
+		Map.Entry<String, Integer> level1 = getBest(1);
+		Map.Entry<String, Integer> level2 = getBest(2);
+		Map.Entry<String, Integer> best = level0;
+		
+		if (level0 != null) {
+			level0pattern = level0.getKey();
+			level0value = level0.getValue();
+			level0patternInfo = patternInfo.get(level0pattern);
+		}
+		if (level1 != null) {
+			level1pattern = level1.getKey();
+			level1value = level1.getValue();
+			level1patternInfo = patternInfo.get(level1pattern);
+		}
+		if (level2 != null) {
+			level2pattern = level2.getKey();
+			level2value = level2.getValue();
+			level2patternInfo = patternInfo.get(level2pattern);
+		}
 		
 		if (best != null) {
-			matchLevel = 1;
-			pattern = best.getKey();
-			matchPatternInfo = patternInfo.get(pattern);
+			pattern = level0pattern;
+			matchPatternInfo = level0patternInfo;
 			
 			// Take any level 1 with something we recognize or a better count
-			if (l1 != null && (matchPatternInfo == null || l1.getValue() > best.getValue())) {
-				best = l1;
-				matchLevel = 2;
-				pattern = best.getKey();
-				matchPatternInfo = patternInfo.get(pattern);
+			if (level1 != null && (level0patternInfo == null || level1value > level0value)) {
+				best = level1;
+				pattern = level1pattern;
+				matchPatternInfo = level1patternInfo;
 			}
+
 			// Take a level 2 if
 			//   - we have something we recognize (and we had nothing)
 			//   - we have the same key but a better count
-			//   - we have an improvement of at least 10%
-			if (l2 != null && (matchPatternInfo == null || 
-					(l1.getKey().equals(l2.getKey()) && l2.getValue() > best.getValue()) ||
-					(!l1.getKey().equals(l2.getKey()) && l2.getValue() > best.getValue() + samples/10))) {
-				best = l2;
-				matchLevel = 3;
-				pattern = best.getKey();
-				matchPatternInfo = patternInfo.get(pattern);
+			//   - we have different keys but same type (signed vs. not-signed) 
+			//   - we have different keys, different types but an improvement of at least 10%
+			if (level2 != null && (matchPatternInfo == null || 
+					(best.getKey().equals(level2pattern) && level2value > best.getValue()) ||
+					(!best.getKey().equals(level2pattern) && level2patternInfo != null && matchPatternInfo.type.equals(level2patternInfo.type) && level2.getValue() > best.getValue()) ||
+					(!best.getKey().equals(level2pattern) && level2.getValue() > best.getValue() + samples/10))) {
+				best = level2;
+				pattern = level2pattern;
+				matchPatternInfo = level2patternInfo;
 			}
+
 			if (type == null) {
 				if (matchPatternInfo != null) {
 					type = matchPatternInfo.type;
@@ -656,6 +705,17 @@ public class TextAnalyzer {
 		}
 	}
 	
+	private void outlier(String input) {
+		Integer seen = outliers.get(input);
+		if (seen == null) {
+			if (outliers.size() < maxOutliers)
+				outliers.put(input, 1);
+		}
+		else {
+			outliers.put(input, seen + 1);
+		}
+	}
+
 	private void trackResult(String input) {
 		// We always want to track basic facts for the field
 		int length = input.length();
@@ -668,29 +728,32 @@ public class TextAnalyzer {
 		// If the cache is full and we still have not determined a type so compute one
 		if (type == null && sampleCount - (nullCount + blankCount) > samples) {
 			determineType();
-			return;
 		}
 
 		if (type == null) {
 			return;
 		}
 
-		int lastIndex = raw.size() - 1;
-		
 		switch (type) {
 		case "Boolean":
 			if (trackBooleanInfo(input))
 				matchCount++;
+			else
+				outlier(input);
 			break;
 			
 		case "Long":
 			if (trackLong(input))
 				matchCount++;
+			else
+				outlier(input);
 			break;
 				
 		case "Double":
 			if (trackDouble(input))
 				matchCount++;
+			else
+				outlier(input);
 			break;
 
 		case "String":
@@ -703,17 +766,17 @@ public class TextAnalyzer {
 		case "DateTime":
 			if (trackDate(matchPatternInfo.format, input))
 				matchCount++;
+			else
+				outlier(input);
 			break;
-			
-		default:
-			System.err.println("HELLO");
-			if ((matchLevel == 1 && matchPattern.equals(levels[0].get(lastIndex).toString())) ||
-					(matchLevel == 2 && matchPattern.equals(levels[1].get(lastIndex).toString()))) {
-				matchCount++;
-			}
 		}
 	}
 
+	/**
+	 * Determine the result of the training complete to date.  Typically invoked after all
+	 * training is complete, but may be invoked at any stage.
+	 * @return A TextAnalysisResult with the analysis of any training completed.
+	 */
 	public TextAnalysisResult getResult() {
 		// If we have not already determined the type, now we need to
 		if (type == null) {
@@ -761,6 +824,8 @@ public class TextAnalyzer {
 						matchPattern += "," + maxRawLength;
 					matchPattern += "}";
 					matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", null);
+					// All outlier information is invalid
+					outliers.clear();
 				}
 				else {
 					matchPattern = "\\d{" + minLength;
@@ -788,6 +853,6 @@ public class TextAnalyzer {
 			}
 		}
 		
-		return new TextAnalysisResult(matchCount, matchPatternInfo, sampleCount, nullCount, blankCount, confidence, min, max, sum, cardinality);
+		return new TextAnalysisResult(matchCount, matchPatternInfo, sampleCount, nullCount, blankCount, confidence, min, max, sum, cardinality, outliers);
 	}
 }

@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+/**
+ * TextAnalysisResult is the result of an analysis of a data stream. 
+ */
 public class TextAnalysisResult {
 	int matchCount;
 	int sampleCount;
@@ -16,8 +19,9 @@ public class TextAnalysisResult {
 	String max;
 	String sum;
 	Map<String, Integer> cardinality;
+	Map<String, Integer> outliers;
 	
-	TextAnalysisResult(int matchCount, PatternInfo patternInfo, int sampleCount, int nullCount, int blankCount, double confidence, String min, String max, String sum, Map<String, Integer> cardinality) {
+	TextAnalysisResult(int matchCount, PatternInfo patternInfo, int sampleCount, int nullCount, int blankCount, double confidence, String min, String max, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
 		this.sampleCount = sampleCount;
@@ -28,57 +32,116 @@ public class TextAnalysisResult {
 		this.max = max;
 		this.sum = sum;
 		this.cardinality = cardinality;
+		this.outliers = outliers;
 	}
 
+	
+	/**
+	 * Confidence in the type classification.
+	 * @return Confidence as a percentage.
+	 */
 	public double getConfidence() {
 		return confidence;
 	}
 	
+	/**
+	 * Type (as determined by training to date) as a String.  Possible types are: "String", "Long",
+	 * "Double", "Date", "Time", or "DateTime".  In addition there are two pseudo-types "[BLANK]"
+	 * (used to indicate a data stream with only empty fields i.e. "") and "[NULL]" (used to indicate
+	 * a data stream with only null values). 
+	 * @return The Type of the data stream.
+	 */
 	public String getType() {
 		return patternInfo.type;
 	}
 	
+	/**
+	 * Get the optional Type Qualifier.  Possible qualifiers are "Email" for "String" and
+	 * "Signed" for types of "Long" and "Double"
+	 * @return The Type Qualifier for the Type.
+	 */
 	public String getTypeQualifier() {
 		return patternInfo.typeQualifier;
 	}
 	
+	/**
+	 * Get the minimum value for numeric types ("Long" and "Double")
+	 * @return The minimum value as a String.
+	 */
 	public String getMin() {
 		return min;
 	}
 	
+	/**
+	 * Get the maximum value for numeric types ("Long" and "Double")
+	 * @return The maximum value as a String.
+	 */
 	public String getMax() {
 		return max;
 	}
 	
+	/**
+	 * Get Regular Expression that reflects the data stream.
+	 * @return The Regular Expression.
+	 */
 	public String getPattern() {
 		return patternInfo.pattern;
 	}
 	
+	/**
+	 * Get the count of all samples that matched the determined type.
+	 * @return Count of all matches.
+	 */
 	public int getMatchCount() {
 		return matchCount;
 	}
 
+	/**
+	 * Get the count of all samples seen.
+	 * @return Count of all samples.
+	 */
 	public int getSampleCount() {
 		return sampleCount;
 	}
 
+	/**
+	 * Get the count of all null samples.
+	 * @return Count of all null samples.
+	 */
 	public int getNullCount() {
 		return nullCount;
 	}
 
+	/**
+	 * Get the count of all blank samples (Blank is "").  Note: "    " is not Blank.
+	 * @return Count of all blank samples.
+	 */
 	public int getBlankCount() {
 		return blankCount;
 	}
 
+	/**
+	 * Get the cardinality for the current data stream.
+	 * See {@link com.cobber.fta.TextAnalyzer#setMaxCardinality(int) setMaxCardinality()} method in TextAnalyzer.
+	 * Note: This is not a complete cardinality analysis unless the cardinality of the
+	 * data stream is less than the maximum cardinality (Default: {@value com.cobber.fta.TextAnalyzer#MAX_CARDINALITY_DEFAULT}).
+	 * See also {@link com.cobber.fta.TextAnalyzer#setMaxCardinality(int) setMaxCardinality()} method in TextAnalyzer.
+	 * @return Count of all blank samples.
+	 */
 	public int getCardinality() {
 		return cardinality.size();
 	}
 
+	/**
+	 * Get the cardinality details for the current data stream.  This is a Map of Strings and the count
+	 * of occurrences.
+	 * @return A Map of values and their occurrence frequency of the data stream to date.
+	 */
 	public Map<String, Integer> getCardinalityDetails() {
 		return cardinality;
 	}
 
-	static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
 	    SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
 	        new Comparator<Map.Entry<K,V>>() {
 	            @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
@@ -95,6 +158,11 @@ public class TextAnalysisResult {
 	    return sortedEntries;
 	}
 	
+	/**
+	 * A String representation of the Analysis.  This is not suitable for anything other than
+	 * debug output and is likely to change with no notice!!
+	 * @return A String representation of the analysis to date.
+	 */
 	@Override
 	public String toString() {
 		String ret = "TextAnalysisResult [matchCount=" + matchCount + ", sampleCount=" + sampleCount + ", nullCount="
@@ -129,6 +197,23 @@ public class TextAnalysisResult {
 				ret += " ";
 			}
 			ret += "}";
+		}
+		if (outliers.size() != 0 && outliers.size() != TextAnalyzer.MAX_OUTLIERS_DEFAULT) {
+			ret += ", outliers=" + outliers.size();
+			if (outliers.size() < .2 * sampleCount) {
+				ret += " {";
+				int i = 0;
+				SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(outliers);
+				for (Map.Entry<String,Integer> entry : ordered) {
+					if (i++ == 10) {
+						ret += "...";
+						break;
+					}
+					ret += "\"" + entry.getKey() + "\":" + entry.getValue();
+					ret += " ";
+				}
+				ret += "}";
+			}
 		}
 		ret += "]";
 		return ret;
