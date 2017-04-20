@@ -367,14 +367,6 @@ public class TextAnalyzer {
 		
 		int length = input.length();
 
-		Integer seen = cardinality.get(input);
-		if (seen == null) {
-			if (cardinality.size() < maxCardinality)
-				cardinality.put(input, 1);
-		}
-		else
-			cardinality.put(input, seen + 1);
-
 		trackResult(rawInput);
 
 		// If we have determined a type, no need to further train
@@ -661,42 +653,10 @@ public class TextAnalyzer {
 				}
 
 				if (type != null) {
-					switch (type) {
-					case "Boolean":
-						for (String sample : raw) {
-							trackBooleanInfo(sample);
-						}
-						break;
-						
-					case "Long":
-						for (String sample : raw) {
-							trackLong(sample);
-						}
-						break;
-						
-					case "Double":
-						for (String sample : raw) {
-							trackDouble(sample);
-						}
-						break;
-					
-					case "String":
-						if (possibleEmails == raw.size())
-							matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", "Email");
-						for (String sample : raw) {
-							trackString(sample);
-						}
-						break;
-						
-					case "Date":
-					case "Time":
-					case "DateTime":
-						for (String sample : raw) {
-							trackDate(matchPatternInfo.format, sample);
-						}
-						break;
-					
-					}
+					if (possibleEmails == raw.size())
+						matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", "Email");
+					for (String sample : raw)
+						trackResult(sample);
 
 					matchCount = best.getValue();
 					matchPattern = pattern;
@@ -704,7 +664,17 @@ public class TextAnalyzer {
 			}
 		}
 	}
-	
+
+	private void addValid(String input) {
+		Integer seen = cardinality.get(input);
+		if (seen == null) {
+			if (cardinality.size() < maxCardinality)
+				cardinality.put(input, 1);
+		}
+		else
+			cardinality.put(input, seen + 1);
+	}
+
 	private void outlier(String input) {
 		Integer seen = outliers.get(input);
 		if (seen == null) {
@@ -736,41 +706,53 @@ public class TextAnalyzer {
 
 		switch (type) {
 		case "Boolean":
-			if (trackBooleanInfo(input))
+			if (trackBooleanInfo(input)) {
 				matchCount++;
-			else
-				outlier(input);
+				addValid(input);
+				return;
+			}
+			outlier(input);
 			break;
 			
 		case "Long":
-			if (trackLong(input))
+			if (trackLong(input)) {
 				matchCount++;
-			else
-				outlier(input);
+				addValid(input);
+				return;
+			}
+			outlier(input);
 			break;
 				
 		case "Double":
-			if (trackDouble(input))
+			if (trackDouble(input)) {
 				matchCount++;
-			else
-				outlier(input);
+				addValid(input);
+				return;
+			}
+			outlier(input);
 			break;
 
 		case "String":
-			if (trackString(input))
+			if (trackString(input)) {
 				matchCount++;
+				addValid(input);
+				return;
+			}
+			outlier(input);
 			break;
 			
 		case "Date":
 		case "Time":
 		case "DateTime":
-			if (trackDate(matchPatternInfo.format, input))
+			if (trackDate(matchPatternInfo.format, input)) {
 				matchCount++;
-			else
-				outlier(input);
+				addValid(input);
+				return;
+			}
+			outlier(input);
 			break;
 		}
-	}
+ 	}
 
 	/**
 	 * Determine the result of the training complete to date.  Typically invoked after all
@@ -824,7 +806,9 @@ public class TextAnalyzer {
 						matchPattern += "," + maxRawLength;
 					matchPattern += "}";
 					matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", null);
-					// All outlier information is invalid
+
+					// All outliers are now part of the cardinality set and there are no outliers
+					cardinality.putAll(outliers);
 					outliers.clear();
 				}
 				else {
