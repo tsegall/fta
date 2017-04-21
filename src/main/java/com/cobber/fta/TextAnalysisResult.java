@@ -20,8 +20,9 @@ public class TextAnalysisResult {
 	String sum;
 	Map<String, Integer> cardinality;
 	Map<String, Integer> outliers;
+	boolean key;
 	
-	TextAnalysisResult(int matchCount, PatternInfo patternInfo, int sampleCount, int nullCount, int blankCount, double confidence, String min, String max, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+	TextAnalysisResult(int matchCount, PatternInfo patternInfo, int sampleCount, int nullCount, int blankCount, double confidence, String min, String max, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers, boolean key) {
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
 		this.sampleCount = sampleCount;
@@ -33,6 +34,7 @@ public class TextAnalysisResult {
 		this.sum = sum;
 		this.cardinality = cardinality;
 		this.outliers = outliers;
+		this.key = key;
 	}
 
 	
@@ -198,6 +200,7 @@ public class TextAnalysisResult {
 			}
 			ret += "}";
 		}
+
 		if (outliers.size() != 0 && outliers.size() != TextAnalyzer.MAX_OUTLIERS_DEFAULT) {
 			ret += ", outliers=" + outliers.size();
 			if (outliers.size() < .2 * sampleCount) {
@@ -215,6 +218,10 @@ public class TextAnalysisResult {
 				ret += "}";
 			}
 		}
+
+		if (key)
+			ret += ", PossibleKey";
+
 		ret += "]";
 		return ret;
 	}

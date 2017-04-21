@@ -26,8 +26,10 @@ public class TextAnalyzer {
 	private int samples = SAMPLE_DEFAULT;
 
 	/** The default value for the Maximum Cardinality tracked. */
-	public static final int MAX_CARDINALITY_DEFAULT = 100;
+	public static final int MAX_CARDINALITY_DEFAULT = 1000;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
+
+	private final int MIN_SAMPLES_FOR_KEY = 1000;
 
 	/** The default value for the Maximum # of outliers tracked. */
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
@@ -821,6 +823,8 @@ public class TextAnalyzer {
 			}
 		}
 
+		boolean key = false;
+
 		if (type != null) {
 			switch (type) {
 			case "Long":
@@ -835,8 +839,20 @@ public class TextAnalyzer {
 				sum = sumBD.toString();
 				break;
 			}
+
+			// Attempt to identify keys?
+			if (sampleCount > MIN_SAMPLES_FOR_KEY && cardinality.size() >= maxCardinality && blankCount == 0 && nullCount == 0 && matchPatternInfo.typeQualifier == null &&
+					(("String".equals(type) && minRawLength == maxRawLength && minRawLength < 32) || "Long".equals(type))) {
+				key = true;
+				for (Map.Entry<String,Integer> entry : cardinality.entrySet()) {
+					if (entry.getValue() != 1) {
+						key = false;
+						break;
+					}
+				}
+			}
 		}
 		
-		return new TextAnalysisResult(matchCount, matchPatternInfo, sampleCount, nullCount, blankCount, confidence, min, max, sum, cardinality, outliers);
+		return new TextAnalysisResult(matchCount, matchPatternInfo, sampleCount, nullCount, blankCount, confidence, min, max, sum, cardinality, outliers, key);
 	}
 }
