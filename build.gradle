@@ -1,9 +1,15 @@
 apply plugin: 'java'
 apply plugin: 'java-library-distribution'
 apply plugin: 'eclipse'
+apply plugin: 'jacoco'
 
 repositories {
     mavenCentral()
+}
+
+test {
+    // enable TestNG support (default is JUnit)
+    useTestNG()
 }
 
 dependencies {
@@ -18,5 +24,14 @@ dependencies {
 distributions {
     main{
         baseName = 'fta'
+    }
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination "${buildDir}/reports/coverage"
     }
 }

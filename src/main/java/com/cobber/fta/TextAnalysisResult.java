@@ -143,6 +143,35 @@ public class TextAnalysisResult {
 		return cardinality;
 	}
 
+	/**
+	 * Get the outlier count for the current data stream.
+	 * See {@link com.cobber.fta.TextAnalyzer#setMaxOutlierCount(int) setMaxOutliers()} method in TextAnalyzer.
+	 * Note: This is not a complete outlier analysis unless the outlier of the
+	 * data stream is less than the maximum outlier count (Default: {@value com.cobber.fta.TextAnalyzer#MAX_OUTLIERS_DEFAULT}).
+	 * See also {@link com.cobber.fta.TextAnalyzer#setMaxOutlierCount(int) setMaxOutliers()} method in TextAnalyzer.
+	 * @return Count of all blank samples.
+	 */
+	public int getOutlierCount() {
+		return outliers.size();
+	}
+
+	/**
+	 * Get the outlier details for the current data stream.  This is a Map of Strings and the count
+	 * of occurrences.
+	 * @return A Map of values and their occurrence frequency of the data stream to date.
+	 */
+	public Map<String, Integer> getOutlierDetails() {
+		return outliers;
+	}
+
+	/**
+	 * Is this field a possible key?
+	 * @return True if the field could be a key field.
+	 */
+	public boolean isKey() {
+		return key;
+	}
+
 	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
 	    SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
 	        new Comparator<Map.Entry<K,V>>() {
