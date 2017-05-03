@@ -26,7 +26,7 @@ public class TextAnalyzer {
 	private int samples = SAMPLE_DEFAULT;
 
 	/** The default value for the Maximum Cardinality tracked. */
-	public static final int MAX_CARDINALITY_DEFAULT = 1000;
+	public static final int MAX_CARDINALITY_DEFAULT = 500;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
 
 	private final int MIN_SAMPLES_FOR_KEY = 1000;
@@ -180,7 +180,8 @@ public class TextAnalyzer {
 		addPattern("[-]\\d{+}", null, "", "Long", "Signed");
 		addPattern("\\d{*}D\\d{+}", null, "", "Double", null);
 		addPattern("[-]\\d{*}D\\d{+}", null, "", "Double", "Signed");
-		addPattern("^$", null, null, "[BLANK]", null);
+		addPattern("^[ ]*$", null, null, "[BLANK]", null);
+		addPattern("[NULL]", null, null, "[NULL]", null);
 	}
 	
 	/**
@@ -237,14 +238,14 @@ public class TextAnalyzer {
 	 * @param maxCardinality The maximum Cardinality that will be tracked (0 implies no tracking)
 	 * @return The previous value of this parameter.
 	 */
-	public int setMaxCardinality(int maxCardinality) {
+	public int setMaxCardinality(int newCardinality) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot change maxCardinality once training has started");
-		if (samples < 0)
-			throw new IllegalArgumentException("Invalid value for maxCardinality " + maxCardinality);
+		if (newCardinality < 0)
+			throw new IllegalArgumentException("Invalid value for maxCardinality " + newCardinality);
 
 		int ret = maxCardinality;
-		this.maxCardinality = maxCardinality;
+		maxCardinality = newCardinality;
 		return ret;
 	}
 
@@ -313,6 +314,11 @@ public class TextAnalyzer {
 		catch (NumberFormatException e) {
 			return false;
 		}
+
+		// If it is NaN/Infinity then we are all done
+		if (Double.isNaN(d) || Double.isInfinite(d))
+			return true;
+
 		if (d < minDouble) {
 			minDouble = d;
 		}
@@ -360,12 +366,12 @@ public class TextAnalyzer {
 			return type != null;
 		}
 
-		if (rawInput.length() == 0) {
+		String input = rawInput.trim();
+
+		if (input.length() == 0) {
 			blankCount++;
 			return type != null;
 		}
-
-		String input = rawInput.trim();
 		
 		int length = input.length();
 
@@ -399,8 +405,12 @@ public class TextAnalyzer {
 			} else if (ch == decimalSeparator) { 
 				l0.append('D');
 				numericDecimalSeparators++;
+				if (decimalSeparator == ',')
+					commas++;
 			} else if (ch == groupingSeparator) {
 				l0.append('G');
+				if (groupingSeparator == ',')
+					commas++;
 			} else if (Character.isAlphabetic(ch)) {
 				l0.append('a');
 				notNumericOnly = true;
@@ -655,8 +665,19 @@ public class TextAnalyzer {
 				}
 
 				if (type != null) {
-					if (possibleEmails == raw.size())
+					// Do we have a set of possible emails?
+					if (possibleEmails == raw.size()) {
+						PatternInfo save = matchPatternInfo;
 						matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", "Email");
+						int emails = 0;
+						for (String sample : raw)
+							if (trackString(sample))
+								emails++;
+						// if at least 80% of them looked like a genuine email then stay with email, otherwise back out to simple String
+						if (emails < .8 * raw.size())
+							matchPatternInfo = save;
+					}
+
 					for (String sample : raw)
 						trackResult(sample);
 
@@ -772,8 +793,7 @@ public class TextAnalyzer {
 		int realSamples = sampleCount - (nullCount + blankCount);
 
 		if (blankCount == sampleCount || nullCount == sampleCount) {
-			type = blankCount == sampleCount ? "[BLANK]" : "[NULL]";
-			matchPattern = "^$";
+			matchPattern = blankCount == sampleCount ? "^[ ]*$" : "[NULL]";
 			matchPatternInfo = patternInfo.get(matchPattern);
 			matchCount = sampleCount;
 			confidence = sampleCount >= 10 ? 1.0 : 0.0;

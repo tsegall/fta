@@ -1,5 +1,7 @@
 package com.cobber.fta;
 
+import java.util.Base64;
+import java.util.Map;
 import java.util.Random;
 
 import org.testng.Assert;
@@ -366,7 +368,7 @@ public class AnalysisResultTests {
 	public void basicBoolean() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
-		String[] inputs = "false|true|TRUE|    false   |FALSE |TRUE|true|false|False|True|false".split("\\|");
+		String[] inputs = "false|true|TRUE|    false   |FALSE |TRUE|true|false|False|True|false|  FALSE|FALSE|true|TRUE|bogus".split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -380,11 +382,190 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getPattern(), "(?i)true|false");
+		Assert.assertEquals(result.getConfidence(), .9375);
+		Assert.assertEquals(result.getType(), "Boolean");
+	}
+
+	@Test
+	public void basicPseudoBoolean() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String[] inputs = "0|1|1|0|0|1|1|0|0|1|0|0|0|1|1|0|1|1|1|1|0|0|0|0|1|1|1".split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getPattern(), "[0|1]");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Boolean");
+	}
+
+	@Test
+	public void basicNotPseudoBoolean() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String[] inputs = "0|5|5|0|0|5|5|0|0|5|0|0|0|5|5|0|5|5|5|5|0|0|0|0|5|5|5|A".split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getPattern(), "\\d{1}");
+		Assert.assertEquals(result.getConfidence(), 0.9642857142857143);
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertEquals(result.getCardinality(), 2);
+		Map<String, Integer> details = result.getCardinalityDetails();
+		Assert.assertEquals(details.get("0"), Integer.valueOf(13));
+		Assert.assertEquals(details.get("5"), Integer.valueOf(14));
+		Assert.assertEquals(result.toString(), "TextAnalysisResult [matchCount=27, sampleCount=30, nullCount=2, blankCount=0, pattern=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", sum=\"70\", cardinality=2 {\"5\":14 \"0\":13 }, outliers=1 {\"A\":1 }]");
+	}
+
+	@Test
+	public void manyNulls() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		int iterations = 50;
+
+		for (int i = 0; i < iterations; i++) {
+			analysis.train(null);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), iterations);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), iterations);
+		Assert.assertEquals(result.getNullCount(), iterations);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getPattern(), "[NULL]");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "[NULL]");
+	}
+
+	@Test
+	public void manyBlanks() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		int iterations = 50;
+
+		for (int i = 0; i < iterations; i++) {
+			analysis.train("");
+			analysis.train(" ");
+			analysis.train("  ");
+			analysis.train("   ");
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), 4 * iterations);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), 4 * iterations);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 4 * iterations);
+		Assert.assertEquals(result.getPattern(), "^[ ]*$");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "[BLANK]");
+	}
+
+	@Test
+	public void basicEmail() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "Bachmann@lavastorm.com|Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
+				"coleman@lavastorm.com|Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
+				"Jones@lavastorm.com|Marinelli@lavastorm.com|Nason@lavastorm.com|Parker@lavastorm.com|" +
+				"Pigneri@lavastorm.com|Rasmussen@lavastorm.com|Regan@lavastorm.com|Segall@Lavastorm.com|" +
+				"Smith@lavastorm.com|Song@lavastorm.com|Tolleson@lavastorm.com|wynn@lavastorm.com|" +
+				"Ahmed@lavastorm.com|Benoit@lavastorm.com|Keane@lavastorm.com|Kilker@lavastorm.com|" +
+				"Waters@lavastorm.com|Meagher@lavastorm.com|Mok@lavastorm.com|Mullin@lavastorm.com|" +
+				"Nason@lavastorm.com|reilly@lavastorm.com|Scoble@lavastorm.com|Comerford@lavastorm.com|" +
+				"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
+				"Tuddenham@lavastorm.com|Williams@lavastorm.com|Wilson@lavastorm.com";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train("tim@cobber com");
+		analysis.train("tim@cobber com");
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 2 + result.getNullCount());
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getPattern(), "\\a{14,24}");
+		Assert.assertEquals(result.getConfidence(), 0.9487179487179487);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "Email");
+	}
+
+	@Test
+	public void basicEmailList() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "Bachmann@lavastorm.com,Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
+				"coleman@lavastorm.com,Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
+				"Jones@lavastorm.com|Marinelli@lavastorm.com,Nason@lavastorm.com,Parker@lavastorm.com|" +
+				"Pigneri@lavastorm.com|Rasmussen@lavastorm.com|Regan@lavastorm.com|Segall@Lavastorm.com|" +
+				"Smith@lavastorm.com|Song@lavastorm.com|Tolleson@lavastorm.com|wynn@lavastorm.com|" +
+				"Ahmed@lavastorm.com|Benoit@lavastorm.com|Keane@lavastorm.com|Kilker@lavastorm.com|" +
+				"Waters@lavastorm.com|Meagher@lavastorm.com|Mok@lavastorm.com|Mullin@lavastorm.com|" +
+				"Nason@lavastorm.com|reilly@lavastorm.com|Scoble@lavastorm.com|Comerford@lavastorm.com|" +
+				"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
+				"Tuddenham@lavastorm.com;Williams@lavastorm.com;Wilson@lavastorm.com";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "Email");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{17,67}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test
@@ -424,7 +605,6 @@ public class AnalysisResultTests {
 		int locked = -1;
 		int nullIterations = 50;
 		int iterations = 10000;
-				
 
 		for (int i = 0; i < nullIterations; i++) {
 			analysis.train(null);
@@ -445,6 +625,242 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void someInts() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		Random random = new Random();
+		int locked = -1;
+
+		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+				locked = i;
+		}
+		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			analysis.train(String.valueOf(random.nextDouble()));
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), 2 * (TextAnalyzer.SAMPLE_DEFAULT + 1));
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertEquals(result.getConfidence(), .5);
+	}
+
+	@Test
+	public void setSampleSize() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		Random random = new Random();
+		int locked = -1;
+		int sample = 0;
+
+		analysis.setSampleSize(2* TextAnalyzer.SAMPLE_DEFAULT);
+		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			sample++;
+			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+				locked = sample;
+		}
+		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			sample++;
+			if (analysis.train(String.valueOf(random.nextDouble())) && locked == -1)
+				locked = sample;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
+		Assert.assertEquals(result.getSampleCount(), 2 * (TextAnalyzer.SAMPLE_DEFAULT + 1));
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), "Double");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void getSampleSize() {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		Assert.assertEquals(analysis.getSampleSize(), TextAnalyzer.SAMPLE_DEFAULT);
+	}
+
+	@Test
+	public void setSampleSizeTooSmall() {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		try {
+			analysis.setSampleSize(TextAnalyzer.SAMPLE_DEFAULT - 1);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Cannot set sample size below " + TextAnalyzer.SAMPLE_DEFAULT);
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void setSampleSizeTooLate() {
+		TextAnalyzer analysis = new TextAnalyzer();
+		Random random = new Random();
+		int locked = -1;
+		int i = 0;
+
+		for (; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+				locked = i;
+		}
+
+		try {
+			analysis.setSampleSize(2* TextAnalyzer.SAMPLE_DEFAULT);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Cannot change sample size once training has started");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void getMaxCardinality() {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		Assert.assertEquals(analysis.getMaxCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+	}
+
+	@Test
+	public void setMaxCardinalityTooSmall() {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		try {
+			analysis.setMaxCardinality(-1);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Invalid value for maxCardinality -1");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void setMaxCardinalityTooLate() {
+		TextAnalyzer analysis = new TextAnalyzer();
+		Random random = new Random();
+		int locked = -1;
+		int i = 0;
+
+		for (; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+				locked = i;
+		}
+
+		try {
+			analysis.setMaxCardinality(2* TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Cannot change maxCardinality once training has started");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void manyRandomDoubles() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		Random random = new Random();
+		int locked = -1;
+		int nullIterations = 50;
+		int iterations = 10000;
+
+		for (int i = 0; i < nullIterations; i++) {
+			analysis.train(null);
+		}
+		for (int i = 0; i < iterations; i++) {
+			if (analysis.train(String.valueOf(random.nextDouble())) && locked == -1)
+				locked = i;
+		}
+		// This is an outlier
+		analysis.train("Zoomer");
+
+		// These are valid doubles
+		analysis.train("NaN");
+		analysis.train("Infinity");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations + 3);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getNullCount(), nullIterations);
+		Assert.assertEquals(result.getType(), "Double");
+		Assert.assertEquals(result.getOutlierCount(), 1);
+	}
+
+	@Test
+	public void manyConstantLengthStrings() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		Random random = new Random();
+		int locked = -1;
+		int nullIterations = 50;
+		int iterations = 10000;
+		int length = 12;
+		StringBuilder b = new StringBuilder(length);
+		String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+		for (int i = 0; i < nullIterations; i++) {
+			analysis.train(null);
+		}
+		for (int i = 0; i < iterations; i++) {
+			b.setLength(0);
+			int next = Math.abs(random.nextInt());
+			for (int j = 0; j < length; j++) {
+				b.append(alphabet.charAt(next%alphabet.length()));
+			}
+			if (analysis.train(b.toString()) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
+		//		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getNullCount(), nullIterations);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getPattern(), "\\a{12}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void manyConstantLengthLongs() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		Random random = new Random();
+		int locked = -1;
+		int nullIterations = 50;
+		int iterations = 10000;
+
+		for (int i = 0; i < nullIterations; i++) {
+			analysis.train(null);
+		}
+		int cnt = 0;
+		while (cnt < iterations) {
+			long l = Math.abs(random.nextInt()) + 1000000000L;
+			if (l >  9999999999L)
+				continue;
+			if (analysis.train(String.valueOf(l)) && locked == -1)
+				locked = cnt;
+			cnt++;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getNullCount(), nullIterations);
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertEquals(result.getPattern(), "\\d{10}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
 	public void manyKnownInts() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 		int locked = -1;
@@ -458,13 +874,16 @@ public class AnalysisResultTests {
 			if (analysis.train(String.valueOf(i)) && locked == -1)
 				locked = i;
 		}
+		analysis.train("  ");
+		analysis.train("    ");
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, 20);
-		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations + 2);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
+		Assert.assertEquals(result.getBlankCount(), 2);
 		Assert.assertEquals(result.getPattern(), "\\d{1,5}");
 		Assert.assertEquals(result.getType(), "Long");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -473,6 +892,77 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void keyFieldLong() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		int locked = -1;
+		int start = 10000;
+		int end = 12000;
+
+		for (int i = start; i < end; i++) {
+			if (analysis.train(String.valueOf(i)) && locked == -1)
+				locked = i - start;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), end - start);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getPattern(), "\\d{5}");
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertTrue(result.isKey());
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void keyFieldString() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		int locked = -1;
+		int start = 100000;
+		int end = 120000;
+
+		for (int i = start; i < end; i++) {
+			if (analysis.train("A" + String.valueOf(i)) && locked == -1)
+				locked = i - start;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), end - start);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getPattern(), "\\a{7}");
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertTrue(result.isKey());
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void notKeyField() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		int locked = -1;
+		int start = 10000;
+		int end = 12000;
+
+		for (int i = start; i < end; i++) {
+			if (analysis.train(String.valueOf(i)) && locked == -1)
+				locked = i - start;
+		}
+
+		analysis.train(String.valueOf(start));
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), 1 + end - start);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getPattern(), "\\d{5}");
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertFalse(result.isKey());
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	// Broken @Test
 	public void DateTimeTime() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
