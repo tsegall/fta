@@ -1,13 +1,19 @@
 package com.cobber.fta;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.mail.internet.AddressException;
@@ -51,40 +57,47 @@ public class TextAnalyzer {
 	// 0: d{4}             1: d{+}              2: [-]d{+}
 	// input "hello world" 0: a{5} a{5}         1: a{+} a{+}        2: a{+} 
 	ArrayList<StringBuilder>[] levels = new ArrayList[3];
-	
+
 	String type;
 	int matchCount;
 	String matchPattern;
 	PatternInfo matchPatternInfo;
 
 	boolean trainingStarted;
-	
+
 	double minDouble = Double.MAX_VALUE;
 	double maxDouble = -Double.MAX_VALUE;
 	BigDecimal sumBD = new BigDecimal(0);
-	
+
 	long minLong = Long.MAX_VALUE;
 	long maxLong = Long.MIN_VALUE;
 	BigInteger sumBI = new BigInteger("0");
-	
+
 	String min = null;
 	String max = null;
 	String sum = null;
-	
+
 	int minRawLength = Integer.MAX_VALUE;
 	int maxRawLength = Integer.MIN_VALUE;
-	
+
 	int minLength = Integer.MAX_VALUE;
 	int maxLength = Integer.MIN_VALUE;
-	
+
 	int possibleHMS = 0;
 	int possibleHM = 0;
+	int totalLongs = 0;
 	int possibleEmails = 0;
-	
+	int possibleZips = 0;
+
 	Map.Entry<String, Integer> lastCompute;
-	
+
 	static HashMap<String, PatternInfo> patternInfo = null;
-	
+	HashSet<String> zips = new HashSet<String>();
+	HashSet<String> usStates = new HashSet<String>();
+	HashSet<String> caProvinces = new HashSet<String>();
+
+	static boolean dataLoaded = false;
+
 	void addPattern(String pattern, String generalPattern, String format, String type, String typeQualifier) {
 		patternInfo.put(pattern, new PatternInfo(pattern, generalPattern, format, type, typeQualifier));
 	}
@@ -95,47 +108,47 @@ public class TextAnalyzer {
 		addPattern("\\d{4}-\\d{1}-\\d{2}", "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "Date", null);
 		addPattern("\\d{4}-\\d{1}-\\d{1}", "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "Date", null);
 		addPattern("\\d{4}-\\d{2}-\\d{1}", "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "Date", null);
-		addPattern("\\d{4}-\\d{1,2}-\\d{1,2}", null, "yyyy-MM-dd", "Date", null);
+		addPattern("\\d{4}-\\d{1,2}-\\d{1,2}", null, "yyyy-MM-dd", "Date", "yyyy-MM-dd");
 
 		addPattern("\\d{4}/\\d{2}/\\d{2}", "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "Date", null);
 		addPattern("\\d{4}/\\d{1}/\\d{2}", "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "Date", null);
 		addPattern("\\d{4}/\\d{2}/\\d{1}", "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "Date", null);
 		addPattern("\\d{4}/\\d{1}/\\d{1}", "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "Date", null);
-		addPattern("\\d{4}/\\d{1,2}/\\d{1,2}", null, "yyyy/MM/dd", "Date", null);
-		
+		addPattern("\\d{4}/\\d{1,2}/\\d{1,2}", null, "yyyy/MM/dd", "Date", "yyyy/MM/dd");
+
 		addPattern("\\d{4} \\d{2} \\d{2}", "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "Date", null);
 		addPattern("\\d{4} \\d{2} \\d{2}", "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "Date", null);
 		addPattern("\\d{4} \\d{2} \\d{2}", "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "Date", null);
 		addPattern("\\d{4} \\d{2} \\d{2}", "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "Date", null);
-		addPattern("\\d{4} \\d{1,2} \\d{1,2}", null, "yyyy MM dd", "Date", null);
+		addPattern("\\d{4} \\d{1,2} \\d{1,2}", null, "yyyy MM dd", "Date", "yyyy MM dd");
 
 		addPattern("\\d{2}-\\d{2}-\\d{4}", "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "Date", null);
 		addPattern("\\d{1}-\\d{2}-\\d{4}", "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "Date", null);
 		addPattern("\\d{2}-\\d{1}-\\d{4}", "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "Date", null);
 		addPattern("\\d{1}-\\d{1}-\\d{4}", "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "Date", null);
-		addPattern("\\d{1,2}-\\d{1,2}-\\d{4}", null, "dd-MM-yyyy", "Date", null);
+		addPattern("\\d{1,2}-\\d{1,2}-\\d{4}", null, "dd-MM-yyyy", "Date", "dd-MM-yyyy");
 
 		addPattern("\\d{2}/\\d{2}/\\d{4}", "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "Date", null);
 		addPattern("\\d{2}/\\d{2}/\\d{4}", "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "Date", null);
 		addPattern("\\d{2}/\\d{2}/\\d{4}", "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "Date", null);
 		addPattern("\\d{2}/\\d{2}/\\d{4}", "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "Date", null);
-		addPattern("\\d{1,2}/\\d{1,2}/\\d{4}", null, "dd/MM/yyyy", "Date", null);
+		addPattern("\\d{1,2}/\\d{1,2}/\\d{4}", null, "dd/MM/yyyy", "Date", "dd/MM/yyyy");
 
-		addPattern("\\d{2} \\d{2} \\d{4}", null, "dd MM yyyy", "Date", null);
+		addPattern("\\d{2} \\d{2} \\d{4}", null, "dd MM yyyy", "Date", "dd MM yyyy");
 		addPattern("\\d{2} \\a{3} \\d{4}", null, "", "Date", null);
 
 		addPattern("\\d{2}-\\a{3}-\\d{2}", "\\d{1,2}-\\a{3}-\\d{2}", "d-MMM-yy", "Date", null);
 		addPattern("\\d{1}-\\a{3}-\\d{2}", "\\d{1,2}-\\a{3}-\\d{2}", "d-MMM-yy", "Date", null);
-		addPattern("\\d{1,2}-\\a{3}-\\d{2}", null, "d-MMM-yy", "Date", null);
+		addPattern("\\d{1,2}-\\a{3}-\\d{2}", null, "d-MMM-yy", "Date", "d-MMM-yy");
 
 		addPattern("\\d{2}:\\d{2}:\\d{2}", "\\d{1,2}:\\d{2}:\\d{2}", "hh:mm:ss", "Time", null);
 		addPattern("\\d{1}:\\d{2}:\\d{2}", "\\d{1,2}:\\d{2}:\\d{2}", "hh:mm:ss", "Time", null);
-		addPattern("\\d{1,2}:\\d{2}:\\d{2}", null, "hh:mm:ss", "Time", null);
+		addPattern("\\d{1,2}:\\d{2}:\\d{2}", null, "hh:mm:ss", "Time", "hh:mm:ss");
 
 		addPattern("\\d{2}:\\d{2}", "\\d{1,2}:\\d{2}", "hh:mm", "Time", null);
 		addPattern("\\d{1}:\\d{2}", "\\d{1,2}:\\d{2}", "hh:mm", "Time", null);
-		addPattern("\\d{1,2}:\\d{2}", null, "hh:mm", "Time", null);
-		
+		addPattern("\\d{1,2}:\\d{2}", null, "hh:mm", "Time", "hh:mm");
+
 		// \d{2}/\d{1}/\d{4} \d{2}:\d{2}:\d{2}		
 
 		addPattern("\\d{2}/\\d{2}/\\d{2} \\d{2}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", null);
@@ -146,7 +159,7 @@ public class TextAnalyzer {
 		addPattern("\\d{1}/\\d{2}/\\d{2} \\d{1}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", null);
 		addPattern("\\d{2}/\\d{1}/\\d{2} \\d{1}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", null);
 		addPattern("\\d{1}/\\d{1}/\\d{2} \\d{1}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", null);
-		addPattern("\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", null, "MM/dd/yy hh:mm", "DateTime", null);
+		addPattern("\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", null, "MM/dd/yy hh:mm", "DateTime", "MM/dd/yy hh:mm");
 
 		addPattern("\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}", null, "", "DateTime", null);
 		addPattern("\\d{4}/\\d{2}/\\d{2}\\a{1}\\d{2}:\\d{2}", null, "", "DateTime", null);
@@ -160,7 +173,9 @@ public class TextAnalyzer {
 		addPattern("\\d{4}-\\d{1}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "DateTime", null);
 		addPattern("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "DateTime", null);
 		addPattern("\\d{4}-\\d{1}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "DateTime", null);
-		addPattern("\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", null, "yyyy-MM-dd hh:mm:ss", "DateTime", null);
+		addPattern("\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", null, "yyyy-MM-dd hh:mm:ss", "DateTime", "yyyy-MM-dd hh:mm:ss");
+
+		addPattern("\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}", null, "ISO8601 (NoTZ)", "DateTime", null);
 
 		addPattern("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy hh:mm:ss", "DateTime", null);
 		addPattern("\\d{2}-\\d{1}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy hh:mm:ss", "DateTime", null);
@@ -182,15 +197,43 @@ public class TextAnalyzer {
 		addPattern("[-]\\d{*}D\\d{+}", null, "", "Double", "Signed");
 		addPattern("^[ ]*$", null, null, "[BLANK]", null);
 		addPattern("[NULL]", null, null, "[NULL]", null);
+		addPattern("[ZIP]", null, null, "Long", "Zip");
+		addPattern("[0|1]", null, null, "Boolean", null);
+		addPattern("[NA_STATE]", null, null, "String", "NA_STATE");
+		addPattern("[US_STATE]", null, null, "String", "US_STATE");
+		addPattern("[CA_PROVINCE]", null, null, "String", "CA_PROVINCE");
 	}
-	
+
 	/**
 	 * Construct a Text Analyzer for the named data stream. 
 	 * @param name The name of the data stream (e.g. the column of the CSV file)
 	 */
-	public TextAnalyzer(String name) {
+	public TextAnalyzer(String name) throws IOException {
 		if (patternInfo == null) {
 			initPatternInfo();
+		}
+
+		if (!dataLoaded) {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_zips.csv")))) {
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					zips.add(line);
+				}
+			}
+
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_states.csv")))) {
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					usStates.add(line);
+				}
+			}
+
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/ca_provinces.csv")))) {
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					caProvinces.add(line);
+				}
+			}
 		}
 
 		this.name = name;
@@ -200,11 +243,11 @@ public class TextAnalyzer {
 		groupingSeparator = formatSymbols.getGroupingSeparator();
 		minusSign = formatSymbols.getMinusSign();
 	}
-	
+
 	/**
 	 * Construct an anonymous Text Analyzer for a data stream. 
 	 */
-	public TextAnalyzer() {
+	public TextAnalyzer() throws IOException {
 		this("anonymous");
 	}
 
@@ -218,7 +261,7 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("Cannot change sample size once training has started");
 		if (samples < SAMPLE_DEFAULT)
 			throw new IllegalArgumentException("Cannot set sample size below " + SAMPLE_DEFAULT);
-			
+
 		int ret = samples;
 		this.samples = samples;
 		return ret;
@@ -258,16 +301,20 @@ public class TextAnalyzer {
 		return maxCardinality;
 	}
 
-	private boolean trackLong(String rawInput) {					
+	private boolean trackLong(String rawInput, boolean register) {
 		long l;
 		String input = rawInput.trim();
-		
+
 		try {
 			l = Long.parseLong(input);
 		}
 		catch (NumberFormatException e) {
 			return false;
 		}
+
+		if (register)
+			totalLongs++;
+
 		if (l < minLong) {
 			minLong = l;
 		}
@@ -279,9 +326,13 @@ public class TextAnalyzer {
 			minLength = digits;
 		if (digits > maxLength)
 			maxLength = digits;
-		
+
 		sumBI = sumBI.add(BigInteger.valueOf(l));
-			
+
+		if ("Zip".equals(matchPatternInfo.typeQualifier)) {
+			return zips.contains(rawInput);
+		}
+
 		return true;
 	}
 
@@ -289,7 +340,7 @@ public class TextAnalyzer {
 		return "true".equalsIgnoreCase(input.trim()) || "false".equalsIgnoreCase(input.trim()); 
 	}
 
-	private boolean trackString(String input) {
+	private boolean trackString(String input, boolean register) {
 		if ("Email".equals(matchPatternInfo.typeQualifier)) {
 			// Address lists commonly have ;'s as separators as opposed to the ','
 			if (input.indexOf(';') != -1)
@@ -304,7 +355,7 @@ public class TextAnalyzer {
 
 		return true;
 	}
-	
+
 	private boolean trackDouble(String input) {					
 		double d;
 
@@ -327,11 +378,20 @@ public class TextAnalyzer {
 		}
 
 		sumBD = sumBD.add(BigDecimal.valueOf(d));
-		
+
 		return true;
 	}
-	
+
 	private boolean trackDate(String dateFormat, String input) {
+		if ("ISO8601 (NoTZ)".equals(dateFormat)) {
+			try {
+				LocalDateTime.parse(input);
+			}
+			catch (DateTimeParseException e) {
+				return false;
+			}
+			return true;
+		}
 		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 
 		try {
@@ -372,7 +432,7 @@ public class TextAnalyzer {
 			blankCount++;
 			return type != null;
 		}
-		
+
 		int length = input.length();
 
 		trackResult(rawInput);
@@ -380,9 +440,9 @@ public class TextAnalyzer {
 		// If we have determined a type, no need to further train
 		if (type != null)
 			return true;
-		
+
 		raw.add(rawInput);
-		
+
 		StringBuilder l0 = new StringBuilder(length);
 
 		// Walk the string
@@ -436,18 +496,20 @@ public class TextAnalyzer {
 					input.charAt(colonIndex - 3) == ':' && Character.isDigit(input.charAt(colonIndex - 4)) &&
 					Character.isDigit(input.charAt(colonIndex + 1)) && Character.isDigit(input.charAt(colonIndex + 1))) {
 				possibleHMS++;
-//				System.err.println("HMS detected " + name);
+				//				System.err.println("HMS detected " + name);
 			}
 		} else if (colons == 1) {
 			if (colonIndex + 2 < length && colonIndex - 1 > 0 && Character.isDigit(input.charAt(colonIndex - 1)) &&
 					Character.isDigit(input.charAt(colonIndex + 1)) && Character.isDigit(input.charAt(colonIndex + 1))) { 
 				possibleHM++;
-//				System.err.println("HM detected " + name);
+				//				System.err.println("HM detected " + name);
 			}
 		}
 		if (atSigns - 1 == commas || atSigns - 1 == semicolons)
 			possibleEmails++;
-		
+		if (length == 5 && digitsSeen == 5)
+			possibleZips++;
+
 		StringBuilder compressedl0 = new StringBuilder(length);
 		if ("true".equalsIgnoreCase(input) || "false".equalsIgnoreCase(input)) {
 			compressedl0.append("(?i)true|false");
@@ -477,7 +539,7 @@ public class TextAnalyzer {
 			}
 		}
 		levels[0].add(compressedl0);
-		
+
 		// Create the level 1 and 2
 		if (digitsSeen > 0 && notNumericOnly == false && numericDecimalSeparators <= 1) {
 			StringBuilder l1 = new StringBuilder();
@@ -507,7 +569,7 @@ public class TextAnalyzer {
 						collapsed.replace(start, i, "+");
 				}
 			}
-			
+
 			// Level 1 is the collapsed version e.g. convert d{4}-d{2}-d{2] to d{+}-d{+}-d{+}
 			PatternInfo found = patternInfo.get(compressedl0.toString());
 			if (found != null && found.generalPattern != null) {
@@ -520,14 +582,14 @@ public class TextAnalyzer {
 			}
 
 		}
-		
+
 		if (sampleCount - (nullCount + blankCount) > samples) {
 			raw.remove(0);
 			levels[0].remove(0);
 			levels[1].remove(0);
 			levels[2].remove(0);
 		}
-		
+
 		return type != null;
 	}
 
@@ -537,7 +599,7 @@ public class TextAnalyzer {
 			return null;
 
 		Map<String, Integer> map = new HashMap<String, Integer>();
-		
+
 		// Calculate the frequency of every element
 		for (StringBuilder s : level) {
 			String key = s.toString();
@@ -571,7 +633,7 @@ public class TextAnalyzer {
 		String secondBestKey;
 		if (secondBest != null) {
 			secondBestKey = secondBest.getKey();
-			
+
 			PatternInfo bestPattern = patternInfo.get(bestKey);
 			PatternInfo secondBestPattern = patternInfo.get(secondBestKey);
 			if (bestPattern != null && secondBestPattern != null) {
@@ -591,7 +653,7 @@ public class TextAnalyzer {
 
 		return best;
 	}
-	
+
 	/**
 	 * This is the core routine for determining the type of the field.
 	 * It is responsible for setting:
@@ -617,7 +679,7 @@ public class TextAnalyzer {
 		Map.Entry<String, Integer> level1 = getBest(1);
 		Map.Entry<String, Integer> level2 = getBest(2);
 		Map.Entry<String, Integer> best = level0;
-		
+
 		if (level0 != null) {
 			level0pattern = level0.getKey();
 			level0value = level0.getValue();
@@ -633,11 +695,11 @@ public class TextAnalyzer {
 			level2value = level2.getValue();
 			level2patternInfo = patternInfo.get(level2pattern);
 		}
-		
+
 		if (best != null) {
 			pattern = level0pattern;
 			matchPatternInfo = level0patternInfo;
-			
+
 			// Take any level 1 with something we recognize or a better count
 			if (level1 != null && (level0patternInfo == null || level1value > level0value)) {
 				best = level1;
@@ -671,11 +733,27 @@ public class TextAnalyzer {
 						matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", "Email");
 						int emails = 0;
 						for (String sample : raw)
-							if (trackString(sample))
+							if (trackString(sample, false))
 								emails++;
 						// if at least 80% of them looked like a genuine email then stay with email, otherwise back out to simple String
 						if (emails < .8 * raw.size())
 							matchPatternInfo = save;
+					}
+
+					// Do we have a set of possible zip codes?
+					if (possibleZips == raw.size()) {
+						PatternInfo save = matchPatternInfo;
+						pattern = "[ZIP]";
+						matchPatternInfo = patternInfo.get(pattern);
+
+						int zipCount = 0;
+						for (String sample : raw)
+							if (trackLong(sample, false))
+								zipCount++;
+						// if at least 90% of them looked like a genuine zip then stay with email, otherwise back out to simple Long
+						if (zipCount < .8 * raw.size())
+							matchPatternInfo = save;
+						type = matchPatternInfo.type;
 					}
 
 					for (String sample : raw)
@@ -717,7 +795,7 @@ public class TextAnalyzer {
 			minRawLength = length;
 		if (length > maxRawLength)
 			maxRawLength = length;
-		
+
 		// If the cache is full and we still have not determined a type so compute one
 		if (type == null && sampleCount - (nullCount + blankCount) > samples) {
 			determineType();
@@ -736,16 +814,16 @@ public class TextAnalyzer {
 			}
 			outlier(input);
 			break;
-			
+
 		case "Long":
-			if (trackLong(input)) {
+			if (trackLong(input, true)) {
 				matchCount++;
 				addValid(input);
 				return;
 			}
 			outlier(input);
 			break;
-				
+
 		case "Double":
 			if (trackDouble(input)) {
 				matchCount++;
@@ -756,14 +834,14 @@ public class TextAnalyzer {
 			break;
 
 		case "String":
-			if (trackString(input)) {
+			if (trackString(input, true)) {
 				matchCount++;
 				addValid(input);
 				return;
 			}
 			outlier(input);
 			break;
-			
+
 		case "Date":
 		case "Time":
 		case "DateTime":
@@ -775,7 +853,7 @@ public class TextAnalyzer {
 			outlier(input);
 			break;
 		}
- 	}
+	}
 
 	/**
 	 * Determine the result of the training complete to date.  Typically invoked after all
@@ -787,7 +865,7 @@ public class TextAnalyzer {
 		if (type == null) {
 			determineType();
 		}
-		
+
 		// Compute our confidence
 		double confidence = 0;
 		int realSamples = sampleCount - (nullCount + blankCount);
@@ -801,21 +879,72 @@ public class TextAnalyzer {
 		else {
 			confidence = (double)matchCount / realSamples;
 		}
-		
-		if ("\\a{+}".equals(matchPattern)) {
+
+		if ("[ZIP]".equals(matchPattern)) {
+			// We thought it was a Zip, but on reflection it does not feel like it
+			if ((realSamples > 100 && confidence < 0.9) || cardinality.size() < 5) {
+				if (totalLongs > .95 * realSamples) {
+					matchPattern = "\\d{+}";
+					matchCount = totalLongs;
+				}
+				else {
+					matchPattern = "\\a{+}";
+					matchCount = realSamples;
+				}
+				confidence = (double)matchCount / realSamples;
+				matchPatternInfo = patternInfo.get(matchPattern);
+			}
+		}
+
+		if ("\\d{+}".equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
+			matchPatternInfo = new PatternInfo("\\d{4}", null, "yyyy", "Date", "yyyy");
+		}
+		else if ("\\a{+}".equals(matchPattern)) {
 			matchPattern = "\\a{" + minRawLength;
 			if (minRawLength != maxRawLength)
 				matchPattern += "," + maxRawLength;
 			matchPattern += "}";
 			matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", matchPatternInfo.typeQualifier);
-		} else if ("\\d{+}".equals(matchPattern)) {
+
+			if (realSamples > 100 && "\\a{2}".equals(matchPattern) && cardinality.size() < usStates.size() + caProvinces.size() + 5 && cardinality.size() > 5) {
+				int usStateCount = 0;
+				int caProvinceCount = 0;
+				int misses = 0;
+				for (Map.Entry<String,Integer> entry : cardinality.entrySet()) {
+					if (usStates.contains(entry.getKey()))
+						usStateCount += entry.getValue();
+					else if (caProvinces.contains(entry.getKey()))
+						caProvinceCount += entry.getValue();
+					else
+						misses++;
+				}
+
+				if (misses < 3) {
+					if (usStateCount != 0 && caProvinceCount != 0) {
+						matchPattern = "[NA_STATE]";
+						matchCount = usStateCount + caProvinceCount;
+					}
+					else if (usStateCount != 0) {
+						matchPattern = "[US_STATE]";
+						matchCount = usStateCount;
+					}
+					else if (caProvinceCount != 0) {
+						matchPattern = "[CA_PROVINCE]";
+						matchCount = caProvinceCount;
+					}
+					confidence = (double)matchCount / realSamples;
+					matchPatternInfo = patternInfo.get(matchPattern);
+				}
+			}
+		}
+		else if ("\\d{+}".equals(matchPattern)) {
 			if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
 				// boolean by any other name
 				matchPattern = "[0|1]";
 				min = "0";
 				max = "1";
 				type = "Boolean";
-				matchPatternInfo = new PatternInfo("[0|1]", null, null, "Boolean", null);
+				matchPatternInfo = patternInfo.get(matchPattern);
 			}
 			else {
 				// We thought it was an integer field, but on reflection it does not feel like it
@@ -852,7 +981,7 @@ public class TextAnalyzer {
 				max = String.valueOf(maxLong);
 				sum = sumBI.toString();
 				break;
-				
+
 			case "Double":
 				min = String.valueOf(minDouble);
 				max = String.valueOf(maxDouble);
@@ -872,7 +1001,7 @@ public class TextAnalyzer {
 				}
 			}
 		}
-		
+
 		return new TextAnalysisResult(matchCount, matchPatternInfo, sampleCount, nullCount, blankCount, confidence, min, max, sum, cardinality, outliers, key);
 	}
 }

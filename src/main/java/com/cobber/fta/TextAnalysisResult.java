@@ -215,7 +215,7 @@ public class TextAnalysisResult {
 		else
 			ret += "null";
 		ret += ", cardinality=" + (cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX");
-		if (cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {
+		if (cardinality.size() != 0 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {
 			ret += " {";
 			int i = 0;
 			SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(cardinality);

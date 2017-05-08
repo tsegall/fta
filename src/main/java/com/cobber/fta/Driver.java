@@ -13,7 +13,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 class Driver {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		BufferedReader in = null;
 		CSVParser records = null;
 		int numFields = 0;
@@ -134,7 +134,7 @@ class Driver {
 		for (int i = 0; i < numFields; i++) {
 			if (col == -1 || col == i) {
 				result = analysis[i].getResult();
-				System.err.printf("Result for %s (%d)\n\t", header[i], i);
+				System.err.printf("Result for '%s' (%d)\n\t", header[i], i);
 				System.err.println(result.toString());
 				if (result.getType() != null)
 					typesDetected++;
