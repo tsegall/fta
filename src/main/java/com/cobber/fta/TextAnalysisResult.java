@@ -145,10 +145,10 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the outlier count for the current data stream.
-	 * See {@link com.cobber.fta.TextAnalyzer#setMaxOutlierCount(int) setMaxOutliers()} method in TextAnalyzer.
+	 * See {@link com.cobber.fta.TextAnalyzer#setMaxOutliers(int) setMaxOutliers()} method in TextAnalyzer.
 	 * Note: This is not a complete outlier analysis unless the outlier of the
 	 * data stream is less than the maximum outlier count (Default: {@value com.cobber.fta.TextAnalyzer#MAX_OUTLIERS_DEFAULT}).
-	 * See also {@link com.cobber.fta.TextAnalyzer#setMaxOutlierCount(int) setMaxOutliers()} method in TextAnalyzer.
+	 * See also {@link com.cobber.fta.TextAnalyzer#setMaxOutliers(int) setMaxOutliers()} method in TextAnalyzer.
 	 * @return Count of all blank samples.
 	 */
 	public int getOutlierCount() {

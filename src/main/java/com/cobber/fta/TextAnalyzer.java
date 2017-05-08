@@ -207,6 +207,7 @@ public class TextAnalyzer {
 	/**
 	 * Construct a Text Analyzer for the named data stream. 
 	 * @param name The name of the data stream (e.g. the column of the CSV file)
+	 * @throws IOException If an internal error occurred.
 	 */
 	public TextAnalyzer(String name) throws IOException {
 		if (patternInfo == null) {
@@ -246,6 +247,7 @@ public class TextAnalyzer {
 
 	/**
 	 * Construct an anonymous Text Analyzer for a data stream. 
+	 * @throws IOException If an internal error occurred.
 	 */
 	public TextAnalyzer() throws IOException {
 		this("anonymous");
@@ -278,7 +280,7 @@ public class TextAnalyzer {
 	/**
 	 * Set the maximum cardinality that will be tracked.  Note: It is not possible to change the
 	 * cardinality once training has started.
-	 * @param maxCardinality The maximum Cardinality that will be tracked (0 implies no tracking)
+	 * @param newCardinality The maximum Cardinality that will be tracked (0 implies no tracking)
 	 * @return The previous value of this parameter.
 	 */
 	public int setMaxCardinality(int newCardinality) {
@@ -299,6 +301,32 @@ public class TextAnalyzer {
 	 */
 	public int getMaxCardinality() {
 		return maxCardinality;
+	}
+
+	/**
+	 * Set the maximum number of outliers that will be tracked.  Note: It is not possible to change the
+	 * outlier count once training has started.
+	 * @param newMaxOutliers The maximum number of outliers that will be tracked (0 implies no tracking)
+	 * @return The previous value of this parameter.
+	 */
+	public int setMaxOutliers(int newMaxOutliers) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot change outlier count once training has started");
+		if (newMaxOutliers < 0)
+			throw new IllegalArgumentException("Invalid value for outlier count " + newMaxOutliers);
+
+		int ret = maxOutliers;
+		maxOutliers = newMaxOutliers;
+		return ret;
+	}
+
+	/**
+	 * Get the maximum number of outliers that will be tracked.
+	 * See {@link #setMaxOutliers(int) setMaxOutliers()} method.
+	 * @return The maximum cardinality.
+	 */
+	public int getOutlierCount() {
+		return maxOutliers;
 	}
 
 	private boolean trackLong(String rawInput, boolean register) {
