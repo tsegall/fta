@@ -135,7 +135,7 @@ class Driver {
 			if (col == -1 || col == i) {
 				result = analysis[i].getResult();
 				System.err.printf("Result for '%s' (%d)\n\t", header[i], i);
-				System.err.println(result.toString());
+				System.err.println(result.dump(verbose));
 				if (result.getType() != null)
 					typesDetected++;
 				matchCount += result.matchCount;

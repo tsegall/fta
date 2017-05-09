@@ -196,6 +196,16 @@ public class TextAnalysisResult {
 	 */
 	@Override
 	public String toString() {
+		return dump(false);
+	}
+
+	/**
+	 * A String representation of the Analysis.  This is not suitable for anything other than
+	 * debug output and is likely to change with no notice!!
+	 * @param verbose If set dump additional information related to cardinality and outliers
+	 * @return A String representation of the analysis to date.
+	 */
+	public String dump(boolean verbose) {
 		String ret = "TextAnalysisResult [matchCount=" + matchCount + ", sampleCount=" + sampleCount + ", nullCount="
 				+ nullCount + ", blankCount=" + blankCount+ ", pattern=\"" + patternInfo.pattern + "\", confidence=" + confidence +
 				", type=" + patternInfo.type +
@@ -215,7 +225,7 @@ public class TextAnalysisResult {
 		else
 			ret += "null";
 		ret += ", cardinality=" + (cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX");
-		if (cardinality.size() != 0 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {
+		if (verbose && cardinality.size() != 0 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {
 			ret += " {";
 			int i = 0;
 			SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(cardinality);
@@ -232,7 +242,7 @@ public class TextAnalysisResult {
 
 		if (outliers.size() != 0 && outliers.size() != TextAnalyzer.MAX_OUTLIERS_DEFAULT) {
 			ret += ", outliers=" + outliers.size();
-			if (outliers.size() < .2 * sampleCount) {
+			if (verbose && outliers.size() != 0 && outliers.size() < .2 * sampleCount) {
 				ret += " {";
 				int i = 0;
 				SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(outliers);

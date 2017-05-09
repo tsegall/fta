@@ -1136,30 +1136,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void DateTimeTime() throws Exception {
+	public void DateTimeYYYY_MM_DDTHH_MM_SS() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
-		/*
-		analysis.train("2004-01-01T00:00:00-0500");
-		analysis.train("2004-01-01T02:00:00-0500");
-		analysis.train("2006-01-01T00:00:00-0500");
-		analysis.train("2004-01-01T02:00:00-0500");
-		analysis.train("2006-01-01T13:00:00-0500");
-		analysis.train("2004-01-01T00:00:00-0500");
-		analysis.train("2006-01-01T13:00:00-0500");
-		analysis.train("2006-01-01T00:00:00-0500");
-		analysis.train("2004-01-01T00:00:00-0500");
-		analysis.train("2004-01-01T00:00:00-0500");
-		analysis.train("2004-01-01T00:00:00-0500");
-		analysis.train("2004-01-01T00:00:00-0500");
-		analysis.train("2004-01-01T00:00:00-0500");
-		analysis.train("2008-01-01T13:00:00-0500");
-		analysis.train("2008-01-01T13:00:00-0500");
-		analysis.train("2010-01-01T00:00:00-0500");
-		analysis.train("2004-01-01T02:00:00-0500");
-		analysis.train(null);
-		analysis.train("2008-01-01T00:00:00-0500");
-		analysis.train(null);
-		 */
+
 		analysis.train("2004-01-01T00:00:00");
 		analysis.train("2004-01-01T02:00:00");
 		analysis.train("2006-01-01T00:00:00");
@@ -1188,5 +1167,41 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "DateTime");
+		Assert.assertEquals(result.getTypeQualifier(), "ISO8601 (NoTZ)");
+	}
+
+	@Test
+	public void DateTimeYYYY_MM_DDTHH_MM_SS_NNNN() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		analysis.train("2004-01-01T00:00:00-05:00");
+		analysis.train("2004-01-01T02:00:00-05:00");
+		analysis.train("2006-01-01T00:00:00-05:00");
+		analysis.train("2004-01-01T02:00:00-05:00");
+		analysis.train("2006-01-01T13:00:00-05:00");
+		analysis.train("2004-01-01T00:00:00-05:00");
+		analysis.train("2006-01-01T13:00:00-05:00");
+		analysis.train("2006-01-01T00:00:00-05:00");
+		analysis.train("2004-01-01T00:00:00-05:00");
+		analysis.train("2004-01-01T00:00:00-05:00");
+		analysis.train("2004-01-01T00:00:00-05:00");
+		analysis.train("2004-01-01T00:00:00-05:00");
+		analysis.train("2004-01-01T00:00:00-05:00");
+		analysis.train("2008-01-01T13:00:00-05:00");
+		analysis.train("2008-01-01T13:00:00-05:00");
+		analysis.train("2010-01-01T00:00:00-05:00");
+		analysis.train("2004-01-01T02:00:00-05:00");
+		analysis.train(null);
+		analysis.train("2008-01-01T00:00:00-05:00");
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), 20);
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}-\\d{2}:\\d{2}");
+		Assert.assertEquals(result.getType(), "DateTime");
+		Assert.assertEquals(result.getTypeQualifier(), "ISO8601 (Offset)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 }
