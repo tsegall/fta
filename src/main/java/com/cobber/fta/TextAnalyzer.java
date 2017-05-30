@@ -72,6 +72,8 @@ public class TextAnalyzer {
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
 	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
 
+	private static final int REFLECTION_SAMPLES = 50;
+
 	String name;
 	DecimalFormatSymbols formatSymbols;
 	char decimalSeparator;
@@ -89,7 +91,7 @@ public class TextAnalyzer {
 	// input "hello world" 0: a{5} a{5}         1: a{+} a{+}        2: a{+} 
 	ArrayList<StringBuilder>[] levels = new ArrayList[3];
 
-	String type;
+	String matchType;
 	int matchCount;
 	String matchPattern;
 	PatternInfo matchPatternInfo;
@@ -117,6 +119,7 @@ public class TextAnalyzer {
 	int possibleHMS = 0;
 	int possibleHM = 0;
 	int totalLongs = 0;
+	int totalLeadingZeros = 0;
 	int possibleEmails = 0;
 	int possibleZips = 0;
 
@@ -158,6 +161,12 @@ public class TextAnalyzer {
 		addPattern("\\d{2}-\\d{1}-\\d{4}", "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "Date", "dd-MM-yyyy");
 		addPattern("\\d{1}-\\d{1}-\\d{4}", "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "Date", "dd-MM-yyyy");
 		addPattern("\\d{1,2}-\\d{1,2}-\\d{4}", null, "dd-MM-yyyy", "Date", "dd-MM-yyyy");
+
+		addPattern("\\d{2}/\\d{2}/\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "Date", "dd/MM/yy");
+		addPattern("\\d{1}/\\d{2}/\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "Date", "dd/MM/yy");
+		addPattern("\\d{2}/\\d{1}/\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "Date", "dd/MM-yy");
+		addPattern("\\d{1}/\\d{1}/\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "Date", "dd/MM/yy");
+		addPattern("\\d{1,2}/\\d{1,2}/\\d{2}", null, "dd/MM/yy", "Date", "dd/MM/yy");
 
 		addPattern("\\d{2}/\\d{2}/\\d{4}", "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "Date", "dd/MM/yyyy");
 		addPattern("\\d{2}/\\d{2}/\\d{4}", "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "Date", "dd/MM/yyyy");
@@ -359,7 +368,7 @@ public class TextAnalyzer {
 	 * See {@link #setMaxOutliers(int) setMaxOutliers()} method.
 	 * @return The maximum cardinality.
 	 */
-	public int getOutlierCount() {
+	public int getMaxOutliers() {
 		return maxOutliers;
 	}
 
@@ -374,8 +383,11 @@ public class TextAnalyzer {
 			return false;
 		}
 
-		if (register)
+		if (register) {
 			totalLongs++;
+			if (input.charAt(0) == '0')
+				totalLeadingZeros++;
+		}
 
 		if (l < minLong) {
 			minLong = l;
@@ -496,14 +508,14 @@ public class TextAnalyzer {
 
 		if (rawInput == null) {
 			nullCount++;
-			return type != null;
+			return matchType != null;
 		}
 
 		String input = rawInput.trim();
 
 		if (input.length() == 0) {
 			blankCount++;
-			return type != null;
+			return matchType != null;
 		}
 
 		int length = input.length();
@@ -511,7 +523,7 @@ public class TextAnalyzer {
 		trackResult(rawInput);
 
 		// If we have determined a type, no need to further train
-		if (type != null)
+		if (matchType != null)
 			return true;
 
 		raw.add(rawInput);
@@ -656,14 +668,7 @@ public class TextAnalyzer {
 
 		}
 
-		if (sampleCount - (nullCount + blankCount) > samples) {
-			raw.remove(0);
-			levels[0].remove(0);
-			levels[1].remove(0);
-			levels[2].remove(0);
-		}
-
-		return type != null;
+		return matchType != null;
 	}
 
 	private Map.Entry<String, Integer> getBest(int levelIndex) {
@@ -737,10 +742,10 @@ public class TextAnalyzer {
 	 */
 	private void determineType() {
 		// If we have fewer than 6 samples do not even pretend
-		if (sampleCount - (nullCount + blankCount) < 6) {
+		if (sampleCount == 0) {
 			matchPattern = "\\a{+}";
 			matchPatternInfo = patternInfo.get(matchPattern);
-			type = matchPatternInfo.type;
+			matchType = matchPatternInfo.type;
 			return;
 		}
 
@@ -794,12 +799,12 @@ public class TextAnalyzer {
 				matchPatternInfo = level2patternInfo;
 			}
 
-			if (type == null) {
+			if (matchType == null) {
 				if (matchPatternInfo != null) {
-					type = matchPatternInfo.type;
+					matchType = matchPatternInfo.type;
 				}
 
-				if (type != null) {
+				if (matchType != null) {
 					// Do we have a set of possible emails?
 					if (possibleEmails == raw.size()) {
 						PatternInfo save = matchPatternInfo;
@@ -808,8 +813,8 @@ public class TextAnalyzer {
 						for (String sample : raw)
 							if (trackString(sample, false))
 								emails++;
-						// if at least 80% of them looked like a genuine email then stay with email, otherwise back out to simple String
-						if (emails < .8 * raw.size())
+						// if at least 90% of them looked like a genuine email then stay with email, otherwise back out to simple String
+						if (emails < .9 * raw.size())
 							matchPatternInfo = save;
 					}
 
@@ -823,10 +828,10 @@ public class TextAnalyzer {
 						for (String sample : raw)
 							if (trackLong(sample, false))
 								zipCount++;
-						// if at least 90% of them looked like a genuine zip then stay with email, otherwise back out to simple Long
-						if (zipCount < .8 * raw.size())
+						// if at least 90% of them looked like a genuine zip then stay with zip, otherwise back out to simple Long
+						if (zipCount < .9 * raw.size())
 							matchPatternInfo = save;
-						type = matchPatternInfo.type;
+						matchType = matchPatternInfo.type;
 					}
 
 					for (String sample : raw)
@@ -870,15 +875,15 @@ public class TextAnalyzer {
 			maxRawLength = length;
 
 		// If the cache is full and we still have not determined a type so compute one
-		if (type == null && sampleCount - (nullCount + blankCount) > samples) {
+		if (matchType == null && sampleCount - (nullCount + blankCount) > samples) {
 			determineType();
 		}
 
-		if (type == null) {
+		if (matchType == null) {
 			return;
 		}
 
-		switch (type) {
+		switch (matchType) {
 		case "Boolean":
 			if (trackBooleanInfo(input)) {
 				matchCount++;
@@ -935,7 +940,7 @@ public class TextAnalyzer {
 	 */
 	public TextAnalysisResult getResult() {
 		// If we have not already determined the type, now we need to
-		if (type == null) {
+		if (matchType == null) {
 			determineType();
 		}
 
@@ -955,7 +960,7 @@ public class TextAnalyzer {
 
 		if ("[ZIP]".equals(matchPattern)) {
 			// We thought it was a Zip, but on reflection it does not feel like it
-			if ((realSamples > 100 && confidence < 0.9) || cardinality.size() < 5) {
+			if ((realSamples > REFLECTION_SAMPLES && confidence < 0.9) || cardinality.size() < 5) {
 				if (totalLongs > .95 * realSamples) {
 					matchPattern = "\\d{+}";
 					matchCount = totalLongs;
@@ -979,7 +984,7 @@ public class TextAnalyzer {
 			matchPattern += "}";
 			matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", matchPatternInfo.typeQualifier);
 
-			if (realSamples > 100 && "\\a{2}".equals(matchPattern) && cardinality.size() < usStates.size() + caProvinces.size() + 5
+			if (realSamples > REFLECTION_SAMPLES && "\\a{2}".equals(matchPattern) && cardinality.size() < usStates.size() + caProvinces.size() + 5
 					&& (name.toLowerCase().contains("state") || name.toLowerCase().contains("province") || cardinality.size() > 5)) {
 				int usStateCount = 0;
 				int caProvinceCount = 0;
@@ -1017,14 +1022,14 @@ public class TextAnalyzer {
 				matchPattern = "[0|1]";
 				min = "0";
 				max = "1";
-				type = "Boolean";
+				matchType = "Boolean";
 				matchPatternInfo = patternInfo.get(matchPattern);
 			}
 			else {
 				// We thought it was an integer field, but on reflection it does not feel like it
-				if (realSamples > 100 && confidence < 0.9) {
+				if (realSamples > REFLECTION_SAMPLES && confidence < 0.9) {
 					matchPattern = "\\a{" + minRawLength;
-					type = "String";
+					matchType = "String";
 					matchCount = realSamples;
 					confidence = 1.0;
 					if (minRawLength != maxRawLength)
@@ -1041,15 +1046,15 @@ public class TextAnalyzer {
 					if (minLength != maxLength)
 						matchPattern += "," + maxLength;
 					matchPattern += "}";
-					matchPatternInfo = new PatternInfo(matchPattern, null, null, type, null);
+					matchPatternInfo = new PatternInfo(matchPattern, null, null, matchType, null);
 				}
 			}
 		}
 
 		boolean key = false;
 
-		if (type != null) {
-			switch (type) {
+		if (matchType != null) {
+			switch (matchType) {
 			case "Long":
 				min = String.valueOf(minLong);
 				max = String.valueOf(maxLong);
@@ -1065,7 +1070,7 @@ public class TextAnalyzer {
 
 			// Attempt to identify keys?
 			if (sampleCount > MIN_SAMPLES_FOR_KEY && cardinality.size() >= maxCardinality && blankCount == 0 && nullCount == 0 && matchPatternInfo.typeQualifier == null &&
-					(("String".equals(type) && minRawLength == maxRawLength && minRawLength < 32) || "Long".equals(type))) {
+					(("String".equals(matchType) && minRawLength == maxRawLength && minRawLength < 32) || "Long".equals(matchType))) {
 				key = true;
 				for (Map.Entry<String,Integer> entry : cardinality.entrySet()) {
 					if (entry.getValue() != 1) {
@@ -1076,6 +1081,6 @@ public class TextAnalyzer {
 			}
 		}
 
-		return new TextAnalysisResult(matchCount, matchPatternInfo, sampleCount, nullCount, blankCount, confidence, min, max, sum, cardinality, outliers, key);
+		return new TextAnalysisResult(matchCount, matchPatternInfo, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, min, max, sum, cardinality, outliers, key);
 	}
 }

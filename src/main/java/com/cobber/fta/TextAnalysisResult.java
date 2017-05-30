@@ -28,6 +28,7 @@ public class TextAnalysisResult {
 	int sampleCount;
 	int nullCount;
 	int blankCount;
+	int leadingZeroCount;
 	PatternInfo patternInfo;
 	double confidence;
 	String min;
@@ -37,12 +38,28 @@ public class TextAnalysisResult {
 	Map<String, Integer> outliers;
 	boolean key;
 	
-	TextAnalysisResult(int matchCount, PatternInfo patternInfo, int sampleCount, int nullCount, int blankCount, double confidence, String min, String max, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers, boolean key) {
+	/**
+	 * @param matchCount The number of samples that match the patternInfo.
+	 * @param patternInfo The PatternInfo associated with this matchCount.
+	 * @param sampleCount The total number of samples seen.
+	 * @param nullCount The number of nulls seen in the sample set.
+	 * @param blankCount The number of blanks seen in the sample set.
+	 * @param leadingZeroCount The number of leading zeros seen in sample set.  Only relevant for type Long.
+	 * @param confidence The percentage confidence in the analysis.  The matchCount divided by the sampleCount.
+	 * @param min A String representation of the minimum value.  Only relevant for numeric types.
+	 * @param max A String representation of the maximum value.  Only relevant for numeric types.
+	 * @param sum A String representation of the sum of all values seen.  Only relevant for numeric types.
+	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
+	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
+	 * @param key Do we think this field is a key.
+	 */
+	TextAnalysisResult(int matchCount, PatternInfo patternInfo, int sampleCount, int nullCount, int blankCount, int leadingZeroCount, double confidence, String min, String max, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers, boolean key) {
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
 		this.sampleCount = sampleCount;
 		this.nullCount = nullCount;
 		this.blankCount = blankCount;
+		this.leadingZeroCount = leadingZeroCount;
 		this.confidence = confidence;
 		this.min = min;
 		this.max = max;
@@ -73,8 +90,11 @@ public class TextAnalysisResult {
 	}
 	
 	/**
-	 * Get the optional Type Qualifier.  Possible qualifiers are "Email" for "String" and
-	 * "Signed" for types of "Long" and "Double"
+	 * Get the optional Type Qualifier.  Possible qualifiers are:
+	 * 	Type: String - "Email", "Zip", "US_STATE", "NA_STATE"
+	 * 	Type: Long - "Signed"
+	 * 	Type: Double - "Signed"
+	 * 	Type: Date - the detailed date format string
 	 * @return The Type Qualifier for the Type.
 	 */
 	public String getTypeQualifier() {
@@ -138,6 +158,14 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * Get the count of all samples with leading zeros (Type long only)
+	 * @return Count of all leading zero samples.
+	 */
+	public int getLeadingZeroCount() {
+		return leadingZeroCount;
+	}
+
+	/**
 	 * Get the cardinality for the current data stream.
 	 * See {@link com.cobber.fta.TextAnalyzer#setMaxCardinality(int) setMaxCardinality()} method in TextAnalyzer.
 	 * Note: This is not a complete cardinality analysis unless the cardinality of the
@@ -161,7 +189,7 @@ public class TextAnalysisResult {
 	/**
 	 * Get the outlier count for the current data stream.
 	 * See {@link com.cobber.fta.TextAnalyzer#setMaxOutliers(int) setMaxOutliers()} method in TextAnalyzer.
-	 * Note: This is not a complete outlier analysis unless the outlier of the
+	 * Note: This is not a complete outlier analysis unless the outlier count of the
 	 * data stream is less than the maximum outlier count (Default: {@value com.cobber.fta.TextAnalyzer#MAX_OUTLIERS_DEFAULT}).
 	 * See also {@link com.cobber.fta.TextAnalyzer#setMaxOutliers(int) setMaxOutliers()} method in TextAnalyzer.
 	 * @return Count of all blank samples.
@@ -217,7 +245,7 @@ public class TextAnalysisResult {
 	/**
 	 * A String representation of the Analysis.  This is not suitable for anything other than
 	 * debug output and is likely to change with no notice!!
-	 * @param verbose If set dump additional information related to cardinality and outliers
+	 * @param verbose If set, dump additional information related to cardinality and outliers.
 	 * @return A String representation of the analysis to date.
 	 */
 	public String dump(boolean verbose) {

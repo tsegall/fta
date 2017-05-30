@@ -40,11 +40,24 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{2}");
+		Assert.assertEquals(result.getPattern(), "\\d{2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertEquals(result.getMin(), "47");
+		Assert.assertEquals(result.getMax(), "91");
+	}
+
+	@Test
+	public void noData() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "^[ ]*$");
 		Assert.assertEquals(result.getConfidence(), 0.0);
-		Assert.assertEquals(result.getType(), "String");
-		Assert.assertEquals(result.getMin(), null);
-		Assert.assertEquals(result.getMax(), null);
+		Assert.assertEquals(result.getType(), "[BLANK]");
 	}
 
 	@Test
@@ -362,6 +375,31 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void slashDateDD_MM_YY() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String[] inputs = "22/01/70|12/01/03|02/01/66|02/01/46|02/01/93|02/01/78|02/01/74|14/01/98|12/01/34".split("\\|");
+		int locked = -1;
+		int iterations = 4;
+
+		for (int iters = 0; iters < iterations; iters++) {
+			for (int i = 0; i < inputs.length; i++) {
+				if (analysis.train(inputs[i]) && locked == -1)
+					locked = i;
+			}
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
+		Assert.assertEquals(result.getMatchCount(), inputs.length * iterations);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "Date");
+	}
+
+	@Test
 	public void basicTimeHH_MM_SS() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
@@ -403,6 +441,32 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Time");
+	}
+
+	@Test
+	public void limitedData() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String[] inputs = "12|4|5|".split("\\|");
+		int pre = 3;
+		int post = 10;
+
+		for (int i = 0; i < pre; i++)
+			analysis.train("");
+		for (int i = 0; i < inputs.length; i++) {
+			analysis.train(inputs[i]);
+		}
+		for (int i = 0; i < post; i++)
+			analysis.train("");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), pre + inputs.length + post);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\d{1,2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "Long");
 	}
 
 	@Test
@@ -587,7 +651,7 @@ public class AnalysisResultTests {
 				"Waters@lavastorm.com|Meagher@lavastorm.com|Mok@lavastorm.com|Mullin@lavastorm.com|" +
 				"Nason@lavastorm.com|reilly@lavastorm.com|Scoble@lavastorm.com|Comerford@lavastorm.com|" +
 				"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
-				"Tuddenham@lavastorm.com;Williams@lavastorm.com;Wilson@lavastorm.com";
+				"Tuddenham@lavastorm.com,Williams@lavastorm.com,Wilson@lavastorm.com";
 		String inputs[] = input.split("\\|");
 		int locked = -1;
 
@@ -607,6 +671,41 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\a{17,67}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void basicEmailListSemicolon() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "Bachmann@lavastorm.com;Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
+				"coleman@lavastorm.com;Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
+				"Jones@lavastorm.com|Marinelli@lavastorm.com;Nason@lavastorm.com;Parker@lavastorm.com|" +
+				"Pigneri@lavastorm.com|Rasmussen@lavastorm.com|Regan@lavastorm.com|Segall@Lavastorm.com|" +
+				"Smith@lavastorm.com|Song@lavastorm.com|Tolleson@lavastorm.com|wynn@lavastorm.com|" +
+				"Ahmed@lavastorm.com|Benoit@lavastorm.com|Keane@lavastorm.com|Kilker@lavastorm.com|" +
+				"Waters@lavastorm.com|Meagher@lavastorm.com|Mok@lavastorm.com|Mullin@lavastorm.com|" +
+				"Nason@lavastorm.com|reilly@lavastorm.com|Scoble@lavastorm.com|Comerford@lavastorm.com|" +
+				"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
+				"Tuddenham@lavastorm.com;Williams@lavastorm.com;Wilson@lavastorm.com|bo gus|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "Email");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{6,67}");
+		Assert.assertEquals(result.getConfidence(), 0.96875);
 	}
 
 	@Test
@@ -638,7 +737,137 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 32);
 		Assert.assertEquals(result.getPattern(), "[ZIP]");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void sameZip() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		int locked = -1;
+		int copies = 100;
+
+		for (int i = 0; i < copies; i++) {
+			if (analysis.train("02421") && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), copies);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), copies);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), copies);
+		Assert.assertEquals(result.getPattern(), "\\d{5}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void changeMind() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		int locked = -1;
+
+		for (int i = 0; i < 2 * TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			if (analysis.train(String.valueOf(i)) && locked == -1)
+				locked = i;
+		}
+
+		for (char ch = 'a'; ch <= 'z'; ch++) {
+			analysis.train(String.valueOf(ch));
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 26);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 26);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{1,2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void leadingZeros() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer("BL record ID");
+
+		analysis.train("000019284");
+		analysis.train("000058669");
+		analysis.train("000093929");
+		analysis.train("000154545");
+		analysis.train("000190188");
+		analysis.train("000370068");
+		analysis.train("000370069");
+		analysis.train("000370070");
+		analysis.train("000440716");
+		analysis.train("000617304");
+		analysis.train("000617305");
+		analysis.train("000617306");
+		analysis.train("000617307");
+		analysis.train("000617308");
+		analysis.train("000617309");
+		analysis.train("000617310");
+		analysis.train("000617311");
+		analysis.train("000617312");
+		analysis.train("000617314");
+		analysis.train("000617315");
+		analysis.train("000617316");
+		analysis.train("000617317");
+		analysis.train("000617318");
+		analysis.train("000617319");
+		analysis.train("000617324");
+		analysis.train("000617325");
+		analysis.train("000617326");
+		analysis.train("000617331");
+		analysis.train("000617335");
+		analysis.train("000617336");
+		analysis.train("000617337");
+		analysis.train("000617338");
+		analysis.train("000617339");
+		analysis.train("000617342");
+		analysis.train("000617347");
+		analysis.train("000617348");
+		analysis.train("000617349");
+		analysis.train("000617350");
+		analysis.train("000617351");
+		analysis.train("000617354");
+		analysis.train("000617355");
+		analysis.train("000617356");
+		analysis.train("000617357");
+		analysis.train("000617358");
+		analysis.train("000617359");
+		analysis.train("000617360");
+		analysis.train("000617361");
+		analysis.train("000617362");
+		analysis.train("000617363");
+		analysis.train("000617364");
+		analysis.train("000617365");
+		analysis.train("000617366");
+		analysis.train("000617368");
+		analysis.train("000617369");
+		analysis.train("000617370");
+		analysis.train("000617371");
+		analysis.train("000617372");
+		analysis.train("000617373");
+		analysis.train("000617374");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), 59);
+		Assert.assertEquals(result.getMatchCount(), 59);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 59);
+		Assert.assertEquals(result.getPattern(), "\\d{9}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -660,7 +889,7 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(locked, start + TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), "Long");
-		Assert.assertEquals(result.getTypeQualifier(), null);
+		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), end + 1 - start);
 		Assert.assertEquals(result.getMatchCount(), end - start);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -685,7 +914,7 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(locked, start + TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), "String");
-		Assert.assertEquals(result.getTypeQualifier(), null);
+		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), end - start);
 		Assert.assertEquals(result.getMatchCount(), end - start);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -730,11 +959,11 @@ public class AnalysisResultTests {
 		TextAnalyzer analysis = new TextAnalyzer();
 
 		String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|AB|AB|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
-				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|YU|MN|MS|MO|MT|NE|NV|XX|" +
+				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|YT|MN|MS|MO|MT|NE|NV|XX|" +
 				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|NF|NB|" +
 				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|PE|BC|" +
 				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|ON|LB|" +
-				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|YU|LB|";
+				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|YT|LB|";
 		String inputs[] = input.split("\\|");
 		int locked = -1;
 
@@ -754,6 +983,37 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "[NA_STATE]");
 		Assert.assertEquals(result.getConfidence(), 0.9927536231884058);
+	}
+
+	@Test
+
+	public void basicCA() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "CA_PROVINCE");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "[CA_PROVINCE]");
+		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test
@@ -950,6 +1210,49 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void getOutlierCount() throws IOException {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		Assert.assertEquals(analysis.getMaxOutliers(), TextAnalyzer.MAX_OUTLIERS_DEFAULT);
+	}
+
+	@Test
+	public void setMaxOutliersTooSmall() throws IOException {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		try {
+			analysis.setMaxOutliers(-1);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Invalid value for outlier count -1");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void setMaxOutliersTooLate() throws IOException {
+		TextAnalyzer analysis = new TextAnalyzer();
+		Random random = new Random();
+		int locked = -1;
+		int i = 0;
+
+		for (; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+				locked = i;
+		}
+
+		try {
+			analysis.setMaxOutliers(2* TextAnalyzer.MAX_OUTLIERS_DEFAULT);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Cannot change outlier count once training has started");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
 	public void manyRandomDoubles() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 		Random random = new Random();
@@ -1049,6 +1352,41 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void bumpMaxCardinality() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		analysis.setMaxCardinality(2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+
+		Random random = new Random();
+		int locked = -1;
+		int nullIterations = 50;
+		int iterations = 10000;
+
+		for (int i = 0; i < nullIterations; i++) {
+			analysis.train(null);
+		}
+		int cnt = 0;
+		while (cnt < iterations) {
+			long l = Math.abs(random.nextInt()) + 1000000000L;
+			if (l >  9999999999L)
+				continue;
+			if (analysis.train(String.valueOf(l)) && locked == -1)
+				locked = cnt;
+			cnt++;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
+		Assert.assertEquals(result.getCardinality(), 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getNullCount(), nullIterations);
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertEquals(result.getPattern(), "\\d{10}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
 	public void manyKnownInts() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 		int locked = -1;
@@ -1100,6 +1438,35 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getType(), "Long");
 		Assert.assertTrue(result.isKey());
 		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void setMaxOutliers() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		int locked = -1;
+		int start = 10000;
+		int end = 12000;
+
+		analysis.setMaxOutliers(2);
+
+		analysis.train("A");
+		for (int i = start; i < end; i++) {
+			if (analysis.train(String.valueOf(i)) && locked == -1)
+				locked = i - start;
+		}
+		analysis.train("B");
+		analysis.train("C");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(analysis.getMaxOutliers(), 2);
+		Assert.assertEquals(result.getOutlierCount(), 2);
+		Assert.assertEquals(result.getSampleCount(), 3 + end - start);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getPattern(), "\\d{5}");
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertTrue(result.isKey());
+		Assert.assertEquals(result.getConfidence(), 0.9985022466300549);
 	}
 
 	@Test
@@ -1170,7 +1537,7 @@ public class AnalysisResultTests {
 		analysis.train("2008-01-01T13:00:00");
 		analysis.train("2008-01-01T13:00:00");
 		analysis.train("2010-01-01T00:00:00");
-		analysis.train("2004-01-01T02:00:00");
+		analysis.train("2004-01-  01T02:00:00");
 		analysis.train(null);
 		analysis.train("2008-01-01T00:00:00");
 		analysis.train(null);
@@ -1180,7 +1547,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 20);
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getConfidence(), 0.9444444444444444);
 		Assert.assertEquals(result.getType(), "DateTime");
 		Assert.assertEquals(result.getTypeQualifier(), "ISO8601 (NoTZ)");
 	}
@@ -1205,7 +1572,7 @@ public class AnalysisResultTests {
 		analysis.train("2008-01-01T13:00:00-05:00");
 		analysis.train("2008-01-01T13:00:00-05:00");
 		analysis.train("2010-01-01T00:00:00-05:00");
-		analysis.train("2004-01-01T02:00:00-05:00");
+		analysis.train("2004-01-   01T02:00:00-05:00");
 		analysis.train(null);
 		analysis.train("2008-01-01T00:00:00-05:00");
 		analysis.train(null);
@@ -1217,6 +1584,6 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}-\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getType(), "DateTime");
 		Assert.assertEquals(result.getTypeQualifier(), "ISO8601 (Offset)");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getConfidence(), 0.9444444444444444);
 	}
 }

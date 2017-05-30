@@ -1,5 +1,3 @@
-package com.cobber.fta;
-
 /*
  * Copyright 2017 Tim Segall
  *
@@ -14,7 +12,10 @@ package com.cobber.fta;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ */
+package com.cobber.fta;
+
+/**
  * The PatternInfo class maintains a set of information about a simple pattern.  This is used
  * to derive a Type from a pattern.  For example,
  * 		new PatternInfo("(?i)true|false", null, "", "Boolean", null)
