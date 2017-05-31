@@ -829,8 +829,10 @@ public class TextAnalyzer {
 							if (trackLong(sample, false))
 								zipCount++;
 						// if at least 90% of them looked like a genuine zip then stay with zip, otherwise back out to simple Long
-						if (zipCount < .9 * raw.size())
+						if (zipCount < .9 * raw.size()) {
 							matchPatternInfo = save;
+							pattern = save.pattern;
+						}
 						matchType = matchPatternInfo.type;
 					}
 
