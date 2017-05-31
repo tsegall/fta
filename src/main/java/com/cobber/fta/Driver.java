@@ -164,8 +164,8 @@ class Driver {
 
 			long duration = System.currentTimeMillis() - start;
 			if (col == -1)
-				System.err.printf("Summary: Types detected %d of %d (%.2f%%), Matched %d, Samples %d.\n",
-						typesDetected, numFields, ((double)typesDetected*100)/numFields, matchCount, sampleCount);
+				System.err.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d.\n",
+						filename, typesDetected, numFields, ((double)typesDetected*100)/numFields, matchCount, sampleCount);
 			else
 				System.err.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%).\n",
 						(typesDetected == 1 ? "yes" : "no"), matchCount,
