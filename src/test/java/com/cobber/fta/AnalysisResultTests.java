@@ -58,6 +58,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "^[ ]*$");
 		Assert.assertEquals(result.getConfidence(), 0.0);
 		Assert.assertEquals(result.getType(), "[BLANK]");
+		Assert.assertEquals(result.dump(true), "TextAnalysisResult [matchCount=0, sampleCount=0, nullCount=0, blankCount=0, pattern=\"^[ ]*$\", confidence=0.0, type=[BLANK], min=null, max=null, sum=null, cardinality=0]");
 	}
 
 	@Test
@@ -550,6 +551,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(details.get("0"), Integer.valueOf(13));
 		Assert.assertEquals(details.get("5"), Integer.valueOf(14));
 		Assert.assertEquals(result.dump(true), "TextAnalysisResult [matchCount=27, sampleCount=30, nullCount=2, blankCount=0, pattern=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", sum=\"70\", cardinality=2 {\"5\":14 \"0\":13 }, outliers=1 {\"A\":1 }]");
+		Assert.assertEquals(result.dump(false), "TextAnalysisResult [matchCount=27, sampleCount=30, nullCount=2, blankCount=0, pattern=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", sum=\"70\", cardinality=2, outliers=1]");
 	}
 
 	@Test
@@ -1091,6 +1093,36 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void basicPromoteToDouble() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input =
+					"8|172.67|22.73|150|30.26|54.55|45.45|433.22|172.73|7.73|" +
+						"218.18|47.27|31.81|22.73|21.43|7.27|26.25|7.27|45.45|80.91|" +
+						"63.64|13.64|45.45|15|425.45|95.25|60.15|100|80|72.73|" +
+						"0.9|181.81|90|545.45|33.68|13.68|12.12|15|615.42|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "Double");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\d{*}D\\d{+}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
 	public void basicPromote() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
@@ -1392,6 +1424,9 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), "Double");
 		Assert.assertEquals(result.getOutlierCount(), 1);
+		Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 1);
+		Assert.assertEquals(outliers.get("Zoomer"), new Integer(1));
 	}
 
 	@Test
@@ -1556,8 +1591,9 @@ public class AnalysisResultTests {
 		int locked = -1;
 		int start = 10000;
 		int end = 12000;
+		int newMaxOutliers = 12;
 
-		analysis.setMaxOutliers(2);
+		analysis.setMaxOutliers(newMaxOutliers);
 
 		analysis.train("A");
 		for (int i = start; i < end; i++) {
@@ -1566,17 +1602,30 @@ public class AnalysisResultTests {
 		}
 		analysis.train("B");
 		analysis.train("C");
+		analysis.train("D");
+		analysis.train("E");
+		analysis.train("F");
+		analysis.train("G");
+		analysis.train("H");
+		analysis.train("I");
+		analysis.train("J");
+		analysis.train("K");
+		analysis.train("L");
+		analysis.train("M");
+		analysis.train("N");
+		analysis.train("O");
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(analysis.getMaxOutliers(), 2);
-		Assert.assertEquals(result.getOutlierCount(), 2);
-		Assert.assertEquals(result.getSampleCount(), 3 + end - start);
+		Assert.assertEquals(analysis.getMaxOutliers(), newMaxOutliers);
+		Assert.assertEquals(result.getOutlierCount(), newMaxOutliers);
+		Assert.assertEquals(result.getSampleCount(), newMaxOutliers + 3 + end - start);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getPattern(), "\\d{5}");
 		Assert.assertEquals(result.getType(), "Long");
 		Assert.assertTrue(result.isKey());
-		Assert.assertEquals(result.getConfidence(), 0.9985022466300549);
+		Assert.assertEquals(result.getConfidence(), 0.9925558312655087);
+		Assert.assertEquals(result.dump(true), "TextAnalysisResult [matchCount=2000, sampleCount=2015, nullCount=0, blankCount=0, pattern=\"\\d{5}\", confidence=0.9925558312655087, type=Long, min=\"10000\", max=\"11999\", sum=\"21999000\", cardinality=MAX, outliers=12 {\"A\":1 \"B\":1 \"C\":1 \"D\":1 \"E\":1 \"F\":1 \"G\":1 \"H\":1 \"I\":1 \"J\":1 ...}, PossibleKey]");
 	}
 
 	@Test

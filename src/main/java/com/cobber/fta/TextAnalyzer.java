@@ -1071,9 +1071,10 @@ public class TextAnalyzer {
 			}
 
 			// Attempt to identify keys?
-			if (sampleCount > MIN_SAMPLES_FOR_KEY && cardinality.size() >= maxCardinality && blankCount == 0 && nullCount == 0 && matchPatternInfo.typeQualifier == null &&
+			if (sampleCount > MIN_SAMPLES_FOR_KEY && maxCardinality >= MIN_SAMPLES_FOR_KEY/2 && cardinality.size() >= maxCardinality && blankCount == 0 && nullCount == 0 && matchPatternInfo.typeQualifier == null &&
 					(("String".equals(matchType) && minRawLength == maxRawLength && minRawLength < 32) || "Long".equals(matchType))) {
 				key = true;
+				// Might be a key but only iff every element in the cardinality set only has a count of 1
 				for (Map.Entry<String,Integer> entry : cardinality.entrySet()) {
 					if (entry.getValue() != 1) {
 						key = false;
