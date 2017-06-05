@@ -153,8 +153,7 @@ class Driver {
 			for (int i = 0; i < numFields; i++) {
 				if (col == -1 || col == i) {
 					result = analysis[i].getResult();
-					System.err.printf("Result for '%s' (%d)\n\t", header[i], i);
-					System.err.println(result.dump(verbose));
+					System.err.printf("Field '%s' (%d) - %s\n", header[i], i, result.dump(verbose));
 					if (result.getType() != null)
 						typesDetected++;
 					matchCount += result.matchCount;
@@ -169,7 +168,7 @@ class Driver {
 			else
 				System.err.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%).\n",
 						(typesDetected == 1 ? "yes" : "no"), matchCount,
-						sampleCount, result.getConfidence());
+						sampleCount, result.getConfidence()*100);
 			System.err.printf("Execution time: %dms\n", duration);
 		}
 	}

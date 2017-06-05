@@ -1030,6 +1030,36 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
+	@Test
+	public void basicStatesLower() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "al|ak|az|ky|ks|la|me|md|mi|ma|mn|ms|mo|ne|mt|sd|tn|tx|ut|vt|wi|" +
+				"va|wa|wv|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|" +
+				"nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|" +
+				"wy|al|ak|az|ar|ca|co|ct|dc|de|fl|ga|hi|id|il|in|ia|ks|ky|la|me|" +
+				"md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|ri|sc|sd|" +
+				"tx|ut|vt|wv|wi|wy|nv|nh|nj|or|pa|ri|sc|ar|ca|co|ct|id|hi|il|in|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "US_STATE");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "[US_STATE]");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
 
 	@Test
 	public void basicNA() throws Exception {
@@ -1090,6 +1120,131 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "[CA_PROVINCE]");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void change2() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+				"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
+				"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|" +
+				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{2,3}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void basicCountry() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "Venezuela|USA|Finland|USA|USA|Germany|France|Italy|Mexico|Germany|" +
+				"Sweden|Germany|Sweden|Spain|Spain|Venezuela|Germany|Germany|Germany|Brazil|" +
+				"Italy|UK|Brazil|Brazil|Brazil|Mexico|USA|France|Venezuela|France|" +
+				"Ireland|Brazil|Italy|Germany|Belgium|Spain|Mexico|USA|Spain|USA|" +
+				"Mexico|Ireland|USA|France|Germany|Germany|USA|UK|USA|USA|" +
+				"UK|Mexico|Finland|UK|Mexico|Germany|USA|Germany|Spain|Sweden|" +
+				"Portugal|USA|Venezuela|France|Canada|Finland|France|Ireland|Portugal|Germany|" +
+				"USA|Canada|France|Denmark|Germany|Germany|USA|Germany|USA|Brazil|" +
+				"Germany|USA|France|Austria|Portugal|Austria|Mexico|UK|Germany|Venezuela|" +
+				"France|UK|France|Germany|France|Germany|UK|Mexico|Spain|Denmark|" +
+				"Austria|USA|Switzerland|France|Brazil|Ireland|Poland|USA|Canada|UK|" +
+				"Sweden|Brazil|Ireland|Venezuela|Austria|UK|Sweden|USA|Brazil|Norway|" +
+				"UK|Canada|Austria|Germany|Austria|USA|USA|Venezuela|Germany|Portugal|" +
+				"USA|Denmark|UK|USA|Austria|Austria|Italy|Venezuela|Brazil|Germany|" +
+				"France|Argentina|Canada|Canada|Finland|France|Brazil|USA|Finland|Denmark|" +
+				"Germany|Switzerland|Brazil|Brazil|Italy|Brazil|Canada|France|Spain|Austria|" +
+				"Italy|Ireland|Austria|Canada|USA|Portugal|Sweden|UK|France|Finland|" +
+				"Germany|Canada|USA|USA|Austria|Italy|Sweden|Sweden|Germany|Brazil|" +
+				"Argentina|France|France|Germany|USA|UK|France|Finland|Germany|Germany|" +
+				"Belgium|France|Sweden|Venezuela|UK|Belgium|Portugal|Denmark|Brazil|Italy|" +
+				"Germany|USA|France|UK|UK|UK|Mexico|Belgium|Venezuela|Portugal|" +
+				"France|USA|France|Brazil|USA|USA|UK|Venezuela|Venezuela|Brazil|" +
+				"Germany|Austria|Venezuela|Portugal|Canada|France|Brazil|Canada|Brazil|Germany|" +
+				"Venezuela|Venezuela|France|Germany|Mexico|Ireland|USA|Canada|Germany|Mexico|" +
+				"Germany|Germany|USA|France|Brazil|Germany|Austria|Germany|Ireland|UK|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "COUNTRY");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "[COUNTRY]");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void basicMonthAbbr() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
+				"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
+				"Jan|Mar|Jun|Jul|Feb|Dec|Bad|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|" +
+				"Jan|Bogus|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+				"Dec|Oct|Apr|May|May|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
+				"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|";
+		int badCount = 4;							// 2 x "NA", 1 x "bogus", 1 x "Bad"
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getPattern(), "[MONTHABBR]");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 3);
+		Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 3);
+		Assert.assertEquals(outliers.get("Bogus"), new Integer(1));
+		Assert.assertEquals(outliers.get("NA"), new Integer(2));
+		Assert.assertEquals(outliers.get("Bad"), new Integer(1));
+		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 0.9835164835164835);
 	}
 
 	@Test

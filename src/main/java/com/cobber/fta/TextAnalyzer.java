@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormatSymbols;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +31,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.mail.internet.AddressException;
@@ -116,6 +118,8 @@ public class TextAnalyzer {
 	int minLength = Integer.MAX_VALUE;
 	int maxLength = Integer.MIN_VALUE;
 
+	int stringLength = -1;
+
 	int possibleHMS = 0;
 	int possibleHM = 0;
 	int totalLongs = 0;
@@ -129,121 +133,128 @@ public class TextAnalyzer {
 	HashSet<String> zips = new HashSet<String>();
 	HashSet<String> usStates = new HashSet<String>();
 	HashSet<String> caProvinces = new HashSet<String>();
+	HashSet<String> countries = new HashSet<String>();
+	HashSet<String> monthAbbr = new HashSet<String>();
 
 	static boolean dataLoaded = false;
 
-	void addPattern(String pattern, String generalPattern, String format, String type, String typeQualifier) {
-		patternInfo.put(pattern, new PatternInfo(pattern, generalPattern, format, type, typeQualifier));
+	void addPattern(String pattern, String type, int minLength, int maxLength, String generalPattern, String format, String typeQualifier) {
+		patternInfo.put(pattern, new PatternInfo(pattern, type, minLength, maxLength, generalPattern, format, typeQualifier));
 	}
 
 	void initPatternInfo() {
 		patternInfo = new HashMap<String, PatternInfo>();
-		addPattern("\\d{4}-\\d{2}-\\d{2}", "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "Date", "yyyy-MM-dd");
-		addPattern("\\d{4}-\\d{1}-\\d{2}", "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "Date", "yyyy-MM-dd");
-		addPattern("\\d{4}-\\d{1}-\\d{1}", "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "Date", "yyyy-MM-dd");
-		addPattern("\\d{4}-\\d{2}-\\d{1}", "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "Date", "yyyy-MM-dd");
-		addPattern("\\d{4}-\\d{1,2}-\\d{1,2}", null, "yyyy-MM-dd", "Date", "yyyy-MM-dd");
+		addPattern("\\d{4}-\\d{2}-\\d{2}", "Date", 10, 10, "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "yyyy-MM-dd");
+		addPattern("\\d{4}-\\d{1}-\\d{2}", "Date", 9, 9, "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "yyyy-MM-dd");
+		addPattern("\\d{4}-\\d{2}-\\d{1}", "Date", 9, 9, "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "yyyy-MM-dd");
+		addPattern("\\d{4}-\\d{1}-\\d{1}", "Date", 8, 8, "\\d{4}-\\d{1,2}-\\d{1,2}", "yyyy-MM-dd", "yyyy-MM-dd");
+		addPattern("\\d{4}-\\d{1,2}-\\d{1,2}", "Date", 8, 10, null, "yyyy-MM-dd", "yyyy-MM-dd");
 
-		addPattern("\\d{4}/\\d{2}/\\d{2}", "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "Date", "yyyy/MM/dd");
-		addPattern("\\d{4}/\\d{1}/\\d{2}", "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "Date", "yyyy/MM/dd");
-		addPattern("\\d{4}/\\d{2}/\\d{1}", "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "Date", "yyyy/MM/dd");
-		addPattern("\\d{4}/\\d{1}/\\d{1}", "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "Date", "yyyy/MM/dd");
-		addPattern("\\d{4}/\\d{1,2}/\\d{1,2}", null, "yyyy/MM/dd", "Date", "yyyy/MM/dd");
+		addPattern("\\d{4}/\\d{2}/\\d{2}", "Date", 10, 10, "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "yyyy/MM/dd");
+		addPattern("\\d{4}/\\d{1}/\\d{2}", "Date", 9, 9, "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "yyyy/MM/dd");
+		addPattern("\\d{4}/\\d{2}/\\d{1}", "Date", 9, 9, "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "yyyy/MM/dd");
+		addPattern("\\d{4}/\\d{1}/\\d{1}", "Date", 8, 8, "\\d{4}/\\d{1,2}/\\d{1,2}", "yyyy/MM/dd", "yyyy/MM/dd");
+		addPattern("\\d{4}/\\d{1,2}/\\d{1,2}", "Date", 8, 10, null, "yyyy/MM/dd", "yyyy/MM/dd");
 
-		addPattern("\\d{4} \\d{2} \\d{2}", "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "Date", "yyyy MM dd");
-		addPattern("\\d{4} \\d{2} \\d{2}", "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "Date", "yyyy MM dd");
-		addPattern("\\d{4} \\d{2} \\d{2}", "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "Date", "yyyy MM dd");
-		addPattern("\\d{4} \\d{2} \\d{2}", "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "Date", "yyyy MM dd");
-		addPattern("\\d{4} \\d{1,2} \\d{1,2}", null, "yyyy MM dd", "Date", "yyyy MM dd");
+		addPattern("\\d{4} \\d{2} \\d{2}", "Date", 10, 10, "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "yyyy MM dd");
+		addPattern("\\d{4} \\d{1} \\d{2}", "Date", 9, 9, "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "yyyy MM dd");
+		addPattern("\\d{4} \\d{2} \\d{1}", "Date", 9, 9, "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "yyyy MM dd");
+		addPattern("\\d{4} \\d{1} \\d{1}", "Date", 8, 8, "\\d{4} \\d{1,2} \\d{1,2}", "yyyy MM dd", "yyyy MM dd");
+		addPattern("\\d{4} \\d{1,2} \\d{1,2}", "Date", 8, 10, null, "yyyy MM dd", "yyyy MM dd");
 
-		addPattern("\\d{2}-\\d{2}-\\d{4}", "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "Date", "dd-MM-yyyy");
-		addPattern("\\d{1}-\\d{2}-\\d{4}", "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "Date", "dd-MM-yyyy");
-		addPattern("\\d{2}-\\d{1}-\\d{4}", "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "Date", "dd-MM-yyyy");
-		addPattern("\\d{1}-\\d{1}-\\d{4}", "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "Date", "dd-MM-yyyy");
-		addPattern("\\d{1,2}-\\d{1,2}-\\d{4}", null, "dd-MM-yyyy", "Date", "dd-MM-yyyy");
+		addPattern("\\d{2}-\\d{2}-\\d{4}", "Date", 10, 10, "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "dd-MM-yyyy");
+		addPattern("\\d{1}-\\d{2}-\\d{4}", "Date", 9, 9, "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "dd-MM-yyyy");
+		addPattern("\\d{2}-\\d{1}-\\d{4}", "Date", 9, 9, "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "dd-MM-yyyy");
+		addPattern("\\d{1}-\\d{1}-\\d{4}", "Date", 8, 8, "\\d{1,2}-\\d{1,2}-\\d{4}", "dd-MM-yyyy", "dd-MM-yyyy");
+		addPattern("\\d{1,2}-\\d{1,2}-\\d{4}", "Date", 8, 10, null, "dd-MM-yyyy", "dd-MM-yyyy");
 
-		addPattern("\\d{2}/\\d{2}/\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "Date", "dd/MM/yy");
-		addPattern("\\d{1}/\\d{2}/\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "Date", "dd/MM/yy");
-		addPattern("\\d{2}/\\d{1}/\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "Date", "dd/MM-yy");
-		addPattern("\\d{1}/\\d{1}/\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "Date", "dd/MM/yy");
-		addPattern("\\d{1,2}/\\d{1,2}/\\d{2}", null, "dd/MM/yy", "Date", "dd/MM/yy");
+		addPattern("\\d{2}/\\d{2}/\\d{2}", "Date", 8, 8, "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "dd/MM/yy");
+		addPattern("\\d{1}/\\d{2}/\\d{2}", "Date", 7, 7, "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "dd/MM/yy");
+		addPattern("\\d{2}/\\d{1}/\\d{2}", "Date", 7, 7, "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "dd/MM-yy");
+		addPattern("\\d{1}/\\d{1}/\\d{2}", "Date", 6, 6, "\\d{1,2}/\\d{1,2}/\\d{2}", "dd/MM/yy", "dd/MM/yy");
+		addPattern("\\d{1,2}/\\d{1,2}/\\d{2}", "Date", 6, 8, null, "dd/MM/yy", "dd/MM/yy");
 
-		addPattern("\\d{2}/\\d{2}/\\d{4}", "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "Date", "dd/MM/yyyy");
-		addPattern("\\d{2}/\\d{2}/\\d{4}", "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "Date", "dd/MM/yyyy");
-		addPattern("\\d{2}/\\d{2}/\\d{4}", "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "Date", "dd/MM/yyyy");
-		addPattern("\\d{2}/\\d{2}/\\d{4}", "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "Date", "dd/MM/yyyy");
-		addPattern("\\d{1,2}/\\d{1,2}/\\d{4}", null, "dd/MM/yyyy", "Date", "dd/MM/yyyy");
+		addPattern("\\d{2}/\\d{2}/\\d{4}", "Date", 10, 10, "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "dd/MM/yyyy");
+		addPattern("\\d{1}/\\d{2}/\\d{4}", "Date", 9, 9, "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "dd/MM/yyyy");
+		addPattern("\\d{2}/\\d{1}/\\d{4}", "Date", 9, 9, "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "dd/MM/yyyy");
+		addPattern("\\d{1}/\\d{1}/\\d{4}", "Date", 8, 8, "\\d{1,2}/\\d{1,2}/\\d{4}", "dd/MM/yyyy", "dd/MM/yyyy");
+		addPattern("\\d{1,2}/\\d{1,2}/\\d{4}", "Date", 8, 10, null, "dd/MM/yyyy", "dd/MM/yyyy");
 
-		addPattern("\\d{2} \\d{2} \\d{4}", null, "dd MM yyyy", "Date", "dd MM yyyy");
-		addPattern("\\d{2} \\a{3} \\d{4}", null, "", "Date", null);
+		addPattern("\\d{2} \\d{2} \\d{4}", "Date", -1, -1, null, "dd MM yyyy", "dd MM yyyy");
 
-		addPattern("\\d{2}-\\a{3}-\\d{2}", "\\d{1,2}-\\a{3}-\\d{2}", "d-MMM-yy", "Date", "d-MMM-yy");
-		addPattern("\\d{1}-\\a{3}-\\d{2}", "\\d{1,2}-\\a{3}-\\d{2}", "d-MMM-yy", "Date", "d-MMM-yy");
-		addPattern("\\d{1,2}-\\a{3}-\\d{2}", null, "d-MMM-yy", "Date", "d-MMM-yy");
+		addPattern("\\d{2} \\a{3} \\d{4}", "Date", -1, -1, null, "", null);
 
-		addPattern("\\d{2}:\\d{2}:\\d{2}", "\\d{1,2}:\\d{2}:\\d{2}", "hh:mm:ss", "Time", "hh:mm:ss");
-		addPattern("\\d{1}:\\d{2}:\\d{2}", "\\d{1,2}:\\d{2}:\\d{2}", "hh:mm:ss", "Time", "hh:mm:ss");
-		addPattern("\\d{1,2}:\\d{2}:\\d{2}", null, "hh:mm:ss", "Time", "hh:mm:ss");
+		addPattern("\\d{2}-\\a{3}-\\d{2}", "Date", -1, -1, "\\d{1,2}-\\a{3}-\\d{2}", "d-MMM-yy", "d-MMM-yy");
+		addPattern("\\d{1}-\\a{3}-\\d{2}", "Date", -1, -1, "\\d{1,2}-\\a{3}-\\d{2}", "d-MMM-yy", "d-MMM-yy");
+		addPattern("\\d{1,2}-\\a{3}-\\d{2}", "Date", -1, -1, null, "d-MMM-yy", "d-MMM-yy");
 
-		addPattern("\\d{2}:\\d{2}", "\\d{1,2}:\\d{2}", "hh:mm", "Time", "hh:mm");
-		addPattern("\\d{1}:\\d{2}", "\\d{1,2}:\\d{2}", "hh:mm", "Time", "hh:mm");
-		addPattern("\\d{1,2}:\\d{2}", null, "hh:mm", "Time", "hh:mm");
+		addPattern("\\d{2}:\\d{2}:\\d{2}", "Time", -1, -1, "\\d{1,2}:\\d{2}:\\d{2}", "hh:mm:ss", "hh:mm:ss");
+		addPattern("\\d{1}:\\d{2}:\\d{2}", "Time", -1, -1, "\\d{1,2}:\\d{2}:\\d{2}", "hh:mm:ss", "hh:mm:ss");
+		addPattern("\\d{1,2}:\\d{2}:\\d{2}", "Time", -1, -1, null, "hh:mm:ss", "hh:mm:ss");
+
+		addPattern("\\d{2}:\\d{2}", "Time", -1, -1, "\\d{1,2}:\\d{2}", "hh:mm", "hh:mm");
+		addPattern("\\d{1}:\\d{2}", "Time", -1, -1, "\\d{1,2}:\\d{2}", "hh:mm", "hh:mm");
+		addPattern("\\d{1,2}:\\d{2}", "Time", -1, -1, null, "hh:mm", "hh:mm");
 
 		// \d{2}/\d{1}/\d{4} \d{2}:\d{2}:\d{2}		
 
-		addPattern("\\d{2}/\\d{2}/\\d{2} \\d{2}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", "MM/dd/yy hh:mm");
-		addPattern("\\d{1}/\\d{2}/\\d{2} \\d{2}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", "MM/dd/yy hh:mm");
-		addPattern("\\d{2}/\\d{1}/\\d{2} \\d{2}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", "MM/dd/yy hh:mm");
-		addPattern("\\d{1}/\\d{1}/\\d{2} \\d{2}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", "MM/dd/yy hh:mm");
-		addPattern("\\d{2}/\\d{2}/\\d{2} \\d{1}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", "MM/dd/yy hh:mm");
-		addPattern("\\d{1}/\\d{2}/\\d{2} \\d{1}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", "MM/dd/yy hh:mm");
-		addPattern("\\d{2}/\\d{1}/\\d{2} \\d{1}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", "MM/dd/yy hh:mm");
-		addPattern("\\d{1}/\\d{1}/\\d{2} \\d{1}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "DateTime", "MM/dd/yy hh:mm");
-		addPattern("\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", null, "MM/dd/yy hh:mm", "DateTime", "MM/dd/yy hh:mm");
+		addPattern("\\d{2}/\\d{2}/\\d{2} \\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "MM/dd/yy hh:mm");
+		addPattern("\\d{1}/\\d{2}/\\d{2} \\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "MM/dd/yy hh:mm");
+		addPattern("\\d{2}/\\d{1}/\\d{2} \\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "MM/dd/yy hh:mm");
+		addPattern("\\d{1}/\\d{1}/\\d{2} \\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "MM/dd/yy hh:mm");
+		addPattern("\\d{2}/\\d{2}/\\d{2} \\d{1}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "MM/dd/yy hh:mm");
+		addPattern("\\d{1}/\\d{2}/\\d{2} \\d{1}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "MM/dd/yy hh:mm");
+		addPattern("\\d{2}/\\d{1}/\\d{2} \\d{1}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "MM/dd/yy hh:mm");
+		addPattern("\\d{1}/\\d{1}/\\d{2} \\d{1}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "MM/dd/yy hh:mm", "MM/dd/yy hh:mm");
+		addPattern("\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}", "DateTime", -1, -1, null, "MM/dd/yy hh:mm", "MM/dd/yy hh:mm");
 
-		addPattern("\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}", null, "", "DateTime", null);
-		addPattern("\\d{4}/\\d{2}/\\d{2}\\a{1}\\d{2}:\\d{2}", null, "", "DateTime", null);
-		addPattern("\\d{4} \\d{2} \\d{2}\\a{1}\\d{2}:\\d{2}", null, "", "DateTime", null);
+		addPattern("\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}", "DateTime", -1, -1, null, "", null);
+		addPattern("\\d{4}/\\d{2}/\\d{2}\\a{1}\\d{2}:\\d{2}", "DateTime", -1, -1, null, "", null);
+		addPattern("\\d{4} \\d{2} \\d{2}\\a{1}\\d{2}:\\d{2}", "DateTime", -1, -1, null, "", null);
 
-		addPattern("\\d{2}-\\d{2}-\\d{4}\\a{1}\\d{2}:\\d{2}", null, "", "DateTime", null);
-		addPattern("\\d{2}/\\d{2}/\\d{4}\\a{1}\\d{2}:\\d{2}", null, "", "DateTime", null);
-		addPattern("\\d{2} \\d{2} \\d{4}\\a{1}\\d{2}:\\d{2}", null, "", "DateTime", null);
+		addPattern("\\d{2}-\\d{2}-\\d{4}\\a{1}\\d{2}:\\d{2}", "DateTime", -1, -1, null, "", null);
+		addPattern("\\d{2}/\\d{2}/\\d{4}\\a{1}\\d{2}:\\d{2}", "DateTime", -1, -1, null, "", null);
+		addPattern("\\d{2} \\d{2} \\d{4}\\a{1}\\d{2}:\\d{2}", "DateTime", -1, -1, null, "", null);
 
-		addPattern("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "DateTime", "yyyy-MM-dd hh:mm:ss");
-		addPattern("\\d{4}-\\d{1}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "DateTime", "yyyy-MM-dd hh:mm:ss");
-		addPattern("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "DateTime", "yyyy-MM-dd hh:mm:ss");
-		addPattern("\\d{4}-\\d{1}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "DateTime", "yyyy-MM-dd hh:mm:ss");
-		addPattern("\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", null, "yyyy-MM-dd hh:mm:ss", "DateTime", "yyyy-MM-dd hh:mm:ss");
+		addPattern("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd hh:mm:ss");
+		addPattern("\\d{4}-\\d{1}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd hh:mm:ss");
+		addPattern("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd hh:mm:ss");
+		addPattern("\\d{4}-\\d{1}-\\d{2} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd hh:mm:ss");
+		addPattern("\\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, null, "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd hh:mm:ss");
 
 		// ISO 8601
-		addPattern("\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}", null, "ISO8601 (NoTZ)", "DateTime", "ISO8601 (NoTZ)");
-		addPattern("\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}-\\d{2}:\\d{2}", null, "ISO8601 (Offset)", "DateTime", "ISO8601 (Offset)");
+		addPattern("\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, null, "ISO8601 (NoTZ)", "ISO8601 (NoTZ)");
+		addPattern("\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}-\\d{2}:\\d{2}", "DateTime", -1, -1, null, "ISO8601 (Offset)", "ISO8601 (Offset)");
 
-		addPattern("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd-MM-yyyy hh:mm:ss", "DateTime", "dd-MM-yyyy hh:mm:ss");
-		addPattern("\\d{2}-\\d{1}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd-MM-yyyy hh:mm:ss", "DateTime", "dd-MM-yyyy hh:mm:ss");
-		addPattern("\\d{1}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd-MM-yyyy hh:mm:ss", "DateTime", "dd-MM-yyyy hh:mm:ss");
-		addPattern("\\d{1}-\\d{1}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd-MM-yyyy hh:mm:ss", "DateTime", "dd-MM-yyyy hh:mm:ss");
-		addPattern("\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", null, "dd-MM-yyyy hh:mm:ss", "DateTime", "dd-MM-yyyy hh:mm:ss");
+		addPattern("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd-MM-yyyy hh:mm:ss", "dd-MM-yyyy hh:mm:ss");
+		addPattern("\\d{2}-\\d{1}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd-MM-yyyy hh:mm:ss", "dd-MM-yyyy hh:mm:ss");
+		addPattern("\\d{1}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd-MM-yyyy hh:mm:ss", "dd-MM-yyyy hh:mm:ss");
+		addPattern("\\d{1}-\\d{1}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd-MM-yyyy hh:mm:ss", "dd-MM-yyyy hh:mm:ss");
+		addPattern("\\d{1,2}-\\d{1,2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, null, "dd-MM-yyyy hh:mm:ss", "dd-MM-yyyy hh:mm:ss");
 
-		addPattern("\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy hh:mm:ss", "DateTime", "dd/MM/yyyy hh:mm:ss");
-		addPattern("\\d{2}/\\d{1}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy hh:mm:ss", "DateTime", "dd/MM/yyyy hh:mm:ss");
-		addPattern("\\d{1}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy hh:mm:ss", "DateTime", "dd/MM/yyyy hh:mm:ss");
-		addPattern("\\d{1}/\\d{1}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy hh:mm:ss", "DateTime", "dd/MM/yyyy hh:mm:ss");
-		addPattern("\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", null, "dd/MM/yyyy hh:mm:ss", "DateTime", "dd/MM/yyyy hh:mm:ss");
+		addPattern("\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy hh:mm:ss", "dd/MM/yyyy hh:mm:ss");
+		addPattern("\\d{2}/\\d{1}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy hh:mm:ss", "dd/MM/yyyy hh:mm:ss");
+		addPattern("\\d{1}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy hh:mm:ss", "dd/MM/yyyy hh:mm:ss");
+		addPattern("\\d{1}/\\d{1}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy hh:mm:ss", "dd/MM/yyyy hh:mm:ss");
+		addPattern("\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "DateTime", -1, -1, null, "dd/MM/yyyy hh:mm:ss", "dd/MM/yyyy hh:mm:ss");
 
-		addPattern("(?i)true|false", null, "", "Boolean", null);
-		addPattern("\\a{+}", null, "", "String", null);
-		addPattern("\\d{+}", null, "", "Long", null);
-		addPattern("[-]\\d{+}", null, "", "Long", "Signed");
-		addPattern("\\d{*}D\\d{+}", null, "", "Double", null);
-		addPattern("[-]\\d{*}D\\d{+}", null, "", "Double", "Signed");
-		addPattern("^[ ]*$", null, null, "[BLANK]", null);
-		addPattern("[NULL]", null, null, "[NULL]", null);
-		addPattern("[ZIP]", null, null, "Long", "Zip");
-		addPattern("[0|1]", null, null, "Boolean", null);
-		addPattern("[NA_STATE]", null, null, "String", "NA_STATE");
-		addPattern("[US_STATE]", null, null, "String", "US_STATE");
-		addPattern("[CA_PROVINCE]", null, null, "String", "CA_PROVINCE");
+		addPattern("(?i)true|false", "Boolean", 4, 5, null, "", null);
+		addPattern("\\a{2}", "String", 2, 2, null, "", null);
+		addPattern("\\a{3}", "String", 3, 3, null, "", null);
+		addPattern("\\a{+}", "String", 1, -1, null, "", null);
+		addPattern("\\d{+}", "Long", 1, -1, null, "", null);
+		addPattern("[-]\\d{+}", "Long", 1, -1, null, "", "Signed");
+		addPattern("\\d{*}D\\d{+}", "Double", -1, -1, null, "", null);
+		addPattern("[-]\\d{*}D\\d{+}", "Double", -1, -1, null, "", "Signed");
+		addPattern("^[ ]*$", "[BLANK]", -1, -1, null, null, null);
+		addPattern("[NULL]", "[NULL]", -1, -1, null, null, null);
+		addPattern("[ZIP]", "Long", -1, -1, null, null, "Zip");
+		addPattern("[0|1]", "Boolean", -1, -1, null, null, null);
+		addPattern("[NA_STATE]", "String", -1, -1, null, null, "NA_STATE");
+		addPattern("[US_STATE]", "String", -1, -1, null, null, "US_STATE");
+		addPattern("[CA_PROVINCE]", "String", -1, -1, null, null, "CA_PROVINCE");
+		addPattern("[COUNTRY]", "String", -1, -1, null, null, "COUNTRY");
+		addPattern("[MONTHABBR]", "String", -1, -1, null, null, "MONTHABBR");
 	}
 
 	/**
@@ -276,6 +287,19 @@ public class TextAnalyzer {
 				while ((line = reader.readLine()) != null) {
 					caProvinces.add(line);
 				}
+			}
+
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/countries.csv")))) {
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					countries.add(line);
+				}
+			}
+
+			// Setup the Monthly abbreviations
+			String[] shortMonths = new DateFormatSymbols().getShortMonths();
+			for (String shortMonth : shortMonths) {
+				monthAbbr.add(shortMonth.toUpperCase(Locale.ROOT));
 			}
 		}
 
@@ -426,6 +450,12 @@ public class TextAnalyzer {
 				return false;
 			}		
 		}
+
+		int len = input.length();
+		if (matchPatternInfo.minLength != -1 && len < matchPatternInfo.minLength)
+			return false;
+		if (matchPatternInfo.maxLength != -1 && len > matchPatternInfo.maxLength)
+			return false;
 
 		return true;
 	}
@@ -808,7 +838,7 @@ public class TextAnalyzer {
 					// Do we have a set of possible emails?
 					if (possibleEmails == raw.size()) {
 						PatternInfo save = matchPatternInfo;
-						matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", "Email");
+						matchPatternInfo = new PatternInfo(matchPattern, "String", -1, -1, null, null, "Email");
 						int emails = 0;
 						for (String sample : raw)
 							if (trackString(sample, false))
@@ -936,6 +966,83 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Parse a String regexp to determine length.
+	 * @param input String input that must be either a variable length string (\a{+}) or fixed length, e.g. \a{3}
+	 * @return The length of the input string or -1 if length is variable
+	 */
+	private int determineLength(String input) {
+		String lengthInformation = input.substring(3, input.length() - 1);
+		return Character.isDigit(lengthInformation.charAt(0)) ? Integer.parseInt(lengthInformation) : -1;
+	}
+
+	private boolean checkFixedLengthSet(HashSet<String> fixedSet, String successPattern) {
+		int realSamples = sampleCount - (nullCount + blankCount);
+		int validCount = 0;
+		int misses = 0;
+		int missCount = 0;
+
+		// First sweep the outliers
+		for (Map.Entry<String,Integer> entry : outliers.entrySet()) {
+			misses++;
+			missCount += entry.getValue();
+			// It makes sense to break out early if we know we are going to fail
+			if ((double)missCount/realSamples > .05)
+				break;
+		}
+		Map<String, Integer> newOutliers = new HashMap<String, Integer>();
+		if ((double)missCount/realSamples <= .05) {
+			for (Map.Entry<String,Integer> entry : cardinality.entrySet()) {
+				if (fixedSet.contains(entry.getKey().toUpperCase(Locale.ROOT)))
+					validCount += entry.getValue();
+				else {
+					misses++;
+					missCount += entry.getValue();
+					newOutliers.put(entry.getKey(), entry.getValue());
+					// It makes sense to break out early if we know we are going to fail
+					if ((double)missCount/realSamples > .05)
+						break;
+				}
+			}
+		}
+		if ((double)validCount/realSamples > .95 && misses <= 3) {
+			matchPattern = successPattern;
+			matchCount = validCount;
+			matchPatternInfo = patternInfo.get(matchPattern);
+			outliers.putAll(newOutliers);
+			cardinality.keySet().removeAll(newOutliers.keySet());
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean checkVariableLengthSet(HashSet<String> variableSet, String successPattern) {
+		int realSamples = sampleCount - (nullCount + blankCount);
+		int validCount = 0;
+		int misses = 0;
+		int missCount = 0;
+		for (Map.Entry<String,Integer> entry : cardinality.entrySet()) {
+			if (variableSet.contains(entry.getKey().toUpperCase(Locale.ROOT)))
+				validCount += entry.getValue();
+			else {
+				misses++;
+				missCount += entry.getValue();
+				// It makes sense to break out early if we know we are going to fail
+				if ((double)missCount/realSamples > .05)
+					break;
+			}
+		}
+		if ((double)validCount/realSamples > .95 && misses < 3) {
+			matchPattern = successPattern;
+			matchCount = validCount;
+			matchPatternInfo = patternInfo.get(matchPattern);
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Determine the result of the training complete to date.  Typically invoked after all
 	 * training is complete, but may be invoked at any stage.
 	 * @return A TextAnalysisResult with the analysis of any training completed.
@@ -977,24 +1084,49 @@ public class TextAnalyzer {
 		}
 
 		if ("\\d{+}".equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
-			matchPatternInfo = new PatternInfo("\\d{4}", null, "yyyy", "Date", "yyyy");
+			matchPatternInfo = new PatternInfo("\\d{4}", "Date", -1, -1, null, "yyyy", "yyyy");
 		}
-		else if ("\\a{+}".equals(matchPattern)) {
-			matchPattern = "\\a{" + minRawLength;
-			if (minRawLength != maxRawLength)
-				matchPattern += "," + maxRawLength;
-			matchPattern += "}";
-			matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", matchPatternInfo.typeQualifier);
+		else if ("String".equals(matchPatternInfo.type)) {
+			int length = determineLength(matchPattern);
+			// We thought it was a fixed length string, but on reflection it does not feel like it
+			if (length != -1 && realSamples > REFLECTION_SAMPLES && (double)matchCount / realSamples < 0.95) {
+				matchPattern = "\\a{+}";
+				matchPatternInfo = patternInfo.get(matchPattern);
+				matchCount = realSamples;
 
-			if (realSamples > REFLECTION_SAMPLES && "\\a{2}".equals(matchPattern) && cardinality.size() < usStates.size() + caProvinces.size() + 5
+				// All outliers are now part of the cardinality set and there are no outliers
+				cardinality.putAll(outliers);
+				outliers.clear();
+
+				confidence = (double)matchCount / realSamples;
+			}
+			if ("\\a{+}".equals(matchPattern)) {
+				matchPattern = "\\a{" + minRawLength;
+				if (minRawLength != maxRawLength)
+					matchPattern += "," + maxRawLength;
+				matchPattern += "}";
+				matchPatternInfo = new PatternInfo(matchPattern, "String", minRawLength, maxRawLength, null, null, matchPatternInfo.typeQualifier);
+			}
+
+			boolean typeIdentified = false;
+			if (realSamples > REFLECTION_SAMPLES && cardinality.size() > 1 && "\\a{3}".equals(matchPattern) &&
+					cardinality.size() <= monthAbbr.size() + 2) {
+				typeIdentified = checkFixedLengthSet(monthAbbr, "[MONTHABBR]");
+			}
+
+			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && cardinality.size() > 1 && cardinality.size() <= countries.size()) {
+				typeIdentified = checkVariableLengthSet(countries, "[COUNTRY]");
+			}
+
+			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && "\\a{2}".equals(matchPattern) && cardinality.size() < usStates.size() + caProvinces.size() + 5
 					&& (name.toLowerCase().contains("state") || name.toLowerCase().contains("province") || cardinality.size() > 5)) {
 				int usStateCount = 0;
 				int caProvinceCount = 0;
 				int misses = 0;
 				for (Map.Entry<String,Integer> entry : cardinality.entrySet()) {
-					if (usStates.contains(entry.getKey()))
+					if (usStates.contains(entry.getKey().toUpperCase(Locale.ROOT)))
 						usStateCount += entry.getValue();
-					else if (caProvinces.contains(entry.getKey()))
+					else if (caProvinces.contains(entry.getKey().toUpperCase(Locale.ROOT)))
 						caProvinceCount += entry.getValue();
 					else
 						misses++;
@@ -1037,7 +1169,7 @@ public class TextAnalyzer {
 					if (minRawLength != maxRawLength)
 						matchPattern += "," + maxRawLength;
 					matchPattern += "}";
-					matchPatternInfo = new PatternInfo(matchPattern, null, null, "String", null);
+					matchPatternInfo = new PatternInfo(matchPattern, "String", -1, -1, null, null, null);
 
 					// All outliers are now part of the cardinality set and there are no outliers
 					cardinality.putAll(outliers);
@@ -1048,7 +1180,7 @@ public class TextAnalyzer {
 					if (minLength != maxLength)
 						matchPattern += "," + maxLength;
 					matchPattern += "}";
-					matchPatternInfo = new PatternInfo(matchPattern, null, null, matchType, null);
+					matchPatternInfo = new PatternInfo(matchPattern, matchType, -1, -1, null, null, null);
 				}
 			}
 		}

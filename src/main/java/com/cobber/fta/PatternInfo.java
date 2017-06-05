@@ -24,23 +24,29 @@ package com.cobber.fta;
 public class PatternInfo {
 	String pattern;
 	String generalPattern;
+	int minLength;
+	int maxLength;
 	String format;
 	String type;
 	String typeQualifier;
-	
+
 	/**
 	 * Construct a new information block for the supplied pattern.
 	 * @param pattern The pattern of interest.
+	 * @param type The type of the pattern.
+	 * @param minLength The minimum length of this pattern (-1 implies undefined)
+	 * @param maxLength The maximum length of this pattern (-1 implies undefined)
 	 * @param generalPattern The general case of this pattern (optional).
 	 * @param format The Java format specified for a date pattern (optional). 
-	 * @param type The type of the pattern.
 	 * @param typeQualifier The type qualifier of the pattern (optional).
 	 */
-	public PatternInfo(String pattern, String generalPattern, String format, String type, String typeQualifier) {
+	public PatternInfo(String pattern, String type, int minLength, int maxLength, String generalPattern, String format, String typeQualifier) {
 		this.pattern = pattern;
+		this.type = type;
+		this.minLength = minLength;
+		this.maxLength = maxLength;
 		this.generalPattern = generalPattern;
 		this.format = format;
-		this.type = type;
 		this.typeQualifier = typeQualifier;
 	}
 	
