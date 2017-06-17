@@ -42,6 +42,7 @@ class Driver {
 		boolean verbose = false;
 		TextAnalyzer[] analysis = null;
 		String[] header = null;
+		Boolean dayFirst = null;
 
 		long start = System.currentTimeMillis();
 
@@ -51,10 +52,14 @@ class Driver {
 				charset = args[++idx];
 			else if ("--col".equals(args[idx]))
 				col = Integer.valueOf(args[++idx]);
+			else if ("--dayFirst".equals(args[idx]))
+				dayFirst = true;
 			else if ("--help".equals(args[idx])) {
 				System.err.println("Usage: [--charset <charset>] [--col <n>] [--samples <n>] [--help] file ...");
 				System.exit(0);
 			}
+			else if ("--monthFirst".equals(args[idx]))
+				dayFirst = false;
 			else if ("--samples".equals(args[idx]))
 				samples = Integer.valueOf(args[++idx]);
 			else if ("--verbose".equals(args[idx])) {
@@ -114,7 +119,7 @@ class Driver {
 							header[i] = record.get(i);
 							if ((col == -1 || col == i) && verbose)
 								System.out.println(record.get(i));
-							analysis[i] = new TextAnalyzer(header[i]);
+							analysis[i] = new TextAnalyzer(header[i], dayFirst);
 							if (samples != -1)
 								analysis[i].setSampleSize(samples);
 						}

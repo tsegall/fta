@@ -43,8 +43,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Long");
-		Assert.assertEquals(result.getMin(), "47");
-		Assert.assertEquals(result.getMax(), "91");
+		Assert.assertEquals(result.getMinValue(), "47");
+		Assert.assertEquals(result.getMaxValue(), "91");
 	}
 
 	@Test
@@ -81,8 +81,36 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "\\d{1,7}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Long");
-		Assert.assertEquals(result.getMin(), "0");
-		Assert.assertEquals(result.getMax(), "4499045");
+		Assert.assertEquals(result.getMinValue(), "0");
+		Assert.assertEquals(result.getMaxValue(), "4499045");
+		Assert.assertEquals(result.getMinLength(), 1);
+		Assert.assertEquals(result.getMaxLength(), 7);
+	}
+
+	@Test
+	public void variableLengthString() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String[] inputs = "Hello World|Hello|H|Z|A".split("\\|");
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked != -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{1,11}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getMinValue(), "A");
+		Assert.assertEquals(result.getMaxValue(), "Z");
+		Assert.assertEquals(result.getMinLength(), 1);
+		Assert.assertEquals(result.getMaxLength(), 11);
 	}
 
 	@Test
@@ -107,8 +135,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Long");
 		Assert.assertEquals(result.getTypeQualifier(), "Signed");
-		Assert.assertEquals(result.getMin(), "-10000");
-		Assert.assertEquals(result.getMax(), "10000");
+		Assert.assertEquals(result.getMinValue(), "-10000");
+		Assert.assertEquals(result.getMaxValue(), "10000");
 	}
 
 	@Test
@@ -130,8 +158,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "\\d{6}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Long");
-		Assert.assertEquals(result.getMin(), "116789");
-		Assert.assertEquals(result.getMax(), "456789");
+		Assert.assertEquals(result.getMinValue(), "116789");
+		Assert.assertEquals(result.getMaxValue(), "456789");
 	}
 
 	@Test
@@ -154,8 +182,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "\\d{*}D\\d{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Double");
-		Assert.assertEquals(result.getMin(), "0.1");
-		Assert.assertEquals(result.getMax(), "99.23");
+		Assert.assertEquals(result.getMinValue(), "0.1");
+		Assert.assertEquals(result.getMaxValue(), "99.23");
 	}
 
 	@Test
@@ -178,8 +206,42 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "\\d{*}D\\d{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Double");
-		Assert.assertEquals(result.getMin(), "0.1");
-		Assert.assertEquals(result.getMax(), "99.23");
+		Assert.assertEquals(result.getMinValue(), "0.1");
+		Assert.assertEquals(result.getMaxValue(), "99.23");
+	}
+
+	@Test
+	public void dateOutlier() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String[] inputs = "12/12/12|12/12/32|02/22/02".split("\\|");
+		int locked = -1;
+		int records = 100;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		for (int i = inputs.length; i < records; i++) {
+			if (analysis.train("02/02/99") && locked == -1)
+				locked = i;
+		}
+
+		analysis.train("02/O2/99");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), records + 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getConfidence(), 0.9900990099009901);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy");
+		Assert.assertEquals(result.getMinValue(), null);
+		Assert.assertEquals(result.getMaxValue(), null);
 	}
 
 	@Test
@@ -203,8 +265,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Double");
 		Assert.assertEquals(result.getTypeQualifier(), "Signed");
-		Assert.assertEquals(result.getMin(), "-99.23");
-		Assert.assertEquals(result.getMax(), "43.8");
+		Assert.assertEquals(result.getMinValue(), "-99.23");
+		Assert.assertEquals(result.getMaxValue(), "43.8");
 	}
 	//			"\\d{4}/\\d{2}/\\d{2}".equals(pattern) ||
 	//			"\\d{2}-\\d{2}-\\d{4}".equals(pattern) ||
@@ -227,9 +289,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}");
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd");
 	}
 
 	@Test
@@ -259,7 +322,156 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicDateDD_MMMM_YYY() throws Exception {
+	public void basicDateD_MMM_YY() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "1-Jan-14|2-Jan-14|3-Jan-14|6-Jan-14|7-Jan-14|7-Jan-14|8-Jan-14|9-Jan-14|10-Jan-14|" +
+				"13-Jan-14|14-Jan-14|15-Jan-14|16-Jan-14|17-Jan-14|20-Jan-14|21-Jan-14|22-Jan-14|" +
+				"23-Jan-14|24-Jan-14|27-Jan-14|28-Jan-14|29-Jan-14|30-Jan-14|31-Jan-14|3-Feb-14|" +
+				"4-Feb-14|5-Feb-14|6-Feb-14|7-Feb-14|10-Feb-14|11-Feb-14|12-Feb-14|13-Feb-14|14-Feb-14|" +
+				"17-Feb-14|18-Feb-14|19-Feb-14|20-Feb-14|21-Feb-14|24-Feb-14|25-Feb-14|26-Feb-14|27-Feb-14|" +
+				"28-Feb-14|3-Mar-14|4-Mar-14|5-Mar-14|";
+		String[] inputs = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "d-MMM-yy");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void startsAsTwoDigitDay() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input =
+				"27/6/2012 12:46:03|27/6/2012 15:29:48|27/6/2012 23:32:22|27/6/2012 23:38:51|27/6/2012 23:42:22|" +
+						"27/6/2012 23:49:13|27/6/2012 23:56:02|28/6/2012 08:04:51|28/6/2012 15:53:00|28/6/2012 16:46:34|" +
+						"28/6/2012 17:01:01|28/6/2012 17:53:52|28/6/2012 18:03:31|28/6/2012 18:31:14|28/6/2012 18:46:12|" +
+						"28/6/2012 23:32:08|28/6/2012 23:44:54|28/6/2012 23:47:48|28/6/2012 23:51:32|28/6/2012 23:53:36|" +
+						"29/6/2012 08:54:18|29/6/2012 08:56:53|29/6/2012 11:21:56|29/6/2012 16:48:14|29/6/2012 16:56:32|" +
+						"1/7/2012 09:15:03|1/7/2012 15:36:44|1/7/2012 18:25:35|1/7/2012 18:31:19|1/7/2012 18:36:04|" +
+						"1/7/2012 19:13:17|1/7/2012 19:13:35|1/7/2012 19:13:49|1/7/2012 19:14:07|1/7/2012 19:14:21|" +
+						"1/7/2012 19:14:29|1/7/2012 19:16:45|1/7/2012 19:17:48|1/7/2012 19:18:19|1/7/2012 19:19:09|";
+
+		String[] inputs = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), "DateTime");
+		Assert.assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void startsAsTwoDigitMonth() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input =
+				"27/10/2012 12:46:03|27/10/2012 15:29:48|27/10/2012 23:32:22|27/10/2012 23:38:51|27/10/2012 23:42:22|" +
+						"27/10/2012 23:49:13|27/10/2012 23:56:02|28/10/2012 08:04:51|28/10/2012 15:53:00|28/10/2012 16:46:34|" +
+						"28/10/2012 17:01:01|28/10/2012 17:53:52|28/10/2012 18:03:31|28/10/2012 18:31:14|28/10/2012 18:46:12|" +
+						"28/10/2012 23:32:08|28/10/2012 23:44:54|28/10/2012 23:47:48|28/10/2012 23:51:32|28/10/2012 23:53:36|" +
+						"29/10/2012 08:54:18|29/10/2012 08:56:53|29/10/2012 11:21:56|29/10/2012 16:48:14|29/10/2012 16:56:32|" +
+						"10/7/2012 09:15:03|1/7/2012 15:36:44|1/7/2012 18:25:35|1/7/2012 18:31:19|1/7/2012 18:36:04|" +
+						"1/7/2012 19:13:17|1/7/2012 19:13:35|1/7/2012 19:13:49|1/7/2012 19:14:07|1/7/2012 19:14:21|" +
+						"1/7/2012 19:14:29|1/7/2012 19:16:45|1/7/2012 19:17:48|1/7/2012 19:18:19|1/7/2012 19:19:09|";
+
+		String[] inputs = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), "DateTime");
+		Assert.assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void basicDateDD_MMM_YYY_HH_MM() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input =
+				"1/30/06 22:01|1/30/06 22:15|1/30/06 22:25|1/30/06 22:35|1/30/06 22:40|1/30/06 22:45|1/30/06 22:47|1/30/06 23:00|1/30/06 23:00|1/30/06 23:11|" +
+						"1/30/06 23:15|1/30/06 23:21|1/30/06 23:31|1/30/06 23:52|1/30/06 23:55|1/30/06 23:58|1/31/06 0:00|1/31/06 0:00|1/31/06 0:00|1/31/06 0:01|" +
+						"1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:17|1/31/06 0:26|1/31/06 0:30|" +
+						"1/31/06 0:30|1/31/06 0:30|1/31/06 0:47|1/31/06 0:56|1/31/06 1:21|1/31/06 1:34|1/31/06 1:49|1/31/06 2:00|1/31/06 2:08|1/31/06 2:11|1/31/06 2:22|" +
+						"1/31/06 2:48|1/31/06 3:05|1/31/06 3:05|1/31/06 3:30|";
+
+		String[] inputs = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "DateTime");
+		Assert.assertEquals(result.getTypeQualifier(), "M/dd/yy H:mm");
+	}
+
+	@Test
+	public void slashLoop() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer("thin", false);
+
+		String input = "1/1/06 0:00";
+		int locked = -1;
+		int iterations = 30;
+
+		for (int iters = 0; iters < iterations; iters++) {
+			if (analysis.train(input) && locked == -1)
+				locked = iters;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), "DateTime");
+		Assert.assertEquals(result.getTypeQualifier(), "M/d/yy H:mm");
+		Assert.assertEquals(result.getSampleCount(), iterations);
+		Assert.assertEquals(result.getMatchCount(), iterations);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void basicDateDD_MMM_YYY() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
 		String[] inputs = "22 Jan 1971|12 Mar 2019|02 Jun 1996|11 Dec 1916|19 Apr 1993|26 Sep 1998|09 Dec 1959|14 Jul 2000|18 Aug 2008".split("\\|");
@@ -275,9 +487,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\d{2} \\a{3} \\d{4}");
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "dd MMM yyyy");
 	}
 
 
@@ -301,9 +514,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\d{4}/\\d{2}/\\d{2}");
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy/MM/dd");
 	}
 
 	@Test
@@ -323,9 +537,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\d{2}-\\d{2}-\\d{4}");
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "dd-MM-yyyy");
 	}
 
 	@Test
@@ -345,9 +560,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\d{1,2}-\\d{1,2}-\\d{4}");
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "d-M-yyyy");
 	}
 
 	@Test
@@ -370,9 +586,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getMatchCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\d{2}/\\d{2}/\\d{4}");
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
 	}
 
 	@Test
@@ -395,9 +612,34 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getMatchCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yy");
+	}
+
+	@Test
+	public void slashDateAmbiguousMM_DD_YY() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer("thin", false);
+
+		String input = " 04/03/13";
+		int locked = -1;
+		int iterations = 30;
+
+		for (int iters = 0; iters < iterations; iters++) {
+			if (analysis.train(input) && locked == -1)
+				locked = iters;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), iterations);
+		Assert.assertEquals(result.getMatchCount(), iterations);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy");
 	}
 
 	@Test
@@ -417,9 +659,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\d{2}:\\d{2}:\\d{2}");
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Time");
+		Assert.assertEquals(result.getTypeQualifier(), "HH:mm:ss");
 	}
 
 	@Test
@@ -439,9 +682,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\d{2}:\\d{2}");
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Time");
+		Assert.assertEquals(result.getTypeQualifier(), "HH:mm");
 	}
 
 	@Test
@@ -471,6 +715,29 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void onlyTrue() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		analysis.train("true");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), 1);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "(?i)true|false");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "Boolean");
+		Assert.assertEquals(result.getMinLength(), 4);
+		Assert.assertEquals(result.getMaxLength(), 4);
+		Assert.assertEquals(result.getMinValue(), "true");
+		Assert.assertEquals(result.getMaxValue(), "true");
+	}
+
+
+
+	@Test
 	public void basicBoolean() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
@@ -494,6 +761,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "(?i)true|false");
 		Assert.assertEquals(result.getConfidence(), .9375);
 		Assert.assertEquals(result.getType(), "Boolean");
+		Assert.assertEquals(result.getMinLength(), 4);
+		Assert.assertEquals(result.getMaxLength(), 12);
+		Assert.assertEquals(result.getMinValue(), "false");
+		Assert.assertEquals(result.getMaxValue(), "true");
 	}
 
 	@Test
@@ -520,6 +791,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "[0|1]");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Boolean");
+		Assert.assertEquals(result.getMinLength(), 1);
+		Assert.assertEquals(result.getMaxLength(), 1);
+		Assert.assertEquals(result.getMinValue(), "false");
+		Assert.assertEquals(result.getMaxValue(), "true");
 	}
 
 	@Test
@@ -874,7 +1149,7 @@ public class AnalysisResultTests {
 
 	@Test
 	public void leadingZeros() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("BL record ID");
+		TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
 
 		analysis.train("000019284");
 		analysis.train("000058669");
@@ -1206,22 +1481,24 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
+	// Set of valid months + 2 x "NA", 1 x "bogus", 1 x "Bad"
+	String monthTest = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
+			"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
+			"Jan|Mar|Jun|Jul|Feb|Dec|Bad|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|" +
+			"Jan|Bogus|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+			"Dec|Oct|Apr|May|May|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
+			"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|";
+
 	@Test
 	public void basicMonthAbbr() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
-		String input = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
-				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
-				"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
-				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
-				"Jan|Mar|Jun|Jul|Feb|Dec|Bad|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
-				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|" +
-				"Jan|Bogus|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
-				"Dec|Oct|Apr|May|May|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
-				"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
-				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|";
-		int badCount = 4;							// 2 x "NA", 1 x "bogus", 1 x "Bad"
-		String inputs[] = input.split("\\|");
+		int badCount = 4;
+		String inputs[] = monthTest.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1245,6 +1522,58 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 0.9835164835164835);
+
+		/* BUG cannot train once we have determined a logical type
+		analysis.train("Another bad element");
+		result = analysis.getResult();
+
+		Assert.assertEquals(result.getPattern(), "[MONTHABBR]");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 1);
+		Assert.assertEquals(result.getOutlierCount(), 4);
+		Map<String, Integer> updatedOutliers = result.getOutlierDetails();
+		Assert.assertEquals(updatedOutliers.size(), 4);
+		Assert.assertEquals(updatedOutliers.get("Bogus"), new Integer(1));
+		Assert.assertEquals(updatedOutliers.get("NA"), new Integer(2));
+		Assert.assertEquals(updatedOutliers.get("Bad"), new Integer(1));
+		Assert.assertEquals(updatedOutliers.get("Another bad element"), new Integer(1));
+		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	*/
+	}
+
+	@Test
+	public void basicMonthAbbrExcessiveBad() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String inputs[] = monthTest.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train("Another bad element");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getPattern(), "\\a{3}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 1);
+		Assert.assertEquals(result.getOutlierCount(), 3);
+		Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 3);
+		Assert.assertEquals(outliers.get("Bogus"), new Integer(1));
+		Assert.assertEquals(outliers.get("NA"), new Integer(2));
+		Assert.assertEquals(outliers.get("Another bad element"), new Integer(1));
+		Assert.assertEquals(result.getMatchCount(), inputs.length + 1 - 4);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 0.9781420765027322);
 	}
 
 	@Test
@@ -1281,7 +1610,7 @@ public class AnalysisResultTests {
 	public void basicPromote() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
-		String input = 
+		String input =
 				"01000053218|0100BRP90233|0100BRP90237|0180BAA01319|0180BAC30834|0190NSC30194|0190NSC30195|0190NSC30652|0190NSC30653|0190NSC30784|" +
 		"0190NSC30785|0190NSY28569|0190NSZ01245|020035037|02900033|02900033|02900039|02901210|02903036|02903037|" +
 		"030051210001|030051210002|030054160002|030055200003|03700325|03700325|0380F968G059|040000002968|049000000804|049002399361|" +
@@ -1713,8 +2042,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "\\d{1,5}");
 		Assert.assertEquals(result.getType(), "Long");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getMin(), "0");
-		Assert.assertEquals(result.getMax(), String.valueOf(iterations - 1));
+		Assert.assertEquals(result.getMinValue(), "0");
+		Assert.assertEquals(result.getMaxValue(), String.valueOf(iterations - 1));
 	}
 
 	@Test
@@ -1851,7 +2180,7 @@ public class AnalysisResultTests {
 		analysis.train("2008-01-01T13:00:00");
 		analysis.train("2008-01-01T13:00:00");
 		analysis.train("2010-01-01T00:00:00");
-		analysis.train("2004-01-  01T02:00:00");
+		analysis.train("2004-01-01T02:00:00");
 		analysis.train(null);
 		analysis.train("2008-01-01T00:00:00");
 		analysis.train(null);
@@ -1860,10 +2189,10 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(result.getSampleCount(), 20);
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}");
-		Assert.assertEquals(result.getConfidence(), 0.9444444444444444);
 		Assert.assertEquals(result.getType(), "DateTime");
-		Assert.assertEquals(result.getTypeQualifier(), "ISO8601 (NoTZ)");
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-ddTHH:mm:ss");
 	}
 
 	@Test
@@ -1872,6 +2201,7 @@ public class AnalysisResultTests {
 
 		analysis.train("2004-01-01T00:00:00-05:00");
 		analysis.train("2004-01-01T02:00:00-05:00");
+		analysis.train("2006-01-01T00:00:00-05:00");
 		analysis.train("2006-01-01T00:00:00-05:00");
 		analysis.train("2004-01-01T02:00:00-05:00");
 		analysis.train("2006-01-01T13:00:00-05:00");
@@ -1886,18 +2216,17 @@ public class AnalysisResultTests {
 		analysis.train("2008-01-01T13:00:00-05:00");
 		analysis.train("2008-01-01T13:00:00-05:00");
 		analysis.train("2010-01-01T00:00:00-05:00");
-		analysis.train("2004-01-   01T02:00:00-05:00");
 		analysis.train(null);
 		analysis.train("2008-01-01T00:00:00-05:00");
 		analysis.train(null);
 
 		TextAnalysisResult result = analysis.getResult();
 
+		Assert.assertEquals(result.getType(), "DateTime");
 		Assert.assertEquals(result.getSampleCount(), 20);
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}\\a{1}\\d{2}:\\d{2}:\\d{2}-\\d{2}:\\d{2}");
-		Assert.assertEquals(result.getType(), "DateTime");
-		Assert.assertEquals(result.getTypeQualifier(), "ISO8601 (Offset)");
-		Assert.assertEquals(result.getConfidence(), 0.9444444444444444);
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-ddTHH:mm:ssx");
+		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 }

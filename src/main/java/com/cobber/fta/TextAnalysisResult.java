@@ -21,7 +21,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * TextAnalysisResult is the result of an analysis of a data stream. 
+ * TextAnalysisResult is the result of an analysis of a data stream.
  */
 public class TextAnalysisResult {
 	int matchCount;
@@ -31,13 +31,15 @@ public class TextAnalysisResult {
 	int leadingZeroCount;
 	PatternInfo patternInfo;
 	double confidence;
-	String min;
-	String max;
+	String minValue;
+	String maxValue;
+	int minLength;
+	int maxLength;
 	String sum;
 	Map<String, Integer> cardinality;
 	Map<String, Integer> outliers;
 	boolean key;
-	
+
 	/**
 	 * @param matchCount The number of samples that match the patternInfo.
 	 * @param patternInfo The PatternInfo associated with this matchCount.
@@ -46,14 +48,16 @@ public class TextAnalysisResult {
 	 * @param blankCount The number of blanks seen in the sample set.
 	 * @param leadingZeroCount The number of leading zeros seen in sample set.  Only relevant for type Long.
 	 * @param confidence The percentage confidence in the analysis.  The matchCount divided by the sampleCount.
-	 * @param min A String representation of the minimum value.  Only relevant for numeric types.
-	 * @param max A String representation of the maximum value.  Only relevant for numeric types.
+	 * @param minValue A String representation of the minimum value.  Only relevant for Numeric/String types.
+	 * @param maxValue A String representation of the maximum value.  Only relevant for Numeric/String types.
+	 * @param minLength TODO
+	 * @param maxLength TODO
 	 * @param sum A String representation of the sum of all values seen.  Only relevant for numeric types.
 	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param key Do we think this field is a key.
 	 */
-	TextAnalysisResult(int matchCount, PatternInfo patternInfo, int sampleCount, int nullCount, int blankCount, int leadingZeroCount, double confidence, String min, String max, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers, boolean key) {
+	TextAnalysisResult(int matchCount, PatternInfo patternInfo, int sampleCount, int nullCount, int blankCount, int leadingZeroCount, double confidence, String minValue, String maxValue, int minLength, int maxLength, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers, boolean key) {
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
 		this.sampleCount = sampleCount;
@@ -61,15 +65,17 @@ public class TextAnalysisResult {
 		this.blankCount = blankCount;
 		this.leadingZeroCount = leadingZeroCount;
 		this.confidence = confidence;
-		this.min = min;
-		this.max = max;
+		this.minValue = minValue;
+		this.maxValue = maxValue;
+		this.minLength = minLength;
+		this.maxLength = maxLength;
 		this.sum = sum;
 		this.cardinality = cardinality;
 		this.outliers = outliers;
 		this.key = key;
 	}
 
-	
+
 	/**
 	 * Confidence in the type classification.
 	 * @return Confidence as a percentage.
@@ -77,18 +83,18 @@ public class TextAnalysisResult {
 	public double getConfidence() {
 		return confidence;
 	}
-	
+
 	/**
 	 * Type (as determined by training to date) as a String.  Possible types are: "String", "Long",
 	 * "Double", "Date", "Time", or "DateTime".  In addition there are two pseudo-types "[BLANK]"
 	 * (used to indicate a data stream with only empty fields i.e. "") and "[NULL]" (used to indicate
-	 * a data stream with only null values). 
+	 * a data stream with only null values).
 	 * @return The Type of the data stream.
 	 */
 	public String getType() {
 		return patternInfo.type;
 	}
-	
+
 	/**
 	 * Get the optional Type Qualifier.  Possible qualifiers are:
 	 * 	Type: String - "Email", "Zip", "US_STATE", "NA_STATE"
@@ -100,23 +106,39 @@ public class TextAnalysisResult {
 	public String getTypeQualifier() {
 		return patternInfo.typeQualifier;
 	}
-	
+
 	/**
-	 * Get the minimum value for numeric types ("Long" and "Double")
+	 * Get the minimum value for Numeric, Boolean and String types
 	 * @return The minimum value as a String.
 	 */
-	public String getMin() {
-		return min;
+	public String getMinValue() {
+		return minValue;
 	}
-	
+
 	/**
-	 * Get the maximum value for numeric types ("Long" and "Double")
+	 * Get the maximum value for Numeric, Boolean and String
 	 * @return The maximum value as a String.
 	 */
-	public String getMax() {
-		return max;
+	public String getMaxValue() {
+		return maxValue;
 	}
-	
+
+	/**
+	 * Get the minimum length for Numeric, Boolean and String
+	 * @return The minimum length.
+	 */
+	public int getMinLength() {
+		return minLength;
+	}
+
+	/**
+	 * Get the maximum length for Numeric, Boolean and String
+	 * @return The maximum length.
+	 */
+	public int getMaxLength() {
+		return maxLength;
+	}
+
 	/**
 	 * Get Regular Expression that reflects the data stream.
 	 * @return The Regular Expression.
@@ -124,7 +146,7 @@ public class TextAnalysisResult {
 	public String getPattern() {
 		return patternInfo.pattern;
 	}
-	
+
 	/**
 	 * Get the count of all samples that matched the determined type.
 	 * @return Count of all matches.
@@ -231,7 +253,7 @@ public class TextAnalysisResult {
 	    sortedEntries.addAll(map.entrySet());
 	    return sortedEntries;
 	}
-	
+
 	/**
 	 * A String representation of the Analysis.  This is not suitable for anything other than
 	 * debug output and is likely to change with no notice!!
@@ -253,13 +275,13 @@ public class TextAnalysisResult {
 				+ nullCount + ", blankCount=" + blankCount+ ", pattern=\"" + patternInfo.pattern + "\", confidence=" + confidence +
 				", type=" + patternInfo.type +
 				(patternInfo.typeQualifier != null ? "(" + patternInfo.typeQualifier + ")" : "") + ", min=";
-		if (min != null)
-			ret += "\"" + min + "\"";
+		if (minValue != null)
+			ret += "\"" + minValue + "\"";
 		else
 			ret += "null";
 		ret += ", max=";
-		if (max != null)
-			ret += "\"" + max + "\"";
+		if (maxValue != null)
+			ret += "\"" + maxValue + "\"";
 		else
 			ret += "null";
 		ret += ", sum=";
