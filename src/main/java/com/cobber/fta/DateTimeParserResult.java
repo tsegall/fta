@@ -1,7 +1,10 @@
 package com.cobber.fta;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -65,8 +68,14 @@ public class DateTimeParserResult {
 		try {
 			if ("Time".equals(getType()))
 				LocalTime.parse(input, formatter);
-			else
+			else if ("Date".equals(getType()))
 				LocalDate.parse(input, formatter);
+			else if ("DateTime".equals(getType()))
+				LocalDateTime.parse(input, formatter);
+			else if ("ZonedDateTime".equals(getType()))
+				ZonedDateTime.parse(input, formatter);
+			else
+				OffsetDateTime.parse(input, formatter);
 			return true;
 		}
 		catch (DateTimeParseException exc) {
@@ -110,7 +119,7 @@ public class DateTimeParserResult {
 		int dateElements = 0;
 		int timeElements = 0;
 		int[] dateFieldLengths = new int[] {-1, -1, -1};
-		String timeZone = null;
+		String timeZone = "";
 		Boolean timeFirst = null;
 		Character dateSeparator = null;
 		Character dateTimeSeparator = ' ';
@@ -198,6 +207,10 @@ public class DateTimeParserResult {
 
 			case 'x':
 				timeZone = "x";
+				while (i + 1 < formatLength && formatString.charAt(i + 1) == 'x') {
+					timeZone += "x";
+					i++;
+				}
 				break;
 
 			case 'z':
@@ -234,6 +247,7 @@ public class DateTimeParserResult {
 	public void parse(String input) throws DateTimeParseException {
 		NextToken nextToken = NextToken.UNDEFINED;
 		char nextChar = 'þ';
+		int nextCount = 1;
 		int upto = 0;
 		int inputLength = input.length();
 
@@ -295,10 +309,25 @@ public class DateTimeParserResult {
 
 			case 'x':
 				nextToken = NextToken.TIMEZONE_OFFSET;
+				nextCount = 1;
+				while (i + 1 < formatLength && formatString.charAt(i + 1) == 'x') {
+					nextCount++;
+					i++;
+				}
 				break;
 
 			case 'z':
 				nextToken = NextToken.TIMEZONE;
+				break;
+
+			case '\'':
+				i++;
+				nextToken = NextToken.CONSTANT_CHAR;
+				nextChar = formatString.charAt(i);
+				if (i + 1 >= formatLength || formatString.charAt(i + 1) != '\'') {
+					throw new DateTimeParseException("Unterminated quote in format String", input, upto);
+				}
+				i++;
 				break;
 
 			default:
@@ -398,13 +427,21 @@ public class DateTimeParserResult {
 				break;
 
 			case TIMEZONE_OFFSET:
-				if (upto + 6 > inputLength)
+				final int[] timeZoneLength = { -1, 2, 4, 5, 6, 8 };
+				final String[] timeZonePattern = { null, "þþ", "þþþþ", "þþ:þþ", "þþþþþþ", "þþ:þþ:þþ" };
+
+				if (nextCount < 1 || nextCount > 5)
+					throw new DateTimeParseException("Invalid time zone offset", input, upto);
+				int len = timeZoneLength[nextCount];
+				String pattern = timeZonePattern[nextCount];
+
+				if (upto + len >= inputLength)
 					throw new DateTimeParseException("Expecting time zone offset, end of input", input, upto);
 				char direction = input.charAt(upto);
 				String offset = input.substring(upto + 1).replaceAll("[0-9]", "þ");
-				if ((direction != '-' && direction != '+') || !"þþ:þþ".equals(offset))
+				if ((direction != '-' && direction != '+') || !pattern.equals(offset))
 					throw new DateTimeParseException("Expecting time zone - bad time zone", input, upto);
-				upto += 6;
+				upto += len + 1;
 				break;
 			}
 		}
@@ -415,14 +452,17 @@ public class DateTimeParserResult {
 
 	/**
 	 * Return the detected type of this input.
-	 * @return The detected type of this input, will be either "Date", "Time" or "DateTime".
+	 * @return The detected type of this input, will be either "Date", "Time",
+	 *  "DateTime", "ZonedDateTime" or "OffsetDateTime".
 	 */
 	public String getType() {
 		if (timeElements == -1)
 			return "Date";
 		if (dateElements == -1)
 			return "Time";
-		return "DateTime";
+		if (timeZone == null || timeZone.length() == 0)
+			return "DateTime";
+		return timeZone.indexOf('z') == -1 ? "OffsetDateTime" : "ZonedDateTime";
 	}
 
 	public void forceResolve(Boolean first) {
@@ -496,7 +536,9 @@ public class DateTimeParserResult {
 			return dateAnswer + timeZone;
 		if (dateElements == -1)
 			return timeAnswer;
-		return (timeFirst != null && timeFirst) ? timeAnswer + dateTimeSeparator + dateAnswer + timeZone
-				: dateAnswer + dateTimeSeparator + timeAnswer + timeZone;
+
+		String separator = dateTimeSeparator == ' ' ? " " : "'T'";
+		return (timeFirst != null && timeFirst) ? timeAnswer + separator + dateAnswer + timeZone
+				: dateAnswer + separator + timeAnswer + timeZone;
 	}
 }

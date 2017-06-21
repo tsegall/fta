@@ -240,8 +240,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getType(), "Date");
 		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy");
-		Assert.assertEquals(result.getMinValue(), null);
-		Assert.assertEquals(result.getMaxValue(), null);
+		Assert.assertEquals(result.getMinValue(), "02/22/02");
+		Assert.assertEquals(result.getMaxValue(), "02/02/99");
 	}
 
 	@Test
@@ -444,6 +444,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "DateTime");
 		Assert.assertEquals(result.getTypeQualifier(), "M/dd/yy H:mm");
+		Assert.assertEquals(result.getMinValue(), "1/30/06 22:01");
+		Assert.assertEquals(result.getMaxValue(), "1/31/06 3:30");
 	}
 
 	@Test
@@ -468,6 +470,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMinValue(), "1/1/06 0:00");
+		Assert.assertEquals(result.getMaxValue(), "1/1/06 0:00");
 	}
 
 	@Test
@@ -491,6 +495,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
 		Assert.assertEquals(result.getTypeQualifier(), "dd MMM yyyy");
+		Assert.assertEquals(result.getMinValue(), "11 Dec 1916");
+		Assert.assertEquals(result.getMaxValue(), "12 Mar 2019");
 	}
 
 
@@ -2192,7 +2198,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getType(), "DateTime");
 		Assert.assertEquals(result.getPattern(), "\\a{+}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-ddTHH:mm:ss");
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss");
 	}
 
 	@Test
@@ -2222,11 +2228,44 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), "DateTime");
+		Assert.assertEquals(result.getType(), "OffsetDateTime");
 		Assert.assertEquals(result.getSampleCount(), 20);
+		Assert.assertEquals(result.getMatchCount(), 18);
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getPattern(), "\\a{+}");
-		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-ddTHH:mm:ssx");
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ssxxx");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		analysis.train("2008-01-01T00:00:00-05:00");
+		result = analysis.getResult();
+		Assert.assertEquals(result.getSampleCount(), 21);
 	}
+
+	@Test
+	public void DateTimeYYYY_MM_DDTHH_MM_SS_Z() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		analysis.train("01/26/2012 10:42:23 GMT");
+		analysis.train("01/26/2012 10:42:23 GMT");
+		analysis.train("01/30/2012 10:59:48 GMT");
+		analysis.train("01/25/2012 16:46:43 GMT");
+		analysis.train("01/25/2012 16:28:42 GMT");
+		analysis.train("01/24/2012 16:53:04 GMT");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), "ZonedDateTime");
+		Assert.assertEquals(result.getSampleCount(), 6);
+		Assert.assertEquals(result.getMatchCount(), 6);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yyyy HH:mm:ss z");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		analysis.train("01/25/2012 16:28:42 GMT");
+		result = analysis.getResult();
+		Assert.assertEquals(result.getSampleCount(), 7);
+	}
+
+
 }

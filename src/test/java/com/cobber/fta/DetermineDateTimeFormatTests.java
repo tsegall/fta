@@ -66,19 +66,43 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
-	public void intuit8601() throws Exception {
-		Assert.assertEquals(DateTimeParser.determineFormatString("2004-01-01T00:00:00+05:00"), "yyyy-MM-ddTHH:mm:ssx");
+	public void intuit8601DD_DD() throws Exception {
+		Assert.assertEquals(DateTimeParser.determineFormatString("2004-01-01T00:00:00+05:00"), "yyyy-MM-dd'T'HH:mm:ssxxx");
 
 		DateTimeParser det = new DateTimeParser();
 		det.train("2004-01-01T00:00:00+05:00");
 
 		DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy-MM-ddTHH:mm:ssx");
+		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd'T'HH:mm:ssxxx");
 
 		Assert.assertTrue(result.isValid("2004-01-01T00:00:00+05:00"));
 		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+08:00"));
 		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+08:0"));
 		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+?08:00"));
+		Assert.assertTrue(result.isValid8("2004-01-01T00:00:00+05:00"));
+		Assert.assertTrue(result.isValid8("2012-03-04T19:22:10+08:00"));
+		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+08:0"));
+		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+?08:00"));
+	}
+
+	@Test
+	public void intuit8601DD_DD_DD() throws Exception {
+		Assert.assertEquals(DateTimeParser.determineFormatString("2004-01-01T00:00:00+05:00:00"), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
+
+		DateTimeParser det = new DateTimeParser();
+		det.train("2004-01-01T00:00:00+05:00:00");
+
+		DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
+
+		Assert.assertTrue(result.isValid("2004-01-01T00:00:00+05:00:00"));
+		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+08:00:00"));
+		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+08:00:0"));
+		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+O8:00:00"));
+		Assert.assertTrue(result.isValid8("2004-01-01T00:00:00+05:00:00"));
+		Assert.assertTrue(result.isValid8("2012-03-04T19:22:10+08:00:00"));
+		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+08:00:0"));
+		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+O8:00:00"));
 	}
 
 	@Test
@@ -210,6 +234,18 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertFalse(result.isValid("2/12/1998 9:5"));
 		Assert.assertFalse(result.isValid("2/12/1998 9:"));
 		Assert.assertFalse(result.isValid("2/12/1998 9:55:5"));
+
+		Assert.assertTrue(result.isValid8("12/12/2012 8:57:02 GMT"));
+		Assert.assertFalse(result.isValid8("12/12/2012 8:57:02 GM"));
+		Assert.assertFalse(result.isValid8("12/12/2012 8:57:02 GMZ"));
+		Assert.assertFalse(result.isValid8("1O/12/2012 8:57:02 GMT"));
+		Assert.assertFalse(result.isValid8("10/1O/2012 8:57:02 GMT"));
+		Assert.assertFalse(result.isValid8("1/0/2012 8:57:02 GMT"));
+		Assert.assertFalse(result.isValid8("1/O/2012 8:57:02 GMT"));
+		Assert.assertFalse(result.isValid8("2/12/1998 :57"));
+		Assert.assertFalse(result.isValid8("2/12/1998 9:5"));
+		Assert.assertFalse(result.isValid8("2/12/1998 9:"));
+		Assert.assertFalse(result.isValid8("2/12/1998 9:55:5"));
 	}
 
 	@Test
@@ -322,7 +358,7 @@ public class DetermineDateTimeFormatTests {
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "MM/dd/yyyy HH:mm:ss z");
-		Assert.assertEquals(result.getType(), "DateTime");
+		Assert.assertEquals(result.getType(), "ZonedDateTime");
 
 		Assert.assertTrue(result.isValid("01/26/2012 10:42:23 GMT"));
 		Assert.assertTrue(result.isValid8("01/26/2012 10:42:23 GMT"));

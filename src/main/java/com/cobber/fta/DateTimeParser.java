@@ -180,7 +180,8 @@ public class DateTimeParser {
 	}
 
 	/**
-	 * Determine a FormatString from an input string that may represent a Date, Time or DateTime.
+	 * Determine a FormatString from an input string that may represent a Date, Time,
+	 * DateTime, OffsetDateTime or a ZonedDateTime.
 	 * @param input The String representing a date with trimmed of whitespace
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
@@ -262,12 +263,27 @@ public class DateTimeParser {
 				digits = 0;
 				break;
 
+			case '+':
+				if (!ISO8601)
+					return null;
+
+				// FALL THROUGH
+
 			case '-':
 				if (ISO8601) {
-					// Expecting DD:DD
-					if (!"þþ:þþ".equals(templated.substring(len - 5, len)))
+					// Expecting DD:DD:DD or DDDDDD or DD:DD or DDDD or DD
+					if ("þþ:þþ:þþ".equals(templated.substring(len - 8, len)))
+						timeZone = "xxxxx";
+					else if ("þþþþþþ".equals(templated.substring(len - 6, len)))
+						timeZone = "xxxx";
+					else if ("þþ:þþ".equals(templated.substring(len - 5, len)))
+						timeZone = "xxx";
+					else if ("þþþþ".equals(templated.substring(len - 4, len)))
+						timeZone = "xx";
+					else if ("þþ".equals(templated.substring(len - 2, len)))
+						timeZone = "x";
+					else
 						return null;
-					timeZone = "x";
 					break;
 				}
 				// FALL THROUGH
@@ -327,16 +343,6 @@ public class DateTimeParser {
 				value = 0;
 				if (timeSeen && dateSeen)
 					timeZone = " z";
-				break;
-
-			case '+':
-				if (!ISO8601)
-					return null;
-
-				// Expecting DD:DD
-				if (!"þþ:þþ".equals(templated.substring(len - 5, len)))
-					return null;
-				timeZone = "x";
 				break;
 
 			default:
@@ -410,8 +416,8 @@ public class DateTimeParser {
 		}
 
 		if (timeFirst)
-			return timeAnswer + (ISO8601 ? "T" : " ") + dateAnswer + timeZone;
+			return timeAnswer + (ISO8601 ? "'T'" : " ") + dateAnswer + timeZone;
 		else
-			return dateAnswer + (ISO8601 ? "T" : " ") + timeAnswer + timeZone;
+			return dateAnswer + (ISO8601 ? "'T'" : " ") + timeAnswer + timeZone;
 	}
 }

@@ -22,6 +22,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormatSymbols;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -117,6 +123,21 @@ public class TextAnalyzer {
 
 	Boolean minBoolean = null;
 	Boolean maxBoolean = null;
+
+	LocalTime minLocalTime = null;
+	LocalTime maxLocalTime = null;
+
+	LocalDate minLocalDate = null;
+	LocalDate maxLocalDate = null;
+
+	LocalDateTime minLocalDateTime = null;
+	LocalDateTime maxLocalDateTime = null;
+
+	ZonedDateTime minZonedDateTime = null;
+	ZonedDateTime maxZonedDateTime = null;
+
+	OffsetDateTime minOffsetDateTime = null;
+	OffsetDateTime maxOffsetDateTime = null;
 
 	String minValue = null;
 	String maxValue = null;
@@ -457,7 +478,48 @@ public class TextAnalyzer {
 		if (result == null)
 			System.err.printf("NULL result for '%s'\n", dateFormat);
 
-		result.parse(trimmed);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(result.getFormatString());
+		switch (result.getType()) {
+		case "Time":
+			LocalTime lt = LocalTime.parse(trimmed, formatter);
+			if (minLocalTime == null || lt.compareTo(minLocalTime) < 0)
+				minLocalTime = lt;
+			if (maxLocalTime == null || lt.compareTo(maxLocalTime) > 0)
+				maxLocalTime = lt;
+			break;
+
+		case "Date":
+			LocalDate ld = LocalDate.parse(trimmed, formatter);
+			if (minLocalDate == null || ld.compareTo(minLocalDate) < 0)
+				minLocalDate = ld;
+			if (maxLocalDate == null || ld.compareTo(maxLocalDate) > 0)
+				maxLocalDate = ld;
+			break;
+
+		case "DateTime":
+			LocalDateTime ldt = LocalDateTime.parse(trimmed, formatter);
+			if (minLocalDateTime == null || ldt.compareTo(minLocalDateTime) < 0)
+				minLocalDateTime = ldt;
+			if (maxLocalDateTime == null || ldt.compareTo(maxLocalDateTime) > 0)
+				maxLocalDateTime = ldt;
+			break;
+
+		case "ZonedDateTime":
+			ZonedDateTime zdt = ZonedDateTime.parse(trimmed, formatter);
+			if (minZonedDateTime == null || zdt.compareTo(minZonedDateTime) < 0)
+				minZonedDateTime = zdt;
+			if (maxZonedDateTime == null || zdt.compareTo(maxZonedDateTime) > 0)
+				maxZonedDateTime = zdt;
+			break;
+
+		case "OffsetDateTime":
+			OffsetDateTime odt = OffsetDateTime.parse(trimmed, formatter);
+			if (minOffsetDateTime == null || odt.compareTo(minOffsetDateTime) < 0)
+				minOffsetDateTime = odt;
+			if (maxOffsetDateTime == null || odt.compareTo(maxOffsetDateTime) > 0)
+				maxOffsetDateTime = odt;
+			break;
+		}
 	}
 
 	/**
@@ -889,26 +951,34 @@ public class TextAnalyzer {
 		case "Date":
 		case "Time":
 		case "DateTime":
+		case "OffsetDateTime":
+		case "ZonedDateTime":
 			try {
 				trackDateTime(matchPatternInfo.format, input);
 				matchCount++;
 				addValid(input);
 				return;
 			}
-			catch (DateTimeParseException e) {
-				if ("Insufficient digits in input (d)".equals(e.getMessage()) || "Insufficient digits in input (M)".equals(e.getMessage())) {
-					try {
-						String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
-						matchPatternInfo = new PatternInfo("\\a{+}", matchPatternInfo.type, -1, -1, null, formatString,
-								formatString);
+			catch (DateTimeParseException reale) {
+				try {
+					DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format);
+					result.parse(input);
+				}
+				catch (DateTimeParseException e) {
+					if ("Insufficient digits in input (d)".equals(e.getMessage()) || "Insufficient digits in input (M)".equals(e.getMessage())) {
+						try {
+							String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
+							matchPatternInfo = new PatternInfo("\\a{+}", matchPatternInfo.type, -1, -1, null, formatString,
+									formatString);
 
-						trackDateTime(matchPatternInfo.format, input);
-						matchCount++;
-						addValid(input);
-						return;
-					}
-					catch (DateTimeParseException e2) {
-						// Ignore and record as outlier below
+							trackDateTime(matchPatternInfo.format, input);
+							matchCount++;
+							addValid(input);
+							return;
+						}
+						catch (DateTimeParseException e2) {
+							// Ignore and record as outlier below
+						}
 					}
 				}
 			}
@@ -1183,6 +1253,31 @@ public class TextAnalyzer {
 			case "String":
 				minValue = minString;
 				maxValue = maxString;
+				break;
+
+			case "Date":
+				minValue = minLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				break;
+
+			case "Time":
+				minValue = minLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				break;
+
+			case "DateTime":
+				minValue = minLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				break;
+
+			case "ZonedDateTime":
+				minValue = minZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				break;
+
+			case "OffsetDateTime":
+				minValue = minOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
 				break;
 			}
 
