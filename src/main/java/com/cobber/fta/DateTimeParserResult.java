@@ -501,7 +501,7 @@ public class DateTimeParserResult {
 						else
 							dateAnswer = asDate(new char[] {'M', 'd', 'y'});
 					else
-						dateAnswer = asDate(new char[] {'X', 'X', 'X'});
+						dateAnswer = asDate(new char[] {'?', '?', '?'});
 
 			}
 			if (yearOffset == 0) {
@@ -511,7 +511,7 @@ public class DateTimeParserResult {
 					else
 						dateAnswer = asDate(new char[] {'y', 'M', 'd'});
 				} else
-					dateAnswer += asDate(new char[] {'y', 'X', 'X'});
+					dateAnswer += asDate(new char[] {'y', '?', '?'});
 			}
 			if (yearOffset == 2) {
 				if (dayOffset != -1) {
@@ -526,7 +526,7 @@ public class DateTimeParserResult {
 						else
 							dateAnswer = asDate(new char[] {'M', 'd', 'y'});
 					else
-						dateAnswer = asDate(new char[] {'X', 'X', 'y'});
+						dateAnswer = asDate(new char[] {'?', '?', 'y'});
 				}
 			}
 		}
