@@ -199,8 +199,11 @@ public class TextAnalyzer {
 	/**
 	 * Construct a Text Analyzer for the named data stream.
 	 *
-	 * @param name
-	 *            The name of the data stream (e.g. the column of the CSV file)
+	 * @param name The name of the data stream (e.g. the column of the CSV file)
+	 * @param dayFirst Determines what to do when the Date field is ambiguous (i.e. we cannot determine which
+	 *   of the fields is the day or the month.  If dayFirst is true, then assume day is first, if dayFirst is
+	 *   false then assume month is first, if it is null then the pattern returned may have '?' in to represent
+	 *   this ambiguity.
 	 * @throws IOException
 	 *             If an internal error occurred.
 	 */
@@ -893,6 +896,44 @@ public class TextAnalyzer {
 		}
 	}
 
+	private void backoutToString(int realSamples) {
+		matchPattern = "\\a{+}";
+		matchCount = realSamples;
+		matchPatternInfo = patternInfo.get(matchPattern);
+
+		// All outliers are now part of the cardinality set and there are now no outliers
+		cardinality.putAll(outliers);
+		outliers.clear();
+	}
+
+	private void backoutZip(int realSamples) {
+		if (totalLongs > .95 * realSamples) {
+			matchPattern = "\\d{+}";
+			matchCount = totalLongs;
+
+			Map<String, Integer> outliersCopy = new HashMap<String, Integer>(outliers);
+			// Sweep the current outliers and check they are part of the set
+			for (Map.Entry<String, Integer> entry : outliersCopy.entrySet()) {
+				boolean isLong = true;
+				try {
+					Long.parseLong(entry.getKey());
+				} catch (NumberFormatException e) {
+					isLong = false;
+				}
+
+				if (isLong) {
+					if (cardinality.size() < maxCardinality)
+						cardinality.put(entry.getKey(), entry.getValue());
+					outliers.remove(entry.getKey(), entry.getValue());
+				}
+			}
+
+			matchPatternInfo = patternInfo.get(matchPattern);
+		} else {
+			backoutToString(realSamples);
+		}
+	}
+
 	private void trackResult(String input) {
 		// We always want to track basic facts for the field
 		int length = input.length();
@@ -911,6 +952,8 @@ public class TextAnalyzer {
 			return;
 		}
 
+		int realSamples = sampleCount - (nullCount + blankCount);
+
 		switch (matchType) {
 		case "Boolean":
 			if (trackBoolean(input)) {
@@ -922,6 +965,11 @@ public class TextAnalyzer {
 			break;
 
 		case "Long":
+			// Do a sanity check once we have at least REFLECTION_SAMPLES
+			if (realSamples == REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.9 && "[ZIP]".equals(matchPattern)) {
+				backoutZip(realSamples);
+			}
+
 			if (trackLong(input, true)) {
 				matchCount++;
 				addValid(input);
@@ -1102,6 +1150,7 @@ public class TextAnalyzer {
 		double confidence = 0;
 		int realSamples = sampleCount - (nullCount + blankCount);
 
+		// Check to see if we are all blanks or all nulls
 		if (blankCount == sampleCount || nullCount == sampleCount) {
 			matchPattern = blankCount == sampleCount ? "^[ ]*$" : "[NULL]";
 			matchPatternInfo = patternInfo.get(matchPattern);
@@ -1111,20 +1160,10 @@ public class TextAnalyzer {
 			confidence = (double) matchCount / realSamples;
 		}
 
-		if ("[ZIP]".equals(matchPattern)) {
-			// We thought it was a Zip, but on reflection it does not feel like
-			// it
-			if ((realSamples > REFLECTION_SAMPLES && confidence < 0.9) || cardinality.size() < 5) {
-				if (totalLongs > .95 * realSamples) {
-					matchPattern = "\\d{+}";
-					matchCount = totalLongs;
-				} else {
-					matchPattern = "\\a{+}";
-					matchCount = realSamples;
-				}
-				confidence = (double) matchCount / realSamples;
-				matchPatternInfo = patternInfo.get(matchPattern);
-			}
+		// Do a sanity check - we need a minimum number to declare it a ZIP
+		if ("[ZIP]".equals(matchPattern) && ((realSamples > REFLECTION_SAMPLES && confidence < 0.9) || cardinality.size() < 5)) {
+			backoutZip(realSamples);
+			confidence = (double) matchCount / realSamples;
 		}
 
 		if ("\\d{+}".equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
@@ -1133,14 +1172,7 @@ public class TextAnalyzer {
 			int length = determineLength(matchPattern);
 			// We thought it was a fixed length string, but on reflection it does not feel like it
 			if (length != -1 && realSamples > REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.95) {
-				matchPattern = "\\a{+}";
-				matchPatternInfo = patternInfo.get(matchPattern);
-				matchCount = realSamples;
-
-				// All outliers are now part of the cardinality set and there are now no outliers
-				cardinality.putAll(outliers);
-				outliers.clear();
-
+				backoutToString(realSamples);
 				confidence = (double) matchCount / realSamples;
 			}
 			if ("\\a{+}".equals(matchPattern)) {

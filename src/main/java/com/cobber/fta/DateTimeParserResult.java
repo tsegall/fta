@@ -241,7 +241,6 @@ public class DateTimeParserResult {
 	/**
 	 * Determine whether a string input matches this DateTimeParserResult.
 	 * @param input The string to validate (stripped of whitespace.
-	 * @return A integer indicating if the input is valid (0 is success),
 	 *  if non-zero then this is the offset where the parse failed
 	 */
 	public void parse(String input) throws DateTimeParseException {
