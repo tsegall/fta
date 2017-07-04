@@ -7,7 +7,8 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DateTimeParserResult {
 	String format = null;
@@ -28,7 +29,7 @@ public class DateTimeParserResult {
 	String formatString = null;
 	Boolean dayFirst = null;
 
-	static HashMap<String, DateTimeParserResult> options = new HashMap<String, DateTimeParserResult>();
+	static Map<String, DateTimeParserResult> options = new ConcurrentHashMap<String, DateTimeParserResult>();
 
 	DateTimeParserResult(String formatString, int timeElements, int hourLength, int dateElements,
 			int[] dateFieldLengths, Boolean timeFirst, Character dateTimeSeparator, int yearOffset, int monthOffset,
@@ -129,9 +130,9 @@ public class DateTimeParserResult {
 		for (int i = 0; i < formatLength; i++) {
 			char ch = formatString.charAt(i);
 			switch (ch) {
-			case 'X':
+			case '?':
 				++dateElements;
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'X') {
+				if (i + 1 < formatLength && formatString.charAt(i + 1) == '?') {
 					i++;
 					dateFieldLengths[dateElements - 1] = 2;
 				}
@@ -174,7 +175,7 @@ public class DateTimeParserResult {
 				break;
 
 			case 'H':
-				timeFirst = dateElements == -1;
+				timeFirst = dateElements == 0;
 				timeElements++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 					i++;
@@ -240,7 +241,7 @@ public class DateTimeParserResult {
 
 	/**
 	 * Determine whether a string input matches this DateTimeParserResult.
-	 * @param input The string to validate (stripped of whitespace.
+	 * @param input The string to validate (stripped of whitespace).
 	 *  if non-zero then this is the offset where the parse failed
 	 */
 	public void parse(String input) throws DateTimeParseException {
@@ -282,7 +283,7 @@ public class DateTimeParserResult {
 				break;
 
 			case 'H':
-			case 'X':
+			case '?':
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 					i++;
 					nextToken = NextToken.DIGITS_2;
@@ -342,7 +343,7 @@ public class DateTimeParserResult {
 				if (upto + 3 > inputLength)
 					throw new DateTimeParseException("Month Abbreviation not complete", input, upto);
 				String monthAbbreviation = input.substring(upto, upto + 3);
-				if (!DateTimeParser.isValidMonthAbbreviation(monthAbbreviation))
+				if (DateTimeParser.monthAbbreviationOffset(monthAbbreviation) == -1)
 					throw new DateTimeParseException("Month Abbreviation incorrect", input, upto);
 				upto += 3;
 				break;
@@ -418,16 +419,17 @@ public class DateTimeParserResult {
 				break;
 
 			case TIMEZONE:
-				if (upto + 3 > inputLength)
-					throw new DateTimeParseException("Expecting time zone, end of input", input, upto);
-				if (!"GMT".equals(input.substring(upto, upto + 3)))
-					throw new DateTimeParseException("Expecting time zone - bad time zone", input, upto);
-				upto += 3;
+				String currentTimeZone = input.substring(upto, inputLength);
+				if (!DateTimeParser.timeZones.contains(currentTimeZone))
+					throw new DateTimeParseException("Expecting time zone - bad time zone: " + currentTimeZone, input, upto);
+				upto = inputLength;
 				break;
 
 			case TIMEZONE_OFFSET:
 				final int[] timeZoneLength = { -1, 2, 4, 5, 6, 8 };
 				final String[] timeZonePattern = { null, "þþ", "þþþþ", "þþ:þþ", "þþþþþþ", "þþ:þþ:þþ" };
+				final int[] minuteOffset = { -1, -1, 2, 3, 2, 3 };
+				final int[] secondOffset = { -1, -1, -1, -1, -1, 4, 7 };
 
 				if (nextCount < 1 || nextCount > 5)
 					throw new DateTimeParseException("Invalid time zone offset", input, upto);
@@ -439,7 +441,26 @@ public class DateTimeParserResult {
 				char direction = input.charAt(upto);
 				String offset = input.substring(upto + 1).replaceAll("[0-9]", "þ");
 				if ((direction != '-' && direction != '+') || !pattern.equals(offset))
-					throw new DateTimeParseException("Expecting time zone - bad time zone", input, upto);
+					throw new DateTimeParseException("Expecting time zone offset, bad time zone offset", input, upto);
+
+				// Validate hour offset
+				int hour = DateTimeParser.getValue(input, upto + 1, 2);
+				if (hour > 18)
+					throw new DateTimeParseException("Expecting time zone offset, invalid hour offset", input, upto + 1);
+
+				// Validate minute offset (if necessary)
+				if (minuteOffset[nextCount] != -1) {
+					int minute = DateTimeParser.getValue(input, upto + 1 + minuteOffset[nextCount], 2);
+					if (minute > 59)
+						throw new DateTimeParseException("Expecting time zone offset, invalid minute offset", input, upto + 1 + minuteOffset[nextCount]);
+				}
+
+				// Validate second offset (if necessary)
+				if (secondOffset[nextCount] != -1) {
+					int minute = DateTimeParser.getValue(input, upto + 1 + secondOffset[nextCount], 2);
+					if (minute > 59)
+						throw new DateTimeParseException("Expecting time zone offset, invalid minute offset", input, upto + 1 + secondOffset[nextCount]);
+				}
 				upto += len + 1;
 				break;
 			}
@@ -504,7 +525,7 @@ public class DateTimeParserResult {
 						dateAnswer = asDate(new char[] {'?', '?', '?'});
 
 			}
-			if (yearOffset == 0) {
+			else if (yearOffset == 0) {
 				if (dayOffset != -1) {
 					if (dayOffset == 1)
 						dateAnswer = asDate(new char[] {'y', 'd', 'M'});
@@ -513,7 +534,7 @@ public class DateTimeParserResult {
 				} else
 					dateAnswer += asDate(new char[] {'y', '?', '?'});
 			}
-			if (yearOffset == 2) {
+			else if (yearOffset == 2) {
 				if (dayOffset != -1) {
 					if (dayOffset == 0)
 						dateAnswer = asDate(new char[] {'d', 'M', 'y'});

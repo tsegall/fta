@@ -1,11 +1,15 @@
 package com.cobber.fta;
 
 import java.text.DateFormatSymbols;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 public class DateTimeParser {
@@ -13,42 +17,57 @@ public class DateTimeParser {
 	static class SimpleDateMatcher {
 		String matcher;
 		String format;
+		int dayOffset;
+		int dayLength;
 		int monthOffset;
+		int monthLength;
+		int yearOffset;
+		int yearLength;
 
-		SimpleDateMatcher(String matcher, String format, int monthOffset) {
+		SimpleDateMatcher(String matcher, String format, int dayOffset, int dayLength, int monthOffset, int monthLength, int yearOffset, int yearLength) {
 			this.matcher = matcher;
 			this.format = format;
+			this.dayOffset = dayOffset;
+			this.dayLength = dayLength;
 			this.monthOffset = monthOffset;
+			this.monthLength = monthLength;
+			this.yearOffset = yearOffset;
+			this.yearLength = yearLength;
 		}
 	}
-	static HashSet<String> monthAbbr = new HashSet<String>();
-	static HashMap<String, SimpleDateMatcher> simpleDateMatcher = new HashMap<String, SimpleDateMatcher>();
+	static Map<String, Integer> monthAbbr = new HashMap<String, Integer>();
+	static Set<String> timeZones = new HashSet<String>();
+	static Map<String, SimpleDateMatcher> simpleDateMatcher = new HashMap<String, SimpleDateMatcher>();
 
 	static {
 		// Setup the Monthly abbreviations
 		String[] shortMonths = new DateFormatSymbols().getShortMonths();
-		for (String shortMonth : shortMonths) {
-			monthAbbr.add(shortMonth.toUpperCase(Locale.ROOT));
+		for (int i = 0; i < shortMonths.length; i++) {
+			monthAbbr.put(shortMonths[i].toUpperCase(Locale.ROOT), i + 1);
 		}
 
-		simpleDateMatcher.put("þþþþ þþ þþ", new SimpleDateMatcher("þþþþ þþ þþ", "yyyy MM dd", -1));
-		simpleDateMatcher.put("þþþþ þ þþ", new SimpleDateMatcher("þþþþ þ þþ", "yyyy M dd", -1));
-		simpleDateMatcher.put("þþþþ þþ þ", new SimpleDateMatcher("þþþþ þþ þ", "yyyy MM d", -1));
-		simpleDateMatcher.put("þþþþ þ þ", new SimpleDateMatcher("þþþþ þ þ", "yyyy M d", -1));
+		// Cache the set of available Time Zones
+		Collections.addAll(timeZones, TimeZone.getAvailableIDs());
 
-		simpleDateMatcher.put("þþ 999 þþþþ", new SimpleDateMatcher("þþ 999 þþþþ", "dd MMM yyyy", 3));
-		simpleDateMatcher.put("þ 999 þþþþ", new SimpleDateMatcher("þ 999 þþþþ", "d MMM yyyy", 2));
-		simpleDateMatcher.put("þþ-999-þþþþ", new SimpleDateMatcher("þþ-999-þþþþ", "dd-MMM-yyyy", 3));
-		simpleDateMatcher.put("þ-999-þþþþ", new SimpleDateMatcher("þ-999-þþþþ", "d-MMM-yyyy", 2));
+		simpleDateMatcher.put("þþþþ þþ þþ", new SimpleDateMatcher("þþþþ þþ þþ", "yyyy MM dd", 8, 2, 5, 2, 0, 4));
+		simpleDateMatcher.put("þþþþ þ þþ", new SimpleDateMatcher("þþþþ þ þþ", "yyyy M dd", 7, 2, 5, 1, 0, 4));
+		simpleDateMatcher.put("þþþþ þþ þ", new SimpleDateMatcher("þþþþ þþ þ", "yyyy MM d", 8, 1, 5, 2, 0, 4));
+		simpleDateMatcher.put("þþþþ þ þ", new SimpleDateMatcher("þþþþ þ þ", "yyyy M d", 7, 1, 5, 1, 0, 4));
 
-		simpleDateMatcher.put("þþ 999 þþ", new SimpleDateMatcher("þþ 999 þþ", "dd MMM yy", 3));
-		simpleDateMatcher.put("þ 999 þþ", new SimpleDateMatcher("þ 999 þþ", "d MMM yy", 2));
-		simpleDateMatcher.put("þþ-999-þþ", new SimpleDateMatcher("þþ-999-þþ", "dd-MMM-yy", 3));
-		simpleDateMatcher.put("þ-999-þþ", new SimpleDateMatcher("þ-999-þþ", "d-MMM-yy", 2));
+		simpleDateMatcher.put("þþ 999 þþþþ", new SimpleDateMatcher("þþ 999 þþþþ", "dd MMM yyyy", 0, 2, 3, 3, 7, 4));
+		simpleDateMatcher.put("þ 999 þþþþ", new SimpleDateMatcher("þ 999 þþþþ", "d MMM yyyy", 0, 1, 2, 3, 6, 4));
+		simpleDateMatcher.put("þþ-999-þþþþ", new SimpleDateMatcher("þþ-999-þþþþ", "dd-MMM-yyyy", 0, 2, 3, 3, 7, 4));
+		simpleDateMatcher.put("þ-999-þþþþ", new SimpleDateMatcher("þ-999-þþþþ", "d-MMM-yyyy", 0, 1, 2, 3, 6, 4));
+
+		simpleDateMatcher.put("þþ 999 þþ", new SimpleDateMatcher("þþ 999 þþ", "dd MMM yy", 0, 2, 3, 3, 7, 2));
+		simpleDateMatcher.put("þ 999 þþ", new SimpleDateMatcher("þ 999 þþ", "d MMM yy", 0, 1, 2, 3, 6, 2));
+		simpleDateMatcher.put("þþ-999-þþ", new SimpleDateMatcher("þþ-999-þþ", "dd-MMM-yy", 0, 2, 3, 3, 7, 2));
+		simpleDateMatcher.put("þ-999-þþ", new SimpleDateMatcher("þ-999-þþ", "d-MMM-yy", 0, 1, 2, 3, 6, 2));
 	}
 
-	static boolean isValidMonthAbbreviation(String month) {
-		return monthAbbr.contains(month.toUpperCase(Locale.ROOT));
+	static int monthAbbreviationOffset(String month) {
+		Integer offset = monthAbbr.get(month.toUpperCase(Locale.ROOT));
+		return offset == null ? -1 : offset;
 	}
 
 	Map<String, Integer> results = new HashMap<String, Integer>();
@@ -63,6 +82,8 @@ public class DateTimeParser {
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public String train(String input) {
+		sampleCount++;
+
 		if (input == null) {
 			nullCount++;
 			return null;
@@ -88,8 +109,8 @@ public class DateTimeParser {
 		return ret;
 	}
 
-	private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-		return map.entrySet().stream().sorted(Map.Entry.comparingByValue())
+	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+		return map.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 
@@ -111,6 +132,10 @@ public class DateTimeParser {
 		Character dateTimeSeparator = null;
 		String timeZone = null;
 		int located = 0;
+
+		// If we have no good samples, call it a day
+		if (sampleCount == nullCount + blankCount + invalidCount)
+			return null;
 
 		// Sort the results of our training by value so that we consider the most frequent first
 		Map<String, Integer> byValue = sortByValue(results);
@@ -157,16 +182,6 @@ public class DateTimeParser {
 				timeZone = result.timeZone;
 		}
 
-		// If we have matched two of the date fields, then by elimination the remaining unidentified field is known
-		if (located == 2) {
-			if (dayOffset == -1)
-				dayOffset = 3 - monthOffset - yearOffset;
-			else if (monthOffset == -1)
-				monthOffset = 3 - dayOffset - yearOffset;
-			else if (yearOffset == -1)
-				yearOffset = 3 - dayOffset - monthOffset;
-		}
-
 		if (timeZone == null)
 			timeZone = "";
 
@@ -176,31 +191,85 @@ public class DateTimeParser {
 
 	static String retDigits(int digitCount, char patternChar) {
 		String ret = String.valueOf(patternChar);
-		return digitCount == 1 ? ret : ret + patternChar;
+		if (digitCount == 1)
+			return ret;
+		if (digitCount == 2)
+			return ret + patternChar;
+		return ret + patternChar + patternChar + patternChar;
+	}
+
+	/**
+	 * Give a String as input with an offset and length return the integer at that position.
+	 * @param input String to extract integer from
+	 * @param offset Integer offset that marks the start
+	 * @param length Integer length of integer to be extracted.
+	 * @return An integer value from the supplied String.
+	 */
+	static int getValue(String input, int offset, int length) {
+		return Integer.valueOf(input.substring(offset, offset + length));
+	}
+
+	static boolean plausibleDate(int[] dateValues, int[] dateDigits, int[] fieldOffsets) {
+		int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 30};
+		int year = dateValues[fieldOffsets[2]];
+		if (year == 0 && dateDigits[fieldOffsets[2]] == 4)
+			return false;
+		int month = dateValues[fieldOffsets[1]];
+		if (month == 0 || month > 12)
+			return false;
+		int day = dateValues[fieldOffsets[0]];
+		if (day == 0 || day > monthDays[month])
+			return false;
+		return true;
 	}
 
 	/**
 	 * Determine a FormatString from an input string that may represent a Date, Time,
 	 * DateTime, OffsetDateTime or a ZonedDateTime.
-	 * @param input The String representing a date with trimmed of whitespace
+	 * @param input The String representing a date with optional leading/trailing whitespace
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public static String determineFormatString(String input) {
 		int len = input.length();
 
+		// Remove leading spaces
+		int start = 0;
+		while (start < len && input.charAt(start) == ' ')
+			start++;
+
+		// Remove trailing spaces
+		while (len >= 1 && input.charAt(len - 1) == ' ')
+			len--;
+
+		len -= start;
+
+		String trimmed = input.substring(start, len + start);
+
 		// Fail fast if we can
-		if (len < 4 || !Character.isDigit(input.charAt(0)))
+		if (len < 4 || !Character.isDigit(trimmed.charAt(0)))
 			return null;
 
 		// Cope with simple dates of the form '21 May 2017' or '9-Sep-2018'
-		if (input.indexOf('þ') != -1)
+		if (trimmed.indexOf('þ') != -1)
 			return null;
-		String templated = input.replaceAll("[0-9]", "þ");
+		String templated = trimmed.replaceAll("[0-9]", "þ");
 		templated = templated.replaceAll("[a-zA-Z]", "9");
 
 		SimpleDateMatcher matcher = simpleDateMatcher.get(templated);
 		if (matcher != null) {
-			if (!DateTimeParser.isValidMonthAbbreviation(input.substring(matcher.monthOffset, matcher.monthOffset + 3)))
+			int[] dateValue = new int[] {-1, -1, -1};
+			if (matcher.monthLength == 3) {
+				dateValue[1] = DateTimeParser.monthAbbreviationOffset(trimmed.substring(matcher.monthOffset, matcher.monthOffset + matcher.monthLength));
+				if (dateValue[1] == -1)
+					return null;
+			}
+			else {
+				dateValue[1] = getValue(trimmed, matcher.monthOffset, matcher.monthLength);
+			}
+			dateValue[0] = getValue(trimmed, matcher.dayOffset, matcher.dayLength);
+			dateValue[2] = getValue(trimmed, matcher.yearOffset, matcher.yearLength);
+
+			if (!plausibleDate(dateValue, new int[] {matcher.dayLength, matcher.monthLength, matcher.yearLength}, new int[] {0,1,2}))
 				return null;
 
 			return matcher.format;
@@ -213,6 +282,7 @@ public class DateTimeParser {
 		int digits = 0;
 		int value = 0;
 		int[] dateValue = new int[3];
+		int[] timeValue = new int[3];
 		int[] dateDigits = new int[3];
 		char dateSeparator = '_';
 		int dateComponent = 0;
@@ -227,9 +297,25 @@ public class DateTimeParser {
 		boolean dateClosed = false;
 		String timeZone = "";
 		boolean ISO8601 = false;
+		boolean expectingAlphaTimeZone = false;
 
+		int lastCh = 'þ';
 		for (int i = 0; i < len && timeZone.length() == 0; i++) {
-			char ch = input.charAt(i);
+			char ch = trimmed.charAt(i);
+
+			// Two spaces in a row is always bad news
+			if (lastCh == ' ' && ch == ' ')
+				return null;
+			lastCh = ch;
+
+			if (expectingAlphaTimeZone) {
+				String currentTimeZone = trimmed.substring(i, len);
+				if (!DateTimeParser.timeZones.contains(currentTimeZone))
+					return null;
+				timeZone = " z";
+				continue;
+			}
+
 			switch (ch) {
 			case '0':
 			case '1':
@@ -248,8 +334,13 @@ public class DateTimeParser {
 				break;
 
 			case ':':
+				if (dateSeen && !dateClosed || timeSeen && timeClosed)
+					return null;
+
 				timeFirst = dateComponent == 0;
 				timeSeen = true;
+				timeValue[timeComponent] = value;
+
 				if (timeComponent == 0) {
 					if (digits != 1 && digits != 2)
 						return null;
@@ -261,6 +352,7 @@ public class DateTimeParser {
 					return null;
 				timeComponent++;
 				digits = 0;
+				value = 0;
 				break;
 
 			case '+':
@@ -271,34 +363,73 @@ public class DateTimeParser {
 
 			case '-':
 				if (ISO8601) {
+					int hours = Integer.MIN_VALUE;
+					int minutesOffset = Integer.MIN_VALUE;
+					int secondsOffset = Integer.MIN_VALUE;
+
+					i++;
+
+					String offset = templated.substring(i, len);
+
 					// Expecting DD:DD:DD or DDDDDD or DD:DD or DDDD or DD
-					if ("þþ:þþ:þþ".equals(templated.substring(len - 8, len)))
+					if (i + 8 <= len && "þþ:þþ:þþ".equals(offset)) {
 						timeZone = "xxxxx";
-					else if ("þþþþþþ".equals(templated.substring(len - 6, len)))
+						minutesOffset = 3;
+						secondsOffset = 6;
+					}
+					else if (i + 6 <= len && "þþþþþþ".equals(offset)) {
 						timeZone = "xxxx";
-					else if ("þþ:þþ".equals(templated.substring(len - 5, len)))
+						minutesOffset = 2;
+						secondsOffset = 4;
+					}
+					else if (i + 5 <= len && "þþ:þþ".equals(offset)) {
 						timeZone = "xxx";
-					else if ("þþþþ".equals(templated.substring(len - 4, len)))
+						minutesOffset = 3;
+					}
+					else if (i + 4 <= len && "þþþþ".equals(offset)) {
 						timeZone = "xx";
-					else if ("þþ".equals(templated.substring(len - 2, len)))
+					}
+					else if (i + 2 <= len && "þþ".equals(offset)) {
 						timeZone = "x";
+					}
 					else
 						return null;
+
+					// Validate the hours
+					hours = getValue(trimmed, i, 2);
+					if (hours != Integer.MIN_VALUE && hours > 18)
+						return null;
+
+					// Validate the minutes
+					if (minutesOffset != Integer.MIN_VALUE) {
+						int minutes = getValue(trimmed, i + minutesOffset, 2);
+						if (minutes != Integer.MIN_VALUE && minutes > 59)
+							return null;
+					}
+
+					// Validate the seconds
+					if (secondsOffset != Integer.MIN_VALUE) {
+						int seconds = getValue(trimmed, i + secondsOffset, 2);
+						if (seconds != Integer.MIN_VALUE && seconds > 59)
+							return null;
+					}
 					break;
 				}
 				// FALL THROUGH
 
 			case '/':
-				dateSeen = true;
+				if (timeSeen && !timeClosed)
+					return null;
 				if (dateComponent == 2)
 					return null;
 
+				dateSeen = true;
 				dateValue[dateComponent] = value;
 				dateDigits[dateComponent] = digits;
 				if (dateComponent == 0) {
 					dateSeparator = ch;
 					fourDigitYear = digits == 4;
-					yearInDateFirst = fourDigitYear || value > 31;
+					yearInDateFirst = fourDigitYear || (digits == 2 && value > 31);
 					if (!yearInDateFirst && digits != 1 && digits != 2)
 						return null;
 				} else if (dateComponent == 1) {
@@ -315,6 +446,8 @@ public class DateTimeParser {
 
 			case 'T':
 				// ISO 8601
+				if (timeSeen)
+					return null;
 				if (!dateSeen || dateClosed || digits != 2 || dateSeparator != '-' || !fourDigitYear || !yearInDateFirst)
 					return null;
 				ISO8601 = true;
@@ -326,23 +459,30 @@ public class DateTimeParser {
 				break;
 
 			case ' ':
+				if (!dateSeen && !timeSeen)
+					return null;
 				if (timeSeen && !timeClosed) {
 					if (digits != 2)
 						return null;
+					timeValue[timeComponent] = value;
 					timeClosed = true;
 				}
-				if (dateSeen && !dateClosed) {
-					if (digits != 2 && (yearInDateFirst == false && digits != 4))
+				else if (dateSeen && !dateClosed) {
+					if (dateComponent != 2)
+						return null;
+					if (!((digits == 2) || (yearInDateFirst == false && digits == 4)))
 						return null;
 					fourDigitYear = digits == 4;
 					dateValue[dateComponent] = value;
 					dateDigits[dateComponent] = digits;
 					dateClosed = true;
 				}
+				else
+					return null;
 				digits = 0;
 				value = 0;
 				if (timeSeen && dateSeen)
-					timeZone = " z";
+					expectingAlphaTimeZone = true;
 				break;
 
 			default:
@@ -355,20 +495,37 @@ public class DateTimeParser {
 
 		if (dateSeen && !dateClosed) {
 			// Need to close out the date
-			if (digits != 2 && (yearInDateFirst == false && digits != 4))
-				return null;
+			if (yearInDateFirst) {
+				if (digits != 2)
+					return null;
+			}
+			else {
+				if (digits != 2 && digits != 4)
+					return null;
+			}
 			fourDigitYear = digits == 4;
 			dateValue[dateComponent] = value;
 			dateDigits[dateComponent] = digits;
+			digits = 0;
 		}
 		if (timeSeen && !timeClosed) {
 			// Need to close out the time
 			if (digits != 2)
 				return null;
+			timeValue[timeComponent] = value;
+			digits = 0;
 		}
+
+		if (digits != 0)
+			return null;
+
+		if (ISO8601 && timeComponent == 0)
+			return null;
 
 		String timeAnswer = null;
 		if (timeComponent != 0) {
+			if (timeValue[0] > 23 || timeValue[1] > 59 || (timeComponent == 2 && timeValue[2] > 59))
+				return null;
 			String hours = hourLength == 1 ? "H" : "HH";
 			timeAnswer = hours + (timeComponent == 1 ? ":mm" : ":mm:ss");
 			if (dateComponent == 0)
@@ -382,33 +539,65 @@ public class DateTimeParser {
 			// If we don't have two date components then it is invalid
 			if (dateComponent == 1)
 				return null;
-			if (yearInDateFirst)
-				dateAnswer = "yyyy" + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
+			if (dateValue[1] == 0 || dateValue[1] > 31)
+				return null;
+			if (yearInDateFirst) {
+				if (!plausibleDate(dateValue, dateDigits, new int[] {2,1,0}))
+					return null;
+				dateAnswer = retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
+			}
 			else {
 				if (fourDigitYear) {
 					// Year is the last field - attempt to determine which is the month
-					if (dateValue[0] > 12)
+					if (dateValue[0] > 12) {
+						if (!plausibleDate(dateValue, dateDigits, new int[] {0,1,2}))
+							return null;
 						dateAnswer = "dd" + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + "yyyy";
-					else if (dateValue[1] > 12)
+					}
+					else if (dateValue[1] > 12) {
+						if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
+							return null;
 						dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yyyy";
+					}
 					else
-						dateAnswer = retDigits(dateDigits[0], 'X') + dateSeparator + retDigits(dateDigits[1], 'X') + dateSeparator + "yyyy";
+						dateAnswer = retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + "yyyy";
 				} else {
+					// If the first group of digits is of length 1, then it is either d/MM/yy or M/dd/yy
+					if (dateDigits[0] == 1) {
+						if (dateValue[0] == 0)
+							return null;
+						if (dateValue[1] > 12) {
+							if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
+								return null;
+							dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
+						}
+						else
+							dateAnswer = retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + "yy";
+					}
 					// If year is the first field - then assume yy/MM/dd
-					if (dateValue[0] > 31)
+					else if (dateValue[0] > 31)
 						dateAnswer = "yy" + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
 					else if (dateValue[2] > 31) {
 						// Year is the last field - attempt to determine which is the month
-						if (dateValue[0] > 12)
+						if (dateValue[0] > 12) {
+							if (!plausibleDate(dateValue, dateDigits, new int[] {0,1,2}))
+								return null;
 							dateAnswer = "dd" + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + "yy";
-						else if (dateValue[1] > 12)
+						}
+						else if (dateValue[1] > 12) {
+							if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
+								return null;
 							dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
+						}
 						else
-							dateAnswer = retDigits(dateDigits[0], 'X') + dateSeparator + retDigits(dateDigits[1], 'X') + dateSeparator + "yy";
-					} else if (dateValue[1] > 12)
+							dateAnswer = retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + "yy";
+					} else if (dateValue[1] > 12) {
+						if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
+							return null;
 						dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
+					}
 					else
-						dateAnswer = retDigits(dateDigits[0], 'X') + dateSeparator + retDigits(dateDigits[1], 'X') + dateSeparator + retDigits(dateDigits[2], 'X');
+						dateAnswer = retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + retDigits(dateDigits[2], '?');
 				}
 			}
 			if (timeComponent == 0)
