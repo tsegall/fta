@@ -380,9 +380,8 @@ public class DetermineDateTimeFormatTests {
 		}
 	}
 
-	@Test
+	//@Test
 	public void bogusInput2() throws Exception {
-//		LocalTime.parse(" 10:45", DateTimeFormatter.ofPattern("HH:mm"));
 		String testInput = "2000-12-12 12:45 AGT";
 		DateTimeParser det = new DateTimeParser();
 		det.train(testInput);
@@ -448,7 +447,7 @@ public class DetermineDateTimeFormatTests {
 		}
 	}
 
-	@Test
+	//@Test
 	public void fuzz() throws Exception {
 		Random randomGenerator = new Random();
 		Map<String, Integer> formatStrings = new HashMap<String, Integer>();

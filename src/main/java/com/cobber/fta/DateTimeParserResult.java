@@ -429,7 +429,7 @@ public class DateTimeParserResult {
 				final int[] timeZoneLength = { -1, 2, 4, 5, 6, 8 };
 				final String[] timeZonePattern = { null, "þþ", "þþþþ", "þþ:þþ", "þþþþþþ", "þþ:þþ:þþ" };
 				final int[] minuteOffset = { -1, -1, 2, 3, 2, 3 };
-				final int[] secondOffset = { -1, -1, -1, -1, -1, 4, 7 };
+				final int[] secondOffset = { -1, -1, -1, -1, 4, 6 };
 
 				if (nextCount < 1 || nextCount > 5)
 					throw new DateTimeParseException("Invalid time zone offset", input, upto);
@@ -457,9 +457,9 @@ public class DateTimeParserResult {
 
 				// Validate second offset (if necessary)
 				if (secondOffset[nextCount] != -1) {
-					int minute = DateTimeParser.getValue(input, upto + 1 + secondOffset[nextCount], 2);
-					if (minute > 59)
-						throw new DateTimeParseException("Expecting time zone offset, invalid minute offset", input, upto + 1 + secondOffset[nextCount]);
+					int second = DateTimeParser.getValue(input, upto + 1 + secondOffset[nextCount], 2);
+					if (second > 59)
+						throw new DateTimeParseException("Expecting time zone offset, invalid second offset", input, upto + 1 + secondOffset[nextCount]);
 				}
 				upto += len + 1;
 				break;
