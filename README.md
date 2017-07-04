@@ -20,7 +20,7 @@ Typical usage is:
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 3.5`
+`$ gradle wrapper --gradle-version 4.0`
 
 `$ ./gradlew installDist`
 
