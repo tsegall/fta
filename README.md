@@ -21,6 +21,7 @@ Typical usage is:
 ## Building ##
 
 `$ gradle wrapper --gradle-version 3.5`
+
 `$ ./gradlew installDist`
 
 ## Running Tests ##
