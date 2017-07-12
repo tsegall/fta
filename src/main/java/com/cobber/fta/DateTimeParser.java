@@ -12,7 +12,31 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
+/**
+ * Analyze String data to determine whether input represents a date or datetime.
+ *
+ * <p>
+ * Typical usage is:
+ * </p>
+ * <pre>
+ * {@code
+ *		DateTimeParser dtp = new DateTimeParser(false);
+ *
+ *		dtp.train("2/7/2012 06:24:47");
+ *		dtp.train("2/7/2012 09:44:04");
+ *		dtp.train("2/7/2012 06:21:38");
+ *		dtp.train("1/7/2012 23:16:14");
+ *		dtp.train("19/7/2012 17:49:53");
+ *
+ *		DateTimeParserResult result = dtp.getResult();
+ *      // Expect "d/M/yyyy HH:mm:ss");
+ *		System.err.println(result.getFormatString());
+ * }
+ * </pre>
+ */
 public class DateTimeParser {
+	// When we have ambiguity - should we prefer to conclude day first, month first or unspecified
+	Boolean dayFirst = null;
 
 	static class SimpleDateMatcher {
 		String matcher;
@@ -63,6 +87,13 @@ public class DateTimeParser {
 		simpleDateMatcher.put("þ 999 þþ", new SimpleDateMatcher("þ 999 þþ", "d MMM yy", 0, 1, 2, 3, 6, 2));
 		simpleDateMatcher.put("þþ-999-þþ", new SimpleDateMatcher("þþ-999-þþ", "dd-MMM-yy", 0, 2, 3, 3, 7, 2));
 		simpleDateMatcher.put("þ-999-þþ", new SimpleDateMatcher("þ-999-þþ", "d-MMM-yy", 0, 1, 2, 3, 6, 2));
+
+		simpleDateMatcher.put("999 þþ, þþþþ", new SimpleDateMatcher("999 þþ, þþþþ", "MMM dd',' yyyy", 4, 2, 0, 3, 8, 4));
+		simpleDateMatcher.put("999 þ, þþþþ", new SimpleDateMatcher("999 þ, þþþþ", "MMM d',' yyyy", 4, 1, 0, 3, 7, 4));
+		simpleDateMatcher.put("999 þþ þþþþ", new SimpleDateMatcher("999 þ þþþþ", "MMM dd yyyy", 4, 2, 0, 3, 7, 4));
+		simpleDateMatcher.put("999 þ þþþþ", new SimpleDateMatcher("999 þ þþþþ", "MMM d yyyy", 4, 1, 0, 3, 6, 4));
+		simpleDateMatcher.put("999-þþ-þþþþ", new SimpleDateMatcher("999-þþ-þþþþ", "MMM-dd-yyyy", 4, 2, 0, 3, 7, 4));
+		simpleDateMatcher.put("999-þ-þþþþ", new SimpleDateMatcher("999-þ-þþþþ", "MMM-d-yyyy", 4, 1, 0, 3, 6, 4));
 	}
 
 	static int monthAbbreviationOffset(String month) {
@@ -75,6 +106,14 @@ public class DateTimeParser {
 	int nullCount = 0;
 	int blankCount = 0;
 	int invalidCount = 0;
+
+	DateTimeParser(Boolean dayFirst) {
+		this.dayFirst = dayFirst;
+	}
+
+	DateTimeParser() {
+		this(null);
+	}
 
 	/**
 	 * Train is the core entry point used to supply input to the DateTimeParser.
@@ -95,7 +134,7 @@ public class DateTimeParser {
 			return null;
 		}
 
-		String ret = determineFormatString(trimmed);
+		String ret = determineFormatString(trimmed, null);
 		if (ret == null) {
 			invalidCount++;
 			return null;
@@ -120,6 +159,14 @@ public class DateTimeParser {
 	 * @return A DateTimeParserResult with the analysis of any training completed.
 	 */
 	public DateTimeParserResult getResult() {
+		// If we have no good samples, call it a day
+		if (sampleCount == nullCount + blankCount + invalidCount)
+			return null;
+
+		// If there is only one result then it must be correct :-)
+		if (results.size() == 1)
+			return DateTimeParserResult.asResult(results.keySet().iterator().next(), dayFirst);
+
 		int timeElements = -1;
 		int hourLength = -1;
 		int dateElements = -1;
@@ -131,18 +178,13 @@ public class DateTimeParser {
 		Character dateSeparator = null;
 		Character dateTimeSeparator = null;
 		String timeZone = null;
-		int located = 0;
-
-		// If we have no good samples, call it a day
-		if (sampleCount == nullCount + blankCount + invalidCount)
-			return null;
 
 		// Sort the results of our training by value so that we consider the most frequent first
 		Map<String, Integer> byValue = sortByValue(results);
 
-		// Iterate through all the results of our training merging them to produce our best guess
+		// Iterate through all the results of our training, merging them to produce our best guess
 		for (Map.Entry<String, Integer> entry : byValue.entrySet()) {
-			DateTimeParserResult result = DateTimeParserResult.asResult(entry.getKey());
+			DateTimeParserResult result = DateTimeParserResult.asResult(entry.getKey(), dayFirst);
 			if (result == null)
 				System.err.println("NOT FOUND - input: '" + entry.getKey() + "'");
 			if (timeElements == -1)
@@ -164,15 +206,12 @@ public class DateTimeParser {
 			}
 			if (dayOffset == -1 && result.dayOffset != -1) {
 				dayOffset = result.dayOffset;
-				located++;
 			}
 			if (monthOffset == -1 && result.monthOffset != -1) {
 				monthOffset = result.monthOffset;
-				located++;
 			}
 			if (yearOffset == -1 && result.yearOffset != -1) {
 				yearOffset = result.yearOffset;
-				located++;
 			}
 			if (dateSeparator == null)
 				dateSeparator = result.dateSeparator;
@@ -185,8 +224,8 @@ public class DateTimeParser {
 		if (timeZone == null)
 			timeZone = "";
 
-		return new DateTimeParserResult(null, timeElements, hourLength, dateElements, dateFieldLengths, timeFirst,
-				dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone);
+		return new DateTimeParserResult(null, dayFirst, timeElements, hourLength, dateElements, dateFieldLengths,
+				timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone);
 	}
 
 	static String retDigits(int digitCount, char patternChar) {
@@ -223,13 +262,25 @@ public class DateTimeParser {
 		return true;
 	}
 
+	private static String dateFormat(int[] dateDigits, char dateSeparator, Boolean dayFirst, boolean yearKnown) {
+		if (dayFirst == null)
+			return retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + retDigits(dateDigits[2], yearKnown ? 'y' : '?');
+
+		if (dayFirst)
+			return retDigits(dateDigits[0], 'd') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'y');
+
+		return retDigits(dateDigits[0], 'M') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'y');
+	}
+
+
 	/**
 	 * Determine a FormatString from an input string that may represent a Date, Time,
 	 * DateTime, OffsetDateTime or a ZonedDateTime.
 	 * @param input The String representing a date with optional leading/trailing whitespace
+	 * @param dayFirst TODO
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
-	public static String determineFormatString(String input) {
+	public static String determineFormatString(String input, Boolean dayFirst) {
 		int len = input.length();
 
 		// Remove leading spaces
@@ -246,7 +297,7 @@ public class DateTimeParser {
 		String trimmed = input.substring(start, len + start);
 
 		// Fail fast if we can
-		if (len < 4 || !Character.isDigit(trimmed.charAt(0)))
+		if (len < 4 || (!Character.isDigit(trimmed.charAt(0)) && !Character.isAlphabetic(trimmed.charAt(0))))
 			return null;
 
 		// Cope with simple dates of the form '21 May 2017' or '9-Sep-2018'
@@ -277,6 +328,10 @@ public class DateTimeParser {
 
 		// Fail fast if we can
 		if (!templated.contains("þ:þþ") && !templated.contains("þ/þþ") && !templated.contains("þ-þþ"))
+			return null;
+
+		// Fail fast if we can
+		if (!Character.isDigit(trimmed.charAt(0)))
 			return null;
 
 		int digits = 0;
@@ -560,7 +615,7 @@ public class DateTimeParser {
 						dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yyyy";
 					}
 					else
-						dateAnswer = retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + "yyyy";
+						dateAnswer = dateFormat(dateDigits, dateSeparator, dayFirst, true);
 				} else {
 					// If the first group of digits is of length 1, then it is either d/MM/yy or M/dd/yy
 					if (dateDigits[0] == 1) {
@@ -572,7 +627,7 @@ public class DateTimeParser {
 							dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
 						}
 						else
-							dateAnswer = retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + "yy";
+							dateAnswer = dateFormat(dateDigits, dateSeparator, dayFirst, true);
 					}
 					// If year is the first field - then assume yy/MM/dd
 					else if (dateValue[0] > 31)
@@ -590,14 +645,14 @@ public class DateTimeParser {
 							dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
 						}
 						else
-							dateAnswer = retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + "yy";
+							dateAnswer = dateFormat(dateDigits, dateSeparator, dayFirst, true);
 					} else if (dateValue[1] > 12) {
 						if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
 							return null;
 						dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
 					}
 					else
-						dateAnswer = retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + retDigits(dateDigits[2], '?');
+						dateAnswer = dateFormat(dateDigits, dateSeparator, dayFirst, false);
 				}
 			}
 			if (timeComponent == 0)

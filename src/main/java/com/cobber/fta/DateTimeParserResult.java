@@ -10,6 +10,9 @@ import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * DateTimeParserResult is the result of a {@link DateTimeParser} analysis.
+ */
 public class DateTimeParserResult {
 	String format = null;
 	int timeElements = -1;
@@ -31,10 +34,11 @@ public class DateTimeParserResult {
 
 	static Map<String, DateTimeParserResult> options = new ConcurrentHashMap<String, DateTimeParserResult>();
 
-	DateTimeParserResult(String formatString, int timeElements, int hourLength, int dateElements,
-			int[] dateFieldLengths, Boolean timeFirst, Character dateTimeSeparator, int yearOffset, int monthOffset,
-			int dayOffset, Character dateSeparator, String timeZone) {
+	DateTimeParserResult(String formatString, Boolean dayFirst, int timeElements, int hourLength,
+			int dateElements, int[] dateFieldLengths, Boolean timeFirst, Character dateTimeSeparator, int yearOffset,
+			int monthOffset, int dayOffset, Character dateSeparator, String timeZone) {
 		this.formatString = formatString;
+		this.dayFirst = dayFirst;
 		this.timeElements = timeElements;
 		this.hourLength = hourLength;
 		this.dateElements = dateElements;
@@ -99,14 +103,21 @@ public class DateTimeParserResult {
 		}
 	}
 
+	static String stringify(Boolean bool) {
+		return bool == null ? "null" : bool.toString();
+	}
 
 	/**
 	 * Given an input string in SimpleDateTimeFormat convert to a DateTimeParserResult
 	 * @param formatString A DateTimeString using DateTimeFormatter patterns
+	 * @param dayFirst 	When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @return The corresponding DateTimeParserResult
 	 */
-	public static DateTimeParserResult asResult(String formatString) {
-		DateTimeParserResult ret = options.get(formatString);
+	public static DateTimeParserResult asResult(String formatString, Boolean dayFirst) {
+		String key = stringify(dayFirst) + '#' + formatString;
+		DateTimeParserResult ret = options.get(key);
+//		if (ret != null)
+//			System.err.printf("Looked for '%s' and found result with formatString = '%s'\n", key, ret.formatString);
 		if (ret != null)
 			return ret;
 
@@ -124,6 +135,7 @@ public class DateTimeParserResult {
 		Boolean timeFirst = null;
 		Character dateSeparator = null;
 		Character dateTimeSeparator = ' ';
+		Boolean fullyBound = true;
 
 		int formatLength = formatString.length();
 
@@ -141,6 +153,7 @@ public class DateTimeParserResult {
 				}
 				if (dateElements == 1)
 					dateSeparator = formatString.charAt(i + 1);
+				fullyBound = false;
 				break;
 
 			case 'M':
@@ -223,6 +236,7 @@ public class DateTimeParserResult {
 				break;
 
 			default:
+				// FIX ME
 			}
 		}
 
@@ -232,9 +246,9 @@ public class DateTimeParserResult {
 			timeElements = -1;
 
 		// Add to cache
-		ret  = new DateTimeParserResult(formatString, timeElements, hourLength, dateElements, dateFieldLengths, timeFirst,
-				dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone);
-		options.put(formatString, ret);
+		ret  = new DateTimeParserResult(fullyBound ? formatString : null, dayFirst, timeElements, hourLength, dateElements, dateFieldLengths,
+				timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone);
+		options.put(key, ret);
 
 		return ret;
 	}
@@ -485,11 +499,6 @@ public class DateTimeParserResult {
 		return timeZone.indexOf('z') == -1 ? "OffsetDateTime" : "ZonedDateTime";
 	}
 
-	public void forceResolve(Boolean first) {
-		this.dayFirst = first;
-		this.formatString = null;
-	}
-
 	private String asDate(char[] fieldChars) {
 		StringBuilder ret = new StringBuilder();
 		for (int f = 0; f < fieldChars.length; f++) {
@@ -508,6 +517,9 @@ public class DateTimeParserResult {
 	 * @return a String in DateTimeFormatter
 	 */
 	public String getFormatString() {
+		if (formatString != null)
+			return formatString;
+
 		String hours = hourLength == 1 ? "H" : "HH";
 		String timeAnswer = timeElements == 0 ? "" : hours + (timeElements == 2 ? ":mm" : ":mm:ss");
 		String dateAnswer = "";
@@ -558,7 +570,9 @@ public class DateTimeParserResult {
 			return timeAnswer;
 
 		String separator = dateTimeSeparator == ' ' ? " " : "'T'";
-		return (timeFirst != null && timeFirst) ? timeAnswer + separator + dateAnswer + timeZone
+		formatString = (timeFirst != null && timeFirst) ? timeAnswer + separator + dateAnswer + timeZone
 				: dateAnswer + separator + timeAnswer + timeZone;
+
+		return formatString;
 	}
 }

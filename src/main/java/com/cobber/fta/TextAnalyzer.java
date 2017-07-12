@@ -66,20 +66,17 @@ import javax.mail.internet.InternetAddress;
  */
 public class TextAnalyzer {
 
-	/**
-	 * The default value for the number of samples to collect before making a
-	 * type determination.
-	 */
+	/** The default value for the number of samples to collect before making a type determination. */
 	public static final int SAMPLE_DEFAULT = 20;
 	private int samples = SAMPLE_DEFAULT;
 
-	/** The default value for the Maximum Cardinality tracked. */
+	/** The default value for the maximum Cardinality tracked. */
 	public static final int MAX_CARDINALITY_DEFAULT = 500;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
 
 	private final int MIN_SAMPLES_FOR_KEY = 1000;
 
-	/** The default value for the Maximum # of outliers tracked. */
+	/** The default value for the maximum # of outliers tracked. */
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
 	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
 
@@ -477,7 +474,7 @@ public class TextAnalyzer {
 	private void trackDateTime(String dateFormat, String input) throws DateTimeParseException {
 		String trimmed = input.trim();
 
-		DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat);
+		DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, dayFirst);
 		if (result == null)
 			System.err.printf("NULL result for '%s'\n", dateFormat);
 
@@ -607,7 +604,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (DateTimeParser.determineFormatString(input) != null)
+		if (DateTimeParser.determineFormatString(input, dayFirst) != null)
 			possibleDateTime++;
 		if (atSigns - 1 == commas || atSigns - 1 == semicolons)
 			possibleEmails++;
@@ -822,12 +819,11 @@ public class TextAnalyzer {
 
 				if (matchType != null) {
 					if (possibleDateTime == raw.size()) {
-						DateTimeParser det = new DateTimeParser();
+						DateTimeParser det = new DateTimeParser(dayFirst);
 						for (String sample : raw)
 							det.train(sample);
 
 						DateTimeParserResult result = det.getResult();
-						result.forceResolve(dayFirst);
 						String formatString = result.getFormatString();
 						matchPatternInfo = new PatternInfo("\\a{+}", result.getType(), -1, -1, null, formatString,
 								formatString);
@@ -1009,7 +1005,7 @@ public class TextAnalyzer {
 			}
 			catch (DateTimeParseException reale) {
 				try {
-					DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format);
+					DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, dayFirst);
 					result.parse(input);
 				}
 				catch (DateTimeParseException e) {

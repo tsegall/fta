@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Simple Driver to utilize the FTA framework.
  */
 package com.cobber.fta;
@@ -37,7 +37,8 @@ class Driver {
 		CSVFormat.Predefined csvFormat = CSVFormat.Predefined.Default;
 		String charset = "UTF-8";
 		String filename = null;
-		int samples = -1;
+		int sampleSize = -1;
+		long recordsToAnalyze = -1;
 		int col = -1;
 		boolean verbose = false;
 		TextAnalyzer[] analysis = null;
@@ -55,13 +56,21 @@ class Driver {
 			else if ("--dayFirst".equals(args[idx]))
 				dayFirst = true;
 			else if ("--help".equals(args[idx])) {
-				System.err.println("Usage: [--charset <charset>] [--col <n>] [--samples <n>] [--help] file ...");
+				System.err.println("Usage: [--charset <charset>] [--col <n>] [--dayFirst] [--help] [--monthFirst] [--records <n>] [--samples <n>] file ...");
+				System.err.println(" --charset <charset> - Use the supplied <charset> to read the input files");
+				System.err.println(" --col <n> - Only analyze column <n>");
+				System.err.println(" --dayFirst - If dates are ambigous assume Day precedes Month");
+				System.err.println(" --monthFirst - If dates are ambigous assume Month precedes Day");
+				System.err.println(" --records <n> - The number of records to analyze");
+				System.err.println(" --samples <n> - Set the size of the sample window");
 				System.exit(0);
 			}
 			else if ("--monthFirst".equals(args[idx]))
 				dayFirst = false;
+			else if ("--records".equals(args[idx]))
+				recordsToAnalyze = Long.valueOf(args[++idx]);
 			else if ("--samples".equals(args[idx]))
-				samples = Integer.valueOf(args[++idx]);
+				sampleSize = Integer.valueOf(args[++idx]);
 			else if ("--verbose".equals(args[idx])) {
 				verbose = true;
 			}
@@ -97,17 +106,14 @@ class Driver {
 					records = csvFormat.getFormat().parse(in);
 				} catch (IOException e) {
 					System.err.printf("Failed to parse input file '%s'\n", filename);
-					try {
-						in.close();
-					} catch (IOException e1) {
-						// Silently eat
-					}
 					System.exit(1);
 				}
 
+				long thisRecord = -1;
 				for (CSVRecord record : records) {
+					thisRecord = record.getRecordNumber();
 					// If this is the header we need to build the header
-					if (record.getRecordNumber() == 1) {
+					if (thisRecord == 1) {
 						numFields = record.size();
 						header = new String[numFields];
 						analysis = new TextAnalyzer[numFields];
@@ -120,8 +126,8 @@ class Driver {
 							if ((col == -1 || col == i) && verbose)
 								System.out.println(record.get(i));
 							analysis[i] = new TextAnalyzer(header[i], dayFirst);
-							if (samples != -1)
-								analysis[i].setSampleSize(samples);
+							if (sampleSize != -1)
+								analysis[i].setSampleSize(sampleSize);
 						}
 					}
 					else {
@@ -138,6 +144,8 @@ class Driver {
 							}
 						}
 					}
+					if (thisRecord == recordsToAnalyze)
+						break;
 				}
 			}
 			finally {

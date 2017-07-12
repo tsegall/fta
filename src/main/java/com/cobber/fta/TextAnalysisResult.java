@@ -21,7 +21,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * TextAnalysisResult is the result of an analysis of a data stream.
+ * TextAnalysisResult is the result of a {@link TextAnalyzer} analysis of a data stream.
  */
 public class TextAnalysisResult {
 	int matchCount;

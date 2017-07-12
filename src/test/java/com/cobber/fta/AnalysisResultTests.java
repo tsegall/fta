@@ -2344,5 +2344,59 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 7);
 	}
 
+	@Test
+	public void intuitDateddMMyyyy_HHmmss() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", false);
+
+		analysis.train("2/7/2012 06:24:47");
+		analysis.train("2/7/2012 09:44:04");
+		analysis.train("2/7/2012 06:21:26");
+		analysis.train("2/7/2012 06:21:30");
+		analysis.train("2/7/2012 06:21:31");
+		analysis.train("2/7/2012 06:21:34");
+		analysis.train("2/7/2012 06:21:38");
+		analysis.train("1/7/2012 23:16:14");
+		analysis.train("19/7/2012 17:49:53");
+		analysis.train("19/7/2012 17:49:54");
+		analysis.train("18/7/2012 09:57:17");
+		analysis.train("19/7/2012 17:48:37");
+		analysis.train("19/7/2012 17:49:54");
+		analysis.train("19/7/2012 17:46:22");
+		analysis.train("19/7/2012 17:49:05");
+		analysis.train("2/7/2012 06:21:43");
+		analysis.train("2/7/2012 06:21:50");
+		analysis.train("2/7/2012 06:21:52");
+		analysis.train("2/7/2012 06:21:55");
+		analysis.train("2/7/2012 06:21:56");
+		analysis.train("20/7/2012 17:30:45");
+		analysis.train("19/7/2012 17:46:22");
+		analysis.train("2/7/2012 05:57:32");
+		analysis.train("19/7/2012 17:45:55");
+		analysis.train("20/7/2012 17:30:48");
+		analysis.train("1/7/2012 18:33:18");
+		analysis.train("1/7/2012 18:27:15");
+		analysis.train("1/7/2012 18:25:35");
+		analysis.train("1/7/2012 18:31:19");
+		analysis.train("1/7/2012 18:36:04");
+		analysis.train("1/7/2012 19:20:45");
+		analysis.train("1/7/2012 19:20:54");
+		analysis.train("1/7/2012 19:19:59");
+		analysis.train("1/7/2012 19:17:56");
+		analysis.train("1/7/2012 19:19:09");
+		analysis.train("1/7/2012 19:20:17");
+		analysis.train("2/7/2012 06:22:29");
+		analysis.train("2/7/2012 06:22:31");
+		analysis.train("2/7/2012 06:22:34");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), "DateTime");
+		Assert.assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
+		Assert.assertEquals(result.getSampleCount(), 39);
+		Assert.assertEquals(result.getMatchCount(), 39);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
 
 }
