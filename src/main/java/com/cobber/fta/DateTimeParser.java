@@ -492,8 +492,8 @@ public class DateTimeParser {
 						return null;
 					if (digits != 1 && digits != 2)
 						return null;
-				} else if (dateComponent == 2)
-					return null;
+				}
+
 				dateComponent++;
 				digits = 0;
 				value = 0;

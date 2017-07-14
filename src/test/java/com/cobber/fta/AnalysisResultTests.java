@@ -2012,9 +2012,8 @@ public class AnalysisResultTests {
 		}
 		for (int i = 0; i < iterations; i++) {
 			b.setLength(0);
-			int next = Math.abs(random.nextInt());
 			for (int j = 0; j < length; j++) {
-				b.append(alphabet.charAt(next%alphabet.length()));
+				b.append(alphabet.charAt(Math.abs(random.nextInt()%alphabet.length())));
 			}
 			if (analysis.train(b.toString()) && locked == -1)
 				locked = i;
@@ -2044,7 +2043,7 @@ public class AnalysisResultTests {
 		}
 		int cnt = 0;
 		while (cnt < iterations) {
-			long l = Math.abs(random.nextInt()) + 1000000000L;
+			long l = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
 			if (l >  9999999999L)
 				continue;
 			if (analysis.train(String.valueOf(l)) && locked == -1)
@@ -2079,7 +2078,7 @@ public class AnalysisResultTests {
 		}
 		int cnt = 0;
 		while (cnt < iterations) {
-			long l = Math.abs(random.nextInt()) + 1000000000L;
+			long l = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
 			if (l >  9999999999L)
 				continue;
 			if (analysis.train(String.valueOf(l)) && locked == -1)

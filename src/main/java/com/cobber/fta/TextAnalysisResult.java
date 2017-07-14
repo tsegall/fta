@@ -24,10 +24,10 @@ import java.util.TreeSet;
  * TextAnalysisResult is the result of a {@link TextAnalyzer} analysis of a data stream.
  */
 public class TextAnalysisResult {
-	int matchCount;
-	int sampleCount;
-	int nullCount;
-	int blankCount;
+	long matchCount;
+	long sampleCount;
+	long nullCount;
+	long blankCount;
 	int leadingZeroCount;
 	PatternInfo patternInfo;
 	double confidence;
@@ -57,7 +57,7 @@ public class TextAnalysisResult {
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param key Do we think this field is a key.
 	 */
-	TextAnalysisResult(int matchCount, PatternInfo patternInfo, int sampleCount, int nullCount, int blankCount, int leadingZeroCount, double confidence, String minValue, String maxValue, int minLength, int maxLength, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers, boolean key) {
+	TextAnalysisResult(long matchCount, PatternInfo patternInfo, long sampleCount, long nullCount, long blankCount, int leadingZeroCount, double confidence, String minValue, String maxValue, int minLength, int maxLength, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers, boolean key) {
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
 		this.sampleCount = sampleCount;
@@ -151,7 +151,7 @@ public class TextAnalysisResult {
 	 * Get the count of all samples that matched the determined type.
 	 * @return Count of all matches.
 	 */
-	public int getMatchCount() {
+	public long getMatchCount() {
 		return matchCount;
 	}
 
@@ -159,7 +159,7 @@ public class TextAnalysisResult {
 	 * Get the count of all samples seen.
 	 * @return Count of all samples.
 	 */
-	public int getSampleCount() {
+	public long getSampleCount() {
 		return sampleCount;
 	}
 
@@ -167,7 +167,7 @@ public class TextAnalysisResult {
 	 * Get the count of all null samples.
 	 * @return Count of all null samples.
 	 */
-	public int getNullCount() {
+	public long getNullCount() {
 		return nullCount;
 	}
 
@@ -175,7 +175,7 @@ public class TextAnalysisResult {
 	 * Get the count of all blank samples (Blank is "").  Note: "    " is not Blank.
 	 * @return Count of all blank samples.
 	 */
-	public int getBlankCount() {
+	public long getBlankCount() {
 		return blankCount;
 	}
 

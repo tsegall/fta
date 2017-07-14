@@ -89,9 +89,9 @@ public class TextAnalyzer {
 	char monetaryDecimalSeparator;
 	char groupingSeparator;
 	char minusSign;
-	int sampleCount;
-	int nullCount;
-	int blankCount;
+	long sampleCount;
+	long nullCount;
+	long blankCount;
 	Map<String, Integer> cardinality = new HashMap<String, Integer>();
 	Map<String, Integer> outliers = new HashMap<String, Integer>();
 	ArrayList<String> raw; // 0245-11-98
@@ -101,7 +101,7 @@ public class TextAnalyzer {
 	ArrayList<StringBuilder>[] levels = new ArrayList[3];
 
 	String matchType;
-	int matchCount;
+	long matchCount;
 	String matchPattern;
 	PatternInfo matchPatternInfo;
 
@@ -165,13 +165,13 @@ public class TextAnalyzer {
 
 	static boolean dataLoaded = false;
 
-	void addPattern(String pattern, String type, int minLength, int maxLength, String generalPattern, String format,
+	static void addPattern(String pattern, String type, int minLength, int maxLength, String generalPattern, String format,
 			String typeQualifier) {
 		patternInfo.put(pattern,
 				new PatternInfo(pattern, type, minLength, maxLength, generalPattern, format, typeQualifier));
 	}
 
-	void initPatternInfo() {
+	static {
 		patternInfo = new HashMap<String, PatternInfo>();
 
 		addPattern("(?i)true|false", "Boolean", 4, 5, null, "", null);
@@ -205,10 +205,6 @@ public class TextAnalyzer {
 	 *             If an internal error occurred.
 	 */
 	public TextAnalyzer(String name, Boolean dayFirst) throws IOException {
-		if (patternInfo == null) {
-			initPatternInfo();
-		}
-
 		if (!dataLoaded) {
 			try (BufferedReader reader = new BufferedReader(
 					new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_zips.csv")))) {
@@ -892,7 +888,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	private void backoutToString(int realSamples) {
+	private void backoutToString(long realSamples) {
 		matchPattern = "\\a{+}";
 		matchCount = realSamples;
 		matchPatternInfo = patternInfo.get(matchPattern);
@@ -902,7 +898,7 @@ public class TextAnalyzer {
 		outliers.clear();
 	}
 
-	private void backoutZip(int realSamples) {
+	private void backoutZip(long realSamples) {
 		if (totalLongs > .95 * realSamples) {
 			matchPattern = "\\d{+}";
 			matchCount = totalLongs;
@@ -948,7 +944,7 @@ public class TextAnalyzer {
 			return;
 		}
 
-		int realSamples = sampleCount - (nullCount + blankCount);
+		long realSamples = sampleCount - (nullCount + blankCount);
 
 		switch (matchType) {
 		case "Boolean":
@@ -1051,10 +1047,10 @@ public class TextAnalyzer {
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
 	private boolean checkUniformLengthSet(HashSet<String> uniformSet, String successPattern) {
-		int realSamples = sampleCount - (nullCount + blankCount);
-		int validCount = 0;
-		int misses = 0;					// count of number of groups that are misses
-		int missCount = 0;				// count of number of misses
+		long realSamples = sampleCount - (nullCount + blankCount);
+		long validCount = 0;
+		long misses = 0;					// count of number of groups that are misses
+		long missCount = 0;				// count of number of misses
 
 		// Sweep the current outliers and check they are part of the set
 		for (Map.Entry<String, Integer> entry : outliers.entrySet()) {
@@ -1102,10 +1098,10 @@ public class TextAnalyzer {
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
 	private boolean checkVariableLengthSet(HashSet<String> variableSet, String successPattern) {
-		int realSamples = sampleCount - (nullCount + blankCount);
-		int validCount = 0;
-		int misses = 0;					// count of number of groups that are misses
-		int missCount = 0;				// count of number of misses
+		long realSamples = sampleCount - (nullCount + blankCount);
+		long validCount = 0;
+		long misses = 0;					// count of number of groups that are misses
+		long missCount = 0;				// count of number of misses
 
 		// Sweep the balance and check they are part of the set
 		for (Map.Entry<String, Integer> entry : cardinality.entrySet()) {
@@ -1144,7 +1140,7 @@ public class TextAnalyzer {
 
 		// Compute our confidence
 		double confidence = 0;
-		int realSamples = sampleCount - (nullCount + blankCount);
+		long realSamples = sampleCount - (nullCount + blankCount);
 
 		// Check to see if we are all blanks or all nulls
 		if (blankCount == sampleCount || nullCount == sampleCount) {
