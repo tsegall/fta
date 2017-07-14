@@ -149,8 +149,8 @@ public class TextAnalyzer {
 	int stringLength = -1;
 
 	int possibleDateTime = 0;
-	int totalLongs = 0;
-	int totalLeadingZeros = 0;
+	long totalLongs = 0;
+	long totalLeadingZeros = 0;
 	int possibleEmails = 0;
 	int possibleZips = 0;
 

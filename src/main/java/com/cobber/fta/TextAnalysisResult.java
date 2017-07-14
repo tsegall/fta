@@ -28,7 +28,7 @@ public class TextAnalysisResult {
 	long sampleCount;
 	long nullCount;
 	long blankCount;
-	int leadingZeroCount;
+	long leadingZeroCount;
 	PatternInfo patternInfo;
 	double confidence;
 	String minValue;
@@ -57,7 +57,7 @@ public class TextAnalysisResult {
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param key Do we think this field is a key.
 	 */
-	TextAnalysisResult(long matchCount, PatternInfo patternInfo, long sampleCount, long nullCount, long blankCount, int leadingZeroCount, double confidence, String minValue, String maxValue, int minLength, int maxLength, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers, boolean key) {
+	TextAnalysisResult(long matchCount, PatternInfo patternInfo, long sampleCount, long nullCount, long blankCount, long leadingZeroCount, double confidence, String minValue, String maxValue, int minLength, int maxLength, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers, boolean key) {
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
 		this.sampleCount = sampleCount;
@@ -183,7 +183,7 @@ public class TextAnalysisResult {
 	 * Get the count of all samples with leading zeros (Type long only)
 	 * @return Count of all leading zero samples.
 	 */
-	public int getLeadingZeroCount() {
+	public long getLeadingZeroCount() {
 		return leadingZeroCount;
 	}
 
