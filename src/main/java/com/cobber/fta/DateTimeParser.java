@@ -185,8 +185,10 @@ public class DateTimeParser {
 		// Iterate through all the results of our training, merging them to produce our best guess
 		for (Map.Entry<String, Integer> entry : byValue.entrySet()) {
 			DateTimeParserResult result = DateTimeParserResult.asResult(entry.getKey(), dayFirst);
-			if (result == null)
+			if (result == null) {
 				System.err.println("NOT FOUND - input: '" + entry.getKey() + "'");
+				continue;
+			}
 			if (timeElements == -1)
 				timeElements = result.timeElements;
 			if (hourLength == -1 || result.hourLength == 1 && hourLength == 2)

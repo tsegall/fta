@@ -80,10 +80,15 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(DateTimeParser.determineFormatString("2004-01-01T00:00:00+05:00", null), "yyyy-MM-dd'T'HH:mm:ssxxx");
 
 		DateTimeParser det = new DateTimeParser();
-		det.train("2004-01-01T00:00:00+05:00");
+		String sample = "2004-01-01T00:00:00+05:00";
+		det.train(sample);
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd'T'HH:mm:ssxxx");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-+][0-9]{2}:[0-9]{2}");
+		Assert.assertTrue(sample.matches(re));
 
 		Assert.assertTrue(result.isValid("2004-01-01T00:00:00+05:00"));
 		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+08:00"));
@@ -100,10 +105,15 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(DateTimeParser.determineFormatString("2004-01-01T00:00:00+05:00:00", null), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
 
 		DateTimeParser det = new DateTimeParser();
-		det.train("2004-01-01T00:00:00+05:00:00");
+		String sample = "2004-01-01T00:00:00+05:00:00";
+		det.train(sample);
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-+][0-9]{2}:[0-9]{2}(:[0-9]{2})?");
+		Assert.assertTrue(sample.matches(re));
 
 		Assert.assertTrue(result.isValid("2004-01-01T00:00:00+05:00:00"));
 		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+08:00:00"));
@@ -127,6 +137,10 @@ public class DetermineDateTimeFormatTests {
 		String type = result.getType();
 
 		Assert.assertEquals(formatString, "MMM d',' yyyy");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\p{Alpha}{3} \\d{1,2}, \\d{4}");
+		Assert.assertTrue(trimmed.matches(re));
 
 		try {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
@@ -285,10 +299,15 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getFormatString(), "dd/MM/yyyy H:mm:ss z");
 
 		DateTimeParser detMonthFirst = new DateTimeParser(false);
-		detMonthFirst.train("12/12/2012 8:57:02 GMT");
+		String sample = "12/12/2012 8:57:02 GMT";
+		detMonthFirst.train(sample);
 
 		result = detMonthFirst.getResult();
 		Assert.assertEquals(result.getFormatString(), "MM/dd/yyyy H:mm:ss z");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{2}/\\d{2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} .*");
+		Assert.assertTrue(sample.matches(re));
 
 		Assert.assertTrue(result.isValid("12/12/2012 8:57:02 GMT"));
 		Assert.assertFalse(result.isValid("12/12/2012 8:57:02 GM"));
@@ -334,10 +353,14 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertNull(DateTimeParser.determineFormatString("21-Jam-2017", null));
 
 		DateTimeParser det = new DateTimeParser();
-		det.train("2 Jan 2017");
+		String sample = "2 Jan 2017";
+		det.train(sample);
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "d MMM yyyy");
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{1,2} \\p{Alpha}{3} \\d{4}");
+		Assert.assertTrue(sample.matches(re));
 
 		Assert.assertTrue(result.isValid("20 Jun 2017"));
 		Assert.assertTrue(result.isValid("1 Jun 2017"));
@@ -369,6 +392,7 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void intuitDateTrainSlash() throws Exception {
 		DateTimeParser det = new DateTimeParser();
+		String sample = "12/12/12";
 		det.train("12/12/12");
 		det.train("12/12/32");
 		det.train("02/22/02");
@@ -379,17 +403,24 @@ public class DetermineDateTimeFormatTests {
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "MM/dd/yy");
 		Assert.assertEquals(result.getType(), "Date");
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertTrue(sample.matches(re));
 	}
 
 	@Test
 	public void intuitDateTrainYYYYSlash() throws Exception {
 		DateTimeParser det = new DateTimeParser();
-		det.train("2012/12/12");
+		String sample = "2012/12/12";
+		det.train(sample);
 		det.train("2012/11/11");
 		det.train("2012/10/32");
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "yyyy/MM/dd");
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{4}/\\d{2}/\\d{2}");
+		Assert.assertTrue(sample.matches(re));
 
 		Assert.assertTrue(result.isValid("2012/12/12"));
 		Assert.assertFalse(result.isValid("2012/10/32"));
@@ -405,21 +436,29 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void yyyyMd() throws Exception {
 		DateTimeParser det = new DateTimeParser();
-		det.train("8547 8 6");
+		String sample = "8547 8 6";
+		det.train(sample);
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "yyyy M d");
 		Assert.assertEquals(result.getType(), "Date");
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{4} \\d{1,2} \\d{1,2}");
+		Assert.assertTrue(sample.matches(re));
 	}
 
 	@Test
 	public void timeFirst() throws Exception {
 		DateTimeParser det = new DateTimeParser();
-		det.train("7:05 5/4/38");
+		String sample = "7:05 5/4/38";
+		det.train(sample);
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "H:mm ?/?/yy");
 		Assert.assertEquals(result.getType(), "DateTime");
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{1,2}:\\d{2} \\d{1,2}/\\d{1,2}/\\d{2}");
+		Assert.assertTrue(sample.matches(re));
 	}
 
 	@Test
@@ -480,13 +519,19 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void intuitHHMMTrain() throws Exception {
 		DateTimeParser det = new DateTimeParser();
-		det.train("12:57");
+		String sampleOne = "12:57";
+		String sampleThree = "8:03";
+		det.train(sampleOne);
 		det.train("13:45");
-		det.train("8:03");
+		det.train(sampleThree);
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "H:mm");
 		Assert.assertEquals(result.getType(), "Time");
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{1,2}:\\d{2}");
+		Assert.assertTrue(sampleOne.matches(re));
+		Assert.assertTrue(sampleThree.matches(re));
 	}
 
 	private void add(Map<String, Integer> counter, String key) {
@@ -581,6 +626,10 @@ public class DetermineDateTimeFormatTests {
 				if (result != null) {
 					good++;
 					String formatString = result.getFormatString();
+
+					String re = result.getRegExp();
+					Assert.assertTrue(trimmed.matches(re));
+
 					String type = result.getType();
 					add(formatStrings, formatString);
 					add(types, type);
@@ -621,7 +670,8 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void intuitMMDDYYYY_HHMMSSTrain() throws Exception {
 		DateTimeParser det = new DateTimeParser();
-		det.train("01/26/2012 10:42:23 GMT");
+		String sample = "01/26/2012 10:42:23 GMT";
+		det.train(sample);
 		det.train("01/30/2012 10:59:48 GMT");
 		det.train("01/25/2012 16:46:43 GMT");
 		det.train("01/25/2012 16:28:42 GMT");
@@ -631,6 +681,10 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getFormatString(), "MM/dd/yyyy HH:mm:ss z");
 		Assert.assertEquals(result.getType(), "ZonedDateTime");
 
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
+		Assert.assertTrue(sample.matches(re));
+
 		Assert.assertTrue(result.isValid("01/26/2012 10:42:23 GMT"));
 		Assert.assertTrue(result.isValid8("01/26/2012 10:42:23 GMT"));
 	}
@@ -638,7 +692,8 @@ public class DetermineDateTimeFormatTests {
 	//@Test
 	public void testPerf() throws Exception {
 		DateTimeParser det = new DateTimeParser();
-		det.train("01/26/2012 10:42:23 GMT");
+		String sample = "01/26/2012 10:42:23 GMT";
+		det.train(sample);
 		det.train("01/30/2012 10:59:48 GMT");
 		det.train("01/25/2012 16:46:43 GMT");
 		det.train("01/25/2012 16:28:42 GMT");
@@ -647,6 +702,10 @@ public class DetermineDateTimeFormatTests {
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "MM/dd/yyyy HH:mm:ss z");
 		Assert.assertEquals(result.getType(), "DateTime");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
+		Assert.assertTrue(sample.matches(re));
 
 		int iterations = 10000000;
 		long start = System.currentTimeMillis();
@@ -664,15 +723,21 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void intuitInsufficientFactsTrain() throws Exception {
 		DateTimeParser detPrime = new DateTimeParser();
+		String sample = "12/30/99";
 
-		detPrime.train("12/30/99");
+		detPrime.train(sample);
 
 		DateTimeParserResult resultPrime = detPrime.getResult();
 		Assert.assertEquals(resultPrime.getFormatString(), "MM/dd/yy");
 
-		DateTimeParser det = new DateTimeParser();
+		String re = resultPrime.getRegExp();
+		Assert.assertEquals(re, "\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertTrue(sample.matches(re));
 
-		det.train(" 04/03/13");
+		DateTimeParser det = new DateTimeParser();
+		sample = " 04/03/13";
+
+		det.train(sample);
 		det.train(" 05/03/13");
 		det.train(" 06/03/13");
 		det.train(" 07/03/13");
@@ -683,10 +748,15 @@ public class DetermineDateTimeFormatTests {
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "??/??/??");
 
+		re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertTrue(sample.trim().matches(re));
+
 		// Force to be day first
 		DateTimeParser detDayFirst = new DateTimeParser(true);
+		sample = " 04/03/13";
 
-		detDayFirst.train(" 04/03/13");
+		detDayFirst.train(sample);
 		detDayFirst.train(" 05/03/13");
 		detDayFirst.train(" 06/03/13");
 		detDayFirst.train(" 07/03/13");
@@ -696,6 +766,11 @@ public class DetermineDateTimeFormatTests {
 
 		result = detDayFirst.getResult();
 		Assert.assertEquals(result.getFormatString(), "dd/MM/yy");
+
+		re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertTrue(sample.trim().matches(re));
+
 		Assert.assertTrue(result.isValid("31/12/12"));
 		Assert.assertFalse(result.isValid("12/31/12"));
 		Assert.assertFalse(result.isValid("2012/12/12"));
@@ -705,8 +780,9 @@ public class DetermineDateTimeFormatTests {
 
 		// Force to be month first
 		DateTimeParser detMonthFirst = new DateTimeParser(false);
+		sample = " 04/03/13";
 
-		detMonthFirst.train(" 04/03/13");
+		detMonthFirst.train(sample);
 		detMonthFirst.train(" 05/03/13");
 		detMonthFirst.train(" 06/03/13");
 		detMonthFirst.train(" 07/03/13");
@@ -716,6 +792,11 @@ public class DetermineDateTimeFormatTests {
 
 		result = detMonthFirst.getResult();
 		Assert.assertEquals(result.getFormatString(), "MM/dd/yy");
+
+		re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertTrue(sample.trim().matches(re));
+
 		Assert.assertFalse(result.isValid("31/12/12"));
 		Assert.assertTrue(result.isValid("12/31/12"));
 		Assert.assertFalse(result.isValid("2012/12/12"));
@@ -727,8 +808,9 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void intuitDateMMddyy() throws Exception {
 		DateTimeParser det = new DateTimeParser();
+		String sample = " 04/03/13";
 
-		det.train(" 04/03/13");
+		det.train(sample);
 		det.train(" 05/03/13");
 		det.train(" 06/03/13");
 		det.train(" 07/03/13");
@@ -741,6 +823,10 @@ public class DetermineDateTimeFormatTests {
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "MM/dd/yy");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertTrue(sample.trim().matches(re));
 
 		Assert.assertTrue(result.isValid("12/12/12"));
 		Assert.assertFalse(result.isValid("1/1/1"));
@@ -758,8 +844,9 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void intuitDateddMMyyyy_HHmmss() throws Exception {
 		DateTimeParser det = new DateTimeParser(false);
+		String sample = "2/7/2012 06:24:47";
 
-		det.train("2/7/2012 06:24:47");
+		det.train(sample);
 		det.train("2/7/2012 09:44:04");
 		det.train("2/7/2012 06:21:26");
 		det.train("2/7/2012 06:21:30");
@@ -771,13 +858,18 @@ public class DetermineDateTimeFormatTests {
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "d/M/yyyy HH:mm:ss");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}");
+		Assert.assertTrue(sample.trim().matches(re));
 	}
 
 	@Test
 	public void intuitDateyyMMdd() throws Exception {
 		DateTimeParser det = new DateTimeParser();
+		String sample = "98/03/13";
 
-		det.train("98/03/13");
+		det.train(sample);
 		det.train("03/03/13");
 		det.train("34/03/13");
 		det.train("46/03/13");
@@ -787,6 +879,10 @@ public class DetermineDateTimeFormatTests {
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "yy/MM/dd");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertTrue(sample.trim().matches(re));
 
 		Assert.assertTrue(result.isValid("12/12/12"));
 		Assert.assertFalse(result.isValid("12/13/12"));
@@ -806,11 +902,16 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void intuitDatedMMMyy() throws Exception {
 		DateTimeParser det = new DateTimeParser();
-		det.train("1-Jan-14");
+		String sample = "1-Jan-14";
+		det.train(sample);
 		det.train("10-Jan-14");
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "d-MMM-yy");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{1,2}-\\p{Alpha}{3}-\\d{2}");
+		Assert.assertTrue(sample.trim().matches(re));
 
 		Assert.assertTrue(result.isValid("1-Jan-14"));
 		Assert.assertTrue(result.isValid("10-Jan-14"));
@@ -822,12 +923,17 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void intuitHHMMSSTrain() throws Exception {
 		DateTimeParser det = new DateTimeParser();
-		det.train("12:57:03");
+		String sample = "12:57:03";
+		det.train(sample);
 		det.train("13:45:00");
 		det.train("8:03:59");
 
 		DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "H:mm:ss");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{1,2}:\\d{2}:\\d{2}");
+		Assert.assertTrue(sample.trim().matches(re));
 
 		Assert.assertTrue(result.isValid("12:57:03"));
 		Assert.assertTrue(result.isValid("8:03:59"));

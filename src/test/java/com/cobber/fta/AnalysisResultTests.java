@@ -235,7 +235,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), records + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{2}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 0.9900990099009901);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getType(), "Date");
@@ -289,7 +289,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd");
@@ -346,7 +346,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{1,2}-\\p{Alpha}{3}-\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -440,7 +440,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{1,2}/\\d{2}/\\d{2} \\d{1,2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "DateTime");
 		Assert.assertEquals(result.getTypeQualifier(), "M/dd/yy H:mm");
@@ -468,7 +468,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getMatchCount(), iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "1/1/06 0:00");
 		Assert.assertEquals(result.getMaxValue(), "1/1/06 0:00");
@@ -491,7 +491,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{2} \\p{Alpha}{3} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
 		Assert.assertEquals(result.getTypeQualifier(), "dd MMM yyyy");
@@ -520,7 +520,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{4}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy/MM/dd");
@@ -543,7 +543,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{2}-\\d{2}-\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
 		Assert.assertEquals(result.getTypeQualifier(), "dd-MM-yyyy");
@@ -566,7 +566,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{1,2}-\\d{1,2}-\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
 		Assert.assertEquals(result.getTypeQualifier(), "d-M-yyyy");
@@ -592,7 +592,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getMatchCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{2}/\\d{2}/\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
@@ -618,7 +618,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getMatchCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{2}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yy");
@@ -642,7 +642,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getMatchCount(), iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{2}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Date");
 		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy");
@@ -665,7 +665,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Time");
 		Assert.assertEquals(result.getTypeQualifier(), "HH:mm:ss");
@@ -688,7 +688,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "Time");
 		Assert.assertEquals(result.getTypeQualifier(), "HH:mm");
@@ -2272,7 +2272,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 20);
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getType(), "DateTime");
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss");
 	}
@@ -2308,7 +2308,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 20);
 		Assert.assertEquals(result.getMatchCount(), 18);
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-+][0-9]{2}:[0-9]{2}");
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ssxxx");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -2334,7 +2334,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 6);
 		Assert.assertEquals(result.getMatchCount(), 6);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
 		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yyyy HH:mm:ss z");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -2394,8 +2394,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 39);
 		Assert.assertEquals(result.getMatchCount(), 39);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\a{+}");
+		Assert.assertEquals(result.getPattern(), "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
-
 }

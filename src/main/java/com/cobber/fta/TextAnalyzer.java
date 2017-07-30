@@ -471,8 +471,10 @@ public class TextAnalyzer {
 		String trimmed = input.trim();
 
 		DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, dayFirst);
-		if (result == null)
+		if (result == null) {
 			System.err.printf("NULL result for '%s'\n", dateFormat);
+			return;
+		}
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(result.getFormatString());
 		switch (result.getType()) {
@@ -821,7 +823,7 @@ public class TextAnalyzer {
 
 						DateTimeParserResult result = det.getResult();
 						String formatString = result.getFormatString();
-						matchPatternInfo = new PatternInfo("\\a{+}", result.getType(), -1, -1, null, formatString,
+						matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), -1, -1, null, formatString,
 								formatString);
 						matchType = matchPatternInfo.type;
 					}
