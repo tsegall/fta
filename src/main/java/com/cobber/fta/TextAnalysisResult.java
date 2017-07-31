@@ -140,7 +140,10 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get Regular Expression that reflects the data stream.
+	 * Get Regular Expression that reflects the data stream.  All valid inputs should match this Regular Expression,
+	 * however in some instances, not all inputs that match this RE are necessarily valid.  For example,
+	 * 28/13/2017 will match the RE (\d{2}/\d{2}/\d{4}) however this is not a valid date with pattern dd/MM/yyyy (there
+	 * is no 13th month).
 	 * @return The Regular Expression.
 	 */
 	public String getPattern() {

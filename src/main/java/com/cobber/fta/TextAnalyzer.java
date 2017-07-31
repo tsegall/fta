@@ -171,17 +171,23 @@ public class TextAnalyzer {
 				new PatternInfo(pattern, type, minLength, maxLength, generalPattern, format, typeQualifier));
 	}
 
+	static final String LONG_PATTERN = "\\d+";
+	static final String SIGNED_LONG_PATTERN = "-?\\d+";
+	static final String DOUBLE_PATTERN = "\\.\\d+|\\d+(\\.\\d+)?";
+	static final String SIGNED_DOUBLE_PATTERN = "-?\\.\\d+|-?\\d+(\\.\\d+)?";
+	static final String ALPHA_PATTERN = "\\p{Alpha}+";
+
 	static {
 		patternInfo = new HashMap<String, PatternInfo>();
 
 		addPattern("(?i)true|false", "Boolean", 4, 5, null, "", null);
-		addPattern("\\a{2}", "String", 2, 2, null, "", null);
-		addPattern("\\a{3}", "String", 3, 3, null, "", null);
-		addPattern("\\a{+}", "String", 1, -1, null, "", null);
-		addPattern("\\d{+}", "Long", 1, -1, null, "", null);
-		addPattern("[-]\\d{+}", "Long", 1, -1, null, "", "Signed");
-		addPattern("\\d{*}D\\d{+}", "Double", -1, -1, null, "", null);
-		addPattern("[-]\\d{*}D\\d{+}", "Double", -1, -1, null, "", "Signed");
+		addPattern("\\p{Alpha}{2}", "String", 2, 2, null, "", null);
+		addPattern("\\p{Alpha}{3}", "String", 3, 3, null, "", null);
+		addPattern(ALPHA_PATTERN, "String", 1, -1, null, "", null);
+		addPattern(LONG_PATTERN, "Long", 1, -1, null, "", null);
+		addPattern(SIGNED_LONG_PATTERN, "Long", 1, -1, null, "", "Signed");
+		addPattern(DOUBLE_PATTERN, "Double", -1, -1, null, "", null);
+		addPattern(SIGNED_DOUBLE_PATTERN, "Double", -1, -1, null, "", "Signed");
 		addPattern("^[ ]*$", "[BLANK]", -1, -1, null, null, null);
 		addPattern("[NULL]", "[NULL]", -1, -1, null, null, null);
 		addPattern("[ZIP]", "Long", -1, -1, null, null, "Zip");
@@ -623,7 +629,7 @@ public class TextAnalyzer {
 					repetitions++;
 				} else {
 					if (last == 'd' || last == 'a') {
-						compressedl0.append('\\').append(last);
+						compressedl0.append(last == 'd' ? "\\d" : "\\p{Alpha}");
 						compressedl0.append('{').append(String.valueOf(repetitions)).append('}');
 					} else {
 						for (int j = 0; j < repetitions; j++) {
@@ -639,42 +645,39 @@ public class TextAnalyzer {
 
 		// Create the level 1 and 2
 		if (digitsSeen > 0 && notNumericOnly == false && numericDecimalSeparators <= 1) {
-			StringBuilder l1 = new StringBuilder();
-			StringBuilder l2 = new StringBuilder().append('[').append(minusSign).append(']');
-			if (numericSigned)
-				l1.append('[').append(minusSign).append(']');
+			StringBuilder l1 = null;
+			StringBuilder l2 = null;
 			if (numericDecimalSeparators == 1) {
-				l1.append("\\d{*}D");
-				l2.append("\\d{*}D");
+				l1 = new StringBuilder(numericSigned ? SIGNED_DOUBLE_PATTERN : DOUBLE_PATTERN);
+				l2 = new StringBuilder(SIGNED_DOUBLE_PATTERN);
 			}
-			l1.append("\\d{+}");
-			l2.append("\\d{+}");
+			else {
+				l1 = new StringBuilder(numericSigned ? SIGNED_LONG_PATTERN : LONG_PATTERN);
+				l2 = new StringBuilder(SIGNED_LONG_PATTERN);
+			}
 			levels[1].add(l1);
 			levels[2].add(l2);
 		} else {
-			// Fast version of replaceAll("\\{\\d*\\}", "{+}")
+			// Fast version of replaceAll("\\{\\d*\\}", "+"), e.g. replace \d{5} with \d+
 			StringBuilder collapsed = new StringBuilder(compressedl0);
 			for (int i = 0; i < collapsed.length(); i++) {
 				if (collapsed.charAt(i) == '{' && Character.isDigit(collapsed.charAt(i + 1))) {
-					int start = ++i;
+					int start = i++;
 					while (collapsed.charAt(++i) != '}')
 						/* EMPTY */;
-					if (start + 1 == i)
-						collapsed.setCharAt(start, '+');
-					else
-						collapsed.replace(start, i, "+");
+					collapsed.replace(start, i + 1, "+");
 				}
 			}
 
-			// Level 1 is the collapsed version e.g. convert d{4}-d{2}-d{2] to
-			// d{+}-d{+}-d{+}
+			// Level 1 is the collapsed version e.g. convert \d{4}-\d{2}-\d{2] to
+			// \d+-\d+-\d+
 			PatternInfo found = patternInfo.get(compressedl0.toString());
 			if (found != null && found.generalPattern != null) {
 				levels[1].add(new StringBuilder(found.generalPattern));
 				levels[2].add(new StringBuilder(collapsed));
 			} else {
 				levels[1].add(new StringBuilder(collapsed));
-				levels[2].add(new StringBuilder("\\a{+}"));
+				levels[2].add(new StringBuilder(ALPHA_PATTERN));
 			}
 
 		}
@@ -751,7 +754,7 @@ public class TextAnalyzer {
 	private void determineType() {
 		// If we have fewer than 6 samples do not even pretend
 		if (sampleCount == 0) {
-			matchPattern = "\\a{+}";
+			matchPattern = ALPHA_PATTERN;
 			matchPatternInfo = patternInfo.get(matchPattern);
 			matchType = matchPatternInfo.type;
 			return;
@@ -826,7 +829,9 @@ public class TextAnalyzer {
 						matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), -1, -1, null, formatString,
 								formatString);
 						matchType = matchPatternInfo.type;
+						pattern = matchPatternInfo.pattern;
 					}
+
 					// Do we have a set of possible emails?
 					if (possibleEmails == raw.size()) {
 						PatternInfo save = matchPatternInfo;
@@ -891,7 +896,7 @@ public class TextAnalyzer {
 	}
 
 	private void backoutToString(long realSamples) {
-		matchPattern = "\\a{+}";
+		matchPattern = ALPHA_PATTERN;
 		matchCount = realSamples;
 		matchPatternInfo = patternInfo.get(matchPattern);
 
@@ -902,7 +907,7 @@ public class TextAnalyzer {
 
 	private void backoutZip(long realSamples) {
 		if (totalLongs > .95 * realSamples) {
-			matchPattern = "\\d{+}";
+			matchPattern = LONG_PATTERN;
 			matchCount = totalLongs;
 
 			Map<String, Integer> outliersCopy = new HashMap<String, Integer>(outliers);
@@ -1002,15 +1007,16 @@ public class TextAnalyzer {
 				return;
 			}
 			catch (DateTimeParseException reale) {
+				DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, dayFirst);
 				try {
-					DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, dayFirst);
 					result.parse(input);
 				}
 				catch (DateTimeParseException e) {
 					if ("Insufficient digits in input (d)".equals(e.getMessage()) || "Insufficient digits in input (M)".equals(e.getMessage())) {
 						try {
 							String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
-							matchPatternInfo = new PatternInfo("\\a{+}", matchPatternInfo.type, -1, -1, null, formatString,
+							result = DateTimeParserResult.asResult(formatString, dayFirst);
+							matchPatternInfo = new PatternInfo(result.getRegExp(), matchPatternInfo.type, -1, -1, null, formatString,
 									formatString);
 
 							trackDateTime(matchPatternInfo.format, input);
@@ -1034,11 +1040,13 @@ public class TextAnalyzer {
 	 *
 	 * @param input
 	 *            String input that must be either a variable length string
-	 *            (\a{+}) or fixed length, e.g. \a{3}
+	 *            (\\p{Alpha}+) or fixed length, e.g. \\p{Alpha}{3}
 	 * @return The length of the input string or -1 if length is variable
 	 */
 	private int determineLength(String input) {
-		String lengthInformation = input.substring(3, input.length() - 1);
+		if (ALPHA_PATTERN.equals(input))
+			return -1;
+		String lengthInformation = input.substring(10, input.length() - 1);
 		return Character.isDigit(lengthInformation.charAt(0)) ? Integer.parseInt(lengthInformation) : -1;
 	}
 
@@ -1160,7 +1168,7 @@ public class TextAnalyzer {
 			confidence = (double) matchCount / realSamples;
 		}
 
-		if ("\\d{+}".equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
+		if (LONG_PATTERN.equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
 			matchPatternInfo = new PatternInfo("\\d{4}", "Date", -1, -1, null, "yyyy", "yyyy");
 		} else if ("String".equals(matchPatternInfo.type)) {
 			int length = determineLength(matchPattern);
@@ -1169,17 +1177,9 @@ public class TextAnalyzer {
 				backoutToString(realSamples);
 				confidence = (double) matchCount / realSamples;
 			}
-			if ("\\a{+}".equals(matchPattern)) {
-				matchPattern = "\\a{" + minRawLength;
-				if (minRawLength != maxRawLength)
-					matchPattern += "," + maxRawLength;
-				matchPattern += "}";
-				matchPatternInfo = new PatternInfo(matchPattern, "String", minRawLength, maxRawLength, null, null,
-						matchPatternInfo.typeQualifier);
-			}
 
 			boolean typeIdentified = false;
-			if (realSamples > REFLECTION_SAMPLES && cardinality.size() > 1 && "\\a{3}".equals(matchPattern)
+			if (realSamples > REFLECTION_SAMPLES && cardinality.size() > 1 && "\\p{Alpha}{3}".equals(matchPattern)
 					&& cardinality.size() <= monthAbbr.size() + 2) {
 				typeIdentified = checkUniformLengthSet(monthAbbr, "[MONTHABBR]");
 			}
@@ -1189,7 +1189,7 @@ public class TextAnalyzer {
 				typeIdentified = checkVariableLengthSet(countries, "[COUNTRY]");
 			}
 
-			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && "\\a{2}".equals(matchPattern)
+			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && "\\p{Alpha}{2}".equals(matchPattern)
 					&& cardinality.size() < usStates.size() + caProvinces.size() + 5
 					&& (name.toLowerCase().contains("state") || name.toLowerCase().contains("province")
 							|| cardinality.size() > 5)) {
@@ -1220,7 +1220,17 @@ public class TextAnalyzer {
 					matchPatternInfo = patternInfo.get(matchPattern);
 				}
 			}
-		} else if ("\\d{+}".equals(matchPattern)) {
+
+			if (!typeIdentified && ALPHA_PATTERN.equals(matchPattern)) {
+				matchPattern = ".{" + minRawLength;
+				if (minRawLength != maxRawLength)
+					matchPattern += "," + maxRawLength;
+				matchPattern += "}";
+				matchPatternInfo = new PatternInfo(matchPattern, "String", minRawLength, maxRawLength, null, null,
+						matchPatternInfo.typeQualifier);
+			}
+
+		} else if (LONG_PATTERN.equals(matchPattern)) {
 			if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
 				// boolean by any other name
 				matchPattern = "[0|1]";
@@ -1229,10 +1239,9 @@ public class TextAnalyzer {
 				matchType = "Boolean";
 				matchPatternInfo = patternInfo.get(matchPattern);
 			} else {
-				// We thought it was an integer field, but on reflection it does
-				// not feel like it
+				// We thought it was an integer field, but on reflection it does not feel like it
 				if (realSamples > REFLECTION_SAMPLES && confidence < 0.9) {
-					matchPattern = "\\a{" + minRawLength;
+					matchPattern = ".{" + minRawLength;
 					matchType = "String";
 					matchCount = realSamples;
 					confidence = 1.0;

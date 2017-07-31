@@ -542,7 +542,7 @@ public class DateTimeParserResult {
 		return ret.toString();
 	}
 
-	String digitsRegExp(int digitsMin, int digitsMax) {
+	private String digitsRegExp(int digitsMin, int digitsMax) {
 		StringBuilder ret = new StringBuilder();
 
 		ret.append("\\d{");
@@ -556,6 +556,12 @@ public class DateTimeParserResult {
 		return ret.toString();
 	}
 
+	/**
+	 * Return the Regular Expression that matches this Date/Time object. All valid inputs should match this
+	 * Regular Expression, however, not all inputs that match this RE are necessarily valid.  For example,
+	 * 28/13/2017 will match the RE (\d{2}/\d{2}/\d{4}) however this is not a valid date with pattern dd/MM/yyyy.
+	 * @return The Regular Expression that mirrors this Date/Time object.
+	 **/
 	public String getRegExp() {
 		StringBuilder ret = new StringBuilder();
 		int digitsMin = 0;
@@ -645,7 +651,7 @@ public class DateTimeParserResult {
 
 	/**
 	 * Return a DateTimeFormatter representation of the DateTimeParserResult.
-	 * @return a String in DateTimeFormatter
+	 * @return A String representation using DateTimeFormatter semantics.
 	 */
 	public String getFormatString() {
 		if (formatString != null)
