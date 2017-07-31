@@ -1,7 +1,16 @@
+apply plugin: 'maven'
+apply plugin: 'signing'
 apply plugin: 'java'
 apply plugin: 'java-library-distribution'
+apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'jacoco'
+
+mainClassName = "com.cobber.fta.Main"
+
+group = "com.cobber.fta"
+archivesBaseName = "fta"
+version = "1.0.2"
 
 repositories {
     mavenCentral()
@@ -10,6 +19,71 @@ repositories {
 test {
     // enable TestNG support (default is JUnit)
     useTestNG()
+    dependsOn cleanTest
+    testLogging.showStandardStreams = true
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name 'Fast Text Analyzer'
+        packaging 'jar'
+        // optionally artifactId can be defined here 
+        description 'Analyze Text data to determine type information and other key metrics associated with a text stream.'
+        url 'https://github.com/tsegall/fta'
+
+        scm {
+          connection 'scm:git:https://github.com/tsegall/fta.git'
+          developerConnection 'scm:git:https://github.com/tsegall/fta.git'
+          url 'https://github.com/tsegall/fta.git'
+        }
+
+        licenses {
+          license {
+            name 'The Apache License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+
+        developers {
+          developer {
+            id 'tsegall'
+            name 'Tim Segall'
+            email 'xtim@cobber.com'
+          }
+        }
+      }
+    }
+  }
 }
 
 dependencies {
@@ -18,7 +92,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.testng/testng
 	compile group: 'org.testng', name: 'testng', version: '6.11'
 	// https://mvnrepository.com/artifact/javax.mail/mail
-	compile group: 'javax.mail', name: 'mail', version: '1.5.0-b01'
+	compile group: 'com.sun.mail', name: 'javax.mail', version: '1.5.6'
 }
 
 distributions {
