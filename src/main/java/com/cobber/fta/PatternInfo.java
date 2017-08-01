@@ -34,23 +34,23 @@ public class PatternInfo {
 	 * Construct a new information block for the supplied pattern.
 	 * @param pattern The pattern of interest.
 	 * @param type The type of the pattern.
+	 * @param typeQualifier The type qualifier of the pattern (optional).
 	 * @param minLength The minimum length of this pattern (-1 implies undefined)
 	 * @param maxLength The maximum length of this pattern (-1 implies undefined)
 	 * @param generalPattern The general case of this pattern (optional).
-	 * @param format The Java format specified for a date pattern (optional). 
-	 * @param typeQualifier The type qualifier of the pattern (optional).
+	 * @param format The Java format specified for a date pattern (optional).
 	 */
-	public PatternInfo(String pattern, String type, int minLength, int maxLength, String generalPattern, String format, String typeQualifier) {
+	public PatternInfo(String pattern, String type, String typeQualifier, int minLength, int maxLength, String generalPattern, String format) {
 		this.pattern = pattern;
 		this.type = type;
+		this.typeQualifier = typeQualifier;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 		this.generalPattern = generalPattern;
 		this.format = format;
-		this.typeQualifier = typeQualifier;
 	}
-	
-	
+
+
 	/**
 	 * Is this pattern Numeric?
 	 * @return A boolean indicating if the Type for this pattern is numeric.

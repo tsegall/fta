@@ -1169,13 +1169,13 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), "Long");
-		Assert.assertEquals(result.getTypeQualifier(), "Zip");
+		Assert.assertEquals(result.getTypeQualifier(), "ZIP");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 32);
-		Assert.assertEquals(result.getPattern(), "[ZIP]");
+		Assert.assertEquals(result.getPattern(), "\\d{5}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1551,8 +1551,12 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "[US_STATE]");
+		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
 	}
 
 	@Test
@@ -1582,8 +1586,12 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "[US_STATE]");
+		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
 	}
 
 	@Test
@@ -1613,7 +1621,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "[NA_STATE]");
+		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getConfidence(), 0.9927536231884058);
 	}
 
@@ -1643,8 +1651,12 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "[CA_PROVINCE]");
+		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
 	}
 
 	@Test
@@ -1731,7 +1743,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "[COUNTRY]");
+		Assert.assertEquals(result.getPattern(), ".+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1762,7 +1774,7 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getPattern(), "[MONTHABBR]");
+		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), "String");
 		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");

@@ -157,6 +157,7 @@ public class TextAnalyzer {
 	Map.Entry<String, Integer> lastCompute;
 
 	static HashMap<String, PatternInfo> patternInfo = null;
+	static HashMap<String, PatternInfo> typeInfo = null;
 	HashSet<String> zips = new HashSet<String>();
 	HashSet<String> usStates = new HashSet<String>();
 	HashSet<String> caProvinces = new HashSet<String>();
@@ -165,10 +166,9 @@ public class TextAnalyzer {
 
 	static boolean dataLoaded = false;
 
-	static void addPattern(String pattern, String type, int minLength, int maxLength, String generalPattern, String format,
-			String typeQualifier) {
-		patternInfo.put(pattern,
-				new PatternInfo(pattern, type, minLength, maxLength, generalPattern, format, typeQualifier));
+	static void addPattern(HashMap<String, PatternInfo> map, boolean patternIsKey, String pattern, String type, String typeQualifier, int minLength,
+			int maxLength, String generalPattern, String format) {
+		map.put(patternIsKey ? pattern : (type + "." + typeQualifier), new PatternInfo(pattern, type, typeQualifier, minLength, maxLength, generalPattern, format));
 	}
 
 	static final String LONG_PATTERN = "\\d+";
@@ -179,24 +179,30 @@ public class TextAnalyzer {
 
 	static {
 		patternInfo = new HashMap<String, PatternInfo>();
+		typeInfo = new HashMap<String, PatternInfo>();
 
-		addPattern("(?i)true|false", "Boolean", 4, 5, null, "", null);
-		addPattern("\\p{Alpha}{2}", "String", 2, 2, null, "", null);
-		addPattern("\\p{Alpha}{3}", "String", 3, 3, null, "", null);
-		addPattern(ALPHA_PATTERN, "String", 1, -1, null, "", null);
-		addPattern(LONG_PATTERN, "Long", 1, -1, null, "", null);
-		addPattern(SIGNED_LONG_PATTERN, "Long", 1, -1, null, "", "Signed");
-		addPattern(DOUBLE_PATTERN, "Double", -1, -1, null, "", null);
-		addPattern(SIGNED_DOUBLE_PATTERN, "Double", -1, -1, null, "", "Signed");
-		addPattern("^[ ]*$", "[BLANK]", -1, -1, null, null, null);
-		addPattern("[NULL]", "[NULL]", -1, -1, null, null, null);
-		addPattern("[ZIP]", "Long", -1, -1, null, null, "Zip");
-		addPattern("[0|1]", "Boolean", -1, -1, null, null, null);
-		addPattern("[NA_STATE]", "String", -1, -1, null, null, "NA_STATE");
-		addPattern("[US_STATE]", "String", -1, -1, null, null, "US_STATE");
-		addPattern("[CA_PROVINCE]", "String", -1, -1, null, null, "CA_PROVINCE");
-		addPattern("[COUNTRY]", "String", -1, -1, null, null, "COUNTRY");
-		addPattern("[MONTHABBR]", "String", -1, -1, null, null, "MONTHABBR");
+		addPattern(patternInfo, true, "(?i)true|false", "Boolean", null, 4, 5, null, "");
+		addPattern(patternInfo, true, "[0|1]", "Boolean", null, -1, -1, null, null);
+
+		addPattern(patternInfo, true, "\\p{Alpha}{2}", "String", null, 2, 2, null, "");
+		addPattern(patternInfo, true, "\\p{Alpha}{3}", "String", null, 3, 3, null, "");
+		addPattern(patternInfo, true, ALPHA_PATTERN, "String", null, 1, -1, null, "");
+
+		addPattern(patternInfo, true, LONG_PATTERN, "Long", null, 1, -1, null, "");
+		addPattern(patternInfo, true, SIGNED_LONG_PATTERN, "Long", "Signed", 1, -1, null, "");
+		addPattern(patternInfo, true, DOUBLE_PATTERN, "Double", null, -1, -1, null, "");
+		addPattern(patternInfo, true, SIGNED_DOUBLE_PATTERN, "Double", "Signed", -1, -1, null, "");
+
+		addPattern(patternInfo, true, "^[ ]*$", "[BLANK]", null, -1, -1, null, null);
+		addPattern(patternInfo, true, "[NULL]", "[NULL]", null, -1, -1, null, null);
+
+		// Logical Types
+		addPattern(typeInfo, false, "\\d{5}", "Long", "ZIP", -1, -1, null, null);
+		addPattern(typeInfo, false, "\\p{Alpha}{2}", "String", "NA_STATE", -1, -1, null, null);
+		addPattern(typeInfo, false, "\\p{Alpha}{2}", "String", "US_STATE", -1, -1, null, null);
+		addPattern(typeInfo, false, "\\p{Alpha}{2}", "String", "CA_PROVINCE", -1, -1, null, null);
+		addPattern(typeInfo, false, ".+", "String", "COUNTRY", -1, -1, null, null);
+		addPattern(typeInfo, false, "\\p{Alpha}{3}", "String", "MONTHABBR", -1, -1, null, null);
 	}
 
 	/**
@@ -390,7 +396,7 @@ public class TextAnalyzer {
 
 		sumBI = sumBI.add(BigInteger.valueOf(l));
 
-		if ("Zip".equals(matchPatternInfo.typeQualifier)) {
+		if ("ZIP".equals(matchPatternInfo.typeQualifier)) {
 			return zips.contains(rawInput);
 		}
 
@@ -826,7 +832,7 @@ public class TextAnalyzer {
 
 						DateTimeParserResult result = det.getResult();
 						String formatString = result.getFormatString();
-						matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), -1, -1, null, formatString,
+						matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), formatString, -1, -1, null,
 								formatString);
 						matchType = matchPatternInfo.type;
 						pattern = matchPatternInfo.pattern;
@@ -835,7 +841,7 @@ public class TextAnalyzer {
 					// Do we have a set of possible emails?
 					if (possibleEmails == raw.size()) {
 						PatternInfo save = matchPatternInfo;
-						matchPatternInfo = new PatternInfo(matchPattern, "String", -1, -1, null, null, "Email");
+						matchPatternInfo = new PatternInfo(matchPattern, "String", "Email", -1, -1, null, null);
 						int emails = 0;
 						for (String sample : raw)
 							if (trackString(sample, false))
@@ -850,8 +856,8 @@ public class TextAnalyzer {
 					// Do we have a set of possible zip codes?
 					if (possibleZips == raw.size()) {
 						PatternInfo save = matchPatternInfo;
-						pattern = "[ZIP]";
-						matchPatternInfo = patternInfo.get(pattern);
+						matchPatternInfo = typeInfo.get("Long.ZIP");
+						pattern = matchPatternInfo.pattern;
 
 						int zipCount = 0;
 						for (String sample : raw)
@@ -965,7 +971,7 @@ public class TextAnalyzer {
 
 		case "Long":
 			// Do a sanity check once we have at least REFLECTION_SAMPLES
-			if (realSamples == REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.9 && "[ZIP]".equals(matchPattern)) {
+			if (realSamples == REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.9 && "ZIP".equals(matchPatternInfo.typeQualifier)) {
 				backoutZip(realSamples);
 			}
 
@@ -1016,7 +1022,7 @@ public class TextAnalyzer {
 						try {
 							String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
 							result = DateTimeParserResult.asResult(formatString, dayFirst);
-							matchPatternInfo = new PatternInfo(result.getRegExp(), matchPatternInfo.type, -1, -1, null, formatString,
+							matchPatternInfo = new PatternInfo(result.getRegExp(), matchPatternInfo.type, formatString, -1, -1, null,
 									formatString);
 
 							trackDateTime(matchPatternInfo.format, input);
@@ -1053,10 +1059,10 @@ public class TextAnalyzer {
 	/**
 	 * Determine if the current dataset reflects a logical type (of uniform length) as defined by the provided set.
 	 * @param uniformSet The set of items with a uniform length that reflect this logical type
-	 * @param successPattern The logical type that this set represents
+	 * @param logicalType The logical type that this set represents
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
-	private boolean checkUniformLengthSet(HashSet<String> uniformSet, String successPattern) {
+	private boolean checkUniformLengthSet(HashSet<String> uniformSet, String logicalType) {
 		long realSamples = sampleCount - (nullCount + blankCount);
 		long validCount = 0;
 		long misses = 0;					// count of number of groups that are misses
@@ -1092,9 +1098,9 @@ public class TextAnalyzer {
 		if ((double) missCount / realSamples > .05 || misses >= 4)
 			return false;
 
-		matchPattern = successPattern;
 		matchCount = validCount;
-		matchPatternInfo = patternInfo.get(matchPattern);
+		matchPatternInfo = typeInfo.get(logicalType);
+		matchPattern = matchPatternInfo.pattern;
 		outliers.putAll(newOutliers);
 		cardinality.keySet().removeAll(newOutliers.keySet());
 
@@ -1104,10 +1110,10 @@ public class TextAnalyzer {
 	/**
 	 * Determine if the current dataset reflects a logical type (of variable length) as defined by the provided set.
 	 * @param variableSet The set of items that reflect this logical type
-	 * @param successPattern The logical type that this set represents
+	 * @param logicalType The logical type that this set represents
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
-	private boolean checkVariableLengthSet(HashSet<String> variableSet, String successPattern) {
+	private boolean checkVariableLengthSet(HashSet<String> variableSet, String logicalType) {
 		long realSamples = sampleCount - (nullCount + blankCount);
 		long validCount = 0;
 		long misses = 0;					// count of number of groups that are misses
@@ -1130,9 +1136,9 @@ public class TextAnalyzer {
 		if ((double) missCount / realSamples > .05 || misses >= 4)
 			return false;
 
-		matchPattern = successPattern;
 		matchCount = validCount;
-		matchPatternInfo = patternInfo.get(matchPattern);
+		matchPatternInfo = typeInfo.get(logicalType);
+		matchPattern = matchPatternInfo.pattern;
 		return true;
 	}
 
@@ -1163,13 +1169,13 @@ public class TextAnalyzer {
 		}
 
 		// Do a sanity check - we need a minimum number to declare it a ZIP
-		if ("[ZIP]".equals(matchPattern) && ((realSamples > REFLECTION_SAMPLES && confidence < 0.9) || cardinality.size() < 5)) {
+		if ("ZIP".equals(matchPatternInfo.typeQualifier) && ((realSamples > REFLECTION_SAMPLES && confidence < 0.9) || cardinality.size() < 5)) {
 			backoutZip(realSamples);
 			confidence = (double) matchCount / realSamples;
 		}
 
 		if (LONG_PATTERN.equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
-			matchPatternInfo = new PatternInfo("\\d{4}", "Date", -1, -1, null, "yyyy", "yyyy");
+			matchPatternInfo = new PatternInfo("\\d{4}", "Date", "yyyy", -1, -1, null, "yyyy");
 		} else if ("String".equals(matchPatternInfo.type)) {
 			int length = determineLength(matchPattern);
 			// We thought it was a fixed length string, but on reflection it does not feel like it
@@ -1181,12 +1187,12 @@ public class TextAnalyzer {
 			boolean typeIdentified = false;
 			if (realSamples > REFLECTION_SAMPLES && cardinality.size() > 1 && "\\p{Alpha}{3}".equals(matchPattern)
 					&& cardinality.size() <= monthAbbr.size() + 2) {
-				typeIdentified = checkUniformLengthSet(monthAbbr, "[MONTHABBR]");
+				typeIdentified = checkUniformLengthSet(monthAbbr, "String.MONTHABBR");
 			}
 
 			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && cardinality.size() > 1
 					&& cardinality.size() <= countries.size()) {
-				typeIdentified = checkVariableLengthSet(countries, "[COUNTRY]");
+				typeIdentified = checkVariableLengthSet(countries, "String.COUNTRY");
 			}
 
 			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && "\\p{Alpha}{2}".equals(matchPattern)
@@ -1206,18 +1212,20 @@ public class TextAnalyzer {
 				}
 
 				if (misses < 3) {
+					String accessor = null;
 					if (usStateCount != 0 && caProvinceCount != 0) {
-						matchPattern = "[NA_STATE]";
+						accessor = "NA_STATE";
 						matchCount = usStateCount + caProvinceCount;
 					} else if (usStateCount != 0) {
-						matchPattern = "[US_STATE]";
+						accessor = "US_STATE";
 						matchCount = usStateCount;
 					} else if (caProvinceCount != 0) {
-						matchPattern = "[CA_PROVINCE]";
+						accessor = "CA_PROVINCE";
 						matchCount = caProvinceCount;
 					}
 					confidence = (double) matchCount / realSamples;
-					matchPatternInfo = patternInfo.get(matchPattern);
+					matchPatternInfo = typeInfo.get("String" + "." + accessor);
+					matchPattern = matchPatternInfo.pattern;
 				}
 			}
 
@@ -1226,8 +1234,8 @@ public class TextAnalyzer {
 				if (minRawLength != maxRawLength)
 					matchPattern += "," + maxRawLength;
 				matchPattern += "}";
-				matchPatternInfo = new PatternInfo(matchPattern, "String", minRawLength, maxRawLength, null, null,
-						matchPatternInfo.typeQualifier);
+				matchPatternInfo = new PatternInfo(matchPattern, "String", matchPatternInfo.typeQualifier, minRawLength, maxRawLength, null,
+						null);
 			}
 
 		} else if (LONG_PATTERN.equals(matchPattern)) {
@@ -1248,7 +1256,7 @@ public class TextAnalyzer {
 					if (minRawLength != maxRawLength)
 						matchPattern += "," + maxRawLength;
 					matchPattern += "}";
-					matchPatternInfo = new PatternInfo(matchPattern, "String", -1, -1, null, null, null);
+					matchPatternInfo = new PatternInfo(matchPattern, "String", null, -1, -1, null, null);
 
 					// All outliers are now part of the cardinality set and
 					// there are no outliers
@@ -1259,7 +1267,7 @@ public class TextAnalyzer {
 					if (minTrimmedLength != maxTrimmedLength)
 						matchPattern += "," + maxTrimmedLength;
 					matchPattern += "}";
-					matchPatternInfo = new PatternInfo(matchPattern, matchType, -1, -1, null, null, null);
+					matchPatternInfo = new PatternInfo(matchPattern, matchType, null, -1, -1, null, null);
 				}
 			}
 		}

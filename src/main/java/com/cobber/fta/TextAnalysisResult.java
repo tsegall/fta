@@ -97,7 +97,7 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the optional Type Qualifier.  Possible qualifiers are:
-	 * 	Type: String - "Email", "Zip", "US_STATE", "NA_STATE"
+	 * 	Type: String - "Email", "ZIP", "US_STATE", "NA_STATE"
 	 * 	Type: Long - "Signed"
 	 * 	Type: Double - "Signed"
 	 * 	Type: Date - the detailed date format string
