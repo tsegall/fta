@@ -59,10 +59,11 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(result.getSampleCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "^[ ]*$");
+		Assert.assertEquals(result.getPattern(), "[NULL]");
 		Assert.assertEquals(result.getConfidence(), 0.0);
-		Assert.assertEquals(result.getType(), "[BLANK]");
-		Assert.assertEquals(result.dump(true), "TextAnalysisResult [matchCount=0, sampleCount=0, nullCount=0, blankCount=0, pattern=\"^[ ]*$\", confidence=0.0, type=[BLANK], min=null, max=null, sum=null, cardinality=0]");
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "NULL");
+		Assert.assertEquals(result.dump(true), "TextAnalysisResult [matchCount=0, sampleCount=0, nullCount=0, blankCount=0, pattern=\"[NULL]\", confidence=0.0, type=String(NULL), min=null, max=null, sum=null, cardinality=0]");
 	}
 
 	@Test
@@ -933,9 +934,13 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getType(), "Boolean");
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 1);
-		Assert.assertEquals(result.getMinValue(), "false");
-		Assert.assertEquals(result.getMaxValue(), "true");
+		Assert.assertEquals(result.getMinValue(), "0");
+		Assert.assertEquals(result.getMaxValue(), "1");
 		Assert.assertTrue(inputs[0].matches(result.getPattern()));
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
 	}
 
 	@Test
@@ -994,10 +999,16 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), iterations);
 		Assert.assertEquals(result.getNullCount(), iterations);
+		Assert.assertEquals(result.getMinLength(), 0);
+		Assert.assertEquals(result.getMaxLength(), 0);
+		Assert.assertEquals(result.getMinValue(), null);
+		Assert.assertEquals(result.getMaxValue(), null);
+		Assert.assertEquals(result.getNullCount(), iterations);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getPattern(), "[NULL]");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), "[NULL]");
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "NULL");
 	}
 
 	@Test
@@ -1006,23 +1017,88 @@ public class AnalysisResultTests {
 
 		int iterations = 50;
 
+		analysis.train("");
 		for (int i = 0; i < iterations; i++) {
-			analysis.train("");
 			analysis.train(" ");
 			analysis.train("  ");
-			analysis.train("   ");
+			analysis.train("      ");
 		}
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 4 * iterations);
+		Assert.assertEquals(result.getSampleCount(), 3 * iterations + 1);
+		Assert.assertEquals(result.getMaxLength(), 6);
+		Assert.assertEquals(result.getMinLength(), 1);
+		Assert.assertEquals(result.getMaxValue(), "      ");
+		Assert.assertEquals(result.getMinValue(), " ");
 		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), 4 * iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 4 * iterations);
-		Assert.assertEquals(result.getPattern(), "^[ ]*$");
+		Assert.assertEquals(result.getMatchCount(), 3 * iterations + 1);
+		Assert.assertEquals(result.getBlankCount(), 3 * iterations + 1);
+		Assert.assertEquals(result.getPattern(), "[ ]*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), "[BLANK]");
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
+
+		Assert.assertTrue("".matches(result.getPattern()));
+		Assert.assertTrue("  ".matches(result.getPattern()));
+	}
+
+	@Test
+	public void sameBlanks() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		int iterations = 50;
+
+		for (int i = 0; i < iterations; i++) {
+			analysis.train("      ");
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), iterations);
+		Assert.assertEquals(result.getMaxLength(), 6);
+		Assert.assertEquals(result.getMinLength(), 6);
+		Assert.assertEquals(result.getMaxValue(), "      ");
+		Assert.assertEquals(result.getMinValue(), "      ");
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), iterations);
+		Assert.assertEquals(result.getBlankCount(), iterations);
+		Assert.assertEquals(result.getPattern(), "[ ]*");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
+
+		Assert.assertTrue("".matches(result.getPattern()));
+		Assert.assertTrue("  ".matches(result.getPattern()));
+	}
+
+	@Test
+	public void justEmpty() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		int iterations = 50;
+
+		for (int i = 0; i < iterations; i++) {
+			analysis.train("");
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), iterations);
+		Assert.assertEquals(result.getMaxLength(), 0);
+		Assert.assertEquals(result.getMinLength(), 0);
+		Assert.assertEquals(result.getMaxValue(), "");
+		Assert.assertEquals(result.getMinValue(), "");
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), iterations);
+		Assert.assertEquals(result.getBlankCount(), iterations);
+		Assert.assertEquals(result.getPattern(), "[ ]*");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 
 		Assert.assertTrue("".matches(result.getPattern()));
 		Assert.assertTrue("  ".matches(result.getPattern()));
@@ -1065,6 +1141,43 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 0.9487179487179487);
 		Assert.assertEquals(result.getType(), "String");
 		Assert.assertEquals(result.getTypeQualifier(), "Email");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
+	}
+
+	@Test
+	public void testTrim() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = " Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
+				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
+				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
+				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
+				" Hello|  Hello| Hello |  world  |    Hello   |      Hi          |" +
+				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
+				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        ";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + result.getNullCount());
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 1);
+		Assert.assertEquals(result.getPattern(), ".{6,18}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertNull(result.getTypeQualifier());
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getPattern()));

@@ -97,7 +97,7 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the optional Type Qualifier.  Possible qualifiers are:
-	 * 	Type: String - "Email", "ZIP", "US_STATE", "NA_STATE"
+	 * 	Type: String - "Email", "ZIP", "US_STATE", "NA_STATE", "BLANK", "NULL"
 	 * 	Type: Long - "Signed"
 	 * 	Type: Double - "Signed"
 	 * 	Type: Date - the detailed date format string
@@ -124,7 +124,8 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the minimum length for Numeric, Boolean and String
+	 * Get the minimum length for Numeric, Boolean and String.
+	 * Note: For strings this length includes any whitespace.
 	 * @return The minimum length.
 	 */
 	public int getMinLength() {
@@ -133,6 +134,7 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the maximum length for Numeric, Boolean and String
+	 * Note: For strings this length includes any whitespace.
 	 * @return The maximum length.
 	 */
 	public int getMaxLength() {
@@ -175,7 +177,8 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the count of all blank samples (Blank is "").  Note: "    " is not Blank.
+	 * Get the count of all blank samples.
+	 * Note: any number (including zero) of spaces are Blank.
 	 * @return Count of all blank samples.
 	 */
 	public long getBlankCount() {
@@ -212,12 +215,12 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the outlier count for the current data stream.
+	 * Get the number of distinct outliers for the current data stream.
 	 * See {@link com.cobber.fta.TextAnalyzer#setMaxOutliers(int) setMaxOutliers()} method in TextAnalyzer.
 	 * Note: This is not a complete outlier analysis unless the outlier count of the
 	 * data stream is less than the maximum outlier count (Default: {@value com.cobber.fta.TextAnalyzer#MAX_OUTLIERS_DEFAULT}).
 	 * See also {@link com.cobber.fta.TextAnalyzer#setMaxOutliers(int) setMaxOutliers()} method in TextAnalyzer.
-	 * @return Count of all blank samples.
+	 * @return Count of the distinct outliers.
 	 */
 	public int getOutlierCount() {
 		return outliers.size();

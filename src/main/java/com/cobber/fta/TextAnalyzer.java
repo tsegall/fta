@@ -118,8 +118,8 @@ public class TextAnalyzer {
 	String minString = null;
 	String maxString = null;
 
-	Boolean minBoolean = null;
-	Boolean maxBoolean = null;
+	String minBoolean = null;
+	String maxBoolean = null;
 
 	LocalTime minLocalTime = null;
 	LocalTime maxLocalTime = null;
@@ -193,10 +193,9 @@ public class TextAnalyzer {
 		addPattern(patternInfo, true, DOUBLE_PATTERN, "Double", null, -1, -1, null, "");
 		addPattern(patternInfo, true, SIGNED_DOUBLE_PATTERN, "Double", "Signed", -1, -1, null, "");
 
-		addPattern(patternInfo, true, "^[ ]*$", "[BLANK]", null, -1, -1, null, null);
-		addPattern(patternInfo, true, "[NULL]", "[NULL]", null, -1, -1, null, null);
-
 		// Logical Types
+		addPattern(typeInfo, false, "[NULL]", "String", "NULL", -1, -1, null, null);
+		addPattern(typeInfo, false, "[ ]*", "String", "BLANK", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\d{5}", "Long", "ZIP", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\p{Alpha}{2}", "String", "NA_STATE", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\p{Alpha}{2}", "String", "US_STATE", -1, -1, null, null);
@@ -411,14 +410,14 @@ public class TextAnalyzer {
 
 		if (isTrue) {
 			if (minBoolean == null)
-				minBoolean = true;
-			if (maxBoolean == null || maxBoolean == false)
-				maxBoolean = true;
+				minBoolean = "true";
+			if (maxBoolean == null || "false".equals(maxBoolean))
+				maxBoolean = "true";
 		} else if (isFalse) {
 			if (maxBoolean == null)
-				maxBoolean = false;
-			if (minBoolean == null || minBoolean == true)
-				minBoolean = false;
+				maxBoolean = "false";
+			if (minBoolean == null || "true".equals(minBoolean))
+				minBoolean = "false";
 		}
 
 		return isTrue || isFalse;
@@ -558,12 +557,13 @@ public class TextAnalyzer {
 
 		String input = rawInput.trim();
 
+		int length = input.length();
+
 		if (input.length() == 0) {
 			blankCount++;
+			trackLength(rawInput);
 			return matchType != null;
 		}
-
-		int length = input.length();
 
 		trackResult(rawInput);
 
@@ -939,7 +939,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	private void trackResult(String input) {
+	private void trackLength(String input) {
 		// We always want to track basic facts for the field
 		int length = input.length();
 
@@ -947,6 +947,15 @@ public class TextAnalyzer {
 			minRawLength = length;
 		if (length > maxRawLength)
 			maxRawLength = length;
+	}
+
+	/**
+	 * Track the supplied raw input, once we have enough samples attempt to determine the type.
+	 * @param input The raw input string
+	 */
+	private void trackResult(String input) {
+
+		trackLength(input);
 
 		// If the cache is full and we have not determined a type compute one
 		if (matchType == null && sampleCount - (nullCount + blankCount) > samples) {
@@ -1050,10 +1059,14 @@ public class TextAnalyzer {
 	 * @return The length of the input string or -1 if length is variable
 	 */
 	private int determineLength(String input) {
-		if (ALPHA_PATTERN.equals(input))
+		int len = input.length();
+		if (len > 0 && (input.charAt(len - 1) == '+' || input.charAt(len - 1) == '*'))
 			return -1;
-		String lengthInformation = input.substring(10, input.length() - 1);
-		return Character.isDigit(lengthInformation.charAt(0)) ? Integer.parseInt(lengthInformation) : -1;
+		int lengthInformation = input.lastIndexOf('{');
+		if (lengthInformation == -1)
+			return -1;
+		String lengthString = input.substring(lengthInformation + 1, len - 1);
+		return Integer.parseInt(lengthString);
 	}
 
 	/**
@@ -1160,8 +1173,9 @@ public class TextAnalyzer {
 
 		// Check to see if we are all blanks or all nulls
 		if (blankCount == sampleCount || nullCount == sampleCount) {
-			matchPattern = blankCount == sampleCount ? "^[ ]*$" : "[NULL]";
-			matchPatternInfo = patternInfo.get(matchPattern);
+			matchPatternInfo = nullCount == sampleCount ? typeInfo.get("String.NULL") : typeInfo.get("String.BLANK");
+			matchPattern = matchPatternInfo.pattern;
+			matchType = matchPatternInfo.type;
 			matchCount = sampleCount;
 			confidence = sampleCount >= 10 ? 1.0 : 0.0;
 		} else {
@@ -1242,8 +1256,8 @@ public class TextAnalyzer {
 			if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
 				// boolean by any other name
 				matchPattern = "[0|1]";
-				minBoolean = false;
-				maxBoolean = true;
+				minBoolean = "0";
+				maxBoolean = "1";
 				matchType = "Boolean";
 				matchPatternInfo = patternInfo.get(matchPattern);
 			} else {
@@ -1294,8 +1308,28 @@ public class TextAnalyzer {
 				break;
 
 			case "String":
-				minValue = minString;
-				maxValue = maxString;
+				if ("NULL".equals(matchPatternInfo.typeQualifier)) {
+					minRawLength = maxRawLength = 0;
+					minValue = maxValue = null;
+				} else if ("BLANK".equals(matchPatternInfo.typeQualifier)) {
+					// If all the fields are blank - then we have not saved any of the raw input, so we
+					// need to synthesize the min and max value, as well as the minRawlength if not set.
+					if (minRawLength == Integer.MAX_VALUE)
+						minRawLength = 0;
+					StringBuilder s = new StringBuilder(maxRawLength);
+					for (int i = 0; i < maxRawLength; i++) {
+						if (i == minRawLength)
+							minValue = new String(s.toString());
+						s.append(' ');
+					}
+					maxValue = s.toString();
+					if (minRawLength == maxRawLength)
+						minValue = maxValue;
+				}
+				else {
+					minValue = minString;
+					maxValue = maxString;
+				}
 				break;
 
 			case "Date":
