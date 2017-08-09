@@ -909,6 +909,44 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void basicBooleanYN() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String[] inputs = "no|yes|YES|    no   |NO |YES|yes|no|No|Yes|no|  NO|NO|yes|YES|bogus".split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, -1);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getPattern(), "(?i)yes|no");
+		Assert.assertEquals(result.getConfidence(), .9375);
+		Assert.assertEquals(result.getType(), "Boolean");
+		Assert.assertEquals(result.getMinLength(), 2);
+		Assert.assertEquals(result.getMaxLength(), 9);
+		Assert.assertEquals(result.getMinValue(), "no");
+		Assert.assertEquals(result.getMaxValue(), "yes");
+		Assert.assertTrue(inputs[0].matches(result.getPattern()));
+
+		int matches = 0;
+		for (int i = 0; i < inputs.length; i++) {
+			if (inputs[i].trim().matches(result.getPattern()))
+					matches++;
+		}
+		Assert.assertEquals(result.getMatchCount(), matches);
+	}
+
+	@Test
 	public void basicPseudoBoolean() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 

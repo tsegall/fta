@@ -182,6 +182,7 @@ public class TextAnalyzer {
 		typeInfo = new HashMap<String, PatternInfo>();
 
 		addPattern(patternInfo, true, "(?i)true|false", "Boolean", null, 4, 5, null, "");
+		addPattern(patternInfo, true, "(?i)yes|no", "Boolean", null, 2, 3, null, "");
 		addPattern(patternInfo, true, "[0|1]", "Boolean", null, -1, -1, null, null);
 
 		addPattern(patternInfo, true, "\\p{Alpha}{2}", "String", null, 2, 2, null, "");
@@ -403,21 +404,21 @@ public class TextAnalyzer {
 	}
 
 	private boolean trackBoolean(String input) {
-		String trimmed = input.trim();
+		String trimmedLower = input.trim().toLowerCase(Locale.ROOT);
 
-		boolean isTrue = "true".equalsIgnoreCase(trimmed);
-		boolean isFalse = !isTrue && "false".equalsIgnoreCase(trimmed);
+		boolean isTrue = "true".equals(trimmedLower) || "yes".equals(trimmedLower);
+		boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower));
 
 		if (isTrue) {
 			if (minBoolean == null)
-				minBoolean = "true";
-			if (maxBoolean == null || "false".equals(maxBoolean))
-				maxBoolean = "true";
+				minBoolean = trimmedLower;
+			if (maxBoolean == null || "false".equals(maxBoolean) || "no".equals(maxBoolean))
+				maxBoolean = trimmedLower;
 		} else if (isFalse) {
 			if (maxBoolean == null)
-				maxBoolean = "false";
-			if (minBoolean == null || "true".equals(minBoolean))
-				minBoolean = "false";
+				maxBoolean = trimmedLower;
+			if (minBoolean == null || "true".equals(minBoolean) || "yes".equals(maxBoolean))
+				minBoolean = trimmedLower;
 		}
 
 		return isTrue || isFalse;
@@ -624,6 +625,8 @@ public class TextAnalyzer {
 		StringBuilder compressedl0 = new StringBuilder(length);
 		if ("true".equalsIgnoreCase(input) || "false".equalsIgnoreCase(input)) {
 			compressedl0.append("(?i)true|false");
+		} else if ("yes".equalsIgnoreCase(input) || "no".equalsIgnoreCase(input)) {
+			compressedl0.append("(?i)yes|no");
 		} else {
 			// Walk the new level0 to create the new level1
 			String l0withSentinel = l0.toString() + "|";

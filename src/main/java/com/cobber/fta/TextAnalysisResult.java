@@ -125,7 +125,7 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the minimum length for Numeric, Boolean and String.
-	 * Note: For strings this length includes any whitespace.
+	 * Note: For String and Boolean types this length includes any whitespace.
 	 * @return The minimum length.
 	 */
 	public int getMinLength() {
@@ -134,7 +134,7 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the maximum length for Numeric, Boolean and String
-	 * Note: For strings this length includes any whitespace.
+	 * Note: For String and Boolean types this length includes any whitespace.
 	 * @return The maximum length.
 	 */
 	public int getMaxLength() {
