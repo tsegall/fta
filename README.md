@@ -30,6 +30,18 @@ Typical usage is:
 ## Generate JavaDoc ##
 `$ ./gradlew javadoc`
 
-## Setup eclipse project  ##
+## Setup eclipse project ##
 `$ ./gradlew eclipse`
 
+## Releasing a new version ##
+`$ ./gradlew uploadArchives`
+Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and follow the instructions!!
+
+## Java code ##
+
+To include the Java code in your application, or download the latest jars from the [Maven
+repository](http://repo1.maven.org/maven2/com/cobber/fta/fta/).
+
+## Javadoc ##
+
+Javadoc is automatically updated to reflect the latest release at http://javadoc.io/doc/com.cobber.fta/fta/.
