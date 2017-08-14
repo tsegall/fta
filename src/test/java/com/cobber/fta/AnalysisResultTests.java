@@ -1220,17 +1220,50 @@ public class AnalysisResultTests {
 		}
 	}
 
+	String inputURLs = "http://www.lavastorm.com|ftp://ftp.sun.com|https://www.google.com|" +
+			"https://www.homedepot.com|http://www.lowes.com|http://www.apple.com|http://www.sgi.com|" +
+			"http://www.ibm.com|http://www.snowgum.com|http://www.zaius.com|http://www.cobber.com|" +
+			"http://www.ey.com|http://www.zoomer.com|http://www.redshift.com|http://www.segall.net|" +
+			"http://www.sgi.com|http://www.united.com|https://www.hp.com/printers/support|http://www.opinist.com|" +
+			"http://www.java.com|http://www.slashdot.org|http://theregister.co.uk|";
+
 	@Test
 	public void basicURL() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
-		String input = "http://www.lavastorm.com|ftp://ftp.sun.com|https://www.google.com|" +
-				"https://www.homedepot.com|http://www.lowes.com|http://www.apple.com|http://www.sgi.com|" +
-				"http://www.ibm.com|http://www.snowgum.com|http://www.zaius.com|http://www.cobber.com|" +
-				"http://www.ey.com|http://www.zoomer.com|http://www.redshift.com|http://www.segall.net|" +
-				"http://www.sgi.com|http://www.united.com|https://www.hp.com/printers/support|http://www.opinist.com|" +
-				"http://www.java.com|http://www.slashdot.org|http://theregister.co.uk";
-		String inputs[] = input.split("\\|");
+		String inputs[] = inputURLs.split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+		analysis.train("bogus");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 1 + result.getNullCount());
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length + 1 - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getPattern(), ".{5,35}");
+		Assert.assertEquals(result.getConfidence(), 0.9565217391304348);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "URL");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
+	}
+
+	@Test
+	public void backoutURL() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String inputs[] = inputURLs.split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -1240,17 +1273,21 @@ public class AnalysisResultTests {
 		}
 		analysis.train(null);
 
+		final int badURLs = 50;
+		for (int i = 0; i < badURLs; i++)
+			analysis.train(String.valueOf(i));
+
 		TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), inputs.length + result.getNullCount());
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getPattern(), ".{17,35}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), "String");
-		Assert.assertEquals(result.getTypeQualifier(), "URL");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length + badURLs + result.getNullCount());
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+//		Assert.assertEquals(result.getMatchCount(), inputs.length + badURLs + result.getNullCount());
+		Assert.assertEquals(result.getPattern(), ".{1,35}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getPattern()));

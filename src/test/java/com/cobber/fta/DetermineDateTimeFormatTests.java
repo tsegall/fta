@@ -412,9 +412,145 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void intuitAlmostISO_2() throws Exception {
+		DateTimeParser det = new DateTimeParser();
+		String sample = "2004-01-01 12:35:41";
+
+		det.train(sample);
+		det.train("2004-01-01 02:00:00");
+		det.train("2006-01-01 05:23:21");
+		det.train("2014-11-21 15:12:21");
+		det.train("2008-05-17 18:12:21");
+		det.train("2004-01-01 00:23:32");
+		det.train("2006-01-01 13:00:12");
+		det.train("2006-01-01 00:00:00");
+		det.train("2004-01-01 18:16:32");
+		det.train("2004-10-08 22:10:01");
+		det.train("2004-01-01 00:00:00");
+		det.train("2014-01-01 22:10:11");
+		det.train("2004-10-22 00:00:00");
+		det.train("1998-09-05 13:01:12");
+		det.train("2008-03-01 13:06:32");
+		det.train("2011-10-07 00:00:00");
+		det.train(null);
+		det.train("2000-06-10 02:00:00");
+		det.train(null);
+		det.train("2018-02-11 19:21:11");
+
+		DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ss");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
+		Assert.assertTrue(sample.trim().matches(re));
+
+		Assert.assertTrue(result.isValid("2000-06-10 02:00:00"));
+		Assert.assertFalse(result.isValid("2000-06-10 02:00:60"));
+		Assert.assertFalse(result.isValid("2000-06-10 02:60:00"));
+		Assert.assertFalse(result.isValid("2000-06-10 25:00:00"));
+
+		Assert.assertTrue(result.isValid8("2000-06-10 02:00:00"));
+		Assert.assertFalse(result.isValid8("2000-06-10 02:00:60"));
+		Assert.assertFalse(result.isValid8("2000-06-10 02:60:00"));
+		Assert.assertFalse(result.isValid8("2000-06-10 25:00:00"));
+	}
+
+	@Test
+	public void intuitAlmostISO_3() throws Exception {
+		DateTimeParser det = new DateTimeParser();
+		String sample = "2004-01-01 12:35:41.0";
+		Assert.assertEquals(DateTimeParser.determineFormatString(sample, null), "yyyy-MM-dd HH:mm:ss.S");
+
+		det.train(sample);
+		det.train("2004-01-01 02:00:00.0");
+		det.train("2006-01-01 05:23:21.999");
+		det.train("2014-11-21 15:12:21.0");
+		det.train("2008-05-17 18:12:21.0");
+		det.train("2004-01-01 00:23:32.0");
+		det.train("2006-01-01 13:00:12.0");
+		det.train("2006-01-01 00:00:00.0");
+		det.train("2004-01-01 18:16:32.0");
+		det.train("2004-10-08 22:10:01.0");
+		det.train("2004-01-01 00:00:00.0");
+		det.train("2014-01-01 22:10:11.0");
+		det.train("2004-10-22 00:00:00.0");
+		det.train("1998-09-05 13:01:12.0");
+		det.train("2008-03-01 13:06:32.0");
+		det.train("2011-10-07 00:00:00.0");
+		det.train(null);
+		det.train("2000-06-10 02:00:00.0");
+		det.train(null);
+		det.train("2018-02-11 19:21:11.0");
+
+		DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ss.S");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1}");
+		Assert.assertTrue(sample.trim().matches(re));
+
+		Assert.assertTrue(result.isValid("2000-06-10 02:00:00.0"));
+		Assert.assertFalse(result.isValid("2000-06-10 02:00:60.0"));
+		Assert.assertFalse(result.isValid("2000-06-10 02:60:00.0"));
+		Assert.assertFalse(result.isValid("2000-06-10 25:00:00.0"));
+
+		Assert.assertTrue(result.isValid8("2000-06-10 02:00:00.0"));
+		Assert.assertFalse(result.isValid8("2000-06-10 02:00:60.0"));
+		Assert.assertFalse(result.isValid8("2000-06-10 02:60:00.0"));
+		Assert.assertFalse(result.isValid8("2000-06-10 25:00:00.0"));
+	}
+
+	@Test
+	public void intuitAlmostISO_4() throws Exception {
+		DateTimeParser det = new DateTimeParser();
+		String sample = "2004-01-01 12:35:41.999";
+		Assert.assertEquals(DateTimeParser.determineFormatString(sample, null), "yyyy-MM-dd HH:mm:ss.SSS");
+
+		det.train(sample);
+		det.train("2004-01-01 02:00:00.000");
+		det.train("2006-01-01 05:23:21.999");
+		det.train("2014-11-21 15:12:21.123");
+		det.train("2008-05-17 18:12:21.456");
+		det.train("2004-01-01 00:23:32.789");
+		det.train("2006-01-01 13:00:12.000");
+		det.train("2006-01-01 00:00:00.001");
+		det.train("2004-01-01 18:16:32.010");
+		det.train("2004-10-08 22:10:01.500");
+		det.train("2004-01-01 00:00:00.600");
+		det.train("2014-01-01 22:10:11.000");
+		det.train("2004-10-22 00:00:00.090");
+		det.train("1998-09-05 13:01:12.010");
+		det.train("2008-03-01 13:06:32.890");
+		det.train("2011-10-07 00:00:00.880");
+		det.train(null);
+		det.train("2000-06-10 02:00:00.000");
+		det.train(null);
+		det.train("2018-02-11 19:21:11.000");
+
+		DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ss.SSS");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}");
+		Assert.assertTrue(sample.trim().matches(re));
+
+		Assert.assertTrue(result.isValid("2000-06-10 02:00:00.000"));
+		Assert.assertFalse(result.isValid("2000-06-10 02:00:60.990"));
+		Assert.assertFalse(result.isValid("2000-06-10 02:60:00.009"));
+		Assert.assertFalse(result.isValid("2000-06-10 02:60:00.00"));
+		Assert.assertFalse(result.isValid("2000-06-10 25:00:00.008"));
+
+		Assert.assertTrue(result.isValid8("2000-06-10 02:00:00.000"));
+		Assert.assertFalse(result.isValid8("2000-06-10 02:00:60.990"));
+		Assert.assertFalse(result.isValid8("2000-06-10 02:60:00.009"));
+		Assert.assertFalse(result.isValid8("2000-06-10 02:60:00.00"));
+		Assert.assertFalse(result.isValid8("2000-06-10 25:00:00.008"));
+	}
+
+	@Test
 	public void intuitTimeDate() throws Exception {
-		Assert.assertEquals(DateTimeParser.determineFormatString("9:57 2/12/98", null), "H:mm ?/??/yy");
 		Assert.assertEquals(DateTimeParser.determineFormatString("9:57 2/13/98", null), "H:mm M/dd/yy");
+		Assert.assertEquals(DateTimeParser.determineFormatString("9:57 2/12/98", null), "H:mm ?/??/yy");
 		Assert.assertEquals(DateTimeParser.determineFormatString("12:57 13/12/98", null), "HH:mm dd/MM/yy");
 		Assert.assertEquals(DateTimeParser.determineFormatString("8:57:02 12/12/2012", null), "H:mm:ss ??/??/yyyy");
 		Assert.assertEquals(DateTimeParser.determineFormatString("12:57:02 2012/12/12", null), "HH:mm:ss yyyy/MM/dd");

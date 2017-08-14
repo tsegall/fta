@@ -171,6 +171,7 @@ public class DateTimeParser {
 		int hourLength = -1;
 		int dateElements = -1;
 		int[] dateFieldLengths = new int[] {-1,-1,-1};
+		int[] timeFieldLengths = new int[] {-1,-1,-1,-1};
 		Boolean timeFirst = null;
 		int dayOffset = -1;
 		int monthOffset = -1;
@@ -191,6 +192,15 @@ public class DateTimeParser {
 			}
 			if (timeElements == -1)
 				timeElements = result.timeElements;
+			if (result.timeFieldLengths != null) {
+				for (int i = 0; i < result.timeFieldLengths.length; i++) {
+					if (timeFieldLengths[i] == -1)
+						timeFieldLengths[i] = result.timeFieldLengths[i];
+					else
+						if (result.timeFieldLengths[i] < timeFieldLengths[i])
+							timeFieldLengths[i] = result.timeFieldLengths[i];
+				}
+			}
 			if (hourLength == -1 || result.hourLength == 1 && hourLength == 2)
 				hourLength = result.hourLength;
 			if (timeFirst == null)
@@ -226,7 +236,7 @@ public class DateTimeParser {
 		if (timeZone == null)
 			timeZone = "";
 
-		return new DateTimeParserResult(null, dayFirst, timeElements, hourLength, dateElements, dateFieldLengths,
+		return new DateTimeParserResult(null, dayFirst, timeElements, timeFieldLengths, hourLength, dateElements, dateFieldLengths,
 				timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone);
 	}
 
@@ -339,8 +349,9 @@ public class DateTimeParser {
 		int digits = 0;
 		int value = 0;
 		int[] dateValue = new int[3];
-		int[] timeValue = new int[3];
 		int[] dateDigits = new int[3];
+		int[] timeValue = new int[4];
+		int[] timeDigits = new int[4];
 		char dateSeparator = '_';
 		int dateComponent = 0;
 		int timeComponent = 0;
@@ -391,12 +402,13 @@ public class DateTimeParser {
 				break;
 
 			case ':':
-				if (dateSeen && !dateClosed || timeSeen && timeClosed)
+				if ((dateSeen && !dateClosed) || (timeSeen && timeClosed))
 					return null;
 
 				timeFirst = dateComponent == 0;
 				timeSeen = true;
 				timeValue[timeComponent] = value;
+				timeDigits[timeComponent] = digits;
 
 				if (timeComponent == 0) {
 					if (digits != 1 && digits != 2)
@@ -501,6 +513,16 @@ public class DateTimeParser {
 				value = 0;
 				break;
 
+			case '.':
+				if ((dateSeen && !dateClosed) || (timeSeen && timeClosed) || timeComponent != 2)
+					return null;
+				timeValue[timeComponent] = value;
+				timeDigits[timeComponent] = digits;
+				timeComponent++;
+				digits = 0;
+				value = 0;
+				break;
+
 			case 'T':
 				// ISO 8601
 				if (timeSeen)
@@ -522,6 +544,7 @@ public class DateTimeParser {
 					if (digits != 2)
 						return null;
 					timeValue[timeComponent] = value;
+					timeDigits[timeComponent] = digits;
 					timeClosed = true;
 				}
 				else if (dateSeen && !dateClosed) {
@@ -568,9 +591,10 @@ public class DateTimeParser {
 		}
 		if (timeSeen && !timeClosed) {
 			// Need to close out the time
-			if (digits != 2)
+			if (timeComponent != 3 && digits != 2)
 				return null;
 			timeValue[timeComponent] = value;
+			timeDigits[timeComponent] = digits;
 			digits = 0;
 		}
 
@@ -585,7 +609,11 @@ public class DateTimeParser {
 			if (timeValue[0] > 23 || timeValue[1] > 59 || (timeComponent == 2 && timeValue[2] > 59))
 				return null;
 			String hours = hourLength == 1 ? "H" : "HH";
-			timeAnswer = hours + (timeComponent == 1 ? ":mm" : ":mm:ss");
+			timeAnswer = hours + ":mm";
+			if (timeComponent >= 2)
+				timeAnswer += ":ss";
+			if (timeComponent == 3)
+				timeAnswer += "." + "SSSSSSSSS".substring(0, timeDigits[3]);
 			if (dateComponent == 0)
 				return timeAnswer;
 		}

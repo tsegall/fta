@@ -28,6 +28,7 @@ public class DateTimeParserResult {
 	int dayOffset = -1;
 	int dayLength = -1;
 	int[] dateFieldLengths = new int[] {-1, -1, -1};
+	int[] timeFieldLengths = new int[] {-1, -1, -1, -1};
 	String timeZone = "";
 	Character dateSeparator = null;
 	String formatString = null;
@@ -35,12 +36,13 @@ public class DateTimeParserResult {
 
 	static Map<String, DateTimeParserResult> options = new ConcurrentHashMap<String, DateTimeParserResult>();
 
-	DateTimeParserResult(String formatString, Boolean dayFirst, int timeElements, int hourLength,
+	DateTimeParserResult(String formatString, Boolean dayFirst, int timeElements, int[] timeFieldLengths, int hourLength,
 			int dateElements, int[] dateFieldLengths, Boolean timeFirst, Character dateTimeSeparator, int yearOffset,
 			int monthOffset, int dayOffset, Character dateSeparator, String timeZone) {
 		this.formatString = formatString;
 		this.dayFirst = dayFirst;
 		this.timeElements = timeElements;
+		this.timeFieldLengths = timeFieldLengths;
 		this.hourLength = hourLength;
 		this.dateElements = dateElements;
 		this.dateFieldLengths = dateFieldLengths;
@@ -61,7 +63,8 @@ public class DateTimeParserResult {
 
 	private enum Token {
 		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DIGITS_1_OR_2, MONTHS_1_OR_2, MONTHS_2,
-		HOURS_1_OR_2, HOURS_2, MINS_2, SECS_2, DIGITS_2, YEARS_2, YEARS_4, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET
+		HOURS_1_OR_2, HOURS_2, MINS_2, SECS_2, FRACTION,
+		DIGITS_2, YEARS_2, YEARS_4, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET
 	}
 
 	private class FormatterToken {
@@ -153,6 +156,7 @@ public class DateTimeParserResult {
 		int dateElements = 0;
 		int timeElements = 0;
 		int[] dateFieldLengths = new int[] {-1, -1, -1};
+		int[] timeFieldLengths = new int[] {-1, -1, -1, -1};
 		String timeZone = "";
 		Boolean timeFirst = null;
 		Character dateSeparator = null;
@@ -218,14 +222,26 @@ public class DateTimeParserResult {
 				}
 				else
 					hourLength = 1;
+				timeFieldLengths[timeElements - 1] = hourLength;
 				break;
 
 			case 'm':
 			case 's':
+				timeFieldLengths[timeElements] = 2;
 				timeElements++;
 				if (i + 1 >= formatLength || formatString.charAt(i + 1) != ch)
 					return null;
 				i++;
+				break;
+
+			case 'S':
+				int fractions = 0;
+				while (i + 1 < formatLength && formatString.charAt(i + 1) == 'S') {
+					i++;
+					fractions++;
+				}
+				timeFieldLengths[timeElements] = fractions;
+				timeElements++;
 				break;
 
 			case 'y':
@@ -268,7 +284,7 @@ public class DateTimeParserResult {
 			timeElements = -1;
 
 		// Add to cache
-		ret  = new DateTimeParserResult(fullyBound ? formatString : null, dayFirst, timeElements, hourLength, dateElements, dateFieldLengths,
+		ret  = new DateTimeParserResult(fullyBound ? formatString : null, dayFirst, timeElements, timeFieldLengths, hourLength, dateElements, dateFieldLengths,
 				timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone);
 		options.put(key, ret);
 
@@ -335,13 +351,14 @@ public class DateTimeParserResult {
 					ret.add(new FormatterToken(Token.YEARS_2));
 				break;
 
+			case 'S':
 			case 'x':
 				int nextCount = 1;
-				while (i + 1 < formatLength && formatString.charAt(i + 1) == 'x') {
+				while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 					nextCount++;
 					i++;
 				}
-				ret.add(new FormatterToken(Token.TIMEZONE_OFFSET, nextCount));
+				ret.add(new FormatterToken(ch == 'x' ? Token.TIMEZONE_OFFSET : Token.FRACTION, nextCount));
 				break;
 
 			case 'z':
@@ -451,6 +468,16 @@ public class DateTimeParserResult {
 				}
 				if (value == 0)
 					throw new DateTimeParseException("0 value illegal for day/month", input, upto);
+				break;
+
+			case FRACTION:
+				for (int i = 0; i < token.count; i++) {
+					if (upto == inputLength)
+						throw new DateTimeParseException("Expecting digit, end of input", input, upto);
+					if (!Character.isDigit(input.charAt(upto)))
+						throw new DateTimeParseException("Expecting digit", input, upto);
+					upto++;
+				}
 				break;
 
 			case HOURS_2:
@@ -611,6 +638,9 @@ public class DateTimeParserResult {
 				}
 				switch (token.type) {
 				case CONSTANT_CHAR:
+					// Cope with the Character being a '.' which needs to be sloshed as an RE
+					if (token.value == '.')
+						ret.append('\\');
 					ret.append(token.value);
 					break;
 
@@ -679,6 +709,11 @@ public class DateTimeParserResult {
 					digitsMin += 4;
 					digitsMax += 4;
 					break;
+
+				case FRACTION:
+					digitsMin += token.count;
+					digitsMax += token.count;
+					break;
 				}
 			}
 		}
@@ -698,7 +733,24 @@ public class DateTimeParserResult {
 			return formatString;
 
 		String hours = hourLength == 1 ? "H" : "HH";
-		String timeAnswer = timeElements == 0 ? "" : hours + (timeElements == 2 ? ":mm" : ":mm:ss");
+		String timeAnswer = null;
+		switch (timeElements) {
+		case 0:
+			timeAnswer = "";
+			break;
+		case 1:
+			timeAnswer = hours;
+			break;
+		case 2:
+			timeAnswer = hours + ":mm";
+			break;
+		case 3:
+			timeAnswer = hours + ":mm:ss" ;
+			break;
+		case 4:
+			timeAnswer = hours + ":mm:ss" + ".S";
+			break;
+		}
 		String dateAnswer = "";
 		if (dateElements != 0) {
 			if (yearOffset == -1) {

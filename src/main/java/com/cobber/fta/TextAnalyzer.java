@@ -1019,17 +1019,16 @@ public class TextAnalyzer {
 			break;
 
 		case "Long":
-			// Do a sanity check once we have at least REFLECTION_SAMPLES
-			if (realSamples == REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.9 && "ZIP".equals(matchPatternInfo.typeQualifier)) {
-				backoutZip(realSamples);
-			}
-
 			if (trackLong(input, true)) {
 				matchCount++;
 				addValid(input);
 				return;
 			}
 			outlier(input);
+
+			// Do a sanity check once we have at least REFLECTION_SAMPLES
+			if (realSamples == REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.9 && "ZIP".equals(matchPatternInfo.typeQualifier))
+				backoutZip(realSamples);
 			break;
 
 		case "Double":
@@ -1048,6 +1047,10 @@ public class TextAnalyzer {
 				return;
 			}
 			outlier(input);
+
+			if (realSamples == REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.95 &&
+					("URL".equals(matchPatternInfo.typeQualifier) || "Email".equals(matchPatternInfo.typeQualifier)))
+				backoutToString(realSamples);
 			break;
 
 		case "Date":
