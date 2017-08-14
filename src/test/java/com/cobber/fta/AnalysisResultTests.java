@@ -982,6 +982,41 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void notPseudoBoolean() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String[] inputs = "7|1|1|7|7|1|1|7|7|1|7|7|7|1|1|7|1|1|1|1|7|7|7|7|1|1|1".split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getPattern(), "\\d{1}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "Long");
+		Assert.assertEquals(result.getMinLength(), 1);
+		Assert.assertEquals(result.getMaxLength(), 1);
+		Assert.assertEquals(result.getMinValue(), "1");
+		Assert.assertEquals(result.getMaxValue(), "7");
+		Assert.assertTrue(inputs[0].matches(result.getPattern()));
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
+	}
+
+	@Test
 	public void basicNotPseudoBoolean() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
@@ -1179,6 +1214,82 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 0.9487179487179487);
 		Assert.assertEquals(result.getType(), "String");
 		Assert.assertEquals(result.getTypeQualifier(), "Email");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
+	}
+
+	@Test
+	public void basicURL() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "http://www.lavastorm.com|ftp://ftp.sun.com|https://www.google.com|" +
+				"https://www.homedepot.com|http://www.lowes.com|http://www.apple.com|http://www.sgi.com|" +
+				"http://www.ibm.com|http://www.snowgum.com|http://www.zaius.com|http://www.cobber.com|" +
+				"http://www.ey.com|http://www.zoomer.com|http://www.redshift.com|http://www.segall.net|" +
+				"http://www.sgi.com|http://www.united.com|https://www.hp.com/printers/support|http://www.opinist.com|" +
+				"http://www.java.com|http://www.slashdot.org|http://theregister.co.uk";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + result.getNullCount());
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getPattern(), ".{17,35}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertEquals(result.getTypeQualifier(), "URL");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
+	}
+
+	@Test
+	public void notEmail() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "2@3|3@4|b4@5|" +
+				"6@7|7@9|12@13|100@2|" +
+				"Zoom@4|Marinelli@44|55@90341|Parker@46|" +
+				"Pigneri@22|Rasmussen@77|478 @ 1912|88 @ LC|" +
+				"Smith@99|Song@88|77@|@lavastorm.com|" +
+				"Tuddenham@02421|Williams@uk|Wilson@99";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train("tim@cobber com");
+		analysis.train("tim@cobber com");
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 2 + result.getNullCount());
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getPattern(), ".{3,15}");
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getMatchCount(), inputs.length + 2);
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getPattern()));
@@ -1999,6 +2110,39 @@ public class AnalysisResultTests {
 					matches++;
 		}
 		Assert.assertEquals(result.getMatchCount(), matches);
+	}
+
+	@Test
+	public void constantLength3() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "aaa|bbb|ccc|ddd|eee|fff|ggg|hhh|iii|jjj|" +
+				"aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|" +
+				"iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
+				"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
+				"aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|" +
+				"iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
+				"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
+				"mmm|iii|uuu|fff|ggg|ggg|uuu|uuu|uuu|uuu|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{3}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "String");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test

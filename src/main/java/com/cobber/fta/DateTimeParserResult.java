@@ -60,7 +60,8 @@ public class DateTimeParserResult {
 	}
 
 	private enum Token {
-		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DIGITS_1_OR_2, MONTHS_1_OR_2, MONTHS_2, DIGITS_2, DIGITS_4, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET
+		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DIGITS_1_OR_2, MONTHS_1_OR_2, MONTHS_2,
+		HOURS_1_OR_2, HOURS_2, MINS_2, SECS_2, DIGITS_2, YEARS_2, YEARS_4, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET
 	}
 
 	private class FormatterToken {
@@ -313,25 +314,25 @@ public class DateTimeParserResult {
 			case '?':
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 					i++;
-					ret.add(new FormatterToken(Token.DIGITS_2));
+					ret.add(new FormatterToken(ch == 'H' ? Token.HOURS_2 : Token.DIGITS_2));
 				}
 				else
-					ret.add(new FormatterToken(Token.DIGITS_1_OR_2));
+					ret.add(new FormatterToken(ch == 'H' ? Token.HOURS_1_OR_2 : Token.DIGITS_1_OR_2));
 				break;
 
 			case 'm':
 			case 's':
-				ret.add(new FormatterToken(Token.DIGITS_2));
+				ret.add(new FormatterToken(ch == 'm' ? Token.MINS_2 : Token.SECS_2));
 				i++;
 				break;
 
 			case 'y':
 				i++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'y') {
-					ret.add(new FormatterToken(Token.DIGITS_4));
+					ret.add(new FormatterToken(Token.YEARS_4));
 					i += 2;
 				} else
-					ret.add(new FormatterToken(Token.DIGITS_2));
+					ret.add(new FormatterToken(Token.YEARS_2));
 				break;
 
 			case 'x':
@@ -364,6 +365,26 @@ public class DateTimeParserResult {
 		return ret.toArray(new FormatterToken[ret.size()]);
 	}
 
+
+	void validateTokenValue(Token token, int value, String input, int upto) {
+		switch (token) {
+		case HOURS_2:
+			if (value > 24)
+				throw new DateTimeParseException("Invalid value for hours (expected 0-23)", input, upto);
+			break;
+
+		case MINS_2:
+			if (value > 59)
+				throw new DateTimeParseException("Invalid value for minutes (expected 0-59)", input, upto);
+			break;
+
+		case SECS_2:
+			if (value > 59)
+				throw new DateTimeParseException("Invalid value for seconds (expected 0-59)", input, upto);
+			break;
+		}
+	}
+
 	/**
 	 * Determine whether a string input matches this DateTimeParserResult.
 	 * @param input The string to validate (stripped of whitespace).
@@ -392,6 +413,7 @@ public class DateTimeParserResult {
 				upto += 3;
 				break;
 
+			case HOURS_1_OR_2:
 			case DIGITS_1_OR_2:
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
@@ -409,7 +431,7 @@ public class DateTimeParserResult {
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				inputChar = input.charAt(upto);
-				if (!Character.isDigit(input.charAt(upto)))
+				if (!Character.isDigit(inputChar))
 					throw new DateTimeParseException("Expecting digit", input, upto);
 				value = inputChar - '0';
 				upto++;
@@ -431,20 +453,29 @@ public class DateTimeParserResult {
 					throw new DateTimeParseException("0 value illegal for day/month", input, upto);
 				break;
 
+			case HOURS_2:
+			case MINS_2:
+			case SECS_2:
+			case YEARS_2:
 			case DIGITS_2:
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
-				if (!Character.isDigit(input.charAt(upto)))
+				inputChar = input.charAt(upto);
+				if (!Character.isDigit(inputChar))
 					throw new DateTimeParseException("Expecting digit", input, upto);
+				value = inputChar - '0';
 				upto++;
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
-				if (!Character.isDigit(input.charAt(upto)))
+				inputChar = input.charAt(upto);
+				if (!Character.isDigit(inputChar))
 					throw new DateTimeParseException("Expecting digit", input, upto);
+				value = 10 * value + (inputChar - '0');
 				upto++;
+				validateTokenValue(nextToken, value, input, upto - 2);
 				break;
 
-			case DIGITS_4:
+			case YEARS_4:
 				if (upto + 4 > inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				for (int j = 0; j < 4; j++) {
@@ -483,7 +514,7 @@ public class DateTimeParserResult {
 				if (upto + len >= inputLength)
 					throw new DateTimeParseException("Expecting time zone offset, end of input", input, upto);
 				char direction = input.charAt(upto);
-				String offset = input.substring(upto + 1).replaceAll("[0-9]", "þ");
+				String offset = input.substring(upto + 1, upto + 1 + len).replaceAll("[0-9]", "þ");
 				if ((direction != '-' && direction != '+') || !pattern.equals(offset))
 					throw new DateTimeParseException("Expecting time zone offset, bad time zone offset", input, upto);
 
@@ -506,6 +537,10 @@ public class DateTimeParserResult {
 						throw new DateTimeParseException("Expecting time zone offset, invalid second offset", input, upto + 1 + secondOffset[token.count]);
 				}
 				upto += len + 1;
+
+				// One letter outputs just the hour, such as '+01', unless the minute is non-zero in which case the minute is also output, such as '+0130'.
+				if (token.count == 1 && upto + 2 == inputLength)
+					upto += 2;
 				break;
 			}
 		}
@@ -597,7 +632,7 @@ public class DateTimeParserResult {
 //					Six or more letters throws IllegalArgumentException. Pattern letter 'X' (upper case) will output 'Z' when the offset to be output would be zero, whereas pattern letter 'x' (lower case) will output '+00', '+0000', or '+00:00'.
 					switch (token.count) {
 					case 1:
-						ret.append("[-+][0-9]{2}[0-9]{0,2}");
+						ret.append("[-+][0-9]{2}([0-9]{2})?");
 						break;
 
 					case 2:
@@ -624,18 +659,23 @@ public class DateTimeParserResult {
 				case DAYS_1_OR_2:
 				case DIGITS_1_OR_2:
 				case MONTHS_1_OR_2:
+				case HOURS_1_OR_2:
 					digitsMin += 1;
 					digitsMax += 2;
 					break;
 
 				case DAYS_2:
 				case MONTHS_2:
+				case YEARS_2:
+				case HOURS_2:
+				case MINS_2:
+				case SECS_2:
 				case DIGITS_2:
 					digitsMin += 2;
 					digitsMax += 2;
 					break;
 
-				case DIGITS_4:
+				case YEARS_4:
 					digitsMin += 4;
 					digitsMax += 4;
 					break;

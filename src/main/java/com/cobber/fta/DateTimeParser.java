@@ -419,7 +419,7 @@ public class DateTimeParser {
 				// FALL THROUGH
 
 			case '-':
-				if (ISO8601) {
+				if (ISO8601 || (dateSeen && dateClosed && timeSeen && timeComponent == 2)) {
 					int hours = Integer.MIN_VALUE;
 					int minutesOffset = Integer.MIN_VALUE;
 					int secondsOffset = Integer.MIN_VALUE;
@@ -529,7 +529,8 @@ public class DateTimeParser {
 						return null;
 					if (!((digits == 2) || (yearInDateFirst == false && digits == 4)))
 						return null;
-					fourDigitYear = digits == 4;
+					if (!fourDigitYear)
+						fourDigitYear = digits == 4;
 					dateValue[dateComponent] = value;
 					dateDigits[dateComponent] = digits;
 					dateClosed = true;

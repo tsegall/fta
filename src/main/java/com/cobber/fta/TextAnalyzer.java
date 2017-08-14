@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URL;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
@@ -153,6 +154,7 @@ public class TextAnalyzer {
 	long totalLeadingZeros = 0;
 	int possibleEmails = 0;
 	int possibleZips = 0;
+	int possibleURLs = 0;
 
 	Map.Entry<String, Integer> lastCompute;
 
@@ -264,6 +266,18 @@ public class TextAnalyzer {
 		monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
 		groupingSeparator = formatSymbols.getGroupingSeparator();
 		minusSign = formatSymbols.getMinusSign();
+	}
+
+	/**
+	 * Construct a Text Analyzer for the named data stream.
+	 *
+	 * @param name The name of the data stream (e.g. the column of the CSV file)
+	 *
+	 * @throws IOException
+	 *             If an internal error occurred.
+	 */
+	public TextAnalyzer(String name) throws IOException {
+		this(name, null);
 	}
 
 	/**
@@ -434,6 +448,14 @@ public class TextAnalyzer {
 				InternetAddress[] emails = InternetAddress.parse(input);
 				return emails.length != 0;
 			} catch (AddressException e) {
+				return false;
+			}
+		} else if ("URL".equals(matchPatternInfo.typeQualifier)) {
+			try {
+				URL url = new URL(input);
+				url.toURI();
+				return true;
+			} catch (Exception exception) {
 				return false;
 			}
 		}
@@ -621,6 +643,8 @@ public class TextAnalyzer {
 			possibleEmails++;
 		if (length == 5 && digitsSeen == 5)
 			possibleZips++;
+		if (input.indexOf("://") != -1)
+			possibleURLs++;
 
 		StringBuilder compressedl0 = new StringBuilder(length);
 		if ("true".equalsIgnoreCase(input) || "false".equalsIgnoreCase(input)) {
@@ -849,10 +873,23 @@ public class TextAnalyzer {
 						for (String sample : raw)
 							if (trackString(sample, false))
 								emails++;
-						// if at least 90% of them looked like a genuine email
-						// then stay with email, otherwise back out to simple
-						// String
+						// if at least 90% of them looked like a genuine email then
+						// stay with email, otherwise back out to simple String
 						if (emails < .9 * raw.size())
+							matchPatternInfo = save;
+					}
+
+					// Do we have a set of possible URLs?
+					if (possibleURLs == raw.size()) {
+						PatternInfo save = matchPatternInfo;
+						matchPatternInfo = new PatternInfo(matchPattern, "String", "URL", -1, -1, null, null);
+						int URLs = 0;
+						for (String sample : raw)
+							if (trackString(sample, false))
+								URLs++;
+						// if at least 90% of them looked like a genuine URL then
+						// stay with URL, otherwise back out to simple String
+						if (URLs < .9 * raw.size())
 							matchPatternInfo = save;
 					}
 
@@ -1088,7 +1125,7 @@ public class TextAnalyzer {
 		for (Map.Entry<String, Integer> entry : outliers.entrySet()) {
 			misses++;
 			missCount += entry.getValue();
-			// It makes sense to break out early if we know we are going to fail
+			// Break out early if we know we are going to fail
 			if ((double) missCount / realSamples > .05)
 				return false;
 		}
@@ -1103,7 +1140,7 @@ public class TextAnalyzer {
 					misses++;
 					missCount += entry.getValue();
 					newOutliers.put(entry.getKey(), entry.getValue());
-					// It makes sense to break out early if we know we are going to fail
+					// Break out early if we know we are going to fail
 					if ((double) missCount / realSamples > .05)
 						return false;
 				}
@@ -1142,7 +1179,7 @@ public class TextAnalyzer {
 			else {
 				misses++;
 				missCount += entry.getValue();
-				// It makes sense to break out early if we know we are going to fail
+				// Break out early if we know we are going to fail
 				if ((double) missCount / realSamples > .05)
 					return false;
 			}

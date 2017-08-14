@@ -76,6 +76,32 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void intuit8601DD() throws Exception {
+		Assert.assertEquals(DateTimeParser.determineFormatString("2004-01-01T00:00:00+05", null), "yyyy-MM-dd'T'HH:mm:ssx");
+
+		DateTimeParser det = new DateTimeParser();
+		String sample = "2004-01-01T00:00:00+05";
+		det.train(sample);
+
+		DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd'T'HH:mm:ssx");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-+][0-9]{2}([0-9]{2})?");
+		Assert.assertTrue(sample.matches(re));
+
+		Assert.assertTrue(result.isValid("2004-01-01T00:00:00+05"));
+		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+08"));
+		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+0830"));
+		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+?08"));
+
+		Assert.assertTrue(result.isValid8("2004-01-01T00:00:00+05"));
+		Assert.assertTrue(result.isValid8("2012-03-04T19:22:10+08"));
+		Assert.assertTrue(result.isValid8("2012-03-04T19:22:10+0830"));
+		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+?08"));
+	}
+
+	@Test
 	public void intuit8601DD_DD() throws Exception {
 		Assert.assertEquals(DateTimeParser.determineFormatString("2004-01-01T00:00:00+05:00", null), "yyyy-MM-dd'T'HH:mm:ssxxx");
 
@@ -94,10 +120,13 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+08:00"));
 		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+08:0"));
 		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+?08:00"));
+		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+19:00"));
+
 		Assert.assertTrue(result.isValid8("2004-01-01T00:00:00+05:00"));
 		Assert.assertTrue(result.isValid8("2012-03-04T19:22:10+08:00"));
 		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+08:0"));
 		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+?08:00"));
+		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+19:00"));
 	}
 
 	@Test
@@ -119,10 +148,14 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+08:00:00"));
 		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+08:00:0"));
 		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+O8:00:00"));
+		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+08:60:00"));
+		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+08:00:60"));
+
 		Assert.assertTrue(result.isValid8("2004-01-01T00:00:00+05:00:00"));
 		Assert.assertTrue(result.isValid8("2012-03-04T19:22:10+08:00:00"));
 		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+08:00:0"));
 		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+O8:00:00"));
+		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+08:00:60"));
 	}
 
 	@Test
@@ -332,6 +365,50 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertFalse(result.isValid8("2/12/1998 9:5"));
 		Assert.assertFalse(result.isValid8("2/12/1998 9:"));
 		Assert.assertFalse(result.isValid8("2/12/1998 9:55:5"));
+	}
+
+	@Test
+	public void intuitAlmostISO() throws Exception {
+		DateTimeParser det = new DateTimeParser();
+		String sample = "2004-01-01 12:35:41-0500";
+
+		det.train(sample);
+		det.train("2004-01-01 02:00:00-0500");
+		det.train("2006-01-01 05:23:21-0500");
+		det.train("2014-11-21 15:12:21-0500");
+		det.train("2008-05-17 18:12:21-0400");
+		det.train("2004-01-01 00:23:32-0500");
+		det.train("2006-01-01 13:00:12-0500");
+		det.train("2006-01-01 00:00:00-0500");
+		det.train("2004-01-01 18:16:32-0500");
+		det.train("2004-10-08 22:10:01-0400");
+		det.train("2004-01-01 00:00:00-0500");
+		det.train("2014-01-01 22:10:11-0500");
+		det.train("2004-10-22 00:00:00-0400");
+		det.train("1998-09-05 13:01:12-0400");
+		det.train("2008-03-01 13:06:32-0500");
+		det.train("2011-10-07 00:00:00-0400");
+		det.train(null);
+		det.train("2000-06-10 02:00:00-0400");
+		det.train(null);
+		det.train("2018-02-11 19:21:11-0500");
+
+		DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ssxx");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}[-+][0-9]{4}");
+		Assert.assertTrue(sample.trim().matches(re));
+
+		Assert.assertTrue(result.isValid("2000-06-10 02:00:00-0400"));
+		Assert.assertFalse(result.isValid("2000-06-10 02:00:60-0400"));
+		Assert.assertFalse(result.isValid("2000-06-10 02:60:00-0400"));
+		Assert.assertFalse(result.isValid("2000-06-10 25:00:00-0400"));
+
+		Assert.assertTrue(result.isValid8("2000-06-10 02:00:00-0400"));
+		Assert.assertFalse(result.isValid8("2000-06-10 02:00:60-0400"));
+		Assert.assertFalse(result.isValid8("2000-06-10 02:60:00-0400"));
+		Assert.assertFalse(result.isValid8("2000-06-10 25:00:00-0400"));
 	}
 
 	@Test
