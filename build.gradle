@@ -108,4 +108,10 @@ jacocoTestReport {
         csv.enabled false
         html.destination "${buildDir}/reports/coverage"
     }
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/Driver**'])
+        })
+    }
 }
