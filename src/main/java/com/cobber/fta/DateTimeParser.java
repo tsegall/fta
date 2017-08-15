@@ -315,8 +315,19 @@ public class DateTimeParser {
 		// Cope with simple dates of the form '21 May 2017' or '9-Sep-2018'
 		if (trimmed.indexOf('þ') != -1)
 			return null;
-		String templated = trimmed.replaceAll("[0-9]", "þ");
-		templated = templated.replaceAll("[a-zA-Z]", "9");
+
+		// Fast version of replaceAll("[0-9]", "þ") and replaceAll("[a-zA-Z]", "9")
+		StringBuilder templatedBuilder = new StringBuilder(len);
+		for (int i = 0; i < len; i++) {
+			char ch = trimmed.charAt(i);
+			if (Character.isDigit(ch))
+				templatedBuilder.append('þ');
+			else if (Character.isAlphabetic(ch))
+				templatedBuilder.append('9');
+			else
+				templatedBuilder.append(ch);
+		}
+		String templated = templatedBuilder.toString();
 
 		SimpleDateMatcher matcher = simpleDateMatcher.get(templated);
 		if (matcher != null) {
