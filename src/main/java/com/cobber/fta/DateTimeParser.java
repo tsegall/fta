@@ -402,7 +402,7 @@ public class DateTimeParser {
 				break;
 
 			case ':':
-				if ((dateSeen && !dateClosed) || (timeSeen && timeClosed))
+				if ((dateSeen && !dateClosed) || (timeSeen && timeClosed) || timeComponent == 3)
 					return null;
 
 				timeFirst = dateComponent == 0;
@@ -514,7 +514,7 @@ public class DateTimeParser {
 				break;
 
 			case '.':
-				if ((dateSeen && !dateClosed) || (timeSeen && timeClosed) || timeComponent != 2)
+				if ((dateSeen && !dateClosed) || (timeSeen && timeClosed) || timeComponent != 2 || digits != 2)
 					return null;
 				timeValue[timeComponent] = value;
 				timeDigits[timeComponent] = digits;
@@ -591,7 +591,7 @@ public class DateTimeParser {
 		}
 		if (timeSeen && !timeClosed) {
 			// Need to close out the time
-			if (timeComponent != 3 && digits != 2)
+			if ((timeComponent != 3 && digits != 2) || (timeComponent == 3 && (digits == 0 || digits > 9)))
 				return null;
 			timeValue[timeComponent] = value;
 			timeDigits[timeComponent] = digits;
@@ -606,7 +606,7 @@ public class DateTimeParser {
 
 		String timeAnswer = null;
 		if (timeComponent != 0) {
-			if (timeValue[0] > 23 || timeValue[1] > 59 || (timeComponent == 2 && timeValue[2] > 59))
+			if (timeValue[0] > 23 || timeValue[1] > 59 || (timeComponent >= 2 && timeValue[2] > 59))
 				return null;
 			String hours = hourLength == 1 ? "H" : "HH";
 			timeAnswer = hours + ":mm";

@@ -678,7 +678,8 @@ public class DetermineDateTimeFormatTests {
 	public void bogusInput() throws Exception {
 		String inputs = "21/12/99:|21/12/99:|18:46:|4:38  39|3124/08/|890/65 1/|7/87/33| 89:50|18:52 56:|18/94/06|0463 5 71|50 9:22|" +
 				"95/06/88|0-27-98|08/56 22/|31-0-99|0/7:6/11 //61|8:73/4/13 15|14/23/3367| 00/21/79|22-23-00|0/20/2361|0/2/52 9:50 4 |" +
-				"1:57:11  1/4/98|2015-8-17T|4/01/41 3:43 T450|37/8/005 5:05|0/6/95|0000 7 1|2000-12-12T12:45-72|2000-12-12T12:45-112|";
+				"1:57:11  1/4/98|2015-8-17T|4/01/41 3:43 T450|37/8/005 5:05|0/6/95|0000 7 1|2000-12-12T12:45-72|2000-12-12T12:45-112|" +
+				"12:45:64.|84:12:45.5712:45| 12:45:63.3 |";
 		String[] input = inputs.split("\\|");
 
 		for (String testCase : input) {
@@ -691,7 +692,7 @@ public class DetermineDateTimeFormatTests {
 
 	//@Test
 	public void bogusInput2() throws Exception {
-		String testInput = "2000-12-12 12:45 AGT";
+		String testInput = "12:45:.085";
 		DateTimeParser det = new DateTimeParser();
 		det.train(testInput);
 		DateTimeParserResult result = det.getResult();
@@ -841,7 +842,7 @@ public class DetermineDateTimeFormatTests {
 					String formatString = result.getFormatString();
 
 					String re = result.getRegExp();
-					Assert.assertTrue(trimmed.matches(re));
+					Assert.assertTrue(trimmed.matches(re), "input: '" + trimmed + "', RE: '" + re + "'");
 
 					String type = result.getType();
 					add(formatStrings, formatString);

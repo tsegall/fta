@@ -501,6 +501,8 @@ public class TextAnalyzer {
 		return true;
 	}
 
+	private HashMap<String, DateTimeFormatter> formatterCache = new HashMap<String, DateTimeFormatter>();
+
 	private void trackDateTime(String dateFormat, String input) throws DateTimeParseException {
 		String trimmed = input.trim();
 
@@ -510,7 +512,14 @@ public class TextAnalyzer {
 			return;
 		}
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(result.getFormatString());
+		// Grab the cached Formatter
+		String formatString = result.getFormatString();
+		DateTimeFormatter formatter = formatterCache.get(formatString);
+		if (formatter == null) {
+			formatter = DateTimeFormatter.ofPattern(formatString);
+			formatterCache.put(formatString, formatter);
+		}
+
 		switch (result.getType()) {
 		case "Time":
 			LocalTime lt = LocalTime.parse(trimmed, formatter);
