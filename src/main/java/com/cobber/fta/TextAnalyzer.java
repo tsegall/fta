@@ -501,7 +501,7 @@ public class TextAnalyzer {
 		return true;
 	}
 
-	private HashMap<String, DateTimeFormatter> formatterCache = new HashMap<String, DateTimeFormatter>();
+	private Map<String, DateTimeFormatter> formatterCache = new HashMap<String, DateTimeFormatter>();
 
 	private void trackDateTime(String dateFormat, String input) throws DateTimeParseException {
 		String trimmed = input.trim();
@@ -646,15 +646,6 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (DateTimeParser.determineFormatString(input, dayFirst) != null)
-			possibleDateTime++;
-		if (atSigns - 1 == commas || atSigns - 1 == semicolons)
-			possibleEmails++;
-		if (length == 5 && digitsSeen == 5)
-			possibleZips++;
-		if (input.indexOf("://") != -1)
-			possibleURLs++;
-
 		StringBuilder compressedl0 = new StringBuilder(length);
 		if ("true".equalsIgnoreCase(input) || "false".equalsIgnoreCase(input)) {
 			compressedl0.append("(?i)true|false");
@@ -684,6 +675,15 @@ public class TextAnalyzer {
 			}
 		}
 		levels[0].add(compressedl0);
+
+		if (DateTimeParser.determineFormatString(input, dayFirst) != null)
+			possibleDateTime++;
+		if (atSigns - 1 == commas || atSigns - 1 == semicolons)
+			possibleEmails++;
+		if (length == 5 && digitsSeen == 5)
+			possibleZips++;
+		if (input.indexOf("://") != -1)
+			possibleURLs++;
 
 		// Create the level 1 and 2
 		if (digitsSeen > 0 && notNumericOnly == false && numericDecimalSeparators <= 1) {
@@ -855,79 +855,73 @@ public class TextAnalyzer {
 				matchPatternInfo = level2patternInfo;
 			}
 
-			if (matchType == null) {
-				if (matchPatternInfo != null) {
-					matchType = matchPatternInfo.type;
-				}
+			matchType = matchPatternInfo.type;
 
-				if (matchType != null) {
-					if (possibleDateTime == raw.size()) {
-						DateTimeParser det = new DateTimeParser(dayFirst);
-						for (String sample : raw)
-							det.train(sample);
+			if (possibleDateTime == raw.size()) {
+				DateTimeParser det = new DateTimeParser(dayFirst);
+				for (String sample : raw)
+					det.train(sample);
 
-						DateTimeParserResult result = det.getResult();
-						String formatString = result.getFormatString();
-						matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), formatString, -1, -1, null,
-								formatString);
-						matchType = matchPatternInfo.type;
-						pattern = matchPatternInfo.pattern;
-					}
-
-					// Do we have a set of possible emails?
-					if (possibleEmails == raw.size()) {
-						PatternInfo save = matchPatternInfo;
-						matchPatternInfo = new PatternInfo(matchPattern, "String", "Email", -1, -1, null, null);
-						int emails = 0;
-						for (String sample : raw)
-							if (trackString(sample, false))
-								emails++;
-						// if at least 90% of them looked like a genuine email then
-						// stay with email, otherwise back out to simple String
-						if (emails < .9 * raw.size())
-							matchPatternInfo = save;
-					}
-
-					// Do we have a set of possible URLs?
-					if (possibleURLs == raw.size()) {
-						PatternInfo save = matchPatternInfo;
-						matchPatternInfo = new PatternInfo(matchPattern, "String", "URL", -1, -1, null, null);
-						int URLs = 0;
-						for (String sample : raw)
-							if (trackString(sample, false))
-								URLs++;
-						// if at least 90% of them looked like a genuine URL then
-						// stay with URL, otherwise back out to simple String
-						if (URLs < .9 * raw.size())
-							matchPatternInfo = save;
-					}
-
-					// Do we have a set of possible zip codes?
-					if (possibleZips == raw.size()) {
-						PatternInfo save = matchPatternInfo;
-						matchPatternInfo = typeInfo.get("Long.ZIP");
-						pattern = matchPatternInfo.pattern;
-
-						int zipCount = 0;
-						for (String sample : raw)
-							if (trackLong(sample, false))
-								zipCount++;
-						// if at least 90% of them looked like a genuine zip
-						// then stay with zip, otherwise back out to simple Long
-						if (zipCount < .9 * raw.size()) {
-							matchPatternInfo = save;
-							pattern = save.pattern;
-						}
-						matchType = matchPatternInfo.type;
-					}
-
-					for (String sample : raw)
-						trackResult(sample);
-
-					matchCount = best.getValue();
-					matchPattern = pattern;
-				}
+				DateTimeParserResult result = det.getResult();
+				String formatString = result.getFormatString();
+				matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), formatString, -1, -1, null,
+						formatString);
+				matchType = matchPatternInfo.type;
+				pattern = matchPatternInfo.pattern;
 			}
+
+			// Do we have a set of possible emails?
+			if (possibleEmails == raw.size()) {
+				PatternInfo save = matchPatternInfo;
+				matchPatternInfo = new PatternInfo(matchPattern, "String", "Email", -1, -1, null, null);
+				int emails = 0;
+				for (String sample : raw)
+					if (trackString(sample, false))
+						emails++;
+				// if at least 90% of them looked like a genuine email then
+				// stay with email, otherwise back out to simple String
+				if (emails < .9 * raw.size())
+					matchPatternInfo = save;
+			}
+
+			// Do we have a set of possible URLs?
+			if (possibleURLs == raw.size()) {
+				PatternInfo save = matchPatternInfo;
+				matchPatternInfo = new PatternInfo(matchPattern, "String", "URL", -1, -1, null, null);
+				int URLs = 0;
+				for (String sample : raw)
+					if (trackString(sample, false))
+						URLs++;
+				// if at least 90% of them looked like a genuine URL then
+				// stay with URL, otherwise back out to simple String
+				if (URLs < .9 * raw.size())
+					matchPatternInfo = save;
+			}
+
+			// Do we have a set of possible zip codes?
+			if (possibleZips == raw.size()) {
+				PatternInfo save = matchPatternInfo;
+				matchPatternInfo = typeInfo.get("Long.ZIP");
+				pattern = matchPatternInfo.pattern;
+
+				int zipCount = 0;
+				for (String sample : raw)
+					if (trackLong(sample, false))
+						zipCount++;
+				// if at least 90% of them looked like a genuine zip
+				// then stay with zip, otherwise back out to simple Long
+				if (zipCount < .9 * raw.size()) {
+					matchPatternInfo = save;
+					pattern = save.pattern;
+				}
+				matchType = matchPatternInfo.type;
+			}
+
+			for (String sample : raw)
+				trackResult(sample);
+
+			matchCount = best.getValue();
+			matchPattern = pattern;
 		}
 	}
 

@@ -64,7 +64,7 @@ public class DateTimeParserResult {
 	private enum Token {
 		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DIGITS_1_OR_2, MONTHS_1_OR_2, MONTHS_2,
 		HOURS_1_OR_2, HOURS_2, MINS_2, SECS_2, FRACTION,
-		DIGITS_2, YEARS_2, YEARS_4, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET
+		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET
 	}
 
 	private class FormatterToken {
@@ -188,7 +188,12 @@ public class DateTimeParserResult {
 					i++;
 					if (i + 1 < formatLength && formatString.charAt(i + 1) == 'M') {
 						i++;
-						monthLength = 3;
+						if (i + 1 < formatLength && formatString.charAt(i + 1) == 'M') {
+							i++;
+							monthLength = 4;
+						}
+						else
+							monthLength = 3;
 					}
 					else
 						monthLength = 2;
@@ -308,7 +313,12 @@ public class DateTimeParserResult {
 					i++;
 					if (i + 1 < formatLength && formatString.charAt(i + 1) == 'M') {
 						i++;
-						ret.add(new FormatterToken(Token.MONTH_ABBR));
+						if (i + 1 < formatLength && formatString.charAt(i + 1) == 'M') {
+							i++;
+							ret.add(new FormatterToken(Token.MONTH));
+						}
+						else
+							ret.add(new FormatterToken(Token.MONTH_ABBR));
 					}
 					else
 						ret.add(new FormatterToken(Token.MONTHS_2));
@@ -421,12 +431,21 @@ public class DateTimeParserResult {
 			int value = 0;
 
 			switch (nextToken) {
+			case MONTH:
+				int start = upto;
+				while (upto < inputLength && Character.isAlphabetic(input.charAt(upto)))
+					upto++;
+				String month = input.substring(start, upto);
+				if (DateTimeParser.monthOffset(month) == -1)
+					throw new DateTimeParseException("Month invalid", input, start);
+				break;
+
 			case MONTH_ABBR:
 				if (upto + 3 > inputLength)
 					throw new DateTimeParseException("Month Abbreviation not complete", input, upto);
 				String monthAbbreviation = input.substring(upto, upto + 3);
 				if (DateTimeParser.monthAbbreviationOffset(monthAbbreviation) == -1)
-					throw new DateTimeParseException("Month Abbreviation incorrect", input, upto);
+					throw new DateTimeParseException("Month Abbreviation invalid", input, upto);
 				upto += 3;
 				break;
 
@@ -630,7 +649,7 @@ public class DateTimeParserResult {
 		int digitsMax = 0;
 
 		for (FormatterToken token : tokenize()) {
-			if (token.type == Token.CONSTANT_CHAR || token.type == Token.MONTH_ABBR ||
+			if (token.type == Token.CONSTANT_CHAR || token.type == Token.MONTH || token.type == Token.MONTH_ABBR ||
 					token.type == Token.TIMEZONE || token.type == Token.TIMEZONE_OFFSET) {
 				if (digitsMin != 0) {
 					ret.append(digitsRegExp(digitsMin, digitsMax));
@@ -642,6 +661,10 @@ public class DateTimeParserResult {
 					if (token.value == '.')
 						ret.append('\\');
 					ret.append(token.value);
+					break;
+
+				case MONTH:
+					ret.append(DateTimeParser.monthPattern);
 					break;
 
 				case MONTH_ABBR:

@@ -159,6 +159,82 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void fullMonths() throws Exception {
+		Assert.assertEquals(DateTimeParser.determineFormatString("25 July 2018", null), "dd MMMM yyyy");
+		Assert.assertEquals(DateTimeParser.determineFormatString("25-July-2018", null), "dd-MMMM-yyyy");
+		Assert.assertEquals(DateTimeParser.determineFormatString("7 June 2017", null), "d MMMM yyyy");
+		Assert.assertEquals(DateTimeParser.determineFormatString("7-June-2017", null), "d-MMMM-yyyy");
+
+		Assert.assertEquals(DateTimeParser.determineFormatString("June 23, 2017", null), "MMMM dd',' yyyy");
+		Assert.assertEquals(DateTimeParser.determineFormatString("August 8, 2017", null), "MMMM d',' yyyy");
+		Assert.assertEquals(DateTimeParser.determineFormatString("August 18 2017", null), "MMMM dd yyyy");
+		Assert.assertEquals(DateTimeParser.determineFormatString("December 9 2017", null), "MMMM d yyyy");
+		Assert.assertEquals(DateTimeParser.determineFormatString("January-14-2017", null), "MMMM-dd-yyyy");
+		Assert.assertEquals(DateTimeParser.determineFormatString("February-4-2017", null), "MMMM-d-yyyy");
+	}
+
+	@Test
+	public void basic_DTP_DD_MMMM_YYYY() throws Exception {
+		String input = "25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
+				"25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
+				"25 July 2018|12 August 1984|10 May 2000|1 April 1970|16 July 1934|06 July 1961|" +
+				"25 July 2018|13 August 1984|10 January 2000|1 May 1970|16 July 1934|06 July 1961|" +
+				"25 July 2018|12 November 1984|10 October 2000|1 January 1970|16 June 1934|06 July 1961|";
+		String inputs[] = input.split("\\|");
+		DateTimeParser det = new DateTimeParser();
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		DateTimeParserResult result = det.getResult();
+
+		String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "d MMMM yyyy");
+
+		String re = result.getRegExp();
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(re));
+		}
+	}
+
+	@Test
+	public void basic_DD_MMMM_YYYY() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+
+		String input = "25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
+				"25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
+				"25 July 2018|12 August 1984|10 May 2000|1 April 1970|16 July 1934|06 July 1961|" +
+				"25 July 2018|13 August 1984|10 January 2000|1 May 1970|16 July 1934|06 July 1961|" +
+				"25 July 2018|12 November 1984|10 October 2000|1 January 1970|16 June 1934|06 July 1961|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), "Date");
+		Assert.assertEquals(result.getTypeQualifier(), "d MMMM yyyy");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\d{1,2} \\p{Alpha}{0,9} \\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
+	}
+
+	@Test
 	public void intuitMMM_DD_YYYY() throws Exception {
 		String trimmed = "May 1, 2018";
 		DateTimeParser det = new DateTimeParser();
@@ -365,6 +441,50 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertFalse(result.isValid8("2/12/1998 9:5"));
 		Assert.assertFalse(result.isValid8("2/12/1998 9:"));
 		Assert.assertFalse(result.isValid8("2/12/1998 9:55:5"));
+	}
+
+	@Test
+	public void intuitISONoSeps() throws Exception {
+		DateTimeParser det = new DateTimeParser();
+		String sample = "20040101T123541Z";
+
+		det.train(sample);
+		det.train("20040101T020000Z");
+		det.train("20060101T052321Z");
+		det.train("20141121T151221Z");
+		det.train("20080517T181221Z");
+		det.train("20040101T002332Z");
+		det.train("20060101T130012Z");
+		det.train("20060101T000000Z");
+		det.train("20040101T181632Z");
+		det.train("20041008T221001Z");
+		det.train("20040101T000000Z");
+		det.train("20140101T221011Z");
+		det.train("20041022T000000Z");
+		det.train("19980905T130112Z");
+		det.train("20080301T130632Z");
+		det.train("20111007T000000Z");
+		det.train(null);
+		det.train("20000610T020000Z");
+		det.train(null);
+		det.train("20180211T192111Z");
+
+		DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "yyyyMMdd'T'HHmmss'Z'");
+
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\d{8}T\\d{6}Z");
+		Assert.assertTrue(sample.trim().matches(re));
+
+		Assert.assertTrue(result.isValid("20000610T020000Z"));
+		Assert.assertFalse(result.isValid("20000610T020060Z"));
+		Assert.assertFalse(result.isValid("20000610T026000Z"));
+		Assert.assertFalse(result.isValid("20000610T250000Z"));
+
+		Assert.assertTrue(result.isValid8("20000610T020000Z"));
+		Assert.assertFalse(result.isValid8("20000610T020060Z"));
+		Assert.assertFalse(result.isValid8("20000610T026000Z"));
+		Assert.assertFalse(result.isValid8("20000610T250000Z"));
 	}
 
 	@Test

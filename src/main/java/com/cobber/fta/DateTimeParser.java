@@ -48,22 +48,40 @@ public class DateTimeParser {
 		int yearOffset;
 		int yearLength;
 
-		SimpleDateMatcher(String matcher, String format, int dayOffset, int dayLength, int monthOffset, int monthLength, int yearOffset, int yearLength) {
+		SimpleDateMatcher(String matcher, String format, int[] dateFacts) {
 			this.matcher = matcher;
 			this.format = format;
-			this.dayOffset = dayOffset;
-			this.dayLength = dayLength;
-			this.monthOffset = monthOffset;
-			this.monthLength = monthLength;
-			this.yearOffset = yearOffset;
-			this.yearLength = yearLength;
+			this.dayOffset = dateFacts[0];
+			this.dayLength = dateFacts[1];
+			this.monthOffset = dateFacts[2];
+			this.monthLength = dateFacts[3];
+			this.yearOffset = dateFacts[4];
+			this.yearLength = dateFacts[5];
 		}
 	}
+	static Map<String, Integer> months = new HashMap<String, Integer>();
+	static String monthPattern = null;
 	static Map<String, Integer> monthAbbr = new HashMap<String, Integer>();
 	static Set<String> timeZones = new HashSet<String>();
 	static Map<String, SimpleDateMatcher> simpleDateMatcher = new HashMap<String, SimpleDateMatcher>();
 
 	static {
+		// Setup the Months
+		int shortestMonth = Integer.MAX_VALUE;
+		int longestMonth = Integer.MIN_VALUE;
+		String[] longMonths = new DateFormatSymbols().getMonths();
+		for (int i = 0; i < longMonths.length; i++) {
+			String month = longMonths[i].toUpperCase(Locale.ROOT);
+			months.put(month, i + 1);
+			int len = month.length();
+			if (len < shortestMonth)
+				shortestMonth = len;
+			if (len > longestMonth)
+				longestMonth = len;
+		}
+		monthPattern = "\\p{Alpha}{" + String.valueOf(shortestMonth) + "," + String.valueOf(longestMonth) + "}";
+
+
 		// Setup the Monthly abbreviations
 		String[] shortMonths = new DateFormatSymbols().getShortMonths();
 		for (int i = 0; i < shortMonths.length; i++) {
@@ -73,31 +91,51 @@ public class DateTimeParser {
 		// Cache the set of available Time Zones
 		Collections.addAll(timeZones, TimeZone.getAvailableIDs());
 
-		simpleDateMatcher.put("þþþþ þþ þþ", new SimpleDateMatcher("þþþþ þþ þþ", "yyyy MM dd", 8, 2, 5, 2, 0, 4));
-		simpleDateMatcher.put("þþþþ þ þþ", new SimpleDateMatcher("þþþþ þ þþ", "yyyy M dd", 7, 2, 5, 1, 0, 4));
-		simpleDateMatcher.put("þþþþ þþ þ", new SimpleDateMatcher("þþþþ þþ þ", "yyyy MM d", 8, 1, 5, 2, 0, 4));
-		simpleDateMatcher.put("þþþþ þ þ", new SimpleDateMatcher("þþþþ þ þ", "yyyy M d", 7, 1, 5, 1, 0, 4));
+		simpleDateMatcher.put("d{4} d{2} d{2}", new SimpleDateMatcher("d{4} d{2} d{2}", "yyyy MM dd", new int[] {8, 2, 5, 2, 0, 4}));
+		simpleDateMatcher.put("d{4} d d{2}", new SimpleDateMatcher("d{4} d d{2}", "yyyy M dd", new int[] {7, 2, 5, 1, 0, 4}));
+		simpleDateMatcher.put("d{4} d{2} d", new SimpleDateMatcher("d{4} d{2} d", "yyyy MM d", new int[] {8, 1, 5, 2, 0, 4}));
+		simpleDateMatcher.put("d{4} d d", new SimpleDateMatcher("d{4} d d", "yyyy M d", new int[] {7, 1, 5, 1, 0, 4}));
 
-		simpleDateMatcher.put("þþ 999 þþþþ", new SimpleDateMatcher("þþ 999 þþþþ", "dd MMM yyyy", 0, 2, 3, 3, 7, 4));
-		simpleDateMatcher.put("þ 999 þþþþ", new SimpleDateMatcher("þ 999 þþþþ", "d MMM yyyy", 0, 1, 2, 3, 6, 4));
-		simpleDateMatcher.put("þþ-999-þþþþ", new SimpleDateMatcher("þþ-999-þþþþ", "dd-MMM-yyyy", 0, 2, 3, 3, 7, 4));
-		simpleDateMatcher.put("þ-999-þþþþ", new SimpleDateMatcher("þ-999-þþþþ", "d-MMM-yyyy", 0, 1, 2, 3, 6, 4));
+		simpleDateMatcher.put("d{2} a{3} d{4}", new SimpleDateMatcher("d{2} a{3} d{4}", "dd MMM yyyy", new int[] {0, 2, 3, 3, 7, 4}));
+		simpleDateMatcher.put("d a{3} d{4}", new SimpleDateMatcher("d a{3} d{4}", "d MMM yyyy", new int[] {0, 1, 2, 3, 6, 4}));
+		simpleDateMatcher.put("d{2}-a{3}-d{4}", new SimpleDateMatcher("d{2}-a{3}-d{4}", "dd-MMM-yyyy", new int[] {0, 2, 3, 3, 7, 4}));
+		simpleDateMatcher.put("d-a{3}-d{4}", new SimpleDateMatcher("d-a{3}-d{4}", "d-MMM-yyyy", new int[] {0, 1, 2, 3, 6, 4}));
 
-		simpleDateMatcher.put("þþ 999 þþ", new SimpleDateMatcher("þþ 999 þþ", "dd MMM yy", 0, 2, 3, 3, 7, 2));
-		simpleDateMatcher.put("þ 999 þþ", new SimpleDateMatcher("þ 999 þþ", "d MMM yy", 0, 1, 2, 3, 6, 2));
-		simpleDateMatcher.put("þþ-999-þþ", new SimpleDateMatcher("þþ-999-þþ", "dd-MMM-yy", 0, 2, 3, 3, 7, 2));
-		simpleDateMatcher.put("þ-999-þþ", new SimpleDateMatcher("þ-999-þþ", "d-MMM-yy", 0, 1, 2, 3, 6, 2));
+		simpleDateMatcher.put("d{2} a{4} d{4}", new SimpleDateMatcher("d{2} a{4} d{4}", "dd MMMM yyyy", new int[] {0, 2, 3, -5, -4, 4}));
+		simpleDateMatcher.put("d a{4} d{4}", new SimpleDateMatcher("d a{4} d{4}", "d MMMM yyyy", new int[] {0, 1, 2, -5, -4, 4}));
+		simpleDateMatcher.put("d{2}-a{4}-d{4}", new SimpleDateMatcher("d{2}-a{4}-d{4}", "dd-MMMM-yyyy", new int[] {0, 2, 3, -5, -4, 4}));
+		simpleDateMatcher.put("d-a{4}-d{4}", new SimpleDateMatcher("d-a{4}-d{4}", "d-MMMM-yyyy", new int[] {0, 1, 2, -5, -4, 4}));
 
-		simpleDateMatcher.put("999 þþ, þþþþ", new SimpleDateMatcher("999 þþ, þþþþ", "MMM dd',' yyyy", 4, 2, 0, 3, 8, 4));
-		simpleDateMatcher.put("999 þ, þþþþ", new SimpleDateMatcher("999 þ, þþþþ", "MMM d',' yyyy", 4, 1, 0, 3, 7, 4));
-		simpleDateMatcher.put("999 þþ þþþþ", new SimpleDateMatcher("999 þ þþþþ", "MMM dd yyyy", 4, 2, 0, 3, 7, 4));
-		simpleDateMatcher.put("999 þ þþþþ", new SimpleDateMatcher("999 þ þþþþ", "MMM d yyyy", 4, 1, 0, 3, 6, 4));
-		simpleDateMatcher.put("999-þþ-þþþþ", new SimpleDateMatcher("999-þþ-þþþþ", "MMM-dd-yyyy", 4, 2, 0, 3, 7, 4));
-		simpleDateMatcher.put("999-þ-þþþþ", new SimpleDateMatcher("999-þ-þþþþ", "MMM-d-yyyy", 4, 1, 0, 3, 6, 4));
+		simpleDateMatcher.put("d{2} a{3} d{2}", new SimpleDateMatcher("d{2} a{3} d{2}", "dd MMM yy", new int[] {0, 2, 3, 3, 7, 2}));
+		simpleDateMatcher.put("d a{3} d{2}", new SimpleDateMatcher("d a{3} d{2}", "d MMM yy", new int[] {0, 1, 2, 3, 6, 2}));
+		simpleDateMatcher.put("d{2}-a{3}-d{2}", new SimpleDateMatcher("d{2}-a{3}-d{2}", "dd-MMM-yy", new int[] {0, 2, 3, 3, 7, 2}));
+		simpleDateMatcher.put("d-a{3}-d{2}", new SimpleDateMatcher("d-a{3}-d{2}", "d-MMM-yy", new int[] {0, 1, 2, 3, 6, 2}));
+
+		simpleDateMatcher.put("a{3} d{2}, d{4}", new SimpleDateMatcher("a{3} d{2}, d{4}", "MMM dd',' yyyy", new int[] {4, 2, 0, 3, 8, 4}));
+		simpleDateMatcher.put("a{3} d, d{4}", new SimpleDateMatcher("a{3} d, d{4}", "MMM d',' yyyy", new int[] {4, 1, 0, 3, 7, 4}));
+		simpleDateMatcher.put("a{3} d{2} d{4}", new SimpleDateMatcher("a{3} d d{4}", "MMM dd yyyy", new int[] {4, 2, 0, 3, 7, 4}));
+		simpleDateMatcher.put("a{3} d d{4}", new SimpleDateMatcher("a{3} d d{4}", "MMM d yyyy", new int[] {4, 1, 0, 3, 6, 4}));
+		simpleDateMatcher.put("a{3}-d{2}-d{4}", new SimpleDateMatcher("a{3}-þþ-d{4}", "MMM-dd-yyyy", new int[] {4, 2, 0, 3, 7, 4}));
+		simpleDateMatcher.put("a{3}-d-d{4}", new SimpleDateMatcher("a{3}-d-d{4}", "MMM-d-yyyy", new int[] {4, 1, 0, 3, 6, 4}));
+
+		simpleDateMatcher.put("a{4} d{2}, d{4}", new SimpleDateMatcher("a{4} d{2}, d{4}", "MMMM dd',' yyyy", new int[] {-8, 2, 0, 3, -4, 4}));
+		simpleDateMatcher.put("a{4} d, d{4}", new SimpleDateMatcher("a{4} d, d{4}", "MMMM d',' yyyy", new int[] {-7, 1, 0, 3, -4, 4}));
+		simpleDateMatcher.put("a{4} d{2} d{4}", new SimpleDateMatcher("a{4} d d{4}", "MMMM dd yyyy", new int[] {-7, 2, 0, 3, -4, 4}));
+		simpleDateMatcher.put("a{4} d d{4}", new SimpleDateMatcher("a{4} d d{4}", "MMMM d yyyy", new int[] {-6, 1, 0, 3, -4, 4}));
+		simpleDateMatcher.put("a{4}-d{2}-d{4}", new SimpleDateMatcher("a{4}-d{2}-d{4}", "MMMM-dd-yyyy", new int[] {-7, 2, 0, 3, -4, 4}));
+		simpleDateMatcher.put("a{4}-d-d{4}", new SimpleDateMatcher("a{4}-d-d{4}", "MMMM-d-yyyy", new int[] {-6, 1, 0, 3, -4, 4}));
+
+		simpleDateMatcher.put("d{8}Td{6}Z", new SimpleDateMatcher("d{8}Td{6}Z", "yyyyMMdd'T'HHmmss'Z'", new int[] {6, 2, 4, 2, 0, 4}));
+
 	}
 
 	static int monthAbbreviationOffset(String month) {
 		Integer offset = monthAbbr.get(month.toUpperCase(Locale.ROOT));
+		return offset == null ? -1 : offset;
+	}
+
+	static int monthOffset(String month) {
+		Integer offset = months.get(month.toUpperCase(Locale.ROOT));
 		return offset == null ? -1 : offset;
 	}
 
@@ -207,12 +245,17 @@ public class DateTimeParser {
 				timeFirst = result.timeFirst;
 			if (dateElements == -1)
 				dateElements = result.dateElements;
+
+			// Merge two date lengths:
+			//  - d and dd -> d
+			//  - M and MM -> M
+			//  - MMM and MMMM -> MMMM
 			if (result.dateFieldLengths != null) {
 				for (int i = 0; i < result.dateFieldLengths.length; i++) {
 					if (dateFieldLengths[i] == -1)
 						dateFieldLengths[i] = result.dateFieldLengths[i];
 					else
-						if (result.dateFieldLengths[i] < dateFieldLengths[i])
+						if (result.dateFieldLengths[i] == 1 && result.dateFieldLengths[i] < dateFieldLengths[i])
 							dateFieldLengths[i] = result.dateFieldLengths[i];
 				}
 			}
@@ -284,6 +327,58 @@ public class DateTimeParser {
 		return retDigits(dateDigits[0], 'M') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'y');
 	}
 
+	static String compress(String input) {
+		StringBuilder result = new StringBuilder();
+		int len = input.length();
+		char lastCh = '=';
+		int count = 0;
+		for (int i = 0; i < len; i++) {
+			char ch = input.charAt(i);
+			if (Character.isDigit(ch)) {
+				if (Character.isDigit(lastCh))
+					count++;
+				else {
+					if (count != 0) {
+						result.append("{" + String.valueOf(count) + "}");
+						count = 0;
+					}
+					result.append('d');
+					lastCh = ch;
+				}
+			}
+			else if (Character.isAlphabetic(ch)) {
+				if (Character.isAlphabetic(lastCh)) {
+					if (count < 3)
+						count++;
+				}
+				else {
+					if (count != 0) {
+						result.append("{" + String.valueOf(count + 1) + "}");
+						count = 0;
+					}
+					if ((i+1 == len || !Character.isAlphabetic(input.charAt(i+1))) && (ch == 'T' || ch == 'Z'))
+							result.append(ch);
+					else
+						result.append('a');
+					lastCh = ch;
+				}
+			}
+			else {
+				if (count != 0) {
+					result.append("{" + String.valueOf(count + 1) + "}");
+					count = 0;
+				}
+				result.append(ch);
+				lastCh = ch;
+			}
+		}
+		if (count != 0) {
+			result.append("{" + String.valueOf(count + 1) + "}");
+			count = 0;
+		}
+
+		return result.toString();
+	}
 
 	/**
 	 * Determine a FormatString from an input string that may represent a Date, Time,
@@ -312,27 +407,20 @@ public class DateTimeParser {
 		if (len < 4 || (!Character.isDigit(trimmed.charAt(0)) && !Character.isAlphabetic(trimmed.charAt(0))))
 			return null;
 
-		// Cope with simple dates of the form '21 May 2017' or '9-Sep-2018'
 		if (trimmed.indexOf('þ') != -1)
 			return null;
 
-		// Fast version of replaceAll("[0-9]", "þ") and replaceAll("[a-zA-Z]", "9")
-		StringBuilder templatedBuilder = new StringBuilder(len);
-		for (int i = 0; i < len; i++) {
-			char ch = trimmed.charAt(i);
-			if (Character.isDigit(ch))
-				templatedBuilder.append('þ');
-			else if (Character.isAlphabetic(ch))
-				templatedBuilder.append('9');
-			else
-				templatedBuilder.append(ch);
-		}
-		String templated = templatedBuilder.toString();
+		String compressed = compress(trimmed);
 
-		SimpleDateMatcher matcher = simpleDateMatcher.get(templated);
+		SimpleDateMatcher matcher = simpleDateMatcher.get(compressed);
 		if (matcher != null) {
 			int[] dateValue = new int[] {-1, -1, -1};
-			if (matcher.monthLength == 3) {
+			if (matcher.monthLength < 0) {
+				dateValue[1] = DateTimeParser.monthOffset(trimmed.substring(matcher.monthOffset, len + matcher.monthLength));
+				if (dateValue[1] == -1)
+					return null;
+			}
+			else if (matcher.monthLength == 3) {
 				dateValue[1] = DateTimeParser.monthAbbreviationOffset(trimmed.substring(matcher.monthOffset, matcher.monthOffset + matcher.monthLength));
 				if (dateValue[1] == -1)
 					return null;
@@ -340,8 +428,8 @@ public class DateTimeParser {
 			else {
 				dateValue[1] = getValue(trimmed, matcher.monthOffset, matcher.monthLength);
 			}
-			dateValue[0] = getValue(trimmed, matcher.dayOffset, matcher.dayLength);
-			dateValue[2] = getValue(trimmed, matcher.yearOffset, matcher.yearLength);
+			dateValue[0] = getValue(trimmed, matcher.dayOffset >= 0 ? matcher.dayOffset : len + matcher.dayOffset, matcher.dayLength);
+			dateValue[2] = getValue(trimmed, matcher.yearOffset >= 0 ? matcher.yearOffset : len + matcher.yearOffset, matcher.yearLength);
 
 			if (!plausibleDate(dateValue, new int[] {matcher.dayLength, matcher.monthLength, matcher.yearLength}, new int[] {0,1,2}))
 				return null;
@@ -350,7 +438,7 @@ public class DateTimeParser {
 		}
 
 		// Fail fast if we can
-		if (!templated.contains("þ:þþ") && !templated.contains("þ/þþ") && !templated.contains("þ-þþ"))
+		if (!compressed.contains(":d{") && !compressed.contains("/d{") && !compressed.contains("-d{"))
 			return null;
 
 		// Fail fast if we can
@@ -449,27 +537,27 @@ public class DateTimeParser {
 
 					i++;
 
-					String offset = templated.substring(i, len);
+					String offset = compress(trimmed.substring(i, len));
 
 					// Expecting DD:DD:DD or DDDDDD or DD:DD or DDDD or DD
-					if (i + 8 <= len && "þþ:þþ:þþ".equals(offset)) {
+					if (i + 8 <= len && "d{2}:d{2}:d{2}".equals(offset)) {
 						timeZone = "xxxxx";
 						minutesOffset = 3;
 						secondsOffset = 6;
 					}
-					else if (i + 6 <= len && "þþþþþþ".equals(offset)) {
+					else if (i + 6 <= len && "d{6}".equals(offset)) {
 						timeZone = "xxxx";
 						minutesOffset = 2;
 						secondsOffset = 4;
 					}
-					else if (i + 5 <= len && "þþ:þþ".equals(offset)) {
+					else if (i + 5 <= len && "d{2}:d{2}".equals(offset)) {
 						timeZone = "xxx";
 						minutesOffset = 3;
 					}
-					else if (i + 4 <= len && "þþþþ".equals(offset)) {
+					else if (i + 4 <= len && "d{4}".equals(offset)) {
 						timeZone = "xx";
 					}
-					else if (i + 2 <= len && "þþ".equals(offset)) {
+					else if (i + 2 <= len && "d{2}".equals(offset)) {
 						timeZone = "x";
 					}
 					else
