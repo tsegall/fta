@@ -22,12 +22,17 @@ package com.cobber.fta;
  * indicates that a case insensitive match for true or false indicates a boolean type ("Boolean").
  */
 public class PatternInfo {
+
+	public enum Type {
+		BOOLEAN, DATE, DATETIME, DOUBLE, LONG, OFFSETDATETIME, STRING, TIME, ZONEDDATETIME
+	}
+
 	String pattern;
 	String generalPattern;
 	int minLength;
 	int maxLength;
 	String format;
-	String type;
+	Type type;
 	String typeQualifier;
 
 	/**
@@ -40,7 +45,7 @@ public class PatternInfo {
 	 * @param generalPattern The general case of this pattern (optional).
 	 * @param format The Java format specified for a date pattern (optional).
 	 */
-	public PatternInfo(String pattern, String type, String typeQualifier, int minLength, int maxLength, String generalPattern, String format) {
+	public PatternInfo(String pattern, Type type, String typeQualifier, int minLength, int maxLength, String generalPattern, String format) {
 		this.pattern = pattern;
 		this.type = type;
 		this.typeQualifier = typeQualifier;
@@ -56,6 +61,6 @@ public class PatternInfo {
 	 * @return A boolean indicating if the Type for this pattern is numeric.
 	 */
 	public boolean isNumeric() {
-		return "Long".equals(this.type) || "Double".equals(this.type);
+		return PatternInfo.Type.LONG.equals(this.type) || PatternInfo.Type.DOUBLE.equals(this.type);
 	}
 }

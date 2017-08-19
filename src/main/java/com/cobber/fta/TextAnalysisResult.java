@@ -50,8 +50,8 @@ public class TextAnalysisResult {
 	 * @param confidence The percentage confidence in the analysis.  The matchCount divided by the sampleCount.
 	 * @param minValue A String representation of the minimum value.  Only relevant for Numeric/String types.
 	 * @param maxValue A String representation of the maximum value.  Only relevant for Numeric/String types.
-	 * @param minLength TODO
-	 * @param maxLength TODO
+	 * @param minLength Get the minimum length. Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace.
+	 * @param maxLength Get the maximum length. Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace.
 	 * @param sum A String representation of the sum of all values seen.  Only relevant for numeric types.
 	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
@@ -85,22 +85,22 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Type (as determined by training to date) as a String.  Possible types are: "String", "Long",
-	 * "Double", "Date", "Time", or "DateTime".  In addition there are two pseudo-types "[BLANK]"
-	 * (used to indicate a data stream with only empty fields i.e. "") and "[NULL]" (used to indicate
-	 * a data stream with only null values).
+	 * Get 'Type' as determined by training to date.  Possible types are: STRING, LONG,
+	 * DOUBLE, DATE, TIME, DATETIME, ZONEDDATATIME, and OFFSETDATETIME.
 	 * @return The Type of the data stream.
 	 */
-	public String getType() {
+	public PatternInfo.Type getType() {
 		return patternInfo.type;
 	}
 
 	/**
 	 * Get the optional Type Qualifier.  Possible qualifiers are:
-	 * 	Type: String - "Email", "URL", "ZIP", "US_STATE", "NA_STATE", "BLANK", "NULL"
-	 * 	Type: Long - "Signed"
-	 * 	Type: Double - "Signed"
-	 * 	Type: Date - the detailed date format string
+	 * <ul>
+	 *  <li>Type: STRING - "EMAIL", "URL", "ZIP", "US_STATE", "CA_PROVINCE", "NA_STATE", "BLANK", "NULL"</li>
+	 *  <li>Type: LONG - "SIGNED"</li>
+	 * 	<li>Type: DOUBLE - "SIGNED"</li>
+	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - the detailed date format string</li>
+	 * </ul>
 	 * @return The Type Qualifier for the Type.
 	 */
 	public String getTypeQualifier() {

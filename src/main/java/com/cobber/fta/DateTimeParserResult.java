@@ -96,13 +96,13 @@ public class DateTimeParserResult {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(getFormatString());
 
 		try {
-			if ("Time".equals(getType()))
+			if (PatternInfo.Type.TIME.equals(getType()))
 				LocalTime.parse(input, formatter);
-			else if ("Date".equals(getType()))
+			else if (PatternInfo.Type.DATE.equals(getType()))
 				LocalDate.parse(input, formatter);
-			else if ("DateTime".equals(getType()))
+			else if (PatternInfo.Type.DATETIME.equals(getType()))
 				LocalDateTime.parse(input, formatter);
-			else if ("ZonedDateTime".equals(getType()))
+			else if (PatternInfo.Type.ZONEDDATETIME.equals(getType()))
 				ZonedDateTime.parse(input, formatter);
 			else
 				OffsetDateTime.parse(input, formatter);
@@ -600,14 +600,14 @@ public class DateTimeParserResult {
 	 * @return The detected type of this input, will be either "Date", "Time",
 	 *  "DateTime", "ZonedDateTime" or "OffsetDateTime".
 	 */
-	public String getType() {
+	public PatternInfo.Type getType() {
 		if (timeElements == -1)
-			return "Date";
+			return PatternInfo.Type.DATE;
 		if (dateElements == -1)
-			return "Time";
+			return PatternInfo.Type.TIME;
 		if (timeZone == null || timeZone.length() == 0)
-			return "DateTime";
-		return timeZone.indexOf('z') == -1 ? "OffsetDateTime" : "ZonedDateTime";
+			return PatternInfo.Type.DATETIME;
+		return timeZone.indexOf('z') == -1 ? PatternInfo.Type.OFFSETDATETIME : PatternInfo.Type.ZONEDDATETIME;
 	}
 
 	private String asDate(char[] fieldChars) {

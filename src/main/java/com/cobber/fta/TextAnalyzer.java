@@ -101,7 +101,7 @@ public class TextAnalyzer {
 	// input "hello world" 0: a{5} a{5} 1: a{+} a{+} 2: a{+}
 	ArrayList<StringBuilder>[] levels = new ArrayList[3];
 
-	String matchType;
+	PatternInfo.Type matchType;
 	long matchCount;
 	String matchPattern;
 	PatternInfo matchPatternInfo;
@@ -160,17 +160,15 @@ public class TextAnalyzer {
 
 	static HashMap<String, PatternInfo> patternInfo = null;
 	static HashMap<String, PatternInfo> typeInfo = null;
-	HashSet<String> zips = new HashSet<String>();
-	HashSet<String> usStates = new HashSet<String>();
-	HashSet<String> caProvinces = new HashSet<String>();
-	HashSet<String> countries = new HashSet<String>();
-	HashSet<String> monthAbbr = new HashSet<String>();
+	static HashSet<String> zips = new HashSet<String>();
+	static HashSet<String> usStates = new HashSet<String>();
+	static HashSet<String> caProvinces = new HashSet<String>();
+	static HashSet<String> countries = new HashSet<String>();
+	static HashSet<String> monthAbbr = new HashSet<String>();
 
-	static boolean dataLoaded = false;
-
-	static void addPattern(HashMap<String, PatternInfo> map, boolean patternIsKey, String pattern, String type, String typeQualifier, int minLength,
+	static void addPattern(HashMap<String, PatternInfo> map, boolean patternIsKey, String pattern, PatternInfo.Type type, String typeQualifier, int minLength,
 			int maxLength, String generalPattern, String format) {
-		map.put(patternIsKey ? pattern : (type + "." + typeQualifier), new PatternInfo(pattern, type, typeQualifier, minLength, maxLength, generalPattern, format));
+		map.put(patternIsKey ? pattern : (type.toString() + "." + typeQualifier), new PatternInfo(pattern, type, typeQualifier, minLength, maxLength, generalPattern, format));
 	}
 
 	static final String LONG_PATTERN = "\\d+";
@@ -183,28 +181,62 @@ public class TextAnalyzer {
 		patternInfo = new HashMap<String, PatternInfo>();
 		typeInfo = new HashMap<String, PatternInfo>();
 
-		addPattern(patternInfo, true, "(?i)true|false", "Boolean", null, 4, 5, null, "");
-		addPattern(patternInfo, true, "(?i)yes|no", "Boolean", null, 2, 3, null, "");
-		addPattern(patternInfo, true, "[0|1]", "Boolean", null, -1, -1, null, null);
+		addPattern(patternInfo, true, "(?i)true|false", PatternInfo.Type.BOOLEAN, null, 4, 5, null, "");
+		addPattern(patternInfo, true, "(?i)yes|no", PatternInfo.Type.BOOLEAN, null, 2, 3, null, "");
+		addPattern(patternInfo, true, "[0|1]", PatternInfo.Type.BOOLEAN, null, -1, -1, null, null);
 
-		addPattern(patternInfo, true, "\\p{Alpha}{2}", "String", null, 2, 2, null, "");
-		addPattern(patternInfo, true, "\\p{Alpha}{3}", "String", null, 3, 3, null, "");
-		addPattern(patternInfo, true, ALPHA_PATTERN, "String", null, 1, -1, null, "");
+		addPattern(patternInfo, true, "\\p{Alpha}{2}", PatternInfo.Type.STRING, null, 2, 2, null, "");
+		addPattern(patternInfo, true, "\\p{Alpha}{3}", PatternInfo.Type.STRING, null, 3, 3, null, "");
+		addPattern(patternInfo, true, ALPHA_PATTERN, PatternInfo.Type.STRING, null, 1, -1, null, "");
 
-		addPattern(patternInfo, true, LONG_PATTERN, "Long", null, 1, -1, null, "");
-		addPattern(patternInfo, true, SIGNED_LONG_PATTERN, "Long", "Signed", 1, -1, null, "");
-		addPattern(patternInfo, true, DOUBLE_PATTERN, "Double", null, -1, -1, null, "");
-		addPattern(patternInfo, true, SIGNED_DOUBLE_PATTERN, "Double", "Signed", -1, -1, null, "");
+		addPattern(patternInfo, true, LONG_PATTERN, PatternInfo.Type.LONG, null, 1, -1, null, "");
+		addPattern(patternInfo, true, SIGNED_LONG_PATTERN, PatternInfo.Type.LONG, "Signed", 1, -1, null, "");
+		addPattern(patternInfo, true, DOUBLE_PATTERN, PatternInfo.Type.DOUBLE, null, -1, -1, null, "");
+		addPattern(patternInfo, true, SIGNED_DOUBLE_PATTERN, PatternInfo.Type.DOUBLE, "Signed", -1, -1, null, "");
 
 		// Logical Types
-		addPattern(typeInfo, false, "[NULL]", "String", "NULL", -1, -1, null, null);
-		addPattern(typeInfo, false, "[ ]*", "String", "BLANK", -1, -1, null, null);
-		addPattern(typeInfo, false, "\\d{5}", "Long", "ZIP", -1, -1, null, null);
-		addPattern(typeInfo, false, "\\p{Alpha}{2}", "String", "NA_STATE", -1, -1, null, null);
-		addPattern(typeInfo, false, "\\p{Alpha}{2}", "String", "US_STATE", -1, -1, null, null);
-		addPattern(typeInfo, false, "\\p{Alpha}{2}", "String", "CA_PROVINCE", -1, -1, null, null);
-		addPattern(typeInfo, false, ".+", "String", "COUNTRY", -1, -1, null, null);
-		addPattern(typeInfo, false, "\\p{Alpha}{3}", "String", "MONTHABBR", -1, -1, null, null);
+		addPattern(typeInfo, false, "[NULL]", PatternInfo.Type.STRING, "NULL", -1, -1, null, null);
+		addPattern(typeInfo, false, "[ ]*", PatternInfo.Type.STRING, "BLANK", -1, -1, null, null);
+		addPattern(typeInfo, false, "\\d{5}", PatternInfo.Type.LONG, "ZIP", -1, -1, null, null);
+		addPattern(typeInfo, false, "\\p{Alpha}{2}", PatternInfo.Type.STRING, "NA_STATE", -1, -1, null, null);
+		addPattern(typeInfo, false, "\\p{Alpha}{2}", PatternInfo.Type.STRING, "US_STATE", -1, -1, null, null);
+		addPattern(typeInfo, false, "\\p{Alpha}{2}", PatternInfo.Type.STRING, "CA_PROVINCE", -1, -1, null, null);
+		addPattern(typeInfo, false, ".+", PatternInfo.Type.STRING, "COUNTRY", -1, -1, null, null);
+		addPattern(typeInfo, false, "\\p{Alpha}{3}", PatternInfo.Type.STRING, "MONTHABBR", -1, -1, null, null);
+
+		try {
+			BufferedReader reader = null;
+
+			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_zips.csv")));
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				zips.add(line);
+			}
+
+			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_states.csv")));
+			while ((line = reader.readLine()) != null) {
+				usStates.add(line);
+			}
+
+			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/ca_provinces.csv")));
+			while ((line = reader.readLine()) != null) {
+				caProvinces.add(line);
+			}
+
+			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/countries.csv")));
+			while ((line = reader.readLine()) != null) {
+				countries.add(line);
+			}
+
+			// Setup the Monthly abbreviations
+			String[] shortMonths = new DateFormatSymbols().getShortMonths();
+			for (String shortMonth : shortMonths) {
+				monthAbbr.add(shortMonth.toUpperCase(Locale.ROOT));
+			}
+		}
+		catch (IOException e) {
+			throw new RuntimeException("Failed to initialize - internal error.");
+		}
 	}
 
 	/**
@@ -219,46 +251,6 @@ public class TextAnalyzer {
 	 *             If an internal error occurred.
 	 */
 	public TextAnalyzer(String name, Boolean dayFirst) throws IOException {
-		if (!dataLoaded) {
-			try (BufferedReader reader = new BufferedReader(
-					new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_zips.csv")))) {
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					zips.add(line);
-				}
-			}
-
-			try (BufferedReader reader = new BufferedReader(
-					new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_states.csv")))) {
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					usStates.add(line);
-				}
-			}
-
-			try (BufferedReader reader = new BufferedReader(
-					new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/ca_provinces.csv")))) {
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					caProvinces.add(line);
-				}
-			}
-
-			try (BufferedReader reader = new BufferedReader(
-					new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/countries.csv")))) {
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					countries.add(line);
-				}
-			}
-
-			// Setup the Monthly abbreviations
-			String[] shortMonths = new DateFormatSymbols().getShortMonths();
-			for (String shortMonth : shortMonths) {
-				monthAbbr.add(shortMonth.toUpperCase(Locale.ROOT));
-			}
-		}
-
 		this.name = name;
 		this.dayFirst = dayFirst;
 		formatSymbols = new DecimalFormatSymbols();
@@ -508,8 +500,7 @@ public class TextAnalyzer {
 
 		DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, dayFirst);
 		if (result == null) {
-			System.err.printf("NULL result for '%s'\n", dateFormat);
-			return;
+			throw new RuntimeException("Internal error - NULL result for " + dateFormat);
 		}
 
 		// Grab the cached Formatter
@@ -521,7 +512,7 @@ public class TextAnalyzer {
 		}
 
 		switch (result.getType()) {
-		case "Time":
+		case TIME:
 			LocalTime lt = LocalTime.parse(trimmed, formatter);
 			if (minLocalTime == null || lt.compareTo(minLocalTime) < 0)
 				minLocalTime = lt;
@@ -529,7 +520,7 @@ public class TextAnalyzer {
 				maxLocalTime = lt;
 			break;
 
-		case "Date":
+		case DATE:
 			LocalDate ld = LocalDate.parse(trimmed, formatter);
 			if (minLocalDate == null || ld.compareTo(minLocalDate) < 0)
 				minLocalDate = ld;
@@ -537,7 +528,7 @@ public class TextAnalyzer {
 				maxLocalDate = ld;
 			break;
 
-		case "DateTime":
+		case DATETIME:
 			LocalDateTime ldt = LocalDateTime.parse(trimmed, formatter);
 			if (minLocalDateTime == null || ldt.compareTo(minLocalDateTime) < 0)
 				minLocalDateTime = ldt;
@@ -545,7 +536,7 @@ public class TextAnalyzer {
 				maxLocalDateTime = ldt;
 			break;
 
-		case "ZonedDateTime":
+		case ZONEDDATETIME:
 			ZonedDateTime zdt = ZonedDateTime.parse(trimmed, formatter);
 			if (minZonedDateTime == null || zdt.compareTo(minZonedDateTime) < 0)
 				minZonedDateTime = zdt;
@@ -553,13 +544,16 @@ public class TextAnalyzer {
 				maxZonedDateTime = zdt;
 			break;
 
-		case "OffsetDateTime":
+		case OFFSETDATETIME:
 			OffsetDateTime odt = OffsetDateTime.parse(trimmed, formatter);
 			if (minOffsetDateTime == null || odt.compareTo(minOffsetDateTime) < 0)
 				minOffsetDateTime = odt;
 			if (maxOffsetDateTime == null || odt.compareTo(maxOffsetDateTime) > 0)
 				maxOffsetDateTime = odt;
 			break;
+
+		default:
+			throw new RuntimeException("Internal error - expected Date/Time type.");
 		}
 	}
 
@@ -773,12 +767,12 @@ public class TextAnalyzer {
 				if (bestPattern.isNumeric() && secondBestPattern.isNumeric()) {
 					if (!bestPattern.type.equals(secondBestPattern.type)) {
 						// Promote Long to Double
-						String newKey = "Double".equals(bestPattern.type) ? best.getKey() : secondBest.getKey();
+						String newKey = PatternInfo.Type.DOUBLE.equals(bestPattern.type) ? best.getKey() : secondBest.getKey();
 						best = new AbstractMap.SimpleEntry<String, Integer>(newKey,
 								best.getValue() + secondBest.getValue());
 					}
-				} else if ("String".equals(bestPattern.type)) {
-					// Promote anything to "String"
+				} else if (PatternInfo.Type.STRING.equals(bestPattern.type)) {
+					// Promote anything to STRING
 					best = new AbstractMap.SimpleEntry<String, Integer>(bestKey,
 							best.getValue() + secondBest.getValue());
 				}
@@ -873,7 +867,7 @@ public class TextAnalyzer {
 			// Do we have a set of possible emails?
 			if (possibleEmails == raw.size()) {
 				PatternInfo save = matchPatternInfo;
-				matchPatternInfo = new PatternInfo(matchPattern, "String", "Email", -1, -1, null, null);
+				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "Email", -1, -1, null, null);
 				int emails = 0;
 				for (String sample : raw)
 					if (trackString(sample, false))
@@ -887,7 +881,7 @@ public class TextAnalyzer {
 			// Do we have a set of possible URLs?
 			if (possibleURLs == raw.size()) {
 				PatternInfo save = matchPatternInfo;
-				matchPatternInfo = new PatternInfo(matchPattern, "String", "URL", -1, -1, null, null);
+				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "URL", -1, -1, null, null);
 				int URLs = 0;
 				for (String sample : raw)
 					if (trackString(sample, false))
@@ -901,7 +895,7 @@ public class TextAnalyzer {
 			// Do we have a set of possible zip codes?
 			if (possibleZips == raw.size()) {
 				PatternInfo save = matchPatternInfo;
-				matchPatternInfo = typeInfo.get("Long.ZIP");
+				matchPatternInfo = typeInfo.get(PatternInfo.Type.LONG.toString() + "." + "ZIP");
 				pattern = matchPatternInfo.pattern;
 
 				int zipCount = 0;
@@ -1012,7 +1006,7 @@ public class TextAnalyzer {
 		long realSamples = sampleCount - (nullCount + blankCount);
 
 		switch (matchType) {
-		case "Boolean":
+		case BOOLEAN:
 			if (trackBoolean(input)) {
 				matchCount++;
 				addValid(input);
@@ -1021,7 +1015,7 @@ public class TextAnalyzer {
 			outlier(input);
 			break;
 
-		case "Long":
+		case LONG:
 			if (trackLong(input, true)) {
 				matchCount++;
 				addValid(input);
@@ -1034,7 +1028,7 @@ public class TextAnalyzer {
 				backoutZip(realSamples);
 			break;
 
-		case "Double":
+		case DOUBLE:
 			if (trackDouble(input)) {
 				matchCount++;
 				addValid(input);
@@ -1043,7 +1037,7 @@ public class TextAnalyzer {
 			outlier(input);
 			break;
 
-		case "String":
+		case STRING:
 			if (trackString(input, true)) {
 				matchCount++;
 				addValid(input);
@@ -1056,11 +1050,11 @@ public class TextAnalyzer {
 				backoutToString(realSamples);
 			break;
 
-		case "Date":
-		case "Time":
-		case "DateTime":
-		case "OffsetDateTime":
-		case "ZonedDateTime":
+		case DATE:
+		case TIME:
+		case DATETIME:
+		case OFFSETDATETIME:
+		case ZONEDDATETIME:
 			try {
 				trackDateTime(matchPatternInfo.format, input);
 				matchCount++;
@@ -1118,10 +1112,11 @@ public class TextAnalyzer {
 	/**
 	 * Determine if the current dataset reflects a logical type (of uniform length) as defined by the provided set.
 	 * @param uniformSet The set of items with a uniform length that reflect this logical type
-	 * @param logicalType The logical type that this set represents
+	 * @param type The type that along with the qualifier identifies the logical type that this set represents
+	 * @param qualifier The qualifier that along with the type identifies the logical type that this set represents
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
-	private boolean checkUniformLengthSet(HashSet<String> uniformSet, String logicalType) {
+	private boolean checkUniformLengthSet(HashSet<String> uniformSet, PatternInfo.Type type, String qualifier) {
 		long realSamples = sampleCount - (nullCount + blankCount);
 		long validCount = 0;
 		long misses = 0;					// count of number of groups that are misses
@@ -1158,7 +1153,7 @@ public class TextAnalyzer {
 			return false;
 
 		matchCount = validCount;
-		matchPatternInfo = typeInfo.get(logicalType);
+		matchPatternInfo = typeInfo.get(type.toString() + "." + qualifier);
 		matchPattern = matchPatternInfo.pattern;
 		outliers.putAll(newOutliers);
 		cardinality.keySet().removeAll(newOutliers.keySet());
@@ -1169,10 +1164,11 @@ public class TextAnalyzer {
 	/**
 	 * Determine if the current dataset reflects a logical type (of variable length) as defined by the provided set.
 	 * @param variableSet The set of items that reflect this logical type
-	 * @param logicalType The logical type that this set represents
+	 * @param type The type that along with the qualifier identifies the logical type that this set represents
+	 * @param qualifier The qualifier that along with the type identifies the logical type that this set represents
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
-	private boolean checkVariableLengthSet(HashSet<String> variableSet, String logicalType) {
+	private boolean checkVariableLengthSet(HashSet<String> variableSet, PatternInfo.Type type, String qualifier) {
 		long realSamples = sampleCount - (nullCount + blankCount);
 		long validCount = 0;
 		long misses = 0;					// count of number of groups that are misses
@@ -1196,7 +1192,7 @@ public class TextAnalyzer {
 			return false;
 
 		matchCount = validCount;
-		matchPatternInfo = typeInfo.get(logicalType);
+		matchPatternInfo = typeInfo.get(type.toString() + "." + qualifier);
 		matchPattern = matchPatternInfo.pattern;
 		return true;
 	}
@@ -1219,7 +1215,7 @@ public class TextAnalyzer {
 
 		// Check to see if we are all blanks or all nulls
 		if (blankCount == sampleCount || nullCount == sampleCount) {
-			matchPatternInfo = nullCount == sampleCount ? typeInfo.get("String.NULL") : typeInfo.get("String.BLANK");
+			matchPatternInfo = nullCount == sampleCount ? typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "NULL") : typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "BLANK");
 			matchPattern = matchPatternInfo.pattern;
 			matchType = matchPatternInfo.type;
 			matchCount = sampleCount;
@@ -1235,8 +1231,8 @@ public class TextAnalyzer {
 		}
 
 		if (LONG_PATTERN.equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
-			matchPatternInfo = new PatternInfo("\\d{4}", "Date", "yyyy", -1, -1, null, "yyyy");
-		} else if ("String".equals(matchPatternInfo.type)) {
+			matchPatternInfo = new PatternInfo("\\d{4}", PatternInfo.Type.DATE, "yyyy", -1, -1, null, "yyyy");
+		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
 			int length = determineLength(matchPattern);
 			// We thought it was a fixed length string, but on reflection it does not feel like it
 			if (length != -1 && realSamples > REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.95) {
@@ -1247,12 +1243,12 @@ public class TextAnalyzer {
 			boolean typeIdentified = false;
 			if (realSamples > REFLECTION_SAMPLES && cardinality.size() > 1 && "\\p{Alpha}{3}".equals(matchPattern)
 					&& cardinality.size() <= monthAbbr.size() + 2) {
-				typeIdentified = checkUniformLengthSet(monthAbbr, "String.MONTHABBR");
+				typeIdentified = checkUniformLengthSet(monthAbbr, PatternInfo.Type.STRING, "MONTHABBR");
 			}
 
 			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && cardinality.size() > 1
 					&& cardinality.size() <= countries.size()) {
-				typeIdentified = checkVariableLengthSet(countries, "String.COUNTRY");
+				typeIdentified = checkVariableLengthSet(countries, PatternInfo.Type.STRING, "COUNTRY");
 			}
 
 			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && "\\p{Alpha}{2}".equals(matchPattern)
@@ -1284,7 +1280,7 @@ public class TextAnalyzer {
 						matchCount = caProvinceCount;
 					}
 					confidence = (double) matchCount / realSamples;
-					matchPatternInfo = typeInfo.get("String" + "." + accessor);
+					matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + accessor);
 					matchPattern = matchPatternInfo.pattern;
 				}
 			}
@@ -1294,7 +1290,7 @@ public class TextAnalyzer {
 				if (minRawLength != maxRawLength)
 					matchPattern += "," + maxRawLength;
 				matchPattern += "}";
-				matchPatternInfo = new PatternInfo(matchPattern, "String", matchPatternInfo.typeQualifier, minRawLength, maxRawLength, null,
+				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minRawLength, maxRawLength, null,
 						null);
 			}
 
@@ -1304,19 +1300,19 @@ public class TextAnalyzer {
 				matchPattern = "[0|1]";
 				minBoolean = "0";
 				maxBoolean = "1";
-				matchType = "Boolean";
+				matchType = PatternInfo.Type.BOOLEAN;
 				matchPatternInfo = patternInfo.get(matchPattern);
 			} else {
 				// We thought it was an integer field, but on reflection it does not feel like it
 				if (realSamples > REFLECTION_SAMPLES && confidence < 0.9) {
 					matchPattern = ".{" + minRawLength;
-					matchType = "String";
+					matchType = PatternInfo.Type.STRING;
 					matchCount = realSamples;
 					confidence = 1.0;
 					if (minRawLength != maxRawLength)
 						matchPattern += "," + maxRawLength;
 					matchPattern += "}";
-					matchPatternInfo = new PatternInfo(matchPattern, "String", null, -1, -1, null, null);
+					matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, null, -1, -1, null, null);
 
 					// All outliers are now part of the cardinality set and
 					// there are no outliers
@@ -1334,90 +1330,88 @@ public class TextAnalyzer {
 
 		boolean key = false;
 
-		if (matchType != null) {
-			switch (matchType) {
-			case "Boolean":
-				minValue = String.valueOf(minBoolean);
-				maxValue = String.valueOf(maxBoolean);
-				break;
+		switch (matchType) {
+		case BOOLEAN:
+			minValue = String.valueOf(minBoolean);
+			maxValue = String.valueOf(maxBoolean);
+			break;
 
-			case "Long":
-				minValue = String.valueOf(minLong);
-				maxValue = String.valueOf(maxLong);
-				sum = sumBI.toString();
-				break;
+		case LONG:
+			minValue = String.valueOf(minLong);
+			maxValue = String.valueOf(maxLong);
+			sum = sumBI.toString();
+			break;
 
-			case "Double":
-				minValue = String.valueOf(minDouble);
-				maxValue = String.valueOf(maxDouble);
-				sum = sumBD.toString();
-				break;
+		case DOUBLE:
+			minValue = String.valueOf(minDouble);
+			maxValue = String.valueOf(maxDouble);
+			sum = sumBD.toString();
+			break;
 
-			case "String":
-				if ("NULL".equals(matchPatternInfo.typeQualifier)) {
-					minRawLength = maxRawLength = 0;
-					minValue = maxValue = null;
-				} else if ("BLANK".equals(matchPatternInfo.typeQualifier)) {
-					// If all the fields are blank - then we have not saved any of the raw input, so we
-					// need to synthesize the min and max value, as well as the minRawlength if not set.
-					if (minRawLength == Integer.MAX_VALUE)
-						minRawLength = 0;
-					StringBuilder s = new StringBuilder(maxRawLength);
-					for (int i = 0; i < maxRawLength; i++) {
-						if (i == minRawLength)
-							minValue = new String(s.toString());
-						s.append(' ');
-					}
-					maxValue = s.toString();
-					if (minRawLength == maxRawLength)
-						minValue = maxValue;
+		case STRING:
+			if ("NULL".equals(matchPatternInfo.typeQualifier)) {
+				minRawLength = maxRawLength = 0;
+				minValue = maxValue = null;
+			} else if ("BLANK".equals(matchPatternInfo.typeQualifier)) {
+				// If all the fields are blank - then we have not saved any of the raw input, so we
+				// need to synthesize the min and max value, as well as the minRawlength if not set.
+				if (minRawLength == Integer.MAX_VALUE)
+					minRawLength = 0;
+				StringBuilder s = new StringBuilder(maxRawLength);
+				for (int i = 0; i < maxRawLength; i++) {
+					if (i == minRawLength)
+						minValue = new String(s.toString());
+					s.append(' ');
 				}
-				else {
-					minValue = minString;
-					maxValue = maxString;
-				}
-				break;
-
-			case "Date":
-				minValue = minLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				break;
-
-			case "Time":
-				minValue = minLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				break;
-
-			case "DateTime":
-				minValue = minLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				break;
-
-			case "ZonedDateTime":
-				minValue = minZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				break;
-
-			case "OffsetDateTime":
-				minValue = minOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				break;
+				maxValue = s.toString();
+				if (minRawLength == maxRawLength)
+					minValue = maxValue;
 			}
+			else {
+				minValue = minString;
+				maxValue = maxString;
+			}
+			break;
 
-			// Attempt to identify keys?
-			if (sampleCount > MIN_SAMPLES_FOR_KEY && maxCardinality >= MIN_SAMPLES_FOR_KEY / 2
-					&& cardinality.size() >= maxCardinality && blankCount == 0 && nullCount == 0
-					&& matchPatternInfo.typeQualifier == null
-					&& (("String".equals(matchType) && minRawLength == maxRawLength && minRawLength < 32)
-							|| "Long".equals(matchType))) {
-				key = true;
-				// Might be a key but only iff every element in the cardinality
-				// set only has a count of 1
-				for (Map.Entry<String, Integer> entry : cardinality.entrySet()) {
-					if (entry.getValue() != 1) {
-						key = false;
-						break;
-					}
+		case DATE:
+			minValue = minLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			maxValue = maxLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			break;
+
+		case TIME:
+			minValue = minLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			maxValue = maxLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			break;
+
+		case DATETIME:
+			minValue = minLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			maxValue = maxLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			break;
+
+		case ZONEDDATETIME:
+			minValue = minZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			maxValue = maxZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			break;
+
+		case OFFSETDATETIME:
+			minValue = minOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			maxValue = maxOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			break;
+		}
+
+		// Attempt to identify keys?
+		if (sampleCount > MIN_SAMPLES_FOR_KEY && maxCardinality >= MIN_SAMPLES_FOR_KEY / 2
+				&& cardinality.size() >= maxCardinality && blankCount == 0 && nullCount == 0
+				&& matchPatternInfo.typeQualifier == null
+				&& ((PatternInfo.Type.STRING.equals(matchType) && minRawLength == maxRawLength && minRawLength < 32)
+						|| PatternInfo.Type.LONG.equals(matchType))) {
+			key = true;
+			// Might be a key but only iff every element in the cardinality
+			// set only has a count of 1
+			for (Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+				if (entry.getValue() != 1) {
+					key = false;
+					break;
 				}
 			}
 		}

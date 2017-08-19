@@ -3,6 +3,7 @@ package com.cobber.fta;
 import java.text.DateFormatSymbols;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -66,11 +67,16 @@ public class DateTimeParser {
 	static Map<String, SimpleDateMatcher> simpleDateMatcher = new HashMap<String, SimpleDateMatcher>();
 
 	static {
+
+		GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance();
+
+		int actualMonths = cal.getActualMaximum(GregorianCalendar.MONTH);
+
 		// Setup the Months
 		int shortestMonth = Integer.MAX_VALUE;
 		int longestMonth = Integer.MIN_VALUE;
 		String[] longMonths = new DateFormatSymbols().getMonths();
-		for (int i = 0; i < longMonths.length; i++) {
+		for (int i = 0; i <= actualMonths; i++) {
 			String month = longMonths[i].toUpperCase(Locale.ROOT);
 			months.put(month, i + 1);
 			int len = month.length();
@@ -84,7 +90,7 @@ public class DateTimeParser {
 
 		// Setup the Monthly abbreviations
 		String[] shortMonths = new DateFormatSymbols().getShortMonths();
-		for (int i = 0; i < shortMonths.length; i++) {
+		for (int i = 0; i <= actualMonths; i++) {
 			monthAbbr.put(shortMonths[i].toUpperCase(Locale.ROOT), i + 1);
 		}
 
@@ -126,7 +132,7 @@ public class DateTimeParser {
 		simpleDateMatcher.put("a{4}-d-d{4}", new SimpleDateMatcher("a{4}-d-d{4}", "MMMM-d-yyyy", new int[] {-6, 1, 0, 3, -4, 4}));
 
 		simpleDateMatcher.put("d{8}Td{6}Z", new SimpleDateMatcher("d{8}Td{6}Z", "yyyyMMdd'T'HHmmss'Z'", new int[] {6, 2, 4, 2, 0, 4}));
-
+		simpleDateMatcher.put("d{8}Td{6}", new SimpleDateMatcher("d{8}Td{6}", "yyyyMMdd'T'HHmmss", new int[] {6, 2, 4, 2, 0, 4}));
 	}
 
 	static int monthAbbreviationOffset(String month) {
@@ -384,7 +390,7 @@ public class DateTimeParser {
 	 * Determine a FormatString from an input string that may represent a Date, Time,
 	 * DateTime, OffsetDateTime or a ZonedDateTime.
 	 * @param input The String representing a date with optional leading/trailing whitespace
-	 * @param dayFirst TODO
+	 * @param dayFirst When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public static String determineFormatString(String input, Boolean dayFirst) {
