@@ -106,16 +106,22 @@ public class DateTimeParser {
 		simpleDateMatcher.put("d a{3} d{4}", new SimpleDateMatcher("d a{3} d{4}", "d MMM yyyy", new int[] {0, 1, 2, 3, 6, 4}));
 		simpleDateMatcher.put("d{2}-a{3}-d{4}", new SimpleDateMatcher("d{2}-a{3}-d{4}", "dd-MMM-yyyy", new int[] {0, 2, 3, 3, 7, 4}));
 		simpleDateMatcher.put("d-a{3}-d{4}", new SimpleDateMatcher("d-a{3}-d{4}", "d-MMM-yyyy", new int[] {0, 1, 2, 3, 6, 4}));
+		simpleDateMatcher.put("d{2}/a{3}/d{4}", new SimpleDateMatcher("d{2}/a{3}/d{4}", "dd/MMM/yyyy", new int[] {0, 2, 3, 3, 7, 4}));
+		simpleDateMatcher.put("d/a{3}/d{4}", new SimpleDateMatcher("d/a{3}/d{4}", "d/MMM/yyyy", new int[] {0, 1, 2, 3, 6, 4}));
 
 		simpleDateMatcher.put("d{2} a{4} d{4}", new SimpleDateMatcher("d{2} a{4} d{4}", "dd MMMM yyyy", new int[] {0, 2, 3, -5, -4, 4}));
 		simpleDateMatcher.put("d a{4} d{4}", new SimpleDateMatcher("d a{4} d{4}", "d MMMM yyyy", new int[] {0, 1, 2, -5, -4, 4}));
 		simpleDateMatcher.put("d{2}-a{4}-d{4}", new SimpleDateMatcher("d{2}-a{4}-d{4}", "dd-MMMM-yyyy", new int[] {0, 2, 3, -5, -4, 4}));
 		simpleDateMatcher.put("d-a{4}-d{4}", new SimpleDateMatcher("d-a{4}-d{4}", "d-MMMM-yyyy", new int[] {0, 1, 2, -5, -4, 4}));
+		simpleDateMatcher.put("d{2}/a{4}/d{4}", new SimpleDateMatcher("d{2}/a{4}/d{4}", "dd/MMMM/yyyy", new int[] {0, 2, 3, -5, -4, 4}));
+		simpleDateMatcher.put("d/a{4}/d{4}", new SimpleDateMatcher("d/a{4}/d{4}", "d/MMMM/yyyy", new int[] {0, 1, 2, -5, -4, 4}));
 
 		simpleDateMatcher.put("d{2} a{3} d{2}", new SimpleDateMatcher("d{2} a{3} d{2}", "dd MMM yy", new int[] {0, 2, 3, 3, 7, 2}));
 		simpleDateMatcher.put("d a{3} d{2}", new SimpleDateMatcher("d a{3} d{2}", "d MMM yy", new int[] {0, 1, 2, 3, 6, 2}));
 		simpleDateMatcher.put("d{2}-a{3}-d{2}", new SimpleDateMatcher("d{2}-a{3}-d{2}", "dd-MMM-yy", new int[] {0, 2, 3, 3, 7, 2}));
 		simpleDateMatcher.put("d-a{3}-d{2}", new SimpleDateMatcher("d-a{3}-d{2}", "d-MMM-yy", new int[] {0, 1, 2, 3, 6, 2}));
+		simpleDateMatcher.put("d{2}/a{3}/d{2}", new SimpleDateMatcher("d{2}/a{3}/d{2}", "dd/MMM/yy", new int[] {0, 2, 3, 3, 7, 2}));
+		simpleDateMatcher.put("d/a{3}/d{2}", new SimpleDateMatcher("d/a{3}/d{2}", "d/MMM/yy", new int[] {0, 1, 2, 3, 6, 2}));
 
 		simpleDateMatcher.put("a{3} d{2}, d{4}", new SimpleDateMatcher("a{3} d{2}, d{4}", "MMM dd',' yyyy", new int[] {4, 2, 0, 3, 8, 4}));
 		simpleDateMatcher.put("a{3} d, d{4}", new SimpleDateMatcher("a{3} d, d{4}", "MMM d',' yyyy", new int[] {4, 1, 0, 3, 7, 4}));
@@ -133,6 +139,9 @@ public class DateTimeParser {
 
 		simpleDateMatcher.put("d{8}Td{6}Z", new SimpleDateMatcher("d{8}Td{6}Z", "yyyyMMdd'T'HHmmss'Z'", new int[] {6, 2, 4, 2, 0, 4}));
 		simpleDateMatcher.put("d{8}Td{6}", new SimpleDateMatcher("d{8}Td{6}", "yyyyMMdd'T'HHmmss", new int[] {6, 2, 4, 2, 0, 4}));
+
+		simpleDateMatcher.put("d{2}/a{3}/d{2} d:d{2} P", new SimpleDateMatcher("d{2}/a{3}/d{2} d:d{2} P", "dd/MMM/yy h:mm a", new int[] {0, 2, 3, 3, 7, 2}));
+		simpleDateMatcher.put("d{2}/a{3}/d{2} d{2}:d{2} P", new SimpleDateMatcher("d{2}/a{3}/d{2} d{2}:d{2} P", "dd/MMM/yy hh:mm a", new int[] {0, 2, 3, 3, 7, 2}));
 	}
 
 	static int monthAbbreviationOffset(String month) {
@@ -223,6 +232,7 @@ public class DateTimeParser {
 		Character dateSeparator = null;
 		Character dateTimeSeparator = null;
 		String timeZone = null;
+		Boolean amPmIndicator = null;
 
 		// Sort the results of our training by value so that we consider the most frequent first
 		Map<String, Integer> byValue = sortByValue(results);
@@ -280,13 +290,15 @@ public class DateTimeParser {
 				dateTimeSeparator = result.dateTimeSeparator;
 			if (timeZone == null)
 				timeZone = result.timeZone;
+			if (amPmIndicator == null)
+				amPmIndicator = result.amPmIndicator;
 		}
 
 		if (timeZone == null)
 			timeZone = "";
 
 		return new DateTimeParserResult(null, dayFirst, timeElements, timeFieldLengths, hourLength, dateElements, dateFieldLengths,
-				timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone);
+				timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator);
 	}
 
 	static String retDigits(int digitCount, char patternChar) {
@@ -338,6 +350,12 @@ public class DateTimeParser {
 		int len = input.length();
 		char lastCh = '=';
 		int count = 0;
+		boolean amIndicator = false;
+		if (input.toLowerCase(Locale.ROOT).endsWith("am") || input.toLowerCase(Locale.ROOT).endsWith("pm")) {
+			len -= 2;
+			amIndicator = true;
+		}
+
 		for (int i = 0; i < len; i++) {
 			char ch = input.charAt(i);
 			if (Character.isDigit(ch)) {
@@ -382,6 +400,9 @@ public class DateTimeParser {
 			result.append("{" + String.valueOf(count + 1) + "}");
 			count = 0;
 		}
+
+		if (amIndicator)
+			result.append('P');
 
 		return result.toString();
 	}

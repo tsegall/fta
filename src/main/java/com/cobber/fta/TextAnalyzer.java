@@ -190,9 +190,9 @@ public class TextAnalyzer {
 		addPattern(patternInfo, true, ALPHA_PATTERN, PatternInfo.Type.STRING, null, 1, -1, null, "");
 
 		addPattern(patternInfo, true, LONG_PATTERN, PatternInfo.Type.LONG, null, 1, -1, null, "");
-		addPattern(patternInfo, true, SIGNED_LONG_PATTERN, PatternInfo.Type.LONG, "Signed", 1, -1, null, "");
+		addPattern(patternInfo, true, SIGNED_LONG_PATTERN, PatternInfo.Type.LONG, "SIGNED", 1, -1, null, "");
 		addPattern(patternInfo, true, DOUBLE_PATTERN, PatternInfo.Type.DOUBLE, null, -1, -1, null, "");
-		addPattern(patternInfo, true, SIGNED_DOUBLE_PATTERN, PatternInfo.Type.DOUBLE, "Signed", -1, -1, null, "");
+		addPattern(patternInfo, true, SIGNED_DOUBLE_PATTERN, PatternInfo.Type.DOUBLE, "SIGNED", -1, -1, null, "");
 
 		// Logical Types
 		addPattern(typeInfo, false, "[NULL]", PatternInfo.Type.STRING, "NULL", -1, -1, null, null);
@@ -431,7 +431,7 @@ public class TextAnalyzer {
 	}
 
 	private boolean trackString(String input, boolean register) {
-		if ("Email".equals(matchPatternInfo.typeQualifier)) {
+		if ("EMAIL".equals(matchPatternInfo.typeQualifier)) {
 			// Address lists commonly have ;'s as separators as opposed to the
 			// ','
 			if (input.indexOf(';') != -1)
@@ -867,7 +867,7 @@ public class TextAnalyzer {
 			// Do we have a set of possible emails?
 			if (possibleEmails == raw.size()) {
 				PatternInfo save = matchPatternInfo;
-				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "Email", -1, -1, null, null);
+				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "EMAIL", -1, -1, null, null);
 				int emails = 0;
 				for (String sample : raw)
 					if (trackString(sample, false))
@@ -1046,7 +1046,7 @@ public class TextAnalyzer {
 			outlier(input);
 
 			if (realSamples == REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.95 &&
-					("URL".equals(matchPatternInfo.typeQualifier) || "Email".equals(matchPatternInfo.typeQualifier)))
+					("URL".equals(matchPatternInfo.typeQualifier) || "EMAIL".equals(matchPatternInfo.typeQualifier)))
 				backoutToString(realSamples);
 			break;
 

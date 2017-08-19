@@ -177,7 +177,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "-?\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "Signed");
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
 		Assert.assertEquals(result.getMinValue(), "-10000");
 		Assert.assertEquals(result.getMaxValue(), "10000");
 
@@ -327,9 +327,46 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), TextAnalyzer.SIGNED_DOUBLE_PATTERN);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getTypeQualifier(), "Signed");
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
 		Assert.assertEquals(result.getMinValue(), "-99.23");
 		Assert.assertEquals(result.getMaxValue(), "43.8");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
+	}
+
+	@Test
+	public void basic_AMPM() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		String input = "09/Mar/17 3:14 PM|09/Mar/17 11:36 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 8:14 AM|" +
+				"09/Mar/17 7:02 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|" +
+				"09/Mar/17 6:59 AM|09/Mar/17 6:57 AM|08/Mar/17 8:12 AM|07/Mar/17 9:27 PM|07/Mar/17 3:34 PM|07/Mar/17 3:01 PM|" +
+				"07/Mar/17 3:00 PM|07/Mar/17 2:51 PM|07/Mar/17 2:46 PM|07/Mar/17 2:40 PM|07/Mar/17 2:23 PM|07/Mar/17 11:04 AM|" +
+				"02/Mar/17 10:57 AM|01/Mar/17 11:56 AM|01/Mar/17 6:14 AM|28/Feb/17 4:56 AM|27/Feb/17 5:58 AM|27/Feb/17 5:58 AM|" +
+				"22/Feb/17 6:48 AM|18/Jan/17 8:29 AM|04/Jan/17 7:37 AM|10/Nov/16 10:42 AM|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Map<String, Integer> outliers = result.getOutlierDetails();
+		for (Map.Entry<String, Integer> entry : outliers.entrySet()) {
+			System.err.printf("Key: %s, value: %d\n", entry.getKey(), entry.getValue());
+		}
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\d{2}/\\p{Alpha}{3}/\\d{2} \\d{1,2}:\\d{2} (am|AM|pm|PM)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "dd/MMM/yy h:mm a");
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getPattern()));
@@ -1235,7 +1272,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), ".{14,24}");
 		Assert.assertEquals(result.getConfidence(), 0.9487179487179487);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "Email");
+		Assert.assertEquals(result.getTypeQualifier(), "EMAIL");
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getPattern()));
@@ -1418,7 +1455,7 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "Email");
+		Assert.assertEquals(result.getTypeQualifier(), "EMAIL");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1457,7 +1494,7 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "Email");
+		Assert.assertEquals(result.getTypeQualifier(), "EMAIL");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);

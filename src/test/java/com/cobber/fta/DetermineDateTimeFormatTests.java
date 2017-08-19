@@ -201,6 +201,41 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void basic_AMPM() throws Exception {
+		Assert.assertEquals(DateTimeParser.determineFormatString("09/Mar/17 3:14 PM", null), "dd/MMM/yy h:mm a");
+
+		String input = "09/Mar/17 3:14 PM|09/Mar/17 11:36 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 8:14 AM|" +
+				"09/Mar/17 7:02 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|" +
+				"09/Mar/17 6:59 AM|09/Mar/17 6:57 AM|08/Mar/17 8:12 AM|07/Mar/17 9:27 PM|07/Mar/17 3:34 PM|07/Mar/17 3:01 PM|" +
+				"07/Mar/17 3:00 PM|07/Mar/17 2:51 PM|07/Mar/17 2:46 PM|07/Mar/17 2:40 PM|07/Mar/17 2:23 PM|07/Mar/17 11:04 AM|" +
+				"02/Mar/17 10:57 AM|01/Mar/17 11:56 AM|01/Mar/17 6:14 AM|28/Feb/17 4:56 AM|27/Feb/17 5:58 AM|27/Feb/17 5:58 AM|" +
+				"22/Feb/17 6:48 AM|18/Jan/17 8:29 AM|04/Jan/17 7:37 AM|10/Nov/16 10:42 AM|";
+		String inputs[] = input.split("\\|");
+		DateTimeParser det = new DateTimeParser();
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		DateTimeParserResult result = det.getResult();
+
+		String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "dd/MMM/yy h:mm a");
+
+		Assert.assertTrue(result.isValid("09/Mar/17 3:14 AM"));
+		Assert.assertTrue(result.isValid8("09/Mar/17 3:14 AM"));
+		Assert.assertTrue(result.isValid("09/Mar/17 3:14 PM"));
+		Assert.assertTrue(result.isValid8("09/Mar/17 3:14 PM"));
+
+		String re = result.getRegExp();
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(re));
+		}
+	}
+
+	@Test
 	public void basic_DD_MMMM_YYYY() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
@@ -933,7 +968,7 @@ public class DetermineDateTimeFormatTests {
 		Map<String, Integer> formatStrings = new HashMap<String, Integer>();
 		Map<String, Integer> types = new HashMap<String, Integer>();
 		int good = 0;
-		int iterations = 1000000000;
+		int iterations = 100000000;
 		String[] timeZones = TimeZone.getAvailableIDs();
 
 		for (int iters = 0; iters < iterations; iters++) {
@@ -993,6 +1028,13 @@ public class DetermineDateTimeFormatTests {
 		      }
 		      s.append(",.;':\"[]{}\\|=!@#$%^&*<>".charAt(randomGenerator.nextInt(100) % 23));
 		    }
+
+		    int x = randomGenerator.nextInt(100);
+		    if (x == 98)
+		    	s.append("am");
+		    else if (x == 99)
+		    	s.append("pm");
+
 			DateTimeParser det = new DateTimeParser();
 			String input = s.toString();
 			//System.err.printf("Input ... '%s'\n", input);
