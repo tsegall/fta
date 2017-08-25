@@ -244,6 +244,7 @@ public class DateTimeParser {
 		Pattern dayRE = Pattern.compile("([^d]*)([d]+)(.*)");
 		Pattern monthRE = Pattern.compile("([^M]*)([M]+)(.*)");
 		Pattern hourRE = Pattern.compile("([^H]*)([H]+)(.*)");
+		Pattern unboundRE = Pattern.compile("([^?]*)([?]+)([^?]*)([?]+)(.*)");
 		String answerMonths = null;
 		String answerDays = null;
 		String answerHours = null;
@@ -253,6 +254,7 @@ public class DateTimeParser {
 		Matcher answerM = null;
 		Matcher answerD = null;
 		Matcher answerH = null;
+		Matcher unbound = null;
 
 		// Sort the results of our training by value so that we consider the most frequent first
 		Map<String, Integer> byValue = sortByValue(results);
@@ -336,20 +338,12 @@ public class DateTimeParser {
 					answerD = dayRE.matcher(key);
 					if (answerD.matches() && answerD.groupCount() == 3) {
 						answerDays = answerD.group(2);
-						if ("dd".equals(answerDays) && dateFieldLengths[dayOffset] == 1) {
-							answerDays = "d";
-							answer = answerD.group(1) + answerDays + answerD.group(3);
-						}
 					}
 				}
 				if (answerMonths == null && currentMonths != null) {
 					answerM = monthRE.matcher(key);
 					if (answerM.matches() && answerM.groupCount() == 3) {
 						answerMonths = answerM.group(2);
-						if ("MM".equals(answerMonths) && dateFieldLengths[monthOffset] == 1) {
-							answerMonths = "M";
-							answer = answerM.group(1) + answerMonths + answerM.group(3);
-						}
 					}
 				}
 
@@ -386,6 +380,40 @@ public class DateTimeParser {
 						answerHours = currentHours;
 					}
 				}
+			}
+		}
+
+		if (dayFirst != null) {
+			unbound = unboundRE.matcher(answer);
+			if (unbound.matches() && unbound.groupCount() == 5) {
+				if (dayFirst)
+					answer = unbound.group(1) + unbound.group(2).replace('?','d') + unbound.group(3) + unbound.group(4).replace('?','M') + unbound.group(5);
+				else
+					answer = unbound.group(1) + unbound.group(2).replace('?','M') + unbound.group(3) + unbound.group(4).replace('?','d') + unbound.group(5);
+			}
+		}
+
+		answerH = hourRE.matcher(answer);
+		if (answerH.matches() && answerH.groupCount() == 3) {
+			answerHours = answerH.group(2);
+			if ("HH".equals(answerHours) && hourLength == 1) {
+				answer = answerH.group(1) + "H" + answerH.group(3);
+			}
+		}
+
+		answerD = dayRE.matcher(answer);
+		if (dayOffset != -1 && answerD.matches() && answerD.groupCount() == 3) {
+			answerDays = answerD.group(2);
+			if ("dd".equals(answerDays) && dateFieldLengths[dayOffset] == 1) {
+				answer = answerD.group(1) + "d" + answerD.group(3);
+			}
+		}
+
+		answerM = monthRE.matcher(answer);
+		if (monthOffset != -1 && answerM.matches() && answerM.groupCount() == 3) {
+			answerMonths = answerM.group(2);
+			if ("MM".equals(answerMonths) && dateFieldLengths[monthOffset] == 1) {
+				answer = answerM.group(1) + "M" + answerM.group(3);
 			}
 		}
 
