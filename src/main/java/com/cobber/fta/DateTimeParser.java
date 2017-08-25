@@ -11,6 +11,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -233,15 +235,31 @@ public class DateTimeParser {
 		Character dateTimeSeparator = null;
 		String timeZone = null;
 		Boolean amPmIndicator = null;
+		StringBuilder last = null;
+		String current = null;
+		String answer = null;
+		Pattern dayRE = Pattern.compile("([^d]*)([d]+)(.*)");
+		Pattern monthRE = Pattern.compile("([^M]*)([M]+)(.*)");
+		Pattern hourRE = Pattern.compile("([^H]*)([H]+)(.*)");
+		String answerMonths = null;
+		String answerDays = null;
+		String answerHours = null;
+		String currentMonths = null;
+		String currentDays = null;
+		String currentHours = null;
+		Matcher answerM = null;
+		Matcher answerD = null;
+		Matcher answerH = null;
 
 		// Sort the results of our training by value so that we consider the most frequent first
 		Map<String, Integer> byValue = sortByValue(results);
 
 		// Iterate through all the results of our training, merging them to produce our best guess
 		for (Map.Entry<String, Integer> entry : byValue.entrySet()) {
-			DateTimeParserResult result = DateTimeParserResult.asResult(entry.getKey(), dayFirst);
+			String key = entry.getKey();
+			DateTimeParserResult result = DateTimeParserResult.asResult(key, dayFirst);
 			if (result == null) {
-				System.err.println("NOT FOUND - input: '" + entry.getKey() + "'");
+				System.err.println("NOT FOUND - input: '" + key + "'");
 				continue;
 			}
 			if (timeElements == -1)
@@ -292,12 +310,86 @@ public class DateTimeParser {
 				timeZone = result.timeZone;
 			if (amPmIndicator == null)
 				amPmIndicator = result.amPmIndicator;
+
+			current = key;
+			Matcher m = monthRE.matcher(key);
+			if (m.matches() && m.groupCount() == 3)
+				currentMonths = m.group(2);
+			Matcher d = dayRE.matcher(key);
+			if (d.matches() && d.groupCount() == 3)
+				currentDays = d.group(2);
+			Matcher h = hourRE.matcher(key);
+			if (h.matches() && h.groupCount() == 3)
+				currentHours = h.group(2);
+			if (answer == null) {
+				answer = key;
+				answerMonths = currentMonths;
+				answerDays = currentDays;
+				answerHours = currentHours;
+			}
+			else {
+				if (answerDays == null && currentDays != null) {
+					answer = key;
+					answerD = dayRE.matcher(key);
+					if (answerD.matches() && answerD.groupCount() == 3) {
+						answerDays = answerD.group(2);
+						if ("dd".equals(answerDays) && dateFieldLengths[dayOffset] == 1) {
+							answerDays = "d";
+							answer = answerD.group(1) + answerDays + answerD.group(3);
+						}
+					}
+				}
+				if (answerMonths == null && currentMonths != null) {
+					answerM = monthRE.matcher(key);
+					if (answerM.matches() && answerM.groupCount() == 3) {
+						answerMonths = answerM.group(2);
+						if ("MM".equals(answerMonths) && dateFieldLengths[monthOffset] == 1) {
+							answerMonths = "M";
+							answer = answerM.group(1) + answerMonths + answerM.group(3);
+						}
+					}
+				}
+
+				// Manage the variable length fields:
+				//   d and dd -> d
+				//   M and MM -> M
+				//   MMM and MMMM -> MMMM
+				//   HH and H -> H
+				if ("dd".equals(answerDays) && "d".equals(currentDays)) {
+					answerD = dayRE.matcher(key);
+					if (answerD.matches() && answerD.groupCount() == 3) {
+						answer = answerD.group(1) + currentDays + answerD.group(3);
+						answerDays = currentDays;
+					}
+				}
+				if ("MM".equals(answerMonths) && "M".equals(currentMonths)) {
+					answerM = monthRE.matcher(key);
+					if (answerM.matches() && answerM.groupCount() == 3) {
+						answer = answerM.group(1) + currentMonths + answerM.group(3);
+						answerMonths = currentMonths;
+					}
+				}
+				if ("MMM".equals(answerMonths) && "MMMM".equals(currentMonths)) {
+					answerM = monthRE.matcher(key);
+					if (answerM.matches() && answerM.groupCount() == 3) {
+						answer = answerM.group(1) + currentMonths + answerM.group(3);
+						answerMonths = currentMonths;
+					}
+				}
+				if ("HH".equals(answerHours) && "H".equals(currentHours)) {
+					answerH = hourRE.matcher(key);
+					if (answerH.matches() && answerH.groupCount() == 3) {
+						answer = answerH.group(1) + currentHours + answerH.group(3);
+						answerHours = currentHours;
+					}
+				}
+			}
 		}
 
 		if (timeZone == null)
 			timeZone = "";
 
-		return new DateTimeParserResult(null, dayFirst, timeElements, timeFieldLengths, hourLength, dateElements, dateFieldLengths,
+		return new DateTimeParserResult(answer.toString(), dayFirst, timeElements, timeFieldLengths, hourLength, dateElements, dateFieldLengths,
 				timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator);
 	}
 

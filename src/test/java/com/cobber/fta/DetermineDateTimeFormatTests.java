@@ -8,14 +8,127 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class DetermineDateTimeFormatTests {
+	//@Test
+	public void allOptions() throws Exception {
+		// "H_mm","MM/dd/yy","dd/MM/yyyy","yyyy/MM/dd","yyyy-MM-dd'T'HH_mm_ssx",
+		// "yyyy-MM-dd'T'HH_mm_ssxxx","yyyy-MM-dd'T'HH_mm_ssxxxxx","dd MMMM yyyy",
+		// "dd-MMMM-yyyy","d MMMM yyyy","d-MMMM-yyyy","MMMM dd',' yyyy",
+		// "MMMM d',' yyyy","MMMM dd yyyy","MMMM d yyyy","MMMM-dd-yyyy","MMMM-d-yyyy"
+		// "2/13/98 9:57"
+		String input =
+				"2017-12-28|18:59|9:59:59|18:59 2017-12-28|2017-12-28 18:59|18:59:59|9:59 2017-12-28|9:59|2017-12-28|" +
+						"9:59:59 2017-12-28|2017 7 8|2017-12-28 9:59:59|18:59:59 2017-12-28|2017-12-28 9:59|7/28/39|39-7-28|" +
+						"39/7/28|2017 7 28|" +
+						"7-28-39|28/7/39|28-7-39|2017-12-28 18:59:59|2017-12-28|2017 12 8|2017-7-28|" +
+						"2017/7/28|2017-12-28|2017-12-28 18:59 GMT|18:59 2017-12-28 GMT|7/28/2017|7-28-2017|28-7-2017|" +
+						"28/7/2017|2017 12 28|39/12/28|39-12-28|2017-12-28|7-28-39 18:59|12/28/39|39-7-28 18:59|28/12/39|" +
+						"7/28/39 18:59|28/7/39 18:59|28-12-39|39/7/28 18:59|2017-12-28|2017/12/28|12-28-39|9:59:59.3|" +
+						"28-7-2017 18:59|18:59 7/28/39|2017-7-28 18:59|2017-12-28|18:59:59.3|2017-12-28 9:59:59 GMT|" +
+						"2017-12-28|12/28/2017|2017-12-28 9:59 GMT|9:59 2017-12-28 GMT|12-28-2017|18:59:59.5959|" +
+						"7-28-39 18:59:59|18:59:59.593|28-12-2017|2017-12-28|9:59:59 2017-12-28 GMT|39/7/28 18:59:59|" +
+						"7-28-2017 18:59|18:59 7-28-39|39/12/28 18:59|2017/7/28 18:59|9:59:59.59|18:59 28/7/39|" +
+						"9:57|12/14/98|20/12/2012|2012/12/12|2004-01-01T00:00:00+05|2004-01-01T00:00:00+05:00|" +
+						"25 July 2018|25-July-2018|7 June 2017|7-June-2017|June 23, 2017|" +
+						"August 8, 2017|August 18 2017|December 9 2017|January-14-2017|February-4-2017|";
+
+		Assert.assertEquals(DateTimeParser.determineFormatString("9:57", null), "H:mm");
+		String inputs[] = input.split("\\|");
+		String fmts[] = new String[inputs.length];
+		String text = null;
+		StringBuilder answer = new StringBuilder();
+		LocalTime localTime = LocalTime.now();
+		LocalDate localDate = LocalDate.now();
+		LocalDateTime localDateTime = LocalDateTime.now();
+		ZonedDateTime zonedDateTime = ZonedDateTime.now();
+		OffsetDateTime offsetDateTime = OffsetDateTime.now();
+		Set<String> seen = new HashSet<String>();
+		Set<Integer> ignore = new HashSet<Integer>();
+
+		StringBuilder headerLine = new StringBuilder("RowID,");
+
+		// Work out headers and which columns we want.
+		for (int i = 0; i < inputs.length; i++) {
+			fmts[i] = DateTimeParser.determineFormatString(inputs[i], null);
+			if (fmts[i] == null) {
+				System.err.println("Null returned from determineFormatString for '" + inputs[i] + "'");
+				continue;
+			}
+
+			String header = fmts[i].replace(':', '_').replace('\'', '_');
+
+			//System.err.printf("i: %d, Header: '%s', input '%s'", i, header, fmts[i], header);
+			// Ignore duplicates
+			if (!seen.add(header)) {
+				ignore.add(i);
+				//System.err.println(" - IGNORED");
+				continue;
+			}
+			headerLine.append('"').append(header).append('"');
+			if (i + 1 < inputs.length)
+				headerLine.append(',');
+			//System.err.println();
+		}
+		System.err.println(headerLine.toString());
+
+
+		for (int rows = 0; rows < 10; rows++) {
+			answer.append(rows).append(',');
+			for (int i = 0; i < inputs.length; i++) {
+				if (ignore.contains(i)) {
+					//System.err.println("Ignoring " + i);
+					continue;
+				}
+				DateTimeParser det = new DateTimeParser();
+				det.train(inputs[i]);
+				DateTimeParserResult result = det.getResult();
+				PatternInfo.Type type = result.getType();
+				try {
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(fmts[i]);
+					if (PatternInfo.Type.TIME.equals(type)) {
+						text = localTime.format(formatter);
+						localTime = localTime.minusHours(209);
+					}
+					else if (PatternInfo.Type.DATE.equals(type)) {
+						text = localDate.format(formatter);
+						localDate = localDate.minusDays(29);
+					}
+					else if (PatternInfo.Type.DATETIME.equals(type)) {
+						text = localDateTime.format(formatter);
+						localDateTime = localDateTime.minusHours(209);
+					}
+					else if (PatternInfo.Type.ZONEDDATETIME.equals(type)) {
+						text = zonedDateTime.format(formatter);
+						zonedDateTime = zonedDateTime.minusHours(209);
+					}
+					else {
+						text = offsetDateTime.format(formatter);
+						offsetDateTime = offsetDateTime.minusHours(209);
+					}
+					answer.append("\"" + text + "\"");
+					if (i + 1 < inputs.length)
+						answer.append(',');
+					else
+						answer.append('\n');
+				}
+				catch (DateTimeParseException exc) {
+					Assert.fail("Failure");
+				}
+			}
+		}
+		System.err.print(answer.toString());
+		Assert.assertEquals(DateTimeParser.determineFormatString("9:57", null), "H:mm");
+	}
+
 	@Test
 	public void intuitTimeOnly() throws Exception {
 		Assert.assertEquals(DateTimeParser.determineFormatString("9:57", null), "H:mm");
@@ -174,6 +287,54 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void basic_dd_M_yy() throws Exception {
+		String input = "02/2/17|27/1/14|21/1/11|15/1/08|08/1/05|02/1/02|27/12/98|21/12/95|14/12/92|08/12/89|";
+		String inputs[] = input.split("\\|");
+		DateTimeParser det = new DateTimeParser();
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		DateTimeParserResult result = det.getResult();
+
+		String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "dd/M/yy");
+
+		String re = result.getRegExp();
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(re));
+		}
+	}
+
+	@Test
+	public void basic_H_MM() throws Exception {
+		String input = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
+		"17:16|0:16|7:16|14:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|3:16|10:16|17:16|0:16|7:16|14:16|" +
+		"21:16|4:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|4:16|11:16|3:16|10:16|17:16|0:16|7:16|14:16|";
+		String inputs[] = input.split("\\|");
+		DateTimeParser det = new DateTimeParser();
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		DateTimeParserResult result = det.getResult();
+
+		String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "H:mm");
+
+		String re = result.getRegExp();
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(re));
+		}
+	}
+
+	@Test
 	public void basic_DTP_DD_MMMM_YYYY() throws Exception {
 		String input = "25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
@@ -235,6 +396,38 @@ public class DetermineDateTimeFormatTests {
 		}
 	}
 
+	@Test
+	public void basic_MMM_d_comma_yyyy() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		String input = "August 20, 2017|August 20, 2017|July 22, 2017|August 5, 2017|July 22, 2017|June 23, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
+				"May 25, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 25, 2017|April 26, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
+				"May 25, 2017|April 26, 2017|March 28, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 25, 2017|April 26, 2017|March 28, 2017|" +
+				"February 27, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 15, 2017|";
+
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DATE);
+		Assert.assertEquals(result.getTypeQualifier(), "MMMM d',' yyyy");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{3,9} \\d{1,2}, \\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
+	}
 	@Test
 	public void basic_DD_MMMM_YYYY() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
