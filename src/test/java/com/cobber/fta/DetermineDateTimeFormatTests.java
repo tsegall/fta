@@ -287,6 +287,30 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void basic_yyyy_MM_dd_HH_mm_z() throws Exception {
+		String input = "2017-08-24 12:10 EDT|2017-07-03 06:10 EDT|2017-05-12 00:10 EDT|2017-03-20 18:10 EDT|2016-07-02 12:10 EDT|" +
+				"2017-01-27 11:10 EST|2016-12-06 05:10 EST|2016-10-15 00:10 EDT|2016-08-23 18:10 EDT|2016-05-11 06:10 EDT|";
+		String inputs[] = input.split("\\|");
+		DateTimeParser det = new DateTimeParser();
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		DateTimeParserResult result = det.getResult();
+
+		String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "yyyy-MM-dd HH:mm z");
+
+		String re = result.getRegExp();
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(re));
+		}
+	}
+
+	@Test
 	public void basic_dd_M_yy() throws Exception {
 		String input = "02/2/17|27/1/14|21/1/11|15/1/08|08/1/05|02/1/02|27/12/98|21/12/95|14/12/92|08/12/89|";
 		String inputs[] = input.split("\\|");

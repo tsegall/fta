@@ -1,6 +1,7 @@
 package com.cobber.fta;
 
 import java.text.DateFormatSymbols;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
@@ -98,6 +99,8 @@ public class DateTimeParser {
 
 		// Cache the set of available Time Zones
 		Collections.addAll(timeZones, TimeZone.getAvailableIDs());
+		// Add the non-real Time Zones (that people use)
+		timeZones.addAll(Arrays.asList(new String[] {"EDT", "CDT", "MDT", "PDT"}));
 
 		simpleDateMatcher.put("d{4} d{2} d{2}", new SimpleDateMatcher("d{4} d{2} d{2}", "yyyy MM dd", new int[] {8, 2, 5, 2, 0, 4}));
 		simpleDateMatcher.put("d{4} d d{2}", new SimpleDateMatcher("d{4} d d{2}", "yyyy M dd", new int[] {7, 2, 5, 1, 0, 4}));
@@ -414,7 +417,7 @@ public class DateTimeParser {
 	}
 
 	static boolean plausibleDate(int[] dateValues, int[] dateDigits, int[] fieldOffsets) {
-		int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 30};
+		int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 		int year = dateValues[fieldOffsets[2]];
 		if (year == 0 && dateDigits[fieldOffsets[2]] == 4)
 			return false;

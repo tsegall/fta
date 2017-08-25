@@ -374,6 +374,62 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void basic_yyyy_M_dd_HH_mm() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		String input = "2017-4-15 21:10|2016-9-27 14:10|2016-3-11 07:10|2015-8-24 00:10|2015-2-04 17:10|" +
+				"2014-7-19 10:10|2013-12-31 03:10|2013-6-13 20:10|2012-11-25 13:10|2012-5-09 06:10|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{1,2}-\\d{2} \\d{2}:\\d{2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-M-dd HH:mm");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
+	}
+
+	@Test
+	public void basic_yyyy_MM_dd_HH_mm_z() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer();
+		String input = "2017-08-24 12:10 EDT|2017-07-03 06:10 EDT|2017-05-12 00:10 EDT|2017-03-20 18:10 EDT|2016-07-02 12:10 EDT|" +
+				"2017-01-27 11:10 EST|2016-12-06 05:10 EST|2016-10-15 00:10 EDT|2016-08-23 18:10 EDT|2016-05-11 06:10 EDT|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2} .*");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.ZONEDDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm z");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
+	}
+
+	@Test
 	public void basicDateYYYY_MM_DD() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
