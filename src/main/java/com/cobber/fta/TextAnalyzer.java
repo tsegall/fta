@@ -452,7 +452,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		int len = input.length();
+		int len = input.trim().length();
 		if (matchPatternInfo.minLength != -1 && len < matchPatternInfo.minLength)
 			return false;
 		if (matchPatternInfo.maxLength != -1 && len > matchPatternInfo.maxLength)
@@ -1100,7 +1100,7 @@ public class TextAnalyzer {
 	 */
 	private int determineLength(String input) {
 		int len = input.length();
-		if (len > 0 && (input.charAt(len - 1) == '+' || input.charAt(len - 1) == '*'))
+		if (len > 0 && (input.charAt(len - 1) == '+' || input.charAt(len - 1) == '*') || input.indexOf(',') != -1)
 			return -1;
 		int lengthInformation = input.lastIndexOf('{');
 		if (lengthInformation == -1)
@@ -1171,12 +1171,13 @@ public class TextAnalyzer {
 	private boolean checkVariableLengthSet(HashSet<String> variableSet, PatternInfo.Type type, String qualifier) {
 		long realSamples = sampleCount - (nullCount + blankCount);
 		long validCount = 0;
-		long misses = 0;					// count of number of groups that are misses
+		long misses = 0;				// count of number of groups that are misses
 		long missCount = 0;				// count of number of misses
+		Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 
 		// Sweep the balance and check they are part of the set
 		for (Map.Entry<String, Integer> entry : cardinality.entrySet()) {
-			if (variableSet.contains(entry.getKey().toUpperCase(Locale.ROOT)))
+			if (variableSet.contains(entry.getKey().trim().toUpperCase(Locale.ROOT)))
 				validCount += entry.getValue();
 			else {
 				misses++;
@@ -1184,6 +1185,7 @@ public class TextAnalyzer {
 				// Break out early if we know we are going to fail
 				if ((double) missCount / realSamples > .05)
 					return false;
+				newOutliers.put(entry.getKey(), entry.getValue());
 			}
 		}
 
@@ -1191,6 +1193,8 @@ public class TextAnalyzer {
 		if ((double) missCount / realSamples > .05 || misses >= 4)
 			return false;
 
+		outliers.putAll(newOutliers);
+		cardinality.keySet().removeAll(newOutliers.keySet());
 		matchCount = validCount;
 		matchPatternInfo = typeInfo.get(type.toString() + "." + qualifier);
 		matchPattern = matchPatternInfo.pattern;
@@ -1258,13 +1262,17 @@ public class TextAnalyzer {
 				int usStateCount = 0;
 				int caProvinceCount = 0;
 				int misses = 0;
+				Map<String, Integer> newOutliers = new HashMap<String, Integer>();
+
 				for (Map.Entry<String, Integer> entry : cardinality.entrySet()) {
-					if (usStates.contains(entry.getKey().toUpperCase(Locale.ROOT)))
+					if (usStates.contains(entry.getKey().trim().toUpperCase(Locale.ROOT)))
 						usStateCount += entry.getValue();
-					else if (caProvinces.contains(entry.getKey().toUpperCase(Locale.ROOT)))
+					else if (caProvinces.contains(entry.getKey().trim().toUpperCase(Locale.ROOT)))
 						caProvinceCount += entry.getValue();
-					else
+					else {
 						misses++;
+						newOutliers.put(entry.getKey(), entry.getValue());
+					}
 				}
 
 				if (misses < 3) {
@@ -1280,6 +1288,8 @@ public class TextAnalyzer {
 						matchCount = caProvinceCount;
 					}
 					confidence = (double) matchCount / realSamples;
+					outliers.putAll(newOutliers);
+					cardinality.keySet().removeAll(newOutliers.keySet());
 					matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + accessor);
 					matchPattern = matchPatternInfo.pattern;
 				}

@@ -175,13 +175,17 @@ class Driver {
 			}
 
 			long duration = System.currentTimeMillis() - start;
-			if (col == -1)
+			if (col == -1) {
+				double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;
 				System.err.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d.\n",
-						filename, typesDetected, numFields, ((double)typesDetected*100)/numFields, matchCount, sampleCount);
-			else
+						filename, typesDetected, numFields, percentage, matchCount, sampleCount);
+			}
+			else {
+				double confidence = result != null ? result.getConfidence() : 0;
 				System.err.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%).\n",
 						(typesDetected == 1 ? "yes" : "no"), matchCount,
-						sampleCount, result.getConfidence()*100);
+						sampleCount, confidence*100);
+			}
 			System.err.printf("Execution time: %dms\n", duration);
 		}
 	}

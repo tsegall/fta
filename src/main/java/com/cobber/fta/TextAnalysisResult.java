@@ -196,6 +196,7 @@ public class TextAnalysisResult {
 	/**
 	 * Get the cardinality for the current data stream.
 	 * See {@link com.cobber.fta.TextAnalyzer#setMaxCardinality(int) setMaxCardinality()} method in TextAnalyzer.
+	 * Note: The cardinality returned is the cardinality of the 'matched' samples.
 	 * Note: This is not a complete cardinality analysis unless the cardinality of the
 	 * data stream is less than the maximum cardinality (Default: {@value com.cobber.fta.TextAnalyzer#MAX_CARDINALITY_DEFAULT}).
 	 * See also {@link com.cobber.fta.TextAnalyzer#setMaxCardinality(int) setMaxCardinality()} method in TextAnalyzer.

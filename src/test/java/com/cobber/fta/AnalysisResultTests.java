@@ -458,6 +458,40 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void basic_StateSpaces() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer("State", true);
+		String input = " OH| SD| WA| MA| WI| NC| MB| VA| NC| DE| ND| PA| WV| TX| KS| WV| FL| WA| CA| GA| WI|" +
+				" IL| SD| NY| IA| CT| DC| PA| WA| TX| IN| TX| MS| BC| ND| GA| NY| PA| TX| ID| AL| MS|" +
+				" OK| AZ| CO| NJ| MI| ON| KS| OH| TX| IN| FL| FL| WA| NY| GA| SC| PA| CA| WI| OH| CO|" +
+				" VA| OH| MO| MA| IL| WA| IN| SD| IA| LA| TX| WY| OK| AL| MO| WA| PA| NB| NY| GA| MI|" +
+				" FL| CA| NM| CA| CA| CA| CA| OH| CA| CA| TX| TX| UT| MD| CA| KS| CO| OR| MN| MO| MO|" +
+				" MI| VT| MN| FL| MI| CA| VT| NM| NC| WY| IL| NY| MN| VA| VA| IN| UT| WI| NV| SA| CA| OH |";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "NA_STATE");
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{2}");
+		Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.get(" SA"), new Integer(1));
+		Assert.assertEquals(result.getConfidence(), 0.9921259842519685);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches("\\s*" + result.getPattern() + "\\s*"), inputs[i]);
+		}
+	}
+
+	@Test
 	public void basic_MM_dd_yy() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer("DOB");
 		String input = "12/5/59|2/13/48|6/29/62|1/7/66|7/3/84|5/28/74|" +
@@ -2210,11 +2244,17 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "NA_STATE");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.get("XX"), new Integer(1));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getConfidence(), 0.9927536231884058);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+		}
 	}
 
 	@Test
@@ -2313,11 +2353,11 @@ public class AnalysisResultTests {
 				"Germany|Canada|USA|USA|Austria|Italy|Sweden|Sweden|Germany|Brazil|" +
 				"Argentina|France|France|Germany|USA|UK|France|Finland|Germany|Germany|" +
 				"Belgium|France|Sweden|Venezuela|UK|Belgium|Portugal|Denmark|Brazil|Italy|" +
-				"Germany|USA|France|UK|UK|UK|Mexico|Belgium|Venezuela|Portugal|" +
+				"Germany|USA|France|UK|UK|UK|Mexico|  Belgium  |Venezuela|Portugal|" +
 				"France|USA|France|Brazil|USA|USA|UK|Venezuela|Venezuela|Brazil|" +
 				"Germany|Austria|Venezuela|Portugal|Canada|France|Brazil|Canada|Brazil|Germany|" +
 				"Venezuela|Venezuela|France|Germany|Mexico|Ireland|USA|Canada|Germany|Mexico|" +
-				"Germany|Germany|USA|France|Brazil|Germany|Austria|Germany|Ireland|UK|";
+				"Germany|Germany|USA|France|Brazil|Germany|Austria|Germany|Ireland|UK|Gondwanaland|";
 		String inputs[] = input.split("\\|");
 		int locked = -1;
 
@@ -2332,8 +2372,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "COUNTRY");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), ".+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -2440,6 +2480,38 @@ public class AnalysisResultTests {
 					matches++;
 		}
 		Assert.assertEquals(result.getMatchCount(), matches);
+	}
+
+	@Test
+	public void basicStateLowCard() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer("State", true);
+
+		String input = "MA|MI|ME|MO|NA|";
+		String inputs[] = input.split("\\|");
+		int locked = -1;
+		int iters = 20;
+
+		for (int j = 0; j < iters; j++) {
+			for (int i = 0; i < inputs.length; i++) {
+				if (analysis.train(inputs[i]) && locked == -1)
+					locked = i;
+			}
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "US_STATE");
+		Assert.assertEquals(result.getSampleCount(), inputs.length * iters);
+		Assert.assertEquals(result.getCardinality(), 4);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 1);
+		Assert.assertEquals(outliers.get("NA"), new Integer(iters));
+		Assert.assertEquals(result.getMatchCount(), (inputs.length - result.getOutlierCount()) * iters);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 0.8);
 	}
 
 	@Test

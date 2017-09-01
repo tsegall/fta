@@ -81,7 +81,7 @@ public class DetermineDateTimeFormatTests {
 		System.err.println(headerLine.toString());
 
 
-		for (int rows = 0; rows < 10; rows++) {
+		for (int rows = 0; rows < 30; rows++) {
 			answer.append(rows).append(',');
 			for (int i = 0; i < inputs.length; i++) {
 				if (ignore.contains(i)) {

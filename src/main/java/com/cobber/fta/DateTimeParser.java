@@ -238,8 +238,6 @@ public class DateTimeParser {
 		Character dateTimeSeparator = null;
 		String timeZone = null;
 		Boolean amPmIndicator = null;
-		StringBuilder last = null;
-		String current = null;
 		String answer = null;
 		Pattern dayRE = Pattern.compile("([^d]*)([d]+)(.*)");
 		Pattern monthRE = Pattern.compile("([^M]*)([M]+)(.*)");
@@ -316,7 +314,6 @@ public class DateTimeParser {
 			if (amPmIndicator == null)
 				amPmIndicator = result.amPmIndicator;
 
-			current = key;
 			Matcher m = monthRE.matcher(key);
 			if (m.matches() && m.groupCount() == 3)
 				currentMonths = m.group(2);
