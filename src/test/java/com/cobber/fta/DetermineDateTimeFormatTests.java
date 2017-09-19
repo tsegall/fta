@@ -215,31 +215,29 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
-	public void intuit8601DD_DD() throws Exception {
-		Assert.assertEquals(DateTimeParser.determineFormatString("2004-01-01T00:00:00+05:00", null), "yyyy-MM-dd'T'HH:mm:ssxxx");
+	public void intuitHHmmddMyy() throws Exception {
+		String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
+				"16:53 26/9/12|09:53 10/3/12|02:53 23/8/11|19:53 03/2/11|12:53 18/7/10|05:53 30/12/09|22:53 12/6/09|15:53 24/11/08|" +
+				"08:53 08/5/08|01:53 21/10/07|18:53 03/4/07|11:53 15/9/06|04:53 27/2/06|21:53 10/8/05|14:53 22/1/05|07:53 06/7/04|" +
+				"00:53 19/12/03|17:53 01/6/03|10:53 13/11/02|03:53 27/4/02|20:53 08/10/01|13:53 22/3/01|";
 
-		DateTimeParser det = new DateTimeParser();
-		String sample = "2004-01-01T00:00:00+05:00";
-		det.train(sample);
+		String inputs[] = input.split("\\|");
+		DateTimeParser det = new DateTimeParser(true);
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
 
 		DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd'T'HH:mm:ssxxx");
+		String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "HH:mm dd/M/yy");
 
 		String re = result.getRegExp();
-		Assert.assertEquals(re, "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-+][0-9]{2}:[0-9]{2}");
-		Assert.assertTrue(sample.matches(re));
 
-		Assert.assertTrue(result.isValid("2004-01-01T00:00:00+05:00"));
-		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+08:00"));
-		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+08:0"));
-		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+?08:00"));
-		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+19:00"));
-
-		Assert.assertTrue(result.isValid8("2004-01-01T00:00:00+05:00"));
-		Assert.assertTrue(result.isValid8("2012-03-04T19:22:10+08:00"));
-		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+08:0"));
-		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+?08:00"));
-		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+19:00"));
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(re));
+		}
 	}
 
 	@Test

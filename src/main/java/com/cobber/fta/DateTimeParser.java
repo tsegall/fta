@@ -253,6 +253,7 @@ public class DateTimeParser {
 		Matcher answerD = null;
 		Matcher answerH = null;
 		Matcher unbound = null;
+		boolean noDateFieldsBound = true;
 
 		// Sort the results of our training by value so that we consider the most frequent first
 		Map<String, Integer> byValue = sortByValue(results);
@@ -323,11 +324,12 @@ public class DateTimeParser {
 			Matcher h = hourRE.matcher(key);
 			if (h.matches() && h.groupCount() == 3)
 				currentHours = h.group(2);
-			if (answer == null) {
+			if (answer == null || noDateFieldsBound) {
 				answer = key;
 				answerMonths = currentMonths;
 				answerDays = currentDays;
 				answerHours = currentHours;
+				noDateFieldsBound = dayOffset == -1 && monthOffset == -1 && yearOffset == -1;
 			}
 			else {
 				if (answerDays == null && currentDays != null) {
@@ -380,13 +382,25 @@ public class DateTimeParser {
 			}
 		}
 
-		if (dayFirst != null) {
+		// We have analyzed all the samples and still have
+		if (dayOffset == -1 || monthOffset == -1 || yearOffset == -1) {
 			unbound = unboundRE.matcher(answer);
+			// Cases to consider:
+			// Nothing is defined - ??/??/?? (or similar variants)
+			// Only Month is defined - ??/MM/?? (or similar variants)
+			// Year is defined - yy/??/?? or ??/??/yy (or similar variants)
 			if (unbound.matches() && unbound.groupCount() == 5) {
-				if (dayFirst)
-					answer = unbound.group(1) + unbound.group(2).replace('?','d') + unbound.group(3) + unbound.group(4).replace('?','M') + unbound.group(5);
-				else
-					answer = unbound.group(1) + unbound.group(2).replace('?','M') + unbound.group(3) + unbound.group(4).replace('?','d') + unbound.group(5);
+				if (monthOffset != -1)
+					answer = unbound.group(1) + unbound.group(2).replace('?','d') + unbound.group(3) + unbound.group(4).replace('?','y') + unbound.group(5);
+				else {
+					if (dayFirst)
+						answer = unbound.group(1) + unbound.group(2).replace('?','d') + unbound.group(3) + unbound.group(4).replace('?','M') + unbound.group(5);
+					else
+						answer = unbound.group(1) + unbound.group(2).replace('?','M') + unbound.group(3) + unbound.group(4).replace('?','d') + unbound.group(5);
+
+					if (answer.indexOf('?') != -1)
+						answer = answer.replace('?', 'y');
+				}
 			}
 		}
 
@@ -927,8 +941,9 @@ public class DateTimeParser {
 						if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
 							return null;
 						dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
-					}
-					else
+					} else if (dateValue[0] > 12 && dateValue[2] > 12) {
+						dateAnswer = "??" + dateSeparator + retDigits(dateDigits[0], 'M') + dateSeparator + "??";
+					} else
 						dateAnswer = dateFormat(dateDigits, dateSeparator, dayFirst, false);
 				}
 			}
