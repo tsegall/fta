@@ -12,8 +12,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -39,8 +37,12 @@ import java.util.stream.Collectors;
  * </pre>
  */
 public class DateTimeParser {
+	public enum DateResolutionMode {
+		None, DayFirst, MonthFirst
+	}
+
 	// When we have ambiguity - should we prefer to conclude day first, month first or unspecified
-	Boolean dayFirst = null;
+	DateResolutionMode resolutionMode = DateResolutionMode.None;
 
 	static class SimpleDateMatcher {
 		String matcher;
@@ -165,12 +167,12 @@ public class DateTimeParser {
 	int blankCount = 0;
 	int invalidCount = 0;
 
-	DateTimeParser(Boolean dayFirst) {
-		this.dayFirst = dayFirst;
+	DateTimeParser(DateResolutionMode resolutionMode) {
+		this.resolutionMode = resolutionMode;
 	}
 
 	DateTimeParser() {
-		this(null);
+		this(DateResolutionMode.None);
 	}
 
 	/**
@@ -192,7 +194,7 @@ public class DateTimeParser {
 			return null;
 		}
 
-		String ret = determineFormatString(trimmed, null);
+		String ret = determineFormatString(trimmed, DateResolutionMode.None);
 		if (ret == null) {
 			invalidCount++;
 			return null;
@@ -206,11 +208,20 @@ public class DateTimeParser {
 		return ret;
 	}
 
-	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+	public static <K, V extends Comparable<? super V>> LinkedHashMap<K, V> sortByValue(Map<K, V> map) {
 		return map.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 
+	private static String longString(char c) {
+		if (c == 'H')
+			return "HH";
+		if (c == 'd')
+			return "dd";
+		if (c == 'M')
+			return "MMMM";
+		return "yyyy";
+	}
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
@@ -223,216 +234,120 @@ public class DateTimeParser {
 
 		// If there is only one result then it must be correct :-)
 		if (results.size() == 1)
-			return DateTimeParserResult.asResult(results.keySet().iterator().next(), dayFirst);
+			return DateTimeParserResult.asResult(results.keySet().iterator().next(), resolutionMode);
 
-		int timeElements = -1;
-		int hourLength = -1;
-		int dateElements = -1;
-		int[] dateFieldLengths = new int[] {-1,-1,-1};
-		int[] timeFieldLengths = new int[] {-1,-1,-1,-1};
-		Boolean timeFirst = null;
-		int dayOffset = -1;
-		int monthOffset = -1;
-		int yearOffset = -1;
-		Character dateSeparator = null;
-		Character dateTimeSeparator = null;
-		String timeZone = null;
-		Boolean amPmIndicator = null;
-		String answer = null;
-		Pattern dayRE = Pattern.compile("([^d]*)([d]+)(.*)");
-		Pattern monthRE = Pattern.compile("([^M]*)([M]+)(.*)");
-		Pattern hourRE = Pattern.compile("([^H]*)([H]+)(.*)");
-		Pattern unboundRE = Pattern.compile("([^?]*)([?]+)([^?]*)([?]+)(.*)");
-		String answerMonths = null;
-		String answerDays = null;
-		String answerHours = null;
-		String currentMonths = null;
-		String currentDays = null;
-		String currentHours = null;
-		Matcher answerM = null;
-		Matcher answerD = null;
-		Matcher answerH = null;
-		Matcher unbound = null;
-		boolean noDateFieldsBound = true;
+		DateTimeParserResult answerResult = null;
 
 		// Sort the results of our training by value so that we consider the most frequent first
-		Map<String, Integer> byValue = sortByValue(results);
+		LinkedHashMap<String, Integer> byValue = sortByValue(results);
 
 		// Iterate through all the results of our training, merging them to produce our best guess
+		StringBuffer answerBuffer = null;
 		for (Map.Entry<String, Integer> entry : byValue.entrySet()) {
 			String key = entry.getKey();
-			DateTimeParserResult result = DateTimeParserResult.asResult(key, dayFirst);
-			if (result == null) {
-				System.err.println("NOT FOUND - input: '" + key + "'");
+			DateTimeParserResult result = DateTimeParserResult.asResult(key, resolutionMode);
+
+			// First entry
+			if (answerBuffer == null) {
+				answerBuffer = new StringBuffer(key);
+				answerResult = result;
 				continue;
 			}
-			if (timeElements == -1)
-				timeElements = result.timeElements;
-			if (result.timeFieldLengths != null) {
-				for (int i = 0; i < result.timeFieldLengths.length; i++) {
-					if (timeFieldLengths[i] == -1)
-						timeFieldLengths[i] = result.timeFieldLengths[i];
-					else
-						if (result.timeFieldLengths[i] < timeFieldLengths[i])
-							timeFieldLengths[i] = result.timeFieldLengths[i];
+
+			// Process any time-related information
+			if (result.timeElements != -1) {
+				if (answerResult.timeElements == -1)
+					answerResult.timeElements = result.timeElements;
+				if (answerResult.timeFirst == null)
+					answerResult.timeFirst = result.timeFirst;
+				if (answerResult.timeZone == null)
+					answerResult.timeZone = result.timeZone;
+				if (answerResult.amPmIndicator == null)
+					answerResult.amPmIndicator = result.amPmIndicator;
+
+				if (result.timeFieldLengths != null) {
+					for (int i = 0; i < result.timeFieldLengths.length; i++) {
+						if (answerResult.timeFieldLengths[i] == -1)
+							answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
+						else
+							if (result.timeFieldLengths[i] < answerResult.timeFieldLengths[i]) {
+								int start = answerResult.timeFieldOffsets[i];
+								int len = answerResult.timeFieldLengths[i];
+								answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
+								answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.timeFieldLengths[i]));
+							}
+					}
 				}
 			}
-			if (hourLength == -1 || result.hourLength == 1 && hourLength == 2)
-				hourLength = result.hourLength;
-			if (timeFirst == null)
-				timeFirst = result.timeFirst;
-			if (dateElements == -1)
-				dateElements = result.dateElements;
 
-			// Merge two date lengths:
-			//  - d and dd -> d
-			//  - M and MM -> M
-			//  - MMM and MMMM -> MMMM
-			if (result.dateFieldLengths != null) {
+			// Process any date-related information
+			if (result.dateElements != -1) {
+				if (answerResult.dayOffset == -1 && result.dayOffset != -1) {
+					answerResult.dayOffset = result.dayOffset;
+					int start = answerResult.dateFieldOffsets[answerResult.dayOffset];
+					int len = answerResult.dateFieldLengths[answerResult.dayOffset];
+					answerBuffer.replace(start, start + len, longString('d').substring(0, len));
+				}
+				if (answerResult.monthOffset == -1 && result.monthOffset != -1) {
+					answerResult.monthOffset = result.monthOffset;
+					int start = answerResult.dateFieldOffsets[answerResult.monthOffset];
+					int len = answerResult.dateFieldLengths[answerResult.monthOffset];
+					answerBuffer.replace(start, start + len, longString('M').substring(0, len));
+				}
+				if (answerResult.yearOffset == -1 && result.yearOffset != -1) {
+					answerResult.yearOffset = result.yearOffset;
+					int start = answerResult.dateFieldOffsets[answerResult.yearOffset];
+					int len = answerResult.dateFieldLengths[answerResult.yearOffset];
+					answerBuffer.replace(start, start + len, longString('y').substring(0, len));
+				}
+
+				if (answerResult.dateElements == -1)
+					answerResult.dateElements = result.dateElements;
+				if (answerResult.dateSeparator == null)
+					answerResult.dateSeparator = result.dateSeparator;
+				if (answerResult.dateTimeSeparator == null)
+					answerResult.dateTimeSeparator = result.dateTimeSeparator;
+
 				for (int i = 0; i < result.dateFieldLengths.length; i++) {
-					if (dateFieldLengths[i] == -1)
-						dateFieldLengths[i] = result.dateFieldLengths[i];
-					else
-						if (result.dateFieldLengths[i] == 1 && result.dateFieldLengths[i] < dateFieldLengths[i])
-							dateFieldLengths[i] = result.dateFieldLengths[i];
+					if (answerResult.dateFieldLengths[i] == -1 && result.dateFieldLengths[i] != -1)
+						answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
+					else if (answerResult.dateFieldLengths[i] != result.dateFieldLengths[i] && (result.dateFieldLengths[i] == 1 || result.dateFieldLengths[i] == 4)) {
+						// Merge two date lengths:
+						//  - d and dd -> d
+						//  - M and MM -> M
+						//  - MMM and MMMM -> MMMM
+						int start = answerResult.dateFieldOffsets[i];
+						int len = answerResult.dateFieldLengths[i];
+						answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
+						answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.dateFieldLengths[i]));
+					}
 				}
 			}
-			if (dayOffset == -1 && result.dayOffset != -1) {
-				dayOffset = result.dayOffset;
-			}
-			if (monthOffset == -1 && result.monthOffset != -1) {
-				monthOffset = result.monthOffset;
-			}
-			if (yearOffset == -1 && result.yearOffset != -1) {
-				yearOffset = result.yearOffset;
-			}
-			if (dateSeparator == null)
-				dateSeparator = result.dateSeparator;
-			if (dateTimeSeparator == null)
-				dateTimeSeparator = result.dateTimeSeparator;
-			if (timeZone == null)
-				timeZone = result.timeZone;
-			if (amPmIndicator == null)
-				amPmIndicator = result.amPmIndicator;
+		}
 
-			Matcher m = monthRE.matcher(key);
-			if (m.matches() && m.groupCount() == 3)
-				currentMonths = m.group(2);
-			Matcher d = dayRE.matcher(key);
-			if (d.matches() && d.groupCount() == 3)
-				currentDays = d.group(2);
-			Matcher h = hourRE.matcher(key);
-			if (h.matches() && h.groupCount() == 3)
-				currentHours = h.group(2);
-			if (answer == null || noDateFieldsBound) {
-				answer = key;
-				answerMonths = currentMonths;
-				answerDays = currentDays;
-				answerHours = currentHours;
-				noDateFieldsBound = dayOffset == -1 && monthOffset == -1 && yearOffset == -1;
+		// If we are supposed to be fully bound and still have some ambiguities then fix them based on the mode
+		if (resolutionMode != DateResolutionMode.None && (answerResult.dayOffset == -1 || answerResult.monthOffset == -1 || answerResult.yearOffset == -1)) {
+			if (answerResult.monthOffset != -1) {
+				int start = answerResult.dateFieldOffsets[0];
+				answerBuffer.replace(start, start + answerResult.dateFieldLengths[0], longString('d').substring(0, answerResult.dateFieldLengths[0]));
+				start = answerResult.dateFieldOffsets[2];
+				answerBuffer.replace(start, start + answerResult.dateFieldLengths[2], longString('y').substring(0, answerResult.dateFieldLengths[2]));
 			}
 			else {
-				if (answerDays == null && currentDays != null) {
-					answer = key;
-					answerD = dayRE.matcher(key);
-					if (answerD.matches() && answerD.groupCount() == 3) {
-						answerDays = answerD.group(2);
-					}
-				}
-				if (answerMonths == null && currentMonths != null) {
-					answerM = monthRE.matcher(key);
-					if (answerM.matches() && answerM.groupCount() == 3) {
-						answerMonths = answerM.group(2);
-					}
-				}
-
-				// Manage the variable length fields:
-				//   d and dd -> d
-				//   M and MM -> M
-				//   MMM and MMMM -> MMMM
-				//   HH and H -> H
-				if ("dd".equals(answerDays) && "d".equals(currentDays)) {
-					answerD = dayRE.matcher(key);
-					if (answerD.matches() && answerD.groupCount() == 3) {
-						answer = answerD.group(1) + currentDays + answerD.group(3);
-						answerDays = currentDays;
-					}
-				}
-				if ("MM".equals(answerMonths) && "M".equals(currentMonths)) {
-					answerM = monthRE.matcher(key);
-					if (answerM.matches() && answerM.groupCount() == 3) {
-						answer = answerM.group(1) + currentMonths + answerM.group(3);
-						answerMonths = currentMonths;
-					}
-				}
-				if ("MMM".equals(answerMonths) && "MMMM".equals(currentMonths)) {
-					answerM = monthRE.matcher(key);
-					if (answerM.matches() && answerM.groupCount() == 3) {
-						answer = answerM.group(1) + currentMonths + answerM.group(3);
-						answerMonths = currentMonths;
-					}
-				}
-				if ("HH".equals(answerHours) && "H".equals(currentHours)) {
-					answerH = hourRE.matcher(key);
-					if (answerH.matches() && answerH.groupCount() == 3) {
-						answer = answerH.group(1) + currentHours + answerH.group(3);
-						answerHours = currentHours;
-					}
-				}
+					char firstField = resolutionMode == DateResolutionMode.DayFirst ? 'd' : 'M';
+					char secondField = resolutionMode == DateResolutionMode.DayFirst ? 'M' : 'd';
+					int start = answerResult.dateFieldOffsets[0];
+					answerBuffer.replace(start, start + answerResult.dateFieldLengths[0], longString(firstField).substring(0, answerResult.dateFieldLengths[0]));
+					start = answerResult.dateFieldOffsets[1];
+					answerBuffer.replace(start, start + answerResult.dateFieldLengths[1], longString(secondField).substring(0, answerResult.dateFieldLengths[1]));
 			}
 		}
 
-		// We have analyzed all the samples and still have
-		if (dayOffset == -1 || monthOffset == -1 || yearOffset == -1) {
-			unbound = unboundRE.matcher(answer);
-			// Cases to consider:
-			// Nothing is defined - ??/??/?? (or similar variants)
-			// Only Month is defined - ??/MM/?? (or similar variants)
-			// Year is defined - yy/??/?? or ??/??/yy (or similar variants)
-			if (unbound.matches() && unbound.groupCount() == 5) {
-				if (monthOffset != -1)
-					answer = unbound.group(1) + unbound.group(2).replace('?','d') + unbound.group(3) + unbound.group(4).replace('?','y') + unbound.group(5);
-				else {
-					if (dayFirst)
-						answer = unbound.group(1) + unbound.group(2).replace('?','d') + unbound.group(3) + unbound.group(4).replace('?','M') + unbound.group(5);
-					else
-						answer = unbound.group(1) + unbound.group(2).replace('?','M') + unbound.group(3) + unbound.group(4).replace('?','d') + unbound.group(5);
+		if (answerResult.timeZone == null)
+			answerResult.timeZone = "";
 
-					if (answer.indexOf('?') != -1)
-						answer = answer.replace('?', 'y');
-				}
-			}
-		}
-
-		answerH = hourRE.matcher(answer);
-		if (answerH.matches() && answerH.groupCount() == 3) {
-			answerHours = answerH.group(2);
-			if ("HH".equals(answerHours) && hourLength == 1) {
-				answer = answerH.group(1) + "H" + answerH.group(3);
-			}
-		}
-
-		answerD = dayRE.matcher(answer);
-		if (dayOffset != -1 && answerD.matches() && answerD.groupCount() == 3) {
-			answerDays = answerD.group(2);
-			if ("dd".equals(answerDays) && dateFieldLengths[dayOffset] == 1) {
-				answer = answerD.group(1) + "d" + answerD.group(3);
-			}
-		}
-
-		answerM = monthRE.matcher(answer);
-		if (monthOffset != -1 && answerM.matches() && answerM.groupCount() == 3) {
-			answerMonths = answerM.group(2);
-			if ("MM".equals(answerMonths) && dateFieldLengths[monthOffset] == 1) {
-				answer = answerM.group(1) + "M" + answerM.group(3);
-			}
-		}
-
-		if (timeZone == null)
-			timeZone = "";
-
-		return new DateTimeParserResult(answer.toString(), dayFirst, timeElements, timeFieldLengths, hourLength, dateElements, dateFieldLengths,
-				timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator);
+		answerResult.formatString = answerBuffer.toString();
+		return DateTimeParserResult.newInstance(answerResult);
 	}
 
 	static String retDigits(int digitCount, char patternChar) {
@@ -469,14 +384,17 @@ public class DateTimeParser {
 		return true;
 	}
 
-	private static String dateFormat(int[] dateDigits, char dateSeparator, Boolean dayFirst, boolean yearKnown) {
-		if (dayFirst == null)
+	private static String dateFormat(int[] dateDigits, char dateSeparator, DateResolutionMode resolutionMode, boolean yearKnown) {
+		switch (resolutionMode) {
+		case None:
 			return retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + retDigits(dateDigits[2], yearKnown ? 'y' : '?');
-
-		if (dayFirst)
+		case DayFirst:
 			return retDigits(dateDigits[0], 'd') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'y');
+		case MonthFirst:
+			return retDigits(dateDigits[0], 'M') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'y');
+		}
 
-		return retDigits(dateDigits[0], 'M') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'y');
+		return null;
 	}
 
 	static String compress(String input) {
@@ -545,10 +463,10 @@ public class DateTimeParser {
 	 * Determine a FormatString from an input string that may represent a Date, Time,
 	 * DateTime, OffsetDateTime or a ZonedDateTime.
 	 * @param input The String representing a date with optional leading/trailing whitespace
-	 * @param dayFirst When we have ambiguity - should we prefer to conclude day first, month first or unspecified
+	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
-	public static String determineFormatString(String input, Boolean dayFirst) {
+	public static String determineFormatString(String input, DateResolutionMode resolutionMode) {
 		int len = input.length();
 
 		// Remove leading spaces
@@ -906,7 +824,7 @@ public class DateTimeParser {
 						dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yyyy";
 					}
 					else
-						dateAnswer = dateFormat(dateDigits, dateSeparator, dayFirst, true);
+						dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true);
 				} else {
 					// If the first group of digits is of length 1, then it is either d/MM/yy or M/dd/yy
 					if (dateDigits[0] == 1) {
@@ -918,7 +836,7 @@ public class DateTimeParser {
 							dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
 						}
 						else
-							dateAnswer = dateFormat(dateDigits, dateSeparator, dayFirst, true);
+							dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true);
 					}
 					// If year is the first field - then assume yy/MM/dd
 					else if (dateValue[0] > 31)
@@ -936,15 +854,15 @@ public class DateTimeParser {
 							dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
 						}
 						else
-							dateAnswer = dateFormat(dateDigits, dateSeparator, dayFirst, true);
+							dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true);
 					} else if (dateValue[1] > 12) {
 						if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
 							return null;
 						dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
 					} else if (dateValue[0] > 12 && dateValue[2] > 12) {
-						dateAnswer = "??" + dateSeparator + retDigits(dateDigits[0], 'M') + dateSeparator + "??";
+						dateAnswer = "??" + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + "??";
 					} else
-						dateAnswer = dateFormat(dateDigits, dateSeparator, dayFirst, false);
+						dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, false);
 				}
 			}
 			if (timeComponent == 0)

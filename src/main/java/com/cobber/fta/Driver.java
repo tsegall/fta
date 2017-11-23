@@ -29,6 +29,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import com.cobber.fta.DateTimeParser.DateResolutionMode;
+
 class Driver {
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = null;
@@ -43,7 +45,7 @@ class Driver {
 		boolean verbose = false;
 		TextAnalyzer[] analysis = null;
 		String[] header = null;
-		Boolean dayFirst = null;
+		DateResolutionMode resolutionMode = DateResolutionMode.None;
 
 		long start = System.currentTimeMillis();
 
@@ -54,7 +56,7 @@ class Driver {
 			else if ("--col".equals(args[idx]))
 				col = Integer.valueOf(args[++idx]);
 			else if ("--dayFirst".equals(args[idx]))
-				dayFirst = true;
+				resolutionMode = DateResolutionMode.DayFirst;
 			else if ("--help".equals(args[idx])) {
 				System.err.println("Usage: [--charset <charset>] [--col <n>] [--dayFirst] [--help] [--monthFirst] [--records <n>] [--samples <n>] file ...");
 				System.err.println(" --charset <charset> - Use the supplied <charset> to read the input files");
@@ -66,7 +68,7 @@ class Driver {
 				System.exit(0);
 			}
 			else if ("--monthFirst".equals(args[idx]))
-				dayFirst = false;
+				resolutionMode = DateResolutionMode.MonthFirst;
 			else if ("--records".equals(args[idx]))
 				recordsToAnalyze = Long.valueOf(args[++idx]);
 			else if ("--samples".equals(args[idx]))
@@ -125,7 +127,7 @@ class Driver {
 							header[i] = record.get(i);
 							if ((col == -1 || col == i) && verbose)
 								System.out.println(record.get(i));
-							analysis[i] = new TextAnalyzer(header[i], dayFirst);
+							analysis[i] = new TextAnalyzer(header[i], resolutionMode);
 							if (sampleSize != -1)
 								analysis[i].setSampleSize(sampleSize);
 						}

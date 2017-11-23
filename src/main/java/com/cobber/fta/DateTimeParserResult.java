@@ -8,8 +8,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 /**
  * DateTimeParserResult is the result of a {@link DateTimeParser} analysis.
@@ -28,25 +31,29 @@ public class DateTimeParserResult {
 	int dayOffset = -1;
 	int dayLength = -1;
 	int[] dateFieldLengths = new int[] {-1, -1, -1};
+	int[] dateFieldOffsets = new int[] {-1, -1, -1};
 	int[] timeFieldLengths = new int[] {-1, -1, -1, -1};
+	int[] timeFieldOffsets = new int[] {-1, -1, -1, -1};
 	String timeZone = "";
 	Character dateSeparator = null;
 	String formatString = null;
-	Boolean dayFirst = null;
+	DateResolutionMode resolutionMode = DateResolutionMode.None;
 	Boolean amPmIndicator = null;
 
-	static Map<String, DateTimeParserResult> options = new ConcurrentHashMap<String, DateTimeParserResult>();
+	static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<String, DateTimeParserResult>();
 
-	DateTimeParserResult(String formatString, Boolean dayFirst, int timeElements, int[] timeFieldLengths, int hourLength,
-			int dateElements, int[] dateFieldLengths, Boolean timeFirst, Character dateTimeSeparator, int yearOffset,
+	DateTimeParserResult(String formatString, DateResolutionMode resolutionMode, int timeElements, int[] timeFieldLengths, int[] timeFieldOffsets, int hourLength,
+			int dateElements, int[] dateFieldLengths, int[] dateFieldOffsets, Boolean timeFirst, Character dateTimeSeparator, int yearOffset,
 			int monthOffset, int dayOffset, Character dateSeparator, String timeZone, Boolean amPmIndicator) {
 		this.formatString = formatString;
-		this.dayFirst = dayFirst;
+		this.resolutionMode = resolutionMode;
 		this.timeElements = timeElements;
 		this.timeFieldLengths = timeFieldLengths;
+		this.timeFieldOffsets = timeFieldOffsets;
 		this.hourLength = hourLength;
 		this.dateElements = dateElements;
 		this.dateFieldLengths = dateFieldLengths;
+		this.dateFieldOffsets = dateFieldOffsets;
 		this.timeFirst = timeFirst;
 		this.dateTimeSeparator = dateTimeSeparator;
 		this.dayOffset = dayOffset;
@@ -61,6 +68,16 @@ public class DateTimeParserResult {
 		this.dateSeparator = dateSeparator;
 		this.timeZone = timeZone;
 		this.amPmIndicator = amPmIndicator;
+	}
+
+	public static DateTimeParserResult newInstance(DateTimeParserResult r) {
+		return new DateTimeParserResult(r.formatString, r.resolutionMode, r.timeElements,
+				r.timeFieldLengths != null ? Arrays.copyOf(r.timeFieldLengths, r.timeFieldLengths.length) : null,
+				r.timeFieldOffsets != null ? Arrays.copyOf(r.timeFieldOffsets, r.timeFieldOffsets.length) : null,
+				r.hourLength, r.dateElements,
+				r.dateFieldLengths != null ? Arrays.copyOf(r.dateFieldLengths, r.dateFieldLengths.length) : null,
+				r.dateFieldOffsets != null ? Arrays.copyOf(r.dateFieldOffsets, r.dateFieldOffsets.length) : null,
+				r.timeFirst, r.dateTimeSeparator, r.yearOffset, r.monthOffset, r.dayOffset, r.dateSeparator, r.timeZone, r.amPmIndicator);
 	}
 
 	private enum Token {
@@ -137,16 +154,16 @@ public class DateTimeParserResult {
 	/**
 	 * Given an input string in SimpleDateTimeFormat convert to a DateTimeParserResult
 	 * @param formatString A DateTimeString using DateTimeFormatter patterns
-	 * @param dayFirst 	When we have ambiguity - should we prefer to conclude day first, month first or unspecified
+	 * @param resolutionMode 	When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @return The corresponding DateTimeParserResult
 	 */
-	public static DateTimeParserResult asResult(String formatString, Boolean dayFirst) {
-		String key = stringify(dayFirst) + '#' + formatString;
-		DateTimeParserResult ret = options.get(key);
+	public static DateTimeParserResult asResult(String formatString, DateResolutionMode resolutionMode) {
+		String key = resolutionMode.name() + '#' + formatString;
+		DateTimeParserResult ret = dtpCache.get(key);
 //		if (ret != null)
 //			System.err.printf("Looked for '%s' and found result with formatString = '%s'\n", key, ret.formatString);
 		if (ret != null)
-			return ret;
+			return newInstance(ret);
 
 		int dayOffset = -1;
 		int dayLength = -1;
@@ -158,7 +175,9 @@ public class DateTimeParserResult {
 		int dateElements = 0;
 		int timeElements = 0;
 		int[] dateFieldLengths = new int[] {-1, -1, -1};
+		int[] dateFieldOffsets = new int[] {-1, -1, -1};
 		int[] timeFieldLengths = new int[] {-1, -1, -1, -1};
+		int[] timeFieldOffsets = new int[] {-1, -1, -1, -1};
 		String timeZone = "";
 		Boolean timeFirst = null;
 		Character dateSeparator = null;
@@ -172,6 +191,7 @@ public class DateTimeParserResult {
 			char ch = formatString.charAt(i);
 			switch (ch) {
 			case '?':
+				dateFieldOffsets[dateElements] = i;
 				++dateElements;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == '?') {
 					i++;
@@ -186,6 +206,7 @@ public class DateTimeParserResult {
 				break;
 
 			case 'M':
+				dateFieldOffsets[dateElements] = i;
 				monthOffset = dateElements++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'M') {
 					i++;
@@ -209,6 +230,7 @@ public class DateTimeParserResult {
 				break;
 
 			case 'd':
+				dateFieldOffsets[dateElements] = i;
 				dayOffset = dateElements++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'd') {
 					i++;
@@ -223,6 +245,7 @@ public class DateTimeParserResult {
 
 			case 'h':
 			case 'H':
+				timeFieldOffsets[timeElements] = i;
 				timeFirst = dateElements == 0;
 				timeElements++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
@@ -236,6 +259,7 @@ public class DateTimeParserResult {
 
 			case 'm':
 			case 's':
+				timeFieldOffsets[timeElements] = i;
 				timeFieldLengths[timeElements] = 2;
 				timeElements++;
 				if (i + 1 >= formatLength || formatString.charAt(i + 1) != ch)
@@ -244,6 +268,7 @@ public class DateTimeParserResult {
 				break;
 
 			case 'S':
+				timeFieldOffsets[timeElements] = i;
 				int fractions = 0;
 				while (i + 1 < formatLength && formatString.charAt(i + 1) == 'S') {
 					i++;
@@ -254,6 +279,7 @@ public class DateTimeParserResult {
 				break;
 
 			case 'y':
+				dateFieldOffsets[dateElements] = i;
 				yearOffset = dateElements++;
 				i++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'y') {
@@ -297,11 +323,11 @@ public class DateTimeParserResult {
 			timeElements = -1;
 
 		// Add to cache
-		ret = new DateTimeParserResult(fullyBound ? formatString : null, dayFirst, timeElements, timeFieldLengths, hourLength, dateElements, dateFieldLengths,
-				timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator);
-		options.put(key, ret);
+		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, timeElements, timeFieldLengths, timeFieldOffsets, hourLength, dateElements, dateFieldLengths,
+				dateFieldOffsets, timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator);
+		dtpCache.put(key, ret);
 
-		return ret;
+		return newInstance(ret);
 	}
 
 	private FormatterToken[] tokenize() {
@@ -837,17 +863,21 @@ public class DateTimeParserResult {
 		String dateAnswer = "";
 		if (dateElements != 0) {
 			if (yearOffset == -1) {
-				if (dayOffset != -1)
+				if (dayOffset != -1) {
+					// The day must be 1, since if it were 0 the year would be known as d/y/m is not valid
 					dateAnswer = asDate(new char[] {'M', 'd', 'y'});
-				else
-					if (dayFirst != null)
-						if (dayFirst)
+				}
+				else {
+					// yearOffset == -1 && dayOffset == -1
+					if (resolutionMode != DateResolutionMode.None)
+						if (resolutionMode == DateResolutionMode.DayFirst || monthOffset == 1)
 							dateAnswer = asDate(new char[] {'d', 'M', 'y'});
 						else
 							dateAnswer = asDate(new char[] {'M', 'd', 'y'});
-					else
-						dateAnswer = asDate(new char[] {'?', '?', '?'});
-
+					else {
+						dateAnswer = asDate(new char[] {'?', monthOffset == 1 ? 'M' : '?', '?'});
+					}
+				}
 			}
 			else if (yearOffset == 0) {
 				if (dayOffset != -1) {
@@ -865,8 +895,8 @@ public class DateTimeParserResult {
 					else
 						dateAnswer = asDate(new char[] {'M', 'd', 'y'});
 				} else {
-					if (dayFirst != null)
-						if (dayFirst)
+					if (resolutionMode != DateResolutionMode.None)
+						if (resolutionMode == DateResolutionMode.DayFirst)
 							dateAnswer = asDate(new char[] {'d', 'M', 'y'});
 						else
 							dateAnswer = asDate(new char[] {'M', 'd', 'y'});

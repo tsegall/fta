@@ -20,11 +20,11 @@ Typical usage is:
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 4.0.2`
+`$ gradle wrapper --gradle-version 4.3.1`
 
 `$ ./gradlew installDist`
 
-## Running Tests ##
+## Running Tests - including coverage ##
 `$ ./gradlew test jacocoTestReport`
 
 ## Generate JavaDoc ##

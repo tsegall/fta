@@ -40,6 +40,8 @@ import java.util.Map;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import com.cobber.fta.DateTimeParser.DateResolutionMode;
+
 /**
  * Analyze Text data to determine type information and other key metrics
  * associated with a text stream. A key objective of the analysis is that it
@@ -84,7 +86,7 @@ public class TextAnalyzer {
 	private static final int REFLECTION_SAMPLES = 50;
 
 	String name;
-	Boolean dayFirst = null;
+	DateResolutionMode resolutionMode = DateResolutionMode.None;
 	DecimalFormatSymbols formatSymbols;
 	char decimalSeparator;
 	char monetaryDecimalSeparator;
@@ -243,16 +245,16 @@ public class TextAnalyzer {
 	 * Construct a Text Analyzer for the named data stream.
 	 *
 	 * @param name The name of the data stream (e.g. the column of the CSV file)
-	 * @param dayFirst Determines what to do when the Date field is ambiguous (i.e. we cannot determine which
-	 *   of the fields is the day or the month.  If dayFirst is true, then assume day is first, if dayFirst is
-	 *   false then assume month is first, if it is null then the pattern returned may have '?' in to represent
+	 * @param resolutionMode Determines what to do when the Date field is ambiguous (i.e. we cannot determine which
+	 *   of the fields is the day or the month.  If resolutionMode is DayFirst, then assume day is first, if resolutionMode is
+	 *   MonthFirst then assume month is first, if it is None then the pattern returned may have '?' in to represent
 	 *   this ambiguity.
 	 * @throws IOException
 	 *             If an internal error occurred.
 	 */
-	public TextAnalyzer(String name, Boolean dayFirst) throws IOException {
+	public TextAnalyzer(String name, DateResolutionMode resolutionMode) throws IOException {
 		this.name = name;
-		this.dayFirst = dayFirst;
+		this.resolutionMode = resolutionMode;
 		formatSymbols = new DecimalFormatSymbols();
 		decimalSeparator = formatSymbols.getDecimalSeparator();
 		monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
@@ -269,7 +271,7 @@ public class TextAnalyzer {
 	 *             If an internal error occurred.
 	 */
 	public TextAnalyzer(String name) throws IOException {
-		this(name, null);
+		this(name, DateResolutionMode.None);
 	}
 
 	/**
@@ -279,7 +281,7 @@ public class TextAnalyzer {
 	 *             If an internal error occurred.
 	 */
 	public TextAnalyzer() throws IOException {
-		this("anonymous", null);
+		this("anonymous", DateResolutionMode.None);
 	}
 
 	/**
@@ -498,13 +500,13 @@ public class TextAnalyzer {
 	private void trackDateTime(String dateFormat, String input) throws DateTimeParseException {
 		String trimmed = input.trim();
 
-		DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, dayFirst);
+		DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, resolutionMode);
 		if (result == null) {
 			throw new RuntimeException("Internal error - NULL result for " + dateFormat);
 		}
 
 		// Grab the cached Formatter
-		String formatString = result.getFormatString();
+		String formatString = result.getFormatString().replaceAll("\\?\\?", "yy").replaceAll("\\?", "M");
 		DateTimeFormatter formatter = formatterCache.get(formatString);
 		if (formatter == null) {
 			formatter = DateTimeFormatter.ofPattern(formatString);
@@ -670,7 +672,7 @@ public class TextAnalyzer {
 		}
 		levels[0].add(compressedl0);
 
-		if (DateTimeParser.determineFormatString(input, dayFirst) != null)
+		if (DateTimeParser.determineFormatString(input, resolutionMode) != null)
 			possibleDateTime++;
 		if (atSigns - 1 == commas || atSigns - 1 == semicolons)
 			possibleEmails++;
@@ -852,7 +854,7 @@ public class TextAnalyzer {
 			matchType = matchPatternInfo.type;
 
 			if (possibleDateTime == raw.size()) {
-				DateTimeParser det = new DateTimeParser(dayFirst);
+				DateTimeParser det = new DateTimeParser(resolutionMode);
 				for (String sample : raw)
 					det.train(sample);
 
@@ -1062,7 +1064,7 @@ public class TextAnalyzer {
 				return;
 			}
 			catch (DateTimeParseException reale) {
-				DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, dayFirst);
+				DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, resolutionMode);
 				try {
 					result.parse(input);
 				}
@@ -1070,7 +1072,7 @@ public class TextAnalyzer {
 					if ("Insufficient digits in input (d)".equals(e.getMessage()) || "Insufficient digits in input (M)".equals(e.getMessage())) {
 						try {
 							String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
-							result = DateTimeParserResult.asResult(formatString, dayFirst);
+							result = DateTimeParserResult.asResult(formatString, resolutionMode);
 							matchPatternInfo = new PatternInfo(result.getRegExp(), matchPatternInfo.type, formatString, -1, -1, null,
 									formatString);
 
@@ -1394,8 +1396,8 @@ public class TextAnalyzer {
 			break;
 
 		case DATETIME:
-			minValue = minLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-			maxValue = maxLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			minValue = minLocalDateTime != null ? minLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format)) : null;
+			maxValue = maxLocalDateTime != null ? maxLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format)) : null;
 			break;
 
 		case ZONEDDATETIME:
