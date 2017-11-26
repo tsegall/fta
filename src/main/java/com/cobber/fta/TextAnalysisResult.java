@@ -96,7 +96,7 @@ public class TextAnalysisResult {
 	/**
 	 * Get the optional Type Qualifier.  Possible qualifiers are:
 	 * <ul>
-	 *  <li>Type: STRING - "EMAIL", "URL", "ZIP", "US_STATE", "CA_PROVINCE", "NA_STATE", "BLANK", "NULL"</li>
+	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "CA_PROVINCE", "COUNTRY", "EMAIL", "MONTHABBR", "NA_STATE", "NULL", "US_STATE", , "URL", "ZIP"</li>
 	 *  <li>Type: LONG - "SIGNED"</li>
 	 * 	<li>Type: DOUBLE - "SIGNED"</li>
 	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - the detailed date format string</li>

@@ -198,6 +198,7 @@ public class TextAnalyzer {
 
 		// Logical Types
 		addPattern(typeInfo, false, "[NULL]", PatternInfo.Type.STRING, "NULL", -1, -1, null, null);
+		addPattern(typeInfo, false, "[BLANKORNULL]", PatternInfo.Type.STRING, "BLANKORNULL", -1, -1, null, null);
 		addPattern(typeInfo, false, "[ ]*", PatternInfo.Type.STRING, "BLANK", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\d{5}", PatternInfo.Type.LONG, "ZIP", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\p{Alpha}{2}", PatternInfo.Type.STRING, "NA_STATE", -1, -1, null, null);
@@ -1220,13 +1221,19 @@ public class TextAnalyzer {
 		long realSamples = sampleCount - (nullCount + blankCount);
 
 		// Check to see if we are all blanks or all nulls
-		if (blankCount == sampleCount || nullCount == sampleCount) {
-			matchPatternInfo = nullCount == sampleCount ? typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "NULL") : typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "BLANK");
+		if (blankCount == sampleCount || nullCount == sampleCount || blankCount + nullCount == sampleCount) {
+			if (nullCount == sampleCount)
+				matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "NULL");
+			else if (blankCount == sampleCount)
+				matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "BLANK");
+			else
+				matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "BLANKORNULL");
 			matchPattern = matchPatternInfo.pattern;
 			matchType = matchPatternInfo.type;
 			matchCount = sampleCount;
 			confidence = sampleCount >= 10 ? 1.0 : 0.0;
-		} else {
+		}
+		else {
 			confidence = (double) matchCount / realSamples;
 		}
 

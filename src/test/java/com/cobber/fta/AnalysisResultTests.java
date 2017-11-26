@@ -1601,6 +1601,47 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void whiteSpace() throws Exception {
+		TextAnalyzer analysis = new TextAnalyzer("field,value");
+
+		analysis.train(null);
+		analysis.train("");
+		analysis.train(" ");
+		analysis.train("  ");
+		analysis.train("   ");
+		analysis.train("    ");
+		analysis.train("     ");
+		analysis.train("      ");
+		analysis.train("       ");
+		analysis.train("        ");
+		analysis.train("         ");
+		analysis.train(null);
+		analysis.train("");
+		analysis.train(" ");
+		analysis.train("  ");
+		analysis.train("   ");
+		analysis.train("    ");
+		analysis.train("     ");
+		analysis.train("      ");
+		analysis.train("       ");
+		analysis.train("        ");
+		analysis.train("         ");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "BLANKORNULL");
+		Assert.assertEquals(result.getSampleCount(), 22);
+		Assert.assertEquals(result.getMatchCount(), 22);
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getMinLength(), 1);
+		Assert.assertEquals(result.getMaxLength(), 9);
+		Assert.assertEquals(result.getBlankCount(), 20);
+		Assert.assertEquals(result.getPattern(), "[BLANKORNULL]");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
 	public void basicEmail() throws Exception {
 		TextAnalyzer analysis = new TextAnalyzer();
 
@@ -3403,4 +3444,5 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getPattern(), "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
+
 }
