@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Map;
 import java.util.Random;
 
@@ -26,10 +27,9 @@ import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 public class AnalysisResultTests {
 	@Test
-	public void inadequateData() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "47|89|90|91".split("\\|");
+	public void inadequateData() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "47|89|90|91".split("\\|");
 
 		int locked = -1;
 
@@ -38,7 +38,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -54,10 +54,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void noData() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		TextAnalysisResult result = analysis.getResult();
+	public void noData() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -69,10 +68,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void variableLengthPositiveInteger() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "47|909|809821|34590|2|0|12|390|4083|4499045|90|9003|8972|42987|8901".split("\\|");
+	public void variableLengthPositiveInteger() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "47|909|809821|34590|2|0|12|390|4083|4499045|90|9003|8972|42987|8901".split("\\|");
 
 		int locked = -1;
 
@@ -81,7 +79,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -99,10 +97,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void rubbish() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "47|hello|hello,world|=====47=====|aaaa|0|12|b,b,b,b390|4083|dddddd|90|-------|+++++|42987|8901".split("\\|");
+	public void rubbish() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "47|hello|hello,world|=====47=====|aaaa|0|12|b,b,b,b390|4083|dddddd|90|-------|+++++|42987|8901".split("\\|");
 
 		int locked = -1;
 
@@ -111,7 +108,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -129,10 +126,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void variableLengthString() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "Hello World|Hello|H|Z|A".split("\\|");
+	public void variableLengthString() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "Hello World|Hello|H|Z|A".split("\\|");
 
 		int locked = -1;
 
@@ -141,7 +137,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -159,10 +155,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void variableLengthInteger() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "-10000|-1000|-100|-10|-3|-2|-1|0|1|2|3|10|100|1000|10000|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15".split("\\|");
+	public void variableLengthInteger() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "-10000|-1000|-100|-10|-3|-2|-1|0|1|2|3|10|100|1000|10000|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15".split("\\|");
 
 		int locked = -1;
 
@@ -171,7 +166,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -189,9 +184,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void constantLengthInteger() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-		String[] inputs = "456789|456089|456700|116789|433339|409187".split("\\|");
+	public void constantLengthInteger() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "456789|456089|456700|116789|433339|409187".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -199,7 +194,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -216,10 +211,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void positiveDouble() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "43.80|1.1|0.1|2.03|.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
+	public void positiveDouble() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "43.80|1.1|0.1|2.03|.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -227,7 +221,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -244,10 +238,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void positiveDouble2() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "43.80|1.1|0.1|2.03|0.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
+	public void positiveDouble2() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "43.80|1.1|0.1|2.03|0.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -255,7 +248,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -272,12 +265,12 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void dateOutlier() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void dateOutlier() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
 
-		String[] inputs = "12/12/12|12/12/32|02/22/02".split("\\|");
+		final String[] inputs = "12/12/12|12/12/32|02/22/02".split("\\|");
 		int locked = -1;
-		int records = 100;
+		final int records = 100;
 
 		for (int i = 0; i < inputs.length; i++) {
 			if (analysis.train(inputs[i]) && locked == -1)
@@ -291,7 +284,7 @@ public class AnalysisResultTests {
 
 		analysis.train("02/O2/99");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), records + 1);
@@ -310,10 +303,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void negativeDouble() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "43.80|-1.1|-.1|2.03|.1|-99.23|14.08976|-14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
+	public void negativeDouble() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "43.80|-1.1|-.1|2.03|.1|-99.23|14.08976|-14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -321,7 +313,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -339,15 +331,16 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basic_AMPM() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-		String input = "09/Mar/17 3:14 PM|09/Mar/17 11:36 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 8:14 AM|" +
+	public void basicAMPM() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "09/Mar/17 3:14 PM|09/Mar/17 11:36 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 8:14 AM|" +
 				"09/Mar/17 7:02 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|" +
 				"09/Mar/17 6:59 AM|09/Mar/17 6:57 AM|08/Mar/17 8:12 AM|07/Mar/17 9:27 PM|07/Mar/17 3:34 PM|07/Mar/17 3:01 PM|" +
 				"07/Mar/17 3:00 PM|07/Mar/17 2:51 PM|07/Mar/17 2:46 PM|07/Mar/17 2:40 PM|07/Mar/17 2:23 PM|07/Mar/17 11:04 AM|" +
 				"02/Mar/17 10:57 AM|01/Mar/17 11:56 AM|01/Mar/17 6:14 AM|28/Feb/17 4:56 AM|27/Feb/17 5:58 AM|27/Feb/17 5:58 AM|" +
 				"22/Feb/17 6:48 AM|18/Jan/17 8:29 AM|04/Jan/17 7:37 AM|10/Nov/16 10:42 AM|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
+		final PrintStream logger = System.err;
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -355,12 +348,12 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Map<String, Integer> outliers = result.getOutlierDetails();
-		for (Map.Entry<String, Integer> entry : outliers.entrySet()) {
-			System.err.printf("Key: %s, value: %d\n", entry.getKey(), entry.getValue());
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
+			logger.printf("Key: %s, value: %d\n", entry.getKey(), entry.getValue());
 		}
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -377,14 +370,13 @@ public class AnalysisResultTests {
 
 
 	@Test
-	public void basic_HHmmddMyy() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.DayFirst);
-		String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
+	public void basicHHmmddMyy() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.DayFirst);
+		final String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
 				"16:53 26/9/12|09:53 10/3/12|02:53 23/8/11|19:53 03/2/11|12:53 18/7/10|05:53 30/12/09|22:53 12/6/09|15:53 24/11/08|" +
 				"08:53 08/5/08|01:53 21/10/07|18:53 03/4/07|11:53 15/9/06|04:53 27/2/06|21:53 10/8/05|14:53 22/1/05|07:53 06/7/04|" +
 				"00:53 19/12/03|17:53 01/6/03|10:53 13/11/02|03:53 27/4/02|20:53 08/10/01|13:53 22/3/01|";
-
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -392,7 +384,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -408,14 +400,13 @@ public class AnalysisResultTests {
 	}
 
 //	@Test
-	public void basic_HHmmddMyy_unresolved() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("TransactionDate");
-		String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
+	public void basicHHmmddMyyUnresolved() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate");
+		final String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
 				"16:53 26/9/12|09:53 10/3/12|02:53 23/8/11|19:53 03/2/11|12:53 18/7/10|05:53 30/12/09|22:53 12/6/09|15:53 24/11/08|" +
 				"08:53 08/5/08|01:53 21/10/07|18:53 03/4/07|11:53 15/9/06|04:53 27/2/06|21:53 10/8/05|14:53 22/1/05|07:53 06/7/04|" +
 				"00:53 19/12/03|17:53 01/6/03|10:53 13/11/02|03:53 27/4/02|20:53 08/10/01|13:53 22/3/01|";
-
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -423,7 +414,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -439,14 +430,13 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basic_HHmmddMyy_false() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
-		String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
+	public void basicHHmmddMyyFalse() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
+		final String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
 				"16:53 26/9/12|09:53 10/3/12|02:53 23/8/11|19:53 03/2/11|12:53 18/7/10|05:53 30/12/09|22:53 12/6/09|15:53 24/11/08|" +
 				"08:53 08/5/08|01:53 21/10/07|18:53 03/4/07|11:53 15/9/06|04:53 27/2/06|21:53 10/8/05|14:53 22/1/05|07:53 06/7/04|" +
 				"00:53 19/12/03|17:53 01/6/03|10:53 13/11/02|03:53 27/4/02|20:53 08/10/01|13:53 22/3/01|";
-
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -454,7 +444,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getTypeQualifier(), "HH:mm dd/M/yy");
@@ -470,14 +460,14 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basic_d_M_yy() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.DayFirst);
-		String input = "1/2/09 6:17|1/2/09 4:53|1/2/09 13:08|1/3/09 14:44|1/4/09 12:56|1/4/09 13:19|1/4/09 20:11|1/2/09 20:09|1/4/09 13:17|1/4/09 14:11|" +
+	public void dMyy() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.DayFirst);
+		final String input = "1/2/09 6:17|1/2/09 4:53|1/2/09 13:08|1/3/09 14:44|1/4/09 12:56|1/4/09 13:19|1/4/09 20:11|1/2/09 20:09|1/4/09 13:17|1/4/09 14:11|" +
 				"1/5/09 2:42|1/5/09 5:39|1/2/09 9:16|1/5/09 10:08|1/2/09 14:18|1/4/09 1:05|1/5/09 11:37|1/6/09 5:02|1/6/09 7:45|1/2/09 7:35|" +
 				"1/6/09 12:56|1/1/09 11:05|1/5/09 4:10|1/6/09 7:18|1/2/09 1:11|1/1/09 2:24|1/7/09 8:08|1/2/09 2:57|1/1/09 20:21|1/8/09 0:42|" +
 				"1/8/09 3:56|1/8/09 3:16|1/8/09 1:59|1/3/09 9:03|1/5/09 13:17|1/6/09 7:46|1/5/09 20:00|1/8/09 16:24|1/9/09 6:39|1/6/09 22:19|" +
 				"1/6/09 23:00|1/7/09 7:44|1/3/09 13:24|1/7/09 15:12|1/7/09 20:15|1/3/09 10:11|1/9/09 15:58|1/3/09 13:11|1/10/09 12:57|1/10/09 14:43|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -485,7 +475,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -501,9 +491,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basic_M_d_yy() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("Account_Created", DateResolutionMode.DayFirst);
-		String input = "1/2/09 6:00|1/2/09 4:42|1/1/09 16:21|9/25/05 21:13|11/15/08 15:47|9/24/08 15:19|1/3/09 9:38|1/2/09 17:43|1/4/09 13:03|6/3/08 4:22|" +
+	public void basicMdyy() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Account_Created", DateResolutionMode.DayFirst);
+		final String input = "1/2/09 6:00|1/2/09 4:42|1/1/09 16:21|9/25/05 21:13|11/15/08 15:47|9/24/08 15:19|1/3/09 9:38|1/2/09 17:43|1/4/09 13:03|6/3/08 4:22|" +
 				"1/5/09 2:23|1/5/09 4:55|1/2/09 8:32|11/11/08 15:53|12/9/08 12:07|1/4/09 0:00|1/5/09 9:35|1/6/09 2:41|1/6/09 7:00|12/30/08 5:44|" +
 				"1/6/09 10:58|12/10/07 12:37|1/5/09 2:33|1/6/09 7:07|12/31/08 2:48|1/1/09 1:56|1/7/09 7:39|1/3/08 7:23|10/24/08 6:48|1/8/09 0:28|" +
 				"1/8/09 3:33|1/8/09 3:06|11/28/07 11:56|1/3/09 8:47|1/5/09 12:45|1/6/09 7:30|12/10/08 19:53|1/8/09 15:57|1/9/09 5:09|1/6/09 12:00|" +
@@ -530,7 +520,7 @@ public class AnalysisResultTests {
 				"1/23/09 3:00|1/6/09 3:38|1/23/09 3:27|12/20/08 8:41|12/29/08 3:16|1/21/09 13:56|7/30/07 21:10|1/4/09 12:39|1/22/09 9:55|1/22/09 23:23|" +
 				"4/25/07 5:08|1/16/09 1:38|8/3/07 2:48|4/7/08 17:15|1/23/09 6:32|1/5/09 15:43|1/24/09 8:02|1/14/09 4:13|11/28/07 10:05|1/23/09 10:42|" +
 				"1/19/09 14:43|3/7/06 5:47|11/24/08 15:50|12/17/07 19:55|12/7/05 19:48|6/20/08 22:08|6/14/07 13:14|6/14/07 13:14|1/17/06 8:51|5/14/07 12:48|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -538,7 +528,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DATETIME);
@@ -554,15 +544,15 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basic_StateSpaces() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
-		String input = " OH| SD| WA| MA| WI| NC| MB| VA| NC| DE| ND| PA| WV| TX| KS| WV| FL| WA| CA| GA| WI|" +
+	public void basicStateSpaces() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
+		final String input = " OH| SD| WA| MA| WI| NC| MB| VA| NC| DE| ND| PA| WV| TX| KS| WV| FL| WA| CA| GA| WI|" +
 				" IL| SD| NY| IA| CT| DC| PA| WA| TX| IN| TX| MS| BC| ND| GA| NY| PA| TX| ID| AL| MS|" +
 				" OK| AZ| CO| NJ| MI| ON| KS| OH| TX| IN| FL| FL| WA| NY| GA| SC| PA| CA| WI| OH| CO|" +
 				" VA| OH| MO| MA| IL| WA| IN| SD| IA| LA| TX| WY| OK| AL| MO| WA| PA| NB| NY| GA| MI|" +
 				" FL| CA| NM| CA| CA| CA| CA| OH| CA| CA| TX| TX| UT| MD| CA| KS| CO| OR| MN| MO| MO|" +
 				" MI| VT| MN| FL| MI| CA| VT| NM| NC| WY| IL| NY| MN| VA| VA| IN| UT| WI| NV| SA| CA| OH |";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -570,7 +560,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -578,8 +568,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{2}");
-		Map<String, Integer> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.get(" SA"), new Integer(1));
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.get(" SA"), Integer.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 0.9921259842519685);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -588,11 +578,11 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basic_MM_dd_yy() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("DOB");
-		String input = "12/5/59|2/13/48|6/29/62|1/7/66|7/3/84|5/28/74|" +
+	public void basicMMddyy() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("DOB");
+		final String input = "12/5/59|2/13/48|6/29/62|1/7/66|7/3/84|5/28/74|" +
 				"|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -600,7 +590,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -616,11 +606,11 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basic_yyyy_M_dd_HH_mm() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-		String input = "2017-4-15 21:10|2016-9-27 14:10|2016-3-11 07:10|2015-8-24 00:10|2015-2-04 17:10|" +
+	public void yyyyMddHHmm() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "2017-4-15 21:10|2016-9-27 14:10|2016-3-11 07:10|2015-8-24 00:10|2015-2-04 17:10|" +
 				"2014-7-19 10:10|2013-12-31 03:10|2013-6-13 20:10|2012-11-25 13:10|2012-5-09 06:10|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -628,7 +618,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -644,11 +634,11 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basic_yyyy_MM_dd_HH_mm_z() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-		String input = "2017-08-24 12:10 EDT|2017-07-03 06:10 EDT|2017-05-12 00:10 EDT|2017-03-20 18:10 EDT|2016-07-02 12:10 EDT|" +
+	public void yyyyMMddHHmmz() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "2017-08-24 12:10 EDT|2017-07-03 06:10 EDT|2017-05-12 00:10 EDT|2017-03-20 18:10 EDT|2016-07-02 12:10 EDT|" +
 				"2017-01-27 11:10 EST|2016-12-06 05:10 EST|2016-10-15 00:10 EDT|2016-08-23 18:10 EDT|2016-05-11 06:10 EDT|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -656,7 +646,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -672,10 +662,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicDateYYYY_MM_DD() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "2010-01-22|2019-01-12|1996-01-02|1916-01-02|1993-01-02|1998-01-02|2001-01-02|2000-01-14|2008-01-12".split("\\|");
+	public void dateYYYYMMDD() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "2010-01-22|2019-01-12|1996-01-02|1916-01-02|1993-01-02|1998-01-02|2001-01-02|2000-01-14|2008-01-12".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -683,7 +672,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -699,13 +688,12 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicDateYYYY() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "2015|2015|2015|2015|2015|2015|2015|2016|2016|2016|2013|1932|1991|1993|2001|1977|2001|1976|1972|" +
+	public void dateYYYY() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "2015|2015|2015|2015|2015|2015|2015|2016|2016|2016|2013|1932|1991|1993|2001|1977|2001|1976|1972|" +
 				"1982|2005|1950|1961|1967|1997|1967|1996|2014|2002|1953|1980|2010|2010|1979|1980|1983|1974|1970|" +
 				"1978|2014|2015|1979|1982|2016|2016|2013|2011|1986|1985|2000|2000|2012|2000|2000|";
-		String[] inputs = input.split("\\|");
+		final String[] inputs = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -713,7 +701,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -727,14 +715,14 @@ public class AnalysisResultTests {
 			Assert.assertTrue(inputs[i].matches(result.getPattern()));
 		}
 
-		TextAnalyzer analysis2 = new TextAnalyzer();
+		final TextAnalyzer analysis2 = new TextAnalyzer();
 
 		for (int i = 0; i < inputs.length; i++) {
 			if (analysis2.train(inputs[i]) && locked == -1)
 				locked = i;
 		}
 
-		TextAnalysisResult result2 = analysis2.getResult();
+		final TextAnalysisResult result2 = analysis2.getResult();
 
 		Assert.assertEquals(result2.getSampleCount(), inputs.length);
 		Assert.assertEquals(result2.getMatchCount(), inputs.length);
@@ -751,16 +739,15 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicDateD_MMM_YY() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "1-Jan-14|2-Jan-14|3-Jan-14|6-Jan-14|7-Jan-14|7-Jan-14|8-Jan-14|9-Jan-14|10-Jan-14|" +
+	public void basicDateDMMMYY() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "1-Jan-14|2-Jan-14|3-Jan-14|6-Jan-14|7-Jan-14|7-Jan-14|8-Jan-14|9-Jan-14|10-Jan-14|" +
 				"13-Jan-14|14-Jan-14|15-Jan-14|16-Jan-14|17-Jan-14|20-Jan-14|21-Jan-14|22-Jan-14|" +
 				"23-Jan-14|24-Jan-14|27-Jan-14|28-Jan-14|29-Jan-14|30-Jan-14|31-Jan-14|3-Feb-14|" +
 				"4-Feb-14|5-Feb-14|6-Feb-14|7-Feb-14|10-Feb-14|11-Feb-14|12-Feb-14|13-Feb-14|14-Feb-14|" +
 				"17-Feb-14|18-Feb-14|19-Feb-14|20-Feb-14|21-Feb-14|24-Feb-14|25-Feb-14|26-Feb-14|27-Feb-14|" +
 				"28-Feb-14|3-Mar-14|4-Mar-14|5-Mar-14|";
-		String[] inputs = input.split("\\|");
+		final String[] inputs = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -768,7 +755,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d-MMM-yy");
@@ -784,10 +771,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void startsAsTwoDigitDay() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input =
+	public void startsAsTwoDigitDay() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input =
 				"27/6/2012 12:46:03|27/6/2012 15:29:48|27/6/2012 23:32:22|27/6/2012 23:38:51|27/6/2012 23:42:22|" +
 						"27/6/2012 23:49:13|27/6/2012 23:56:02|28/6/2012 08:04:51|28/6/2012 15:53:00|28/6/2012 16:46:34|" +
 						"28/6/2012 17:01:01|28/6/2012 17:53:52|28/6/2012 18:03:31|28/6/2012 18:31:14|28/6/2012 18:46:12|" +
@@ -796,8 +782,7 @@ public class AnalysisResultTests {
 						"1/7/2012 09:15:03|1/7/2012 15:36:44|1/7/2012 18:25:35|1/7/2012 18:31:19|1/7/2012 18:36:04|" +
 						"1/7/2012 19:13:17|1/7/2012 19:13:35|1/7/2012 19:13:49|1/7/2012 19:14:07|1/7/2012 19:14:21|" +
 						"1/7/2012 19:14:29|1/7/2012 19:16:45|1/7/2012 19:17:48|1/7/2012 19:18:19|1/7/2012 19:19:09|";
-
-		String[] inputs = input.split("\\|");
+		final String[] inputs = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -805,7 +790,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
@@ -821,10 +806,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void startsAsTwoDigitMonth() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input =
+	public void startsAsTwoDigitMonth() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input =
 				"27/10/2012 12:46:03|27/10/2012 15:29:48|27/10/2012 23:32:22|27/10/2012 23:38:51|27/10/2012 23:42:22|" +
 						"27/10/2012 23:49:13|27/10/2012 23:56:02|28/10/2012 08:04:51|28/10/2012 15:53:00|28/10/2012 16:46:34|" +
 						"28/10/2012 17:01:01|28/10/2012 17:53:52|28/10/2012 18:03:31|28/10/2012 18:31:14|28/10/2012 18:46:12|" +
@@ -833,8 +817,7 @@ public class AnalysisResultTests {
 						"10/7/2012 09:15:03|1/7/2012 15:36:44|1/7/2012 18:25:35|1/7/2012 18:31:19|1/7/2012 18:36:04|" +
 						"1/7/2012 19:13:17|1/7/2012 19:13:35|1/7/2012 19:13:49|1/7/2012 19:14:07|1/7/2012 19:14:21|" +
 						"1/7/2012 19:14:29|1/7/2012 19:16:45|1/7/2012 19:17:48|1/7/2012 19:18:19|1/7/2012 19:19:09|";
-
-		String[] inputs = input.split("\\|");
+		final String[] inputs = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -842,7 +825,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
@@ -858,16 +841,16 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basic_ddMMyy_HHmm() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("ddMMyy_HHmm", DateResolutionMode.DayFirst);
-		String input =
+	public void basicddMMyyHHmm() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("ddMMyy_HHmm", DateResolutionMode.DayFirst);
+		final String input =
 				"23/08/17 03:49|23/08/17 03:49|14/08/17 10:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|" +
 				"28/07/17 00:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|28/07/17 00:49|19/07/17 07:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|" +
 				"28/07/17 00:49|19/07/17 07:49|10/07/17 14:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|28/07/17 00:49|19/07/17 07:49|10/07/17 14:49|" +
 				"01/07/17 21:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|28/07/17 00:49|19/07/17 07:49|10/07/17 14:49|01/07/17 21:49|23/06/17 04:49|" +
 				"23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|28/07/17 00:49|19/07/17 07:49|10/07/17 14:49|01/07/17 21:49|23/06/17 04:49|14/06/17 11:49|" +
 				"23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|28/07/17 00:49|19/07/17 07:49|10/07/17 14:49|01/07/17 21:49|23/06/17 04:49|14/06/17 11:49|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -875,7 +858,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yy HH:mm");
@@ -893,12 +876,12 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basic_H_MM() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("H:mm");
-		String input = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
+	public void basicHMM() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("H:mm");
+		final String input = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
 		"17:16|0:16|7:16|14:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|3:16|10:16|17:16|0:16|7:16|14:16|" +
 		"21:16|4:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|4:16|11:16|3:16|10:16|17:16|0:16|7:16|14:16|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -906,7 +889,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.TIME);
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm");
@@ -924,17 +907,15 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicDateDD_MMM_YYY_HH_MM() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input =
+	public void basicDateDDMMMYYYHHMM() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input =
 				"1/30/06 22:01|1/30/06 22:15|1/30/06 22:25|1/30/06 22:35|1/30/06 22:40|1/30/06 22:45|1/30/06 22:47|1/30/06 23:00|1/30/06 23:00|1/30/06 23:11|" +
 						"1/30/06 23:15|1/30/06 23:21|1/30/06 23:31|1/30/06 23:52|1/30/06 23:55|1/30/06 23:58|1/31/06 0:00|1/31/06 0:00|1/31/06 0:00|1/31/06 0:01|" +
 						"1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:17|1/31/06 0:26|1/31/06 0:30|" +
 						"1/31/06 0:30|1/31/06 0:30|1/31/06 0:47|1/31/06 0:56|1/31/06 1:21|1/31/06 1:34|1/31/06 1:49|1/31/06 2:00|1/31/06 2:08|1/31/06 2:11|1/31/06 2:22|" +
 						"1/31/06 2:48|1/31/06 3:05|1/31/06 3:05|1/31/06 3:30|";
-
-		String[] inputs = input.split("\\|");
+		final String[] inputs = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -942,7 +923,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "M/dd/yy H:mm");
@@ -960,19 +941,18 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void slashLoop() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("thin", DateResolutionMode.MonthFirst);
-
-		String input = "1/1/06 0:00";
+	public void slashLoop() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("thin", DateResolutionMode.MonthFirst);
+		final String input = "1/1/06 0:00";
+		final int iterations = 30;
 		int locked = -1;
-		int iterations = 30;
 
 		for (int iters = 0; iters < iterations; iters++) {
 			if (analysis.train(input) && locked == -1)
 				locked = iters;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "M/d/yy H:mm");
@@ -987,10 +967,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicDateDD_MMM_YYY() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "22 Jan 1971|12 Mar 2019|02 Jun 1996|11 Dec 1916|19 Apr 1993|26 Sep 1998|09 Dec 1959|14 Jul 2000|18 Aug 2008".split("\\|");
+	public void basicDateDDMMMYYY() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "22 Jan 1971|12 Mar 2019|02 Jun 1996|11 Dec 1916|19 Apr 1993|26 Sep 1998|09 Dec 1959|14 Jul 2000|18 Aug 2008".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -998,7 +977,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1020,10 +999,9 @@ public class AnalysisResultTests {
 	//	put(Pattern.compile("^(?i)\\d{1,2}\\s[a-z]{4,}\\s\\d{4}$").matcher(""), "dd MMMM yyyy");
 
 	@Test
-	public void slashDateYYYY_MM_DD() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "2010/01/22|2019/01/12|1996/01/02|1916/01/02|1993/01/02|1998/01/02|2001/01/02|2000/01/14|2008/01/12".split("\\|");
+	public void slashDateYYYYMMDD() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "2010/01/22|2019/01/12|1996/01/02|1916/01/02|1993/01/02|1998/01/02|2001/01/02|2000/01/14|2008/01/12".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1031,7 +1009,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1047,10 +1025,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicDateDD_MM_YYYY() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "22-01-2010|12-01-2019|02-01-1996|02-01-1916|02-01-1993|02-01-1998|02-01-2001|14-01-2000|12-01-2008".split("\\|");
+	public void basicDateDDMMYYYY() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "22-01-2010|12-01-2019|02-01-1996|02-01-1916|02-01-1993|02-01-1998|02-01-2001|14-01-2000|12-01-2008".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1058,7 +1035,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1074,10 +1051,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void variableDateDD_MM_YYYY() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "22-1-2010|12-1-2019|2-1-1996|2-1-1916|2-1-1993|2-1-1998|22-11-2001|14-1-2000|12-5-2008".split("\\|");
+	public void variableDateDDMMYYYY() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "22-1-2010|12-1-2019|2-1-1996|2-1-1916|2-1-1993|2-1-1998|22-11-2001|14-1-2000|12-5-2008".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1085,7 +1061,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1102,12 +1078,11 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void slashDateDD_MM_YYYY() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "22/01/2010|12/01/2019|02/01/1996|02/01/1916|02/01/1993|02/01/1998|02/01/2001|14/01/2000|12/01/2008".split("\\|");
+	public void slashDateDDMMYYYY() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "22/01/2010|12/01/2019|02/01/1996|02/01/1916|02/01/1993|02/01/1998|02/01/2001|14/01/2000|12/01/2008".split("\\|");
+		final int iterations = 4;
 		int locked = -1;
-		int iterations = 4;
 
 		for (int iters = 0; iters < iterations; iters++) {
 			for (int i = 0; i < inputs.length; i++) {
@@ -1116,7 +1091,7 @@ public class AnalysisResultTests {
 			}
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getMatchCount(), inputs.length * iterations);
@@ -1132,12 +1107,11 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void slashDateDD_MM_YY() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "22/01/70|12/01/03|02/01/66|02/01/46|02/01/93|02/01/78|02/01/74|14/01/98|12/01/34".split("\\|");
+	public void slashDateDDMMYY() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "22/01/70|12/01/03|02/01/66|02/01/46|02/01/93|02/01/78|02/01/74|14/01/98|12/01/34".split("\\|");
+		final int iterations = 4;
 		int locked = -1;
-		int iterations = 4;
 
 		for (int iters = 0; iters < iterations; iters++) {
 			for (int i = 0; i < inputs.length; i++) {
@@ -1146,7 +1120,7 @@ public class AnalysisResultTests {
 			}
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getMatchCount(), inputs.length * iterations);
@@ -1162,19 +1136,18 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void slashDateAmbiguousMM_DD_YY() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("thin", DateResolutionMode.MonthFirst);
-
-		String input = " 04/03/13";
+	public void slashDateAmbiguousMMDDYY() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("thin", DateResolutionMode.MonthFirst);
+		final String input = " 04/03/13";
+		final int iterations = 30;
 		int locked = -1;
-		int iterations = 30;
 
 		for (int iters = 0; iters < iterations; iters++) {
 			if (analysis.train(input) && locked == -1)
 				locked = iters;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getMatchCount(), iterations);
@@ -1188,10 +1161,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicTimeHH_MM_SS() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "00:10:00|00:10:00|23:07:00|06:07:00|16:07:00|06:37:00|06:07:00|06:09:00|06:20:00|06:57:00".split("\\|");
+	public void basicTimeHHMMSS() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "00:10:00|00:10:00|23:07:00|06:07:00|16:07:00|06:37:00|06:07:00|06:09:00|06:20:00|06:57:00".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1199,7 +1171,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1215,10 +1187,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicTimeHH_MM() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "00:10|00:10|23:07|06:07|16:07|06:37|06:07|06:09|06:20|06:57".split("\\|");
+	public void basicTimeHHMM() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "00:10|00:10|23:07|06:07|16:07|06:37|06:07|06:09|06:20|06:57".split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1226,7 +1197,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1242,12 +1213,11 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void limitedData() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "12|4|5|".split("\\|");
-		int pre = 3;
-		int post = 10;
+	public void limitedData() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "12|4|5|".split("\\|");
+		final int pre = 3;
+		final int post = 10;
 
 		for (int i = 0; i < pre; i++)
 			analysis.train("");
@@ -1257,7 +1227,7 @@ public class AnalysisResultTests {
 		for (int i = 0; i < post; i++)
 			analysis.train("");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), pre + inputs.length + post);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1272,12 +1242,12 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void onlyTrue() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void onlyTrue() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		analysis.train("true");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), 1);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -1294,10 +1264,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicBoolean() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "false|true|TRUE|    false   |FALSE |TRUE|true|false|False|True|false|  FALSE|FALSE|true|TRUE|bogus".split("\\|");
+	public void basicBoolean() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "false|true|TRUE|    false   |FALSE |TRUE|true|false|False|True|false|  FALSE|FALSE|true|TRUE|bogus".split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -1307,7 +1276,7 @@ public class AnalysisResultTests {
 		}
 		analysis.train(null);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
@@ -1332,10 +1301,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicBooleanYN() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "no|yes|YES|    no   |NO |YES|yes|no|No|Yes|no|  NO|NO|yes|YES|bogus".split("\\|");
+	public void basicBooleanYN() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "no|yes|YES|    no   |NO |YES|yes|no|No|Yes|no|  NO|NO|yes|YES|bogus".split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -1345,7 +1313,7 @@ public class AnalysisResultTests {
 		}
 		analysis.train(null);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
@@ -1370,10 +1338,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicPseudoBoolean() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "0|1|1|0|0|1|1|0|0|1|0|0|0|1|1|0|1|1|1|1|0|0|0|0|1|1|1".split("\\|");
+	public void basicPseudoBoolean() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "0|1|1|0|0|1|1|0|0|1|0|0|0|1|1|0|1|1|1|1|0|0|0|0|1|1|1".split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -1383,7 +1350,7 @@ public class AnalysisResultTests {
 		}
 		analysis.train(null);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
@@ -1405,10 +1372,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void notPseudoBoolean() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "7|1|1|7|7|1|1|7|7|1|7|7|7|1|1|7|1|1|1|1|7|7|7|7|1|1|1".split("\\|");
+	public void notPseudoBoolean() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "7|1|1|7|7|1|1|7|7|1|7|7|7|1|1|7|1|1|1|1|7|7|7|7|1|1|1".split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -1418,7 +1384,7 @@ public class AnalysisResultTests {
 		}
 		analysis.train(null);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
@@ -1440,10 +1406,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicNotPseudoBoolean() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String[] inputs = "0|5|5|0|0|5|5|0|0|5|0|0|0|5|5|0|5|5|5|5|0|0|0|0|5|5|5|A".split("\\|");
+	public void basicNotPseudoBoolean() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "0|5|5|0|0|5|5|0|0|5|0|0|0|5|5|0|5|5|5|5|0|0|0|0|5|5|5|A".split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -1453,7 +1418,7 @@ public class AnalysisResultTests {
 		}
 		analysis.train(null);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
@@ -1464,7 +1429,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 0.9642857142857143);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getCardinality(), 2);
-		Map<String, Integer> details = result.getCardinalityDetails();
+		final Map<String, Integer> details = result.getCardinalityDetails();
 		Assert.assertEquals(details.get("0"), Integer.valueOf(13));
 		Assert.assertEquals(details.get("5"), Integer.valueOf(14));
 		Assert.assertEquals(result.dump(true), "TextAnalysisResult [matchCount=27, sampleCount=30, nullCount=2, blankCount=0, pattern=\"\\d{1}\", confidence=0.9642857142857143, type=LONG, min=\"0\", max=\"5\", sum=\"70\", cardinality=2 {\"5\":14 \"0\":13 }, outliers=1 {\"A\":1 }]");
@@ -1480,16 +1445,15 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void manyNulls() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		int iterations = 50;
+	public void manyNulls() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int iterations = 50;
 
 		for (int i = 0; i < iterations; i++) {
 			analysis.train(null);
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -1508,10 +1472,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void manyBlanks() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		int iterations = 50;
+	public void manyBlanks() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int iterations = 50;
 
 		analysis.train("");
 		for (int i = 0; i < iterations; i++) {
@@ -1520,7 +1483,7 @@ public class AnalysisResultTests {
 			analysis.train("      ");
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), 3 * iterations + 1);
 		Assert.assertEquals(result.getMaxLength(), 6);
@@ -1541,16 +1504,15 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void sameBlanks() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		int iterations = 50;
+	public void sameBlanks() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int iterations = 50;
 
 		for (int i = 0; i < iterations; i++) {
 			analysis.train("      ");
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getMaxLength(), 6);
@@ -1571,16 +1533,15 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void justEmpty() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		int iterations = 50;
+	public void justEmpty() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int iterations = 50;
 
 		for (int i = 0; i < iterations; i++) {
 			analysis.train("");
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getMaxLength(), 0);
@@ -1601,8 +1562,8 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void whiteSpace() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("field,value");
+	public void whiteSpace() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("field,value");
 
 		analysis.train(null);
 		analysis.train("");
@@ -1627,7 +1588,7 @@ public class AnalysisResultTests {
 		analysis.train("        ");
 		analysis.train("         ");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "BLANKORNULL");
@@ -1642,10 +1603,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicEmail() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "Bachmann@lavastorm.com|Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
+	public void basicEmail() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "Bachmann@lavastorm.com|Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
 				"coleman@lavastorm.com|Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
 				"Jones@lavastorm.com|Marinelli@lavastorm.com|Nason@lavastorm.com|Parker@lavastorm.com|" +
 				"Pigneri@lavastorm.com|Rasmussen@lavastorm.com|Regan@lavastorm.com|Segall@Lavastorm.com|" +
@@ -1655,7 +1615,7 @@ public class AnalysisResultTests {
 				"Nason@lavastorm.com|reilly@lavastorm.com|Scoble@lavastorm.com|Comerford@lavastorm.com|" +
 				"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
 				"Tuddenham@lavastorm.com|Williams@lavastorm.com|Wilson@lavastorm.com";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -1667,7 +1627,7 @@ public class AnalysisResultTests {
 		analysis.train("tim@cobber com");
 		analysis.train(null);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2 + result.getNullCount());
@@ -1684,7 +1644,7 @@ public class AnalysisResultTests {
 		}
 	}
 
-	String inputURLs = "http://www.lavastorm.com|ftp://ftp.sun.com|https://www.google.com|" +
+	private final static String INPUT_URLS = "http://www.lavastorm.com|ftp://ftp.sun.com|https://www.google.com|" +
 			"https://www.homedepot.com|http://www.lowes.com|http://www.apple.com|http://www.sgi.com|" +
 			"http://www.ibm.com|http://www.snowgum.com|http://www.zaius.com|http://www.cobber.com|" +
 			"http://www.ey.com|http://www.zoomer.com|http://www.redshift.com|http://www.segall.net|" +
@@ -1692,10 +1652,9 @@ public class AnalysisResultTests {
 			"http://www.java.com|http://www.slashdot.org|http://theregister.co.uk|";
 
 	@Test
-	public void basicURL() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String inputs[] = inputURLs.split("\\|");
+	public void basicURL() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String inputs[] = INPUT_URLS.split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -1706,7 +1665,7 @@ public class AnalysisResultTests {
 		analysis.train(null);
 		analysis.train("bogus");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 1 + result.getNullCount());
@@ -1724,10 +1683,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void backoutURL() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String inputs[] = inputURLs.split("\\|");
+	public void backoutURL() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String inputs[] = INPUT_URLS.split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -1741,7 +1699,7 @@ public class AnalysisResultTests {
 		for (int i = 0; i < badURLs; i++)
 			analysis.train(String.valueOf(i));
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -1759,16 +1717,15 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void notEmail() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "2@3|3@4|b4@5|" +
+	public void notEmail() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "2@3|3@4|b4@5|" +
 				"6@7|7@9|12@13|100@2|" +
 				"Zoom@4|Marinelli@44|55@90341|Parker@46|" +
 				"Pigneri@22|Rasmussen@77|478 @ 1912|88 @ LC|" +
 				"Smith@99|Song@88|77@|@lavastorm.com|" +
 				"Tuddenham@02421|Williams@uk|Wilson@99";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -1780,7 +1737,7 @@ public class AnalysisResultTests {
 		analysis.train("tim@cobber com");
 		analysis.train(null);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2 + result.getNullCount());
@@ -1798,17 +1755,16 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void testTrim() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = " Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
+	public void testTrim() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = " Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi          |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        ";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1817,7 +1773,7 @@ public class AnalysisResultTests {
 		}
 		analysis.train(null);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + result.getNullCount());
@@ -1835,10 +1791,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicEmailList() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "Bachmann@lavastorm.com,Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
+	public void basicEmailList() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "Bachmann@lavastorm.com,Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
 				"coleman@lavastorm.com,Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
 				"Jones@lavastorm.com|Marinelli@lavastorm.com,Nason@lavastorm.com,Parker@lavastorm.com|" +
 				"Pigneri@lavastorm.com|Rasmussen@lavastorm.com|Regan@lavastorm.com|Segall@Lavastorm.com|" +
@@ -1848,7 +1803,7 @@ public class AnalysisResultTests {
 				"Nason@lavastorm.com|reilly@lavastorm.com|Scoble@lavastorm.com|Comerford@lavastorm.com|" +
 				"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
 				"Tuddenham@lavastorm.com,Williams@lavastorm.com,Wilson@lavastorm.com";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1856,7 +1811,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -1874,10 +1829,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicEmailListSemicolon() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "Bachmann@lavastorm.com;Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
+	public void basicEmailListSemicolon() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "Bachmann@lavastorm.com;Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
 				"coleman@lavastorm.com;Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
 				"Jones@lavastorm.com|Marinelli@lavastorm.com;Nason@lavastorm.com;Parker@lavastorm.com|" +
 				"Pigneri@lavastorm.com|Rasmussen@lavastorm.com|Regan@lavastorm.com|Segall@Lavastorm.com|" +
@@ -1887,7 +1841,7 @@ public class AnalysisResultTests {
 				"Nason@lavastorm.com|reilly@lavastorm.com|Scoble@lavastorm.com|Comerford@lavastorm.com|" +
 				"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
 				"Tuddenham@lavastorm.com;Williams@lavastorm.com;Wilson@lavastorm.com|bo gus|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1895,7 +1849,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -1909,10 +1863,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicZip() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
+	public void basicZip() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
 				"06045|06233|06431|06704|06910|07101|07510|07764|08006|08205|08534|08829|10044|10260|10549|10965|11239|11501|11743|11976|" +
 				"12138|12260|12503|12746|12878|13040|13166|13418|13641|13801|14068|14276|14548|14731|14865|15077|15261|15430|15613|15741|" +
 				"15951|16210|16410|16662|17053|17247|17516|17765|17951|18109|18428|18702|18957|19095|19339|19489|19808|20043|20170|20370|" +
@@ -1920,7 +1873,7 @@ public class AnalysisResultTests {
 				"25030|25186|25389|25638|25841|26059|26524|26525|26763|27199|27395|27587|27832|27954|28119|28280|28397|28543|28668|28774|" +
 				"29111|29329|29475|29622|29744|30016|30119|30235|30343|30503|30643|31002|31141|31518|31724|31901|32134|32297|32454|32617|" +
 				"32780|32934|33093|33265|33448|33603|33763|33907|34138|34470|34731|35053|35221|35491|35752|36022|36460|36616|36860|37087|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1928,7 +1881,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
@@ -1943,10 +1896,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void zipUnwind() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "02421|02420|02421|02420|02421|02420|02421|02420|02421|02420|" +
+	public void zipUnwind() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "02421|02420|02421|02420|02421|02420|02421|02420|02421|02420|" +
 				"02421|02420|02421|02420|02421|02420|02421|02420|02421|02420|" +
 				"10248|10249|10250|10251|10252|10253|10254|10255|10256|10257|10258|10259|10260|10261|10262|10263|10264|" +
 				"bogus|" +
@@ -1997,7 +1949,7 @@ public class AnalysisResultTests {
 						"11013|11014|11015|11016|11017|11018|11019|11020|11021|11022|11023|11024|11025|11026|11027|11028|11029|" +
 						"11030|11031|11032|11033|11034|11035|11036|11037|11038|11039|11040|11041|11042|11043|11044|11045|11046|" +
 						"11047|11048|11049|11050|11051|11052|11053|11054|11055|11056|11057|11058|11059|11060|11061|11062|11063|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2005,7 +1957,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
@@ -2027,10 +1979,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void zipNotReal() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input =
+	public void zipNotReal() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input =
 				"10248|10249|10250|10251|10252|10253|10254|10255|10256|10257|10258|10259|10260|10261|10262|10263|10264|" +
 						"10265|10266|10267|10268|10269|10270|10271|10272|10273|10274|10275|10276|10277|10278|10279|10280|10281|" +
 						"10282|10283|10284|10285|10286|10287|10288|10289|10290|10291|10292|10293|10294|10295|10296|10297|10298|" +
@@ -2079,7 +2030,7 @@ public class AnalysisResultTests {
 						"11013|11014|11015|11016|11017|11018|11019|11020|11021|11022|11023|11024|11025|11026|11027|11028|11029|" +
 						"11030|11031|11032|11033|11034|11035|11036|11037|11038|11039|11040|11041|11042|11043|11044|11045|11046|" +
 						"11047|11048|11049|11050|11051|11052|11053|11054|11055|11056|11057|11058|11059|11060|11061|11062|11063|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2087,7 +2038,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
@@ -2106,19 +2057,19 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void sameZip() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("sameZip");
+	public void sameZip() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("sameZip");
+		final int copies = 100;
+		final String sample = "02421";
 
 		int locked = -1;
-		int copies = 100;
-		String sample = "02421";
 
 		for (int i = 0; i < copies; i++) {
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
@@ -2134,8 +2085,8 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void changeMind() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void changeMind() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
 		int locked = -1;
 
 		for (int i = 0; i < 2 * TextAnalyzer.SAMPLE_DEFAULT; i++) {
@@ -2147,7 +2098,7 @@ public class AnalysisResultTests {
 			analysis.train(String.valueOf(ch));
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -2161,8 +2112,8 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void leadingZeros() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
+	public void leadingZeros() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
 
 		analysis.train("000019284");
 		analysis.train("000058669");
@@ -2224,7 +2175,7 @@ public class AnalysisResultTests {
 		analysis.train("000617373");
 		analysis.train("000617374");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertNull(result.getTypeQualifier());
@@ -2237,12 +2188,12 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void notZipButNumeric() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void notZipButNumeric() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int start = 10000;
+		final int end = 99999;
 
 		int locked = -1;
-		int start = 10000;
-		int end = 99999;
 
 		for (int i = start; i < end; i++) {
 			if (analysis.train(String.valueOf(i)) && locked == -1)
@@ -2250,7 +2201,7 @@ public class AnalysisResultTests {
 		}
 		analysis.train("No Zip provided");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, start + TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
@@ -2263,19 +2214,19 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void notZips() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void notZips() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int start = 10000;
+		final int end = 99999;
 
 		int locked = -1;
-		int start = 10000;
-		int end = 99999;
 
 		for (int i = start; i < end; i++) {
 			if (analysis.train(i < 80000 ? String.valueOf(i) : "A" + String.valueOf(i)) && locked == -1)
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, start + TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -2288,16 +2239,16 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicStates() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void basicStates() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
 
-		String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
+		final String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
 				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|" +
 				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|" +
 				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|" +
 				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|" +
 				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2305,7 +2256,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -2323,16 +2274,15 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicStatesLower() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "al|ak|az|ky|ks|la|me|md|mi|ma|mn|ms|mo|ne|mt|sd|tn|tx|ut|vt|wi|" +
+	public void basicStatesLower() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "al|ak|az|ky|ks|la|me|md|mi|ma|mn|ms|mo|ne|mt|sd|tn|tx|ut|vt|wi|" +
 				"va|wa|wv|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|" +
 				"nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|" +
 				"wy|al|ak|az|ar|ca|co|ct|dc|de|fl|ga|hi|id|il|in|ia|ks|ky|la|me|" +
 				"md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|ri|sc|sd|" +
 				"tx|ut|vt|wv|wi|wy|nv|nh|nj|or|pa|ri|sc|ar|ca|co|ct|id|hi|il|in|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2340,7 +2290,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -2358,16 +2308,15 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicNA() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|AB|AB|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
+	public void basicNA() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|AB|AB|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
 				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|YT|MN|MS|MO|MT|NE|NV|XX|" +
 				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|NF|NB|" +
 				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|PE|BC|" +
 				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|ON|LB|" +
 				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|YT|LB|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2375,7 +2324,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -2383,8 +2332,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		Map<String, Integer> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.get("XX"), new Integer(1));
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.get("XX"), Integer.valueOf(1));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getConfidence(), 0.9927536231884058);
@@ -2395,15 +2344,14 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicCA() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+	public void basicCA() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2411,7 +2359,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -2429,10 +2377,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void change2() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+	public void change2() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
@@ -2441,7 +2388,7 @@ public class AnalysisResultTests {
 				"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2449,7 +2396,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -2467,10 +2414,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicCountry() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "Venezuela|USA|Finland|USA|USA|Germany|France|Italy|Mexico|Germany|" +
+	public void basicCountry() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "Venezuela|USA|Finland|USA|USA|Germany|France|Italy|Mexico|Germany|" +
 				"Sweden|Germany|Sweden|Spain|Spain|Venezuela|Germany|Germany|Germany|Brazil|" +
 				"Italy|UK|Brazil|Brazil|Brazil|Mexico|USA|France|Venezuela|France|" +
 				"Ireland|Brazil|Italy|Germany|Belgium|Spain|Mexico|USA|Spain|USA|" +
@@ -2495,7 +2441,7 @@ public class AnalysisResultTests {
 				"Germany|Austria|Venezuela|Portugal|Canada|France|Brazil|Canada|Brazil|Germany|" +
 				"Venezuela|Venezuela|France|Germany|Mexico|Ireland|USA|Canada|Germany|Mexico|" +
 				"Germany|Germany|USA|France|Brazil|Germany|Austria|Germany|Ireland|UK|Gondwanaland|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2503,7 +2449,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -2517,7 +2463,7 @@ public class AnalysisResultTests {
 	}
 
 	// Set of valid months + 2 x "NA", 1 x "bogus", 1 x "Bad"
-	String monthTest = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+	private final static String MONTH_TEST = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
 			"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
@@ -2529,11 +2475,11 @@ public class AnalysisResultTests {
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|";
 
 	@Test
-	public void basicMonthAbbr() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void basicMonthAbbr() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int badCount = 4;
+		final String inputs[] = MONTH_TEST.split("\\|");
 
-		int badCount = 4;
-		String inputs[] = monthTest.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2541,7 +2487,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
@@ -2549,11 +2495,11 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 3);
-		Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 3);
-		Assert.assertEquals(outliers.get("Bogus"), new Integer(1));
-		Assert.assertEquals(outliers.get("NA"), new Integer(2));
-		Assert.assertEquals(outliers.get("Bad"), new Integer(1));
+		Assert.assertEquals(outliers.get("Bogus"), Integer.valueOf(1));
+		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(2));
+		Assert.assertEquals(outliers.get("Bad"), Integer.valueOf(1));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 0.9835164835164835);
@@ -2581,10 +2527,10 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicMonthAbbrExcessiveBad() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void basicMonthAbbrExcessiveBad() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String inputs[] = MONTH_TEST.split("\\|");
 
-		String inputs[] = monthTest.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2593,7 +2539,7 @@ public class AnalysisResultTests {
 		}
 		analysis.train("Another bad element");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
@@ -2601,11 +2547,11 @@ public class AnalysisResultTests {
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 1);
 		Assert.assertEquals(result.getOutlierCount(), 3);
-		Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 3);
-		Assert.assertEquals(outliers.get("Bogus"), new Integer(1));
-		Assert.assertEquals(outliers.get("NA"), new Integer(2));
-		Assert.assertEquals(outliers.get("Another bad element"), new Integer(1));
+		Assert.assertEquals(outliers.get("Bogus"), Integer.valueOf(1));
+		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(2));
+		Assert.assertEquals(outliers.get("Another bad element"), Integer.valueOf(1));
 		Assert.assertEquals(result.getMatchCount(), inputs.length + 1 - 4);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 0.9781420765027322);
@@ -2620,13 +2566,13 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicStateLowCard() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
+	public void basicStateLowCard() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
+		final String input = "MA|MI|ME|MO|NA|";
+		final String inputs[] = input.split("\\|");
+		final int iters = 20;
 
-		String input = "MA|MI|ME|MO|NA|";
-		String inputs[] = input.split("\\|");
 		int locked = -1;
-		int iters = 20;
 
 		for (int j = 0; j < iters; j++) {
 			for (int i = 0; i < inputs.length; i++) {
@@ -2635,7 +2581,7 @@ public class AnalysisResultTests {
 			}
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -2643,19 +2589,18 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length * iters);
 		Assert.assertEquals(result.getCardinality(), 4);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("NA"), new Integer(iters));
+		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(iters));
 		Assert.assertEquals(result.getMatchCount(), (inputs.length - result.getOutlierCount()) * iters);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 0.8);
 	}
 
 	@Test
-	public void constantLength3() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input = "aaa|bbb|ccc|ddd|eee|fff|ggg|hhh|iii|jjj|" +
+	public void constantLength3() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "aaa|bbb|ccc|ddd|eee|fff|ggg|hhh|iii|jjj|" +
 				"aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|" +
 				"iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
 				"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
@@ -2663,7 +2608,7 @@ public class AnalysisResultTests {
 				"iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
 				"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
 				"mmm|iii|uuu|fff|ggg|ggg|uuu|uuu|uuu|uuu|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2671,7 +2616,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
@@ -2685,15 +2630,14 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicPromoteToDouble() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input =
+	public void basicPromoteToDouble() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input =
 					"8|172.67|22.73|150|30.26|54.55|45.45|433.22|172.73|7.73|" +
 						"218.18|47.27|31.81|22.73|21.43|7.27|26.25|7.27|45.45|80.91|" +
 						"63.64|13.64|45.45|15|425.45|95.25|60.15|100|80|72.73|" +
 						"0.9|181.81|90|545.45|33.68|13.68|12.12|15|615.42|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2701,7 +2645,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
@@ -2719,10 +2663,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicPromote() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-
-		String input =
+	public void basicPromote() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input =
 				"01000053218|0100BRP90233|0100BRP90237|0180BAA01319|0180BAC30834|0190NSC30194|0190NSC30195|0190NSC30652|0190NSC30653|0190NSC30784|" +
 		"0190NSC30785|0190NSY28569|0190NSZ01245|020035037|02900033|02900033|02900039|02901210|02903036|02903037|" +
 		"030051210001|030051210002|030054160002|030055200003|03700325|03700325|0380F968G059|040000002968|049000000804|049002399361|" +
@@ -2733,7 +2676,7 @@ public class AnalysisResultTests {
 		"0800COA10268|0800COA10268|0800COA10386|0800COA10469|0800COA10470|0800COA10490|0800COB20133|0800COB20134|0800COB20138|0800COB20139|" +
 		"0800COC30257|0800COC30258|0800COC30488|0800COC30504|0800COC30505|0800COC30649|0800COC30815|0800COC30873|0800COC31003|0800COC31004|" +
 		"0800COC31093|0800COC31215|0800COC31216|0800COC31221|0800COC31222|0800COC31229|0800COC31231|0800COC31306|0800COC31307|";
-		String inputs[] = input.split("\\|");
+		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2741,7 +2684,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -2759,10 +2702,10 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicText() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void basicText() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int iterations = 1000;
 		int locked = -1;
-		int iterations = 1000;
 
 		for (int i = 0; i < iterations; i++) {
 			if (analysis.train("primary") && locked == -1)
@@ -2778,7 +2721,7 @@ public class AnalysisResultTests {
 		}
 		analysis.train("secondory");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT/4);
 		Assert.assertEquals(result.getSampleCount(), 5 * iterations + 1);
@@ -2789,12 +2732,12 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void manyRandomInts() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-		Random random = new Random();
+	public void manyRandomInts() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int nullIterations = 50;
+		final int iterations = 10000;
+		final Random random = new Random();
 		int locked = -1;
-		int nullIterations = 50;
-		int iterations = 10000;
 
 		for (int i = 0; i < nullIterations; i++) {
 			analysis.train(null);
@@ -2804,7 +2747,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
@@ -2815,16 +2758,16 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void someInts() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-		Random random = new Random();
-		int locked = -1;
+	public void someInts() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final Random random = new Random();
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
+		int locked = -1;
 
 		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
-			String input = String.valueOf(random.nextInt(1000000));
-			int len = input.length();
+			final String input = String.valueOf(random.nextInt(1000000));
+			final int len = input.length();
 			if (len < minLength)
 				minLength = len;
 			if (len > maxLength)
@@ -2836,7 +2779,7 @@ public class AnalysisResultTests {
 			analysis.train(String.valueOf(random.nextDouble()));
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), 2 * (TextAnalyzer.SAMPLE_DEFAULT + 1));
@@ -2852,9 +2795,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void setSampleSize() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-		Random random = new Random();
+	public void setSampleSize() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final Random random = new Random();
 		int locked = -1;
 		int sample = 0;
 
@@ -2870,7 +2813,7 @@ public class AnalysisResultTests {
 				locked = sample;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
 		Assert.assertEquals(result.getSampleCount(), 2 * (TextAnalyzer.SAMPLE_DEFAULT + 1));
@@ -2881,14 +2824,14 @@ public class AnalysisResultTests {
 
 	@Test
 	public void getSampleSize()  throws IOException {
-		TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		Assert.assertEquals(analysis.getSampleSize(), TextAnalyzer.SAMPLE_DEFAULT);
 	}
 
 	@Test
 	public void setSampleSizeTooSmall() throws IOException {
-		TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		try {
 			analysis.setSampleSize(TextAnalyzer.SAMPLE_DEFAULT - 1);
@@ -2902,8 +2845,8 @@ public class AnalysisResultTests {
 
 	@Test
 	public void setSampleSizeTooLate() throws IOException {
-		TextAnalyzer analysis = new TextAnalyzer();
-		Random random = new Random();
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final Random random = new Random();
 		int locked = -1;
 		int i = 0;
 
@@ -2924,14 +2867,14 @@ public class AnalysisResultTests {
 
 	@Test
 	public void getMaxCardinality() throws IOException {
-		TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		Assert.assertEquals(analysis.getMaxCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 	}
 
 	@Test
 	public void setMaxCardinalityTooSmall() throws IOException {
-		TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		try {
 			analysis.setMaxCardinality(-1);
@@ -2945,8 +2888,8 @@ public class AnalysisResultTests {
 
 	@Test
 	public void setMaxCardinalityTooLate() throws IOException {
-		TextAnalyzer analysis = new TextAnalyzer();
-		Random random = new Random();
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final Random random = new Random();
 		int locked = -1;
 		int i = 0;
 
@@ -2967,14 +2910,14 @@ public class AnalysisResultTests {
 
 	@Test
 	public void getOutlierCount() throws IOException {
-		TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		Assert.assertEquals(analysis.getMaxOutliers(), TextAnalyzer.MAX_OUTLIERS_DEFAULT);
 	}
 
 	@Test
 	public void setMaxOutliersTooSmall() throws IOException {
-		TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		try {
 			analysis.setMaxOutliers(-1);
@@ -2988,8 +2931,8 @@ public class AnalysisResultTests {
 
 	@Test
 	public void setMaxOutliersTooLate() throws IOException {
-		TextAnalyzer analysis = new TextAnalyzer();
-		Random random = new Random();
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final Random random = new Random();
 		int locked = -1;
 		int i = 0;
 
@@ -3009,12 +2952,12 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void manyRandomDoubles() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-		Random random = new Random();
+	public void manyRandomDoubles() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int nullIterations = 50;
+		final int iterations = 10000;
+		final Random random = new Random();
 		int locked = -1;
-		int nullIterations = 50;
-		int iterations = 10000;
 
 		for (int i = 0; i < nullIterations; i++) {
 			analysis.train(null);
@@ -3030,7 +2973,7 @@ public class AnalysisResultTests {
 		analysis.train("NaN");
 		analysis.train("Infinity");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations + 3);
@@ -3038,21 +2981,21 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("Zoomer"), new Integer(1));
+		Assert.assertEquals(outliers.get("Zoomer"), Integer.valueOf(1));
 	}
 
 	@Test
-	public void manyConstantLengthStrings() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-		Random random = new Random();
+	public void manyConstantLengthStrings() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int nullIterations = 50;
+		final int iterations = 10000;
+		final Random random = new Random();
+		final int length = 12;
+		final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		final StringBuilder b = new StringBuilder(length);
 		int locked = -1;
-		int nullIterations = 50;
-		int iterations = 10000;
-		int length = 12;
-		StringBuilder b = new StringBuilder(length);
-		String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 		for (int i = 0; i < nullIterations; i++) {
 			analysis.train(null);
@@ -3066,7 +3009,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
@@ -3078,27 +3021,27 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void manyConstantLengthLongs() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
-		Random random = new Random();
+	public void manyConstantLengthLongs() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int nullIterations = 50;
+		final int iterations = 10000;
+		final Random random = new Random();
 		int locked = -1;
-		int nullIterations = 50;
-		int iterations = 10000;
 
 		for (int i = 0; i < nullIterations; i++) {
 			analysis.train(null);
 		}
 		int cnt = 0;
 		while (cnt < iterations) {
-			long l = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
-			if (l >  9999999999L)
+			final long randomLong = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
+			if (randomLong >  9999999999L)
 				continue;
-			if (analysis.train(String.valueOf(l)) && locked == -1)
+			if (analysis.train(String.valueOf(randomLong)) && locked == -1)
 				locked = cnt;
 			cnt++;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
@@ -3110,30 +3053,30 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void bumpMaxCardinality() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void bumpMaxCardinality() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		analysis.setMaxCardinality(2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 
-		Random random = new Random();
+		final Random random = new Random();
+		final int nullIterations = 50;
+		final int iterations = 10000;
 		int locked = -1;
-		int nullIterations = 50;
-		int iterations = 10000;
 
 		for (int i = 0; i < nullIterations; i++) {
 			analysis.train(null);
 		}
 		int cnt = 0;
 		while (cnt < iterations) {
-			long l = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
-			if (l >  9999999999L)
+			final long randomLong = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
+			if (randomLong >  9999999999L)
 				continue;
-			if (analysis.train(String.valueOf(l)) && locked == -1)
+			if (analysis.train(String.valueOf(randomLong)) && locked == -1)
 				locked = cnt;
 			cnt++;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
@@ -3145,11 +3088,11 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void manyKnownInts() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void manyKnownInts() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int nullIterations = 50;
+		final int iterations = 100000;
 		int locked = -1;
-		int nullIterations = 50;
-		int iterations = 100000;
 
 		for (int i = 0; i < nullIterations; i++) {
 			analysis.train(null);
@@ -3161,7 +3104,7 @@ public class AnalysisResultTests {
 		analysis.train("  ");
 		analysis.train("    ");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations + 2);
@@ -3176,18 +3119,18 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void keyFieldLong() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void keyFieldLong() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int start = 10000;
+		final int end = 12000;
 		int locked = -1;
-		int start = 10000;
-		int end = 12000;
 
 		for (int i = start; i < end; i++) {
 			if (analysis.train(String.valueOf(i)) && locked == -1)
 				locked = i - start;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), end - start);
@@ -3199,12 +3142,13 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void setMaxOutliers() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void setMaxOutliers() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int start = 10000;
+		final int end = 12000;
+		final int newMaxOutliers = 12;
+
 		int locked = -1;
-		int start = 10000;
-		int end = 12000;
-		int newMaxOutliers = 12;
 
 		analysis.setMaxOutliers(newMaxOutliers);
 
@@ -3228,7 +3172,7 @@ public class AnalysisResultTests {
 		analysis.train("N");
 		analysis.train("O");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(analysis.getMaxOutliers(), newMaxOutliers);
 		Assert.assertEquals(result.getOutlierCount(), newMaxOutliers);
@@ -3242,18 +3186,19 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void keyFieldString() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void keyFieldString() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int start = 100000;
+		final int end = 120000;
+
 		int locked = -1;
-		int start = 100000;
-		int end = 120000;
 
 		for (int i = start; i < end; i++) {
 			if (analysis.train("A" + String.valueOf(i)) && locked == -1)
 				locked = i - start;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), end - start);
@@ -3265,11 +3210,12 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void notKeyField() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void notKeyField() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int start = 10000;
+		final int end = 12000;
+
 		int locked = -1;
-		int start = 10000;
-		int end = 12000;
 
 		for (int i = start; i < end; i++) {
 			if (analysis.train(String.valueOf(i)) && locked == -1)
@@ -3278,7 +3224,7 @@ public class AnalysisResultTests {
 
 		analysis.train(String.valueOf(start));
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), 1 + end - start);
@@ -3290,8 +3236,8 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void DateTimeYYYY_MM_DDTHH_MM_SS() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void dateTimeYYYYMMDDTHHMMSS() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		analysis.train("2004-01-01T00:00:00");
 		analysis.train("2004-01-01T02:00:00");
@@ -3314,7 +3260,7 @@ public class AnalysisResultTests {
 		analysis.train("2008-01-01T00:00:00");
 		analysis.train(null);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), 20);
 		Assert.assertEquals(result.getNullCount(), 2);
@@ -3325,8 +3271,8 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void DateTimeYYYY_MM_DDTHH_MM_SS_NNNN() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void dateTimeYYYYMMDDTHHMMSSNNNN() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		analysis.train("2004-01-01T00:00:00-05:00");
 		analysis.train("2004-01-01T02:00:00-05:00");
@@ -3365,8 +3311,8 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void DateTimeYYYY_MM_DDTHH_MM_SS_Z() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer();
+	public void dateTimeYYYYMMDDTHHMMSSZ() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		analysis.train("01/26/2012 10:42:23 GMT");
 		analysis.train("01/26/2012 10:42:23 GMT");
@@ -3391,8 +3337,8 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void intuitDateddMMyyyy_HHmmss() throws Exception {
-		TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
+	public void intuitDateddMMyyyyHHmmss() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 
 		analysis.train("2/7/2012 06:24:47");
 		analysis.train("2/7/2012 09:44:04");
@@ -3434,7 +3380,7 @@ public class AnalysisResultTests {
 		analysis.train("2/7/2012 06:22:31");
 		analysis.train("2/7/2012 06:22:34");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");

@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.csv.CSVFormat;
@@ -32,11 +33,12 @@ import org.apache.commons.csv.CSVRecord;
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 class Driver {
-	public static void main(String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException {
+		final PrintStream logger = System.err;
 		BufferedReader in = null;
 		CSVParser records = null;
 		int numFields = 0;
-		CSVFormat.Predefined csvFormat = CSVFormat.Predefined.Default;
+		final CSVFormat.Predefined csvFormat = CSVFormat.Predefined.Default;
 		String charset = "UTF-8";
 		String filename = null;
 		int sampleSize = -1;
@@ -47,10 +49,10 @@ class Driver {
 		String[] header = null;
 		DateResolutionMode resolutionMode = DateResolutionMode.None;
 
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 
 		int idx = 0;
-		while (idx < args.length && args[idx].startsWith("-")) {
+		while (idx < args.length && args[idx].charAt(0) == '-') {
 			if ("--charset".equals(args[idx]))
 				charset = args[++idx];
 			else if ("--col".equals(args[idx]))
@@ -58,13 +60,13 @@ class Driver {
 			else if ("--dayFirst".equals(args[idx]))
 				resolutionMode = DateResolutionMode.DayFirst;
 			else if ("--help".equals(args[idx])) {
-				System.err.println("Usage: [--charset <charset>] [--col <n>] [--dayFirst] [--help] [--monthFirst] [--records <n>] [--samples <n>] file ...");
-				System.err.println(" --charset <charset> - Use the supplied <charset> to read the input files");
-				System.err.println(" --col <n> - Only analyze column <n>");
-				System.err.println(" --dayFirst - If dates are ambigous assume Day precedes Month");
-				System.err.println(" --monthFirst - If dates are ambigous assume Month precedes Day");
-				System.err.println(" --records <n> - The number of records to analyze");
-				System.err.println(" --samples <n> - Set the size of the sample window");
+				logger.println("Usage: [--charset <charset>] [--col <n>] [--dayFirst] [--help] [--monthFirst] [--records <n>] [--samples <n>] file ...");
+				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
+				logger.println(" --col <n> - Only analyze column <n>");
+				logger.println(" --dayFirst - If dates are ambigous assume Day precedes Month");
+				logger.println(" --monthFirst - If dates are ambigous assume Month precedes Day");
+				logger.println(" --records <n> - The number of records to analyze");
+				logger.println(" --samples <n> - Set the size of the sample window");
 				System.exit(0);
 			}
 			else if ("--monthFirst".equals(args[idx]))
@@ -77,14 +79,14 @@ class Driver {
 				verbose = true;
 			}
 			else {
-				System.err.printf("Unrecognized option: '%s', use --help\n", args[idx]);
+				logger.printf("Unrecognized option: '%s', use --help\n", args[idx]);
 				System.exit(1);
 			}
 			idx++;
 		}
 
 		if (idx == args.length) {
-			System.err.printf("No file to process supplied, use --help\n");
+			logger.printf("No file to process supplied, use --help\n");
 			System.exit(1);
 		}
 
@@ -96,10 +98,10 @@ class Driver {
 				try {
 					in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), charset));
 				} catch (UnsupportedEncodingException e1) {
-					System.err.printf("Charset '%s' not supported\n", charset);
+					logger.printf("Charset '%s' not supported\n", charset);
 					System.exit(1);
 				} catch (FileNotFoundException e1) {
-					System.err.printf("File '%s' not found\n", filename);
+					logger.printf("File '%s' not found\n", filename);
 					System.exit(1);
 				}
 
@@ -107,12 +109,12 @@ class Driver {
 				try {
 					records = csvFormat.getFormat().parse(in);
 				} catch (IOException e) {
-					System.err.printf("Failed to parse input file '%s'\n", filename);
+					logger.printf("Failed to parse input file '%s'\n", filename);
 					System.exit(1);
 				}
 
 				long thisRecord = -1;
-				for (CSVRecord record : records) {
+				for (final CSVRecord record : records) {
 					thisRecord = record.getRecordNumber();
 					// If this is the header we need to build the header
 					if (thisRecord == 1) {
@@ -120,7 +122,7 @@ class Driver {
 						header = new String[numFields];
 						analysis = new TextAnalyzer[numFields];
 						if (col > numFields) {
-							System.err.printf("Column %d does not exist.  Only %d field(s) in input.\n", col, numFields);
+							logger.printf("Column %d does not exist.  Only %d field(s) in input.\n", col, numFields);
 							System.exit(1);
 						}
 						for (int i = 0; i < numFields; i++) {
@@ -134,7 +136,7 @@ class Driver {
 					}
 					else {
 						if (record.size() != numFields) {
-							System.err.printf("Record %d has %d fields, expected %d, skipping\n",
+							logger.printf("Record %d has %d fields, expected %d, skipping\n",
 									record.getRecordNumber(), record.size(), numFields);
 							continue;
 						}
@@ -168,27 +170,27 @@ class Driver {
 			for (int i = 0; i < numFields; i++) {
 				if (col == -1 || col == i) {
 					result = analysis[i].getResult();
-					System.err.printf("Field '%s' (%d) - %s\n", header[i], i, result.dump(verbose));
+					logger.printf("Field '%s' (%d) - %s\n", header[i], i, result.dump(verbose));
 					if (result.getType() != null)
 						typesDetected++;
-					matchCount += result.matchCount;
-					sampleCount += result.sampleCount;
+					matchCount += result.getMatchCount();
+					sampleCount += result.getSampleCount();
 				}
 			}
 
-			long duration = System.currentTimeMillis() - start;
+			final long duration = System.currentTimeMillis() - start;
 			if (col == -1) {
-				double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;
-				System.err.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d.\n",
+				final double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;
+				logger.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d.\n",
 						filename, typesDetected, numFields, percentage, matchCount, sampleCount);
 			}
 			else {
-				double confidence = result != null ? result.getConfidence() : 0;
-				System.err.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%).\n",
+				final double confidence = result == null ? 0 : result.getConfidence();
+				logger.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%).\n",
 						(typesDetected == 1 ? "yes" : "no"), matchCount,
 						sampleCount, confidence*100);
 			}
-			System.err.printf("Execution time: %dms\n", duration);
+			logger.printf("Execution time: %dms\n", duration);
 		}
 	}
 }

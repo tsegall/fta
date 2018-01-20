@@ -27,13 +27,13 @@ public class PatternInfo {
 		BOOLEAN, DATE, DATETIME, DOUBLE, LONG, OFFSETDATETIME, STRING, TIME, ZONEDDATETIME
 	}
 
-	String pattern;
-	String generalPattern;
-	int minLength;
-	int maxLength;
-	String format;
-	Type type;
-	String typeQualifier;
+	public String pattern;
+	public String generalPattern;
+	public int minLength;
+	public int maxLength;
+	public String format;
+	public Type type;
+	public String typeQualifier;
 
 	/**
 	 * Construct a new information block for the supplied pattern.
@@ -45,7 +45,8 @@ public class PatternInfo {
 	 * @param generalPattern The general case of this pattern (optional).
 	 * @param format The Java format specified for a date pattern (optional).
 	 */
-	public PatternInfo(String pattern, Type type, String typeQualifier, int minLength, int maxLength, String generalPattern, String format) {
+	public PatternInfo(final String pattern, final Type type, final String typeQualifier, final int minLength,
+			final int maxLength, final String generalPattern, final String format) {
 		this.pattern = pattern;
 		this.type = type;
 		this.typeQualifier = typeQualifier;

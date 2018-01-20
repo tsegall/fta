@@ -42,19 +42,26 @@ public class DateTimeParser {
 	}
 
 	// When we have ambiguity - should we prefer to conclude day first, month first or unspecified
-	DateResolutionMode resolutionMode = DateResolutionMode.None;
+	private DateResolutionMode resolutionMode = DateResolutionMode.None;
+
+	private static Map<String, Integer> months = new HashMap<String, Integer>();
+	private static Map<String, Integer> monthAbbr = new HashMap<String, Integer>();
+	private static Map<String, SimpleDateMatcher> simpleDateMatcher = new HashMap<String, SimpleDateMatcher>();
+
+	public static Set<String> timeZones = new HashSet<String>();
+	public static String monthPattern = null;
 
 	static class SimpleDateMatcher {
-		String matcher;
-		String format;
-		int dayOffset;
-		int dayLength;
-		int monthOffset;
-		int monthLength;
-		int yearOffset;
-		int yearLength;
+		private final String matcher;
+		private final String format;
+		private int dayOffset;
+		private final int dayLength;
+		private int monthOffset;
+		private final int monthLength;
+		private int yearOffset;
+		private final int yearLength;
 
-		SimpleDateMatcher(String matcher, String format, int[] dateFacts) {
+		SimpleDateMatcher(final String matcher, final String format, final int[] dateFacts) {
 			this.matcher = matcher;
 			this.format = format;
 			this.dayOffset = dateFacts[0];
@@ -65,36 +72,31 @@ public class DateTimeParser {
 			this.yearLength = dateFacts[5];
 		}
 	}
-	static Map<String, Integer> months = new HashMap<String, Integer>();
-	static String monthPattern = null;
-	static Map<String, Integer> monthAbbr = new HashMap<String, Integer>();
-	static Set<String> timeZones = new HashSet<String>();
-	static Map<String, SimpleDateMatcher> simpleDateMatcher = new HashMap<String, SimpleDateMatcher>();
 
 	static {
 
-		GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance();
+		final GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance();
 
-		int actualMonths = cal.getActualMaximum(GregorianCalendar.MONTH);
+		final int actualMonths = cal.getActualMaximum(GregorianCalendar.MONTH);
 
 		// Setup the Months
 		int shortestMonth = Integer.MAX_VALUE;
 		int longestMonth = Integer.MIN_VALUE;
-		String[] longMonths = new DateFormatSymbols().getMonths();
+		final String[] longMonths = new DateFormatSymbols().getMonths();
 		for (int i = 0; i <= actualMonths; i++) {
-			String month = longMonths[i].toUpperCase(Locale.ROOT);
+			final String month = longMonths[i].toUpperCase(Locale.ROOT);
 			months.put(month, i + 1);
-			int len = month.length();
+			final int len = month.length();
 			if (len < shortestMonth)
 				shortestMonth = len;
 			if (len > longestMonth)
 				longestMonth = len;
 		}
-		monthPattern = "\\p{Alpha}{" + String.valueOf(shortestMonth) + "," + String.valueOf(longestMonth) + "}";
+		monthPattern = "\\p{Alpha}{" + shortestMonth + "," + longestMonth + "}";
 
 
 		// Setup the Monthly abbreviations
-		String[] shortMonths = new DateFormatSymbols().getShortMonths();
+		final String[] shortMonths = new DateFormatSymbols().getShortMonths();
 		for (int i = 0; i <= actualMonths; i++) {
 			monthAbbr.put(shortMonths[i].toUpperCase(Locale.ROOT), i + 1);
 		}
@@ -151,23 +153,23 @@ public class DateTimeParser {
 		simpleDateMatcher.put("d{2}/a{3}/d{2} d{2}:d{2} P", new SimpleDateMatcher("d{2}/a{3}/d{2} d{2}:d{2} P", "dd/MMM/yy hh:mm a", new int[] {0, 2, 3, 3, 7, 2}));
 	}
 
-	static int monthAbbreviationOffset(String month) {
-		Integer offset = monthAbbr.get(month.toUpperCase(Locale.ROOT));
+	public static int monthAbbreviationOffset(final String month) {
+		final Integer offset = monthAbbr.get(month.toUpperCase(Locale.ROOT));
 		return offset == null ? -1 : offset;
 	}
 
-	static int monthOffset(String month) {
-		Integer offset = months.get(month.toUpperCase(Locale.ROOT));
+	public static int monthOffset(final String month) {
+		final Integer offset = months.get(month.toUpperCase(Locale.ROOT));
 		return offset == null ? -1 : offset;
 	}
 
-	Map<String, Integer> results = new HashMap<String, Integer>();
-	int sampleCount = 0;
-	int nullCount = 0;
-	int blankCount = 0;
-	int invalidCount = 0;
+	private final Map<String, Integer> results = new HashMap<String, Integer>();
+	private int sampleCount;
+	private int nullCount;
+	private int blankCount;
+	private int invalidCount;
 
-	DateTimeParser(DateResolutionMode resolutionMode) {
+	DateTimeParser(final DateResolutionMode resolutionMode) {
 		this.resolutionMode = resolutionMode;
 	}
 
@@ -180,7 +182,7 @@ public class DateTimeParser {
 	 * @param input The String representing a date with possible surrounding whitespace.
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
-	public String train(String input) {
+	public String train(final String input) {
 		sampleCount++;
 
 		if (input == null) {
@@ -188,18 +190,18 @@ public class DateTimeParser {
 			return null;
 		}
 
-		String trimmed = input.trim();
 		if (input.length() == 0) {
 			blankCount++;
 			return null;
 		}
 
+		final String trimmed = input.trim();
 		String ret = determineFormatString(trimmed, DateResolutionMode.None);
 		if (ret == null) {
 			invalidCount++;
 			return null;
 		}
-		Integer seen = results.get(ret);
+		final Integer seen = results.get(ret);
 		if (seen == null)
 			results.put(ret, 1);
 		else
@@ -208,12 +210,12 @@ public class DateTimeParser {
 		return ret;
 	}
 
-	public static <K, V extends Comparable<? super V>> LinkedHashMap<K, V> sortByValue(Map<K, V> map) {
+	public static <K, V extends Comparable<? super V>> HashMap<K, V> sortByValue(final Map<K, V> map) {
 		return map.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 
-	private static String longString(char c) {
+	private static String longString(final char c) {
 		if (c == 'H')
 			return "HH";
 		if (c == 'd')
@@ -239,12 +241,12 @@ public class DateTimeParser {
 		DateTimeParserResult answerResult = null;
 
 		// Sort the results of our training by value so that we consider the most frequent first
-		LinkedHashMap<String, Integer> byValue = sortByValue(results);
+		final HashMap<String, Integer> byValue = sortByValue(results);
 
 		// Iterate through all the results of our training, merging them to produce our best guess
 		StringBuffer answerBuffer = null;
-		for (Map.Entry<String, Integer> entry : byValue.entrySet()) {
-			String key = entry.getKey();
+		for (final Map.Entry<String, Integer> entry : byValue.entrySet()) {
+			final String key = entry.getKey();
 			DateTimeParserResult result = DateTimeParserResult.asResult(key, resolutionMode);
 
 			// First entry
@@ -271,8 +273,8 @@ public class DateTimeParser {
 							answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
 						else
 							if (result.timeFieldLengths[i] < answerResult.timeFieldLengths[i]) {
-								int start = answerResult.timeFieldOffsets[i];
-								int len = answerResult.timeFieldLengths[i];
+								final int start = answerResult.timeFieldOffsets[i];
+								final int len = answerResult.timeFieldLengths[i];
 								answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
 								answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.timeFieldLengths[i]));
 							}
@@ -284,20 +286,20 @@ public class DateTimeParser {
 			if (result.dateElements != -1) {
 				if (answerResult.dayOffset == -1 && result.dayOffset != -1) {
 					answerResult.dayOffset = result.dayOffset;
-					int start = answerResult.dateFieldOffsets[answerResult.dayOffset];
-					int len = answerResult.dateFieldLengths[answerResult.dayOffset];
+					final int start = answerResult.dateFieldOffsets[answerResult.dayOffset];
+					final int len = answerResult.dateFieldLengths[answerResult.dayOffset];
 					answerBuffer.replace(start, start + len, longString('d').substring(0, len));
 				}
 				if (answerResult.monthOffset == -1 && result.monthOffset != -1) {
 					answerResult.monthOffset = result.monthOffset;
-					int start = answerResult.dateFieldOffsets[answerResult.monthOffset];
-					int len = answerResult.dateFieldLengths[answerResult.monthOffset];
+					final int start = answerResult.dateFieldOffsets[answerResult.monthOffset];
+					final int len = answerResult.dateFieldLengths[answerResult.monthOffset];
 					answerBuffer.replace(start, start + len, longString('M').substring(0, len));
 				}
 				if (answerResult.yearOffset == -1 && result.yearOffset != -1) {
 					answerResult.yearOffset = result.yearOffset;
-					int start = answerResult.dateFieldOffsets[answerResult.yearOffset];
-					int len = answerResult.dateFieldLengths[answerResult.yearOffset];
+					final int start = answerResult.dateFieldOffsets[answerResult.yearOffset];
+					final int len = answerResult.dateFieldLengths[answerResult.yearOffset];
 					answerBuffer.replace(start, start + len, longString('y').substring(0, len));
 				}
 
@@ -316,8 +318,8 @@ public class DateTimeParser {
 						//  - d and dd -> d
 						//  - M and MM -> M
 						//  - MMM and MMMM -> MMMM
-						int start = answerResult.dateFieldOffsets[i];
-						int len = answerResult.dateFieldLengths[i];
+						final int start = answerResult.dateFieldOffsets[i];
+						final int len = answerResult.dateFieldLengths[i];
 						answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
 						answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.dateFieldLengths[i]));
 					}
@@ -334,8 +336,8 @@ public class DateTimeParser {
 				answerBuffer.replace(start, start + answerResult.dateFieldLengths[2], longString('y').substring(0, answerResult.dateFieldLengths[2]));
 			}
 			else {
-					char firstField = resolutionMode == DateResolutionMode.DayFirst ? 'd' : 'M';
-					char secondField = resolutionMode == DateResolutionMode.DayFirst ? 'M' : 'd';
+					final char firstField = resolutionMode == DateResolutionMode.DayFirst ? 'd' : 'M';
+					final char secondField = resolutionMode == DateResolutionMode.DayFirst ? 'M' : 'd';
 					int start = answerResult.dateFieldOffsets[0];
 					answerBuffer.replace(start, start + answerResult.dateFieldLengths[0], longString(firstField).substring(0, answerResult.dateFieldLengths[0]));
 					start = answerResult.dateFieldOffsets[1];
@@ -350,7 +352,7 @@ public class DateTimeParser {
 		return DateTimeParserResult.newInstance(answerResult);
 	}
 
-	static String retDigits(int digitCount, char patternChar) {
+	private static String retDigits(final int digitCount, final char patternChar) {
 		String ret = String.valueOf(patternChar);
 		if (digitCount == 1)
 			return ret;
@@ -366,25 +368,25 @@ public class DateTimeParser {
 	 * @param length Integer length of integer to be extracted.
 	 * @return An integer value from the supplied String.
 	 */
-	static int getValue(String input, int offset, int length) {
+	public static int getValue(final String input, final int offset, final int length) {
 		return Integer.valueOf(input.substring(offset, offset + length));
 	}
 
-	static boolean plausibleDate(int[] dateValues, int[] dateDigits, int[] fieldOffsets) {
-		int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-		int year = dateValues[fieldOffsets[2]];
+	private static boolean plausibleDate(final int[] dateValues, final int[] dateDigits, final int[] fieldOffsets) {
+		final int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+		final int year = dateValues[fieldOffsets[2]];
 		if (year == 0 && dateDigits[fieldOffsets[2]] == 4)
 			return false;
-		int month = dateValues[fieldOffsets[1]];
+		final int month = dateValues[fieldOffsets[1]];
 		if (month == 0 || month > 12)
 			return false;
-		int day = dateValues[fieldOffsets[0]];
+		final int day = dateValues[fieldOffsets[0]];
 		if (day == 0 || day > monthDays[month])
 			return false;
 		return true;
 	}
 
-	private static String dateFormat(int[] dateDigits, char dateSeparator, DateResolutionMode resolutionMode, boolean yearKnown) {
+	private static String dateFormat(final int[] dateDigits, final char dateSeparator, final DateResolutionMode resolutionMode, final boolean yearKnown) {
 		switch (resolutionMode) {
 		case None:
 			return retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + retDigits(dateDigits[2], yearKnown ? 'y' : '?');
@@ -397,7 +399,7 @@ public class DateTimeParser {
 		return null;
 	}
 
-	static String compress(String input) {
+	private static String compress(final String input) {
 		StringBuilder result = new StringBuilder();
 		int len = input.length();
 		char lastCh = '=';
@@ -409,13 +411,13 @@ public class DateTimeParser {
 		}
 
 		for (int i = 0; i < len; i++) {
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			if (Character.isDigit(ch)) {
 				if (Character.isDigit(lastCh))
 					count++;
 				else {
 					if (count != 0) {
-						result.append("{" + String.valueOf(count) + "}");
+						result.append("{" + count + "}");
 						count = 0;
 					}
 					result.append('d');
@@ -466,7 +468,7 @@ public class DateTimeParser {
 	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
-	public static String determineFormatString(String input, DateResolutionMode resolutionMode) {
+	public static String determineFormatString(final String input, final DateResolutionMode resolutionMode) {
 		int len = input.length();
 
 		// Remove leading spaces
@@ -480,7 +482,7 @@ public class DateTimeParser {
 
 		len -= start;
 
-		String trimmed = input.substring(start, len + start);
+		final String trimmed = input.substring(start, len + start);
 
 		// Fail fast if we can
 		if (len < 4 || (!Character.isDigit(trimmed.charAt(0)) && !Character.isAlphabetic(trimmed.charAt(0))))
@@ -491,7 +493,7 @@ public class DateTimeParser {
 
 		String compressed = compress(trimmed);
 
-		SimpleDateMatcher matcher = simpleDateMatcher.get(compressed);
+		final SimpleDateMatcher matcher = simpleDateMatcher.get(compressed);
 		if (matcher != null) {
 			int[] dateValue = new int[] {-1, -1, -1};
 			if (matcher.monthLength < 0) {
@@ -542,7 +544,7 @@ public class DateTimeParser {
 		boolean dateSeen = false;
 		boolean dateClosed = false;
 		String timeZone = "";
-		boolean ISO8601 = false;
+		boolean iso8601 = false;
 		boolean expectingAlphaTimeZone = false;
 
 		int lastCh = 'þ';
@@ -555,7 +557,7 @@ public class DateTimeParser {
 			lastCh = ch;
 
 			if (expectingAlphaTimeZone) {
-				String currentTimeZone = trimmed.substring(i, len);
+				final String currentTimeZone = trimmed.substring(i, len);
 				if (!DateTimeParser.timeZones.contains(currentTimeZone))
 					return null;
 				timeZone = " z";
@@ -603,20 +605,20 @@ public class DateTimeParser {
 				break;
 
 			case '+':
-				if (!ISO8601)
+				if (!iso8601)
 					return null;
 
 				// FALL THROUGH
 
 			case '-':
-				if (ISO8601 || (dateSeen && dateClosed && timeSeen && timeComponent == 2)) {
+				if (iso8601 || (dateSeen && dateClosed && timeSeen && timeComponent == 2)) {
 					int hours = Integer.MIN_VALUE;
 					int minutesOffset = Integer.MIN_VALUE;
 					int secondsOffset = Integer.MIN_VALUE;
 
 					i++;
 
-					String offset = compress(trimmed.substring(i, len));
+					final String offset = compress(trimmed.substring(i, len));
 
 					// Expecting DD:DD:DD or DDDDDD or DD:DD or DDDD or DD
 					if (i + 8 <= len && "d{2}:d{2}:d{2}".equals(offset)) {
@@ -649,14 +651,14 @@ public class DateTimeParser {
 
 					// Validate the minutes
 					if (minutesOffset != Integer.MIN_VALUE) {
-						int minutes = getValue(trimmed, i + minutesOffset, 2);
+						final int minutes = getValue(trimmed, i + minutesOffset, 2);
 						if (minutes != Integer.MIN_VALUE && minutes > 59)
 							return null;
 					}
 
 					// Validate the seconds
 					if (secondsOffset != Integer.MIN_VALUE) {
-						int seconds = getValue(trimmed, i + secondsOffset, 2);
+						final int seconds = getValue(trimmed, i + secondsOffset, 2);
 						if (seconds != Integer.MIN_VALUE && seconds > 59)
 							return null;
 					}
@@ -707,7 +709,7 @@ public class DateTimeParser {
 					return null;
 				if (!dateSeen || dateClosed || digits != 2 || dateSeparator != '-' || !fourDigitYear || !yearInDateFirst)
 					return null;
-				ISO8601 = true;
+				iso8601 = true;
 				dateValue[dateComponent] = value;
 				dateDigits[dateComponent] = digits;
 				dateClosed = true;
@@ -728,7 +730,7 @@ public class DateTimeParser {
 				else if (dateSeen && !dateClosed) {
 					if (dateComponent != 2)
 						return null;
-					if (!((digits == 2) || (yearInDateFirst == false && digits == 4)))
+					if (!(digits == 2 || (yearInDateFirst == false && digits == 4)))
 						return null;
 					if (!fourDigitYear)
 						fourDigitYear = digits == 4;
@@ -779,14 +781,14 @@ public class DateTimeParser {
 		if (digits != 0)
 			return null;
 
-		if (ISO8601 && timeComponent == 0)
+		if (iso8601 && timeComponent == 0)
 			return null;
 
 		String timeAnswer = null;
 		if (timeComponent != 0) {
 			if (timeValue[0] > 23 || timeValue[1] > 59 || (timeComponent >= 2 && timeValue[2] > 59))
 				return null;
-			String hours = hourLength == 1 ? "H" : "HH";
+			final String hours = hourLength == 1 ? "H" : "HH";
 			timeAnswer = hours + ":mm";
 			if (timeComponent >= 2)
 				timeAnswer += ":ss";
@@ -870,8 +872,8 @@ public class DateTimeParser {
 		}
 
 		if (timeFirst)
-			return timeAnswer + (ISO8601 ? "'T'" : " ") + dateAnswer + timeZone;
+			return timeAnswer + (iso8601 ? "'T'" : " ") + dateAnswer + timeZone;
 		else
-			return dateAnswer + (ISO8601 ? "'T'" : " ") + timeAnswer + timeZone;
+			return dateAnswer + (iso8601 ? "'T'" : " ") + timeAnswer + timeZone;
 	}
 }

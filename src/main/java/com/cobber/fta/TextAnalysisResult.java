@@ -24,21 +24,21 @@ import java.util.TreeSet;
  * TextAnalysisResult is the result of a {@link TextAnalyzer} analysis of a data stream.
  */
 public class TextAnalysisResult {
-	long matchCount;
-	long sampleCount;
-	long nullCount;
-	long blankCount;
-	long leadingZeroCount;
-	PatternInfo patternInfo;
-	double confidence;
-	String minValue;
-	String maxValue;
-	int minLength;
-	int maxLength;
-	String sum;
-	Map<String, Integer> cardinality;
-	Map<String, Integer> outliers;
-	boolean key;
+	private final long matchCount;
+	private final long sampleCount;
+	private final long nullCount;
+	private final long blankCount;
+	private final long leadingZeroCount;
+	private final PatternInfo patternInfo;
+	private final double confidence;
+	private final String minValue;
+	private final String maxValue;
+	private final int minLength;
+	private final int maxLength;
+	private final String sum;
+	private final Map<String, Integer> cardinality;
+	private final Map<String, Integer> outliers;
+	private final boolean key;
 
 	/**
 	 * @param matchCount The number of samples that match the patternInfo.
@@ -57,7 +57,10 @@ public class TextAnalysisResult {
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param key Do we think this field is a key.
 	 */
-	TextAnalysisResult(long matchCount, PatternInfo patternInfo, long sampleCount, long nullCount, long blankCount, long leadingZeroCount, double confidence, String minValue, String maxValue, int minLength, int maxLength, String sum, Map<String, Integer> cardinality, Map<String, Integer> outliers, boolean key) {
+	TextAnalysisResult(final long matchCount, final PatternInfo patternInfo, final long sampleCount, final long nullCount,
+			final long blankCount, final long leadingZeroCount, final double confidence, final String minValue, final String maxValue,
+			final int minLength, final int maxLength, final String sum, final Map<String, Integer> cardinality,
+			final Map<String, Integer> outliers, final boolean key) {
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
 		this.sampleCount = sampleCount;
@@ -96,7 +99,7 @@ public class TextAnalysisResult {
 	/**
 	 * Get the optional Type Qualifier.  Possible qualifiers are:
 	 * <ul>
-	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "CA_PROVINCE", "COUNTRY", "EMAIL", "MONTHABBR", "NA_STATE", "NULL", "US_STATE", , "URL", "ZIP"</li>
+	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "CA_PROVINCE", "COUNTRY", "EMAIL", "MONTHABBR", "NA_STATE", "NULL", "US_STATE", "URL", "ZIP"</li>
 	 *  <li>Type: LONG - "SIGNED"</li>
 	 * 	<li>Type: DOUBLE - "SIGNED"</li>
 	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - the detailed date format string</li>
@@ -245,7 +248,7 @@ public class TextAnalysisResult {
 	}
 
 	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
-	    SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+	    final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
 	        new Comparator<Map.Entry<K,V>>() {
 	            @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
 	                int res = e2.getValue().compareTo(e1.getValue());
@@ -277,7 +280,7 @@ public class TextAnalysisResult {
 	 * @param verbose If set, dump additional information related to cardinality and outliers.
 	 * @return A String representation of the analysis to date.
 	 */
-	public String dump(boolean verbose) {
+	public String dump(final boolean verbose) {
 		String ret = "TextAnalysisResult [matchCount=" + matchCount + ", sampleCount=" + sampleCount + ", nullCount="
 				+ nullCount + ", blankCount=" + blankCount+ ", pattern=\"" + patternInfo.pattern + "\", confidence=" + confidence +
 				", type=" + patternInfo.type +
@@ -300,8 +303,8 @@ public class TextAnalysisResult {
 		if (verbose && cardinality.size() != 0 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {
 			ret += " {";
 			int i = 0;
-			SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(cardinality);
-			for (Map.Entry<String,Integer> entry : ordered) {
+			final SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(cardinality);
+			for (final Map.Entry<String,Integer> entry : ordered) {
 				if (i++ == 10) {
 					ret += "...";
 					break;
@@ -312,13 +315,13 @@ public class TextAnalysisResult {
 			ret += "}";
 		}
 
-		if (outliers.size() != 0 && outliers.size() != TextAnalyzer.MAX_OUTLIERS_DEFAULT) {
+		if (!outliers.isEmpty() && outliers.size() != TextAnalyzer.MAX_OUTLIERS_DEFAULT) {
 			ret += ", outliers=" + outliers.size();
-			if (verbose && outliers.size() != 0 && outliers.size() < .2 * sampleCount) {
+			if (verbose && !outliers.isEmpty() && outliers.size() < .2 * sampleCount) {
 				ret += " {";
 				int i = 0;
-				SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(outliers);
-				for (Map.Entry<String,Integer> entry : ordered) {
+				final SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(outliers);
+				for (final Map.Entry<String,Integer> entry : ordered) {
 					if (i++ == 10) {
 						ret += "...";
 						break;

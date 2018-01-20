@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormatSymbols;
@@ -34,8 +36,10 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -77,7 +81,7 @@ public class TextAnalyzer {
 	public static final int MAX_CARDINALITY_DEFAULT = 500;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
 
-	private final int MIN_SAMPLES_FOR_KEY = 1000;
+	private static final int MIN_SAMPLES_FOR_KEY = 1000;
 
 	/** The default value for the maximum # of outliers tracked. */
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
@@ -85,99 +89,90 @@ public class TextAnalyzer {
 
 	private static final int REFLECTION_SAMPLES = 50;
 
-	String name;
-	DateResolutionMode resolutionMode = DateResolutionMode.None;
-	DecimalFormatSymbols formatSymbols;
-	char decimalSeparator;
-	char monetaryDecimalSeparator;
-	char groupingSeparator;
-	char minusSign;
-	long sampleCount;
-	long nullCount;
-	long blankCount;
-	Map<String, Integer> cardinality = new HashMap<String, Integer>();
-	Map<String, Integer> outliers = new HashMap<String, Integer>();
-	ArrayList<String> raw; // 0245-11-98
+	private String name;
+	private DateResolutionMode resolutionMode = DateResolutionMode.None;
+	private char decimalSeparator;
+	private char monetaryDecimalSeparator;
+	private char groupingSeparator;
+	private char minusSign;
+	private long sampleCount;
+	private long nullCount;
+	private long blankCount;
+	private final Map<String, Integer> cardinality = new HashMap<String, Integer>();
+	private final Map<String, Integer> outliers = new HashMap<String, Integer>();
+	private List<String> raw; // 0245-11-98
 	// 0: d{4}-d{2}-d{2} 1: d{+}-d{+}-d{+} 2: d{+}-d{+}-d{+}
 	// 0: d{4} 1: d{+} 2: [-]d{+}
 	// input "hello world" 0: a{5} a{5} 1: a{+} a{+} 2: a{+}
-	ArrayList<StringBuilder>[] levels = new ArrayList[3];
+	private List<StringBuilder>[] levels = new ArrayList[3];
 
-	PatternInfo.Type matchType;
-	long matchCount;
-	String matchPattern;
-	PatternInfo matchPatternInfo;
+	private PatternInfo.Type matchType;
+	private long matchCount;
+	private String matchPattern;
+	private PatternInfo matchPatternInfo;
 
-	boolean trainingStarted;
+	private boolean trainingStarted;
 
-	double minDouble = Double.MAX_VALUE;
-	double maxDouble = -Double.MAX_VALUE;
-	BigDecimal sumBD = new BigDecimal(0);
+	private double minDouble = Double.MAX_VALUE;
+	private double maxDouble = -Double.MAX_VALUE;
+	private BigDecimal sumBD = BigDecimal.ZERO;
 
-	long minLong = Long.MAX_VALUE;
-	long maxLong = Long.MIN_VALUE;
-	BigInteger sumBI = new BigInteger("0");
+	private long minLong = Long.MAX_VALUE;
+	private long maxLong = Long.MIN_VALUE;
+	private BigInteger sumBI = BigInteger.ZERO;
 
-	String minString = null;
-	String maxString = null;
+	private String minString;
+	private String maxString;
 
-	String minBoolean = null;
-	String maxBoolean = null;
+	private String minBoolean;
+	private String maxBoolean;
 
-	LocalTime minLocalTime = null;
-	LocalTime maxLocalTime = null;
+	private LocalTime minLocalTime;
+	private LocalTime maxLocalTime;
 
-	LocalDate minLocalDate = null;
-	LocalDate maxLocalDate = null;
+	private LocalDate minLocalDate;
+	private LocalDate maxLocalDate;
 
-	LocalDateTime minLocalDateTime = null;
-	LocalDateTime maxLocalDateTime = null;
+	private LocalDateTime minLocalDateTime;
+	private LocalDateTime maxLocalDateTime;
 
-	ZonedDateTime minZonedDateTime = null;
-	ZonedDateTime maxZonedDateTime = null;
+	private ZonedDateTime minZonedDateTime;
+	private ZonedDateTime maxZonedDateTime;
 
-	OffsetDateTime minOffsetDateTime = null;
-	OffsetDateTime maxOffsetDateTime = null;
+	private OffsetDateTime minOffsetDateTime;
+	private OffsetDateTime maxOffsetDateTime;
 
-	String minValue = null;
-	String maxValue = null;
-	String sum = null;
+	private int minRawLength = Integer.MAX_VALUE;
+	private int maxRawLength = Integer.MIN_VALUE;
 
-	int minRawLength = Integer.MAX_VALUE;
-	int maxRawLength = Integer.MIN_VALUE;
+	private int minTrimmedLength = Integer.MAX_VALUE;
+	private int maxTrimmedLength = Integer.MIN_VALUE;
 
-	int minTrimmedLength = Integer.MAX_VALUE;
-	int maxTrimmedLength = Integer.MIN_VALUE;
+	private int possibleDateTime;
+	private long totalLongs;
+	private long totalLeadingZeros;
+	private int possibleEmails;
+	private int possibleZips;
+	private int possibleURLs;
 
-	int stringLength = -1;
+	private static Map<String, PatternInfo> patternInfo;
+	private static Map<String, PatternInfo> typeInfo;
+	private static Set<String> zips = new HashSet<String>();
+	private static Set<String> usStates = new HashSet<String>();
+	private static Set<String> caProvinces = new HashSet<String>();
+	private static Set<String> countries = new HashSet<String>();
+	private static Set<String> monthAbbr = new HashSet<String>();
 
-	int possibleDateTime = 0;
-	long totalLongs = 0;
-	long totalLeadingZeros = 0;
-	int possibleEmails = 0;
-	int possibleZips = 0;
-	int possibleURLs = 0;
-
-	Map.Entry<String, Integer> lastCompute;
-
-	static HashMap<String, PatternInfo> patternInfo = null;
-	static HashMap<String, PatternInfo> typeInfo = null;
-	static HashSet<String> zips = new HashSet<String>();
-	static HashSet<String> usStates = new HashSet<String>();
-	static HashSet<String> caProvinces = new HashSet<String>();
-	static HashSet<String> countries = new HashSet<String>();
-	static HashSet<String> monthAbbr = new HashSet<String>();
-
-	static void addPattern(HashMap<String, PatternInfo> map, boolean patternIsKey, String pattern, PatternInfo.Type type, String typeQualifier, int minLength,
-			int maxLength, String generalPattern, String format) {
+	private static void addPattern(final Map<String, PatternInfo> map, final boolean patternIsKey, final String pattern, final PatternInfo.Type type,
+			final String typeQualifier, final int minLength, final int maxLength, final String generalPattern, final String format) {
 		map.put(patternIsKey ? pattern : (type.toString() + "." + typeQualifier), new PatternInfo(pattern, type, typeQualifier, minLength, maxLength, generalPattern, format));
 	}
 
-	static final String LONG_PATTERN = "\\d+";
-	static final String SIGNED_LONG_PATTERN = "-?\\d+";
-	static final String DOUBLE_PATTERN = "\\.\\d+|\\d+(\\.\\d+)?";
-	static final String SIGNED_DOUBLE_PATTERN = "-?\\.\\d+|-?\\d+(\\.\\d+)?";
-	static final String ALPHA_PATTERN = "\\p{Alpha}+";
+	public static final String LONG_PATTERN = "\\d+";
+	public static final String SIGNED_LONG_PATTERN = "-?\\d+";
+	public static final String DOUBLE_PATTERN = "\\.\\d+|\\d+(\\.\\d+)?";
+	public static final String SIGNED_DOUBLE_PATTERN = "-?\\.\\d+|-?\\d+(\\.\\d+)?";
+	public static final String ALPHA_PATTERN = "\\p{Alpha}+";
 
 	static {
 		patternInfo = new HashMap<String, PatternInfo>();
@@ -232,13 +227,13 @@ public class TextAnalyzer {
 			}
 
 			// Setup the Monthly abbreviations
-			String[] shortMonths = new DateFormatSymbols().getShortMonths();
-			for (String shortMonth : shortMonths) {
+			final String[] shortMonths = new DateFormatSymbols().getShortMonths();
+			for (final String shortMonth : shortMonths) {
 				monthAbbr.add(shortMonth.toUpperCase(Locale.ROOT));
 			}
 		}
 		catch (IOException e) {
-			throw new RuntimeException("Failed to initialize - internal error.");
+			throw new InternalErrorException("Failed to initialize", e);
 		}
 	}
 
@@ -253,10 +248,10 @@ public class TextAnalyzer {
 	 * @throws IOException
 	 *             If an internal error occurred.
 	 */
-	public TextAnalyzer(String name, DateResolutionMode resolutionMode) throws IOException {
+	public TextAnalyzer(final String name, final DateResolutionMode resolutionMode) throws IOException {
 		this.name = name;
 		this.resolutionMode = resolutionMode;
-		formatSymbols = new DecimalFormatSymbols();
+		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
 		decimalSeparator = formatSymbols.getDecimalSeparator();
 		monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
 		groupingSeparator = formatSymbols.getGroupingSeparator();
@@ -271,7 +266,7 @@ public class TextAnalyzer {
 	 * @throws IOException
 	 *             If an internal error occurred.
 	 */
-	public TextAnalyzer(String name) throws IOException {
+	public TextAnalyzer(final String name) throws IOException {
 		this(name, DateResolutionMode.None);
 	}
 
@@ -294,13 +289,13 @@ public class TextAnalyzer {
 	 *            The number of samples to collect
 	 * @return The previous value of this parameter.
 	 */
-	public int setSampleSize(int samples) {
+	public int setSampleSize(final int samples) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot change sample size once training has started");
 		if (samples < SAMPLE_DEFAULT)
 			throw new IllegalArgumentException("Cannot set sample size below " + SAMPLE_DEFAULT);
 
-		int ret = samples;
+		final int ret = samples;
 		this.samples = samples;
 		return ret;
 	}
@@ -324,7 +319,7 @@ public class TextAnalyzer {
 	 *            tracking)
 	 * @return The previous value of this parameter.
 	 */
-	public int setMaxCardinality(int newCardinality) {
+	public int setMaxCardinality(final int newCardinality) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot change maxCardinality once training has started");
 		if (newCardinality < 0)
@@ -354,13 +349,13 @@ public class TextAnalyzer {
 	 *            no tracking)
 	 * @return The previous value of this parameter.
 	 */
-	public int setMaxOutliers(int newMaxOutliers) {
+	public int setMaxOutliers(final int newMaxOutliers) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot change outlier count once training has started");
 		if (newMaxOutliers < 0)
 			throw new IllegalArgumentException("Invalid value for outlier count " + newMaxOutliers);
 
-		int ret = maxOutliers;
+		final int ret = maxOutliers;
 		maxOutliers = newMaxOutliers;
 		return ret;
 	}
@@ -375,9 +370,9 @@ public class TextAnalyzer {
 		return maxOutliers;
 	}
 
-	private boolean trackLong(String rawInput, boolean register) {
+	private boolean trackLong(final String rawInput, final boolean register) {
+		final String input = rawInput.trim();
 		long l;
-		String input = rawInput.trim();
 
 		try {
 			l = Long.parseLong(input);
@@ -397,7 +392,7 @@ public class TextAnalyzer {
 		if (l > maxLong) {
 			maxLong = l;
 		}
-		int digits = l < 0 ? input.length() - 1 : input.length();
+		final int digits = l < 0 ? input.length() - 1 : input.length();
 		if (digits < minTrimmedLength)
 			minTrimmedLength = digits;
 		if (digits > maxTrimmedLength)
@@ -412,11 +407,11 @@ public class TextAnalyzer {
 		return true;
 	}
 
-	private boolean trackBoolean(String input) {
-		String trimmedLower = input.trim().toLowerCase(Locale.ROOT);
+	private boolean trackBoolean(final String input) {
+		final String trimmedLower = input.trim().toLowerCase(Locale.ROOT);
 
-		boolean isTrue = "true".equals(trimmedLower) || "yes".equals(trimmedLower);
-		boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower));
+		final boolean isTrue = "true".equals(trimmedLower) || "yes".equals(trimmedLower);
+		final boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower));
 
 		if (isTrue) {
 			if (minBoolean == null)
@@ -433,45 +428,46 @@ public class TextAnalyzer {
 		return isTrue || isFalse;
 	}
 
-	private boolean trackString(String input, boolean register) {
+	private boolean trackString(final String input, final boolean register) {
+		String cleaned = input;
+
 		if ("EMAIL".equals(matchPatternInfo.typeQualifier)) {
 			// Address lists commonly have ;'s as separators as opposed to the
 			// ','
-			if (input.indexOf(';') != -1)
-				input = input.replaceAll(";", ",");
+			if (cleaned.indexOf(';') != -1)
+				cleaned = cleaned.replaceAll(";", ",");
 			try {
-				InternetAddress[] emails = InternetAddress.parse(input);
-				return emails.length != 0;
+				return InternetAddress.parse(cleaned).length != 0;
 			} catch (AddressException e) {
 				return false;
 			}
 		} else if ("URL".equals(matchPatternInfo.typeQualifier)) {
 			try {
-				URL url = new URL(input);
+				final URL url = new URL(cleaned);
 				url.toURI();
 				return true;
-			} catch (Exception exception) {
+			} catch (MalformedURLException | URISyntaxException exception) {
 				return false;
 			}
 		}
 
-		int len = input.trim().length();
+		final int len = cleaned.trim().length();
 		if (matchPatternInfo.minLength != -1 && len < matchPatternInfo.minLength)
 			return false;
 		if (matchPatternInfo.maxLength != -1 && len > matchPatternInfo.maxLength)
 			return false;
 
-		if (minString == null || minString.compareTo(input) > 0) {
-			minString = input;
+		if (minString == null || minString.compareTo(cleaned) > 0) {
+			minString = cleaned;
 		}
-		if (maxString == null || maxString.compareTo(input) < 0) {
-			maxString = input;
+		if (maxString == null || maxString.compareTo(cleaned) < 0) {
+			maxString = cleaned;
 		}
 
 		return true;
 	}
 
-	private boolean trackDouble(String input) {
+	private boolean trackDouble(final String input) {
 		double d;
 
 		try {
@@ -496,67 +492,67 @@ public class TextAnalyzer {
 		return true;
 	}
 
-	private Map<String, DateTimeFormatter> formatterCache = new HashMap<String, DateTimeFormatter>();
+	private final Map<String, DateTimeFormatter> formatterCache = new HashMap<String, DateTimeFormatter>();
 
-	private void trackDateTime(String dateFormat, String input) throws DateTimeParseException {
-		String trimmed = input.trim();
-
-		DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, resolutionMode);
+	private void trackDateTime(final String dateFormat, final String input) throws DateTimeParseException {
+		final DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, resolutionMode);
 		if (result == null) {
-			throw new RuntimeException("Internal error - NULL result for " + dateFormat);
+			throw new InternalErrorException("NULL result for " + dateFormat);
 		}
 
 		// Grab the cached Formatter
-		String formatString = result.getFormatString().replaceAll("\\?\\?", "yy").replaceAll("\\?", "M");
+		final String formatString = result.getFormatString().replaceAll("\\?\\?", "yy").replaceAll("\\?", "M");
 		DateTimeFormatter formatter = formatterCache.get(formatString);
 		if (formatter == null) {
 			formatter = DateTimeFormatter.ofPattern(formatString);
 			formatterCache.put(formatString, formatter);
 		}
 
+		final String trimmed = input.trim();
+
 		switch (result.getType()) {
 		case TIME:
-			LocalTime lt = LocalTime.parse(trimmed, formatter);
-			if (minLocalTime == null || lt.compareTo(minLocalTime) < 0)
-				minLocalTime = lt;
-			if (maxLocalTime == null || lt.compareTo(maxLocalTime) > 0)
-				maxLocalTime = lt;
+			final LocalTime localTime = LocalTime.parse(trimmed, formatter);
+			if (minLocalTime == null || localTime.compareTo(minLocalTime) < 0)
+				minLocalTime = localTime;
+			if (maxLocalTime == null || localTime.compareTo(maxLocalTime) > 0)
+				maxLocalTime = localTime;
 			break;
 
 		case DATE:
-			LocalDate ld = LocalDate.parse(trimmed, formatter);
-			if (minLocalDate == null || ld.compareTo(minLocalDate) < 0)
-				minLocalDate = ld;
-			if (maxLocalDate == null || ld.compareTo(maxLocalDate) > 0)
-				maxLocalDate = ld;
+			final LocalDate localDate = LocalDate.parse(trimmed, formatter);
+			if (minLocalDate == null || localDate.compareTo(minLocalDate) < 0)
+				minLocalDate = localDate;
+			if (maxLocalDate == null || localDate.compareTo(maxLocalDate) > 0)
+				maxLocalDate = localDate;
 			break;
 
 		case DATETIME:
-			LocalDateTime ldt = LocalDateTime.parse(trimmed, formatter);
-			if (minLocalDateTime == null || ldt.compareTo(minLocalDateTime) < 0)
-				minLocalDateTime = ldt;
-			if (maxLocalDateTime == null || ldt.compareTo(maxLocalDateTime) > 0)
-				maxLocalDateTime = ldt;
+			final LocalDateTime localDateTime = LocalDateTime.parse(trimmed, formatter);
+			if (minLocalDateTime == null || localDateTime.compareTo(minLocalDateTime) < 0)
+				minLocalDateTime = localDateTime;
+			if (maxLocalDateTime == null || localDateTime.compareTo(maxLocalDateTime) > 0)
+				maxLocalDateTime = localDateTime;
 			break;
 
 		case ZONEDDATETIME:
-			ZonedDateTime zdt = ZonedDateTime.parse(trimmed, formatter);
-			if (minZonedDateTime == null || zdt.compareTo(minZonedDateTime) < 0)
-				minZonedDateTime = zdt;
-			if (maxZonedDateTime == null || zdt.compareTo(maxZonedDateTime) > 0)
-				maxZonedDateTime = zdt;
+			final ZonedDateTime zonedDataTime = ZonedDateTime.parse(trimmed, formatter);
+			if (minZonedDateTime == null || zonedDataTime.compareTo(minZonedDateTime) < 0)
+				minZonedDateTime = zonedDataTime;
+			if (maxZonedDateTime == null || zonedDataTime.compareTo(maxZonedDateTime) > 0)
+				maxZonedDateTime = zonedDataTime;
 			break;
 
 		case OFFSETDATETIME:
-			OffsetDateTime odt = OffsetDateTime.parse(trimmed, formatter);
-			if (minOffsetDateTime == null || odt.compareTo(minOffsetDateTime) < 0)
-				minOffsetDateTime = odt;
-			if (maxOffsetDateTime == null || odt.compareTo(maxOffsetDateTime) > 0)
-				maxOffsetDateTime = odt;
+			final OffsetDateTime offsetDateTime = OffsetDateTime.parse(trimmed, formatter);
+			if (minOffsetDateTime == null || offsetDateTime.compareTo(minOffsetDateTime) < 0)
+				minOffsetDateTime = offsetDateTime;
+			if (maxOffsetDateTime == null || offsetDateTime.compareTo(maxOffsetDateTime) > 0)
+				maxOffsetDateTime = offsetDateTime;
 			break;
 
 		default:
-			throw new RuntimeException("Internal error - expected Date/Time type.");
+			throw new InternalErrorException("Expected Date/Time type.");
 		}
 	}
 
@@ -567,7 +563,7 @@ public class TextAnalyzer {
 	 *            The raw input as a String
 	 * @return A boolean indicating if the resultant type is currently known.
 	 */
-	public boolean train(String rawInput) {
+	public boolean train(final String rawInput) {
 		// Initialize if we have not already done so
 		if (!trainingStarted) {
 			trainingStarted = true;
@@ -584,11 +580,11 @@ public class TextAnalyzer {
 			return matchType != null;
 		}
 
-		String input = rawInput.trim();
+		final String input = rawInput.trim();
 
-		int length = input.length();
+		final int length = input.length();
 
-		if (input.length() == 0) {
+		if (length == 0) {
 			blankCount++;
 			trackLength(rawInput);
 			return matchType != null;
@@ -602,7 +598,7 @@ public class TextAnalyzer {
 
 		raw.add(rawInput);
 
-		StringBuilder l0 = new StringBuilder(length);
+		final StringBuilder l0 = new StringBuilder(length);
 
 		// Walk the string
 		boolean numericSigned = false;
@@ -654,7 +650,7 @@ public class TextAnalyzer {
 			char last = l0withSentinel.charAt(0);
 			int repetitions = 1;
 			for (int i = 1; i < l0withSentinel.length(); i++) {
-				char ch = l0withSentinel.charAt(i);
+				final char ch = l0withSentinel.charAt(i);
 				if (ch == last) {
 					repetitions++;
 				} else {
@@ -698,10 +694,10 @@ public class TextAnalyzer {
 			levels[2].add(l2);
 		} else {
 			// Fast version of replaceAll("\\{\\d*\\}", "+"), e.g. replace \d{5} with \d+
-			StringBuilder collapsed = new StringBuilder(compressedl0);
+			final StringBuilder collapsed = new StringBuilder(compressedl0);
 			for (int i = 0; i < collapsed.length(); i++) {
 				if (collapsed.charAt(i) == '{' && Character.isDigit(collapsed.charAt(i + 1))) {
-					int start = i++;
+					final int start = i++;
 					while (collapsed.charAt(++i) != '}')
 						/* EMPTY */;
 					collapsed.replace(start, i + 1, "+");
@@ -710,7 +706,7 @@ public class TextAnalyzer {
 
 			// Level 1 is the collapsed version e.g. convert \d{4}-\d{2}-\d{2] to
 			// \d+-\d+-\d+
-			PatternInfo found = patternInfo.get(compressedl0.toString());
+			final PatternInfo found = patternInfo.get(compressedl0.toString());
 			if (found != null && found.generalPattern != null) {
 				levels[1].add(new StringBuilder(found.generalPattern));
 				levels[2].add(new StringBuilder(collapsed));
@@ -724,17 +720,17 @@ public class TextAnalyzer {
 		return matchType != null;
 	}
 
-	private Map.Entry<String, Integer> getBest(int levelIndex) {
-		ArrayList<StringBuilder> level = levels[levelIndex];
+	private Map.Entry<String, Integer> getBest(final int levelIndex) {
+		final List<StringBuilder> level = levels[levelIndex];
 		if (level.isEmpty())
 			return null;
 
-		Map<String, Integer> map = new HashMap<String, Integer>();
+		final Map<String, Integer> map = new HashMap<String, Integer>();
 
 		// Calculate the frequency of every element
-		for (StringBuilder s : level) {
-			String key = s.toString();
-			Integer seen = map.get(key);
+		for (final StringBuilder s : level) {
+			final String key = s.toString();
+			final Integer seen = map.get(key);
 			if (seen == null) {
 				map.put(key, 1);
 			} else {
@@ -747,7 +743,7 @@ public class TextAnalyzer {
 		int secondBestCount = 0;
 		Map.Entry<String, Integer> best = null;
 		Map.Entry<String, Integer> secondBest = null;
-		for (Map.Entry<String, Integer> entry : map.entrySet()) {
+		for (final Map.Entry<String, Integer> entry : map.entrySet()) {
 			if (entry.getValue() > bestCount) {
 				secondBest = best;
 				secondBestCount = bestCount;
@@ -770,7 +766,7 @@ public class TextAnalyzer {
 				if (bestPattern.isNumeric() && secondBestPattern.isNumeric()) {
 					if (!bestPattern.type.equals(secondBestPattern.type)) {
 						// Promote Long to Double
-						String newKey = PatternInfo.Type.DOUBLE.equals(bestPattern.type) ? best.getKey() : secondBest.getKey();
+						final String newKey = PatternInfo.Type.DOUBLE.equals(bestPattern.type) ? best.getKey() : secondBest.getKey();
 						best = new AbstractMap.SimpleEntry<String, Integer>(newKey,
 								best.getValue() + secondBest.getValue());
 					}
@@ -855,12 +851,12 @@ public class TextAnalyzer {
 			matchType = matchPatternInfo.type;
 
 			if (possibleDateTime == raw.size()) {
-				DateTimeParser det = new DateTimeParser(resolutionMode);
-				for (String sample : raw)
+				final DateTimeParser det = new DateTimeParser(resolutionMode);
+				for (final String sample : raw)
 					det.train(sample);
 
-				DateTimeParserResult result = det.getResult();
-				String formatString = result.getFormatString();
+				final DateTimeParserResult result = det.getResult();
+				final String formatString = result.getFormatString();
 				matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), formatString, -1, -1, null,
 						formatString);
 				matchType = matchPatternInfo.type;
@@ -872,9 +868,10 @@ public class TextAnalyzer {
 				PatternInfo save = matchPatternInfo;
 				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "EMAIL", -1, -1, null, null);
 				int emails = 0;
-				for (String sample : raw)
+				for (final String sample : raw) {
 					if (trackString(sample, false))
 						emails++;
+				}
 				// if at least 90% of them looked like a genuine email then
 				// stay with email, otherwise back out to simple String
 				if (emails < .9 * raw.size())
@@ -883,26 +880,26 @@ public class TextAnalyzer {
 
 			// Do we have a set of possible URLs?
 			if (possibleURLs == raw.size()) {
-				PatternInfo save = matchPatternInfo;
+				final PatternInfo save = matchPatternInfo;
 				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "URL", -1, -1, null, null);
-				int URLs = 0;
-				for (String sample : raw)
+				int countURLs = 0;
+				for (final String sample : raw)
 					if (trackString(sample, false))
-						URLs++;
+						countURLs++;
 				// if at least 90% of them looked like a genuine URL then
 				// stay with URL, otherwise back out to simple String
-				if (URLs < .9 * raw.size())
+				if (countURLs < .9 * raw.size())
 					matchPatternInfo = save;
 			}
 
 			// Do we have a set of possible zip codes?
 			if (possibleZips == raw.size()) {
-				PatternInfo save = matchPatternInfo;
+				final PatternInfo save = matchPatternInfo;
 				matchPatternInfo = typeInfo.get(PatternInfo.Type.LONG.toString() + "." + "ZIP");
 				pattern = matchPatternInfo.pattern;
 
 				int zipCount = 0;
-				for (String sample : raw)
+				for (final String sample : raw)
 					if (trackLong(sample, false))
 						zipCount++;
 				// if at least 90% of them looked like a genuine zip
@@ -914,7 +911,7 @@ public class TextAnalyzer {
 				matchType = matchPatternInfo.type;
 			}
 
-			for (String sample : raw)
+			for (final String sample : raw)
 				trackResult(sample);
 
 			matchCount = best.getValue();
@@ -922,8 +919,8 @@ public class TextAnalyzer {
 		}
 	}
 
-	private void addValid(String input) {
-		Integer seen = cardinality.get(input);
+	private void addValid(final String input) {
+		final Integer seen = cardinality.get(input);
 		if (seen == null) {
 			if (cardinality.size() < maxCardinality)
 				cardinality.put(input, 1);
@@ -931,8 +928,8 @@ public class TextAnalyzer {
 			cardinality.put(input, seen + 1);
 	}
 
-	private void outlier(String input) {
-		Integer seen = outliers.get(input);
+	private void outlier(final String input) {
+		final Integer seen = outliers.get(input);
 		if (seen == null) {
 			if (outliers.size() < maxOutliers)
 				outliers.put(input, 1);
@@ -941,7 +938,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	private void backoutToString(long realSamples) {
+	private void backoutToString(final long realSamples) {
 		matchPattern = ALPHA_PATTERN;
 		matchCount = realSamples;
 		matchPatternInfo = patternInfo.get(matchPattern);
@@ -951,14 +948,14 @@ public class TextAnalyzer {
 		outliers.clear();
 	}
 
-	private void backoutZip(long realSamples) {
+	private void backoutZip(final long realSamples) {
 		if (totalLongs > .95 * realSamples) {
 			matchPattern = LONG_PATTERN;
 			matchCount = totalLongs;
 
-			Map<String, Integer> outliersCopy = new HashMap<String, Integer>(outliers);
+			final Map<String, Integer> outliersCopy = new HashMap<String, Integer>(outliers);
 			// Sweep the current outliers and check they are part of the set
-			for (Map.Entry<String, Integer> entry : outliersCopy.entrySet()) {
+			for (final Map.Entry<String, Integer> entry : outliersCopy.entrySet()) {
 				boolean isLong = true;
 				try {
 					Long.parseLong(entry.getKey());
@@ -979,9 +976,9 @@ public class TextAnalyzer {
 		}
 	}
 
-	private void trackLength(String input) {
+	private void trackLength(final String input) {
 		// We always want to track basic facts for the field
-		int length = input.length();
+		final int length = input.length();
 
 		if (length != 0 && length < minRawLength)
 			minRawLength = length;
@@ -993,7 +990,7 @@ public class TextAnalyzer {
 	 * Track the supplied raw input, once we have enough samples attempt to determine the type.
 	 * @param input The raw input string
 	 */
-	private void trackResult(String input) {
+	private void trackResult(final String input) {
 
 		trackLength(input);
 
@@ -1006,7 +1003,7 @@ public class TextAnalyzer {
 			return;
 		}
 
-		long realSamples = sampleCount - (nullCount + blankCount);
+		final long realSamples = sampleCount - (nullCount + blankCount);
 
 		switch (matchType) {
 		case BOOLEAN:
@@ -1072,7 +1069,7 @@ public class TextAnalyzer {
 				catch (DateTimeParseException e) {
 					if ("Insufficient digits in input (d)".equals(e.getMessage()) || "Insufficient digits in input (M)".equals(e.getMessage())) {
 						try {
-							String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
+							final String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
 							result = DateTimeParserResult.asResult(formatString, resolutionMode);
 							matchPatternInfo = new PatternInfo(result.getRegExp(), matchPatternInfo.type, formatString, -1, -1, null,
 									formatString);
@@ -1101,14 +1098,14 @@ public class TextAnalyzer {
 	 *            (\\p{Alpha}+) or fixed length, e.g. \\p{Alpha}{3}
 	 * @return The length of the input string or -1 if length is variable
 	 */
-	private int determineLength(String input) {
-		int len = input.length();
+	private int determineLength(final String input) {
+		final int len = input.length();
 		if (len > 0 && (input.charAt(len - 1) == '+' || input.charAt(len - 1) == '*') || input.indexOf(',') != -1)
 			return -1;
-		int lengthInformation = input.lastIndexOf('{');
+		final int lengthInformation = input.lastIndexOf('{');
 		if (lengthInformation == -1)
 			return -1;
-		String lengthString = input.substring(lengthInformation + 1, len - 1);
+		final String lengthString = input.substring(lengthInformation + 1, len - 1);
 		return Integer.parseInt(lengthString);
 	}
 
@@ -1119,14 +1116,14 @@ public class TextAnalyzer {
 	 * @param qualifier The qualifier that along with the type identifies the logical type that this set represents
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
-	private boolean checkUniformLengthSet(HashSet<String> uniformSet, PatternInfo.Type type, String qualifier) {
-		long realSamples = sampleCount - (nullCount + blankCount);
+	private boolean checkUniformLengthSet(final Set<String> uniformSet, final PatternInfo.Type type, final String qualifier) {
+		final long realSamples = sampleCount - (nullCount + blankCount);
 		long validCount = 0;
 		long misses = 0;					// count of number of groups that are misses
 		long missCount = 0;				// count of number of misses
 
 		// Sweep the current outliers and check they are part of the set
-		for (Map.Entry<String, Integer> entry : outliers.entrySet()) {
+		for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
 			misses++;
 			missCount += entry.getValue();
 			// Break out early if we know we are going to fail
@@ -1135,9 +1132,9 @@ public class TextAnalyzer {
 		}
 
 		// Sweep the balance and check they are part of the set
-		Map<String, Integer> newOutliers = new HashMap<String, Integer>();
+		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 		if ((double) missCount / realSamples <= .05) {
-			for (Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
 				if (uniformSet.contains(entry.getKey().toUpperCase(Locale.ROOT)))
 					validCount += entry.getValue();
 				else {
@@ -1171,15 +1168,15 @@ public class TextAnalyzer {
 	 * @param qualifier The qualifier that along with the type identifies the logical type that this set represents
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
-	private boolean checkVariableLengthSet(HashSet<String> variableSet, PatternInfo.Type type, String qualifier) {
-		long realSamples = sampleCount - (nullCount + blankCount);
+	private boolean checkVariableLengthSet(final Set<String> variableSet, final PatternInfo.Type type, final String qualifier) {
+		final long realSamples = sampleCount - (nullCount + blankCount);
+		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 		long validCount = 0;
 		long misses = 0;				// count of number of groups that are misses
 		long missCount = 0;				// count of number of misses
-		Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 
 		// Sweep the balance and check they are part of the set
-		for (Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+		for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
 			if (variableSet.contains(entry.getKey().trim().toUpperCase(Locale.ROOT)))
 				validCount += entry.getValue();
 			else {
@@ -1211,14 +1208,18 @@ public class TextAnalyzer {
 	 * @return A TextAnalysisResult with the analysis of any training completed.
 	 */
 	public TextAnalysisResult getResult() {
+		String minValue = null;
+		String maxValue = null;
+		String sum = null;
+
 		// If we have not already determined the type, now we need to
 		if (matchType == null) {
 			determineType();
 		}
 
 		// Compute our confidence
+		final long realSamples = sampleCount - (nullCount + blankCount);
 		double confidence = 0;
-		long realSamples = sampleCount - (nullCount + blankCount);
 
 		// Check to see if we are all blanks or all nulls
 		if (blankCount == sampleCount || nullCount == sampleCount || blankCount + nullCount == sampleCount) {
@@ -1246,7 +1247,7 @@ public class TextAnalyzer {
 		if (LONG_PATTERN.equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
 			matchPatternInfo = new PatternInfo("\\d{4}", PatternInfo.Type.DATE, "yyyy", -1, -1, null, "yyyy");
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
-			int length = determineLength(matchPattern);
+			final int length = determineLength(matchPattern);
 			// We thought it was a fixed length string, but on reflection it does not feel like it
 			if (length != -1 && realSamples > REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.95) {
 				backoutToString(realSamples);
@@ -1266,14 +1267,14 @@ public class TextAnalyzer {
 
 			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && "\\p{Alpha}{2}".equals(matchPattern)
 					&& cardinality.size() < usStates.size() + caProvinces.size() + 5
-					&& (name.toLowerCase().contains("state") || name.toLowerCase().contains("province")
+					&& (name.toLowerCase(Locale.ROOT).contains("state") || name.toLowerCase(Locale.ROOT).contains("province")
 							|| cardinality.size() > 5)) {
 				int usStateCount = 0;
 				int caProvinceCount = 0;
 				int misses = 0;
-				Map<String, Integer> newOutliers = new HashMap<String, Integer>();
+				final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 
-				for (Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+				for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
 					if (usStates.contains(entry.getKey().trim().toUpperCase(Locale.ROOT)))
 						usStateCount += entry.getValue();
 					else if (caProvinces.contains(entry.getKey().trim().toUpperCase(Locale.ROOT)))
@@ -1370,7 +1371,6 @@ public class TextAnalyzer {
 		case STRING:
 			if ("NULL".equals(matchPatternInfo.typeQualifier)) {
 				minRawLength = maxRawLength = 0;
-				minValue = maxValue = null;
 			} else if ("BLANK".equals(matchPatternInfo.typeQualifier)) {
 				// If all the fields are blank - then we have not saved any of the raw input, so we
 				// need to synthesize the min and max value, as well as the minRawlength if not set.
@@ -1403,8 +1403,8 @@ public class TextAnalyzer {
 			break;
 
 		case DATETIME:
-			minValue = minLocalDateTime != null ? minLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format)) : null;
-			maxValue = maxLocalDateTime != null ? maxLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format)) : null;
+			minValue = minLocalDateTime == null ? null : minLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
 			break;
 
 		case ZONEDDATETIME:
@@ -1427,7 +1427,7 @@ public class TextAnalyzer {
 			key = true;
 			// Might be a key but only iff every element in the cardinality
 			// set only has a count of 1
-			for (Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
 				if (entry.getValue() != 1) {
 					key = false;
 					break;
