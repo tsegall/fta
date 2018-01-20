@@ -30,12 +30,19 @@ Typical usage is:
 ## Generate JavaDoc ##
 `$ ./gradlew javadoc`
 
+## Everything ...
+`$ ./gradlew clean installDist test jacocoTestReport javadoc`
+
 ## Setup eclipse project ##
 `$ ./gradlew eclipse`
 
 ## Releasing a new version ##
 `$ ./gradlew uploadArchives`
 Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and follow the instructions!!
+1. login to OSSRH available at https://oss.sonatype.org/
+2. Find and select the latest version in the Staging Repository
+3. Close the staging repository (wait until complete)
+4. Release the staging repository
 
 ## Java code ##
 

@@ -60,13 +60,14 @@ class Driver {
 			else if ("--dayFirst".equals(args[idx]))
 				resolutionMode = DateResolutionMode.DayFirst;
 			else if ("--help".equals(args[idx])) {
-				logger.println("Usage: [--charset <charset>] [--col <n>] [--dayFirst] [--help] [--monthFirst] [--records <n>] [--samples <n>] file ...");
+				logger.println("Usage: [--charset <charset>] [--col <n>] [--dayFirst] [--help] [--monthFirst] [--records <n>] [--samples <n>] [--verbose] file ...");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
 				logger.println(" --dayFirst - If dates are ambigous assume Day precedes Month");
 				logger.println(" --monthFirst - If dates are ambigous assume Month precedes Day");
 				logger.println(" --records <n> - The number of records to analyze");
 				logger.println(" --samples <n> - Set the size of the sample window");
+				logger.println(" --verbose - Output each record as it is processed");
 				System.exit(0);
 			}
 			else if ("--monthFirst".equals(args[idx]))

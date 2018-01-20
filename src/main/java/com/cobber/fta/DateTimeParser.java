@@ -37,11 +37,11 @@ import java.util.stream.Collectors;
  * </pre>
  */
 public class DateTimeParser {
+	/** When we have ambiguity - should we prefer to conclude day first, month first or unspecified. */
 	public enum DateResolutionMode {
 		None, DayFirst, MonthFirst
 	}
 
-	// When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 
 	private static Map<String, Integer> months = new HashMap<String, Integer>();
@@ -328,7 +328,7 @@ public class DateTimeParser {
 		}
 
 		// If we are supposed to be fully bound and still have some ambiguities then fix them based on the mode
-		if (resolutionMode != DateResolutionMode.None && (answerResult.dayOffset == -1 || answerResult.monthOffset == -1 || answerResult.yearOffset == -1)) {
+		if (answerResult.dateElements != -1 && resolutionMode != DateResolutionMode.None && (answerResult.dayOffset == -1 || answerResult.monthOffset == -1 || answerResult.yearOffset == -1)) {
 			if (answerResult.monthOffset != -1) {
 				int start = answerResult.dateFieldOffsets[0];
 				answerBuffer.replace(start, start + answerResult.dateFieldLengths[0], longString('d').substring(0, answerResult.dateFieldLengths[0]));

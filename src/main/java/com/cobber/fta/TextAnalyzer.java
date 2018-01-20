@@ -259,7 +259,7 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Construct a Text Analyzer for the named data stream.
+	 * Construct a Text Analyzer for the named data stream.  Note: The resolution mode will be 'None'.
 	 *
 	 * @param name The name of the data stream (e.g. the column of the CSV file)
 	 *
@@ -271,7 +271,7 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Construct an anonymous Text Analyzer for a data stream.
+	 * Construct an anonymous Text Analyzer for a data stream.  Note: The resolution mode will be 'None'.
 	 *
 	 * @throws IOException
 	 *             If an internal error occurred.
@@ -1437,5 +1437,14 @@ public class TextAnalyzer {
 
 		return new TextAnalysisResult(matchCount, matchPatternInfo, sampleCount, nullCount, blankCount,
 				totalLeadingZeros, confidence, minValue, maxValue, minRawLength, maxRawLength, sum, cardinality, outliers, key);
+	}
+
+	/**
+	 * Access the training set - this will typically be the first SAMPLE_SIZE records.
+	 *
+	 * @return A List of the raw input strings.
+	 */
+	public List<String>getTrainingSet() {
+		return raw;
 	}
 }
