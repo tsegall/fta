@@ -446,11 +446,11 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\p{Alpha}{3,9} \\d{1,2}, \\d{4}");
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3,9} \\d{1,2}, \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
 		}
 	}
 	@Test
@@ -478,11 +478,11 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getPattern(), "\\d{1,2} \\p{Alpha}{3,9} \\d{4}");
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2} \\p{Alpha}{3,9} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getPattern()));
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
 		}
 	}
 

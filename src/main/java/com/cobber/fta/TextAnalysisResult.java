@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Tim Segall
+ * Copyright 2017-2018 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,8 +151,8 @@ public class TextAnalysisResult {
 	 * is no 13th month).
 	 * @return The Regular Expression.
 	 */
-	public String getPattern() {
-		return patternInfo.pattern;
+	public String getRegExp() {
+		return patternInfo.regexp;
 	}
 
 	/**
@@ -282,7 +282,7 @@ public class TextAnalysisResult {
 	 */
 	public String dump(final boolean verbose) {
 		String ret = "TextAnalysisResult [matchCount=" + matchCount + ", sampleCount=" + sampleCount + ", nullCount="
-				+ nullCount + ", blankCount=" + blankCount+ ", pattern=\"" + patternInfo.pattern + "\", confidence=" + confidence +
+				+ nullCount + ", blankCount=" + blankCount+ ", regexp=\"" + patternInfo.regexp + "\", confidence=" + confidence +
 				", type=" + patternInfo.type +
 				(patternInfo.typeQualifier != null ? "(" + patternInfo.typeQualifier + ")" : "") + ", min=";
 		if (minValue != null)

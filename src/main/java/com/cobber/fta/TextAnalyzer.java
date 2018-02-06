@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Tim Segall
+ * Copyright 2017-2018 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,9 +163,9 @@ public class TextAnalyzer {
 	private static Set<String> countries = new HashSet<String>();
 	private static Set<String> monthAbbr = new HashSet<String>();
 
-	private static void addPattern(final Map<String, PatternInfo> map, final boolean patternIsKey, final String pattern, final PatternInfo.Type type,
+	private static void addPattern(final Map<String, PatternInfo> map, final boolean patternIsKey, final String regexp, final PatternInfo.Type type,
 			final String typeQualifier, final int minLength, final int maxLength, final String generalPattern, final String format) {
-		map.put(patternIsKey ? pattern : (type.toString() + "." + typeQualifier), new PatternInfo(pattern, type, typeQualifier, minLength, maxLength, generalPattern, format));
+		map.put(patternIsKey ? regexp : (type.toString() + "." + typeQualifier), new PatternInfo(regexp, type, typeQualifier, minLength, maxLength, generalPattern, format));
 	}
 
 	public static final String LONG_PATTERN = "\\d+";
@@ -860,7 +860,7 @@ public class TextAnalyzer {
 				matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), formatString, -1, -1, null,
 						formatString);
 				matchType = matchPatternInfo.type;
-				pattern = matchPatternInfo.pattern;
+				pattern = matchPatternInfo.regexp;
 			}
 
 			// Do we have a set of possible emails?
@@ -896,7 +896,7 @@ public class TextAnalyzer {
 			if (possibleZips == raw.size()) {
 				final PatternInfo save = matchPatternInfo;
 				matchPatternInfo = typeInfo.get(PatternInfo.Type.LONG.toString() + "." + "ZIP");
-				pattern = matchPatternInfo.pattern;
+				pattern = matchPatternInfo.regexp;
 
 				int zipCount = 0;
 				for (final String sample : raw)
@@ -906,7 +906,7 @@ public class TextAnalyzer {
 				// then stay with zip, otherwise back out to simple Long
 				if (zipCount < .9 * raw.size()) {
 					matchPatternInfo = save;
-					pattern = save.pattern;
+					pattern = save.regexp;
 				}
 				matchType = matchPatternInfo.type;
 			}
@@ -1154,7 +1154,7 @@ public class TextAnalyzer {
 
 		matchCount = validCount;
 		matchPatternInfo = typeInfo.get(type.toString() + "." + qualifier);
-		matchPattern = matchPatternInfo.pattern;
+		matchPattern = matchPatternInfo.regexp;
 		outliers.putAll(newOutliers);
 		cardinality.keySet().removeAll(newOutliers.keySet());
 
@@ -1197,7 +1197,7 @@ public class TextAnalyzer {
 		cardinality.keySet().removeAll(newOutliers.keySet());
 		matchCount = validCount;
 		matchPatternInfo = typeInfo.get(type.toString() + "." + qualifier);
-		matchPattern = matchPatternInfo.pattern;
+		matchPattern = matchPatternInfo.regexp;
 		return true;
 	}
 
@@ -1229,7 +1229,7 @@ public class TextAnalyzer {
 				matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "BLANK");
 			else
 				matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "BLANKORNULL");
-			matchPattern = matchPatternInfo.pattern;
+			matchPattern = matchPatternInfo.regexp;
 			matchType = matchPatternInfo.type;
 			matchCount = sampleCount;
 			confidence = sampleCount >= 10 ? 1.0 : 0.0;
@@ -1301,7 +1301,7 @@ public class TextAnalyzer {
 					outliers.putAll(newOutliers);
 					cardinality.keySet().removeAll(newOutliers.keySet());
 					matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + accessor);
-					matchPattern = matchPatternInfo.pattern;
+					matchPattern = matchPatternInfo.regexp;
 				}
 			}
 

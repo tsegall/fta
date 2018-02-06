@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017-2018 Tim Segall
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cobber.fta;
 
 import java.text.DateFormatSymbols;
@@ -49,29 +64,7 @@ public class DateTimeParser {
 	private static Map<String, SimpleDateMatcher> simpleDateMatcher = new HashMap<String, SimpleDateMatcher>();
 
 	public static Set<String> timeZones = new HashSet<String>();
-	public static String monthPattern = null;
-
-	static class SimpleDateMatcher {
-		private final String matcher;
-		private final String format;
-		private int dayOffset;
-		private final int dayLength;
-		private int monthOffset;
-		private final int monthLength;
-		private int yearOffset;
-		private final int yearLength;
-
-		SimpleDateMatcher(final String matcher, final String format, final int[] dateFacts) {
-			this.matcher = matcher;
-			this.format = format;
-			this.dayOffset = dateFacts[0];
-			this.dayLength = dateFacts[1];
-			this.monthOffset = dateFacts[2];
-			this.monthLength = dateFacts[3];
-			this.yearOffset = dateFacts[4];
-			this.yearLength = dateFacts[5];
-		}
-	}
+	public static String monthPattern;
 
 	static {
 
@@ -105,6 +98,11 @@ public class DateTimeParser {
 		Collections.addAll(timeZones, TimeZone.getAvailableIDs());
 		// Add the non-real Time Zones (that people use)
 		timeZones.addAll(Arrays.asList(new String[] {"EDT", "CDT", "MDT", "PDT"}));
+
+		SimpleDateMatcher s;
+
+		s = new SimpleDateMatcher("d{4} d{2} d{2}", "yyyy MM dd", new int[] {8, 2, 5, 2, 0, 4}); simpleDateMatcher.put(s.getMatcher(), s);
+
 
 		simpleDateMatcher.put("d{4} d{2} d{2}", new SimpleDateMatcher("d{4} d{2} d{2}", "yyyy MM dd", new int[] {8, 2, 5, 2, 0, 4}));
 		simpleDateMatcher.put("d{4} d d{2}", new SimpleDateMatcher("d{4} d d{2}", "yyyy M dd", new int[] {7, 2, 5, 1, 0, 4}));
@@ -196,7 +194,7 @@ public class DateTimeParser {
 		}
 
 		final String trimmed = input.trim();
-		String ret = determineFormatString(trimmed, DateResolutionMode.None);
+		final String ret = determineFormatString(trimmed, DateResolutionMode.None);
 		if (ret == null) {
 			invalidCount++;
 			return null;
@@ -247,7 +245,7 @@ public class DateTimeParser {
 		StringBuffer answerBuffer = null;
 		for (final Map.Entry<String, Integer> entry : byValue.entrySet()) {
 			final String key = entry.getKey();
-			DateTimeParserResult result = DateTimeParserResult.asResult(key, resolutionMode);
+			final DateTimeParserResult result = DateTimeParserResult.asResult(key, resolutionMode);
 
 			// First entry
 			if (answerBuffer == null) {
@@ -353,7 +351,7 @@ public class DateTimeParser {
 	}
 
 	private static String retDigits(final int digitCount, final char patternChar) {
-		String ret = String.valueOf(patternChar);
+		final String ret = String.valueOf(patternChar);
 		if (digitCount == 1)
 			return ret;
 		if (digitCount == 2)
@@ -373,7 +371,6 @@ public class DateTimeParser {
 	}
 
 	private static boolean plausibleDate(final int[] dateValues, final int[] dateDigits, final int[] fieldOffsets) {
-		final int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 		final int year = dateValues[fieldOffsets[2]];
 		if (year == 0 && dateDigits[fieldOffsets[2]] == 4)
 			return false;
@@ -381,6 +378,7 @@ public class DateTimeParser {
 		if (month == 0 || month > 12)
 			return false;
 		final int day = dateValues[fieldOffsets[0]];
+		final int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 		if (day == 0 || day > monthDays[month])
 			return false;
 		return true;
@@ -400,7 +398,7 @@ public class DateTimeParser {
 	}
 
 	private static String compress(final String input) {
-		StringBuilder result = new StringBuilder();
+		final StringBuilder result = new StringBuilder();
 		int len = input.length();
 		char lastCh = '=';
 		int count = 0;
@@ -491,31 +489,31 @@ public class DateTimeParser {
 		if (trimmed.indexOf('þ') != -1)
 			return null;
 
-		String compressed = compress(trimmed);
+		final String compressed = compress(trimmed);
 
 		final SimpleDateMatcher matcher = simpleDateMatcher.get(compressed);
 		if (matcher != null) {
 			int[] dateValue = new int[] {-1, -1, -1};
-			if (matcher.monthLength < 0) {
-				dateValue[1] = DateTimeParser.monthOffset(trimmed.substring(matcher.monthOffset, len + matcher.monthLength));
+			if (matcher.getMonthLength() < 0) {
+				dateValue[1] = DateTimeParser.monthOffset(trimmed.substring(matcher.getMonthOffset(), len + matcher.getMonthLength()));
 				if (dateValue[1] == -1)
 					return null;
 			}
-			else if (matcher.monthLength == 3) {
-				dateValue[1] = DateTimeParser.monthAbbreviationOffset(trimmed.substring(matcher.monthOffset, matcher.monthOffset + matcher.monthLength));
+			else if (matcher.getMonthLength() == 3) {
+				dateValue[1] = DateTimeParser.monthAbbreviationOffset(trimmed.substring(matcher.getMonthOffset(), matcher.getMonthOffset() + matcher.getMonthLength()));
 				if (dateValue[1] == -1)
 					return null;
 			}
 			else {
-				dateValue[1] = getValue(trimmed, matcher.monthOffset, matcher.monthLength);
+				dateValue[1] = getValue(trimmed, matcher.getMonthOffset(), matcher.getMonthLength());
 			}
-			dateValue[0] = getValue(trimmed, matcher.dayOffset >= 0 ? matcher.dayOffset : len + matcher.dayOffset, matcher.dayLength);
-			dateValue[2] = getValue(trimmed, matcher.yearOffset >= 0 ? matcher.yearOffset : len + matcher.yearOffset, matcher.yearLength);
+			dateValue[0] = getValue(trimmed, matcher.getDayOffset() >= 0 ? matcher.getDayOffset() : len + matcher.getDayOffset(), matcher.getDayLength());
+			dateValue[2] = getValue(trimmed, matcher.getYearOffset() >= 0 ? matcher.getYearOffset() : len + matcher.getYearOffset(), matcher.getYearLength());
 
-			if (!plausibleDate(dateValue, new int[] {matcher.dayLength, matcher.monthLength, matcher.yearLength}, new int[] {0,1,2}))
+			if (!plausibleDate(dateValue, new int[] {matcher.getDayLength(), matcher.getMonthLength(), matcher.getYearLength()}, new int[] {0,1,2}))
 				return null;
 
-			return matcher.format;
+			return matcher.getFormat();
 		}
 
 		// Fail fast if we can
@@ -549,7 +547,7 @@ public class DateTimeParser {
 
 		int lastCh = 'þ';
 		for (int i = 0; i < len && timeZone.length() == 0; i++) {
-			char ch = trimmed.charAt(i);
+			final char ch = trimmed.charAt(i);
 
 			// Two spaces in a row is always bad news
 			if (lastCh == ' ' && ch == ' ')
@@ -612,7 +610,6 @@ public class DateTimeParser {
 
 			case '-':
 				if (iso8601 || (dateSeen && dateClosed && timeSeen && timeComponent == 2)) {
-					int hours = Integer.MIN_VALUE;
 					int minutesOffset = Integer.MIN_VALUE;
 					int secondsOffset = Integer.MIN_VALUE;
 
@@ -645,7 +642,7 @@ public class DateTimeParser {
 						return null;
 
 					// Validate the hours
-					hours = getValue(trimmed, i, 2);
+					int hours = getValue(trimmed, i, 2);
 					if (hours != Integer.MIN_VALUE && hours > 18)
 						return null;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Tim Segall
+ * Copyright 2017-2018 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class PatternInfo {
 		BOOLEAN, DATE, DATETIME, DOUBLE, LONG, OFFSETDATETIME, STRING, TIME, ZONEDDATETIME
 	}
 
-	public String pattern;
+	public String regexp;
 	public String generalPattern;
 	public int minLength;
 	public int maxLength;
@@ -37,7 +37,7 @@ public class PatternInfo {
 
 	/**
 	 * Construct a new information block for the supplied pattern.
-	 * @param pattern The pattern of interest.
+	 * @param regexp The pattern of interest.
 	 * @param type The type of the pattern.
 	 * @param typeQualifier The type qualifier of the pattern (optional).
 	 * @param minLength The minimum length of this pattern (-1 implies undefined)
@@ -45,9 +45,9 @@ public class PatternInfo {
 	 * @param generalPattern The general case of this pattern (optional).
 	 * @param format The Java format specified for a date pattern (optional).
 	 */
-	public PatternInfo(final String pattern, final Type type, final String typeQualifier, final int minLength,
+	public PatternInfo(final String regexp, final Type type, final String typeQualifier, final int minLength,
 			final int maxLength, final String generalPattern, final String format) {
-		this.pattern = pattern;
+		this.regexp = regexp;
 		this.type = type;
 		this.typeQualifier = typeQualifier;
 		this.minLength = minLength;

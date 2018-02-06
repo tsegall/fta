@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017-2018 Tim Segall
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cobber.fta;
 
 import java.time.LocalDate;
@@ -82,46 +97,10 @@ public class DateTimeParserResult {
 				r.timeFirst, r.dateTimeSeparator, r.yearOffset, r.monthOffset, r.dayOffset, r.dateSeparator, r.timeZone, r.amPmIndicator);
 	}
 
-	private enum Token {
+	enum Token {
 		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DIGITS_1_OR_2, MONTHS_1_OR_2, MONTHS_2,
 		HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, SECS_2, FRACTION,
 		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET, AMPM
-	}
-
-	private class FormatterToken {
-		private final Token type;
-		private final int count;
-		private final char value;
-
-		public Token getType() {
-			return type;
-		}
-
-		public int getCount() {
-			return count;
-		}
-
-		public char getValue() {
-			return value;
-		}
-
-		FormatterToken(final Token type) {
-			this.type = type;
-			this.count = 0;
-			this.value = '\0';
-		}
-
-		FormatterToken(final Token type, final int count) {
-			this.type = type;
-			this.count = count;
-			this.value = '\0';
-		}
-
-		FormatterToken(final Token type, final char value) {
-			this.type = type;
-			this.count = 0;
-			this.value = value;
-		}
 	}
 
 	/**
@@ -499,7 +478,7 @@ public class DateTimeParserResult {
 			formatString = getFormatString();
 
 		for (final FormatterToken token : tokenize()) {
-			final Token nextToken = token.type;
+			final Token nextToken = token.getType();
 
 			char inputChar;
 			int value = 0;
@@ -716,11 +695,9 @@ public class DateTimeParserResult {
 	private String digitsRegExp(final int digitsMin, final int digitsMax) {
 		final StringBuilder ret = new StringBuilder();
 
-		ret.append("\\d{");
-		ret.append(digitsMin);
+		ret.append("\\d{").append(digitsMin);
 		if (digitsMax != digitsMin) {
-			ret.append(',');
-			ret.append(digitsMax);
+			ret.append(',').append(digitsMax);
 		}
 		ret.append('}');
 
@@ -739,8 +716,8 @@ public class DateTimeParserResult {
 		int digitsMax = 0;
 
 		for (final FormatterToken token : tokenize()) {
-			if (token.type == Token.CONSTANT_CHAR || token.type == Token.MONTH || token.type == Token.MONTH_ABBR ||
-					token.type == Token.AMPM || token.type == Token.TIMEZONE || token.type == Token.TIMEZONE_OFFSET) {
+			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.MONTH || token.getType() == Token.MONTH_ABBR ||
+					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE || token.getType() == Token.TIMEZONE_OFFSET) {
 				if (digitsMin != 0) {
 					ret.append(digitsRegExp(digitsMin, digitsMax));
 					digitsMin = digitsMax = 0;
@@ -802,7 +779,7 @@ public class DateTimeParserResult {
 				}
 			}
 			else {
-				switch (token.type) {
+				switch (token.getType()) {
 				case DAYS_1_OR_2:
 				case DIGITS_1_OR_2:
 				case MONTHS_1_OR_2:
