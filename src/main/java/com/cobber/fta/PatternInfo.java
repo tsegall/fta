@@ -24,7 +24,7 @@ package com.cobber.fta;
 public class PatternInfo {
 
 	public enum Type {
-		BOOLEAN, DATE, DATETIME, DOUBLE, LONG, OFFSETDATETIME, STRING, TIME, ZONEDDATETIME
+		Boolean, LocalDate, LocalDateTime, Double, Long, OffsetDateTime, String, LocalTime, ZonedDateTime
 	}
 
 	public String regexp;
@@ -62,6 +62,6 @@ public class PatternInfo {
 	 * @return A boolean indicating if the Type for this pattern is numeric.
 	 */
 	public boolean isNumeric() {
-		return PatternInfo.Type.LONG.equals(this.type) || PatternInfo.Type.DOUBLE.equals(this.type);
+		return PatternInfo.Type.Long.equals(this.type) || PatternInfo.Type.Double.equals(this.type);
 	}
 }
