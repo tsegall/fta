@@ -99,19 +99,19 @@ public class DetermineDateTimeFormatTests {
 				final PatternInfo.Type type = result.getType();
 				try {
 					final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(fmts[i]);
-					if (PatternInfo.Type.LocalTime.equals(type)) {
+					if (PatternInfo.Type.LOCALTIME.equals(type)) {
 						text = localTime.format(formatter);
 						localTime = localTime.minusHours(209);
 					}
-					else if (PatternInfo.Type.LocalDate.equals(type)) {
+					else if (PatternInfo.Type.LOCALDATE.equals(type)) {
 						text = localDate.format(formatter);
 						localDate = localDate.minusDays(29);
 					}
-					else if (PatternInfo.Type.LocalDateTime.equals(type)) {
+					else if (PatternInfo.Type.LOCALDATETIME.equals(type)) {
 						text = localDateTime.format(formatter);
 						localDateTime = localDateTime.minusHours(209);
 					}
-					else if (PatternInfo.Type.ZonedDateTime.equals(type)) {
+					else if (PatternInfo.Type.ZONEDDATETIME.equals(type)) {
 						text = zonedDateTime.format(formatter);
 						zonedDateTime = zonedDateTime.minusHours(209);
 					}
@@ -440,7 +440,7 @@ public class DetermineDateTimeFormatTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LocalDate);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MMMM d',' yyyy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -472,7 +472,7 @@ public class DetermineDateTimeFormatTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LocalDate);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -505,13 +505,13 @@ public class DetermineDateTimeFormatTests {
 
 		try {
 			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
-			if (PatternInfo.Type.LocalTime.equals(type))
+			if (PatternInfo.Type.LOCALTIME.equals(type))
 				LocalTime.parse(trimmed, formatter);
-			else if (PatternInfo.Type.LocalDate.equals(type))
+			else if (PatternInfo.Type.LOCALDATE.equals(type))
 				LocalDate.parse(trimmed, formatter);
-			else if (PatternInfo.Type.LocalDateTime.equals(type))
+			else if (PatternInfo.Type.LOCALDATETIME.equals(type))
 				LocalDateTime.parse(trimmed, formatter);
-			else if (PatternInfo.Type.ZonedDateTime.equals(type))
+			else if (PatternInfo.Type.ZONEDDATETIME.equals(type))
 				ZonedDateTime.parse(trimmed, formatter);
 			else
 				OffsetDateTime.parse(trimmed, formatter);
@@ -1031,7 +1031,7 @@ public class DetermineDateTimeFormatTests {
 
 		final DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "MM/dd/yy");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LocalDate);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 		final String regExp = result.getRegExp();
 		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
 		Assert.assertTrue(sample.matches(regExp));
@@ -1070,7 +1070,7 @@ public class DetermineDateTimeFormatTests {
 
 		final DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "yyyy M d");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LocalDate);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 		final String regExp = result.getRegExp();
 		Assert.assertEquals(regExp, "\\d{4} \\d{1,2} \\d{1,2}");
 		Assert.assertTrue(sample.matches(regExp));
@@ -1084,7 +1084,7 @@ public class DetermineDateTimeFormatTests {
 
 		final DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "H:mm ?/?/yy");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LocalDateTime);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
 		final String regExp = result.getRegExp();
 		Assert.assertEquals(regExp, "\\d{1,2}:\\d{2} \\d{1,2}/\\d{1,2}/\\d{2}");
 		Assert.assertTrue(sample.matches(regExp));
@@ -1130,13 +1130,13 @@ public class DetermineDateTimeFormatTests {
 			return;
 		try {
 			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
-			if (PatternInfo.Type.LocalTime.equals(type))
+			if (PatternInfo.Type.LOCALTIME.equals(type))
 				LocalTime.parse(trimmed, formatter);
-			else if (PatternInfo.Type.LocalDate.equals(type))
+			else if (PatternInfo.Type.LOCALDATE.equals(type))
 				LocalDate.parse(trimmed, formatter);
-			else if (PatternInfo.Type.LocalDateTime.equals(type))
+			else if (PatternInfo.Type.LOCALDATETIME.equals(type))
 				LocalDateTime.parse(trimmed, formatter);
-			else if (PatternInfo.Type.ZonedDateTime.equals(type))
+			else if (PatternInfo.Type.ZONEDDATETIME.equals(type))
 				ZonedDateTime.parse(trimmed, formatter);
 			else
 				OffsetDateTime.parse(trimmed, formatter);
@@ -1158,7 +1158,7 @@ public class DetermineDateTimeFormatTests {
 
 		final DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "H:mm");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LocalTime);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
 		final String regExp = result.getRegExp();
 		Assert.assertEquals(regExp, "\\d{1,2}:\\d{2}");
 		Assert.assertTrue(sampleOne.matches(regExp));
@@ -1292,13 +1292,13 @@ public class DetermineDateTimeFormatTests {
 
 					try {
 						final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
-						if (PatternInfo.Type.LocalTime.equals(type))
+						if (PatternInfo.Type.LOCALTIME.equals(type))
 							LocalTime.parse(trimmed, formatter);
-						else if (PatternInfo.Type.LocalDate.equals(type))
+						else if (PatternInfo.Type.LOCALDATE.equals(type))
 							LocalDate.parse(trimmed, formatter);
-						else if (PatternInfo.Type.LocalDateTime.equals(type))
+						else if (PatternInfo.Type.LOCALDATETIME.equals(type))
 							LocalDateTime.parse(trimmed, formatter);
-						else if (PatternInfo.Type.ZonedDateTime.equals(type))
+						else if (PatternInfo.Type.ZONEDDATETIME.equals(type))
 							ZonedDateTime.parse(trimmed, formatter);
 						else
 							OffsetDateTime.parse(trimmed, formatter);
@@ -1332,7 +1332,7 @@ public class DetermineDateTimeFormatTests {
 
 		final DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "MM/dd/yyyy HH:mm:ss z");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.ZonedDateTime);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.ZONEDDATETIME);
 
 		final String regExp = result.getRegExp();
 		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
@@ -1355,7 +1355,7 @@ public class DetermineDateTimeFormatTests {
 
 		final DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "MM/dd/yyyy HH:mm:ss z");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.ZonedDateTime);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.ZONEDDATETIME);
 
 		final String regExp = result.getRegExp();
 		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
