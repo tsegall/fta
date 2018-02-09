@@ -283,18 +283,21 @@ public class DateTimeParser {
 			// Process any date-related information
 			if (result.dateElements != -1) {
 				if (answerResult.dayOffset == -1 && result.dayOffset != -1) {
+					// We did not know where the day was and now do
 					answerResult.dayOffset = result.dayOffset;
 					final int start = answerResult.dateFieldOffsets[answerResult.dayOffset];
 					final int len = answerResult.dateFieldLengths[answerResult.dayOffset];
 					answerBuffer.replace(start, start + len, longString('d').substring(0, len));
 				}
 				if (answerResult.monthOffset == -1 && result.monthOffset != -1) {
+					// We did not know where the month was and now do
 					answerResult.monthOffset = result.monthOffset;
 					final int start = answerResult.dateFieldOffsets[answerResult.monthOffset];
 					final int len = answerResult.dateFieldLengths[answerResult.monthOffset];
 					answerBuffer.replace(start, start + len, longString('M').substring(0, len));
 				}
 				if (answerResult.yearOffset == -1 && result.yearOffset != -1) {
+					// We did not know where the year was and now do
 					answerResult.yearOffset = result.yearOffset;
 					final int start = answerResult.dateFieldOffsets[answerResult.yearOffset];
 					final int len = answerResult.dateFieldLengths[answerResult.yearOffset];
@@ -318,6 +321,10 @@ public class DateTimeParser {
 						//  - MMM and MMMM -> MMMM
 						final int start = answerResult.dateFieldOffsets[i];
 						final int len = answerResult.dateFieldLengths[i];
+						final int delta = answerResult.dateFieldLengths[i] - result.dateFieldLengths[i];
+						for (int j = i + 1; j < result.dateFieldLengths.length; j++) {
+							 answerResult.dateFieldOffsets[j] -= delta;
+						}
 						answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
 						answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.dateFieldLengths[i]));
 					}
