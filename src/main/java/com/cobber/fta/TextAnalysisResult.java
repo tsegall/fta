@@ -24,6 +24,7 @@ import java.util.TreeSet;
  * TextAnalysisResult is the result of a {@link TextAnalyzer} analysis of a data stream.
  */
 public class TextAnalysisResult {
+	private final String name;
 	private final long matchCount;
 	private final long sampleCount;
 	private final long nullCount;
@@ -41,6 +42,7 @@ public class TextAnalysisResult {
 	private final boolean key;
 
 	/**
+	 * @param name The name of the data stream being analyzed.
 	 * @param matchCount The number of samples that match the patternInfo.
 	 * @param patternInfo The PatternInfo associated with this matchCount.
 	 * @param sampleCount The total number of samples seen.
@@ -57,10 +59,11 @@ public class TextAnalysisResult {
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param key Do we think this field is a key.
 	 */
-	TextAnalysisResult(final long matchCount, final PatternInfo patternInfo, final long sampleCount, final long nullCount,
+	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final long sampleCount, final long nullCount,
 			final long blankCount, final long leadingZeroCount, final double confidence, final String minValue, final String maxValue,
 			final int minLength, final int maxLength, final String sum, final Map<String, Integer> cardinality,
 			final Map<String, Integer> outliers, final boolean key) {
+		this.name = name;
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
 		this.sampleCount = sampleCount;
@@ -78,6 +81,13 @@ public class TextAnalysisResult {
 		this.key = key;
 	}
 
+	/**
+	 * Name of the data stream being analyzed.
+	 * @return Name of data stream..
+	 */
+	public String getName() {
+		return name;
+	}
 
 	/**
 	 * Confidence in the type classification.
@@ -281,7 +291,7 @@ public class TextAnalysisResult {
 	 * @return A String representation of the analysis to date.
 	 */
 	public String dump(final boolean verbose) {
-		String ret = "TextAnalysisResult [matchCount=" + matchCount + ", sampleCount=" + sampleCount + ", nullCount="
+		String ret = "TextAnalysisResult [name=" + name + ", matchCount=" + matchCount + ", sampleCount=" + sampleCount + ", nullCount="
 				+ nullCount + ", blankCount=" + blankCount+ ", regexp=\"" + patternInfo.regexp + "\", confidence=" + confidence +
 				", type=" + patternInfo.type +
 				(patternInfo.typeQualifier != null ? "(" + patternInfo.typeQualifier + ")" : "") + ", min=";

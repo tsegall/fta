@@ -1435,7 +1435,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		return new TextAnalysisResult(matchCount, matchPatternInfo, sampleCount, nullCount, blankCount,
+		return new TextAnalysisResult(name, matchCount, matchPatternInfo, sampleCount, nullCount, blankCount,
 				totalLeadingZeros, confidence, minValue, maxValue, minRawLength, maxRawLength, sum, cardinality, outliers, key);
 	}
 

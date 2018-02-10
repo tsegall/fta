@@ -65,7 +65,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 0.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "NULL");
-		Assert.assertEquals(result.dump(true), "TextAnalysisResult [matchCount=0, sampleCount=0, nullCount=0, blankCount=0, regexp=\"[NULL]\", confidence=0.0, type=String(NULL), min=null, max=null, sum=null, cardinality=0]");
+		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=anonymous, matchCount=0, sampleCount=0, nullCount=0, blankCount=0, regexp=\"[NULL]\", confidence=0.0, type=String(NULL), min=null, max=null, sum=null, cardinality=0]");
 	}
 
 	@Test
@@ -1462,8 +1462,8 @@ public class AnalysisResultTests {
 		final Map<String, Integer> details = result.getCardinalityDetails();
 		Assert.assertEquals(details.get("0"), Integer.valueOf(13));
 		Assert.assertEquals(details.get("5"), Integer.valueOf(14));
-		Assert.assertEquals(result.dump(true), "TextAnalysisResult [matchCount=27, sampleCount=30, nullCount=2, blankCount=0, regexp=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", sum=\"70\", cardinality=2 {\"5\":14 \"0\":13 }, outliers=1 {\"A\":1 }]");
-		Assert.assertEquals(result.dump(false), "TextAnalysisResult [matchCount=27, sampleCount=30, nullCount=2, blankCount=0, regexp=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", sum=\"70\", cardinality=2, outliers=1]");
+		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=anonymous, matchCount=27, sampleCount=30, nullCount=2, blankCount=0, regexp=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", sum=\"70\", cardinality=2 {\"5\":14 \"0\":13 }, outliers=1 {\"A\":1 }]");
+		Assert.assertEquals(result.dump(false), "TextAnalysisResult [name=anonymous, matchCount=27, sampleCount=30, nullCount=2, blankCount=0, regexp=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", sum=\"70\", cardinality=2, outliers=1]");
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
@@ -3173,7 +3173,7 @@ public class AnalysisResultTests {
 
 	@Test
 	public void setMaxOutliers() throws IOException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
 		final int start = 10000;
 		final int end = 12000;
 		final int newMaxOutliers = 12;
@@ -3212,7 +3212,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertTrue(result.isKey());
 		Assert.assertEquals(result.getConfidence(), 0.9925558312655087);
-		Assert.assertEquals(result.dump(true), "TextAnalysisResult [matchCount=2000, sampleCount=2015, nullCount=0, blankCount=0, regexp=\"\\d{5}\", confidence=0.9925558312655087, type=Long, min=\"10000\", max=\"11999\", sum=\"21999000\", cardinality=MAX, outliers=12 {\"A\":1 \"B\":1 \"C\":1 \"D\":1 \"E\":1 \"F\":1 \"G\":1 \"H\":1 \"I\":1 \"J\":1 ...}, PossibleKey]");
+		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=Alphabet, matchCount=2000, sampleCount=2015, nullCount=0, blankCount=0, regexp=\"\\d{5}\", confidence=0.9925558312655087, type=Long, min=\"10000\", max=\"11999\", sum=\"21999000\", cardinality=MAX, outliers=12 {\"A\":1 \"B\":1 \"C\":1 \"D\":1 \"E\":1 \"F\":1 \"G\":1 \"H\":1 \"I\":1 \"J\":1 ...}, PossibleKey]");
 	}
 
 	@Test
