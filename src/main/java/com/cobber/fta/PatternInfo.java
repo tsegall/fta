@@ -25,7 +25,7 @@ package com.cobber.fta;
 public class PatternInfo {
 
 	public enum Type {
-		/** A Boolean type - e.g. True/False, Yes/No, 1/0 */
+		/** A Boolean type - for example, True/False, Yes/No, 1/0. */
 		BOOLEAN {
 			@Override
 			public String toString() {
@@ -39,21 +39,21 @@ public class PatternInfo {
 				return "Double";
 			}
 		},
-		/** A simple Date value - i.e. A calendar value, no time, no time-zone. */
+		/** A simple Date value - a calendar value with no time or no time-zone. */
 		LOCALDATE {
 			@Override
 			public String toString() {
 				return "LocalDate";
 			}
 		},
-		/** A date and time - i.e. both Calendar and a wall clock. */
+		/** A date and time - both a calendar and a wall clock. */
 		LOCALDATETIME {
 			@Override
 			public String toString() {
 				return "LocalDateTime";
 			}
 		},
-		/** Any Time value - i.e. a wall Time. */
+		/** Any Time value - a wall Time. */
 		LOCALTIME {
 			@Override
 			public String toString() {
@@ -81,7 +81,7 @@ public class PatternInfo {
 				return "String";
 			}
 		},
-		/** A date-time with an time-zone. */
+		/** A date-time with a time-zone. */
 		ZONEDDATETIME {
 			@Override
 			public String toString() {

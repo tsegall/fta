@@ -227,11 +227,14 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.DOUBLE_PATTERN);
+		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getMinValue(), "0.1");
 		Assert.assertEquals(result.getMaxValue(), "99.23");
+		Assert.assertEquals(result.getMinLength(), 2);
+		Assert.assertEquals(result.getMaxLength(), 11);
+
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -254,7 +257,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.DOUBLE_PATTERN);
+		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getMinValue(), "0.1");
@@ -319,7 +322,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.SIGNED_DOUBLE_PATTERN);
+		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_SIGNED_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -2684,7 +2687,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.DOUBLE_PATTERN);
+		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {

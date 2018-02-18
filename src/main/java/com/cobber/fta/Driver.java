@@ -45,6 +45,7 @@ class Driver {
 		long recordsToAnalyze = -1;
 		int col = -1;
 		boolean verbose = false;
+		boolean noStatistics = false;
 		TextAnalyzer[] analysis = null;
 		String[] header = null;
 		DateResolutionMode resolutionMode = DateResolutionMode.None;
@@ -72,6 +73,8 @@ class Driver {
 			}
 			else if ("--monthFirst".equals(args[idx]))
 				resolutionMode = DateResolutionMode.MonthFirst;
+			else if ("--noStatistics".equals(args[idx]))
+				noStatistics = true;
 			else if ("--records".equals(args[idx]))
 				recordsToAnalyze = Long.valueOf(args[++idx]);
 			else if ("--samples".equals(args[idx]))
@@ -131,6 +134,8 @@ class Driver {
 							if ((col == -1 || col == i) && verbose)
 								System.out.println(record.get(i));
 							analysis[i] = new TextAnalyzer(header[i], resolutionMode);
+							if (noStatistics)
+								analysis[i].setCollectStatistics(false);
 							if (sampleSize != -1)
 								analysis[i].setSampleSize(sampleSize);
 						}

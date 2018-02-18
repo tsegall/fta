@@ -549,6 +549,7 @@ public class DateTimeParser {
 		boolean dateSeen = false;
 		boolean dateClosed = false;
 		String timeZone = "";
+		String amPmIndicator = "";
 		boolean iso8601 = false;
 		boolean expectingAlphaTimeZone = false;
 
@@ -750,6 +751,19 @@ public class DateTimeParser {
 					expectingAlphaTimeZone = true;
 				break;
 
+			case 'a':
+			case 'A':
+			case 'p':
+			case 'P':
+				// We are prepared to accept AM or PM at the end
+				final char second = trimmed.charAt(i + 1);
+				if (i + 2 != len || (second != 'M' && second != 'm'))
+					return null;
+
+				amPmIndicator = trimmed.charAt(i - 1) == ' ' ? " a" : "a";
+				i++;
+				break;
+
 			default:
 				return null;
 			}
@@ -790,16 +804,26 @@ public class DateTimeParser {
 
 		String timeAnswer = null;
 		if (timeComponent != 0) {
-			if (timeValue[0] > 23 || timeValue[1] > 59 || (timeComponent >= 2 && timeValue[2] > 59))
+			if (timeValue[1] > 59 || (timeComponent >= 2 && timeValue[2] > 59))
 				return null;
-			final String hours = hourLength == 1 ? "H" : "HH";
+			String hours;
+			if (amPmIndicator.length() != 0) {
+				if (timeValue[0] > 12)
+					return null;
+				hours = hourLength == 1 ? "h" : "hh";
+			}
+			else {
+				if (timeValue[0] > 23)
+					return null;
+				hours = hourLength == 1 ? "H" : "HH";
+			}
 			timeAnswer = hours + ":mm";
 			if (timeComponent >= 2)
 				timeAnswer += ":ss";
 			if (timeComponent == 3)
 				timeAnswer += "." + "SSSSSSSSS".substring(0, timeDigits[3]);
 			if (dateComponent == 0)
-				return timeAnswer;
+				return timeAnswer + amPmIndicator;
 		}
 
 		String dateAnswer = null;
@@ -878,6 +902,6 @@ public class DateTimeParser {
 		if (timeFirst)
 			return timeAnswer + (iso8601 ? "'T'" : " ") + dateAnswer + timeZone;
 		else
-			return dateAnswer + (iso8601 ? "'T'" : " ") + timeAnswer + timeZone;
+			return dateAnswer + (iso8601 ? "'T'" : " ") + timeAnswer + amPmIndicator + timeZone;
 	}
 }

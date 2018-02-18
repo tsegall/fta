@@ -77,6 +77,9 @@ public class TextAnalyzer {
 	public static final int SAMPLE_DEFAULT = 20;
 	private int samples = SAMPLE_DEFAULT;
 
+	/** Should we collect statistics (min, max, sum) as we parse the data stream. */
+	private boolean collectStatistics = true;
+
 	/** The default value for the maximum Cardinality tracked. */
 	public static final int MAX_CARDINALITY_DEFAULT = 500;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
@@ -163,16 +166,18 @@ public class TextAnalyzer {
 	private static Set<String> countries = new HashSet<String>();
 	private static Set<String> monthAbbr = new HashSet<String>();
 
+	public static final String PATTERN_ALPHA = "\\p{Alpha}+";
+	public static final String PATTERN_LONG = "\\d+";
+	public static final String PATTERN_SIGNED_LONG = "-?\\d+";
+	public static final String PATTERN_DOUBLE = "\\.\\d+|\\d+(\\.\\d+)?";
+	public static final String PATTERN_SIGNED_DOUBLE = "-?\\.\\d+|-?\\d+(\\.\\d+)?";
+
+	private final Map<String, DateTimeFormatter> formatterCache = new HashMap<String, DateTimeFormatter>();
+
 	private static void addPattern(final Map<String, PatternInfo> map, final boolean patternIsKey, final String regexp, final PatternInfo.Type type,
 			final String typeQualifier, final int minLength, final int maxLength, final String generalPattern, final String format) {
 		map.put(patternIsKey ? regexp : (type.toString() + "." + typeQualifier), new PatternInfo(regexp, type, typeQualifier, minLength, maxLength, generalPattern, format));
 	}
-
-	public static final String LONG_PATTERN = "\\d+";
-	public static final String SIGNED_LONG_PATTERN = "-?\\d+";
-	public static final String DOUBLE_PATTERN = "\\.\\d+|\\d+(\\.\\d+)?";
-	public static final String SIGNED_DOUBLE_PATTERN = "-?\\.\\d+|-?\\d+(\\.\\d+)?";
-	public static final String ALPHA_PATTERN = "\\p{Alpha}+";
 
 	static {
 		patternInfo = new HashMap<String, PatternInfo>();
@@ -184,12 +189,12 @@ public class TextAnalyzer {
 
 		addPattern(patternInfo, true, "\\p{Alpha}{2}", PatternInfo.Type.STRING, null, 2, 2, null, "");
 		addPattern(patternInfo, true, "\\p{Alpha}{3}", PatternInfo.Type.STRING, null, 3, 3, null, "");
-		addPattern(patternInfo, true, ALPHA_PATTERN, PatternInfo.Type.STRING, null, 1, -1, null, "");
+		addPattern(patternInfo, true, PATTERN_ALPHA, PatternInfo.Type.STRING, null, 1, -1, null, "");
 
-		addPattern(patternInfo, true, LONG_PATTERN, PatternInfo.Type.LONG, null, 1, -1, null, "");
-		addPattern(patternInfo, true, SIGNED_LONG_PATTERN, PatternInfo.Type.LONG, "SIGNED", 1, -1, null, "");
-		addPattern(patternInfo, true, DOUBLE_PATTERN, PatternInfo.Type.DOUBLE, null, -1, -1, null, "");
-		addPattern(patternInfo, true, SIGNED_DOUBLE_PATTERN, PatternInfo.Type.DOUBLE, "SIGNED", -1, -1, null, "");
+		addPattern(patternInfo, true, PATTERN_LONG, PatternInfo.Type.LONG, null, 1, -1, null, "");
+		addPattern(patternInfo, true, PATTERN_SIGNED_LONG, PatternInfo.Type.LONG, "SIGNED", 1, -1, null, "");
+		addPattern(patternInfo, true, PATTERN_DOUBLE, PatternInfo.Type.DOUBLE, null, -1, -1, null, "");
+		addPattern(patternInfo, true, PATTERN_SIGNED_DOUBLE, PatternInfo.Type.DOUBLE, "SIGNED", -1, -1, null, "");
 
 		// Logical Types
 		addPattern(typeInfo, false, "[NULL]", PatternInfo.Type.STRING, "NULL", -1, -1, null, null);
@@ -238,7 +243,7 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Construct a Text Analyzer for the named data stream.
+	 * Construct a Text Analyzer for the named data stream with the supplied DateResolutionMode.
 	 *
 	 * @param name The name of the data stream (e.g. the column of the CSV file)
 	 * @param resolutionMode Determines what to do when the Date field is ambiguous (i.e. we cannot determine which
@@ -251,7 +256,7 @@ public class TextAnalyzer {
 	public TextAnalyzer(final String name, final DateResolutionMode resolutionMode) throws IOException {
 		this.name = name;
 		this.resolutionMode = resolutionMode;
-		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
+		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
 		decimalSeparator = formatSymbols.getDecimalSeparator();
 		monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
 		groupingSeparator = formatSymbols.getGroupingSeparator();
@@ -281,14 +286,40 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Set the number of Samples to collect before attempting to determine the
-	 * type. Note: It is not possible to change the Sample Size once training
-	 * has started.
+	 * Indicate whether to collect statistics or not.
 	 *
-	 * @param samples
-	 *            The number of samples to collect
+     * @param collectStatistics
+     *            A boolean indicating the desired state
 	 * @return The previous value of this parameter.
 	 */
+	public boolean setCollectStatistics(final boolean collectStatistics) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot adjust statistics collection once training has started");
+
+		final boolean ret = collectStatistics;
+		this.collectStatistics = collectStatistics;
+		return ret;
+	}
+
+	/**
+	 * Indicate whether to collect statistics or not.
+	 *
+	 * @return Whether Statistics collection is enabled.
+	 */
+	public boolean getCollectStatistics() {
+		return collectStatistics;
+	}
+
+    /**
+     * Set the number of Samples to collect before attempting to determine the
+     * type. Note: It is not possible to change the Sample Size once training
+     * has started.
+     * Indicate whether to collect statistics or not.
+     *
+     * @param samples
+     *            The number of samples to collect
+     * @return The previous value of this parameter.
+	*/
 	public int setSampleSize(final int samples) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot change sample size once training has started");
@@ -304,7 +335,7 @@ public class TextAnalyzer {
 	 * Get the number of Samples used to collect before attempting to determine
 	 * the type.
 	 *
-	 * @return The maximum cardinality.
+	 * @return The current size of the sample window.
 	 */
 	public int getSampleSize() {
 		return samples;
@@ -325,7 +356,7 @@ public class TextAnalyzer {
 		if (newCardinality < 0)
 			throw new IllegalArgumentException("Invalid value for maxCardinality " + newCardinality);
 
-		int ret = maxCardinality;
+		final int ret = maxCardinality;
 		maxCardinality = newCardinality;
 		return ret;
 	}
@@ -386,19 +417,21 @@ public class TextAnalyzer {
 				totalLeadingZeros++;
 		}
 
-		if (l < minLong) {
-			minLong = l;
-		}
-		if (l > maxLong) {
-			maxLong = l;
-		}
-		final int digits = l < 0 ? input.length() - 1 : input.length();
-		if (digits < minTrimmedLength)
-			minTrimmedLength = digits;
-		if (digits > maxTrimmedLength)
-			maxTrimmedLength = digits;
+		if (collectStatistics) {
+			if (l < minLong) {
+				minLong = l;
+			}
+			if (l > maxLong) {
+				maxLong = l;
+			}
+			final int digits = l < 0 ? input.length() - 1 : input.length();
+			if (digits < minTrimmedLength)
+				minTrimmedLength = digits;
+			if (digits > maxTrimmedLength)
+				maxTrimmedLength = digits;
 
-		sumBI = sumBI.add(BigInteger.valueOf(l));
+			sumBI = sumBI.add(BigInteger.valueOf(l));
+		}
 
 		if ("ZIP".equals(matchPatternInfo.typeQualifier)) {
 			return zips.contains(rawInput);
@@ -480,19 +513,19 @@ public class TextAnalyzer {
 		if (Double.isNaN(d) || Double.isInfinite(d))
 			return true;
 
-		if (d < minDouble) {
-			minDouble = d;
-		}
-		if (d > maxDouble) {
-			maxDouble = d;
-		}
+		if (collectStatistics) {
+			if (d < minDouble) {
+				minDouble = d;
+			}
+			if (d > maxDouble) {
+				maxDouble = d;
+			}
 
-		sumBD = sumBD.add(BigDecimal.valueOf(d));
+			sumBD = sumBD.add(BigDecimal.valueOf(d));
+		}
 
 		return true;
 	}
-
-	private final Map<String, DateTimeFormatter> formatterCache = new HashMap<String, DateTimeFormatter>();
 
 	private void trackDateTime(final String dateFormat, final String input) throws DateTimeParseException {
 		final DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, resolutionMode);
@@ -501,7 +534,7 @@ public class TextAnalyzer {
 		}
 
 		// Grab the cached Formatter
-		final String formatString = result.getFormatString().replaceAll("\\?\\?", "yy").replaceAll("\\?", "M");
+		final String formatString = result.getFormatString();
 		DateTimeFormatter formatter = formatterCache.get(formatString);
 		if (formatter == null) {
 			formatter = DateTimeFormatter.ofPattern(formatString);
@@ -513,42 +546,52 @@ public class TextAnalyzer {
 		switch (result.getType()) {
 		case LOCALTIME:
 			final LocalTime localTime = LocalTime.parse(trimmed, formatter);
-			if (minLocalTime == null || localTime.compareTo(minLocalTime) < 0)
-				minLocalTime = localTime;
-			if (maxLocalTime == null || localTime.compareTo(maxLocalTime) > 0)
-				maxLocalTime = localTime;
+			if (collectStatistics) {
+				if (minLocalTime == null || localTime.compareTo(minLocalTime) < 0)
+					minLocalTime = localTime;
+				if (maxLocalTime == null || localTime.compareTo(maxLocalTime) > 0)
+					maxLocalTime = localTime;
+			}
 			break;
 
 		case LOCALDATE:
 			final LocalDate localDate = LocalDate.parse(trimmed, formatter);
-			if (minLocalDate == null || localDate.compareTo(minLocalDate) < 0)
-				minLocalDate = localDate;
-			if (maxLocalDate == null || localDate.compareTo(maxLocalDate) > 0)
-				maxLocalDate = localDate;
+			if (collectStatistics) {
+				if (minLocalDate == null || localDate.compareTo(minLocalDate) < 0)
+					minLocalDate = localDate;
+				if (maxLocalDate == null || localDate.compareTo(maxLocalDate) > 0)
+					maxLocalDate = localDate;
+			}
 			break;
 
 		case LOCALDATETIME:
 			final LocalDateTime localDateTime = LocalDateTime.parse(trimmed, formatter);
-			if (minLocalDateTime == null || localDateTime.compareTo(minLocalDateTime) < 0)
-				minLocalDateTime = localDateTime;
-			if (maxLocalDateTime == null || localDateTime.compareTo(maxLocalDateTime) > 0)
-				maxLocalDateTime = localDateTime;
+			if (collectStatistics) {
+				if (minLocalDateTime == null || localDateTime.compareTo(minLocalDateTime) < 0)
+					minLocalDateTime = localDateTime;
+				if (maxLocalDateTime == null || localDateTime.compareTo(maxLocalDateTime) > 0)
+					maxLocalDateTime = localDateTime;
+			}
 			break;
 
 		case ZONEDDATETIME:
 			final ZonedDateTime zonedDataTime = ZonedDateTime.parse(trimmed, formatter);
-			if (minZonedDateTime == null || zonedDataTime.compareTo(minZonedDateTime) < 0)
-				minZonedDateTime = zonedDataTime;
-			if (maxZonedDateTime == null || zonedDataTime.compareTo(maxZonedDateTime) > 0)
-				maxZonedDateTime = zonedDataTime;
+			if (collectStatistics) {
+				if (minZonedDateTime == null || zonedDataTime.compareTo(minZonedDateTime) < 0)
+					minZonedDateTime = zonedDataTime;
+				if (maxZonedDateTime == null || zonedDataTime.compareTo(maxZonedDateTime) > 0)
+					maxZonedDateTime = zonedDataTime;
+			}
 			break;
 
 		case OFFSETDATETIME:
 			final OffsetDateTime offsetDateTime = OffsetDateTime.parse(trimmed, formatter);
-			if (minOffsetDateTime == null || offsetDateTime.compareTo(minOffsetDateTime) < 0)
-				minOffsetDateTime = offsetDateTime;
-			if (maxOffsetDateTime == null || offsetDateTime.compareTo(maxOffsetDateTime) > 0)
-				maxOffsetDateTime = offsetDateTime;
+			if (collectStatistics) {
+				if (minOffsetDateTime == null || offsetDateTime.compareTo(minOffsetDateTime) < 0)
+					minOffsetDateTime = offsetDateTime;
+				if (maxOffsetDateTime == null || offsetDateTime.compareTo(maxOffsetDateTime) > 0)
+					maxOffsetDateTime = offsetDateTime;
+			}
 			break;
 
 		default:
@@ -609,7 +652,7 @@ public class TextAnalyzer {
 		int semicolons = 0;
 		int atSigns = 0;
 		for (int i = 0; i < length; i++) {
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			if (i == 0 && ch == minusSign) {
 				numericSigned = true;
 			} else if (Character.isDigit(ch)) {
@@ -639,14 +682,14 @@ public class TextAnalyzer {
 			}
 		}
 
-		StringBuilder compressedl0 = new StringBuilder(length);
+		final StringBuilder compressedl0 = new StringBuilder(length);
 		if ("true".equalsIgnoreCase(input) || "false".equalsIgnoreCase(input)) {
 			compressedl0.append("(?i)true|false");
 		} else if ("yes".equalsIgnoreCase(input) || "no".equalsIgnoreCase(input)) {
 			compressedl0.append("(?i)yes|no");
 		} else {
 			// Walk the new level0 to create the new level1
-			String l0withSentinel = l0.toString() + "|";
+			final String l0withSentinel = l0.toString() + "|";
 			char last = l0withSentinel.charAt(0);
 			int repetitions = 1;
 			for (int i = 1; i < l0withSentinel.length(); i++) {
@@ -683,12 +726,12 @@ public class TextAnalyzer {
 			StringBuilder l1 = null;
 			StringBuilder l2 = null;
 			if (numericDecimalSeparators == 1) {
-				l1 = new StringBuilder(numericSigned ? SIGNED_DOUBLE_PATTERN : DOUBLE_PATTERN);
-				l2 = new StringBuilder(SIGNED_DOUBLE_PATTERN);
+				l1 = new StringBuilder(numericSigned ? PATTERN_SIGNED_DOUBLE : PATTERN_DOUBLE);
+				l2 = new StringBuilder(PATTERN_SIGNED_DOUBLE);
 			}
 			else {
-				l1 = new StringBuilder(numericSigned ? SIGNED_LONG_PATTERN : LONG_PATTERN);
-				l2 = new StringBuilder(SIGNED_LONG_PATTERN);
+				l1 = new StringBuilder(numericSigned ? PATTERN_SIGNED_LONG : PATTERN_LONG);
+				l2 = new StringBuilder(PATTERN_SIGNED_LONG);
 			}
 			levels[1].add(l1);
 			levels[2].add(l2);
@@ -712,7 +755,7 @@ public class TextAnalyzer {
 				levels[2].add(new StringBuilder(collapsed));
 			} else {
 				levels[1].add(new StringBuilder(collapsed));
-				levels[2].add(new StringBuilder(ALPHA_PATTERN));
+				levels[2].add(new StringBuilder(PATTERN_ALPHA));
 			}
 
 		}
@@ -755,13 +798,13 @@ public class TextAnalyzer {
 			}
 		}
 
-		String bestKey = best.getKey();
+		final String bestKey = best.getKey();
 		String secondBestKey;
 		if (secondBest != null) {
 			secondBestKey = secondBest.getKey();
 
-			PatternInfo bestPattern = patternInfo.get(bestKey);
-			PatternInfo secondBestPattern = patternInfo.get(secondBestKey);
+			final PatternInfo bestPattern = patternInfo.get(bestKey);
+			final PatternInfo secondBestPattern = patternInfo.get(secondBestKey);
 			if (bestPattern != null && secondBestPattern != null) {
 				if (bestPattern.isNumeric() && secondBestPattern.isNumeric()) {
 					if (!bestPattern.type.equals(secondBestPattern.type)) {
@@ -789,7 +832,7 @@ public class TextAnalyzer {
 	private void determineType() {
 		// If we have fewer than 6 samples do not even pretend
 		if (sampleCount == 0) {
-			matchPattern = ALPHA_PATTERN;
+			matchPattern = PATTERN_ALPHA;
 			matchPatternInfo = patternInfo.get(matchPattern);
 			matchType = matchPatternInfo.type;
 			return;
@@ -799,9 +842,9 @@ public class TextAnalyzer {
 		String level0pattern = null, level1pattern = null, level2pattern = null;
 		PatternInfo level0patternInfo = null, level1patternInfo = null, level2patternInfo = null;
 		String pattern = null;
-		Map.Entry<String, Integer> level0 = getBest(0);
-		Map.Entry<String, Integer> level1 = getBest(1);
-		Map.Entry<String, Integer> level2 = getBest(2);
+		final Map.Entry<String, Integer> level0 = getBest(0);
+		final Map.Entry<String, Integer> level1 = getBest(1);
+		final Map.Entry<String, Integer> level2 = getBest(2);
 		Map.Entry<String, Integer> best = level0;
 
 		if (level0 != null) {
@@ -865,7 +908,7 @@ public class TextAnalyzer {
 
 			// Do we have a set of possible emails?
 			if (possibleEmails == raw.size()) {
-				PatternInfo save = matchPatternInfo;
+				final PatternInfo save = matchPatternInfo;
 				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "EMAIL", -1, -1, null, null);
 				int emails = 0;
 				for (final String sample : raw) {
@@ -939,7 +982,7 @@ public class TextAnalyzer {
 	}
 
 	private void backoutToString(final long realSamples) {
-		matchPattern = ALPHA_PATTERN;
+		matchPattern = PATTERN_ALPHA;
 		matchCount = realSamples;
 		matchPatternInfo = patternInfo.get(matchPattern);
 
@@ -950,7 +993,7 @@ public class TextAnalyzer {
 
 	private void backoutZip(final long realSamples) {
 		if (totalLongs > .95 * realSamples) {
-			matchPattern = LONG_PATTERN;
+			matchPattern = PATTERN_LONG;
 			matchCount = totalLongs;
 
 			final Map<String, Integer> outliersCopy = new HashMap<String, Integer>(outliers);
@@ -1118,7 +1161,6 @@ public class TextAnalyzer {
 	 */
 	private boolean checkUniformLengthSet(final Set<String> uniformSet, final PatternInfo.Type type, final String qualifier) {
 		final long realSamples = sampleCount - (nullCount + blankCount);
-		long validCount = 0;
 		long misses = 0;					// count of number of groups that are misses
 		long missCount = 0;				// count of number of misses
 
@@ -1132,6 +1174,7 @@ public class TextAnalyzer {
 		}
 
 		// Sweep the balance and check they are part of the set
+		long validCount = 0;
 		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 		if ((double) missCount / realSamples <= .05) {
 			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
@@ -1244,7 +1287,7 @@ public class TextAnalyzer {
 			confidence = (double) matchCount / realSamples;
 		}
 
-		if (LONG_PATTERN.equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
+		if (PATTERN_LONG.equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
 			matchPatternInfo = new PatternInfo("\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", -1, -1, null, "yyyy");
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
 			final int length = determineLength(matchPattern);
@@ -1305,7 +1348,7 @@ public class TextAnalyzer {
 				}
 			}
 
-			if (!typeIdentified && ALPHA_PATTERN.equals(matchPattern)) {
+			if (!typeIdentified && PATTERN_ALPHA.equals(matchPattern)) {
 				matchPattern = ".{" + minRawLength;
 				if (minRawLength != maxRawLength)
 					matchPattern += "," + maxRawLength;
@@ -1314,7 +1357,7 @@ public class TextAnalyzer {
 						null);
 			}
 
-		} else if (LONG_PATTERN.equals(matchPattern)) {
+		} else if (PATTERN_LONG.equals(matchPattern)) {
 			if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
 				// boolean by any other name
 				matchPattern = "[0|1]";
@@ -1376,7 +1419,7 @@ public class TextAnalyzer {
 				// need to synthesize the min and max value, as well as the minRawlength if not set.
 				if (minRawLength == Integer.MAX_VALUE)
 					minRawLength = 0;
-				StringBuilder s = new StringBuilder(maxRawLength);
+				final StringBuilder s = new StringBuilder(maxRawLength);
 				for (int i = 0; i < maxRawLength; i++) {
 					if (i == minRawLength)
 						minValue = new String(s.toString());
@@ -1393,28 +1436,38 @@ public class TextAnalyzer {
 			break;
 
 		case LOCALDATE:
-			minValue = minLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-			maxValue = maxLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			if (collectStatistics) {
+				minValue = minLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			}
 			break;
 
 		case LOCALTIME:
-			minValue = minLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-			maxValue = maxLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			if (collectStatistics) {
+				minValue = minLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			}
 			break;
 
 		case LOCALDATETIME:
-			minValue = minLocalDateTime == null ? null : minLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-			maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			if (collectStatistics) {
+				minValue = minLocalDateTime == null ? null : minLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			}
 			break;
 
 		case ZONEDDATETIME:
-			minValue = minZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-			maxValue = maxZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			if (collectStatistics) {
+				minValue = minZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			}
 			break;
 
 		case OFFSETDATETIME:
-			minValue = minOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-			maxValue = maxOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			if (collectStatistics) {
+				minValue = minOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+			}
 			break;
 		}
 
@@ -1440,7 +1493,7 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Access the training set - this will typically be the first SAMPLE_SIZE records.
+	 * Access the training set - this will typically be the first {@link #SAMPLE_DEFAULT} records.
 	 *
 	 * @return A List of the raw input strings.
 	 */

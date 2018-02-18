@@ -423,6 +423,73 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void basic_hhmmss_AMPM() {
+		final String input = "06:58:20 AM|07:25:18 PM|01:47:06 AM|05:32:48 AM|11:29:53 PM|02:21:10 PM|04:55:48 AM|" +
+				"03:39:14 PM|09:43:02 PM|10:43:15 AM|05:46:07 AM|05:09:34 PM|06:03:58 AM|10:59:15 AM|10:13:28 AM|" +
+				"10:25:10 AM|10:33:03 PM|04:24:44 AM|04:19:29 PM|01:08:48 AM|11:11:47 AM|10:11:06 PM|12:27:06 AM|" +
+				"12:35:14 AM|01:30:55 PM|12:11:05 AM|09:23:51 PM|10:23:20 PM|01:29:57 PM|04:35:17 PM|06:53:23 PM|" +
+				"09:23:13 PM|11:40:44 PM|01:01:02 AM|04:24:19 AM|08:51:48 AM|02:29:26 AM|08:48:32 AM|11:03:13 PM|" +
+				"07:52:27 PM|04:51:40 PM|08:31:11 AM|07:53:57 AM|07:04:03 PM|12:05:00 AM|01:50:13 AM|";
+		final String inputs[] = input.split("\\|");
+		final DateTimeParser det = new DateTimeParser();
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		final DateTimeParserResult result = det.getResult();
+
+		final String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "hh:mm:ss a");
+
+		Assert.assertTrue(result.isValid("03:14:12 AM"));
+		Assert.assertTrue(result.isValid8("03:14:12 AM"));
+		Assert.assertTrue(result.isValid("03:14:12 PM"));
+		Assert.assertTrue(result.isValid8("03:14:12 PM"));
+
+		final String regExp = result.getRegExp();
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(regExp), inputs[i]);
+		}
+	}
+
+	@Test
+	public void basic_hhmmss_AMPM_2() {
+		final String input = "06:58:20am|07:25:18pm|01:47:06am|05:32:48am|11:29:53pm|02:21:10pm|04:55:48am|" +
+				"03:39:14pm|09:43:02pm|10:43:15am|05:46:07am|05:09:34pm|06:03:58am|10:59:15am|10:13:28am|" +
+				"10:25:10am|10:33:03pm|04:24:44am|04:19:29pm|01:08:48am|11:11:47am|10:11:06pm|12:27:06am|" +
+				"12:35:14am|01:30:55pm|12:11:05am|09:23:51pm|10:23:20pm|01:29:57pm|04:35:17pm|06:53:23pm|" +
+				"09:23:13pm|11:40:44pm|01:01:02am|04:24:19am|08:51:48am|02:29:26am|08:48:32am|11:03:13pm|" +
+				"07:52:27pm|04:51:40pm|08:31:11am|07:53:57am|07:04:03pm|12:05:00am|01:50:13am|";
+		final String inputs[] = input.split("\\|");
+		final DateTimeParser det = new DateTimeParser();
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		final DateTimeParserResult result = det.getResult();
+
+		final String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "hh:mm:ssa");
+
+		Assert.assertTrue(result.isValid("03:14:12am"));
+		Assert.assertTrue(result.isValid("03:14:12pm"));
+		// It hurts but there is no way to specify am/pm (lowercase) as valid without constructing your own formatter
+		// Assert.assertTrue(result.isValid8("03:14:12am"));
+		// Assert.assertTrue(result.isValid8("03:14:12pm"));
+
+		final String regExp = result.getRegExp();
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(regExp), inputs[i]);
+		}
+	}
+
+	@Test
 	public void basicMMMdcommayyyy() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String input = "August 20, 2017|August 20, 2017|July 22, 2017|August 5, 2017|July 22, 2017|June 23, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +

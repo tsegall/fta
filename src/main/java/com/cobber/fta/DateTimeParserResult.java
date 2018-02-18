@@ -153,8 +153,6 @@ public class DateTimeParserResult {
 	public static DateTimeParserResult asResult(final String formatString, final DateResolutionMode resolutionMode) {
 		final String key = resolutionMode.name() + '#' + formatString;
 		DateTimeParserResult ret = dtpCache.get(key);
-//		if (ret != null)
-//			System.err.printf("Looked for '%s' and found result with formatString = '%s'\n", key, ret.formatString);
 		if (ret != null)
 			return newInstance(ret);
 
