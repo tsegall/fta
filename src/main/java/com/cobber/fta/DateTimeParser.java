@@ -61,7 +61,6 @@ public class DateTimeParser {
 
 	private static Map<String, Integer> months = new HashMap<String, Integer>();
 	private static Map<String, Integer> monthAbbr = new HashMap<String, Integer>();
-	private static Map<String, SimpleDateMatcher> simpleDateMatcher = new HashMap<String, SimpleDateMatcher>();
 
 	public static Set<String> timeZones = new HashSet<String>();
 	public static String monthPattern;
@@ -99,56 +98,6 @@ public class DateTimeParser {
 		// Add the non-real Time Zones (that people use)
 		timeZones.addAll(Arrays.asList(new String[] {"EDT", "CDT", "MDT", "PDT"}));
 
-		SimpleDateMatcher s;
-
-		s = new SimpleDateMatcher("d{4} d{2} d{2}", "yyyy MM dd", new int[] {8, 2, 5, 2, 0, 4}); simpleDateMatcher.put(s.getMatcher(), s);
-
-
-		simpleDateMatcher.put("d{4} d{2} d{2}", new SimpleDateMatcher("d{4} d{2} d{2}", "yyyy MM dd", new int[] {8, 2, 5, 2, 0, 4}));
-		simpleDateMatcher.put("d{4} d d{2}", new SimpleDateMatcher("d{4} d d{2}", "yyyy M dd", new int[] {7, 2, 5, 1, 0, 4}));
-		simpleDateMatcher.put("d{4} d{2} d", new SimpleDateMatcher("d{4} d{2} d", "yyyy MM d", new int[] {8, 1, 5, 2, 0, 4}));
-		simpleDateMatcher.put("d{4} d d", new SimpleDateMatcher("d{4} d d", "yyyy M d", new int[] {7, 1, 5, 1, 0, 4}));
-
-		simpleDateMatcher.put("d{2} a{3} d{4}", new SimpleDateMatcher("d{2} a{3} d{4}", "dd MMM yyyy", new int[] {0, 2, 3, 3, 7, 4}));
-		simpleDateMatcher.put("d a{3} d{4}", new SimpleDateMatcher("d a{3} d{4}", "d MMM yyyy", new int[] {0, 1, 2, 3, 6, 4}));
-		simpleDateMatcher.put("d{2}-a{3}-d{4}", new SimpleDateMatcher("d{2}-a{3}-d{4}", "dd-MMM-yyyy", new int[] {0, 2, 3, 3, 7, 4}));
-		simpleDateMatcher.put("d-a{3}-d{4}", new SimpleDateMatcher("d-a{3}-d{4}", "d-MMM-yyyy", new int[] {0, 1, 2, 3, 6, 4}));
-		simpleDateMatcher.put("d{2}/a{3}/d{4}", new SimpleDateMatcher("d{2}/a{3}/d{4}", "dd/MMM/yyyy", new int[] {0, 2, 3, 3, 7, 4}));
-		simpleDateMatcher.put("d/a{3}/d{4}", new SimpleDateMatcher("d/a{3}/d{4}", "d/MMM/yyyy", new int[] {0, 1, 2, 3, 6, 4}));
-
-		simpleDateMatcher.put("d{2} a{4} d{4}", new SimpleDateMatcher("d{2} a{4} d{4}", "dd MMMM yyyy", new int[] {0, 2, 3, -5, -4, 4}));
-		simpleDateMatcher.put("d a{4} d{4}", new SimpleDateMatcher("d a{4} d{4}", "d MMMM yyyy", new int[] {0, 1, 2, -5, -4, 4}));
-		simpleDateMatcher.put("d{2}-a{4}-d{4}", new SimpleDateMatcher("d{2}-a{4}-d{4}", "dd-MMMM-yyyy", new int[] {0, 2, 3, -5, -4, 4}));
-		simpleDateMatcher.put("d-a{4}-d{4}", new SimpleDateMatcher("d-a{4}-d{4}", "d-MMMM-yyyy", new int[] {0, 1, 2, -5, -4, 4}));
-		simpleDateMatcher.put("d{2}/a{4}/d{4}", new SimpleDateMatcher("d{2}/a{4}/d{4}", "dd/MMMM/yyyy", new int[] {0, 2, 3, -5, -4, 4}));
-		simpleDateMatcher.put("d/a{4}/d{4}", new SimpleDateMatcher("d/a{4}/d{4}", "d/MMMM/yyyy", new int[] {0, 1, 2, -5, -4, 4}));
-
-		simpleDateMatcher.put("d{2} a{3} d{2}", new SimpleDateMatcher("d{2} a{3} d{2}", "dd MMM yy", new int[] {0, 2, 3, 3, 7, 2}));
-		simpleDateMatcher.put("d a{3} d{2}", new SimpleDateMatcher("d a{3} d{2}", "d MMM yy", new int[] {0, 1, 2, 3, 6, 2}));
-		simpleDateMatcher.put("d{2}-a{3}-d{2}", new SimpleDateMatcher("d{2}-a{3}-d{2}", "dd-MMM-yy", new int[] {0, 2, 3, 3, 7, 2}));
-		simpleDateMatcher.put("d-a{3}-d{2}", new SimpleDateMatcher("d-a{3}-d{2}", "d-MMM-yy", new int[] {0, 1, 2, 3, 6, 2}));
-		simpleDateMatcher.put("d{2}/a{3}/d{2}", new SimpleDateMatcher("d{2}/a{3}/d{2}", "dd/MMM/yy", new int[] {0, 2, 3, 3, 7, 2}));
-		simpleDateMatcher.put("d/a{3}/d{2}", new SimpleDateMatcher("d/a{3}/d{2}", "d/MMM/yy", new int[] {0, 1, 2, 3, 6, 2}));
-
-		simpleDateMatcher.put("a{3} d{2}, d{4}", new SimpleDateMatcher("a{3} d{2}, d{4}", "MMM dd',' yyyy", new int[] {4, 2, 0, 3, 8, 4}));
-		simpleDateMatcher.put("a{3} d, d{4}", new SimpleDateMatcher("a{3} d, d{4}", "MMM d',' yyyy", new int[] {4, 1, 0, 3, 7, 4}));
-		simpleDateMatcher.put("a{3} d{2} d{4}", new SimpleDateMatcher("a{3} d d{4}", "MMM dd yyyy", new int[] {4, 2, 0, 3, 7, 4}));
-		simpleDateMatcher.put("a{3} d d{4}", new SimpleDateMatcher("a{3} d d{4}", "MMM d yyyy", new int[] {4, 1, 0, 3, 6, 4}));
-		simpleDateMatcher.put("a{3}-d{2}-d{4}", new SimpleDateMatcher("a{3}-þþ-d{4}", "MMM-dd-yyyy", new int[] {4, 2, 0, 3, 7, 4}));
-		simpleDateMatcher.put("a{3}-d-d{4}", new SimpleDateMatcher("a{3}-d-d{4}", "MMM-d-yyyy", new int[] {4, 1, 0, 3, 6, 4}));
-
-		simpleDateMatcher.put("a{4} d{2}, d{4}", new SimpleDateMatcher("a{4} d{2}, d{4}", "MMMM dd',' yyyy", new int[] {-8, 2, 0, 3, -4, 4}));
-		simpleDateMatcher.put("a{4} d, d{4}", new SimpleDateMatcher("a{4} d, d{4}", "MMMM d',' yyyy", new int[] {-7, 1, 0, 3, -4, 4}));
-		simpleDateMatcher.put("a{4} d{2} d{4}", new SimpleDateMatcher("a{4} d d{4}", "MMMM dd yyyy", new int[] {-7, 2, 0, 3, -4, 4}));
-		simpleDateMatcher.put("a{4} d d{4}", new SimpleDateMatcher("a{4} d d{4}", "MMMM d yyyy", new int[] {-6, 1, 0, 3, -4, 4}));
-		simpleDateMatcher.put("a{4}-d{2}-d{4}", new SimpleDateMatcher("a{4}-d{2}-d{4}", "MMMM-dd-yyyy", new int[] {-7, 2, 0, 3, -4, 4}));
-		simpleDateMatcher.put("a{4}-d-d{4}", new SimpleDateMatcher("a{4}-d-d{4}", "MMMM-d-yyyy", new int[] {-6, 1, 0, 3, -4, 4}));
-
-		simpleDateMatcher.put("d{8}Td{6}Z", new SimpleDateMatcher("d{8}Td{6}Z", "yyyyMMdd'T'HHmmss'Z'", new int[] {6, 2, 4, 2, 0, 4}));
-		simpleDateMatcher.put("d{8}Td{6}", new SimpleDateMatcher("d{8}Td{6}", "yyyyMMdd'T'HHmmss", new int[] {6, 2, 4, 2, 0, 4}));
-
-		simpleDateMatcher.put("d{2}/a{3}/d{2} d:d{2} P", new SimpleDateMatcher("d{2}/a{3}/d{2} d:d{2} P", "dd/MMM/yy h:mm a", new int[] {0, 2, 3, 3, 7, 2}));
-		simpleDateMatcher.put("d{2}/a{3}/d{2} d{2}:d{2} P", new SimpleDateMatcher("d{2}/a{3}/d{2} d{2}:d{2} P", "dd/MMM/yy hh:mm a", new int[] {0, 2, 3, 3, 7, 2}));
 	}
 
 	public static int monthAbbreviationOffset(final String month) {
@@ -498,7 +447,7 @@ public class DateTimeParser {
 
 		final String compressed = compress(trimmed);
 
-		final SimpleDateMatcher matcher = simpleDateMatcher.get(compressed);
+		final SimpleDateMatcher matcher = SimpleDateMatcher.get(compressed);
 		if (matcher != null) {
 			int[] dateValue = new int[] {-1, -1, -1};
 			if (matcher.getMonthLength() < 0) {
