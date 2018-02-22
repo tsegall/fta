@@ -10,7 +10,7 @@ mainClassName = "com.cobber.fta.Main"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "1.0.20"
+version = "1.0.21"
 
 repositories {
     mavenCentral()
@@ -88,11 +88,11 @@ uploadArchives {
 
 dependencies {
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-csv
-	compile group: 'org.apache.commons', name: 'commons-csv', version: '1.4'
+	compile group: 'org.apache.commons', name: 'commons-csv', version: '1.5'
 	// https://mvnrepository.com/artifact/org.testng/testng
-	compile group: 'org.testng', name: 'testng', version: '6.11'
+	compile group: 'org.testng', name: 'testng', version: '6.14.2'
 	// https://mvnrepository.com/artifact/javax.mail/mail
-	compile group: 'com.sun.mail', name: 'javax.mail', version: '1.5.6'
+	compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.1'
 }
 
 distributions {

@@ -171,6 +171,7 @@ public class DateTimeParser {
 			return "MMMM";
 		return "yyyy";
 	}
+
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
@@ -353,68 +354,6 @@ public class DateTimeParser {
 		return null;
 	}
 
-	private static String compress(final String input) {
-		final StringBuilder result = new StringBuilder();
-		int len = input.length();
-		char lastCh = '=';
-		int count = 0;
-		boolean amIndicator = false;
-		if (input.toLowerCase(Locale.ROOT).endsWith("am") || input.toLowerCase(Locale.ROOT).endsWith("pm")) {
-			len -= 2;
-			amIndicator = true;
-		}
-
-		for (int i = 0; i < len; i++) {
-			final char ch = input.charAt(i);
-			if (Character.isDigit(ch)) {
-				if (Character.isDigit(lastCh))
-					count++;
-				else {
-					if (count != 0) {
-						result.append("{" + count + "}");
-						count = 0;
-					}
-					result.append('d');
-					lastCh = ch;
-				}
-			}
-			else if (Character.isAlphabetic(ch)) {
-				if (Character.isAlphabetic(lastCh)) {
-					if (count < 3)
-						count++;
-				}
-				else {
-					if (count != 0) {
-						result.append("{" + String.valueOf(count + 1) + "}");
-						count = 0;
-					}
-					if ((i+1 == len || !Character.isAlphabetic(input.charAt(i+1))) && (ch == 'T' || ch == 'Z'))
-							result.append(ch);
-					else
-						result.append('a');
-					lastCh = ch;
-				}
-			}
-			else {
-				if (count != 0) {
-					result.append("{" + String.valueOf(count + 1) + "}");
-					count = 0;
-				}
-				result.append(ch);
-				lastCh = ch;
-			}
-		}
-		if (count != 0) {
-			result.append("{" + String.valueOf(count + 1) + "}");
-			count = 0;
-		}
-
-		if (amIndicator)
-			result.append('P');
-
-		return result.toString();
-	}
-
 	/**
 	 * Determine a FormatString from an input string that may represent a Date, Time,
 	 * DateTime, OffsetDateTime or a ZonedDateTime.
@@ -445,7 +384,7 @@ public class DateTimeParser {
 		if (trimmed.indexOf('þ') != -1)
 			return null;
 
-		final String compressed = compress(trimmed);
+		final String compressed = SimpleDateMatcher.compress(trimmed);
 
 		final SimpleDateMatcher matcher = SimpleDateMatcher.get(compressed);
 		if (matcher != null) {
@@ -572,7 +511,7 @@ public class DateTimeParser {
 
 					i++;
 
-					final String offset = compress(trimmed.substring(i, len));
+					final String offset = SimpleDateMatcher.compress(trimmed.substring(i, len));
 
 					// Expecting DD:DD:DD or DDDDDD or DD:DD or DDDD or DD
 					if (i + 8 <= len && "d{2}:d{2}:d{2}".equals(offset)) {
