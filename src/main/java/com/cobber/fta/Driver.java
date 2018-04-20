@@ -38,9 +38,8 @@ class Driver {
 		BufferedReader in = null;
 		CSVParser records = null;
 		int numFields = 0;
-		final CSVFormat.Predefined csvFormat = CSVFormat.Predefined.Default;
+		CSVFormat csvFormat = CSVFormat.DEFAULT;
 		String charset = "UTF-8";
-		String filename = null;
 		int sampleSize = -1;
 		long recordsToAnalyze = -1;
 		int col = -1;
@@ -60,11 +59,16 @@ class Driver {
 				col = Integer.valueOf(args[++idx]);
 			else if ("--dayFirst".equals(args[idx]))
 				resolutionMode = DateResolutionMode.DayFirst;
+			else if ("--delimiter".equals(args[idx])) {
+				String delim = args[++idx];
+				csvFormat = csvFormat.withDelimiter("\\t".equals(delim) ? '\t' : delim.charAt(0));
+			}
 			else if ("--help".equals(args[idx])) {
 				logger.println("Usage: [--charset <charset>] [--col <n>] [--dayFirst] [--help] [--monthFirst] [--records <n>] [--samples <n>] [--verbose] file ...");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
 				logger.println(" --dayFirst - If dates are ambigous assume Day precedes Month");
+				logger.println(" --delimiter - Delimiter to use - must be a single character");
 				logger.println(" --monthFirst - If dates are ambigous assume Month precedes Day");
 				logger.println(" --records <n> - The number of records to analyze");
 				logger.println(" --samples <n> - Set the size of the sample window");
@@ -96,7 +100,7 @@ class Driver {
 
 		// Loop over all the files arguments
 		while (idx < args.length) {
-			filename = args[idx++];
+			String filename = args[idx++];
 
 			try {
 				try {
@@ -111,7 +115,7 @@ class Driver {
 
 				// Parse the input using commons-csv
 				try {
-					records = csvFormat.getFormat().parse(in);
+					records = csvFormat.parse(in);
 				} catch (IOException e) {
 					logger.printf("Failed to parse input file '%s'\n", filename);
 					System.exit(1);
