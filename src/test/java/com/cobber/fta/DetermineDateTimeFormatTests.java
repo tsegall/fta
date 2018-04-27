@@ -851,6 +851,60 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void intuitMMMM_d_yyyy() {
+		final DateTimeParser det = new DateTimeParser();
+		final String sample = "September-17-2014";
+
+		det.train(sample);
+		det.train("September-11-2011");
+		det.train("September-4-2008");
+		det.train("August-29-2005");
+		det.train("August-23-2002");
+		det.train("August-17-1999");
+		det.train("August-10-1996");
+		det.train("August-4-1993");
+		det.train("July-29-1990");
+		det.train("July-23-1987");
+		det.train("July-16-1984");
+		det.train("July-10-1981");
+		det.train("July-4-1978");
+		det.train("June-28-1975");
+		det.train("June-21-1972");
+		det.train("June-15-1969");
+		det.train("June-9-1966");
+		det.train("June-3-1963");
+		det.train("May-27-1960");
+		det.train("May-21-1957");
+		det.train("May-15-1954");
+		det.train("May-9-1951");
+		det.train("May-2-1948");
+		det.train("April-26-1945");
+		det.train("April-20-1942");
+		det.train("April-14-1939");
+		det.train("April-7-1936");
+		det.train("April-1-1933");
+		det.train("March-26-1930");
+		det.train("March-20-1927");
+
+		final DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "MMMM-d-yyyy");
+
+		final String regExp = result.getRegExp();
+		Assert.assertEquals(regExp, "\\p{Alpha}{3,9}-\\d{1,2}-\\d{4}");
+		Assert.assertTrue(sample.trim().matches(regExp));
+
+		Assert.assertTrue(result.isValid("April-1-1939"));
+		Assert.assertFalse(result.isValid("April-32-1940"));
+		Assert.assertFalse(result.isValid("Sep-12-1959"));
+		Assert.assertFalse(result.isValid("May-12-69"));
+
+		Assert.assertTrue(result.isValid8("April-1-1939"));
+		Assert.assertFalse(result.isValid8("April-32-1940"));
+		Assert.assertFalse(result.isValid8("Sep-12-1959"));
+		Assert.assertFalse(result.isValid8("May-12-69"));
+	}
+
+	@Test
 	public void intuitAlmostISO() {
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "2004-01-01 12:35:41-0500";
