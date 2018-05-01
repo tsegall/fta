@@ -2170,7 +2170,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 26);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{1,2}");
+		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_ALPHA);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -2827,8 +2827,9 @@ public class AnalysisResultTests {
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
 		int locked = -1;
+		int samples;
 
-		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+		for (samples = 0; samples <= TextAnalyzer.SAMPLE_DEFAULT; samples++) {
 			final String input = String.valueOf(random.nextInt(1000000));
 			final int len = input.length();
 			if (len < minLength)
@@ -2836,16 +2837,16 @@ public class AnalysisResultTests {
 			if (len > maxLength)
 				maxLength = len;
 			if (analysis.train(input) && locked == -1)
-				locked = i;
+				locked = samples;
 		}
-		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+		while (samples++ < analysis.getReflectionSampleSize() - 1) {
 			analysis.train(String.valueOf(random.nextDouble()));
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), 2 * (TextAnalyzer.SAMPLE_DEFAULT + 1));
+		Assert.assertEquals(result.getSampleCount(), samples - 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		String pattern = "\\d{" + minLength;
@@ -2854,7 +2855,7 @@ public class AnalysisResultTests {
 		}
 		pattern += "}";
 		Assert.assertEquals(result.getRegExp(), pattern);
-		Assert.assertEquals(result.getConfidence(), .5);
+		Assert.assertEquals(result.getConfidence(), 0.7241379310344828);
 	}
 
 	@Test

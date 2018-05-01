@@ -90,7 +90,8 @@ public class TextAnalyzer {
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
 	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
 
-	private static final int REFLECTION_SAMPLES = 50;
+	private static final int REFLECTION_SAMPLES = 30;
+	private int reflectionSamples = REFLECTION_SAMPLES;
 
 	private String name;
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
@@ -328,6 +329,10 @@ public class TextAnalyzer {
 
 		final int ret = samples;
 		this.samples = samples;
+
+		// Never want the Sample Size to be greater than the Reflection point
+		if (samples >= reflectionSamples)
+			reflectionSamples = samples + 1;
 		return ret;
 	}
 
@@ -339,6 +344,16 @@ public class TextAnalyzer {
 	 */
 	public int getSampleSize() {
 		return samples;
+	}
+
+	/**
+	 * Get the number of Samples required before we will 'reflect' on the analysis and
+	 * potentially change determination.
+	 *
+	 * @return The current size of the sample window.
+	 */
+	public int getReflectionSampleSize() {
+		return reflectionSamples;
 	}
 
 	/**
@@ -1067,7 +1082,7 @@ public class TextAnalyzer {
 			outlier(input);
 
 			// Do a sanity check once we have at least REFLECTION_SAMPLES
-			if (realSamples == REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.9 && "ZIP".equals(matchPatternInfo.typeQualifier))
+			if (realSamples == reflectionSamples && (double) matchCount / realSamples < 0.9 && "ZIP".equals(matchPatternInfo.typeQualifier))
 				backoutZip(realSamples);
 			break;
 
@@ -1282,7 +1297,7 @@ public class TextAnalyzer {
 		}
 
 		// Do a sanity check - we need a minimum number to declare it a ZIP
-		if ("ZIP".equals(matchPatternInfo.typeQualifier) && ((realSamples > REFLECTION_SAMPLES && confidence < 0.9) || cardinality.size() < 5)) {
+		if ("ZIP".equals(matchPatternInfo.typeQualifier) && ((realSamples >= reflectionSamples && confidence < 0.9) || cardinality.size() < 5)) {
 			backoutZip(realSamples);
 			confidence = (double) matchCount / realSamples;
 		}
@@ -1292,23 +1307,23 @@ public class TextAnalyzer {
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
 			final int length = determineLength(matchPattern);
 			// We thought it was a fixed length string, but on reflection it does not feel like it
-			if (length != -1 && realSamples > REFLECTION_SAMPLES && (double) matchCount / realSamples < 0.95) {
+			if (length != -1 && realSamples >= reflectionSamples && (double) matchCount / realSamples < 0.95) {
 				backoutToString(realSamples);
 				confidence = (double) matchCount / realSamples;
 			}
 
 			boolean typeIdentified = false;
-			if (realSamples > REFLECTION_SAMPLES && cardinality.size() > 1 && "\\p{Alpha}{3}".equals(matchPattern)
+			if (realSamples >= reflectionSamples && cardinality.size() > 1 && "\\p{Alpha}{3}".equals(matchPattern)
 					&& cardinality.size() <= monthAbbr.size() + 2) {
 				typeIdentified = checkUniformLengthSet(monthAbbr, PatternInfo.Type.STRING, "MONTHABBR");
 			}
 
-			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && cardinality.size() > 1
+			if (!typeIdentified && realSamples >= reflectionSamples && cardinality.size() > 1
 					&& cardinality.size() <= countries.size()) {
 				typeIdentified = checkVariableLengthSet(countries, PatternInfo.Type.STRING, "COUNTRY");
 			}
 
-			if (!typeIdentified && realSamples > REFLECTION_SAMPLES && "\\p{Alpha}{2}".equals(matchPattern)
+			if (!typeIdentified && realSamples >= reflectionSamples && "\\p{Alpha}{2}".equals(matchPattern)
 					&& cardinality.size() < usStates.size() + caProvinces.size() + 5
 					&& (name.toLowerCase(Locale.ROOT).contains("state") || name.toLowerCase(Locale.ROOT).contains("province")
 							|| cardinality.size() > 5)) {
@@ -1367,20 +1382,10 @@ public class TextAnalyzer {
 				matchPatternInfo = patternInfo.get(matchPattern);
 			} else {
 				// We thought it was an integer field, but on reflection it does not feel like it
-				if (realSamples > REFLECTION_SAMPLES && confidence < 0.9) {
-					matchPattern = ".{" + minRawLength;
+				if (realSamples >= reflectionSamples && confidence < 0.9) {
+					backoutToString(realSamples);
 					matchType = PatternInfo.Type.STRING;
-					matchCount = realSamples;
 					confidence = 1.0;
-					if (minRawLength != maxRawLength)
-						matchPattern += "," + maxRawLength;
-					matchPattern += "}";
-					matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, null, -1, -1, null, null);
-
-					// All outliers are now part of the cardinality set and
-					// there are no outliers
-					cardinality.putAll(outliers);
-					outliers.clear();
 				} else {
 					matchPattern = "\\d{" + minTrimmedLength;
 					if (minTrimmedLength != maxTrimmedLength)
