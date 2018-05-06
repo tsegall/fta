@@ -102,7 +102,7 @@ public class TextAnalyzer {
 	private long sampleCount;
 	private long nullCount;
 	private long blankCount;
-	private final Map<String, Integer> cardinality = new HashMap<String, Integer>();
+	private Map<String, Integer> cardinality = new HashMap<String, Integer>();
 	private final Map<String, Integer> outliers = new HashMap<String, Integer>();
 	private List<String> raw; // 0245-11-98
 	// 0: d{4}-d{2}-d{2} 1: d{+}-d{+}-d{+} 2: d{+}-d{+}-d{+}
@@ -165,6 +165,7 @@ public class TextAnalyzer {
 	private static Set<String> usStates = new HashSet<String>();
 	private static Set<String> caProvinces = new HashSet<String>();
 	private static Set<String> countries = new HashSet<String>();
+	private static Set<String> gender = new HashSet<String>();
 	private static Set<String> monthAbbr = new HashSet<String>();
 
 	public static final String PATTERN_ALPHA = "\\p{Alpha}+";
@@ -206,6 +207,7 @@ public class TextAnalyzer {
 		addPattern(typeInfo, false, "\\p{Alpha}{2}", PatternInfo.Type.STRING, "US_STATE", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\p{Alpha}{2}", PatternInfo.Type.STRING, "CA_PROVINCE", -1, -1, null, null);
 		addPattern(typeInfo, false, ".+", PatternInfo.Type.STRING, "COUNTRY", -1, -1, null, null);
+		addPattern(typeInfo, false, "\\p{Alpha}+", PatternInfo.Type.STRING, "GENDER", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\p{Alpha}{3}", PatternInfo.Type.STRING, "MONTHABBR", -1, -1, null, null);
 
 		try {
@@ -231,6 +233,9 @@ public class TextAnalyzer {
 			while ((line = reader.readLine()) != null) {
 				countries.add(line);
 			}
+
+			gender.add("MALE");
+			gender.add("FEMALE");
 
 			// Setup the Monthly abbreviations
 			final String[] shortMonths = new DateFormatSymbols().getShortMonths();
@@ -1221,12 +1226,13 @@ public class TextAnalyzer {
 
 	/**
 	 * Determine if the current dataset reflects a logical type (of variable length) as defined by the provided set.
+	 * @param cardinalityUpper The cardinality set but reduced to ignore case
 	 * @param variableSet The set of items that reflect this logical type
 	 * @param type The type that along with the qualifier identifies the logical type that this set represents
 	 * @param qualifier The qualifier that along with the type identifies the logical type that this set represents
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
-	private boolean checkVariableLengthSet(final Set<String> variableSet, final PatternInfo.Type type, final String qualifier) {
+	private boolean checkVariableLengthSet(Map<String, Integer> cardinalityUpper, final Set<String> variableSet, final PatternInfo.Type type, final String qualifier) {
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 		long validCount = 0;
@@ -1234,28 +1240,30 @@ public class TextAnalyzer {
 		long missCount = 0;				// count of number of misses
 
 		// Sweep the balance and check they are part of the set
-		for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
-			if (variableSet.contains(entry.getKey().trim().toUpperCase(Locale.ROOT)))
+		for (final Map.Entry<String, Integer> entry : cardinalityUpper.entrySet()) {
+			if (variableSet.contains(entry.getKey()))
 				validCount += entry.getValue();
 			else {
 				misses++;
 				missCount += entry.getValue();
 				// Break out early if we know we are going to fail
-				if ((double) missCount / realSamples > .05)
+				// To declare success we need fewer than 40% failures by count and also a limited number of misses by group
+				if ((double) missCount / realSamples > .4 || misses > (long)Math.sqrt(variableSet.size()))
 					return false;
 				newOutliers.put(entry.getKey(), entry.getValue());
 			}
 		}
 
-		// To declare success we need fewer than 5% failures by count and additionally fewer than 4 groups
-		if ((double) missCount / realSamples > .05 || misses >= 4)
+		// To declare success we need fewer than 40% failures by count and also a limited number of misses by group
+		if ((double) missCount / realSamples > .4 || misses > (long)Math.sqrt(variableSet.size()))
 			return false;
 
 		outliers.putAll(newOutliers);
-		cardinality.keySet().removeAll(newOutliers.keySet());
+		cardinalityUpper.keySet().removeAll(newOutliers.keySet());
 		matchCount = validCount;
 		matchPatternInfo = typeInfo.get(type.toString() + "." + qualifier);
 		matchPattern = matchPatternInfo.regexp;
+		cardinality = cardinalityUpper;
 		return true;
 	}
 
@@ -1302,7 +1310,11 @@ public class TextAnalyzer {
 			confidence = (double) matchCount / realSamples;
 		}
 
-		if (PATTERN_LONG.equals(matchPattern) && minLong > 1700 && maxLong < 2030) {
+		if (PATTERN_LONG.equals(matchPattern) && minLong > 19000101 && maxLong < 20400101 &&
+				((realSamples >= reflectionSamples && cardinality.size() > 10) || name.toLowerCase(Locale.ROOT).contains("date"))) {
+			matchPatternInfo = new PatternInfo("\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", -1, -1, null, "yyyyMMdd");
+		} else if (PATTERN_LONG.equals(matchPattern) && minLong > 1800 && maxLong < 2030 &&
+				((realSamples >= reflectionSamples && cardinality.size() > 10) || name.toLowerCase(Locale.ROOT).contains("year") || name.toLowerCase(Locale.ROOT).contains("date"))) {
 			matchPatternInfo = new PatternInfo("\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", -1, -1, null, "yyyy");
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
 			final int length = determineLength(matchPattern);
@@ -1312,54 +1324,83 @@ public class TextAnalyzer {
 				confidence = (double) matchCount / realSamples;
 			}
 
+			// Build Cardinality map ignoring case (and white space)
+			int minKeyLength = Integer.MAX_VALUE;
+			int maxKeyLength = 0;
+			final Map<String, Integer> cardinalityUpper = new HashMap<String, Integer>();
+			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+				String key = entry.getKey().toUpperCase(Locale.ROOT).trim();
+				int keyLength = key.length();
+				if (keyLength < minKeyLength)
+					minKeyLength = keyLength;
+				if (keyLength > maxKeyLength)
+					maxKeyLength = keyLength;
+				final Integer seen = cardinalityUpper.get(key);
+				if (seen == null) {
+					cardinalityUpper.put(key, entry.getValue());
+				} else
+					cardinalityUpper.put(key, seen + entry.getValue());
+			}
+
 			boolean typeIdentified = false;
-			if (realSamples >= reflectionSamples && cardinality.size() > 1 && "\\p{Alpha}{3}".equals(matchPattern)
-					&& cardinality.size() <= monthAbbr.size() + 2) {
-				typeIdentified = checkUniformLengthSet(monthAbbr, PatternInfo.Type.STRING, "MONTHABBR");
-			}
 
-			if (!typeIdentified && realSamples >= reflectionSamples && cardinality.size() > 1
-					&& cardinality.size() <= countries.size()) {
-				typeIdentified = checkVariableLengthSet(countries, PatternInfo.Type.STRING, "COUNTRY");
-			}
-
-			if (!typeIdentified && realSamples >= reflectionSamples && "\\p{Alpha}{2}".equals(matchPattern)
-					&& cardinality.size() < usStates.size() + caProvinces.size() + 5
-					&& (name.toLowerCase(Locale.ROOT).contains("state") || name.toLowerCase(Locale.ROOT).contains("province")
-							|| cardinality.size() > 5)) {
-				int usStateCount = 0;
-				int caProvinceCount = 0;
-				int misses = 0;
-				final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
-
-				for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
-					if (usStates.contains(entry.getKey().trim().toUpperCase(Locale.ROOT)))
-						usStateCount += entry.getValue();
-					else if (caProvinces.contains(entry.getKey().trim().toUpperCase(Locale.ROOT)))
-						caProvinceCount += entry.getValue();
-					else {
-						misses++;
-						newOutliers.put(entry.getKey(), entry.getValue());
-					}
+			if (minKeyLength == maxKeyLength) {
+				if (realSamples >= reflectionSamples && cardinalityUpper.size() > 1 && minKeyLength == 3
+						&& cardinalityUpper.size() <= monthAbbr.size() + 2) {
+					typeIdentified = checkUniformLengthSet(monthAbbr, PatternInfo.Type.STRING, "MONTHABBR");
 				}
 
-				if (misses < 3) {
-					String accessor = null;
-					if (usStateCount != 0 && caProvinceCount != 0) {
-						accessor = "NA_STATE";
-						matchCount = usStateCount + caProvinceCount;
-					} else if (usStateCount != 0) {
-						accessor = "US_STATE";
-						matchCount = usStateCount;
-					} else if (caProvinceCount != 0) {
-						accessor = "CA_PROVINCE";
-						matchCount = caProvinceCount;
+				if (!typeIdentified && realSamples >= reflectionSamples && "\\p{Alpha}{2}".equals(matchPattern)
+						&& cardinalityUpper.size() < usStates.size() + caProvinces.size() + 5
+						&& (name.toLowerCase(Locale.ROOT).contains("state") || name.toLowerCase(Locale.ROOT).contains("province")
+								|| cardinalityUpper.size() > 5)) {
+					int usStateCount = 0;
+					int caProvinceCount = 0;
+					int misses = 0;
+					final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
+
+					for (final Map.Entry<String, Integer> entry : cardinalityUpper.entrySet()) {
+						if (usStates.contains(entry.getKey()))
+							usStateCount += entry.getValue();
+						else if (caProvinces.contains(entry.getKey()))
+							caProvinceCount += entry.getValue();
+						else {
+							misses++;
+							newOutliers.put(entry.getKey(), entry.getValue());
+						}
 					}
-					confidence = (double) matchCount / realSamples;
-					outliers.putAll(newOutliers);
-					cardinality.keySet().removeAll(newOutliers.keySet());
-					matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + accessor);
-					matchPattern = matchPatternInfo.regexp;
+
+					if (misses < 3) {
+						String accessor = null;
+						if (usStateCount != 0 && caProvinceCount != 0) {
+							accessor = "NA_STATE";
+							matchCount = usStateCount + caProvinceCount;
+						} else if (usStateCount != 0) {
+							accessor = "US_STATE";
+							matchCount = usStateCount;
+						} else if (caProvinceCount != 0) {
+							accessor = "CA_PROVINCE";
+							matchCount = caProvinceCount;
+						}
+						confidence = (double) matchCount / realSamples;
+						outliers.putAll(newOutliers);
+						cardinality.keySet().removeAll(newOutliers.keySet());
+						matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + accessor);
+						matchPattern = matchPatternInfo.regexp;
+					}
+				}
+			}
+			else {
+				// Hunt for a variable length string that we can say something more interesting about
+
+				if (!typeIdentified && realSamples >= reflectionSamples && cardinalityUpper.size() > 1
+						&& cardinalityUpper.size() <= gender.size() + 1) {
+					typeIdentified = checkVariableLengthSet(cardinalityUpper, gender, PatternInfo.Type.STRING, "GENDER");
+				}
+
+				if (!typeIdentified && realSamples >= reflectionSamples && cardinalityUpper.size() > 1
+						&& cardinalityUpper.size() <= countries.size() + 1) {
+					typeIdentified = checkVariableLengthSet(cardinalityUpper, countries, PatternInfo.Type.STRING, "COUNTRY");
 				}
 			}
 

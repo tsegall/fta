@@ -17,6 +17,9 @@ package com.cobber.fta;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
@@ -548,6 +551,61 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void basicDateNumber() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Trade Date", DateResolutionMode.DayFirst);
+		final String input = "20120202|20120607|20120627|20120627|20120627|20120627|20120627|20120628|20120312|20120201|" +
+		"20111031|20120229|20120104|20120312|20120312|20120628|20120628|20120628|20120628|20120628|" +
+		"20111027|20120213|20120628|20120227|20120313|20120701|20120702|20120702|20120701|20120701|" +
+		"20120629|20120629|20120629|20120629|20120629|20120629|20120629|20120629|20120629|20120629|" +
+		"20120629|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|" +
+		"20120702|20120702|20120702|20120702|20120713|20120713|20120713|20120713|20120713|20120713|" +
+		"20120430|20120523|20120627|20120627|20120606|20120703|20120718|20120718|20120703|20120703|" +
+		"20120523|20120627|20120627|20120703|20120503|20120718|20120926|20120523|20120626|20120713|" +
+		"20120713|20120626|20120626|20121004|20120702|20120702|20120702|20120702|20120702|20120702|" +
+		"20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|" +
+		"20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120516|20120518|20120521|" +
+		"20120522|20120523|20120523|20120524|20120524|20120525|20120525|20120525|20120528|20120529|" +
+		"20120529|20120531|20120601|20120601|20120605|20120606|20120608|20120611|20120613|20120618|" +
+		"20120620|20120625|20120625|20120702|20120702|20120702|20120702|20120629|20120628|20120702|" +
+		"20120629|20120629|20120518|20120702|20120702|20120702|20120702|20120702|20120702|20120702|" +
+		"20120702|20120702|20120702|20120629|20120629|20120702|20120629|20120629|20120629|20120702|" +
+		"20120702|20120702|20120629|20120629|20120702|20120629|20120626|20120702|20120702|20120702|" +
+		"20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|" +
+		"20120702|20120702|20120702|20120702|20120702|20120702|20120629|20120702|20120629|20120702|";
+
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyyMMdd");
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{8}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches("\\s*" + result.getRegExp() + "\\s*"), inputs[i]);
+			try {
+				LocalDate.parse(inputs[i], formatter);
+			}
+			catch (DateTimeParseException e) {
+				Assert.fail("Parse failed" + e);
+			}
+		}
+
+
+
+	}
+	@Test
 	public void basicStateSpaces() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
 		final String input = " OH| SD| WA| MA| WI| NC| MB| VA| NC| DE| ND| PA| WV| TX| KS| WV| FL| WA| CA| GA| WI|" +
@@ -573,13 +631,45 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.get(" SA"), Integer.valueOf(1));
+		Assert.assertEquals(outliers.get("SA"), Integer.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 0.9921259842519685);
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches("\\s*" + result.getRegExp() + "\\s*"), inputs[i]);
 		}
 	}
+
+	@Test
+	public void basicGender() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
+		final String input = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
+				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
+				"Female|Male|Female|FEMALE|Male|Female|male|Male|Male|male|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "GENDER");
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}+");
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.get("UNKNOWN"), Integer.valueOf(1));
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches("\\s*" + result.getRegExp() + "\\s*"), inputs[i]);
+		}
+	}
+
 
 	@Test
 	public void basicMMddyy() throws IOException {

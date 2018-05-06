@@ -98,8 +98,7 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get 'Type' as determined by training to date.  Possible types are: STRING, LONG,
-	 * DOUBLE, DATE, TIME, DATETIME, ZONEDDATATIME, and OFFSETDATETIME.
+	 * Get 'Type' as determined by training to date.
 	 * @return The Type of the data stream.
 	 */
 	public PatternInfo.Type getType() {

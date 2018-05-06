@@ -260,7 +260,7 @@ public class DateTimeParserResult {
 
 			case 'S':
 				timeFieldOffsets[timeElements] = i;
-				int fractions = 0;
+				int fractions = 1;
 				while (i + 1 < formatLength && formatString.charAt(i + 1) == 'S') {
 					i++;
 					fractions++;

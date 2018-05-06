@@ -163,13 +163,7 @@ public class DateTimeParser {
 	}
 
 	private static String longString(final char c) {
-		if (c == 'H')
-			return "HH";
-		if (c == 'd')
-			return "dd";
-		if (c == 'M')
-			return "MMMM";
-		return "yyyy";
+		return "" + c + c + c + c;
 	}
 
 	/**
@@ -216,7 +210,8 @@ public class DateTimeParser {
 					answerResult.amPmIndicator = result.amPmIndicator;
 
 				if (result.timeFieldLengths != null) {
-					for (int i = 0; i < result.timeFieldLengths.length; i++) {
+					// Adjust the Hours, Minutes, or Seconds fields if the length is shorter (but not the fractions of Seconds)
+					for (int i = 0; i < result.timeFieldLengths.length - 1; i++) {
 						if (answerResult.timeFieldLengths[i] == -1)
 							answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
 						else
