@@ -31,6 +31,8 @@ public class TextAnalysisResult {
 	private final long blankCount;
 	private final long leadingZeroCount;
 	private final PatternInfo patternInfo;
+	private final boolean leadingWhiteSpace;
+	private final boolean trailingWhiteSpace;
 	private final double confidence;
 	private final String minValue;
 	private final String maxValue;
@@ -45,6 +47,8 @@ public class TextAnalysisResult {
 	 * @param name The name of the data stream being analyzed.
 	 * @param matchCount The number of samples that match the patternInfo.
 	 * @param patternInfo The PatternInfo associated with this matchCount.
+	 * @param leadingWhiteSpace Is there leading White Space?
+	 * @param trailingWhiteSpace Is there trailing White Space?
 	 * @param sampleCount The total number of samples seen.
 	 * @param nullCount The number of nulls seen in the sample set.
 	 * @param blankCount The number of blanks seen in the sample set.
@@ -59,13 +63,15 @@ public class TextAnalysisResult {
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param key Do we think this field is a key.
 	 */
-	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final long sampleCount, final long nullCount,
-			final long blankCount, final long leadingZeroCount, final double confidence, final String minValue, final String maxValue,
-			final int minLength, final int maxLength, final String sum, final Map<String, Integer> cardinality,
-			final Map<String, Integer> outliers, final boolean key) {
+	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, boolean trailingWhiteSpace,
+			final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount, final double confidence,
+			final String minValue, final String maxValue, final int minLength, final int maxLength,
+			final String sum, final Map<String, Integer> cardinality, final Map<String, Integer> outliers, final boolean key) {
 		this.name = name;
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
+		this.leadingWhiteSpace = leadingWhiteSpace;
+		this.trailingWhiteSpace = trailingWhiteSpace;
 		this.sampleCount = sampleCount;
 		this.nullCount = nullCount;
 		this.blankCount = blankCount;
@@ -120,7 +126,7 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the minimum value for Numeric, Boolean and String types
+	 * Get the minimum value for Numeric, Boolean and String types.
 	 * @return The minimum value as a String.
 	 */
 	public String getMinValue() {
@@ -128,7 +134,7 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the maximum value for Numeric, Boolean and String
+	 * Get the maximum value for Numeric, Boolean and String.
 	 * @return The maximum value as a String.
 	 */
 	public String getMaxValue() {
@@ -145,7 +151,7 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the maximum length for Numeric, Boolean and String
+	 * Get the maximum length for Numeric, Boolean and String.
 	 * Note: For String and Boolean types this length includes any whitespace.
 	 * @return The maximum length.
 	 */
@@ -161,7 +167,17 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression.
 	 */
 	public String getRegExp() {
-		return patternInfo.regexp;
+
+		String answer = patternInfo.regexp;
+
+		if (!TextAnalyzer.PATTERN_ANY_VARIABLE.equals(answer) && (leadingWhiteSpace || trailingWhiteSpace)) {
+			if (leadingWhiteSpace)
+				answer = "\\p{javaWhitespace}*" + answer;
+			if (trailingWhiteSpace)
+				answer += "\\p{javaWhitespace}*";
+		}
+
+		return answer;
 	}
 
 	/**
@@ -291,7 +307,7 @@ public class TextAnalysisResult {
 	 */
 	public String dump(final boolean verbose) {
 		String ret = "TextAnalysisResult [name=" + name + ", matchCount=" + matchCount + ", sampleCount=" + sampleCount + ", nullCount="
-				+ nullCount + ", blankCount=" + blankCount+ ", regexp=\"" + patternInfo.regexp + "\", confidence=" + confidence +
+				+ nullCount + ", blankCount=" + blankCount+ ", regexp=\"" + getRegExp() + "\", confidence=" + confidence +
 				", type=" + patternInfo.type +
 				(patternInfo.typeQualifier != null ? "(" + patternInfo.typeQualifier + ")" : "") + ", min=";
 		if (minValue != null)
@@ -324,8 +340,8 @@ public class TextAnalysisResult {
 			ret += "}";
 		}
 
-		if (!outliers.isEmpty() && outliers.size() != TextAnalyzer.MAX_OUTLIERS_DEFAULT) {
-			ret += ", outliers=" + outliers.size();
+		if (!outliers.isEmpty()) {
+			ret += ", outliers=" + (outliers.size() < TextAnalyzer.MAX_OUTLIERS_DEFAULT ? String.valueOf(outliers.size()) : "MAX");
 			if (verbose && !outliers.isEmpty() && outliers.size() < .2 * sampleCount) {
 				ret += " {";
 				int i = 0;

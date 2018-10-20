@@ -52,9 +52,6 @@ public class DateTimeParserResult {
 
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 	private int hourLength = -1;
-	private int yearLength = -1;
-	private int monthLength = -1;
-	private int dayLength = -1;
 
 	static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<String, DateTimeParserResult>();
 
@@ -74,14 +71,8 @@ public class DateTimeParserResult {
 		this.timeFirst = timeFirst;
 		this.dateTimeSeparator = dateTimeSeparator;
 		this.dayOffset = dayOffset;
-		if (dayOffset != -1)
-			this.dayLength = dateFieldLengths[dayOffset];
 		this.monthOffset = monthOffset;
-		if (monthOffset != -1)
-			this.monthLength = dateFieldLengths[monthOffset];
 		this.yearOffset = yearOffset;
-		if (yearOffset != -1)
-			this.yearLength = dateFieldLengths[yearOffset];
 		this.dateSeparator = dateSeparator;
 		this.timeZone = timeZone;
 		this.amPmIndicator = amPmIndicator;
@@ -439,6 +430,7 @@ public class DateTimeParserResult {
 	}
 
 
+	@SuppressWarnings("incomplete-switch")
 	void validateTokenValue(final Token token, final int value, final String input, final int upto) {
 		switch (token) {
 		case HOURS12_2:
@@ -708,6 +700,7 @@ public class DateTimeParserResult {
 	 * 28/13/2017 will match the RE (\d{2}/\d{2}/\d{4}) however this is not a valid date with pattern dd/MM/yyyy.
 	 * @return The Regular Expression that mirrors this Date/Time object.
 	 **/
+	@SuppressWarnings("incomplete-switch")
 	public String getRegExp() {
 		final StringBuilder ret = new StringBuilder(40);
 		int digitsMin = 0;
@@ -733,7 +726,7 @@ public class DateTimeParserResult {
 					break;
 
 				case MONTH_ABBR:
-					ret.append("\\p{Alpha}{3}");
+					ret.append(TextAnalyzer.PATTERN_ALPHA_3);
 					break;
 
 				case AMPM:

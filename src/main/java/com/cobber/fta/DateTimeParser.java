@@ -84,7 +84,7 @@ public class DateTimeParser {
 			if (len > longestMonth)
 				longestMonth = len;
 		}
-		monthPattern = "\\p{Alpha}{" + shortestMonth + "," + longestMonth + "}";
+		monthPattern = TextAnalyzer.PATTERN_ALPHA + "{" + shortestMonth + "," + longestMonth + "}";
 
 
 		// Setup the Monthly abbreviations

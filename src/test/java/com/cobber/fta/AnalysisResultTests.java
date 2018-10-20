@@ -159,6 +159,41 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void variableLengthStringWithOutlier() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "HelloWorld|Hello|H|Z|A|Do|Not|Ask|What|You|Can|Do".split("\\|");
+		final int ITERATIONS = 10;
+
+		int locked = -1;
+
+		for (int iters = 0; iters < ITERATIONS; iters++) {
+			for (int i = 0; i < inputs.length; i++) {
+				if (analysis.train(inputs[i]) && locked != -1)
+					locked = i;
+			}
+		}
+		analysis.train(";+");
+
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length * ITERATIONS + 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{1,10}");
+		Assert.assertEquals(result.getMatchCount(), inputs.length * ITERATIONS);
+		Assert.assertEquals(result.getConfidence(), 0.9917355371900827);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getMinValue(), "A");
+		Assert.assertEquals(result.getMaxValue(), "Z");
+		Assert.assertEquals(result.getMinLength(), 1);
+		Assert.assertEquals(result.getMaxLength(), 10);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void variableLengthInteger() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "-10000|-1000|-100|-10|-3|-2|-1|0|1|2|3|10|100|1000|10000|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15".split("\\|");
@@ -233,6 +268,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getMinValue(), "0.1");
 		Assert.assertEquals(result.getMaxValue(), "99.23");
 		Assert.assertEquals(result.getMinLength(), 2);
@@ -263,6 +299,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getMinValue(), "0.1");
 		Assert.assertEquals(result.getMaxValue(), "99.23");
 
@@ -562,7 +599,7 @@ public class AnalysisResultTests {
 		"20120430|20120523|20120627|20120627|20120606|20120703|20120718|20120718|20120703|20120703|" +
 		"20120523|20120627|20120627|20120703|20120503|20120718|20120926|20120523|20120626|20120713|" +
 		"20120713|20120626|20120626|20121004|20120702|20120702|20120702|20120702|20120702|20120702|" +
-		"20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|" +
+		"20120702|20120702|20120702|20120702|20120702|20120702|19591209|20120702|20120702|20120702|" +
 		"20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120516|20120518|20120521|" +
 		"20120522|20120523|20120523|20120524|20120524|20120525|20120525|20120525|20120528|20120529|" +
 		"20120529|20120531|20120601|20120601|20120605|20120606|20120608|20120611|20120613|20120618|" +
@@ -571,7 +608,7 @@ public class AnalysisResultTests {
 		"20120702|20120702|20120702|20120629|20120629|20120702|20120629|20120629|20120629|20120702|" +
 		"20120702|20120702|20120629|20120629|20120702|20120629|20120626|20120702|20120702|20120702|" +
 		"20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|" +
-		"20120702|20120702|20120702|20120702|20120702|20120702|20120629|20120702|20120629|20120702|";
+		"20120702|20120702|20120702|20120702|20120702|20120702|20120629|20120702|20180519|20120702|";
 
 		final String inputs[] = input.split("\\|");
 		int locked = -1;
@@ -590,10 +627,12 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{8}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMinValue(), "19591209");
+		Assert.assertEquals(result.getMaxValue(), "20180519");
 
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(result.getTypeQualifier());
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches("\\s*" + result.getRegExp() + "\\s*"), inputs[i]);
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 			try {
 				LocalDate.parse(inputs[i], formatter);
 			}
@@ -601,10 +640,8 @@ public class AnalysisResultTests {
 				Assert.fail("Parse failed" + e);
 			}
 		}
-
-
-
 	}
+
 	@Test
 	public void basicStateSpaces() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
@@ -629,13 +666,13 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getTypeQualifier(), "NA_STATE");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*\\p{Alpha}{2}\\p{javaWhitespace}*");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.get("SA"), Integer.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 0.9921259842519685);
 
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches("\\s*" + result.getRegExp() + "\\s*"), inputs[i]);
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 		}
 	}
 
@@ -666,7 +703,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches("\\s*" + result.getRegExp() + "\\s*"), inputs[i]);
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 		}
 	}
 
@@ -1305,12 +1342,12 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getMatchCount(), iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*\\d{2}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy");
 
-		Assert.assertTrue(input.trim().matches(result.getRegExp()));
+		Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test
@@ -1406,7 +1443,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), 1);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "(?i)true|false");
+		Assert.assertEquals(result.getRegExp(), "(?i)(true|false)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
 		Assert.assertEquals(result.getMinLength(), 4);
@@ -1436,7 +1473,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "(?i)true|false");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*(?i)(true|false)\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), .9375);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
 		Assert.assertEquals(result.getMinLength(), 4);
@@ -1447,8 +1484,8 @@ public class AnalysisResultTests {
 
 		int matches = 0;
 		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].trim().matches(result.getRegExp()))
-					matches++;
+			if (inputs[i].matches(result.getRegExp()))
+				matches++;
 		}
 		Assert.assertEquals(result.getMatchCount(), matches);
 	}
@@ -1473,7 +1510,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "(?i)yes|no");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*(?i)(yes|no)\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), .9375);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
 		Assert.assertEquals(result.getMinLength(), 2);
@@ -1647,13 +1684,15 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), 3 * iterations + 1);
 		Assert.assertEquals(result.getBlankCount(), 3 * iterations + 1);
-		Assert.assertEquals(result.getRegExp(), "[ ]*");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 
 		Assert.assertTrue("".matches(result.getRegExp()));
+		Assert.assertTrue(" ".matches(result.getRegExp()));
 		Assert.assertTrue("  ".matches(result.getRegExp()));
+		Assert.assertTrue("      ".matches(result.getRegExp()));
 	}
 
 	@Test
@@ -1676,13 +1715,12 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), iterations);
 		Assert.assertEquals(result.getBlankCount(), iterations);
-		Assert.assertEquals(result.getRegExp(), "[ ]*");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 
-		Assert.assertTrue("".matches(result.getRegExp()));
-		Assert.assertTrue("  ".matches(result.getRegExp()));
+		Assert.assertTrue("      ".matches(result.getRegExp()));
 	}
 
 	@Test
@@ -1705,41 +1743,28 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), iterations);
 		Assert.assertEquals(result.getBlankCount(), iterations);
-		Assert.assertEquals(result.getRegExp(), "[ ]*");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 
 		Assert.assertTrue("".matches(result.getRegExp()));
-		Assert.assertTrue("  ".matches(result.getRegExp()));
 	}
+
 
 	@Test
 	public void whiteSpace() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("field,value");
+		final String input = "| |  |   |    |     |      |       |        |         |";
+		final String inputs[] = input.split("\\|");
 
 		analysis.train(null);
-		analysis.train("");
-		analysis.train(" ");
-		analysis.train("  ");
-		analysis.train("   ");
-		analysis.train("    ");
-		analysis.train("     ");
-		analysis.train("      ");
-		analysis.train("       ");
-		analysis.train("        ");
-		analysis.train("         ");
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
+
 		analysis.train(null);
-		analysis.train("");
-		analysis.train(" ");
-		analysis.train("  ");
-		analysis.train("   ");
-		analysis.train("    ");
-		analysis.train("     ");
-		analysis.train("      ");
-		analysis.train("       ");
-		analysis.train("        ");
-		analysis.train("         ");
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -1751,8 +1776,51 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 9);
 		Assert.assertEquals(result.getBlankCount(), 20);
-		Assert.assertEquals(result.getRegExp(), "[BLANKORNULL]");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+
+	}
+
+	@Test
+	public void employeeNumber() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("employeeNumber");
+		final String input = "||||||||||||||||||||" +
+				"||||||||||||48|72|242|242|242|335|354|355|355|" +
+				"397|460|567|616|616|70|70|865|1023|1023|1023|1023|1023|1023|1023|1023|1161|1161|1161|1161|1161|" +
+				"1260|1273|1273|1273|136|136|136|136|136|136|136|136|136|1422|1422|1422|1422|1422|1422|1548|1652|" +
+				"F9442559|F9442774|F9442774|F9442856|F9442856|F9442856|F9442856|F9442856|F9442965|F9442965|" +
+				"F9442965|F9442968|F9442999|F9442999|FN228446|FN241214|FN241227|FN246235|FN246286|FN246288|" +
+				"FN270164|FN270168|FN273815|FN273967|FN295633|FN295655|FN295657|FN295659|FN295684|FN295688|" +
+				"FN295842|FN9441020|FN9441048|FN9441064|FN9441082|FN9441138|FN9441189|FN9441244|FN9441246|FN9441248|" +
+				"FN9441330|FN9441334|FN9441383|FN9441501|FN9441505|FN9441516|FN9441529|FN9441680|FN9441695|FN9441804|";
+		final String inputs[] = input.split("\\|");
+
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getMinLength(), 2);
+		Assert.assertEquals(result.getMaxLength(), 9);
+		Assert.assertEquals(result.getBlankCount(), 32);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alnum}{2,9}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		int matchCount = 0;
+		for (int i = 0; i < inputs.length; i++) {
+			if (inputs[i].matches(result.getRegExp()))
+				matchCount++;
+		}
+		Assert.assertEquals(matchCount, result.getMatchCount());
 	}
 
 	@Test
@@ -1933,7 +2001,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 1);
-		Assert.assertEquals(result.getRegExp(), ".{6,18}");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*\\p{Alpha}{2,5}\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
@@ -2260,8 +2328,118 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 26);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_ALPHA);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alnum}{1,2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void changeMindMinMax() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input =
+				"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!!Volume!Volume!!!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!!Volume!Volume!!!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!!!!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!!!!Volume!Audio disc ; Volume!Volume!!!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Audio disc ; Volume!!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!!Volume!Volume!!!!!!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!!!Volume!Volume!Volume!Volume!Volume!!!Volume!Volume!Volume!" +
+						"Volume!Volume!!!!!!!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"!Volume!Volume!!!Volume!Volume!Volume!!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!!Volume!Volume!Volume!!Volume!Volume!!Volume!Volume!!Volume!Volume!Volume!" +
+						"Volume!!Volume!Volume!!Volume!!!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!Online resource (ePub ebook)!Volume!Online resource (ePub ebook)!Volume!!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"!Volume!Volume!Volume!Volume!Volume!Volume!Volume!!Volume!Volume!Volume!Volume!Volume!!Volume!Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Volume!Audio disc ; Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Online resource (ePub ebook)!Volume!Volume!Volume!" +
+						"Volume!Volume!!!!Volume!Volume!Volume!Volume!Volume!Volume!Computer disc!Volume!Volume!Volume!Volume!Volume!" +
+						"!Volume!Online resource!Volume!!Volume!!Volume!!Volume!!Volume!Online resource (PDF ebook ; ePub ebook)!Volume!Volume!Volume!Volume!" +
+						"Volume!Volume!Online resource (ePub ebook)!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Audio disc ; Volume!" +
+						"Volume!Volume!Volume!Volume!Volume!!Volume!Volume!!Volume!Volume!Volume!!Volume!Volume!!" +
+						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!";
+		final String inputs[] = input.split("\\!");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount() + result.getBlankCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getRegExp(), ".{6,40}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMinValue(), "Audio disc ; Volume");
+		Assert.assertEquals(result.getMaxValue(), "Volume");
+
+		String regExp = result.getRegExp();
+		for (int i = 0; i < inputs.length; i++) {
+			if (inputs[i].length() == 0)
+				continue;
+			Assert.assertTrue(inputs[i].matches(regExp), inputs[i]);
+		}
+	}
+
+	@Test
+	public void backoutToDouble() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input =
+				"0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
+						"0|0|0|0|0.25|0|0|0|0|0|0|0|0|0|0|0|0|" +
+						"0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
+						"0|0|0|0|0|0|0|0.02|0.06|0|0|0|0|0|0.02|0|0|" +
+						"0.02|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
+						"0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
+						"0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
+						"0|0|0|0|0|0|0|0|0|0|0.02|0.02|0|0|0|0|0|" +
+						"0.14|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
+						"0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
+						"0|0|0.25|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
+						"0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
+						"0|0|0|0|0|0.05|0|0|0|0|0|0|0.02|0|0.02|0|0|" +
+						"0|0.01|0|0|0|0|0.02|0|0|0|0|0.01|0|0|0|||";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount() + result.getBlankCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 221);
+		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?\\.\\d+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMinValue(), "0.01");
+		Assert.assertEquals(result.getMaxValue(), "0.25");
+
+		String regExp = result.getRegExp();
+		for (int i = 0; i < inputs.length; i++) {
+			if (inputs[i].length() == 0)
+				continue;
+			Assert.assertTrue(inputs[i].matches(regExp), inputs[i]);
+		}
 	}
 
 	@Test
@@ -2389,6 +2567,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), ".{5,6}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMinValue(), "10000");
+		Assert.assertEquals(result.getMaxValue(), "A99998");
 	}
 
 	@Test
@@ -2750,18 +2930,24 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 0.8);
 	}
 
+	final String alpha3 = "aaa|bbb|ccc|ddd|eee|fff|ggg|hhh|iii|jjj|" +
+			"aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|" +
+			"iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
+			"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
+			"aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|" +
+			"iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
+			"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
+			"mmm|iii|uuu|fff|ggg|ggg|uuu|uuu|uuu|uuu|";
+	final String number3 = "111|123|707|902|104|223|537|902|111|443|" +
+			"121|234|738|902|002|431|679|093|124|557|886|631|235|569|002|149|963|271|905|501|" +
+			"171|734|038|002|882|215|875|193|214|997|126|361|098|888|314|111|222|341|458|082|" +
+			"371|334|438|442|782|715|775|893|314|337|326|781|984|349|534|888|654|841|158|182|" +
+			"098|123|435|000|312|223|343|563|123|";
+
 	@Test
-	public void constantLength3() throws IOException {
+	public void constantLength3_alpha() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input = "aaa|bbb|ccc|ddd|eee|fff|ggg|hhh|iii|jjj|" +
-				"aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|" +
-				"iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
-				"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
-				"aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|" +
-				"iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
-				"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
-				"mmm|iii|uuu|fff|ggg|ggg|uuu|uuu|uuu|uuu|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = alpha3.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2772,6 +2958,54 @@ public class AnalysisResultTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void constantLength3_alnum() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String inputs[] = (alpha3 + number3).split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "\\p{Alnum}{3}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void constantLength3_numal() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String inputs[] = (number3 + alpha3).split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "\\p{Alnum}{3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
@@ -2846,7 +3080,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{8,12}");
+		Assert.assertEquals(result.getRegExp(), "\\p{Alnum}{8,12}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2880,7 +3114,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 5 * iterations + 1);
 		Assert.assertEquals(result.getNullCount(), iterations);
 		Assert.assertEquals(result.getCardinality(), 5);
-		Assert.assertEquals(result.getRegExp(), ".{7,9}");
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{7,9}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -2949,6 +3183,83 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void floatBug() throws IOException {
+		String[] samples = new String[] {
+				"352115", "277303", "324576", "818328", "698915", "438223", "104583", "355898", "387829", "130771",
+				"246823", "833969", "380632", "467021", "869890", "15191", "463747", "847192", "706545", "895018",
+				"311867",
+				"0.4704197792748601", "0.8005132170623999", "0.015796397806505325", "0.9830897509338489", "0.669847612276236",
+				"0.9325644671976738", "0.5373506913452817", "0.21823369307871965", "0.1699104680573703", "0.18275707526552865",
+				"0.24983460286935077", "0.772409965970719", "1.1388812589363528E-4", "0.78120115126727", "0.6386556468768979",
+				"0.8730028156182696", "0.8296568674820993", "0.3250682023283127", "0.7261517112855164", "0.09470135380197953" };
+		final TextAnalyzer analysis = new TextAnalyzer();
+		int locked = -1;
+		int sample = 0;
+
+		analysis.setSampleSize(2* TextAnalyzer.SAMPLE_DEFAULT);
+		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			if (analysis.train(samples[sample++]) && locked == -1)
+				locked = sample;
+		}
+		for (int i = 0; i < TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			if (analysis.train(samples[sample++]) && locked == -1)
+				locked = sample;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
+		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE_WITH_EXPONENT);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void signedFloatBug() throws IOException {
+		String[] samples = new String[] {
+				"352115", "277303", "324576", "818328", "698915", "438223", "104583", "355898", "387829", "130771",
+				"246823", "833969", "380632", "467021", "869890", "15191", "463747", "847192", "706545", "895018",
+				"311867",
+				"0.4704197792748601", "-0.8005132170623999", "0.015796397806505325", "0.9830897509338489", "0.669847612276236",
+				"0.9325644671976738", "0.5373506913452817", "0.21823369307871965", "0.1699104680573703", "0.18275707526552865",
+				"0.24983460286935077", "0.772409965970719", "1.1388812589363528E+4", "0.78120115126727", "0.6386556468768979",
+				"0.8730028156182696", "0.8296568674820993", "0.3250682023283127", "0.7261517112855164", "0.09470135380197953" };
+		final TextAnalyzer analysis = new TextAnalyzer();
+		int locked = -1;
+		int sample = 0;
+
+		analysis.setSampleSize(2* TextAnalyzer.SAMPLE_DEFAULT);
+		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			if (analysis.train(samples[sample++]) && locked == -1)
+				locked = sample;
+		}
+		for (int i = 0; i < TextAnalyzer.SAMPLE_DEFAULT; i++) {
+			if (analysis.train(samples[sample++]) && locked == -1)
+				locked = sample;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
+		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void setSampleSize() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final Random random = new Random();
@@ -2973,6 +3284,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 2 * (TextAnalyzer.SAMPLE_DEFAULT + 1));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -3134,6 +3446,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
@@ -3170,7 +3483,7 @@ public class AnalysisResultTests {
 		//		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), ".{12}");
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{12}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -3357,7 +3670,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), end - start);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getRegExp(), ".{7}");
+		Assert.assertEquals(result.getRegExp(), "\\p{Alnum}{7}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertTrue(result.isKey());
 		Assert.assertEquals(result.getConfidence(), 1.0);

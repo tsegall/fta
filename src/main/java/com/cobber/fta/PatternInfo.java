@@ -127,6 +127,16 @@ public class PatternInfo {
 		this.format = format;
 	}
 
+	public PatternInfo(PatternInfo that) {
+		this.regexp = that.regexp;
+		this.type = that.type;
+		this.typeQualifier = that.typeQualifier;
+		this.minLength = that.minLength;
+		this.maxLength = that.maxLength;
+		this.generalPattern = that.generalPattern;
+		this.format = that.format;
+	}
+
 	/**
 	 * Is this pattern Numeric?
 	 *
@@ -134,5 +144,14 @@ public class PatternInfo {
 	 */
 	public boolean isNumeric() {
 		return PatternInfo.Type.LONG.equals(this.type) || PatternInfo.Type.DOUBLE.equals(this.type);
+	}
+
+	/**
+	 * Is this pattern Numeric?
+	 *
+	 * @return A boolean indicating if the Type for this pattern is numeric.
+	 */
+	public boolean isAlphabetic() {
+		return this.regexp.startsWith(TextAnalyzer.PATTERN_ALPHA);
 	}
 }
