@@ -185,7 +185,7 @@ class FileProcessor {
 				matchCount += result.getMatchCount();
 				sampleCount += result.getSampleCount();
 				if (options.validate && matched[i] != result.getMatchCount()) {
-					logger.printf("\tMatch Count via RegExp (%d) does not match analysis (%d)\n", matched[i], result.getMatchCount());
+					logger.printf("\t*** Match Count via RegExp (%d) does not match analysis (%d) ***\n", matched[i], result.getMatchCount());
 				}
 			}
 		}

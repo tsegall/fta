@@ -114,7 +114,7 @@ public class TextAnalysisResult {
 	/**
 	 * Get the optional Type Qualifier.  Possible qualifiers are:
 	 * <ul>
-	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "CA_PROVINCE", "COUNTRY", "EMAIL", "MONTHABBR", "NA_STATE", "NULL", "US_STATE", "URL", "ZIP"</li>
+	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "CA_PROVINCE", "COUNTRY", "EMAIL", "MONTHABBR", "ADDRESS", "NA_STATE", "NULL", "US_STATE", "URL", "ZIP"</li>
 	 *  <li>Type: LONG - "SIGNED"</li>
 	 * 	<li>Type: DOUBLE - "SIGNED"</li>
 	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - the detailed date format string</li>
@@ -167,14 +167,48 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression.
 	 */
 	public String getRegExp() {
-
 		String answer = patternInfo.regexp;
 
-		if (!TextAnalyzer.PATTERN_ANY_VARIABLE.equals(answer) && (leadingWhiteSpace || trailingWhiteSpace)) {
+		if (!leadingWhiteSpace && !trailingWhiteSpace)
+			return answer;
+
+		if (TextAnalyzer.PATTERN_BOOLEAN.equals(answer) || TextAnalyzer.PATTERN_YESNO.equals(answer)) {
 			if (leadingWhiteSpace)
 				answer = "\\p{javaWhitespace}*" + answer;
 			if (trailingWhiteSpace)
 				answer += "\\p{javaWhitespace}*";
+			return answer;
+		}
+
+		if (TextAnalyzer.PATTERN_ANY_VARIABLE.equals(answer))
+			return answer;
+
+		String pattern1 = null;
+		String pattern2 = null;
+		int orIndex = answer.indexOf('|');
+		if (orIndex == -1) {
+			pattern1 = answer.substring(0);
+			pattern2 = null;
+		}
+		else {
+			pattern1 = answer.substring(0, orIndex);
+			pattern2 = answer.substring(orIndex + 1);
+		}
+
+		if (leadingWhiteSpace)
+			pattern1 = "\\p{javaWhitespace}*" + pattern1;
+		if (trailingWhiteSpace)
+			pattern1 += "\\p{javaWhitespace}*";
+
+		answer = pattern1;
+
+		if (pattern2 != null) {
+			if (leadingWhiteSpace)
+				pattern2 = "\\p{javaWhitespace}*" + pattern2;
+			if (trailingWhiteSpace)
+				pattern2 += "\\p{javaWhitespace}*";
+
+			answer += '|' + pattern2;
 		}
 
 		return answer;

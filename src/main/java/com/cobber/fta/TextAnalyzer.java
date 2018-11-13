@@ -49,7 +49,7 @@ import com.cobber.fta.DateTimeParser.DateResolutionMode;
 /**
  * Analyze Text data to determine type information and other key metrics
  * associated with a text stream. A key objective of the analysis is that it
- * should be sufficiently fast to be in-line (e.g. as the data is input from
+ * should be sufficiently fast to be in-line (i.e. as the data is input from
  * some source it should be possible to stream the data through this class
  * without undue performance degradation).
  *
@@ -122,10 +122,12 @@ public class TextAnalyzer {
 
 	private double minDouble = Double.MAX_VALUE;
 	private double maxDouble = -Double.MAX_VALUE;
+	private long negativeDoubles = 0;
 	private BigDecimal sumBD = BigDecimal.ZERO;
 
 	private long minLong = Long.MAX_VALUE;
 	private long maxLong = Long.MIN_VALUE;
+	private long negativeLongs = 0;
 	private BigInteger sumBI = BigInteger.ZERO;
 
 	private String minString;
@@ -161,6 +163,7 @@ public class TextAnalyzer {
 	private int possibleEmails;
 	private int possibleZips;
 	private int possibleURLs;
+	private int possibleAddresses;
 
 	private static Map<String, PatternInfo> patternInfo;
 	private static Map<String, PatternInfo> typeInfo;
@@ -170,6 +173,7 @@ public class TextAnalyzer {
 	private static Set<String> usStates = new HashSet<String>();
 	private static Set<String> caProvinces = new HashSet<String>();
 	private static Set<String> countries = new HashSet<String>();
+	private static Set<String> addressMarkers = new HashSet<String>();
 	private static Set<String> gender = new HashSet<String>();
 	private static Set<String> monthAbbr = new HashSet<String>();
 
@@ -231,6 +235,7 @@ public class TextAnalyzer {
 		addPattern(typeInfo, false, "\\p{javaWhitespace}*", PatternInfo.Type.STRING, "BLANKORNULL", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\p{javaWhitespace}*", PatternInfo.Type.STRING, "BLANK", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\d{5}", PatternInfo.Type.LONG, "ZIP", -1, -1, null, null);
+		addPattern(typeInfo, false, PATTERN_ANY_VARIABLE, PatternInfo.Type.STRING, "ADDRESS", -1, -1, null, null);
 		addPattern(typeInfo, false, PATTERN_ALPHA_2, PatternInfo.Type.STRING, "NA_STATE", -1, -1, null, null);
 		addPattern(typeInfo, false, PATTERN_ALPHA_2, PatternInfo.Type.STRING, "US_STATE", -1, -1, null, null);
 		addPattern(typeInfo, false, PATTERN_ALPHA_2, PatternInfo.Type.STRING, "CA_PROVINCE", -1, -1, null, null);
@@ -296,6 +301,11 @@ public class TextAnalyzer {
 			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/countries.csv")));
 			while ((line = reader.readLine()) != null) {
 				countries.add(line);
+			}
+
+			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/address_markers.csv")));
+			while ((line = reader.readLine()) != null) {
+				addressMarkers.add(line);
 			}
 
 			gender.add("MALE");
@@ -510,6 +520,9 @@ public class TextAnalyzer {
 				totalLeadingZeros++;
 		}
 
+		if (l < 0)
+			negativeLongs++;
+
 		if (collectStatistics) {
 			if (l < minLong) {
 				minLong = l;
@@ -580,7 +593,12 @@ public class TextAnalyzer {
 				} catch (MalformedURLException | URISyntaxException exception) {
 					return false;
 				}
+			} else if ("ADDRESS".equals(matchPatternInfo.typeQualifier)) {
+				int spaceIndex = cleaned.lastIndexOf(' ');
+				if (spaceIndex == -1 || !addressMarkers.contains(input.substring(spaceIndex + 1).toUpperCase(Locale.ROOT)))
+					return false;
 			}
+
 		}
 
 		return updateStats(cleaned);
@@ -622,6 +640,9 @@ public class TextAnalyzer {
 		// If it is NaN/Infinity then we are all done
 		if (Double.isNaN(d) || Double.isInfinite(d))
 			return true;
+
+		if (d < 0.0)
+			negativeDoubles++;
 
 		if (collectStatistics) {
 			if (d < minDouble) {
@@ -763,6 +784,8 @@ public class TextAnalyzer {
 		int commas = 0;
 		int semicolons = 0;
 		int atSigns = 0;
+		int spaceIndex = -1;
+
 		for (int i = 0; i < length; i++) {
 			char ch = input.charAt(i);
 			if (i == 0 && ch == minusSign) {
@@ -797,6 +820,8 @@ public class TextAnalyzer {
 					commas++;
 				else if (ch == ';')
 					semicolons++;
+				else if (ch == ' ')
+					spaceIndex = i;
 				l0.append(ch);
 				// If the last character was an exponentiation symbol then this better be a sign if it is going to be numeric
 				if (possibleExponentSeen != -1 && possibleExponentSeen == i - 1) {
@@ -849,6 +874,8 @@ public class TextAnalyzer {
 			possibleZips++;
 		if (input.indexOf("://") != -1)
 			possibleURLs++;
+		if (spaceIndex != -1 && addressMarkers.contains(input.substring(spaceIndex + 1, length).toUpperCase(Locale.ROOT)))
+			possibleAddresses++;
 
 		// Create the level 1 and 2
 		if (digitsSeen > 0 && couldBeNumeric && numericDecimalSeparators <= 1) {
@@ -1092,6 +1119,11 @@ public class TextAnalyzer {
 					pattern = save.regexp;
 				}
 				matchType = matchPatternInfo.type;
+			}
+
+			// Do we have a set of possible Addresses?
+			if (possibleAddresses >= .90 * raw.size()) {
+				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "ADDRESS", -1, -1, null, null);
 			}
 
 			for (final String sample : raw)
@@ -1564,6 +1596,11 @@ public class TextAnalyzer {
 		}
 
 		if (PATTERN_LONG.equals(matchPattern)) {
+			if (matchPatternInfo.typeQualifier == null && negativeLongs != 0) {
+				matchPattern = PATTERN_SIGNED_LONG;
+				matchPatternInfo = patternInfo.get(matchPattern);
+			}
+
 			if (minLong > 19000101 && maxLong < 20400101 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || name.toLowerCase(Locale.ROOT).contains("date"))) {
 				matchPatternInfo = new PatternInfo("\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", 8, 8, null, "yyyyMMdd");
@@ -1582,17 +1619,23 @@ public class TextAnalyzer {
 				maxBoolean = "1";
 				matchPatternInfo = patternInfo.get(matchPattern);
 			} else {
-				matchPattern = "\\d{" + minTrimmedLength;
+				matchPattern = matchPatternInfo.typeQualifier != null ? "-?\\d{" : "\\d{";
+				matchPattern += minTrimmedLength;
 				if (minTrimmedLength != maxTrimmedLength)
 					matchPattern += "," + maxTrimmedLength;
 				matchPattern += "}";
-				matchPatternInfo = new PatternInfo(matchPattern, matchType, null, -1, -1, null, null);
+				matchPatternInfo = new PatternInfo(matchPattern, matchType, matchPatternInfo.typeQualifier, -1, -1, null, null);
 
 				if (realSamples >= reflectionSamples && confidence < 0.96) {
 					// We thought it was an integer field, but on reflection it does not feel like it
 					conditionalBackoutToPattern(realSamples, matchPatternInfo);
 					confidence = 1.0;
 				}
+			}
+		} else if (PATTERN_DOUBLE.equals(matchPattern)) {
+			if (matchPatternInfo.typeQualifier == null && negativeDoubles != 0) {
+				matchPattern = PATTERN_SIGNED_DOUBLE;
+				matchPatternInfo = patternInfo.get(matchPattern);
 			}
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
 			final int length = determineLength(matchPattern);
