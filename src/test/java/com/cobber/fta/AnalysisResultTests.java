@@ -645,12 +645,12 @@ public class AnalysisResultTests {
 	@Test
 	public void basicStateSpaces() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
-		final String input = " OH| SD| WA| MA| WI| NC| MB| VA| NC| DE| ND| PA| WV| TX| KS| WV| FL| WA| CA| GA| WI|" +
-				" IL| SD| NY| IA| CT| DC| PA| WA| TX| IN| TX| MS| BC| ND| GA| NY| PA| TX| ID| AL| MS|" +
-				" OK| AZ| CO| NJ| MI| ON| KS| OH| TX| IN| FL| FL| WA| NY| GA| SC| PA| CA| WI| OH| CO|" +
-				" VA| OH| MO| MA| IL| WA| IN| SD| IA| LA| TX| WY| OK| AL| MO| WA| PA| NB| NY| GA| MI|" +
-				" FL| CA| NM| CA| CA| CA| CA| OH| CA| CA| TX| TX| UT| MD| CA| KS| CO| OR| MN| MO| MO|" +
-				" MI| VT| MN| FL| MI| CA| VT| NM| NC| WY| IL| NY| MN| VA| VA| IN| UT| WI| NV| SA| CA| OH |";
+		final String input = " AL| AK| AZ| KY| KS| LA| ME| MD| MI| MA| MN| MS|MO |NE| MT| SD|TN | TX| UT| VT| WI|" +
+						" VA| WA| WV| HI| ID| IL| IN| IA| KS| KY| LA| ME| MD| MA| MI| MN| MS| MO| MT| NE| NV|" +
+						" NH| NJ| NM| NY| NC| ND| OH| OK| OR| PA| RI| SC| SD| TN| TX| UT| VT| VA| WA|  WV | WI|" +
+						" WY| AL| AK| AZ| AR| CA| CO| CT| DC| DE| FL| GA| HI| ID| IL| IN| IA| KS| KY| LA|SA|" +
+						" MD| MA| MI| MN| MS| MO| MT| NE| NV| NH| NJ| NM| NY| NC| ND| OH| OK| OR| RI| SC| SD|" +
+						" TX| UT| VT| WV| WI| WY| NV| NH| NJ| OR| PA| RI| SC| AR| CA| CO| CT| ID| HI| IL| IN|";
 		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
@@ -663,13 +663,13 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "NA_STATE");
+		Assert.assertEquals(result.getTypeQualifier(), "US_STATE");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*\\p{Alpha}{2}\\p{javaWhitespace}*");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.get("SA"), Integer.valueOf(1));
-		Assert.assertEquals(result.getConfidence(), 0.9921259842519685);
+		Assert.assertEquals(result.getConfidence(), 0.9920634920634921);
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
@@ -678,7 +678,7 @@ public class AnalysisResultTests {
 
 	@Test
 	public void basicGender() throws IOException {
-		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
+		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String input = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
 				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
 				"Female|Male|Female|FEMALE|Male|Female|male|Male|Male|male|";
@@ -694,12 +694,44 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "GENDER");
+		Assert.assertEquals(result.getTypeQualifier(), "GENDER_EN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}+");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.get("UNKNOWN"), Integer.valueOf(1));
+		Assert.assertEquals(result.getConfidence(), 0.9666666666666667);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
+	@Test
+	public void basicGenderNoDefaults() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.setDefaultLogicalTypes(false);
+
+		final String input = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
+				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
+				"Female|Male|Female|FEMALE|Male|Female|male|Male|Male|male|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{4,7}");
+		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2641,42 +2673,6 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicNA() throws IOException {
-		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|AB|AB|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
-				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|YT|MN|MS|MO|MT|NE|NV|XX|" +
-				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|NF|NB|" +
-				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|PE|BC|" +
-				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|ON|LB|" +
-				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|YT|LB|";
-		final String inputs[] = input.split("\\|");
-		int locked = -1;
-
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "NA_STATE");
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
-		Assert.assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.get("XX"), Integer.valueOf(1));
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
-		Assert.assertEquals(result.getConfidence(), 0.9927536231884058);
-
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-		}
-	}
-
-	@Test
 	public void basicCA() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String input = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
@@ -2786,13 +2782,13 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "COUNTRY");
+		Assert.assertEquals(result.getTypeQualifier(), "COUNTRY_EN");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), ".+");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getConfidence(), 0.9960159362549801);
 	}
 
 	// Set of valid months + 2 x "NA", 1 x "bogus", 1 x "Bad"
@@ -2835,7 +2831,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(outliers.get("Bad"), Integer.valueOf(1));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 0.9835164835164835);
+		Assert.assertEquals(result.getConfidence(), 0.978021978021978);
 
 		/* BUG cannot train once we have determined a logical type
 		analysis.train("Another bad element");
@@ -2870,7 +2866,9 @@ public class AnalysisResultTests {
 			if (analysis.train(inputs[i]) && locked == -1)
 				locked = i;
 		}
-		analysis.train("Another bad element");
+		final int unknownCount = 10;
+		for (int i = 0; i < unknownCount; i++)
+			analysis.train("UNK");
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -2878,16 +2876,15 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), inputs.length + 1);
-		Assert.assertEquals(result.getOutlierCount(), 3);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + unknownCount);
+		Assert.assertEquals(result.getOutlierCount(), 2);
 		final Map<String, Integer> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.size(), 3);
+		Assert.assertEquals(outliers.size(), 2);
 		Assert.assertEquals(outliers.get("Bogus"), Integer.valueOf(1));
 		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(2));
-		Assert.assertEquals(outliers.get("Another bad element"), Integer.valueOf(1));
-		Assert.assertEquals(result.getMatchCount(), inputs.length + 1 - 4);
+		Assert.assertEquals(result.getMatchCount(), inputs.length + unknownCount + 1 - 4);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 0.9781420765027322);
+		Assert.assertEquals(result.getConfidence(), 0.984375);
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
@@ -2895,7 +2892,7 @@ public class AnalysisResultTests {
 			if (inputs[i].matches(result.getRegExp()))
 					matches++;
 		}
-		Assert.assertEquals(result.getMatchCount(), matches);
+		Assert.assertEquals(result.getMatchCount() - unknownCount, matches);
 	}
 
 	@Test

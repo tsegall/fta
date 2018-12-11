@@ -18,12 +18,10 @@ package com.cobber.fta;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.text.DateFormatSymbols;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,10 +39,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.plugins.LogicalTypeCAProvince;
+import com.cobber.fta.plugins.LogicalTypeCountry;
+import com.cobber.fta.plugins.LogicalTypeEmail;
+import com.cobber.fta.plugins.LogicalTypeGender;
+import com.cobber.fta.plugins.LogicalTypeMonthAbbr;
+import com.cobber.fta.plugins.LogicalTypeURL;
+import com.cobber.fta.plugins.LogicalTypeUSState;
 
 /**
  * Analyze Text data to determine type information and other key metrics
@@ -80,6 +82,9 @@ public class TextAnalyzer {
 	/** Should we collect statistics (min, max, sum) as we parse the data stream. */
 	private boolean collectStatistics = true;
 
+	/** Should we enable Default Logical Type detection. */
+	private boolean logicalTypeDetection = true;
+
 	/** The default value for the maximum Cardinality tracked. */
 	public static final int MAX_CARDINALITY_DEFAULT = 500;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
@@ -93,7 +98,7 @@ public class TextAnalyzer {
 	private static final int REFLECTION_SAMPLES = 30;
 	private int reflectionSamples = REFLECTION_SAMPLES;
 
-	private String name;
+	private String dataStreamName;
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 	private char decimalSeparator;
 	private char monetaryDecimalSeparator;
@@ -160,22 +165,16 @@ public class TextAnalyzer {
 	private int possibleDateTime;
 	private long totalLongs;
 	private long totalLeadingZeros;
-	private int possibleEmails;
 	private int possibleZips;
-	private int possibleURLs;
-	private int possibleAddresses;
 
 	private static Map<String, PatternInfo> patternInfo;
 	private static Map<String, PatternInfo> typeInfo;
 	private static Map<String, String> promotion;
 
 	private static Set<String> zips = new HashSet<String>();
-	private static Set<String> usStates = new HashSet<String>();
-	private static Set<String> caProvinces = new HashSet<String>();
-	private static Set<String> countries = new HashSet<String>();
-	private static Set<String> addressMarkers = new HashSet<String>();
-	private static Set<String> gender = new HashSet<String>();
-	private static Set<String> monthAbbr = new HashSet<String>();
+
+	private ArrayList<LogicalTypeInfinite> stringTypesInfinite = new ArrayList<LogicalTypeInfinite>();
+	private ArrayList<LogicalTypeFinite> stringTypesFinite = new ArrayList<LogicalTypeFinite>();
 
 	public static final String PATTERN_ANY = ".";
 	public static final String PATTERN_ANY_VARIABLE = ".+";
@@ -235,13 +234,6 @@ public class TextAnalyzer {
 		addPattern(typeInfo, false, "\\p{javaWhitespace}*", PatternInfo.Type.STRING, "BLANKORNULL", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\p{javaWhitespace}*", PatternInfo.Type.STRING, "BLANK", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\d{5}", PatternInfo.Type.LONG, "ZIP", -1, -1, null, null);
-		addPattern(typeInfo, false, PATTERN_ANY_VARIABLE, PatternInfo.Type.STRING, "ADDRESS", -1, -1, null, null);
-		addPattern(typeInfo, false, PATTERN_ALPHA_2, PatternInfo.Type.STRING, "NA_STATE", -1, -1, null, null);
-		addPattern(typeInfo, false, PATTERN_ALPHA_2, PatternInfo.Type.STRING, "US_STATE", -1, -1, null, null);
-		addPattern(typeInfo, false, PATTERN_ALPHA_2, PatternInfo.Type.STRING, "CA_PROVINCE", -1, -1, null, null);
-		addPattern(typeInfo, false, ".+", PatternInfo.Type.STRING, "COUNTRY", -1, -1, null, null);
-		addPattern(typeInfo, false, PATTERN_ALPHA_VARIABLE, PatternInfo.Type.STRING, "GENDER", -1, -1, null, null);
-		addPattern(typeInfo, false, PATTERN_ALPHA_3, PatternInfo.Type.STRING, "MONTHABBR", -1, -1, null, null);
 
 		promotion.put(PATTERN_LONG + "---" + PATTERN_SIGNED_LONG, PATTERN_SIGNED_LONG);
 		promotion.put(PATTERN_LONG + "---" + PATTERN_DOUBLE, PATTERN_DOUBLE);
@@ -287,35 +279,6 @@ public class TextAnalyzer {
 			while ((line = reader.readLine()) != null) {
 				zips.add(line);
 			}
-
-			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_states.csv")));
-			while ((line = reader.readLine()) != null) {
-				usStates.add(line);
-			}
-
-			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/ca_provinces.csv")));
-			while ((line = reader.readLine()) != null) {
-				caProvinces.add(line);
-			}
-
-			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/countries.csv")));
-			while ((line = reader.readLine()) != null) {
-				countries.add(line);
-			}
-
-			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/address_markers.csv")));
-			while ((line = reader.readLine()) != null) {
-				addressMarkers.add(line);
-			}
-
-			gender.add("MALE");
-			gender.add("FEMALE");
-
-			// Setup the Monthly abbreviations
-			final String[] shortMonths = new DateFormatSymbols().getShortMonths();
-			for (final String shortMonth : shortMonths) {
-				monthAbbr.add(shortMonth.toUpperCase(Locale.ROOT));
-			}
 		}
 		catch (IOException e) {
 			throw new InternalErrorException("Failed to initialize", e);
@@ -334,13 +297,44 @@ public class TextAnalyzer {
 	 *             If an internal error occurred.
 	 */
 	public TextAnalyzer(final String name, final DateResolutionMode resolutionMode) throws IOException {
-		this.name = name;
+		this.dataStreamName = name;
 		this.resolutionMode = resolutionMode;
 		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
 		decimalSeparator = formatSymbols.getDecimalSeparator();
 		monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
 		groupingSeparator = formatSymbols.getGroupingSeparator();
 		minusSign = formatSymbols.getMinusSign();
+	}
+
+	/**
+	 * Register a new Logical Type processor.
+	 * See {@link LogicalTypeFinite} or {@link LogicalTypeInfinite}
+	 *
+	 * @param newLogicalType The class representing the new Logical Type
+	 * @return Success if the new Logical type was successfully registered.
+	 */
+	public boolean registerLogicalType(Class<? extends LogicalType> newLogicalType) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot register logical types once training has started");
+
+		Constructor<?> ctor;
+		LogicalType object;
+		PatternInfo.Type baseType;
+
+		try {
+			ctor = newLogicalType.getConstructor();
+			object = (LogicalType)ctor.newInstance();
+			baseType = object.getBaseType();
+			if (PatternInfo.Type.STRING.equals(baseType))
+				if (object instanceof LogicalTypeInfinite)
+					stringTypesInfinite.add((LogicalTypeInfinite)object);
+				else
+					stringTypesFinite.add((LogicalTypeFinite)object);
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -382,12 +376,37 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Indicate whether to collect statistics or not.
+	 * Indicates whether to collect statistics or not.
 	 *
 	 * @return Whether Statistics collection is enabled.
 	 */
 	public boolean getCollectStatistics() {
 		return collectStatistics;
+	}
+
+	/**
+	 * Indicate whether to enable default Logical Type processing.
+	 *
+	 * @param logicalTypeDetection
+	 *            A boolean indicating the desired state
+	 * @return The previous value of this parameter.
+	 */
+	public boolean setDefaultLogicalTypes(final boolean logicalTypeDetection) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot adjust Logical Type detection once training has started");
+
+		final boolean ret = logicalTypeDetection;
+		this.logicalTypeDetection = logicalTypeDetection;
+		return ret;
+	}
+
+	/**
+	 * Indicates whether to enable default Logical Type processing or not.
+	 *
+	 * @return Whether default Logical Type processing collection is enabled.
+	 */
+	public boolean getDefaultLogicalTypes() {
+		return logicalTypeDetection;
 	}
 
     /**
@@ -567,38 +586,19 @@ public class TextAnalyzer {
 		return isTrue || isFalse;
 	}
 
-	private boolean trackString(final String input, final boolean register) {
+	private boolean trackString(final String input, PatternInfo patternInfo, final boolean register) {
 		String cleaned = input;
 
-		if (matchPatternInfo.typeQualifier == null) {
-			if (matchPatternInfo.isAlphabetic() && !cleaned.trim().chars().allMatch(Character::isAlphabetic))
+		if (patternInfo.typeQualifier == null) {
+			if (patternInfo.isAlphabetic() && !cleaned.trim().chars().allMatch(Character::isAlphabetic))
 				return false;
 		}
 		else {
-			if ("EMAIL".equals(matchPatternInfo.typeQualifier)) {
-				// Address lists commonly have ;'s as separators as opposed to the
-				// ','
-				if (cleaned.indexOf(';') != -1)
-					cleaned = cleaned.replaceAll(";", ",");
-				try {
-					return InternetAddress.parse(cleaned).length != 0;
-				} catch (AddressException e) {
-					return false;
-				}
-			} else if ("URL".equals(matchPatternInfo.typeQualifier)) {
-				try {
-					final URL url = new URL(cleaned);
-					url.toURI();
-					return true;
-				} catch (MalformedURLException | URISyntaxException exception) {
-					return false;
-				}
-			} else if ("ADDRESS".equals(matchPatternInfo.typeQualifier)) {
-				int spaceIndex = cleaned.lastIndexOf(' ');
-				if (spaceIndex == -1 || !addressMarkers.contains(input.substring(spaceIndex + 1).toUpperCase(Locale.ROOT)))
-					return false;
+			// If it is a registered Logical Type then validate it
+			for (LogicalType logical : stringTypesInfinite) {
+				if (logical.getQualifier().equals(patternInfo.typeQualifier))
+					return logical.isValid(input);
 			}
-
 		}
 
 		return updateStats(cleaned);
@@ -740,11 +740,32 @@ public class TextAnalyzer {
 	public boolean train(final String rawInput) {
 		// Initialize if we have not already done so
 		if (!trainingStarted) {
-			trainingStarted = true;
 			raw = new ArrayList<String>(samples);
 			levels[0] = new ArrayList<StringBuilder>(samples);
 			levels[1] = new ArrayList<StringBuilder>(samples);
 			levels[2] = new ArrayList<StringBuilder>(samples);
+
+			if (logicalTypeDetection) {
+				// Infinite ...
+				registerLogicalType(LogicalTypeURL.class);
+				registerLogicalType(LogicalTypeEmail.class);
+				// Finite - Variable length ...
+				registerLogicalType(LogicalTypeGender.class);
+				registerLogicalType(LogicalTypeCountry.class);
+				// Finite - Fixed length ...
+				registerLogicalType(LogicalTypeMonthAbbr.class);
+				registerLogicalType(LogicalTypeCAProvince.class);
+				registerLogicalType(LogicalTypeUSState.class);
+			}
+
+			// Run the initializers for the Logical Types
+			for (LogicalType logical : stringTypesInfinite)
+				logical.initialize();
+
+			for (LogicalType logical : stringTypesFinite)
+				logical.initialize();
+
+			trainingStarted = true;
 		}
 
 		sampleCount++;
@@ -781,13 +802,18 @@ public class TextAnalyzer {
 		int possibleExponentSeen = -1;
 		int digitsSeen = 0;
 		int alphasSeen = 0;
-		int commas = 0;
-		int semicolons = 0;
-		int atSigns = 0;
-		int spaceIndex = -1;
+		int[] charCounts = new int[128];
+		int[] lastIndex = new int[128];
 
 		for (int i = 0; i < length; i++) {
 			char ch = input.charAt(i);
+
+			// Track counts and last occurrence for simple characters
+			if (ch <= 127) {
+				charCounts[ch]++;
+				lastIndex[ch] = i;
+			}
+
 			if (i == 0 && ch == minusSign) {
 				numericSigned = true;
 			} else if (Character.isDigit(ch)) {
@@ -796,12 +822,8 @@ public class TextAnalyzer {
 			} else if (ch == decimalSeparator) {
 				l0.append('D');
 				numericDecimalSeparators++;
-				if (decimalSeparator == ',')
-					commas++;
 			} else if (ch == groupingSeparator) {
 				l0.append('G');
-				if (groupingSeparator == ',')
-					commas++;
 			} else if (Character.isAlphabetic(ch)) {
 				l0.append('a');
 				alphasSeen++;
@@ -814,14 +836,6 @@ public class TextAnalyzer {
 				else
 					couldBeNumeric = false;
 			} else {
-				if (ch == '@')
-					atSigns++;
-				else if (ch == ',')
-					commas++;
-				else if (ch == ';')
-					semicolons++;
-				else if (ch == ' ')
-					spaceIndex = i;
 				l0.append(ch);
 				// If the last character was an exponentiation symbol then this better be a sign if it is going to be numeric
 				if (possibleExponentSeen != -1 && possibleExponentSeen == i - 1) {
@@ -868,14 +882,12 @@ public class TextAnalyzer {
 
 		if (DateTimeParser.determineFormatString(input, resolutionMode) != null)
 			possibleDateTime++;
-		if (atSigns - 1 == commas || atSigns - 1 == semicolons)
-			possibleEmails++;
 		if (length == 5 && digitsSeen == 5)
 			possibleZips++;
-		if (input.indexOf("://") != -1)
-			possibleURLs++;
-		if (spaceIndex != -1 && addressMarkers.contains(input.substring(spaceIndex + 1, length).toUpperCase(Locale.ROOT)))
-			possibleAddresses++;
+
+		// Check to see if this input is one of our registered Logical Types
+		for (LogicalTypeInfinite logical : stringTypesInfinite)
+			logical.isCandidate(input, compressedl0, charCounts, lastIndex);
 
 		// Create the level 1 and 2
 		if (digitsSeen > 0 && couldBeNumeric && numericDecimalSeparators <= 1) {
@@ -1073,33 +1085,18 @@ public class TextAnalyzer {
 				pattern = matchPatternInfo.regexp;
 			}
 
-			// Do we have a set of possible emails?
-			if (possibleEmails == raw.size()) {
-				final PatternInfo save = matchPatternInfo;
-				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "EMAIL", -1, -1, null, null);
-				int emails = 0;
-				for (final String sample : raw) {
-					if (trackString(sample, false))
-						emails++;
+			// If it is a registered Logical Type then validate it
+			for (LogicalTypeInfinite logical : stringTypesInfinite) {
+				if (logical.getCandidateCount() == raw.size()) {
+					int count = 0;
+					PatternInfo candidate = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), -1, -1, null, null);
+					for (final String sample : raw)
+						if (trackString(sample, candidate, false))
+							count++;
+					// If a reasonable number look genuine then we are convinced
+					if (count >= logical.getSampleThreshold() * raw.size())
+						matchPatternInfo = candidate;
 				}
-				// if at least 90% of them looked like a genuine email then
-				// stay with email, otherwise back out to simple String
-				if (emails < .9 * raw.size())
-					matchPatternInfo = save;
-			}
-
-			// Do we have a set of possible URLs?
-			if (possibleURLs == raw.size()) {
-				final PatternInfo save = matchPatternInfo;
-				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "URL", -1, -1, null, null);
-				int countURLs = 0;
-				for (final String sample : raw)
-					if (trackString(sample, false))
-						countURLs++;
-				// if at least 90% of them looked like a genuine URL then
-				// stay with URL, otherwise back out to simple String
-				if (countURLs < .9 * raw.size())
-					matchPatternInfo = save;
 			}
 
 			// Do we have a set of possible zip codes?
@@ -1119,11 +1116,6 @@ public class TextAnalyzer {
 					pattern = save.regexp;
 				}
 				matchType = matchPatternInfo.type;
-			}
-
-			// Do we have a set of possible Addresses?
-			if (possibleAddresses >= .90 * raw.size()) {
-				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, "ADDRESS", -1, -1, null, null);
 			}
 
 			for (final String sample : raw)
@@ -1373,17 +1365,21 @@ public class TextAnalyzer {
 			break;
 
 		case STRING:
-			if (trackString(input, true)) {
+			if (trackString(input, matchPatternInfo, true)) {
 				matchCount++;
 				addValid(input);
 				valid = true;
 			}
 			else {
-				if (realSamples == reflectionSamples && (double) matchCount / realSamples < 0.95 &&
-						("URL".equals(matchPatternInfo.typeQualifier) || "EMAIL".equals(matchPatternInfo.typeQualifier))) {
-					backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
-					valid = true;
-				}
+				if (realSamples == reflectionSamples && (double) matchCount / realSamples < 0.95 && matchPatternInfo.typeQualifier != null)
+					// If it is a registered Logical Type then validate it
+					for (LogicalType logical : stringTypesInfinite) {
+						if (logical.getQualifier().equals(matchPatternInfo.typeQualifier)) {
+							backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
+							valid = true;
+							break;
+						}
+					}
 			}
 			break;
 
@@ -1459,13 +1455,11 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Determine if the current dataset reflects a logical type (of uniform length) as defined by the provided set.
-	 * @param uniformSet The set of items with a uniform length that reflect this logical type
-	 * @param type The type that along with the qualifier identifies the logical type that this set represents
-	 * @param qualifier The qualifier that along with the type identifies the logical type that this set represents
+	 * Determine if the current dataset reflects a logical type (of uniform length).
+	 * @param logical The Logical type we are testing
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
-	private boolean checkUniformLengthSet(final Set<String> uniformSet, final PatternInfo.Type type, final String qualifier) {
+	private boolean checkUniformLengthSet(LogicalTypeFinite logical) {
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		long misses = 0;					// count of number of groups that are misses
 		long missCount = 0;				// count of number of misses
@@ -1484,25 +1478,25 @@ public class TextAnalyzer {
 		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 		if ((double) missCount / realSamples <= .05) {
 			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
-				if (uniformSet.contains(entry.getKey().toUpperCase(Locale.ROOT)))
+				if (logical.isValid(entry.getKey().trim().toUpperCase(Locale.ROOT)))
 					validCount += entry.getValue();
 				else {
 					misses++;
 					missCount += entry.getValue();
 					newOutliers.put(entry.getKey(), entry.getValue());
 					// Break out early if we know we are going to fail
-					if ((double) missCount / realSamples > .05)
+					if (newOutliers.size() > 1 && (double) missCount / realSamples > .05)
 						return false;
 				}
 			}
 		}
 
 		// To declare success we need fewer than 5% failures by count and additionally fewer than 4 groups
-		if ((double) missCount / realSamples > .05 || misses >= 4)
-			return false;
+		if (newOutliers.size() != 1 && ((double) missCount / realSamples > .05 || misses >= 4))
+				return false;
 
 		matchCount = validCount;
-		matchPatternInfo = typeInfo.get(type.toString() + "." + qualifier);
+		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), -1, -1, null, null);
 		matchPattern = matchPatternInfo.regexp;
 		outliers.putAll(newOutliers);
 		cardinality.keySet().removeAll(newOutliers.keySet());
@@ -1511,14 +1505,12 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Determine if the current dataset reflects a logical type (of variable length) as defined by the provided set.
+	 * Determine if the current dataset reflects a logical type (of variable length).
 	 * @param cardinalityUpper The cardinality set but reduced to ignore case
-	 * @param variableSet The set of items that reflect this logical type
-	 * @param type The type that along with the qualifier identifies the logical type that this set represents
-	 * @param qualifier The qualifier that along with the type identifies the logical type that this set represents
-	 * @return True if we believe that this data set is defined by the provided set
+	 * @param logical The Logical type we are testing
+	 * @return True if we believe that this data set is defined by the provided by this Logical Type
 	 */
-	private boolean checkVariableLengthSet(Map<String, Integer> cardinalityUpper, final Set<String> variableSet, final PatternInfo.Type type, final String qualifier) {
+	private boolean checkVariableLengthSet(Map<String, Integer> cardinalityUpper, LogicalTypeFinite logical) { 
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 		long validCount = 0;
@@ -1527,27 +1519,27 @@ public class TextAnalyzer {
 
 		// Sweep the balance and check they are part of the set
 		for (final Map.Entry<String, Integer> entry : cardinalityUpper.entrySet()) {
-			if (variableSet.contains(entry.getKey()))
+			if (logical.isValid(entry.getKey()))
 				validCount += entry.getValue();
 			else {
 				misses++;
 				missCount += entry.getValue();
 				// Break out early if we know we are going to fail
 				// To declare success we need fewer than 40% failures by count and also a limited number of misses by group
-				if ((double) missCount / realSamples > .4 || misses > (long)Math.sqrt(variableSet.size()))
+				if ((double) missCount / realSamples > .4 || misses > (long)Math.sqrt(logical.getSize()))
 					return false;
 				newOutliers.put(entry.getKey(), entry.getValue());
 			}
 		}
 
 		// To declare success we need fewer than 40% failures by count and also a limited number of misses by group
-		if ((double) missCount / realSamples > .4 || misses > (long)Math.sqrt(variableSet.size()))
+		if ((double) missCount / realSamples > .4 || misses > (long)Math.sqrt(logical.getSize()))
 			return false;
 
 		outliers.putAll(newOutliers);
 		cardinalityUpper.keySet().removeAll(newOutliers.keySet());
 		matchCount = validCount;
-		matchPatternInfo = typeInfo.get(type.toString() + "." + qualifier);
+		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), -1, -1, null, null);
 		matchPattern = matchPatternInfo.regexp;
 		cardinality = cardinalityUpper;
 		return true;
@@ -1602,13 +1594,13 @@ public class TextAnalyzer {
 			}
 
 			if (minLong > 19000101 && maxLong < 20400101 &&
-					((realSamples >= reflectionSamples && cardinality.size() > 10) || name.toLowerCase(Locale.ROOT).contains("date"))) {
+					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
 				matchPatternInfo = new PatternInfo("\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", 8, 8, null, "yyyyMMdd");
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern(matchPatternInfo.format);
 				minLocalDate = LocalDate.parse(String.valueOf(minLong), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
 			} else if (minLong > 1800 && maxLong < 2030 &&
-					((realSamples >= reflectionSamples && cardinality.size() > 10) || name.toLowerCase(Locale.ROOT).contains("year") || name.toLowerCase(Locale.ROOT).contains("date"))) {
+					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("year") || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
 				matchPatternInfo = new PatternInfo("\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLong, 1, 1);
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
@@ -1674,63 +1666,27 @@ public class TextAnalyzer {
 			boolean typeIdentified = false;
 
 			if (minKeyLength == maxKeyLength) {
-				if (realSamples >= reflectionSamples && cardinalityUpper.size() > 1 && minKeyLength == 3
-						&& cardinalityUpper.size() <= monthAbbr.size() + 2) {
-					typeIdentified = checkUniformLengthSet(monthAbbr, PatternInfo.Type.STRING, "MONTHABBR");
-				}
-
-				if (!typeIdentified && realSamples >= reflectionSamples && PATTERN_ALPHA_2.equals(matchPattern)
-						&& cardinalityUpper.size() < usStates.size() + caProvinces.size() + 5
-						&& (name.toLowerCase(Locale.ROOT).contains("state") || name.toLowerCase(Locale.ROOT).contains("province")
-								|| cardinalityUpper.size() > 5)) {
-					int usStateCount = 0;
-					int caProvinceCount = 0;
-					int misses = 0;
-					final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
-
-					for (final Map.Entry<String, Integer> entry : cardinalityUpper.entrySet()) {
-						if (usStates.contains(entry.getKey()))
-							usStateCount += entry.getValue();
-						else if (caProvinces.contains(entry.getKey()))
-							caProvinceCount += entry.getValue();
-						else {
-							misses++;
-							newOutliers.put(entry.getKey(), entry.getValue());
+				// Hunt for a fixed length Logical Type
+				for (LogicalTypeFinite logical : stringTypesFinite) {
+					if (minKeyLength == logical.getMinLength() && logical.getMinLength() == logical.getMaxLength())
+						if (!typeIdentified && realSamples >= reflectionSamples && cardinalityUpper.size() > 1
+						&& cardinalityUpper.size() <= logical.getSize() + 2) {
+							typeIdentified = checkUniformLengthSet(logical);
+							if (typeIdentified)
+								confidence = (double) matchCount / realSamples;
 						}
-					}
-
-					if (misses < 3) {
-						String accessor = null;
-						if (usStateCount != 0 && caProvinceCount != 0) {
-							accessor = "NA_STATE";
-							matchCount = usStateCount + caProvinceCount;
-						} else if (usStateCount != 0) {
-							accessor = "US_STATE";
-							matchCount = usStateCount;
-						} else if (caProvinceCount != 0) {
-							accessor = "CA_PROVINCE";
-							matchCount = caProvinceCount;
-						}
-						confidence = (double) matchCount / realSamples;
-						outliers.putAll(newOutliers);
-						cardinality.keySet().removeAll(newOutliers.keySet());
-						matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + accessor);
-						matchPattern = matchPatternInfo.regexp;
-						typeIdentified = true;
-					}
 				}
 			}
 			else {
-				// Hunt for a variable length string that we can say something more interesting about
-
-				if (!typeIdentified && realSamples >= reflectionSamples && cardinalityUpper.size() > 1
-						&& cardinalityUpper.size() <= gender.size() + 1) {
-					typeIdentified = checkVariableLengthSet(cardinalityUpper, gender, PatternInfo.Type.STRING, "GENDER");
-				}
-
-				if (!typeIdentified && realSamples >= reflectionSamples && cardinalityUpper.size() > 1
-						&& cardinalityUpper.size() <= countries.size() + 1) {
-					typeIdentified = checkVariableLengthSet(cardinalityUpper, countries, PatternInfo.Type.STRING, "COUNTRY");
+				// Hunt for a variable length Logical Type
+				for (LogicalTypeFinite logical : stringTypesFinite) {
+					if (logical.getMinLength() != logical.getMaxLength())
+						if (!typeIdentified && realSamples >= reflectionSamples && cardinalityUpper.size() > 1
+						&& cardinalityUpper.size() <= logical.getSize() + 1) {
+							typeIdentified = checkVariableLengthSet(cardinalityUpper, logical);
+							if (typeIdentified)
+								confidence = (double) matchCount / realSamples;
+						}
 				}
 			}
 
@@ -1849,7 +1805,7 @@ public class TextAnalyzer {
 				}
 			}
 		}
- 		return new TextAnalysisResult(name, matchCount, matchPatternInfo, leadingWhiteSpace, trailingWhiteSpace, sampleCount,
+		return new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace, trailingWhiteSpace, sampleCount,
 				nullCount, blankCount, totalLeadingZeros, confidence, minValue, maxValue, minRawLength, maxRawLength, sum,
 				cardinality, outliers, key);
 	}

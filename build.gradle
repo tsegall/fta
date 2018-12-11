@@ -106,7 +106,7 @@ jacocoTestReport {
     reports {
         xml.enabled true
         csv.enabled false
-        html.destination "${buildDir}/reports/coverage"
+        html.destination file("${buildDir}/reports/coverage")
     }
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
