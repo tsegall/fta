@@ -15,9 +15,7 @@
  */
 package com.cobber.fta;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -33,11 +31,9 @@ import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeCAProvince;
@@ -47,6 +43,7 @@ import com.cobber.fta.plugins.LogicalTypeGender;
 import com.cobber.fta.plugins.LogicalTypeMonthAbbr;
 import com.cobber.fta.plugins.LogicalTypeURL;
 import com.cobber.fta.plugins.LogicalTypeUSState;
+import com.cobber.fta.plugins.LogicalTypeUSZip5;
 
 /**
  * Analyze Text data to determine type information and other key metrics
@@ -127,12 +124,10 @@ public class TextAnalyzer {
 
 	private double minDouble = Double.MAX_VALUE;
 	private double maxDouble = -Double.MAX_VALUE;
-	private long negativeDoubles = 0;
 	private BigDecimal sumBD = BigDecimal.ZERO;
 
 	private long minLong = Long.MAX_VALUE;
 	private long maxLong = Long.MIN_VALUE;
-	private long negativeLongs = 0;
 	private BigInteger sumBI = BigInteger.ZERO;
 
 	private String minString;
@@ -163,17 +158,13 @@ public class TextAnalyzer {
 	private int maxTrimmedLength = Integer.MIN_VALUE;
 
 	private int possibleDateTime;
-	private long totalLongs;
 	private long totalLeadingZeros;
-	private int possibleZips;
 
 	private static Map<String, PatternInfo> patternInfo;
 	private static Map<String, PatternInfo> typeInfo;
 	private static Map<String, String> promotion;
 
-	private static Set<String> zips = new HashSet<String>();
-
-	private ArrayList<LogicalTypeInfinite> stringTypesInfinite = new ArrayList<LogicalTypeInfinite>();
+	private ArrayList<LogicalTypeInfinite> infiniteTypes = new ArrayList<LogicalTypeInfinite>();
 	private ArrayList<LogicalTypeFinite> stringTypesFinite = new ArrayList<LogicalTypeFinite>();
 
 	public static final String PATTERN_ANY = ".";
@@ -233,7 +224,6 @@ public class TextAnalyzer {
 		addPattern(typeInfo, false, "[NULL]", PatternInfo.Type.STRING, "NULL", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\p{javaWhitespace}*", PatternInfo.Type.STRING, "BLANKORNULL", -1, -1, null, null);
 		addPattern(typeInfo, false, "\\p{javaWhitespace}*", PatternInfo.Type.STRING, "BLANK", -1, -1, null, null);
-		addPattern(typeInfo, false, "\\d{5}", PatternInfo.Type.LONG, "ZIP", -1, -1, null, null);
 
 		promotion.put(PATTERN_LONG + "---" + PATTERN_SIGNED_LONG, PATTERN_SIGNED_LONG);
 		promotion.put(PATTERN_LONG + "---" + PATTERN_DOUBLE, PATTERN_DOUBLE);
@@ -270,19 +260,6 @@ public class TextAnalyzer {
 		promotion.put(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT + "---" + PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 		promotion.put(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT + "---" + PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 		promotion.put(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT + "---" + PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-
-		try {
-			BufferedReader reader = null;
-
-			reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_zips.csv")));
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				zips.add(line);
-			}
-		}
-		catch (IOException e) {
-			throw new InternalErrorException("Failed to initialize", e);
-		}
 	}
 
 	/**
@@ -319,17 +296,14 @@ public class TextAnalyzer {
 
 		Constructor<?> ctor;
 		LogicalType object;
-		PatternInfo.Type baseType;
 
 		try {
 			ctor = newLogicalType.getConstructor();
 			object = (LogicalType)ctor.newInstance();
-			baseType = object.getBaseType();
-			if (PatternInfo.Type.STRING.equals(baseType))
-				if (object instanceof LogicalTypeInfinite)
-					stringTypesInfinite.add((LogicalTypeInfinite)object);
-				else
-					stringTypesFinite.add((LogicalTypeFinite)object);
+			if (object instanceof LogicalTypeInfinite)
+				infiniteTypes.add((LogicalTypeInfinite)object);
+			else
+				stringTypesFinite.add((LogicalTypeFinite)object);
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			return false;
@@ -514,7 +488,7 @@ public class TextAnalyzer {
 		return maxOutliers;
 	}
 
-	private boolean trackLong(final String rawInput, final boolean register) {
+	private boolean trackLong(final String rawInput, PatternInfo patternInfo, final boolean register) {
 		final String input = rawInput.trim();
 
 		// Track String facts - just in case we end up backing out.
@@ -534,32 +508,32 @@ public class TextAnalyzer {
 		}
 
 		if (register) {
-			totalLongs++;
 			if (input.charAt(0) == '0')
 				totalLeadingZeros++;
+
+			if (collectStatistics) {
+				if (l < minLong) {
+					minLong = l;
+				}
+				if (l > maxLong) {
+					maxLong = l;
+				}
+				final int digits = l < 0 ? input.length() - 1 : input.length();
+				if (digits < minTrimmedLength)
+					minTrimmedLength = digits;
+				if (digits > maxTrimmedLength)
+					maxTrimmedLength = digits;
+
+				sumBI = sumBI.add(BigInteger.valueOf(l));
+			}
 		}
 
-		if (l < 0)
-			negativeLongs++;
-
-		if (collectStatistics) {
-			if (l < minLong) {
-				minLong = l;
+		if (patternInfo.typeQualifier != null) {
+			// If it is a registered Infinite Logical Type then validate it
+			for (LogicalType logical : infiniteTypes) {
+				if (PatternInfo.Type.LONG.equals(logical.getBaseType()) && logical.getQualifier().equals(patternInfo.typeQualifier))
+					return logical.isValid(input);
 			}
-			if (l > maxLong) {
-				maxLong = l;
-			}
-			final int digits = l < 0 ? input.length() - 1 : input.length();
-			if (digits < minTrimmedLength)
-				minTrimmedLength = digits;
-			if (digits > maxTrimmedLength)
-				maxTrimmedLength = digits;
-
-			sumBI = sumBI.add(BigInteger.valueOf(l));
-		}
-
-		if ("ZIP".equals(matchPatternInfo.typeQualifier)) {
-			return zips.contains(rawInput);
 		}
 
 		return true;
@@ -594,10 +568,13 @@ public class TextAnalyzer {
 				return false;
 		}
 		else {
-			// If it is a registered Logical Type then validate it
-			for (LogicalType logical : stringTypesInfinite) {
-				if (logical.getQualifier().equals(patternInfo.typeQualifier))
-					return logical.isValid(input);
+			// If it is a registered Infinite Logical Type then validate it
+			for (LogicalType logical : infiniteTypes) {
+				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && logical.getQualifier().equals(patternInfo.typeQualifier)) {
+					if (!logical.isValid(input))
+						return false;
+					break;
+				}
 			}
 		}
 
@@ -619,7 +596,6 @@ public class TextAnalyzer {
 			maxString = cleaned;
 		}
 
-
 		if (len < minTrimmedLength)
 			minTrimmedLength = len;
 		if (len > maxTrimmedLength)
@@ -628,7 +604,16 @@ public class TextAnalyzer {
 		return true;
 	}
 
-	private boolean trackDouble(final String input) {
+	private boolean isDouble(final String input) {
+		try {
+			Double.parseDouble(input.trim());
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean trackDouble(final String input, PatternInfo patternInfo, final boolean register) {
 		double d;
 
 		try {
@@ -637,14 +622,22 @@ public class TextAnalyzer {
 			return false;
 		}
 
+		if (patternInfo.typeQualifier != null) {
+			// If it is a registered Infinite Logical Type then validate it
+			for (LogicalType logical : infiniteTypes) {
+				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && logical.getQualifier().equals(patternInfo.typeQualifier)) {
+					if (!logical.isValid(input))
+						return false;
+					break;
+				}
+			}
+		}
+
 		// If it is NaN/Infinity then we are all done
 		if (Double.isNaN(d) || Double.isInfinite(d))
 			return true;
 
-		if (d < 0.0)
-			negativeDoubles++;
-
-		if (collectStatistics) {
+		if (register && collectStatistics) {
 			if (d < minDouble) {
 				minDouble = d;
 			}
@@ -749,6 +742,7 @@ public class TextAnalyzer {
 				// Infinite ...
 				registerLogicalType(LogicalTypeURL.class);
 				registerLogicalType(LogicalTypeEmail.class);
+				registerLogicalType(LogicalTypeUSZip5.class);
 				// Finite - Variable length ...
 				registerLogicalType(LogicalTypeGender.class);
 				registerLogicalType(LogicalTypeCountry.class);
@@ -759,7 +753,7 @@ public class TextAnalyzer {
 			}
 
 			// Run the initializers for the Logical Types
-			for (LogicalType logical : stringTypesInfinite)
+			for (LogicalType logical : infiniteTypes)
 				logical.initialize();
 
 			for (LogicalType logical : stringTypesFinite)
@@ -882,11 +876,9 @@ public class TextAnalyzer {
 
 		if (DateTimeParser.determineFormatString(input, resolutionMode) != null)
 			possibleDateTime++;
-		if (length == 5 && digitsSeen == 5)
-			possibleZips++;
 
 		// Check to see if this input is one of our registered Logical Types
-		for (LogicalTypeInfinite logical : stringTypesInfinite)
+		for (LogicalTypeInfinite logical : infiniteTypes)
 			logical.isCandidate(input, compressedl0, charCounts, lastIndex);
 
 		// Create the level 1 and 2
@@ -1085,37 +1077,32 @@ public class TextAnalyzer {
 				pattern = matchPatternInfo.regexp;
 			}
 
-			// If it is a registered Logical Type then validate it
-			for (LogicalTypeInfinite logical : stringTypesInfinite) {
+			// If it is a registered Infinite Logical Type then validate it
+			for (LogicalTypeInfinite logical : infiniteTypes) {
 				if (logical.getCandidateCount() == raw.size()) {
 					int count = 0;
-					PatternInfo candidate = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), -1, -1, null, null);
-					for (final String sample : raw)
-						if (trackString(sample, candidate, false))
-							count++;
+					PatternInfo candidate = new PatternInfo(logical.getRegexp(), logical.getBaseType(), logical.getQualifier(), -1, -1, null, null);
+					for (final String sample : raw) {
+						if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
+							if (trackString(sample, candidate, false))
+								count++;
+						}
+						else if (PatternInfo.Type.LONG.equals(logical.getBaseType())) {
+							if (trackLong(sample, candidate, false))
+								count++;
+						}
+						else if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType())) {
+							if (trackDouble(sample, candidate, false))
+								count++;
+						}
+					}
 					// If a reasonable number look genuine then we are convinced
-					if (count >= logical.getSampleThreshold() * raw.size())
+					if (count >= logical.getSampleThreshold() * raw.size()) {
 						matchPatternInfo = candidate;
+						matchType = matchPatternInfo.type;
+						pattern = matchPatternInfo.regexp;
+					}
 				}
-			}
-
-			// Do we have a set of possible zip codes?
-			if (possibleZips == raw.size()) {
-				final PatternInfo save = matchPatternInfo;
-				matchPatternInfo = typeInfo.get(PatternInfo.Type.LONG.toString() + "." + "ZIP");
-				pattern = matchPatternInfo.regexp;
-
-				int zipCount = 0;
-				for (final String sample : raw)
-					if (trackLong(sample, false))
-						zipCount++;
-				// if at least 90% of them looked like a genuine zip
-				// then stay with zip, otherwise back out to simple Long
-				if (zipCount < .9 * raw.size()) {
-					matchPatternInfo = save;
-					pattern = save.regexp;
-				}
-				matchType = matchPatternInfo.type;
 			}
 
 			for (final String sample : raw)
@@ -1160,7 +1147,7 @@ public class TextAnalyzer {
 		for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
 			String key = entry.getKey();
 			Integer value = entry.getValue();
-			if (PatternInfo.Type.LONG.equals(current.type) && trackDouble(key)) {
+			if (PatternInfo.Type.LONG.equals(current.type) && isDouble(key)) {
 				doubles++;
 				if (!negative)
 					negative = key.charAt(0) == '-';
@@ -1228,48 +1215,60 @@ public class TextAnalyzer {
 	private void backoutToPattern(final long realSamples, String newPattern) {
 		matchPattern = newPattern;
 		matchCount = realSamples;
-		matchType = PatternInfo.Type.STRING;
 		matchPatternInfo = patternInfo.get(matchPattern);
 
 		// If it is not one of our known types then construct a suitable PatternInfo
 		if (matchPatternInfo == null)
-			matchPatternInfo = new PatternInfo(matchPattern, matchType, null, -1, -1, null, null);
+			matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, null, -1, -1, null, null);
 
 		// All outliers are now part of the cardinality set and there are now no outliers
 		cardinality.putAll(outliers);
 
 		// Need to update stats to reflect any outliers we previously ignored
-		for (final String key : outliers.keySet()) {
-			updateStats(key);
+		if (matchPatternInfo.type.equals(PatternInfo.Type.STRING))
+			for (final String key : outliers.keySet())
+				updateStats(key);
+		else if (matchPatternInfo.type.equals(PatternInfo.Type.DOUBLE)) {
+			minDouble = minLong;
+			maxDouble = maxLong;
+			sumBD = new BigDecimal(sumBI);
+			for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
+				for (int i = 0; i < entry.getValue(); i++)
+					trackDouble(entry.getKey(), matchPatternInfo, true);
+			}
 		}
 
 		outliers.clear();
 	}
 
-	private void backoutZip(final long realSamples) {
-		if (totalLongs > .95 * realSamples) {
-			matchPattern = PATTERN_LONG;
-			matchCount = totalLongs;
+	private void backoutLogicalLongType(LogicalTypeInfinite logical, final long realSamples) {
+		int otherLongs = 0;
 
-			final Map<String, Integer> outliersCopy = new HashMap<String, Integer>(outliers);
-			// Sweep the current outliers and check they are part of the set
-			for (final Map.Entry<String, Integer> entry : outliersCopy.entrySet()) {
-				boolean isLong = true;
-				try {
-					Long.parseLong(entry.getKey());
-				} catch (NumberFormatException e) {
-					isLong = false;
-				}
-
-				if (isLong) {
-					if (cardinality.size() < maxCardinality)
-						cardinality.put(entry.getKey(), entry.getValue());
-					outliers.remove(entry.getKey(), entry.getValue());
-				}
+		final Map<String, Integer> outliersCopy = new HashMap<String, Integer>(outliers);
+		// Sweep the current outliers and check they are part of the set
+		for (final Map.Entry<String, Integer> entry : outliersCopy.entrySet()) {
+			boolean isLong = true;
+			try {
+				Long.parseLong(entry.getKey());
+			} catch (NumberFormatException e) {
+				isLong = false;
 			}
 
-			matchPatternInfo = patternInfo.get(matchPattern);
-		} else {
+			if (isLong) {
+				if (cardinality.size() < maxCardinality)
+					cardinality.put(entry.getKey(), entry.getValue());
+				outliers.remove(entry.getKey(), entry.getValue());
+				otherLongs += entry.getValue();
+			}
+		}
+
+		matchCount += otherLongs;
+
+		if ((double) matchCount / realSamples > 0.9) {
+			matchPatternInfo = patternInfo.get(PATTERN_LONG);
+			matchPattern = matchPatternInfo.regexp;
+		}
+		else {
 			backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
 		}
 	}
@@ -1344,20 +1343,15 @@ public class TextAnalyzer {
 			break;
 
 		case LONG:
-			if (trackLong(input, true)) {
+			if (trackLong(input, matchPatternInfo, true)) {
 				matchCount++;
 				addValid(input);
 				valid = true;
 			}
-			else {
-				// Do a sanity check once we have enough samples
-				if (realSamples == reflectionSamples && (double) matchCount / realSamples < 0.9 && "ZIP".equals(matchPatternInfo.typeQualifier))
-					backoutZip(realSamples);
-			}
 			break;
 
 		case DOUBLE:
-			if (trackDouble(input)) {
+			if (trackDouble(input, matchPatternInfo, true)) {
 				matchCount++;
 				addValid(input);
 				valid = true;
@@ -1369,17 +1363,6 @@ public class TextAnalyzer {
 				matchCount++;
 				addValid(input);
 				valid = true;
-			}
-			else {
-				if (realSamples == reflectionSamples && (double) matchCount / realSamples < 0.95 && matchPatternInfo.typeQualifier != null)
-					// If it is a registered Logical Type then validate it
-					for (LogicalType logical : stringTypesInfinite) {
-						if (logical.getQualifier().equals(matchPatternInfo.typeQualifier)) {
-							backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
-							valid = true;
-							break;
-						}
-					}
 			}
 			break;
 
@@ -1424,13 +1407,21 @@ public class TextAnalyzer {
 		if (valid)
 			trackTrimmedLengthAndWhiteSpace(input);
 		else {
-			if (matchType == PatternInfo.Type.STRING && matchPatternInfo.typeQualifier == null &&
-					matchPatternInfo.isAlphabetic() && outliers.size() == maxOutliers) {
-				// Need to evaluate if we got this wrong
-				conditionalBackoutToPattern(realSamples, matchPatternInfo);
-			}
-			else {
-				outlier(input);
+			outlier(input);
+			if (outliers.size() == maxOutliers) {
+				if (matchPatternInfo.typeQualifier != null) {
+					// Do we need to back out from any of our Infinite type determinations
+					for (LogicalTypeInfinite logical : infiniteTypes) {
+						if (logical.getQualifier().equals(matchPatternInfo.typeQualifier) && "US_ZIP5".equals(matchPatternInfo.typeQualifier))
+							backoutLogicalLongType(logical, realSamples);
+						else if (matchType == PatternInfo.Type.STRING && matchPatternInfo.typeQualifier != null)
+							backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
+					}
+				}
+				else if (matchType == PatternInfo.Type.STRING && matchPatternInfo.isAlphabetic()) {
+					// Need to evaluate if we got this wrong
+					conditionalBackoutToPattern(realSamples, matchPatternInfo);
+				}
 			}
 		}
 	}
@@ -1581,14 +1572,21 @@ public class TextAnalyzer {
 			confidence = (double) matchCount / realSamples;
 		}
 
-		// Do a sanity check - we need a minimum number to declare it a ZIP
-		if ("ZIP".equals(matchPatternInfo.typeQualifier) && ((realSamples >= reflectionSamples && confidence < 0.9) || cardinality.size() < 5)) {
-			backoutZip(realSamples);
-			confidence = (double) matchCount / realSamples;
+		// Do we need to back out from any of our Infinite type determinations
+		for (LogicalTypeInfinite logical : infiniteTypes) {
+			if (matchPatternInfo.typeQualifier != null &&
+					matchPatternInfo.typeQualifier.equals(logical.getQualifier()) &&
+					logical.shouldBackout(matchCount, realSamples, cardinality, outliers)) {
+				if (PatternInfo.Type.STRING.equals(logical.getBaseType()))
+					conditionalBackoutToPattern(realSamples, matchPatternInfo);
+				else if (PatternInfo.Type.LONG.equals(logical.getBaseType()))
+					backoutLogicalLongType(logical, realSamples);
+				confidence = (double) matchCount / realSamples;
+			}
 		}
 
 		if (PATTERN_LONG.equals(matchPattern)) {
-			if (matchPatternInfo.typeQualifier == null && negativeLongs != 0) {
+			if (matchPatternInfo.typeQualifier == null && minLong < 0) {
 				matchPattern = PATTERN_SIGNED_LONG;
 				matchPatternInfo = patternInfo.get(matchPattern);
 			}
@@ -1625,7 +1623,7 @@ public class TextAnalyzer {
 				}
 			}
 		} else if (PATTERN_DOUBLE.equals(matchPattern)) {
-			if (matchPatternInfo.typeQualifier == null && negativeDoubles != 0) {
+			if (matchPatternInfo.typeQualifier == null && minDouble < 0.0) {
 				matchPattern = PATTERN_SIGNED_DOUBLE;
 				matchPatternInfo = patternInfo.get(matchPattern);
 			}
@@ -1793,8 +1791,8 @@ public class TextAnalyzer {
 		if (sampleCount > MIN_SAMPLES_FOR_KEY && maxCardinality >= MIN_SAMPLES_FOR_KEY / 2
 				&& cardinality.size() >= maxCardinality && blankCount == 0 && nullCount == 0
 				&& matchPatternInfo.typeQualifier == null
-				&& ((PatternInfo.Type.STRING.equals(matchType) && minRawLength == maxRawLength && minRawLength < 32)
-						|| PatternInfo.Type.LONG.equals(matchType))) {
+				&& ((PatternInfo.Type.STRING.equals(matchPatternInfo.type) && minRawLength == maxRawLength && minRawLength < 32)
+						|| PatternInfo.Type.LONG.equals(matchPatternInfo.type))) {
 			key = true;
 			// Might be a key but only iff every element in the cardinality
 			// set only has a count of 1

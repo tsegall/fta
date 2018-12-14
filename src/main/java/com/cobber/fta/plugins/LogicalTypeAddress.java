@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeInfinite;
@@ -63,5 +64,10 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 		if (result)
 			candidateCount++;
 		return result;
+	}
+
+	@Override
+	public boolean shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+		return (double)matchCount/realSamples < getSampleThreshold();
 	}
 }

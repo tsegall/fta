@@ -3,6 +3,7 @@ package com.cobber.fta.plugins;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
@@ -51,5 +52,10 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 		if (result)
 			candidateCount++;
 		return result;
+	}
+
+	@Override
+	public boolean shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+		return (double)matchCount/realSamples < getSampleThreshold();
 	}
 }

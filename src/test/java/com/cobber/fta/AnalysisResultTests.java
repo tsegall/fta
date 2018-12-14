@@ -68,7 +68,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 0.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "NULL");
-		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=anonymous, matchCount=0, sampleCount=0, nullCount=0, blankCount=0, regexp=\"[NULL]\", confidence=0.0, type=String(NULL), min=null, max=null, sum=null, cardinality=0]");
+		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=anonymous, matchCount=0, sampleCount=0, nullCount=0, blankCount=0, regexp=\"[NULL]\", confidence=0.0, type=String(NULL), min=null, max=null, minLength=0, maxLength=0, sum=null, cardinality=0]");
 	}
 
 	@Test
@@ -246,6 +246,37 @@ public class AnalysisResultTests {
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void sum50() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		int locked = -1;
+		final int COUNT = 50;
+		int sum = 0;
+
+		for (int i = 10000; i < 10000 + COUNT; i++) {
+			sum += i;
+			if (analysis.train(String.valueOf(i)) && locked != -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, -1);
+		Assert.assertEquals(result.getSampleCount(), COUNT);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{5}");
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getMinValue(), "10000");
+		Assert.assertEquals(result.getMaxValue(), "10049");
+		Assert.assertEquals(result.getTypeQualifier(), "US_ZIP5");
+		Assert.assertEquals(result.getConfidence(), 0.96);
+		Assert.assertEquals(result.getSum(), String.valueOf(sum));
+
+		for (int i = 10000; i < 10000 + COUNT; i++) {
+			Assert.assertTrue(String.valueOf(i).matches(result.getRegExp()));
 		}
 	}
 
@@ -1654,8 +1685,8 @@ public class AnalysisResultTests {
 		final Map<String, Integer> details = result.getCardinalityDetails();
 		Assert.assertEquals(details.get("0"), Integer.valueOf(13));
 		Assert.assertEquals(details.get("5"), Integer.valueOf(14));
-		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=anonymous, matchCount=27, sampleCount=30, nullCount=2, blankCount=0, regexp=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", sum=\"70\", cardinality=2 {\"5\":14 \"0\":13 }, outliers=1 {\"A\":1 }]");
-		Assert.assertEquals(result.dump(false), "TextAnalysisResult [name=anonymous, matchCount=27, sampleCount=30, nullCount=2, blankCount=0, regexp=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", sum=\"70\", cardinality=2, outliers=1]");
+		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=anonymous, matchCount=27, sampleCount=30, nullCount=2, blankCount=0, regexp=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", minLength=1, maxLength=1, sum=\"70\", cardinality=2 {\"5\":14 \"0\":13 }, outliers=1 {\"A\":1 }]");
+		Assert.assertEquals(result.dump(false), "TextAnalysisResult [name=anonymous, matchCount=27, sampleCount=30, nullCount=2, blankCount=0, regexp=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", minLength=1, maxLength=1, sum=\"70\", cardinality=2, outliers=1]");
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
@@ -1862,6 +1893,7 @@ public class AnalysisResultTests {
 				"coleman@lavastorm.com|Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
 				"Jones@lavastorm.com|Marinelli@lavastorm.com|Nason@lavastorm.com|Parker@lavastorm.com|" +
 				"Pigneri@lavastorm.com|Rasmussen@lavastorm.com|Regan@lavastorm.com|Segall@Lavastorm.com|" +
+				"Pigneri2@lavastorm.com|ahern@lavastorm.com|reginald@lavastorm.com|blumfontaine@Lavastorm.com|" +
 				"Smith@lavastorm.com|Song@lavastorm.com|Tolleson@lavastorm.com|wynn@lavastorm.com|" +
 				"Ahmed@lavastorm.com|Benoit@lavastorm.com|Keane@lavastorm.com|Kilker@lavastorm.com|" +
 				"Waters@lavastorm.com|Meagher@lavastorm.com|Mok@lavastorm.com|Mullin@lavastorm.com|" +
@@ -1884,13 +1916,13 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2 + result.getNullCount());
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "EMAIL");
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), ".{14,24}");
-		Assert.assertEquals(result.getConfidence(), 0.9487179487179487);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "EMAIL");
+		Assert.assertEquals(result.getRegExp(), "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}");
+		Assert.assertEquals(result.getConfidence(), 0.9534883720930233);
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -1925,7 +1957,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length + 1 - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), ".{5,35}");
+		Assert.assertEquals(result.getRegExp(), "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 		Assert.assertEquals(result.getConfidence(), 0.9565217391304348);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "URL");
@@ -2073,12 +2105,16 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{17,67}");
+		Assert.assertEquals(result.getRegExp(), "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
+		// Only simple emails match the regexp, so the count will not the 4 that include email lists :-(
+		int matches = 0;
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+			if (inputs[i].matches(result.getRegExp()))
+				matches++;
 		}
+		Assert.assertEquals(result.getMatchCount() - 4, matches);
 	}
 
 	@Test
@@ -2111,7 +2147,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{6,67}");
+		Assert.assertEquals(result.getRegExp(), "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}");
 		Assert.assertEquals(result.getConfidence(), 0.96875);
 	}
 
@@ -2138,7 +2174,7 @@ public class AnalysisResultTests {
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "ZIP");
+		Assert.assertEquals(result.getTypeQualifier(), "US_ZIP5");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -2429,7 +2465,7 @@ public class AnalysisResultTests {
 	public void backoutToDouble() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String input =
-				"0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
+				"0|0|0|0|0|0|0|0|0|1|2|3|0|0|0|0|0|" +
 						"0|0|0|0|0.25|0|0|0|0|0|0|0|0|0|0|0|0|" +
 						"0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
 						"0|0|0|0|0|0|0|0.02|0.06|0|0|0|0|0|0.02|0|0|" +
@@ -2460,11 +2496,11 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount() + result.getBlankCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 221);
+		Assert.assertEquals(result.getLeadingZeroCount(), 218);
 		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getMinValue(), "0.01");
-		Assert.assertEquals(result.getMaxValue(), "0.25");
+		Assert.assertEquals(result.getMinValue(), "0.0");
+		Assert.assertEquals(result.getMaxValue(), "3.0");
 
 		String regExp = result.getRegExp();
 		for (int i = 0; i < inputs.length; i++) {
@@ -2570,9 +2606,9 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), end + 1 - start);
-		Assert.assertEquals(result.getMatchCount(), end - start);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
+		Assert.assertEquals(result.getMatchCount(), end - start);
 		Assert.assertEquals(result.getConfidence(), 0.9999888888888889);
 	}
 
@@ -2597,7 +2633,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), end - start);
 		Assert.assertEquals(result.getMatchCount(), end - start);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{5,6}");
+		Assert.assertEquals(result.getRegExp(), "\\p{Alnum}{5,6}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "10000");
 		Assert.assertEquals(result.getMaxValue(), "A99998");
@@ -3646,7 +3682,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertTrue(result.isKey());
 		Assert.assertEquals(result.getConfidence(), 0.9925558312655087);
-		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=Alphabet, matchCount=2000, sampleCount=2015, nullCount=0, blankCount=0, regexp=\"\\d{5}\", confidence=0.9925558312655087, type=Long, min=\"10000\", max=\"11999\", sum=\"21999000\", cardinality=MAX, outliers=12 {\"A\":1 \"B\":1 \"C\":1 \"D\":1 \"E\":1 \"F\":1 \"G\":1 \"H\":1 \"I\":1 \"J\":1 ...}, PossibleKey]");
+		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=Alphabet, matchCount=2000, sampleCount=2015, nullCount=0, blankCount=0, regexp=\"\\d{5}\", confidence=0.9925558312655087, type=Long, min=\"10000\", max=\"11999\", minLength=1, maxLength=5, sum=\"21999000\", cardinality=MAX, outliers=12 {\"A\":1 \"B\":1 \"C\":1 \"D\":1 \"E\":1 \"F\":1 \"G\":1 \"H\":1 \"I\":1 \"J\":1 ...}, PossibleKey]");
 	}
 
 	@Test

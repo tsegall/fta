@@ -1,5 +1,7 @@
 package com.cobber.fta.plugins;
 
+import java.util.Map;
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
@@ -54,5 +56,10 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 		if (result)
 			candidateCount++;
 		return result;
+	}
+
+	@Override
+	public boolean shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+		return (double)matchCount/realSamples < getSampleThreshold();
 	}
 }
