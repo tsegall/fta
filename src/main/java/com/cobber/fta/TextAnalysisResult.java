@@ -314,7 +314,7 @@ public class TextAnalysisResult {
 		return key;
 	}
 
-	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
 	    final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
 	        new Comparator<Map.Entry<K,V>>() {
 	            @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
@@ -348,64 +348,68 @@ public class TextAnalysisResult {
 	 * @return A String representation of the analysis to date.
 	 */
 	public String dump(final boolean verbose) {
-		String ret = "TextAnalysisResult [name=" + name + ", matchCount=" + matchCount + ", sampleCount=" + sampleCount + ", nullCount="
-				+ nullCount + ", blankCount=" + blankCount+ ", regexp=\"" + getRegExp() + "\", confidence=" + confidence +
-				", type=" + patternInfo.type +
-				(patternInfo.typeQualifier != null ? "(" + patternInfo.typeQualifier + ")" : "") + ", min=";
+		StringBuilder ret = new StringBuilder();
+		ret.append("TextAnalysisResult [name=").append(name).append(", matchCount=")
+		.append(matchCount).append(", sampleCount=").append(sampleCount).append(", nullCount=").append(nullCount)
+		.append(", blankCount=").append(blankCount).append(", regexp=\"").append(getRegExp()).append("\", confidence=")
+		.append(confidence).append(", type=").append(patternInfo.type);
+		if (patternInfo.typeQualifier != null)
+			ret.append('(').append(patternInfo.typeQualifier).append(')');
+		ret.append(", min=");
 		if (minValue != null)
-			ret += "\"" + minValue + "\"";
+			ret.append('"').append(minValue).append('"');
 		else
-			ret += "null";
-		ret += ", max=";
+			ret.append("null");
+		ret.append(", max=");
 		if (maxValue != null)
-			ret += "\"" + maxValue + "\"";
+			ret.append('"').append(maxValue).append('"');
 		else
-			ret += "null";
-		ret += ", minLength=" + minLength;
-		ret += ", maxLength=" + maxLength;
-		ret += ", sum=";
+			ret.append("null");
+		ret.append(", minLength=").append(minLength);
+		ret.append(", maxLength=").append(maxLength);
+		ret.append(", sum=");
 		if (sum != null)
-			ret += "\"" + sum + "\"";
+			ret.append('"').append(sum).append('"');
 		else
-			ret += "null";
-		ret += ", cardinality=" + (cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX");
+			ret.append("null");
+		ret.append(", cardinality=").append(cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX");
 		if (verbose && cardinality.size() != 0 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {
-			ret += " {";
+			ret.append(" {");
 			int i = 0;
 			final SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(cardinality);
 			for (final Map.Entry<String,Integer> entry : ordered) {
 				if (i++ == 10) {
-					ret += "...";
+					ret.append("...");
 					break;
 				}
-				ret += "\"" + entry.getKey() + "\":" + entry.getValue();
-				ret += " ";
+				ret.append('"').append(entry.getKey()).append("\":").append(entry.getValue());
+				ret.append(' ');
 			}
-			ret += "}";
+			ret.append('}');
 		}
 
 		if (!outliers.isEmpty()) {
-			ret += ", outliers=" + (outliers.size() < TextAnalyzer.MAX_OUTLIERS_DEFAULT ? String.valueOf(outliers.size()) : "MAX");
+			ret.append(", outliers=").append(outliers.size() < TextAnalyzer.MAX_OUTLIERS_DEFAULT ? String.valueOf(outliers.size()) : "MAX");
 			if (verbose && !outliers.isEmpty() && outliers.size() < .2 * sampleCount) {
-				ret += " {";
+				ret.append(" {");
 				int i = 0;
 				final SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(outliers);
 				for (final Map.Entry<String,Integer> entry : ordered) {
 					if (i++ == 10) {
-						ret += "...";
+						ret.append("...");
 						break;
 					}
-					ret += "\"" + entry.getKey() + "\":" + entry.getValue();
-					ret += " ";
+					ret.append('"').append(entry.getKey()).append("\":").append(entry.getValue());
+					ret.append(' ');
 				}
-				ret += "}";
+				ret.append('}');
 			}
 		}
 
 		if (key)
-			ret += ", PossibleKey";
+			ret.append(", PossibleKey");
 
-		ret += "]";
-		return ret;
+		ret.append(']');
+		return ret.toString();
 	}
 }

@@ -31,9 +31,11 @@ import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeCAProvince;
@@ -112,9 +114,7 @@ public class TextAnalyzer {
 	// input "hello world" 0: a{5} a{5} 1: a{+} a{+} 2: a{+}
 	private List<StringBuilder>[] levels = new ArrayList[3];
 
-	private PatternInfo.Type matchType;
 	private long matchCount;
-	private String matchPattern;
 	private PatternInfo matchPatternInfo;
 
 	private boolean trainingStarted;
@@ -164,6 +164,7 @@ public class TextAnalyzer {
 	private static Map<String, PatternInfo> typeInfo;
 	private static Map<String, String> promotion;
 
+	private Set<String> registered = new HashSet<String>();
 	private ArrayList<LogicalTypeInfinite> infiniteTypes = new ArrayList<LogicalTypeInfinite>();
 	private ArrayList<LogicalTypeFinite> stringTypesFinite = new ArrayList<LogicalTypeFinite>();
 
@@ -300,6 +301,9 @@ public class TextAnalyzer {
 		try {
 			ctor = newLogicalType.getConstructor();
 			object = (LogicalType)ctor.newInstance();
+			if (registered.contains(object.getQualifier()))
+				throw new IllegalArgumentException("Logical type: " + object.getQualifier() + " already registered.");
+			registered.add(object.getQualifier());
 			if (object instanceof LogicalTypeInfinite)
 				infiniteTypes.add((LogicalTypeInfinite)object);
 			else
@@ -764,6 +768,8 @@ public class TextAnalyzer {
 
 		sampleCount++;
 
+		PatternInfo.Type matchType = matchPatternInfo != null ? matchPatternInfo.type : null;
+
 		if (rawInput == null) {
 			nullCount++;
 			return matchType != null;
@@ -782,7 +788,7 @@ public class TextAnalyzer {
 		trackResult(rawInput);
 
 		// If we have determined a type, no need to further train
-		if (matchType != null)
+		if (matchPatternInfo != null && matchPatternInfo.type != null)
 			return true;
 
 		raw.add(rawInput);
@@ -926,7 +932,7 @@ public class TextAnalyzer {
 
 		}
 
-		return matchType != null;
+		return matchPatternInfo != null && matchPatternInfo.type != null;
 	}
 
 	private Map.Entry<String, Integer> getBest(final int levelIndex) {
@@ -1003,16 +1009,13 @@ public class TextAnalyzer {
 	private void determineType() {
 		// If we have fewer than 6 samples do not even pretend
 		if (sampleCount == 0) {
-			matchPattern = PATTERN_ANY_VARIABLE;
-			matchPatternInfo = patternInfo.get(matchPattern);
-			matchType = matchPatternInfo.type;
+			matchPatternInfo = patternInfo.get(PATTERN_ANY_VARIABLE);
 			return;
 		}
 
 		int level0value = 0, level1value = 0, level2value = 0;
 		String level0pattern = null, level1pattern = null, level2pattern = null;
 		PatternInfo level0patternInfo = null, level1patternInfo = null, level2patternInfo = null;
-		String pattern = null;
 		final Map.Entry<String, Integer> level0 = getBest(0);
 		final Map.Entry<String, Integer> level1 = getBest(1);
 		final Map.Entry<String, Integer> level2 = getBest(2);
@@ -1035,13 +1038,11 @@ public class TextAnalyzer {
 		}
 
 		if (best != null) {
-			pattern = level0pattern;
 			matchPatternInfo = level0patternInfo;
 
 			// Take any level 1 with something we recognize or a better count
 			if (level1 != null && (level0patternInfo == null || level1value > level0value)) {
 				best = level1;
-				pattern = level1pattern;
 				matchPatternInfo = level1patternInfo;
 			}
 
@@ -1058,11 +1059,8 @@ public class TextAnalyzer {
 							&& level2.getValue() > best.getValue())
 					|| (!best.getKey().equals(level2pattern) && level2.getValue() > best.getValue() + samples / 10))) {
 				best = level2;
-				pattern = level2pattern;
 				matchPatternInfo = level2patternInfo;
 			}
-
-			matchType = matchPatternInfo.type;
 
 			if (possibleDateTime == raw.size()) {
 				final DateTimeParser det = new DateTimeParser(resolutionMode);
@@ -1073,8 +1071,6 @@ public class TextAnalyzer {
 				final String formatString = result.getFormatString();
 				matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), formatString, -1, -1, null,
 						formatString);
-				matchType = matchPatternInfo.type;
-				pattern = matchPatternInfo.regexp;
 			}
 
 			// If it is a registered Infinite Logical Type then validate it
@@ -1097,11 +1093,8 @@ public class TextAnalyzer {
 						}
 					}
 					// If a reasonable number look genuine then we are convinced
-					if (count >= logical.getSampleThreshold() * raw.size()) {
+					if (count >= logical.getSampleThreshold() * raw.size())
 						matchPatternInfo = candidate;
-						matchType = matchPatternInfo.type;
-						pattern = matchPatternInfo.regexp;
-					}
 				}
 			}
 
@@ -1109,7 +1102,6 @@ public class TextAnalyzer {
 				trackResult(sample);
 
 			matchCount = best.getValue();
-			matchPattern = pattern;
 		}
 	}
 
@@ -1213,13 +1205,12 @@ public class TextAnalyzer {
 	}
 
 	private void backoutToPattern(final long realSamples, String newPattern) {
-		matchPattern = newPattern;
 		matchCount = realSamples;
-		matchPatternInfo = patternInfo.get(matchPattern);
+		matchPatternInfo = patternInfo.get(newPattern);
 
 		// If it is not one of our known types then construct a suitable PatternInfo
 		if (matchPatternInfo == null)
-			matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, null, -1, -1, null, null);
+			matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, null, -1, -1, null, null);
 
 		// All outliers are now part of the cardinality set and there are now no outliers
 		cardinality.putAll(outliers);
@@ -1264,13 +1255,10 @@ public class TextAnalyzer {
 
 		matchCount += otherLongs;
 
-		if ((double) matchCount / realSamples > 0.9) {
+		if ((double) matchCount / realSamples > 0.9)
 			matchPatternInfo = patternInfo.get(PATTERN_LONG);
-			matchPattern = matchPatternInfo.regexp;
-		}
-		else {
+		else
 			backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
-		}
 	}
 
 	private void trackLength(final String input) {
@@ -1322,18 +1310,16 @@ public class TextAnalyzer {
 		trackLength(input);
 
 		// If the cache is full and we have not determined a type compute one
-		if (matchType == null && sampleCount - (nullCount + blankCount) > samples) {
+		if ((matchPatternInfo == null || matchPatternInfo.type == null) && sampleCount - (nullCount + blankCount) > samples)
 			determineType();
-		}
 
-		if (matchType == null) {
+		if (matchPatternInfo == null || matchPatternInfo.type == null)
 			return;
-		}
 
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		boolean valid = false;
 
-		switch (matchType) {
+		switch (matchPatternInfo.type) {
 		case BOOLEAN:
 			if (trackBoolean(input)) {
 				matchCount++;
@@ -1414,11 +1400,11 @@ public class TextAnalyzer {
 					for (LogicalTypeInfinite logical : infiniteTypes) {
 						if (logical.getQualifier().equals(matchPatternInfo.typeQualifier) && "US_ZIP5".equals(matchPatternInfo.typeQualifier))
 							backoutLogicalLongType(logical, realSamples);
-						else if (matchType == PatternInfo.Type.STRING && matchPatternInfo.typeQualifier != null)
+						else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
 					}
 				}
-				else if (matchType == PatternInfo.Type.STRING && matchPatternInfo.isAlphabetic()) {
+				else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.isAlphabetic()) {
 					// Need to evaluate if we got this wrong
 					conditionalBackoutToPattern(realSamples, matchPatternInfo);
 				}
@@ -1488,7 +1474,6 @@ public class TextAnalyzer {
 
 		matchCount = validCount;
 		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), -1, -1, null, null);
-		matchPattern = matchPatternInfo.regexp;
 		outliers.putAll(newOutliers);
 		cardinality.keySet().removeAll(newOutliers.keySet());
 
@@ -1531,7 +1516,6 @@ public class TextAnalyzer {
 		cardinalityUpper.keySet().removeAll(newOutliers.keySet());
 		matchCount = validCount;
 		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), -1, -1, null, null);
-		matchPattern = matchPatternInfo.regexp;
 		cardinality = cardinalityUpper;
 		return true;
 	}
@@ -1548,9 +1532,8 @@ public class TextAnalyzer {
 		String sum = null;
 
 		// If we have not already determined the type, now we need to
-		if (matchType == null) {
+		if (matchPatternInfo == null || matchPatternInfo.type == null)
 			determineType();
-		}
 
 		// Compute our confidence
 		final long realSamples = sampleCount - (nullCount + blankCount);
@@ -1564,7 +1547,6 @@ public class TextAnalyzer {
 				matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "BLANK");
 			else
 				matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "BLANKORNULL");
-			matchPattern = matchPatternInfo.regexp;
 			matchCount = sampleCount;
 			confidence = sampleCount >= 10 ? 1.0 : 0.0;
 		}
@@ -1585,11 +1567,9 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (PATTERN_LONG.equals(matchPattern)) {
-			if (matchPatternInfo.typeQualifier == null && minLong < 0) {
-				matchPattern = PATTERN_SIGNED_LONG;
-				matchPatternInfo = patternInfo.get(matchPattern);
-			}
+		if (PATTERN_LONG.equals(matchPatternInfo.regexp)) {
+			if (matchPatternInfo.typeQualifier == null && minLong < 0)
+				matchPatternInfo = patternInfo.get(PATTERN_SIGNED_LONG);
 
 			if (minLong > 19000101 && maxLong < 20400101 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
@@ -1604,17 +1584,16 @@ public class TextAnalyzer {
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
 			} else if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
 				// boolean by any other name
-				matchPattern = "[0|1]";
 				minBoolean = "0";
 				maxBoolean = "1";
-				matchPatternInfo = patternInfo.get(matchPattern);
+				matchPatternInfo = patternInfo.get("[0|1]");
 			} else {
-				matchPattern = matchPatternInfo.typeQualifier != null ? "-?\\d{" : "\\d{";
-				matchPattern += minTrimmedLength;
+				String newPattern = matchPatternInfo.typeQualifier != null ? "-?\\d{" : "\\d{";
+				newPattern += minTrimmedLength;
 				if (minTrimmedLength != maxTrimmedLength)
-					matchPattern += "," + maxTrimmedLength;
-				matchPattern += "}";
-				matchPatternInfo = new PatternInfo(matchPattern, matchType, matchPatternInfo.typeQualifier, -1, -1, null, null);
+					newPattern += "," + maxTrimmedLength;
+				newPattern += "}";
+				matchPatternInfo = new PatternInfo(newPattern, matchPatternInfo.type, matchPatternInfo.typeQualifier, -1, -1, null, null);
 
 				if (realSamples >= reflectionSamples && confidence < 0.96) {
 					// We thought it was an integer field, but on reflection it does not feel like it
@@ -1622,13 +1601,11 @@ public class TextAnalyzer {
 					confidence = 1.0;
 				}
 			}
-		} else if (PATTERN_DOUBLE.equals(matchPattern)) {
-			if (matchPatternInfo.typeQualifier == null && minDouble < 0.0) {
-				matchPattern = PATTERN_SIGNED_DOUBLE;
-				matchPatternInfo = patternInfo.get(matchPattern);
-			}
+		} else if (PATTERN_DOUBLE.equals(matchPatternInfo.regexp)) {
+			if (matchPatternInfo.typeQualifier == null && minDouble < 0.0)
+				matchPatternInfo = patternInfo.get(PATTERN_SIGNED_DOUBLE);
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
-			final int length = determineLength(matchPattern);
+			final int length = determineLength(matchPatternInfo.regexp);
 			// We thought it was a fixed length string, but on reflection it does not feel like it
 			if (length != -1 && realSamples >= reflectionSamples && (double) matchCount / realSamples < 0.95) {
 				backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
@@ -1636,7 +1613,7 @@ public class TextAnalyzer {
 			}
 
 			// Need to evaluate if we got the type wrong
-			if (matchType == PatternInfo.Type.STRING && matchPatternInfo.typeQualifier == null && matchPatternInfo.isAlphabetic()) {
+			if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier == null && matchPatternInfo.isAlphabetic()) {
 				conditionalBackoutToPattern(realSamples, matchPatternInfo);
 				confidence = (double) matchCount / realSamples;
 			}
@@ -1689,20 +1666,20 @@ public class TextAnalyzer {
 			}
 
 			// Qualify Alpha or Alnum with a min and max length
-			if (!typeIdentified && (PATTERN_ALPHA_VARIABLE.equals(matchPattern) || PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPattern))) {
-				matchPattern = matchPattern.substring(0, matchPattern.length() - 1) + "{" + minTrimmedLength;
+			if (!typeIdentified && (PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
+				String newPattern = matchPatternInfo.regexp;
+				newPattern = newPattern.substring(0, newPattern.length() - 1) + "{" + minTrimmedLength;
 				if (minTrimmedLength != maxTrimmedLength)
-					matchPattern += "," + maxTrimmedLength;
-				matchPattern += "}";
-				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minTrimmedLength, maxTrimmedLength, null,
+					newPattern += "," + maxTrimmedLength;
+				newPattern += "}";
+				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minTrimmedLength, maxTrimmedLength, null,
 						null);
 			}
 
 			// Qualify random string with a min and max length
-			if (!typeIdentified && PATTERN_ANY_VARIABLE.equals(matchPattern)) {
-				matchPattern = matchPattern.substring(0, matchPattern.length() - 1) +
-						Utils.lengthQualifier(minRawLength, maxRawLength);
-				matchPatternInfo = new PatternInfo(matchPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minRawLength, maxRawLength, null,
+			if (!typeIdentified && PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
+				String newPattern = PATTERN_ANY + Utils.lengthQualifier(minRawLength, maxRawLength);
+				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minRawLength, maxRawLength, null,
 						null);
 			}
 		}
