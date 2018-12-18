@@ -1,7 +1,5 @@
 package com.cobber.fta;
 
-import java.util.Map;
-
 /**
  * All Logical Types that consist of a unconstrained domain, e.g. an infinite (or large) number of elements should
  * subclass this abstract class.
@@ -28,15 +26,4 @@ public abstract class LogicalTypeInfinite extends LogicalType {
 	public int getCandidateCount() {
 		return candidateCount;
 	}
-
-	/**
-	 * Given the data to date as embodied by the arguments return a boolean indicating whether we think this is an
-	 * instance of this logical type.
-	 * @param matchount Number of samples that match so far (as determined by isValid()
-	 * @param realsamples Number of real (i.e. non-blank and non-null) samples that we have processed so far.
-	 * @param cardinality Cardinality set, up to the maximum maintained
-	 * @param outliers Outlier set, up to the maximum maintained
-	 * @return True if we think this is an instance of this logical type.
-	 */
-	public abstract boolean shouldBackout(long matchount, long realsamples, Map<String, Integer> cardinality, Map<String, Integer> outliers);
 }

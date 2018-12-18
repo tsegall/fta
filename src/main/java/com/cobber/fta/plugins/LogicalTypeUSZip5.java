@@ -25,6 +25,8 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public boolean initialize() {
+		threshold = 90;
+
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_zips.csv")))){
 			String line = null;
 
@@ -32,7 +34,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 				zips.add(line);
 			}
 		} catch (IOException e) {
-			return false;
+			throw new IllegalArgumentException("Internal error: Issues with US Zip database");
 		}
 
 		return true;
@@ -49,11 +51,6 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public double getSampleThreshold() {
-		return 0.9;
-	}
-
-	@Override
 	public Type getBaseType() {
 		return PatternInfo.Type.LONG;
 	}
@@ -64,7 +61,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
-		return cardinality.size() < 5 || (double)matchCount/realSamples < getSampleThreshold();
+	public String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+		return cardinality.size() < 5 || (double)matchCount/realSamples < getThreshold()/100.0 ? "\\d{5}" : null;
 	}
 }

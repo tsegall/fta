@@ -2644,11 +2644,11 @@ public class AnalysisResultTests {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		final String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
-				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|" +
-				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|" +
-				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|" +
-				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|" +
-				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|";
+				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|XX|" +
+				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|XX|" +
+				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|XX|" +
+				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|XX|" +
+				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|XX|";
 		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
@@ -2662,6 +2662,79 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "US_STATE");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - 5);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getConfidence(), 0.9618320610687023);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void basicStatesWithDash() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		final String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
+				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|-|" +
+				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|-|" +
+				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|-|" +
+				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|-|" +
+				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|-|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "US_STATE");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - 5);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getConfidence(), 0.9618320610687023);
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (!"-".equals(inputs[i]))
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void basicStates100Percent() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		analysis.setPluginThreshold(100);
+
+		final String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
+				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|XX|" +
+				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|XX|" +
+				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|XX|" +
+				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|XX|" +
+				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|XX|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -2827,17 +2900,17 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 0.9960159362549801);
 	}
 
-	// Set of valid months + 2 x "NA", 1 x "bogus", 1 x "Bad"
+	// Set of valid months + 4 x "UNK"
 	private final static String MONTH_TEST = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
 			"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
-			"Jan|Mar|Jun|Jul|Feb|Dec|Bad|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
-			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|" +
-			"Jan|Bogus|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+			"Jan|Mar|Jun|Jul|Feb|Dec|UNK|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|UNK|Sep|Jan|Oct|Oct|Oct|" +
+			"Jan|UNK|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 			"Dec|Oct|Apr|May|May|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
 			"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
-			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|";
+			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|UNK|Sep|Jan|Oct|Oct|Oct|";
 
 	@Test
 	public void basicMonthAbbr() throws IOException {
@@ -2859,12 +2932,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getOutlierCount(), 3);
+		Assert.assertEquals(result.getOutlierCount(), 1);
 		final Map<String, Integer> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.size(), 3);
-		Assert.assertEquals(outliers.get("Bogus"), Integer.valueOf(1));
-		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(2));
-		Assert.assertEquals(outliers.get("Bad"), Integer.valueOf(1));
+		Assert.assertEquals(outliers.size(), 1);
+		Assert.assertEquals(outliers.get("UNK"), Integer.valueOf(4));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 0.978021978021978);
@@ -2892,7 +2963,7 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicMonthAbbrExcessiveBad() throws IOException {
+	public void basicMonthAbbrBackout() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = MONTH_TEST.split("\\|");
 
@@ -2912,15 +2983,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), inputs.length + unknownCount);
-		Assert.assertEquals(result.getOutlierCount(), 2);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.size(), 2);
-		Assert.assertEquals(outliers.get("Bogus"), Integer.valueOf(1));
-		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(2));
-		Assert.assertEquals(result.getMatchCount(), inputs.length + unknownCount + 1 - 4);
+		Assert.assertEquals(result.getSampleCount(), result.getMatchCount());
+		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 0.984375);
+		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
@@ -2932,9 +2998,49 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void basicMonthAbbrExcessiveBad() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String inputs[] = MONTH_TEST.split("\\|");
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		final int unknownCount = 10;
+		for (int i = 0; i < unknownCount; i++)
+			analysis.train("Bad");
+		analysis.train("NA");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length + unknownCount + 1);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 1);
+		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(1));
+		Assert.assertEquals(result.getMatchCount(), inputs.length + unknownCount);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 0.9948186528497409);
+		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
+
+		int matches = 0;
+		for (int i = 0; i < inputs.length; i++) {
+			if (inputs[i].matches(result.getRegExp()))
+				matches++;
+		}
+		Assert.assertEquals(result.getMatchCount() - unknownCount, matches);
+	}
+
+	@Test
 	public void basicStateLowCard() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
-		final String input = "MA|MI|ME|MO|NA|";
+		final String input = "MA|MI|ME|MO|MS|";
 		final String inputs[] = input.split("\\|");
 		final int iters = 20;
 
@@ -2946,21 +3052,24 @@ public class AnalysisResultTests {
 					locked = i;
 			}
 		}
+		final int UNKNOWN = 4;
+		for (int k = 0; k < UNKNOWN; k++)
+			analysis.train("NA");
 
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "US_STATE");
-		Assert.assertEquals(result.getSampleCount(), inputs.length * iters);
-		Assert.assertEquals(result.getCardinality(), 4);
+		Assert.assertEquals(result.getSampleCount(), inputs.length * iters + UNKNOWN);
+		Assert.assertEquals(result.getCardinality(), 5);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(iters));
-		Assert.assertEquals(result.getMatchCount(), (inputs.length - result.getOutlierCount()) * iters);
+		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(UNKNOWN));
+		Assert.assertEquals(result.getMatchCount(), inputs.length * iters);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 0.8);
+		Assert.assertEquals(result.getConfidence(), 0.9615384615384616);
 	}
 
 	final String alpha3 = "aaa|bbb|ccc|ddd|eee|fff|ggg|hhh|iii|jjj|" +

@@ -13,17 +13,14 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 
 	@Override
 	public boolean initialize() {
+		threshold = 95;
+
 		return true;
 	}
 
 	@Override
 	public String getQualifier() {
 		return "EMAIL";
-	}
-
-	@Override
-	public double getSampleThreshold() {
-		return 0.95;
 	}
 
 	@Override
@@ -59,7 +56,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
-		return (double)matchCount/realSamples < getSampleThreshold();
+	public String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

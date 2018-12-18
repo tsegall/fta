@@ -12,6 +12,8 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 
 	@Override
 	public boolean initialize() {
+		threshold = 95;
+
 		return true;
 	}
 
@@ -25,11 +27,6 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 		return 	"^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 	}
 		
-	@Override
-	public double getSampleThreshold() {
-		return 0.95;
-	}
-
 	@Override
 	public PatternInfo.Type getBaseType() {
 		return PatternInfo.Type.STRING;
@@ -55,7 +52,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
-		return (double)matchCount/realSamples < getSampleThreshold();
+	public String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

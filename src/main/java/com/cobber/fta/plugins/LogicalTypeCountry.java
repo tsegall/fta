@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFinite;
@@ -21,9 +22,17 @@ public class LogicalTypeCountry extends LogicalTypeFinite {
 				members.add(line);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new IllegalArgumentException("Internal error: Issues with Countries database");
 		}
+	}
+
+	@Override
+	public boolean initialize() {
+		super.initialize();
+
+		threshold = 95;
+
+		return true;
 	}
 
 	@Override
@@ -42,8 +51,10 @@ public class LogicalTypeCountry extends LogicalTypeFinite {
 	}
 
 	@Override
-	public double getSampleThreshold() {
-		// TODO Auto-generated method stub
-		return 0;
+	public String shouldBackout(long matchCount, long realsamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+		if (outliers.size() > Math.sqrt(members.size()))
+			return ".+";
+
+		return (double)matchCount / realsamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

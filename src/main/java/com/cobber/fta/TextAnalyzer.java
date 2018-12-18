@@ -84,6 +84,9 @@ public class TextAnalyzer {
 	/** Should we enable Default Logical Type detection. */
 	private boolean logicalTypeDetection = true;
 
+	/** Threshold for detection - by default this is unset and sensible defaults are used. */
+	private int threshold = -1;
+
 	/** The default value for the maximum Cardinality tracked. */
 	public static final int MAX_CARDINALITY_DEFAULT = 500;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
@@ -166,7 +169,7 @@ public class TextAnalyzer {
 
 	private Set<String> registered = new HashSet<String>();
 	private ArrayList<LogicalTypeInfinite> infiniteTypes = new ArrayList<LogicalTypeInfinite>();
-	private ArrayList<LogicalTypeFinite> stringTypesFinite = new ArrayList<LogicalTypeFinite>();
+	private ArrayList<LogicalTypeFinite> finiteTypes = new ArrayList<LogicalTypeFinite>();
 
 	public static final String PATTERN_ANY = ".";
 	public static final String PATTERN_ANY_VARIABLE = ".+";
@@ -301,13 +304,15 @@ public class TextAnalyzer {
 		try {
 			ctor = newLogicalType.getConstructor();
 			object = (LogicalType)ctor.newInstance();
+
 			if (registered.contains(object.getQualifier()))
 				throw new IllegalArgumentException("Logical type: " + object.getQualifier() + " already registered.");
 			registered.add(object.getQualifier());
+
 			if (object instanceof LogicalTypeInfinite)
 				infiniteTypes.add((LogicalTypeInfinite)object);
 			else
-				stringTypesFinite.add((LogicalTypeFinite)object);
+				finiteTypes.add((LogicalTypeFinite)object);
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			return false;
@@ -385,6 +390,31 @@ public class TextAnalyzer {
 	 */
 	public boolean getDefaultLogicalTypes() {
 		return logicalTypeDetection;
+	}
+
+	/**
+	 * The percentage when we declare success 0 - 100.
+	 * Typically this should not be adjusted, if you want to run in Strict mode then set this to 100.
+	 * @param threshold The new threshold used for detection.
+	 */
+	public void setPluginThreshold(int threshold) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot adjust Threshold once training has started");
+
+		if (threshold < 0 || threshold > 100)
+			throw new IllegalArgumentException("Threshold must be between 0 and 100ƒ");
+
+		this.threshold = threshold;
+	}
+
+	/**
+	 * Get the current detection Threshold.
+	 * If not set, this will return -1, this means that each plugin is using a default threshold and doing something sensible.
+	 *
+	 * @return The current threshold.
+	 */
+	public int getPluginThreshold() {
+		return threshold;
 	}
 
     /**
@@ -759,9 +789,16 @@ public class TextAnalyzer {
 			// Run the initializers for the Logical Types
 			for (LogicalType logical : infiniteTypes)
 				logical.initialize();
-
-			for (LogicalType logical : stringTypesFinite)
+			for (LogicalType logical : finiteTypes)
 				logical.initialize();
+
+			if (threshold != -1) {
+				// Set the threshold for all Logical Types
+				for (LogicalType logical : infiniteTypes)
+					logical.setThreshold(threshold);
+				for (LogicalType logical : finiteTypes)
+					logical.setThreshold(threshold);
+			}
 
 			trainingStarted = true;
 		}
@@ -1093,7 +1130,7 @@ public class TextAnalyzer {
 						}
 					}
 					// If a reasonable number look genuine then we are convinced
-					if (count >= logical.getSampleThreshold() * raw.size())
+					if (count >= logical.getThreshold()/100.0 * raw.size())
 						matchPatternInfo = candidate;
 				}
 			}
@@ -1171,18 +1208,21 @@ public class TextAnalyzer {
 		}
 
 		int badCharacters = current.isAlphabetic() ? digits : alphas;
+		// If we are currently Alphabetic and the only errors are digits then convert to AlphaNumeric
 		if (badCharacters != 0 && spaces == 0 && other == 0 && current.isAlphabetic()) {
 			if (outliers.size() == maxOutliers || digits > .01 * realSamples) {
 				backoutToPattern(realSamples, current.regexp.replace("Alpha", "Alnum"));
 				return true;
 			}
 		}
+		// If we are currently Numeric and the only errors are alpha then convert to AlphaNumeric
 		else if (badCharacters != 0 && spaces == 0 && other == 0 && PatternInfo.Type.LONG.equals(current.type)) {
 			if (outliers.size() == maxOutliers || alphas > .01 * realSamples) {
 				backoutToPattern(realSamples, "\\p{Alnum}" + Utils.lengthQualifier(minRawLength, maxRawLength));
 				return true;
 			}
 		}
+		// If we are currently Numeric and the only errors are doubles then convert to double
 		else if (outliers.size() == doubles && PatternInfo.Type.LONG.equals(current.type)) {
 			backoutToPattern(realSamples, doublePattern(negative, exponent));
 			return true;
@@ -1232,7 +1272,7 @@ public class TextAnalyzer {
 		outliers.clear();
 	}
 
-	private void backoutLogicalLongType(LogicalTypeInfinite logical, final long realSamples) {
+	private void backoutLogicalLongType(LogicalType logical, final long realSamples) {
 		int otherLongs = 0;
 
 		final Map<String, Integer> outliersCopy = new HashMap<String, Integer>(outliers);
@@ -1397,7 +1437,7 @@ public class TextAnalyzer {
 			if (outliers.size() == maxOutliers) {
 				if (matchPatternInfo.typeQualifier != null) {
 					// Do we need to back out from any of our Infinite type determinations
-					for (LogicalTypeInfinite logical : infiniteTypes) {
+					for (LogicalType logical : infiniteTypes) {
 						if (logical.getQualifier().equals(matchPatternInfo.typeQualifier) && "US_ZIP5".equals(matchPatternInfo.typeQualifier))
 							backoutLogicalLongType(logical, realSamples);
 						else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
@@ -1469,7 +1509,7 @@ public class TextAnalyzer {
 		}
 
 		// To declare success we need fewer than 5% failures by count and additionally fewer than 4 groups
-		if (newOutliers.size() != 1 && ((double) missCount / realSamples > .05 || misses >= 4))
+		if (((double) missCount / realSamples > .05 || misses >= 4))
 				return false;
 
 		matchCount = validCount;
@@ -1555,17 +1595,18 @@ public class TextAnalyzer {
 		}
 
 		// Do we need to back out from any of our Infinite type determinations
-		for (LogicalTypeInfinite logical : infiniteTypes) {
-			if (matchPatternInfo.typeQualifier != null &&
-					matchPatternInfo.typeQualifier.equals(logical.getQualifier()) &&
-					logical.shouldBackout(matchCount, realSamples, cardinality, outliers)) {
-				if (PatternInfo.Type.STRING.equals(logical.getBaseType()))
-					conditionalBackoutToPattern(realSamples, matchPatternInfo);
-				else if (PatternInfo.Type.LONG.equals(logical.getBaseType()))
-					backoutLogicalLongType(logical, realSamples);
-				confidence = (double) matchCount / realSamples;
+		if (matchPatternInfo.typeQualifier != null)
+			for (LogicalType logical : infiniteTypes) {
+				String newPattern;
+				if (matchPatternInfo.typeQualifier.equals(logical.getQualifier()) &&
+						(newPattern = logical.shouldBackout(matchCount, realSamples, cardinality, outliers)) != null) {
+					if (PatternInfo.Type.STRING.equals(logical.getBaseType()))
+						backoutToPattern(realSamples, newPattern);
+					else if (PatternInfo.Type.LONG.equals(logical.getBaseType()))
+						backoutLogicalLongType(logical, realSamples);
+					confidence = (double) matchCount / realSamples;
+				}
 			}
-		}
 
 		if (PATTERN_LONG.equals(matchPatternInfo.regexp)) {
 			if (matchPatternInfo.typeQualifier == null && minLong < 0)
@@ -1612,12 +1653,6 @@ public class TextAnalyzer {
 				confidence = (double) matchCount / realSamples;
 			}
 
-			// Need to evaluate if we got the type wrong
-			if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier == null && matchPatternInfo.isAlphabetic()) {
-				conditionalBackoutToPattern(realSamples, matchPatternInfo);
-				confidence = (double) matchCount / realSamples;
-			}
-
 			// Build Cardinality map ignoring case (and white space)
 			int minKeyLength = Integer.MAX_VALUE;
 			int maxKeyLength = 0;
@@ -1642,27 +1677,53 @@ public class TextAnalyzer {
 
 			if (minKeyLength == maxKeyLength) {
 				// Hunt for a fixed length Logical Type
-				for (LogicalTypeFinite logical : stringTypesFinite) {
+				for (LogicalTypeFinite logical : finiteTypes) {
 					if (minKeyLength == logical.getMinLength() && logical.getMinLength() == logical.getMaxLength())
 						if (!typeIdentified && realSamples >= reflectionSamples && cardinalityUpper.size() > 1
 						&& cardinalityUpper.size() <= logical.getSize() + 2) {
 							typeIdentified = checkUniformLengthSet(logical);
-							if (typeIdentified)
+							if (typeIdentified) {
 								confidence = (double) matchCount / realSamples;
+								break;
+							}
 						}
 				}
 			}
 			else {
 				// Hunt for a variable length Logical Type
-				for (LogicalTypeFinite logical : stringTypesFinite) {
+				for (LogicalTypeFinite logical : finiteTypes) {
 					if (logical.getMinLength() != logical.getMaxLength())
 						if (!typeIdentified && realSamples >= reflectionSamples && cardinalityUpper.size() > 1
 						&& cardinalityUpper.size() <= logical.getSize() + 1) {
 							typeIdentified = checkVariableLengthSet(cardinalityUpper, logical);
-							if (typeIdentified)
+							if (typeIdentified) {
 								confidence = (double) matchCount / realSamples;
+								break;
+							}
 						}
 				}
+			}
+
+			// Do we need to back out from any of our Finite type determinations
+			if (matchPatternInfo.typeQualifier != null)
+				for (LogicalTypeFinite logical : finiteTypes) {
+					String newPattern;
+					if (matchPatternInfo.typeQualifier.equals(logical.getQualifier()) &&
+							(newPattern = logical.shouldBackout(matchCount, realSamples, cardinalityUpper, outliers)) != null) {
+						if (PatternInfo.Type.STRING.equals(logical.getBaseType()))
+							backoutToPattern(realSamples, newPattern);
+						else if (PatternInfo.Type.LONG.equals(logical.getBaseType()))
+							backoutLogicalLongType(logical, realSamples);
+						confidence = (double) matchCount / realSamples;
+						typeIdentified = false;
+						break;
+					}
+				}
+
+			// Need to evaluate if we got the type wrong
+			if (!typeIdentified && PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.isAlphabetic()) {
+				conditionalBackoutToPattern(realSamples, matchPatternInfo);
+				confidence = (double) matchCount / realSamples;
 			}
 
 			// Qualify Alpha or Alnum with a min and max length

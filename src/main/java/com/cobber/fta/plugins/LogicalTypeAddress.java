@@ -18,6 +18,8 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 
 	@Override
 	public boolean initialize() {
+		threshold = 90;
+
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/address_markers.csv")))){
 			String line = null;
 
@@ -25,7 +27,7 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 				addressMarkers.add(line);
 			}
 		} catch (IOException e) {
-			return false;
+			throw new IllegalArgumentException("Internal error: Issues with Address database");
 		}
 
 		return true;
@@ -39,11 +41,6 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 	@Override
 	public String getRegexp() {
 		return ".+";
-	}
-
-	@Override
-	public double getSampleThreshold() {
-		return 0.9;
 	}
 
 	@Override
@@ -67,7 +64,7 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
-		return (double)matchCount/realSamples < getSampleThreshold();
+	public String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

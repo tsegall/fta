@@ -147,9 +147,9 @@ public class PatternInfo {
 	}
 
 	/**
-	 * Is this pattern Numeric?
+	 * Is this pattern Alphabetic?
 	 *
-	 * @return A boolean indicating if the Type for this pattern is numeric.
+	 * @return A boolean indicating if the Type for this pattern is Alphabetic.
 	 */
 	public boolean isAlphabetic() {
 		return this.regexp.startsWith(TextAnalyzer.PATTERN_ALPHA);
