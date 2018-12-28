@@ -57,10 +57,7 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
 		int spaceIndex = lastIndex[' '];
-		boolean result = spaceIndex != -1 && addressMarkers.contains(input.substring(spaceIndex + 1, input.length()).toUpperCase(Locale.ROOT));
-		if (result)
-			candidateCount++;
-		return result;
+		return spaceIndex != -1 && addressMarkers.contains(input.substring(spaceIndex + 1, input.length()).toUpperCase(Locale.ROOT));
 	}
 
 	@Override

@@ -15,9 +15,12 @@
  */
 package com.cobber.fta;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormatSymbols;
@@ -42,6 +45,9 @@ import com.cobber.fta.plugins.LogicalTypeCAProvince;
 import com.cobber.fta.plugins.LogicalTypeCountry;
 import com.cobber.fta.plugins.LogicalTypeEmail;
 import com.cobber.fta.plugins.LogicalTypeGender;
+import com.cobber.fta.plugins.LogicalTypeISO3166_2;
+import com.cobber.fta.plugins.LogicalTypeISO3166_3;
+import com.cobber.fta.plugins.LogicalTypeISO4217;
 import com.cobber.fta.plugins.LogicalTypeMonthAbbr;
 import com.cobber.fta.plugins.LogicalTypeURL;
 import com.cobber.fta.plugins.LogicalTypeUSState;
@@ -84,8 +90,11 @@ public class TextAnalyzer {
 	/** Should we enable Default Logical Type detection. */
 	private boolean logicalTypeDetection = true;
 
-	/** Threshold for detection - by default this is unset and sensible defaults are used. */
-	private int threshold = -1;
+	/** Plugin Threshold for detection - by default this is unset and sensible defaults are used. */
+	private int pluginThreshold = -1;
+
+	/** Threshold for detection - by default this is set to 95%. */
+	private int threshold = 95;
 
 	/** The default value for the maximum Cardinality tracked. */
 	public static final int MAX_CARDINALITY_DEFAULT = 500;
@@ -111,6 +120,7 @@ public class TextAnalyzer {
 	private long blankCount;
 	private Map<String, Integer> cardinality = new HashMap<String, Integer>();
 	private final Map<String, Integer> outliers = new HashMap<String, Integer>();
+	private final Map<String, Integer> outliersCompressed = new HashMap<String, Integer>();
 	private List<String> raw; // 0245-11-98
 	// 0: d{4}-d{2}-d{2} 1: d{+}-d{+}-d{+} 2: d{+}-d{+}-d{+}
 	// 0: d{4} 1: d{+} 2: [-]d{+}
@@ -136,6 +146,9 @@ public class TextAnalyzer {
 	private String minString;
 	private String maxString;
 
+	private String minOutlierString;
+	private String maxOutlierString;
+
 	private String minBoolean;
 	private String maxBoolean;
 
@@ -154,11 +167,16 @@ public class TextAnalyzer {
 	private OffsetDateTime minOffsetDateTime;
 	private OffsetDateTime maxOffsetDateTime;
 
+	// The minimum length (inclusive of spaces)
 	private int minRawLength = Integer.MAX_VALUE;
+	// The maximum length (inclusive of spaces)
 	private int maxRawLength = Integer.MIN_VALUE;
 
 	private int minTrimmedLength = Integer.MAX_VALUE;
 	private int maxTrimmedLength = Integer.MIN_VALUE;
+
+	private int minTrimmedOutlierLength = Integer.MAX_VALUE;
+	private int maxTrimmedOutlierLength = Integer.MIN_VALUE;
 
 	private int possibleDateTime;
 	private long totalLeadingZeros;
@@ -169,6 +187,7 @@ public class TextAnalyzer {
 
 	private Set<String> registered = new HashSet<String>();
 	private ArrayList<LogicalTypeInfinite> infiniteTypes = new ArrayList<LogicalTypeInfinite>();
+	private int[] candidateCounts;
 	private ArrayList<LogicalTypeFinite> finiteTypes = new ArrayList<LogicalTypeFinite>();
 
 	public static final String PATTERN_ANY = ".";
@@ -291,29 +310,35 @@ public class TextAnalyzer {
 	 * Register a new Logical Type processor.
 	 * See {@link LogicalTypeFinite} or {@link LogicalTypeInfinite}
 	 *
-	 * @param newLogicalType The class representing the new Logical Type
+	 * @param className The name of the class for the new Logical Type
 	 * @return Success if the new Logical type was successfully registered.
 	 */
-	public boolean registerLogicalType(Class<? extends LogicalType> newLogicalType) {
+	public boolean registerLogicalType(String className) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot register logical types once training has started");
 
+		Class<?> newLogicalType;
 		Constructor<?> ctor;
 		LogicalType object;
 
 		try {
+			newLogicalType = Class.forName(className);
 			ctor = newLogicalType.getConstructor();
 			object = (LogicalType)ctor.newInstance();
 
+			if (!(object instanceof LogicalType))
+				throw new IllegalArgumentException("Logical type: " + className + " does not appear to be a Logical Type.");
+
 			if (registered.contains(object.getQualifier()))
 				throw new IllegalArgumentException("Logical type: " + object.getQualifier() + " already registered.");
+
 			registered.add(object.getQualifier());
 
 			if (object instanceof LogicalTypeInfinite)
 				infiniteTypes.add((LogicalTypeInfinite)object);
 			else
 				finiteTypes.add((LogicalTypeFinite)object);
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			return false;
 		}
@@ -395,9 +420,9 @@ public class TextAnalyzer {
 	/**
 	 * The percentage when we declare success 0 - 100.
 	 * Typically this should not be adjusted, if you want to run in Strict mode then set this to 100.
-	 * @param threshold The new threshold used for detection.
+	 * @param threshold The new threshold for detection.
 	 */
-	public void setPluginThreshold(int threshold) {
+	public void setThreshold(int threshold) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot adjust Threshold once training has started");
 
@@ -409,12 +434,37 @@ public class TextAnalyzer {
 
 	/**
 	 * Get the current detection Threshold.
-	 * If not set, this will return -1, this means that each plugin is using a default threshold and doing something sensible.
+	 *
+	 * @return The current threshold.
+	 */
+	public int getThreshold() {
+		return threshold;
+	}
+
+
+	/**
+	 * The percentage when we declare success 0 - 100 for Logical Type plugins.
+	 * Typically this should not be adjusted, if you want to run in Strict mode then set this to 100.
+	 * @param threshold The new threshold used for detection.
+	 */
+	public void setPluginThreshold(int threshold) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot adjust Plugin Threshold once training has started");
+
+		if (threshold < 0 || threshold > 100)
+			throw new IllegalArgumentException("Plugin Threshold must be between 0 and 100ƒ");
+
+		this.pluginThreshold = threshold;
+	}
+
+	/**
+	 * Get the current detection Threshold for Logical Type plugins.
+	 * If not set, this will return -1, this means that each plugin is using a default threshold and doing something sensible!
 	 *
 	 * @return The current threshold.
 	 */
 	public int getPluginThreshold() {
-		return threshold;
+		return pluginThreshold;
 	}
 
     /**
@@ -526,12 +576,11 @@ public class TextAnalyzer {
 		final String input = rawInput.trim();
 
 		// Track String facts - just in case we end up backing out.
-		if (minString == null || minString.compareTo(input) > 0) {
+		if (minString == null || minString.compareTo(input) > 0)
 			minString = input;
-		}
-		if (maxString == null || maxString.compareTo(input) < 0) {
+
+		if (maxString == null || maxString.compareTo(input) < 0)
 			maxString = input;
-		}
 
 		long l;
 
@@ -623,12 +672,11 @@ public class TextAnalyzer {
 		if (matchPatternInfo.maxLength != -1 && len > matchPatternInfo.maxLength)
 			return false;
 
-		if (minString == null || minString.compareTo(cleaned) > 0) {
+		if (minString == null || minString.compareTo(cleaned) > 0)
 			minString = cleaned;
-		}
-		if (maxString == null || maxString.compareTo(cleaned) < 0) {
+
+		if (maxString == null || maxString.compareTo(cleaned) < 0)
 			maxString = cleaned;
-		}
 
 		if (len < minTrimmedLength)
 			minTrimmedLength = len;
@@ -773,18 +821,20 @@ public class TextAnalyzer {
 			levels[2] = new ArrayList<StringBuilder>(samples);
 
 			if (logicalTypeDetection) {
-				// Infinite ...
-				registerLogicalType(LogicalTypeURL.class);
-				registerLogicalType(LogicalTypeEmail.class);
-				registerLogicalType(LogicalTypeUSZip5.class);
-				// Finite - Variable length ...
-				registerLogicalType(LogicalTypeGender.class);
-				registerLogicalType(LogicalTypeCountry.class);
-				// Finite - Fixed length ...
-				registerLogicalType(LogicalTypeMonthAbbr.class);
-				registerLogicalType(LogicalTypeCAProvince.class);
-				registerLogicalType(LogicalTypeUSState.class);
+				try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.txt")))){
+					String line = null;
+
+					while ((line = reader.readLine()) != null) {
+						if (line.trim().length() == 0 || line.charAt(0) == '#')
+							continue;
+						registerLogicalType(line);
+					}
+				} catch (IOException e) {
+					throw new IllegalArgumentException("Internal error: Issues with plugins file");
+				}
 			}
+
+			candidateCounts = new int[infiniteTypes.size()];
 
 			// Run the initializers for the Logical Types
 			for (LogicalType logical : infiniteTypes)
@@ -792,12 +842,12 @@ public class TextAnalyzer {
 			for (LogicalType logical : finiteTypes)
 				logical.initialize();
 
-			if (threshold != -1) {
+			if (pluginThreshold != -1) {
 				// Set the threshold for all Logical Types
 				for (LogicalType logical : infiniteTypes)
-					logical.setThreshold(threshold);
+					logical.setThreshold(pluginThreshold);
 				for (LogicalType logical : finiteTypes)
-					logical.setThreshold(threshold);
+					logical.setThreshold(pluginThreshold);
 			}
 
 			trainingStarted = true;
@@ -921,8 +971,12 @@ public class TextAnalyzer {
 			possibleDateTime++;
 
 		// Check to see if this input is one of our registered Logical Types
-		for (LogicalTypeInfinite logical : infiniteTypes)
-			logical.isCandidate(input, compressedl0, charCounts, lastIndex);
+		int c = 0;
+		for (LogicalTypeInfinite logical : infiniteTypes) {
+			if (logical.isCandidate(input, compressedl0, charCounts, lastIndex))
+				candidateCounts[c]++;
+			c++;
+		}
 
 		// Create the level 1 and 2
 		if (digitsSeen > 0 && couldBeNumeric && numericDecimalSeparators <= 1) {
@@ -1087,14 +1141,19 @@ public class TextAnalyzer {
 			// - we have something we recognize (and we had nothing)
 			// - we have the same key but a better count
 			// - we have different keys but same type (signed vs. not-signed)
-			// - we have different keys, different types but an improvement of
-			// at least 10%
+			// - we have different keys, two numeric types and an improvement of at least 5%
+			// - we have different keys, different types and an improvement of at least 10%
 			if (level2 != null && (matchPatternInfo == null
 					|| (best.getKey().equals(level2pattern) && level2value > best.getValue())
 					|| (!best.getKey().equals(level2pattern) && level2patternInfo != null
 							&& matchPatternInfo.type.equals(level2patternInfo.type)
 							&& level2.getValue() > best.getValue())
-					|| (!best.getKey().equals(level2pattern) && level2.getValue() > best.getValue() + samples / 10))) {
+					|| (!best.getKey().equals(level2pattern) && level2patternInfo != null
+							&& matchPatternInfo.isNumeric()
+							&& level2patternInfo.isNumeric()
+							&& level2.getValue() >= best.getValue() + samples / 20)
+					|| (!best.getKey().equals(level2pattern)
+							&& level2.getValue() >= best.getValue() + samples / 10))) {
 				best = level2;
 				matchPatternInfo = level2patternInfo;
 			}
@@ -1111,8 +1170,9 @@ public class TextAnalyzer {
 			}
 
 			// If it is a registered Infinite Logical Type then validate it
+			int i = 0;
 			for (LogicalTypeInfinite logical : infiniteTypes) {
-				if (logical.getCandidateCount() == raw.size()) {
+				if (candidateCounts[i] == raw.size()) {
 					int count = 0;
 					PatternInfo candidate = new PatternInfo(logical.getRegexp(), logical.getBaseType(), logical.getQualifier(), -1, -1, null, null);
 					for (final String sample : raw) {
@@ -1133,12 +1193,11 @@ public class TextAnalyzer {
 					if (count >= logical.getThreshold()/100.0 * raw.size())
 						matchPatternInfo = candidate;
 				}
+				i++;
 			}
 
 			for (final String sample : raw)
 				trackResult(sample);
-
-			matchCount = best.getValue();
 		}
 	}
 
@@ -1151,8 +1210,50 @@ public class TextAnalyzer {
 			cardinality.put(input, seen + 1);
 	}
 
+	private String compress(final String input) {
+		StringBuilder b = new StringBuilder();
+
+		int len = input.length();
+		if (len > 30)
+			return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ...";
+		for (int i = 0; i < len; i++) {
+			char ch = input.charAt(i);
+			if (Character.isDigit(ch))
+				b.append('1');
+			else if (Character.isAlphabetic(ch))
+				b.append('a');
+			else
+				b.append(ch);
+		}
+
+		return b.toString();
+	}
+
 	private int outlier(final String input) {
-		final Integer seen = outliers.get(input);
+		final String cleaned = input.trim();
+		final int trimmedLength = cleaned.length();
+
+		if (trimmedLength < minTrimmedOutlierLength)
+			minTrimmedOutlierLength = trimmedLength;
+		if (trimmedLength > maxTrimmedOutlierLength)
+			maxTrimmedOutlierLength = trimmedLength;
+
+		if (minOutlierString == null || minOutlierString.compareTo(cleaned) > 0)
+			minOutlierString = cleaned;
+
+		if (maxOutlierString == null || maxOutlierString.compareTo(cleaned) < 0)
+			maxOutlierString = cleaned;
+
+		String compressed = compress(input);
+		Integer seen = outliersCompressed.get(compressed);
+		if (seen == null) {
+			if (outliersCompressed.size() < maxOutliers)
+				outliersCompressed.put(compressed, 1);
+		} else {
+			outliersCompressed.put(compressed, seen + 1);
+		}
+
+		seen = outliers.get(input);
 		if (seen == null) {
 			if (outliers.size() < maxOutliers)
 				outliers.put(input, 1);
@@ -1163,17 +1264,19 @@ public class TextAnalyzer {
 		return outliers.size();
 	}
 
-	private boolean conditionalBackoutToPattern(final long realSamples, PatternInfo current) {
+	private boolean conditionalBackoutToPattern(final long realSamples, PatternInfo current, boolean useCompressed) {
 		int alphas = 0;
 		int digits = 0;
 		int spaces = 0;
 		int other = 0;
 		int doubles = 0;
+		int nonAlphaNumeric = 0;
 		boolean negative = false;
 		boolean exponent = false;
+		Map<String, Integer> outlierMap = useCompressed ? outliersCompressed : outliers;
 
 		// Sweep the current outliers
-		for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
+		for (final Map.Entry<String, Integer> entry : outlierMap.entrySet()) {
 			String key = entry.getKey();
 			Integer value = entry.getValue();
 			if (PatternInfo.Type.LONG.equals(current.type) && isDouble(key)) {
@@ -1205,33 +1308,34 @@ public class TextAnalyzer {
 				spaces += value;
 			if (foundOther)
 				other += value;
+			if (foundSpace || foundOther)
+				nonAlphaNumeric += value;
 		}
 
 		int badCharacters = current.isAlphabetic() ? digits : alphas;
 		// If we are currently Alphabetic and the only errors are digits then convert to AlphaNumeric
 		if (badCharacters != 0 && spaces == 0 && other == 0 && current.isAlphabetic()) {
-			if (outliers.size() == maxOutliers || digits > .01 * realSamples) {
+			if (outlierMap.size() == maxOutliers || digits > .01 * realSamples) {
 				backoutToPattern(realSamples, current.regexp.replace("Alpha", "Alnum"));
 				return true;
 			}
 		}
 		// If we are currently Numeric and the only errors are alpha then convert to AlphaNumeric
 		else if (badCharacters != 0 && spaces == 0 && other == 0 && PatternInfo.Type.LONG.equals(current.type)) {
-			if (outliers.size() == maxOutliers || alphas > .01 * realSamples) {
-				backoutToPattern(realSamples, "\\p{Alnum}" + Utils.lengthQualifier(minRawLength, maxRawLength));
+			if (outlierMap.size() == maxOutliers || alphas > .01 * realSamples) {
+				backoutToPattern(realSamples, "\\p{Alnum}+");
 				return true;
 			}
 		}
 		// If we are currently Numeric and the only errors are doubles then convert to double
-		else if (outliers.size() == doubles && PatternInfo.Type.LONG.equals(current.type)) {
+		else if (outlierMap.size() == doubles && PatternInfo.Type.LONG.equals(current.type)) {
 			backoutToPattern(realSamples, doublePattern(negative, exponent));
 			return true;
 		}
-		else {
-			if (outliers.size() == maxOutliers || (badCharacters + spaces + other) > .01 * realSamples) {
+		else if ((realSamples > reflectionSamples && outlierMap.size() == maxOutliers)
+					|| (badCharacters + nonAlphaNumeric) > .01 * realSamples) {
 				backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
 				return true;
-			}
 		}
 
 		return false;
@@ -1257,8 +1361,18 @@ public class TextAnalyzer {
 
 		// Need to update stats to reflect any outliers we previously ignored
 		if (matchPatternInfo.type.equals(PatternInfo.Type.STRING))
-			for (final String key : outliers.keySet())
-				updateStats(key);
+			for (final String key : outliers.keySet()) {
+				if (minString == null || minString.compareTo(minOutlierString) > 0)
+					minString = minOutlierString;
+
+				if (maxString == null || maxString.compareTo(maxOutlierString) < 0)
+					maxString = maxOutlierString;
+
+				if (minTrimmedLength > minTrimmedOutlierLength)
+					minTrimmedLength = minTrimmedOutlierLength;
+				if (maxTrimmedOutlierLength > maxTrimmedLength)
+					maxTrimmedLength = maxTrimmedOutlierLength;
+			}
 		else if (matchPatternInfo.type.equals(PatternInfo.Type.DOUBLE)) {
 			minDouble = minLong;
 			maxDouble = maxLong;
@@ -1270,12 +1384,19 @@ public class TextAnalyzer {
 		}
 
 		outliers.clear();
+		outliersCompressed.clear();
 	}
 
+	/**
+	 * Backout from a mistaken logical type whose base type was long
+	 * @param logical The Logical type we are backing out from
+	 * @param realSamples The number of real samples we have seen.
+	 */
 	private void backoutLogicalLongType(LogicalType logical, final long realSamples) {
 		int otherLongs = 0;
 
 		final Map<String, Integer> outliersCopy = new HashMap<String, Integer>(outliers);
+
 		// Sweep the current outliers and check they are part of the set
 		for (final Map.Entry<String, Integer> entry : outliersCopy.entrySet()) {
 			boolean isLong = true;
@@ -1294,8 +1415,7 @@ public class TextAnalyzer {
 		}
 
 		matchCount += otherLongs;
-
-		if ((double) matchCount / realSamples > 0.9)
+		if ((double) matchCount / realSamples > threshold/100.0)
 			matchPatternInfo = patternInfo.get(PATTERN_LONG);
 		else
 			backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
@@ -1336,9 +1456,9 @@ public class TextAnalyzer {
 		final int trimmedLength = input.trim().length();
 
 		if (trimmedLength < minRawLength)
-			minRawLength = trimmedLength;
+			minTrimmedLength = trimmedLength;
 		if (trimmedLength > maxRawLength)
-			maxRawLength = trimmedLength;
+			maxTrimmedLength = trimmedLength;
 	}
 
 	/**
@@ -1444,9 +1564,9 @@ public class TextAnalyzer {
 							backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
 					}
 				}
-				else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.isAlphabetic()) {
+				else {
 					// Need to evaluate if we got this wrong
-					conditionalBackoutToPattern(realSamples, matchPatternInfo);
+					conditionalBackoutToPattern(realSamples, matchPatternInfo, true);
 				}
 			}
 		}
@@ -1492,8 +1612,9 @@ public class TextAnalyzer {
 
 		// Sweep the balance and check they are part of the set
 		long validCount = 0;
+		double missThreshold = 1.0 - logical.getThreshold()/100.0;
 		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
-		if ((double) missCount / realSamples <= .05) {
+		if ((double) missCount / realSamples <= missThreshold) {
 			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
 				if (logical.isValid(entry.getKey().trim().toUpperCase(Locale.ROOT)))
 					validCount += entry.getValue();
@@ -1502,15 +1623,15 @@ public class TextAnalyzer {
 					missCount += entry.getValue();
 					newOutliers.put(entry.getKey(), entry.getValue());
 					// Break out early if we know we are going to fail
-					if (newOutliers.size() > 1 && (double) missCount / realSamples > .05)
+					if (newOutliers.size() > 1 && (double)missCount / realSamples > missThreshold)
 						return false;
 				}
 			}
 		}
 
-		// To declare success we need fewer than 5% failures by count and additionally fewer than 4 groups
-		if (((double) missCount / realSamples > .05 || misses >= 4))
-				return false;
+		// To declare success we need fewer than threshold failures by count and additionally fewer than 4 groups
+		if (((double)missCount / realSamples > missThreshold || misses >= 4))
+			return false;
 
 		matchCount = validCount;
 		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), -1, -1, null, null);
@@ -1521,7 +1642,7 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Determine if the current dataset reflects a logical type (of variable length).
+	 * Determine if the current data set reflects a logical type (of variable length).
 	 * @param cardinalityUpper The cardinality set but reduced to ignore case
 	 * @param logical The Logical type we are testing
 	 * @return True if we believe that this data set is defined by the provided by this Logical Type
@@ -1530,7 +1651,6 @@ public class TextAnalyzer {
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 		long validCount = 0;
-		long misses = 0;				// count of number of groups that are misses
 		long missCount = 0;				// count of number of misses
 
 		// Sweep the balance and check they are part of the set
@@ -1538,18 +1658,15 @@ public class TextAnalyzer {
 			if (logical.isValid(entry.getKey()))
 				validCount += entry.getValue();
 			else {
-				misses++;
 				missCount += entry.getValue();
-				// Break out early if we know we are going to fail
-				// To declare success we need fewer than 40% failures by count and also a limited number of misses by group
-				if ((double) missCount / realSamples > .4 || misses > (long)Math.sqrt(logical.getSize()))
-					return false;
 				newOutliers.put(entry.getKey(), entry.getValue());
+				// Break out early if we know we are going to fail
+				if (logical.shouldBackout(realSamples - missCount, realSamples, cardinalityUpper, newOutliers) != null)
+					return false;
 			}
 		}
 
-		// To declare success we need fewer than 40% failures by count and also a limited number of misses by group
-		if ((double) missCount / realSamples > .4 || misses > (long)Math.sqrt(logical.getSize()))
+		if (logical.shouldBackout(realSamples - missCount, realSamples, cardinalityUpper, newOutliers) != null)
 			return false;
 
 		outliers.putAll(newOutliers);
@@ -1629,17 +1746,14 @@ public class TextAnalyzer {
 				maxBoolean = "1";
 				matchPatternInfo = patternInfo.get("[0|1]");
 			} else {
-				String newPattern = matchPatternInfo.typeQualifier != null ? "-?\\d{" : "\\d{";
-				newPattern += minTrimmedLength;
-				if (minTrimmedLength != maxTrimmedLength)
-					newPattern += "," + maxTrimmedLength;
-				newPattern += "}";
+				String newPattern = matchPatternInfo.typeQualifier != null ? "-?\\d" : "\\d";
+				newPattern += Utils.lengthQualifier(minTrimmedLength, maxTrimmedLength);
 				matchPatternInfo = new PatternInfo(newPattern, matchPatternInfo.type, matchPatternInfo.typeQualifier, -1, -1, null, null);
 
-				if (realSamples >= reflectionSamples && confidence < 0.96) {
+				if (realSamples >= reflectionSamples && confidence < threshold/100.0) {
 					// We thought it was an integer field, but on reflection it does not feel like it
-					conditionalBackoutToPattern(realSamples, matchPatternInfo);
-					confidence = 1.0;
+					conditionalBackoutToPattern(realSamples, matchPatternInfo, false);
+					confidence = (double) matchCount / realSamples;
 				}
 			}
 		} else if (PATTERN_DOUBLE.equals(matchPatternInfo.regexp)) {
@@ -1704,42 +1818,46 @@ public class TextAnalyzer {
 				}
 			}
 
-			// Do we need to back out from any of our Finite type determinations
-			if (matchPatternInfo.typeQualifier != null)
-				for (LogicalTypeFinite logical : finiteTypes) {
-					String newPattern;
-					if (matchPatternInfo.typeQualifier.equals(logical.getQualifier()) &&
-							(newPattern = logical.shouldBackout(matchCount, realSamples, cardinalityUpper, outliers)) != null) {
-						if (PatternInfo.Type.STRING.equals(logical.getBaseType()))
-							backoutToPattern(realSamples, newPattern);
-						else if (PatternInfo.Type.LONG.equals(logical.getBaseType()))
-							backoutLogicalLongType(logical, realSamples);
-						confidence = (double) matchCount / realSamples;
-						typeIdentified = false;
-						break;
+			// Fixup any likely enums
+			if (matchPatternInfo.typeQualifier == null && cardinalityUpper.size() < 100 && outliersCompressed.size() != 0) {
+				boolean fail = false;
+				int count = 0;
+
+				for (final Map.Entry<String, Integer> entry : outliersCompressed.entrySet()) {
+					String key = entry.getKey();
+					count += entry.getValue();
+					for (int c : key.codePoints().toArray()) {
+						if (c != '1' && c != 'a' && c != '-' && c != '_') {
+							fail = true;
+							break;
+						}
 					}
 				}
-
-			// Need to evaluate if we got the type wrong
-			if (!typeIdentified && PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.isAlphabetic()) {
-				conditionalBackoutToPattern(realSamples, matchPatternInfo);
-				confidence = (double) matchCount / realSamples;
+				if ((double)count/matchCount > 0.01 && !fail) {
+					backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
+					confidence = (double) matchCount / realSamples;
+				}
 			}
 
+			// Need to evaluate if we got the type wrong
+			if (matchPatternInfo.typeQualifier == null && matchPatternInfo.isAlphabetic() && realSamples >= reflectionSamples) {
+				conditionalBackoutToPattern(realSamples, matchPatternInfo, false);
+				confidence = (double) matchCount / realSamples;
+			}
+		}
+
+		if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier == null) {
 			// Qualify Alpha or Alnum with a min and max length
-			if (!typeIdentified && (PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
+			if ((PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
 				String newPattern = matchPatternInfo.regexp;
-				newPattern = newPattern.substring(0, newPattern.length() - 1) + "{" + minTrimmedLength;
-				if (minTrimmedLength != maxTrimmedLength)
-					newPattern += "," + maxTrimmedLength;
-				newPattern += "}";
+				newPattern = newPattern.substring(0, newPattern.length() - 1) + Utils.lengthQualifier(minTrimmedLength, maxTrimmedLength);
 				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minTrimmedLength, maxTrimmedLength, null,
 						null);
 			}
 
 			// Qualify random string with a min and max length
-			if (!typeIdentified && PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
-				String newPattern = PATTERN_ANY + Utils.lengthQualifier(minRawLength, maxRawLength);
+			if (PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
+				String newPattern = PATTERN_ANY + Utils.lengthQualifier(minTrimmedLength, maxTrimmedLength);
 				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minRawLength, maxRawLength, null,
 						null);
 			}
@@ -1768,7 +1886,7 @@ public class TextAnalyzer {
 			if ("NULL".equals(matchPatternInfo.typeQualifier)) {
 				minRawLength = maxRawLength = 0;
 			} else if ("BLANK".equals(matchPatternInfo.typeQualifier)) {
-				// If all the fields are blank - then we have not saved any of the raw input, so we
+				// If all the fields are blank (i.e. a variable number of spaces) - then we have not saved any of the raw input, so we
 				// need to synthesize the min and max value, as well as the minRawlength if not set.
 				if (minRawLength == Integer.MAX_VALUE)
 					minRawLength = 0;
@@ -1790,15 +1908,15 @@ public class TextAnalyzer {
 
 		case LOCALDATE:
 			if (collectStatistics) {
-				minValue = minLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				minValue = minLocalDate == null ? null : minLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxLocalDate == null ? null : maxLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
 			}
 			break;
 
 		case LOCALTIME:
 			if (collectStatistics) {
-				minValue = minLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				minValue = minLocalTime == null ? null : minLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				maxValue = maxLocalTime == null ? null : maxLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
 			}
 			break;
 

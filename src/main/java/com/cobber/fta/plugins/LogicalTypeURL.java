@@ -9,7 +9,6 @@ import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 
 public class LogicalTypeURL extends LogicalTypeInfinite {
-
 	@Override
 	public boolean initialize() {
 		threshold = 95;
@@ -45,10 +44,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		boolean result = charCounts[':'] != 0 && compressed.indexOf("://") != -1;
-		if (result)
-			candidateCount++;
-		return result;
+		return charCounts[':'] != 0 && compressed.indexOf("://") != -1;
 	}
 
 	@Override

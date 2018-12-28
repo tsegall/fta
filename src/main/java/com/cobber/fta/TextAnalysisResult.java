@@ -97,6 +97,8 @@ public class TextAnalysisResult {
 
 	/**
 	 * Confidence in the type classification.
+	 * Typically this will be the number of matches divided by the number of real samples.
+	 * Where a real sample does not include either nulls or blanks.
 	 * @return Confidence as a percentage.
 	 */
 	public double getConfidence() {
@@ -223,7 +225,7 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the count of all samples that matched the determined type.
+	 * Get the count of all (non-blank/non-null) samples that matched the determined type.
 	 * @return Count of all matches.
 	 */
 	public long getMatchCount() {
@@ -266,7 +268,8 @@ public class TextAnalysisResult {
 	/**
 	 * Get the cardinality for the current data stream.
 	 * See {@link com.cobber.fta.TextAnalyzer#setMaxCardinality(int) setMaxCardinality()} method in TextAnalyzer.
-	 * Note: The cardinality returned is the cardinality of the 'matched' samples.
+	 * Note: The cardinality returned is the cardinality of the valid samples.  For example, if a date is invalid it will not
+	 * be included in the cardinality.
 	 * Note: This is not a complete cardinality analysis unless the cardinality of the
 	 * data stream is less than the maximum cardinality (Default: {@value com.cobber.fta.TextAnalyzer#MAX_CARDINALITY_DEFAULT}).
 	 * See also {@link com.cobber.fta.TextAnalyzer#setMaxCardinality(int) setMaxCardinality()} method in TextAnalyzer.

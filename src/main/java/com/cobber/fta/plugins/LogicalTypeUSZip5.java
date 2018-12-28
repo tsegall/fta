@@ -9,23 +9,20 @@ import java.util.Set;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
-import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.TextAnalyzer;
 
 public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	private static Set<String> zips = new HashSet<String>();
 
 	@Override
 	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		boolean result = compressed.toString().equals("\\d{5}");
-		if (result)
-			candidateCount++;
-		return result;
+		return compressed.length() == 5 && compressed.toString().equals("\\d{5}");
 	}
 
 	@Override
 	public boolean initialize() {
-		threshold = 90;
+		threshold = 95;
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_zips.csv")))){
 			String line = null;

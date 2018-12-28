@@ -60,10 +60,10 @@ public abstract class LogicalType {
 	 * of this logical type, if not return a new suitable pattern.
 	 * instance of this logical type.
 	 * @param matchCount Number of samples that match so far (as determined by isValid()
-	 * @param realsamples Number of real (i.e. non-blank and non-null) samples that we have processed so far.
+	 * @param realSamples Number of real (i.e. non-blank and non-null) samples that we have processed so far.
 	 * @param cardinality Cardinality set, up to the maximum maintained
 	 * @param outliers Outlier set, up to the maximum maintained
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract String shouldBackout(long matchCount, long realsamples, Map<String, Integer> cardinality, Map<String, Integer> outliers);
+	public abstract String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers);
 }

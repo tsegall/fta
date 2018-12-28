@@ -11,7 +11,8 @@ import com.cobber.fta.LogicalTypeFinite;
 public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 	private static Set<String> members;
 
-	static {
+	@Override
+	public boolean initialize() {
 		members = new HashSet<String>();	
 
 		// Setup the Monthly abbreviations
@@ -19,10 +20,7 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 		for (int i = 0; i < 12; i++) {
 			members.add(shortMonths[i].toUpperCase(Locale.ROOT));
 		}
-	}
 
-	@Override
-	public boolean initialize() {
 		super.initialize();
 
 		threshold = 95;
@@ -46,10 +44,10 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String shouldBackout(long matchCount, long realsamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+	public String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		if (outliers.size() > 1)
 			return "\\p{Alpha}{3}";
 
-		return (double)matchCount / realsamples >= getThreshold()/100.0 ? null : "\\p{Alpha}{3}";
+		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : "\\p{Alpha}{3}";
 	}
 }

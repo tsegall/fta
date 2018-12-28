@@ -10,7 +10,6 @@ import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 
 public class LogicalTypeEmail extends LogicalTypeInfinite {
-
 	@Override
 	public boolean initialize() {
 		threshold = 95;
@@ -49,10 +48,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
 		int atSigns = charCounts['@'];
-		boolean result = atSigns - 1 == charCounts[','] || atSigns - 1 == charCounts[';'];
-		if (result)
-			candidateCount++;
-		return result;
+		return atSigns - 1 == charCounts[','] || atSigns - 1 == charCounts[';'];
 	}
 
 	@Override
