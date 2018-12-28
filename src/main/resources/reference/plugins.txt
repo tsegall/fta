@@ -1,0 +1,16 @@
+# Infinite ...
+com.cobber.fta.plugins.LogicalTypeURL
+com.cobber.fta.plugins.LogicalTypeEmail
+com.cobber.fta.plugins.LogicalTypeUSZip5
+
+# Finite - Variable length ...
+com.cobber.fta.plugins.LogicalTypeGender
+com.cobber.fta.plugins.LogicalTypeCountry
+
+# Finite - Fixed length ...
+com.cobber.fta.plugins.LogicalTypeMonthAbbr
+com.cobber.fta.plugins.LogicalTypeCAProvince
+com.cobber.fta.plugins.LogicalTypeUSState
+com.cobber.fta.plugins.LogicalTypeISO4217
+com.cobber.fta.plugins.LogicalTypeISO3166_3
+com.cobber.fta.plugins.LogicalTypeISO3166_2
