@@ -9,17 +9,16 @@ import java.util.Set;
 import com.cobber.fta.LogicalTypeFinite;
 
 public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
-	private static Set<String> members;
+	private static Set<String> members = new HashSet<String>();
+
+	static {
+		final String[] shortMonths = new DateFormatSymbols().getShortMonths();
+		for (int i = 0; i < 12; i++)
+			members.add(shortMonths[i].toUpperCase(Locale.ROOT));
+	}
 
 	@Override
 	public boolean initialize() {
-		members = new HashSet<String>();	
-
-		// Setup the Monthly abbreviations
-		final String[] shortMonths = new DateFormatSymbols().getShortMonths();
-		for (int i = 0; i < 12; i++) {
-			members.add(shortMonths[i].toUpperCase(Locale.ROOT));
-		}
 
 		super.initialize();
 

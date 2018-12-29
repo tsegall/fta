@@ -1717,11 +1717,16 @@ public class TextAnalyzer {
 				String newPattern;
 				if (matchPatternInfo.typeQualifier.equals(logical.getQualifier()) &&
 						(newPattern = logical.shouldBackout(matchCount, realSamples, cardinality, outliers)) != null) {
-					if (PatternInfo.Type.STRING.equals(logical.getBaseType()))
+					if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
 						backoutToPattern(realSamples, newPattern);
-					else if (PatternInfo.Type.LONG.equals(logical.getBaseType()))
+						confidence = (double) matchCount / realSamples;
+						break;
+					}
+					else if (PatternInfo.Type.LONG.equals(logical.getBaseType())) {
 						backoutLogicalLongType(logical, realSamples);
-					confidence = (double) matchCount / realSamples;
+						confidence = (double) matchCount / realSamples;
+						break;
+					}
 				}
 			}
 

@@ -2,6 +2,7 @@
 com.cobber.fta.plugins.LogicalTypeURL
 com.cobber.fta.plugins.LogicalTypeEmail
 com.cobber.fta.plugins.LogicalTypeUSZip5
+com.cobber.fta.plugins.LogicalTypeAddress
 
 # Finite - Variable length ...
 com.cobber.fta.plugins.LogicalTypeGender

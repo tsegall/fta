@@ -7,14 +7,15 @@ import java.util.Set;
 import com.cobber.fta.LogicalTypeFinite;
 
 public class LogicalTypeGender extends LogicalTypeFinite {
-	private static Set<String> members;
+	private static Set<String> members = new HashSet<String>();
+
+	static {
+		members.add("FEMALE");
+		members.add("MALE");
+	}
 
 	@Override
 	public boolean initialize() {
-		members = new HashSet<String>();	
-		members.add("FEMALE");
-		members.add("MALE");
-
 		super.initialize();
 
 		threshold = 95;

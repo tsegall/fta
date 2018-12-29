@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
@@ -2231,18 +2232,18 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getConfidence(), 0.96875);
 	}
 
+	final String validZips = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
+			"06045|06233|06431|06704|06910|07101|07510|07764|08006|08205|08534|08829|10044|10260|10549|10965|11239|11501|11743|11976|" +
+			"12138|12260|12503|12746|12878|13040|13166|13418|13641|13801|14068|14276|14548|14731|14865|15077|15261|15430|15613|15741|" +
+			"15951|16210|16410|16662|17053|17247|17516|17765|17951|18109|18428|18702|18957|19095|19339|19489|19808|20043|20170|20370|" +
+			"20540|20687|20827|21047|21236|21779|22030|22209|22526|22741|23016|23162|23310|23503|23868|24038|24210|24430|24594|24856|" +
+			"25030|25186|25389|25638|25841|26059|26524|26525|26763|27199|27395|27587|27832|27954|28119|28280|28397|28543|28668|28774|" +
+			"29111|29329|29475|29622|29744|30016|30119|30235|30343|30503|30643|31002|31141|31518|31724|31901|32134|32297|32454|32617|" +
+			"32780|32934|33093|33265|33448|33603|33763|33907|34138|34470|34731|35053|35221|35491|35752|36022|36460|36616|36860|37087|";
 	@Test
 	public void basicZip() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
-				"06045|06233|06431|06704|06910|07101|07510|07764|08006|08205|08534|08829|10044|10260|10549|10965|11239|11501|11743|11976|" +
-				"12138|12260|12503|12746|12878|13040|13166|13418|13641|13801|14068|14276|14548|14731|14865|15077|15261|15430|15613|15741|" +
-				"15951|16210|16410|16662|17053|17247|17516|17765|17951|18109|18428|18702|18957|19095|19339|19489|19808|20043|20170|20370|" +
-				"20540|20687|20827|21047|21236|21779|22030|22209|22526|22741|23016|23162|23310|23503|23868|24038|24210|24430|24594|24856|" +
-				"25030|25186|25389|25638|25841|26059|26524|26525|26763|27199|27395|27587|27832|27954|28119|28280|28397|28543|28668|28774|" +
-				"29111|29329|29475|29622|29744|30016|30119|30235|30343|30503|30643|31002|31141|31518|31724|31901|32134|32297|32454|32617|" +
-				"32780|32934|33093|33265|33448|33603|33763|33907|34138|34470|34731|35053|35221|35491|35752|36022|36460|36616|36860|37087|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = validZips.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2720,32 +2721,37 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMaxValue(), "A99998");
 	}
 
+	final String validUSStates = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
+			"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|" +
+			"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|" +
+			"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|" +
+			"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|" +
+			"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|";
 	@Test
 	public void basicStates() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		final String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
-				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|XX|" +
-				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|XX|" +
-				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|XX|" +
-				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|XX|" +
-				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|XX|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = validUSStates.split("\\|");
 		int locked = -1;
 
+		analysis.train("XX");
+		analysis.train("XX");
 		for (int i = 0; i < inputs.length; i++) {
 			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
+				locked = i + 2;
 		}
+		analysis.train("XX");
+		analysis.train("XX");
+		analysis.train("XX");
 
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "US_STATE");
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + 5);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - 5);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getConfidence(), 0.9618320610687023);
@@ -2862,15 +2868,15 @@ public class AnalysisResultTests {
 		}
 	}
 
+	final String validCAProvinces = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+			"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+			"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+			"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+			"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|";
 	@Test
 	public void basicCA() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
-				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
-				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
-				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
-				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = validCAProvinces.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -3270,7 +3276,7 @@ public class AnalysisResultTests {
 	@Test
 	public void variableSpacesFixedLength() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("variableSpacesFixedLength");
-		final String input = "JMD     |JOD     |JPYP    |KESQ    |KGS     |KHR     |" + 
+		final String input = "JMD     |JOD     |JPYP    |KESQ    |KGS     |KHR     |" +
 				" AXN    | AOAZ   | B1D    | BIFD   | BSD    | BZD    | CZE    | CHF    |" +
 				"  MzR   |  NIO   |  P2N   |  PLN   |  RWF   |  SDG   |  SHP   |  SLL   |" +
 				"   SVQ  |   SYP  |   S33Z |   THB  |   TOP  |   TZS  |   UYE  |   VND  |" +
@@ -3341,15 +3347,15 @@ public class AnalysisResultTests {
 		}
 	}
 
+	final String valid3166_3 = "ALA|ARM|BEL|BIH|BWA|BVT|BRA|IOT|BRN|BGR|BFA|" +
+			"BDI|CPV|CYM|COG|DJI|ETH|GMB|GTM|HUN|JAM|KGZ|" +
+			"LIE|LTU|LUX|MAC|MKD|MDG|MWI|MYS|MDV|MLI|MRT|" +
+			"MAR|NER|PAN|REU|VCT|SXM|SDN|TLS|TKM|TCA|TUV|" +
+			"UGA|UKR|ARE|GBR|UMI|USA|URY|VNM|";
 	@Test
 	public void basicISO3166_3() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("3166 Alpha-3");
-		final String input = "ALA|ARM|BEL|BIH|BWA|BVT|BRA|IOT|BRN|BGR|BFA|" +
-				"BDI|CPV|CYM|COG|DJI|ETH|GMB|GTM|HUN|JAM|KGZ|" +
-				"LIE|LTU|LUX|MAC|MKD|MDG|MWI|MYS|MDV|MLI|MRT|" +
-				"MAR|NER|PAN|REU|VCT|SXM|SDN|TLS|TKM|TCA|TUV|" +
-				"UGA|UKR|ARE|GBR|UMI|USA|URY|VNM|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = valid3166_3.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -3377,16 +3383,16 @@ public class AnalysisResultTests {
 		}
 	}
 
+	final String valid3166_2 =  "AL|AW|BZ|BW|BV|BR|IO|BN|BG|" +
+			"BF|BI|CV|KH|CF|CK|DM|FK|GE|" +
+			"GG|IS|JP|LA|LT|LU|MO|MK|MG|" +
+			"MW|MY|MV|ML|MT|MU|MZ|NG|PG|" +
+			"RO|WS|SK|SR|TG|TC|TV|UG|UA|" +
+			"AE|GB|UM|US|UY|UZ|VG|";
 	@Test
 	public void basicISO3166_2() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("3166 Alpha-2");
-		final String input =  "AL|AW|BZ|BW|BV|BR|IO|BN|BG|" +
-				"BF|BI|CV|KH|CF|CK|DM|FK|GE|" +
-				"GG|IS|JP|LA|LT|LU|MO|MK|MG|" +
-				"MW|MY|MV|ML|MT|MU|MZ|NG|PG|" +
-				"RO|WS|SK|SR|TG|TC|TV|UG|UA|" +
-				"AE|GB|UM|US|UY|UZ|VG|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = valid3166_2.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -4132,6 +4138,92 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMaxValue(), String.valueOf(iterations - 1));
 	}
 
+	String validUSStreets[] = new String[] {
+			"9885 Princeton Court",
+			"11 San Pablo Rd.",
+			"365 3rd St.",
+			"426 Brewery Street",
+			"676 Thatcher St.",
+			"848 Hawthorne St.",
+			"788 West Coffee St.",
+			"240 Arnold Avenue",
+			"25 S. Hawthorne St.",
+			"9314 Rose Street",
+			"32 West Bellevue St.",
+			"8168 Thomas Road",
+			"353 Homewood Ave.",
+			"14 North Cambridge Street",
+			"30 Leeton Ridge Drive",
+			"8412 North Mulberry Dr.",
+			"7691 Beacon Street",
+			"187 Lake View Drive",
+			"318 Summerhouse Road",
+			"609 Taylor Ave.",
+			"47 Broad St.",
+			"525 Valley View St.",
+			"8 Greenview Ave.",
+			"86 North Helen St.",
+			"8763 Virginia Street",
+			"10 Front Avenue",
+			"141 Blue Spring Street",
+			"99 W. Airport Ave.",
+			"32 NW. Rocky River Ave.",
+			"324 North Lancaster Dr."
+	};
+
+	String validUSAddresses[] = new String[] {
+			"9885 Princeton Court Shakopee, MN 55379",
+			"11 San Pablo Rd.  Nottingham, MD 21236",
+			"365 3rd St.  Woodhaven, NY 11421",
+			"426 Brewery Street Horn Lake, MS 38637",
+			"676 Thatcher St.  Hagerstown, MD 21740",
+			"848 Hawthorne St.  Rockaway, NJ 07866",
+			"788 West Coffee St.  Abingdon, MD 21009",
+			"240 Arnold Avenue Yorktown Heights, NY 10598",
+			"25 S. Hawthorne St.  Elizabeth City, NC 27909",
+			"9314 Rose Street Holyoke, MA 01040",
+			"32 West Bellevue St.  Holly Springs, NC 27540",
+			"8168 Thomas Road El Dorado, AR 71730",
+			"353 Homewood Ave.  Poughkeepsie, NY 12601",
+			"14 North Cambridge Street Anchorage, AK 99504",
+			"30 Leeton Ridge Drive Bristol, CT 06010",
+			"8412 North Mulberry Dr.  Tiffin, OH 44883",
+			"7691 Beacon Street Marysville, OH 43040",
+			"187 Lake View Drive Redford, MI 48239",
+			"318 Summerhouse Road Lenoir, NC 28645",
+			"609 Taylor Ave.  Fort Myers, FL 33905",
+			"47 Broad St.  Baldwin, NY 11510",
+			"525 Valley View St.  Natick, MA 01760",
+			"8 Greenview Ave.  Lithonia, GA 30038",
+			"86 North Helen St.  Clermont, FL 34711",
+			"8763 Virginia Street Hyattsville, MD 20782",
+			"10 Front Avenue Brookline, MA 02446",
+			"141 Blue Spring Street Ocoee, FL 34761",
+			"99 W. Airport Ave.  Eau Claire, WI 54701",
+			"32 NW. Rocky River Ave.  Raeford, NC 28376",
+			"324 North Lancaster Dr.  Wyoming, MI 49509"
+	};
+
+	@Test
+	public void basicUSStreet() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		for (String s : validUSStreets) {
+			analysis.train(s);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), validUSStreets.length);
+		Assert.assertEquals(result.getCardinality(), validUSStreets.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "ADDRESS_EN");
+		Assert.assertEquals(result.getRegExp(), ".+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
 	@Test
 	public void keyFieldLong() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
@@ -4373,6 +4465,137 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getMinValue(), "-101.0");
 		Assert.assertEquals(result.getMaxValue(), "119.0");
+	}
+
+	public String[] decoder = new String[] {
+			"Integer", "Boolean", "Long", "Double", "Date",
+			"ISO-3166-3", "ISO-3166-2", "ZIP", "US_STATE", "CA_PROVINCE",
+			"US_STREET"
+	};
+
+	public String[] generateTestData(int type, int length) {
+		final Random random = new Random(314159265);
+		String[] result = new String[length];
+		String[] candidatesISO3166_3 = valid3166_3.split("\\|");
+		String[] candidatesISO3166_2 = valid3166_2.split("\\|");
+		String[] candidatesZips = validZips.split("\\|");
+		String[] candidatesUSStates = validUSStates.split("\\|");
+		String[] candidatesCAProvinces = validCAProvinces.split("\\|");
+
+		for (int i = 0; i < length; i++)
+		switch (type) {
+		case 0:
+			// Integer
+			result[i] = String.valueOf(random.nextInt());
+			break;
+		case 1:
+			// Boolean
+			result[i] = String.valueOf(random.nextBoolean());
+			break;
+		case 2:
+			// Long
+			result[i] = String.valueOf(random.nextLong());
+			break;
+		case 3:
+			// Double
+			result[i] = String.valueOf(random.nextDouble());
+			break;
+		case 4:
+			// Date
+			Date d = new Date(random.nextLong());
+			result[i] = d.toString();
+			break;
+		case 5:
+			// ISO 3166-3
+			result[i] = candidatesISO3166_3[random.nextInt(candidatesISO3166_3.length)];
+			break;
+		case 6:
+			// ISO 3166-2
+			result[i] = candidatesISO3166_2[random.nextInt(candidatesISO3166_2.length)];
+			break;
+		case 7:
+			// Zip Cpde
+			result[i] = candidatesZips[random.nextInt(candidatesZips.length)];
+			break;
+		case 8:
+			// US State
+			result[i] = candidatesUSStates[random.nextInt(candidatesUSStates.length)];
+			break;
+		case 9:
+			// CA Provinces
+			result[i] = candidatesCAProvinces[random.nextInt(candidatesCAProvinces.length)];
+			break;
+		case 10:
+			// US Street
+			result[i] = validUSStreets[random.nextInt(validUSStreets.length)];
+			break;
+		}
+
+		return result;
+	}
+
+	class AnalysisThread implements Runnable {
+		private String id;
+		private int streamType;
+		private String[] stream;
+		private TextAnalysisResult answer;
+		private TextAnalyzer analysis;
+
+		AnalysisThread(String id, int streamType, String[] stream, TextAnalysisResult answer) throws IOException {
+			this.id = id;
+			this.streamType = streamType;
+			this.stream = stream;
+			this.answer = answer;
+			analysis = new TextAnalyzer();
+//			System.out.printf("Thread %s: created, Stream: type: %s, length: %d\n",
+//					this.id, decoder[this.streamType], this.stream.length);
+		}
+
+		@Override
+		public void run() {
+			long start = System.currentTimeMillis();
+			for (int i = 0; i < stream.length; i++)
+				analysis.train(stream[i]);
+
+			final TextAnalysisResult result = analysis.getResult();
+
+			Assert.assertEquals(result.getSampleCount(), answer.getSampleCount());
+			Assert.assertEquals(result.getNullCount(), answer.getNullCount());
+			Assert.assertEquals(result.getBlankCount(), answer.getBlankCount());
+			Assert.assertEquals(result.getRegExp(), answer.getRegExp());
+			Assert.assertEquals(result.getConfidence(), answer.getConfidence());
+			Assert.assertEquals(result.getType(), answer.getType());
+			Assert.assertEquals(result.getMinValue(), answer.getMinValue());
+			Assert.assertEquals(result.getMaxValue(), answer.getMaxValue());
+
+//			System.out.printf("Thread %s: exiting, duration %d\n", id, System.currentTimeMillis() - start);
+		}
+	}
+
+	@Test
+	public void testThreading() throws IOException, InterruptedException {
+		final Random random = new Random(271828);
+		final int THREADS = 1000;
+		Thread[] threads = new Thread[THREADS];
+
+		for (int t = 0; t < THREADS; t++) {
+			int type = random.nextInt(decoder.length);
+			int length = 30 + random.nextInt(10000);
+			String[] stream = generateTestData(type, length);
+
+			TextAnalyzer analysis = new TextAnalyzer();
+			for (int i = 0; i < stream.length; i++)
+				analysis.train(stream[i]);
+
+			threads[t] = new Thread(new AnalysisThread(String.valueOf(t), type, stream, analysis.getResult()));
+		}
+
+		for (int t = 0; t < THREADS; t++)
+			threads[t].start();
+
+		for (int t = 0; t < THREADS; t++)
+			if (threads[t].isAlive())
+				threads[t].join();
 	}
 
 	//@Test
