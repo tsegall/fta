@@ -89,8 +89,8 @@ public class DateTimeParserResult {
 	}
 
 	enum Token {
-		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DIGITS_1_OR_2, MONTHS_1_OR_2, MONTHS_2,
-		HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, SECS_2, FRACTION,
+		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DAY_OF_WEEK, DAY_OF_WEEK_ABBR, DIGITS_1_OR_2, MONTHS_1_OR_2,
+		MONTHS_2, HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, SECS_2, FRACTION,
 		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET, AMPM
 	}
 
@@ -324,6 +324,21 @@ public class DateTimeParserResult {
 		for (int i = 0; i < formatLength; i++) {
 			final char ch = formatString.charAt(i);
 			switch (ch) {
+			case 'E':
+				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'E') {
+					i++;
+					if (i + 1 < formatLength && formatString.charAt(i + 1) == 'E') {
+						i++;
+						if (i + 1 < formatLength && formatString.charAt(i + 1) == 'E') {
+							i++;
+							ret.add(new FormatterToken(Token.DAY_OF_WEEK));
+						}
+						else
+							ret.add(new FormatterToken(Token.DAY_OF_WEEK_ABBR));
+					}
+				}
+				break;
+
 			case 'M':
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'M') {
 					i++;
@@ -472,10 +487,18 @@ public class DateTimeParserResult {
 
 			char inputChar;
 			int value = 0;
+			int start;
 
 			switch (nextToken) {
+			case DAY_OF_WEEK:
+			case DAY_OF_WEEK_ABBR:
+				start = upto;
+				while (upto < inputLength && Character.isAlphabetic(input.charAt(upto)))
+					upto++;
+				break;
+
 			case MONTH:
-				final int start = upto;
+				start = upto;
 				while (upto < inputLength && Character.isAlphabetic(input.charAt(upto)))
 					upto++;
 				final String month = input.substring(start, upto);
@@ -598,10 +621,12 @@ public class DateTimeParserResult {
 				break;
 
 			case TIMEZONE:
-				final String currentTimeZone = input.substring(upto, inputLength);
+				start = upto;
+				while (upto < inputLength && input.charAt(upto) != ' ')
+					upto++;
+				final String currentTimeZone = input.substring(start, upto);
 				if (!DateTimeParser.timeZones.contains(currentTimeZone))
 					throw new DateTimeParseException("Expecting time zone - bad time zone: " + currentTimeZone, input, upto);
-				upto = inputLength;
 				break;
 
 			case TIMEZONE_OFFSET:
@@ -707,8 +732,10 @@ public class DateTimeParserResult {
 		int digitsMax = 0;
 
 		for (final FormatterToken token : tokenize()) {
-			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.MONTH || token.getType() == Token.MONTH_ABBR ||
-					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE || token.getType() == Token.TIMEZONE_OFFSET) {
+			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.MONTH ||
+					token.getType() == Token.MONTH_ABBR || token.getType() == Token.DAY_OF_WEEK_ABBR ||
+					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE ||
+					token.getType() == Token.TIMEZONE_OFFSET) {
 				if (digitsMin != 0) {
 					ret.append(digitsRegExp(digitsMin, digitsMax));
 					digitsMin = digitsMax = 0;
@@ -723,6 +750,10 @@ public class DateTimeParserResult {
 
 				case MONTH:
 					ret.append(DateTimeParser.monthPattern);
+					break;
+
+				case DAY_OF_WEEK_ABBR:
+					ret.append(TextAnalyzer.PATTERN_ALPHA_3);
 					break;
 
 				case MONTH_ABBR:

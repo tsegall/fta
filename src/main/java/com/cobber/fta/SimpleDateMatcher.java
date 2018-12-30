@@ -83,6 +83,8 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleDateMatcher("d{2}/a{3}/d{2} d:d{2} P", "dd/MMM/yy h:mm a", new int[] {0, 2, 3, 3, 7, 2}));
 		matchers.add(new SimpleDateMatcher("d{2}/a{3}/d{2} d{2}:d{2} P", "dd/MMM/yy hh:mm a", new int[] {0, 2, 3, 3, 7, 2}));
 
+		matchers.add(new SimpleDateMatcher("a{3} a{3} d{2} d{2}:d{2}:d{2} a{3} d{4}", "EEE MMM dd HH:mm:ss z yyyy", new int[] {8, 2, 4, 3, 24, 4}));
+
 		for (SimpleDateMatcher sdm : matchers) {
 			knownMatchers.put(sdm.getMatcher(), sdm);
 		}

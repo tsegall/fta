@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -1693,6 +1694,30 @@ public class DetermineDateTimeFormatTests {
 
 		Assert.assertTrue(result.isValid8("1-Jan-14"));
 		Assert.assertTrue(result.isValid8("10-Jan-14"));
+	}
+
+	@Test
+	public void javaSimple() {
+		final DateTimeParser det = new DateTimeParser();
+		long millis = System.currentTimeMillis();
+		Date d = new Date();
+		Set<String> samples = new HashSet<String>();
+
+		for (int i = 0; i < 100; i++) {
+			d = new Date(millis);
+			samples.add(d.toString());
+			det.train(d.toString());
+			millis -= 186400000;
+		}
+
+		final DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss z yyyy");
+
+		final String regExp = result.getRegExp();
+		Assert.assertEquals(regExp, "\\p{Alpha}{3} \\p{Alpha}{3} \\d{2} \\d{2}:\\d{2}:\\d{2} .* \\d{4}");
+		Assert.assertTrue(d.toString().matches(regExp));
+		Assert.assertTrue(result.isValid8(d.toString()));
+		Assert.assertTrue(result.isValid(d.toString()));
 	}
 
 	@Test

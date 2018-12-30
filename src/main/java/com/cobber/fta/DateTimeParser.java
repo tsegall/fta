@@ -169,7 +169,7 @@ public class DateTimeParser {
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
-	 * @return A DateTimeParserResult with the analysis of any training completed.
+	 * @return A DateTimeParserResult with the analysis of any training completed, or null if no answer.
 	 */
 	public DateTimeParserResult getResult() {
 		// If we have no good samples, call it a day

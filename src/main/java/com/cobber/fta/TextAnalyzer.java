@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormatSymbols;
@@ -41,17 +40,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
-import com.cobber.fta.plugins.LogicalTypeCAProvince;
-import com.cobber.fta.plugins.LogicalTypeCountry;
-import com.cobber.fta.plugins.LogicalTypeEmail;
-import com.cobber.fta.plugins.LogicalTypeGender;
-import com.cobber.fta.plugins.LogicalTypeISO3166_2;
-import com.cobber.fta.plugins.LogicalTypeISO3166_3;
-import com.cobber.fta.plugins.LogicalTypeISO4217;
-import com.cobber.fta.plugins.LogicalTypeMonthAbbr;
-import com.cobber.fta.plugins.LogicalTypeURL;
-import com.cobber.fta.plugins.LogicalTypeUSState;
-import com.cobber.fta.plugins.LogicalTypeUSZip5;
 
 /**
  * Analyze Text data to determine type information and other key metrics
@@ -868,7 +856,7 @@ public class TextAnalyzer {
 
 		if (length == 0) {
 			blankCount++;
-			trackLength(rawInput);
+			trackLengthAndShape(rawInput);
 			return matchType != null;
 		}
 
@@ -937,7 +925,6 @@ public class TextAnalyzer {
 		final StringBuilder compressedl0 = new StringBuilder(length);
 		if (alphasSeen != 0 && digitsSeen != 0 && alphasSeen + digitsSeen == length) {
 			compressedl0.append(PATTERN_ALPHANUMERIC).append('{').append(String.valueOf(length)).append('}');
-
 		} else if ("true".equalsIgnoreCase(input) || "false".equalsIgnoreCase(input)) {
 			compressedl0.append(PATTERN_BOOLEAN);
 		} else if ("yes".equalsIgnoreCase(input) || "no".equalsIgnoreCase(input)) {
@@ -1210,12 +1197,45 @@ public class TextAnalyzer {
 			cardinality.put(input, seen + 1);
 	}
 
+	private String shapeToRegExp(final String shape) {
+
+		if (shape.equals(".+"))
+			return null;
+
+		StringBuilder result = new StringBuilder();
+		final String shapeWithSentinel = shape.toString() + "|";
+		char last = shapeWithSentinel.charAt(0);
+		int repetitions = 1;
+		for (int i = 1; i < shapeWithSentinel.length(); i++) {
+			final char ch = shapeWithSentinel.charAt(i);
+			if (ch == last) {
+				repetitions++;
+			} else {
+				if (last == '1' || last == 'a') {
+					result.append(last == '1' ? "\\d" : PATTERN_ALPHA);
+					result.append('{').append(String.valueOf(repetitions)).append('}');
+				} else {
+					for (int j = 0; j < repetitions; j++) {
+						if (last == '+' || last == '.' || last == '*' || last == '(' || last == ')' ||
+								last == '{' || last == '}' || last == '[' || last == ']' || last == '^' || last == '$')
+							result.append('\\');
+						result.append(last);
+					}
+				}
+				last = ch;
+				repetitions = 1;
+			}
+		}
+
+		return result.toString();
+	}
+
 	private String compress(final String input) {
 		StringBuilder b = new StringBuilder();
 
 		int len = input.length();
 		if (len > 30)
-			return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ...";
+			return ".+";
 		for (int i = 0; i < len; i++) {
 			char ch = input.charAt(i);
 			if (Character.isDigit(ch))
@@ -1360,19 +1380,18 @@ public class TextAnalyzer {
 		cardinality.putAll(outliers);
 
 		// Need to update stats to reflect any outliers we previously ignored
-		if (matchPatternInfo.type.equals(PatternInfo.Type.STRING))
-			for (final String key : outliers.keySet()) {
-				if (minString == null || minString.compareTo(minOutlierString) > 0)
-					minString = minOutlierString;
+		if (matchPatternInfo.type.equals(PatternInfo.Type.STRING)) {
+			if (minString == null || minString.compareTo(minOutlierString) > 0)
+				minString = minOutlierString;
 
-				if (maxString == null || maxString.compareTo(maxOutlierString) < 0)
-					maxString = maxOutlierString;
+			if (maxString == null || maxString.compareTo(maxOutlierString) < 0)
+				maxString = maxOutlierString;
 
-				if (minTrimmedLength > minTrimmedOutlierLength)
-					minTrimmedLength = minTrimmedOutlierLength;
-				if (maxTrimmedOutlierLength > maxTrimmedLength)
-					maxTrimmedLength = maxTrimmedOutlierLength;
-			}
+			if (minTrimmedLength > minTrimmedOutlierLength)
+				minTrimmedLength = minTrimmedOutlierLength;
+			if (maxTrimmedOutlierLength > maxTrimmedLength)
+				maxTrimmedLength = maxTrimmedOutlierLength;
+		}
 		else if (matchPatternInfo.type.equals(PatternInfo.Type.DOUBLE)) {
 			minDouble = minLong;
 			maxDouble = maxLong;
@@ -1421,7 +1440,9 @@ public class TextAnalyzer {
 			backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
 	}
 
-	private void trackLength(final String input) {
+	private boolean uniformShape = true;
+	private String shape = null;
+	private void trackLengthAndShape(final String input) {
 		// We always want to track basic facts for the field
 		final int length = input.length();
 
@@ -1429,6 +1450,14 @@ public class TextAnalyzer {
 			minRawLength = length;
 		if (length > maxRawLength)
 			maxRawLength = length;
+
+		if (uniformShape) {
+			String inputShape = compress(input);
+			if (shape == null)
+				shape = inputShape;
+			else if (!shape.contentEquals(inputShape))
+				uniformShape = false;
+		}
 	}
 
 	private void trackTrimmedLengthAndWhiteSpace(final String input) {
@@ -1467,7 +1496,7 @@ public class TextAnalyzer {
 	 */
 	private void trackResult(final String input) {
 
-		trackLength(input);
+		trackLengthAndShape(input);
 
 		// If the cache is full and we have not determined a type compute one
 		if ((matchPatternInfo == null || matchPatternInfo.type == null) && sampleCount - (nullCount + blankCount) > samples)
@@ -1647,7 +1676,7 @@ public class TextAnalyzer {
 	 * @param logical The Logical type we are testing
 	 * @return True if we believe that this data set is defined by the provided by this Logical Type
 	 */
-	private boolean checkVariableLengthSet(Map<String, Integer> cardinalityUpper, LogicalTypeFinite logical) { 
+	private boolean checkVariableLengthSet(Map<String, Integer> cardinalityUpper, LogicalTypeFinite logical) {
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 		long validCount = 0;
@@ -1862,7 +1891,11 @@ public class TextAnalyzer {
 
 			// Qualify random string with a min and max length
 			if (PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
-				String newPattern = PATTERN_ANY + Utils.lengthQualifier(minTrimmedLength, maxTrimmedLength);
+				String newPattern = null;
+				if (uniformShape && cardinality.size() > 1)
+					newPattern = shapeToRegExp(shape);
+				if (newPattern == null)
+					newPattern = PATTERN_ANY + Utils.lengthQualifier(minTrimmedLength, maxTrimmedLength);
 				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minRawLength, maxRawLength, null,
 						null);
 			}

@@ -4073,6 +4073,190 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void possibleSSN() throws IOException {
+		final Random random = new Random(314159265);
+		String[] samples = new String[1000];
+
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < samples.length; i++) {
+			b.setLength(0);
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append('-');
+			b.append(String.format("%02d", random.nextInt(100)));
+			b.append('-');
+			b.append(String.format("%04d", random.nextInt(10000)));
+			samples[i] = b.toString();
+		}
+
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void USPhone() throws IOException {
+		final Random random = new Random(314159265);
+		String[] samples = new String[1000];
+
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < samples.length; i++) {
+			b.setLength(0);
+			b.append("+1 ");
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append(' ');
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append(' ');
+			b.append(String.format("%04d", random.nextInt(10000)));
+			samples[i] = b.toString();
+		}
+
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\+\\d{1} \\d{3} \\d{3} \\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void USPhone2() throws IOException {
+		final Random random = new Random(314159265);
+		String[] samples = new String[1000];
+
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < samples.length; i++) {
+			b.setLength(0);
+			b.append("1.");
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append('.');
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append('.');
+			b.append(String.format("%04d", random.nextInt(10000)));
+			samples[i] = b.toString();
+		}
+
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\d{1}\\.\\d{3}\\.\\d{3}\\.\\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void USPhone3() throws IOException {
+		final Random random = new Random(314159265);
+		String[] samples = new String[1000];
+
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < samples.length; i++) {
+			b.setLength(0);
+			b.append("(");
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append(") ");
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append(' ');
+			b.append(String.format("%04d", random.nextInt(10000)));
+			samples[i] = b.toString();
+		}
+
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\(\\d{3}\\) \\d{3} \\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void difficultRegExp() throws IOException {
+		final Random random = new Random(314159265);
+		String[] samples = new String[1000];
+
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < samples.length; i++) {
+			b.setLength(0);
+			b.append("[");
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append("){[0-9] ^");
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append('$');
+			b.append(String.format("%04d", random.nextInt(10000)));
+			samples[i] = b.toString();
+		}
+
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\[\\d{3}\\)\\{\\[\\d{1}-\\d{1}\\] \\^\\d{3}\\$\\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void bumpMaxCardinality() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
@@ -4575,7 +4759,7 @@ public class AnalysisResultTests {
 	@Test
 	public void testThreading() throws IOException, InterruptedException {
 		final Random random = new Random(271828);
-		final int THREADS = 1000;
+		final int THREADS = 100;
 		Thread[] threads = new Thread[THREADS];
 
 		for (int t = 0; t < THREADS; t++) {
