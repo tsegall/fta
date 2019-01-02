@@ -88,11 +88,11 @@ uploadArchives {
 
 dependencies {
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-csv
-	compile group: 'org.apache.commons', name: 'commons-csv', version: '1.5'
+	compile group: 'org.apache.commons', name: 'commons-csv', version: '1.6'
 	// https://mvnrepository.com/artifact/org.testng/testng
-	compile group: 'org.testng', name: 'testng', version: '6.14.2'
+	compile group: 'org.testng', name: 'testng', version: '6.14.3'
 	// https://mvnrepository.com/artifact/javax.mail/mail
-	compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.1'
+	compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
 }
 
 distributions {

@@ -154,10 +154,15 @@ class FileProcessor {
 				records = r.getRecords();
 
 				long thisRecord = -1;
+				TextAnalysisResult[] results = null;
 				for (final CSVRecord record : records) {
 					thisRecord = record.getRecordNumber();
 					if (thisRecord == 1) {
 						numFields = record.size();
+						results = new TextAnalysisResult[numFields];
+						for (int i = 0; i < numFields; i++)
+							if (options.col == -1 || options.col == i)
+								results[i] = analysis[i].getResult();
 					}
 					else {
 						if (record.size() != numFields) {
@@ -165,7 +170,7 @@ class FileProcessor {
 						}
 						for (int i = 0; i < numFields; i++) {
 							if (options.col == -1 || options.col == i) {
-								if (record.get(i).matches(analysis[i].getResult().getRegExp()))
+								if (record.get(i).matches(results[i].getRegExp()))
 									matched[i]++;
 							}
 						}
