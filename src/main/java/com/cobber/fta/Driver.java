@@ -19,6 +19,7 @@ package com.cobber.fta;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Locale;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
@@ -48,6 +49,7 @@ class Driver {
 				logger.println(" --col <n> - Only analyze column <n>");
 				logger.println(" --dayFirst - If dates are ambigous assume Day precedes Month");
 				logger.println(" --delimiter - Delimiter to use - must be a single character");
+				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				logger.println(" --maxCardinality <n> - Set the Maximum Cardinality size");
 				logger.println(" --monthFirst - If dates are ambigous assume Month precedes Day");
 				logger.println(" --records <n> - The number of records to analyze");
@@ -56,6 +58,8 @@ class Driver {
 				logger.println(" --verbose - Output each record as it is processed");
 				System.exit(0);
 			}
+			else if ("--locale".equals(args[idx]))
+				options.locale = new Locale(args[++idx]);
 			else if ("--maxCardinality".equals(args[idx]))
 				options.maxCardinality = Integer.valueOf(args[++idx]);
 			else if ("--monthFirst".equals(args[idx]))

@@ -124,6 +124,8 @@ class FileProcessor {
 							analysis[i].setSampleSize(options.sampleSize);
 						if (options.maxCardinality != -1)
 							analysis[i].setMaxCardinality(options.maxCardinality);
+						if (options.locale != null)
+							analysis[i].setLocale(options.locale);
 					}
 				}
 				else {

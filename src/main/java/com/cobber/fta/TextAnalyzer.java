@@ -23,6 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -84,6 +86,8 @@ public class TextAnalyzer {
 	/** Threshold for detection - by default this is set to 95%. */
 	private int threshold = 95;
 
+	private Locale locale = Locale.getDefault();
+
 	/** The default value for the maximum Cardinality tracked. */
 	public static final int MAX_CARDINALITY_DEFAULT = 500;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
@@ -101,6 +105,7 @@ public class TextAnalyzer {
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 	private char decimalSeparator;
 	private char monetaryDecimalSeparator;
+	private NumberFormat numberFormatter;
 	private char groupingSeparator;
 	private char minusSign;
 	private long sampleCount;
@@ -168,6 +173,7 @@ public class TextAnalyzer {
 
 	private int possibleDateTime;
 	private long totalLeadingZeros;
+	private long groupingSeparators;
 
 	private static Map<String, PatternInfo> patternInfo;
 	private static Map<String, PatternInfo> typeInfo;
@@ -287,11 +293,6 @@ public class TextAnalyzer {
 	public TextAnalyzer(final String name, final DateResolutionMode resolutionMode) throws IOException {
 		this.dataStreamName = name;
 		this.resolutionMode = resolutionMode;
-		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
-		decimalSeparator = formatSymbols.getDecimalSeparator();
-		monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
-		groupingSeparator = formatSymbols.getGroupingSeparator();
-		minusSign = formatSymbols.getMinusSign();
 	}
 
 	/**
@@ -429,7 +430,6 @@ public class TextAnalyzer {
 		return threshold;
 	}
 
-
 	/**
 	 * The percentage when we declare success 0 - 100 for Logical Type plugins.
 	 * Typically this should not be adjusted, if you want to run in Strict mode then set this to 100.
@@ -453,6 +453,17 @@ public class TextAnalyzer {
 	 */
 	public int getPluginThreshold() {
 		return pluginThreshold;
+	}
+
+	/**
+	 * Override the default Locale.
+	 * @param locale The new Locale used to determine separators in numbers, default plugins, etc.
+	 */
+	public void setLocale(Locale locale) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot adjust Locale once training has started");
+
+		this.locale = locale;
 	}
 
     /**
@@ -572,10 +583,17 @@ public class TextAnalyzer {
 
 		long l;
 
+		// Interpret the String as a long, first attempt uses parseLong which is fast, if that fails, then try
+		// using a NumberFormatter which will cope with grouping separators (e.g. 1,000).
 		try {
 			l = Long.parseLong(input);
 		} catch (NumberFormatException e) {
-			return false;
+			ParsePosition pos = new ParsePosition(0);
+			Number n = numberFormatter.parse(input, pos);
+			if (n == null || input.length() != pos.getIndex())
+				return false;
+			l = n.longValue();
+			groupingSeparators++;
 		}
 
 		if (register) {
@@ -809,6 +827,7 @@ public class TextAnalyzer {
 			levels[2] = new ArrayList<StringBuilder>(samples);
 
 			if (logicalTypeDetection) {
+				// Load the default set of plugins for Logical Type detection
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.txt")))){
 					String line = null;
 
@@ -837,6 +856,14 @@ public class TextAnalyzer {
 				for (LogicalType logical : finiteTypes)
 					logical.setThreshold(pluginThreshold);
 			}
+
+			numberFormatter = NumberFormat.getIntegerInstance(locale);
+
+			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+			decimalSeparator = formatSymbols.getDecimalSeparator();
+			monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
+			groupingSeparator = formatSymbols.getGroupingSeparator();
+			minusSign = formatSymbols.getMinusSign();
 
 			trainingStarted = true;
 		}
@@ -873,6 +900,7 @@ public class TextAnalyzer {
 		// Walk the string
 		boolean numericSigned = false;
 		int numericDecimalSeparators = 0;
+		int numericGroupingSeparators = 0;
 		boolean couldBeNumeric = true;
 		int possibleExponentSeen = -1;
 		int digitsSeen = 0;
@@ -899,6 +927,7 @@ public class TextAnalyzer {
 				numericDecimalSeparators++;
 			} else if (ch == groupingSeparator) {
 				l0.append('G');
+				numericGroupingSeparators++;
 			} else if (Character.isAlphabetic(ch)) {
 				l0.append('a');
 				alphasSeen++;
@@ -930,8 +959,10 @@ public class TextAnalyzer {
 		} else if ("yes".equalsIgnoreCase(input) || "no".equalsIgnoreCase(input)) {
 			compressedl0.append(PATTERN_YESNO);
 		} else {
+			String l0withSentinel = l0.toString() + "|";
 			// Walk the new level0 to create the new level1
-			final String l0withSentinel = l0.toString() + "|";
+			if (couldBeNumeric && numericGroupingSeparators > 0)
+				l0withSentinel = l0withSentinel.replace("G", "");
 			char last = l0withSentinel.charAt(0);
 			int repetitions = 1;
 			for (int i = 1; i < l0withSentinel.length(); i++) {
@@ -1759,17 +1790,17 @@ public class TextAnalyzer {
 				}
 			}
 
-		if (PATTERN_LONG.equals(matchPatternInfo.regexp)) {
-			if (matchPatternInfo.typeQualifier == null && minLong < 0)
+		if (PATTERN_LONG.equals(matchPatternInfo.regexp) || PATTERN_SIGNED_LONG.equals(matchPatternInfo.regexp)) {
+			if (PATTERN_LONG.equals(matchPatternInfo.regexp) && matchPatternInfo.typeQualifier == null && minLong < 0)
 				matchPatternInfo = patternInfo.get(PATTERN_SIGNED_LONG);
 
-			if (minLong > 19000101 && maxLong < 20400101 &&
+			if (groupingSeparators == 0 && minLong > 19000101 && maxLong < 20400101 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
 				matchPatternInfo = new PatternInfo("\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", 8, 8, null, "yyyyMMdd");
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern(matchPatternInfo.format);
 				minLocalDate = LocalDate.parse(String.valueOf(minLong), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
-			} else if (minLong > 1800 && maxLong < 2030 &&
+			} else if (groupingSeparators == 0 && minLong > 1800 && maxLong < 2030 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("year") || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
 				matchPatternInfo = new PatternInfo("\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLong, 1, 1);
@@ -1780,9 +1811,22 @@ public class TextAnalyzer {
 				maxBoolean = "1";
 				matchPatternInfo = patternInfo.get("[0|1]");
 			} else {
-				String newPattern = matchPatternInfo.typeQualifier != null ? "-?\\d" : "\\d";
+				String newPattern = "";
+				String updatedTypeQualifier = matchPatternInfo.typeQualifier;
+				boolean signed = "SIGNED".equals(updatedTypeQualifier);
+				if (signed)
+					newPattern += "-?";
+				if (groupingSeparators != 0) {
+					if (signed)
+						updatedTypeQualifier += ",GROUPING";
+					else
+						updatedTypeQualifier = "GROUPING";
+					newPattern += "[0-9" + groupingSeparator + "]";
+				}
+				else
+					newPattern += "\\d";
 				newPattern += Utils.lengthQualifier(minTrimmedLength, maxTrimmedLength);
-				matchPatternInfo = new PatternInfo(newPattern, matchPatternInfo.type, matchPatternInfo.typeQualifier, -1, -1, null, null);
+				matchPatternInfo = new PatternInfo(newPattern, matchPatternInfo.type, updatedTypeQualifier, -1, -1, null, null);
 
 				if (realSamples >= reflectionSamples && confidence < threshold/100.0) {
 					// We thought it was an integer field, but on reflection it does not feel like it

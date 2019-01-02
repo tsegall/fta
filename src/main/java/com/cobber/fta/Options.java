@@ -15,6 +15,8 @@
  */
 package com.cobber.fta;
 
+import java.util.Locale;
+
 import org.apache.commons.csv.CSVFormat;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
@@ -25,6 +27,7 @@ class Options {
 	boolean noStatistics = false;
 	long recordsToAnalyze = -1;
 	int sampleSize = -1;
+	Locale locale = null;
 	int maxCardinality = -1;
 	boolean verbose = false;
 	String charset = "UTF-8";

@@ -17,12 +17,15 @@ package com.cobber.fta;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -199,7 +202,7 @@ public class AnalysisResultTests {
 	@Test
 	public void variableLengthInteger() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String[] inputs = "-10000|-1000|-100|-10|-3|-2|-1|0|1|2|3|10|100|1000|10000|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15".split("\\|");
+		final String[] inputs = "-100000|-1000|-100|-10|-3|-2|-1|100|200|300|400|500|600|1000|10000|601|602|6033|604|605|606|607|608|609|610|911|912|913|914|915".split("\\|");
 
 		int locked = -1;
 
@@ -213,11 +216,11 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "-?\\d+");
+		Assert.assertEquals(result.getRegExp(), "-?\\d{1,6}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
-		Assert.assertEquals(result.getMinValue(), "-10000");
+		Assert.assertEquals(result.getMinValue(), "-100000");
 		Assert.assertEquals(result.getMaxValue(), "10000");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2666,6 +2669,218 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getLeadingZeroCount(), 59);
 		Assert.assertEquals(result.getRegExp(), "\\d{9}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void groupingSeparator() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		final String input = "3600|7500|3600|3600|800|3600|1200|1200|600|" +
+				"1200|1200|1200|1200|3600|1200|13,000|1200|200|" +
+				"1200|1200|1200|1200|1200|1200|1200|1200|200|" +
+				"1200|3600|1200|1200|1200|1200|1200|1200|200|" +
+				"1200|1200|1200|1200|1200|1200|1200|1200|200|" +
+				"1200|3600|1200|1200|1200|1200|3600|1200|600|" +
+				"1200|1200|1200|1200|3600|1200|13,000|1200|200|" +
+				"1200|1200|1200|1200|1200|1200|1200|1200|200|" +
+				"1200|1200|1200|1200|3600|1200|1200|1200|200|" +
+				"3600|1200|1200|1200|1200|1200|1200|1200|200|" +
+				"1200|1200|1200|3600|3600|1200|1200|1200|200|";
+
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "[0-9,]{3,6}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMinValue(), "200");
+		Assert.assertEquals(result.getMaxValue(), "13000");
+
+		String regExp = result.getRegExp();
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(regExp), inputs[i]);
+		}
+	}
+
+	@Test
+	public void groupingSeparatorLarge() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		final Random random = new Random();
+		final int SAMPLE_SIZE = 100;
+		long min = Long.MAX_VALUE;
+		long max = Long.MIN_VALUE;
+		String minValue = String.valueOf(min);
+		String maxValue = String.valueOf(max);
+		Set<String> samples = new HashSet<String>();
+
+		for (int i = 0; i < SAMPLE_SIZE; i++) {
+			long l = random.nextInt(100000000);
+			String sample = NumberFormat.getNumberInstance(Locale.US).format(l).toString();
+			if (l < min) {
+				min = l;
+				minValue = sample;
+			}
+			if ( l > max) {
+				max = l;
+				maxValue = sample;
+			}
+			samples.add(sample);
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getMinValue(), String.valueOf(min));
+		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
+		String regExp = "[0-9,]{";
+		if (minValue.length() == maxValue.length())
+			regExp += minValue.length();
+		else {
+			regExp += minValue.length() + "," + maxValue.length();
+		}
+		regExp += "}";
+		Assert.assertEquals(result.getRegExp(), regExp);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(regExp), sample);
+		}
+	}
+
+	@Test
+	public void groupingSeparatorLargeFRENCH() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		analysis.setLocale(Locale.FRENCH);
+		final Random random = new Random();
+		final int SAMPLE_SIZE = 100;
+		long min = Long.MAX_VALUE;
+		long max = Long.MIN_VALUE;
+		String minValue = String.valueOf(min);
+		String maxValue = String.valueOf(max);
+		Set<String> samples = new HashSet<String>();
+
+		for (int i = 0; i < SAMPLE_SIZE; i++) {
+			long l = random.nextInt(100000000);
+			String sample = NumberFormat.getNumberInstance(Locale.FRENCH).format(l).toString();
+			if (l < min) {
+				min = l;
+				minValue = sample;
+			}
+			if ( l > max) {
+				max = l;
+				maxValue = sample;
+			}
+			samples.add(sample);
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getMinValue(), String.valueOf(min));
+		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
+		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.FRENCH);
+
+		String regExp = "[0-9" + formatSymbols.getGroupingSeparator() + "]{";
+		if (minValue.length() == maxValue.length())
+			regExp += minValue.length();
+		else {
+			regExp += minValue.length() + "," + maxValue.length();
+		}
+		regExp += "}";
+		Assert.assertEquals(result.getRegExp(), regExp);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(regExp), sample);
+		}
+	}
+
+	@Test
+	public void groupingSeparatorSigned() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		final Random random = new Random(21456);
+		final int SAMPLE_SIZE = 100;
+		long min = Long.MAX_VALUE;
+		long max = Long.MIN_VALUE;
+		long absMin = Long.MAX_VALUE;
+		long absMax = 0;
+		String minValue = String.valueOf(Long.MAX_VALUE);
+		String maxValue = "0";
+		Set<String> samples = new HashSet<String>();
+
+		for (int i = 0; i < SAMPLE_SIZE; i++) {
+			long l = random.nextInt(100000000);
+			if (random.nextBoolean())
+				l *= -1;
+			if (l < min) {
+				min = l;
+			}
+			if (l > max) {
+				max = l;
+			}
+			String sample = NumberFormat.getNumberInstance(Locale.US).format(l).toString();
+			long pos = Math.abs(l);
+			if (pos < absMin) {
+				absMin = pos;
+				minValue = NumberFormat.getNumberInstance(Locale.US).format(pos).toString();
+			}
+			if (pos > absMax) {
+				absMax = pos;
+				maxValue = NumberFormat.getNumberInstance(Locale.US).format(pos).toString();
+			}
+			samples.add(sample);
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getMinValue(), String.valueOf(min));
+		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
+		String regExp = "-?[0-9,]{";
+		if (minValue.length() == maxValue.length())
+			regExp += minValue.length();
+		else {
+			regExp += minValue.length() + "," + maxValue.length();
+		}
+		regExp += "}";
+		Assert.assertEquals(result.getRegExp(), regExp);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(regExp), sample);
+		}
+
 	}
 
 	@Test
