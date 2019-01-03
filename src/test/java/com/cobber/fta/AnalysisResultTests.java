@@ -187,7 +187,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{1,10}");
 		Assert.assertEquals(result.getMatchCount(), inputs.length * ITERATIONS);
-		Assert.assertEquals(result.getConfidence(), 0.9917355371900827);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getMinValue(), "A");
 		Assert.assertEquals(result.getMaxValue(), "Z");
@@ -363,6 +363,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
+		// This record is bad 'O' not '0'
 		analysis.train("02/O2/99");
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -371,7 +372,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), records + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{2}");
-		Assert.assertEquals(result.getConfidence(), 0.9900990099009901);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy");
@@ -706,7 +707,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*\\p{Alpha}{2}\\p{javaWhitespace}*");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.get("SA"), Integer.valueOf(1));
-		Assert.assertEquals(result.getConfidence(), 0.9920634920634921);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
@@ -737,7 +738,7 @@ public class AnalysisResultTests {
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		int outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
-		Assert.assertEquals(result.getConfidence(), 0.9666666666666667);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
@@ -769,7 +770,7 @@ public class AnalysisResultTests {
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		int outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
-		Assert.assertEquals(result.getConfidence(), 0.85);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)outlierCount/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
@@ -1717,7 +1718,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getRegExp(), "\\d{1}");
-		Assert.assertEquals(result.getConfidence(), 0.9642857142857143);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getCardinality(), 2);
 		final Map<String, Integer> details = result.getCardinalityDetails();
@@ -1922,7 +1923,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMaxLength(), 9);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{Alnum}{9}");
-		Assert.assertEquals(result.getConfidence(), 0.9933333333333333);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		int matchCount = 0;
 		for (int i = 0; i < inputs.length; i++) {
@@ -2006,7 +2007,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getRegExp(), "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}");
-		Assert.assertEquals(result.getConfidence(), 0.9534883720930233);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)2/(result.getSampleCount() - result.getNullCount()));
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -2042,7 +2043,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMatchCount(), inputs.length + 1 - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getRegExp(), "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
-		Assert.assertEquals(result.getConfidence(), 0.9565217391304348);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "URL");
 
@@ -2232,7 +2233,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}");
-		Assert.assertEquals(result.getConfidence(), 0.96875);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}
 
 	final String validZips = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
@@ -2341,7 +2342,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 20);
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
-		Assert.assertEquals(result.getConfidence(), 0.998805256869773);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		int matches = 0;
 		for (int i = 0; i < inputs.length; i++) {
@@ -2906,7 +2907,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
 		Assert.assertEquals(result.getMatchCount(), end - start);
-		Assert.assertEquals(result.getConfidence(), 0.9999888888888889);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}
 
 	@Test
@@ -2969,7 +2970,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
-		Assert.assertEquals(result.getConfidence(), 0.9618320610687023);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)5/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -3004,7 +3005,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 5);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
-		Assert.assertEquals(result.getConfidence(), 0.9618320610687023);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)5/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {
 			if (!"-".equals(inputs[i]))
@@ -3196,10 +3197,13 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getTypeQualifier(), "COUNTRY_EN");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 1);
+		int outlierCount = outliers.get("GONDWANALAND");
+		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), ".+");
-		Assert.assertEquals(result.getConfidence(), 0.9960159362549801);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}
 
 	// Set of valid months + 4 x "UNK"
@@ -3227,7 +3231,7 @@ public class AnalysisResultTests {
 				locked = i;
 		}
 
-		final TextAnalysisResult result = analysis.getResult();
+		TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
@@ -3240,28 +3244,27 @@ public class AnalysisResultTests {
 		Assert.assertEquals(outliers.get("UNK"), Integer.valueOf(4));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 0.978021978021978);
-
-		/* BUG cannot train once we have determined a logical type
+		Assert.assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
+		Assert.assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
+/*
 		analysis.train("Another bad element");
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getPattern(), "[MONTHABBR]");
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");
+		Assert.assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
+		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 1);
-		Assert.assertEquals(result.getOutlierCount(), 4);
+		Assert.assertEquals(result.getOutlierCount(), 0);
 		Map<String, Integer> updatedOutliers = result.getOutlierDetails();
-		Assert.assertEquals(updatedOutliers.size(), 4);
-		Assert.assertEquals(updatedOutliers.get("Bogus"), new Integer(1));
-		Assert.assertEquals(updatedOutliers.get("NA"), new Integer(2));
-		Assert.assertEquals(updatedOutliers.get("Bad"), new Integer(1));
-		Assert.assertEquals(updatedOutliers.get("Another bad element"), new Integer(1));
+		Assert.assertEquals(updatedOutliers.size(), 2);
+		Assert.assertEquals(updatedOutliers.get("UNK"), Integer.valueOf(4));
+		Assert.assertEquals(updatedOutliers.get("Another bad element"), Integer.valueOf(1));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-	*/
+		Assert.assertEquals(result.getConfidence(), 1 - (double)(badCount + 1)/result.getSampleCount());
+		*/
 	}
 
 	@Test
@@ -3328,7 +3331,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(1));
 		Assert.assertEquals(result.getMatchCount(), inputs.length + unknownCount);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 0.9948186528497409);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
@@ -3371,7 +3374,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(UNKNOWN));
 		Assert.assertEquals(result.getMatchCount(), inputs.length * iters);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 0.9615384615384616);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)UNKNOWN/result.getSampleCount());
 	}
 
 	@Test
@@ -3481,7 +3484,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMinLength(), 9);
 		Assert.assertEquals(result.getMaxLength(), 9);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 0.9666666666666667);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		for (String sample : samples) {
 			Assert.assertTrue(sample.matches(result.getRegExp()));
@@ -4686,7 +4689,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertTrue(result.isKey());
-		Assert.assertEquals(result.getConfidence(), 0.9925558312655087);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)15/result.getSampleCount());
 		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=Alphabet, matchCount=2000, sampleCount=2015, nullCount=0, blankCount=0, regexp=\"\\d{5}\", confidence=0.9925558312655087, type=Long, min=\"10000\", max=\"11999\", minLength=1, maxLength=5, sum=\"21999000\", cardinality=MAX, outliers=12 {\"A\":1 \"B\":1 \"C\":1 \"D\":1 \"E\":1 \"F\":1 \"G\":1 \"H\":1 \"I\":1 \"J\":1 ...}, PossibleKey]");
 	}
 
@@ -4860,7 +4863,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "-?\\d+|-?(\\d+)?\\.\\d+");
-		Assert.assertEquals(result.getConfidence(), 0.95);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getMinValue(), "-101.0");
 		Assert.assertEquals(result.getMaxValue(), "119.0");

@@ -35,11 +35,9 @@ import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
@@ -179,7 +177,7 @@ public class TextAnalyzer {
 	private static Map<String, PatternInfo> typeInfo;
 	private static Map<String, String> promotion;
 
-	private Set<String> registered = new HashSet<String>();
+	private Map<String, LogicalType> registered = new HashMap<String, LogicalType>();
 	private ArrayList<LogicalTypeInfinite> infiniteTypes = new ArrayList<LogicalTypeInfinite>();
 	private int[] candidateCounts;
 	private ArrayList<LogicalTypeFinite> finiteTypes = new ArrayList<LogicalTypeFinite>();
@@ -318,10 +316,10 @@ public class TextAnalyzer {
 			if (!(object instanceof LogicalType))
 				throw new IllegalArgumentException("Logical type: " + className + " does not appear to be a Logical Type.");
 
-			if (registered.contains(object.getQualifier()))
+			if (registered.containsKey(object.getQualifier()))
 				throw new IllegalArgumentException("Logical type: " + object.getQualifier() + " already registered.");
 
-			registered.add(object.getQualifier());
+			registered.put(object.getQualifier(), object);
 
 			if (object instanceof LogicalTypeInfinite)
 				infiniteTypes.add((LogicalTypeInfinite)object);
@@ -619,10 +617,9 @@ public class TextAnalyzer {
 
 		if (patternInfo.typeQualifier != null) {
 			// If it is a registered Infinite Logical Type then validate it
-			for (LogicalType logical : infiniteTypes) {
-				if (PatternInfo.Type.LONG.equals(logical.getBaseType()) && logical.getQualifier().equals(patternInfo.typeQualifier))
-					return logical.isValid(input);
-			}
+			LogicalType logical = registered.get(patternInfo.typeQualifier);
+			if (logical != null && PatternInfo.Type.LONG.equals(logical.getBaseType()))
+				return logical.isValid(input);
 		}
 
 		return true;
@@ -658,13 +655,9 @@ public class TextAnalyzer {
 		}
 		else {
 			// If it is a registered Infinite Logical Type then validate it
-			for (LogicalType logical : infiniteTypes) {
-				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && logical.getQualifier().equals(patternInfo.typeQualifier)) {
-					if (!logical.isValid(input))
-						return false;
-					break;
-				}
-			}
+			LogicalType logical = registered.get(patternInfo.typeQualifier);
+			if (logical != null && PatternInfo.Type.STRING.equals(logical.getBaseType()) && !logical.isValid(input))
+				return false;
 		}
 
 		return updateStats(cleaned);
@@ -712,13 +705,9 @@ public class TextAnalyzer {
 
 		if (patternInfo.typeQualifier != null) {
 			// If it is a registered Infinite Logical Type then validate it
-			for (LogicalType logical : infiniteTypes) {
-				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && logical.getQualifier().equals(patternInfo.typeQualifier)) {
-					if (!logical.isValid(input))
-						return false;
-					break;
-				}
-			}
+			LogicalType logical = registered.get(patternInfo.typeQualifier);
+			if (logical != null && PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && !logical.isValid(input))
+				return false;
 		}
 
 		// If it is NaN/Infinity then we are all done
@@ -1187,7 +1176,7 @@ public class TextAnalyzer {
 						formatString);
 			}
 
-			// If it is a registered Infinite Logical Type then validate it
+			// Check to see if it might be one of our known Infinite Logical Types
 			int i = 0;
 			for (LogicalTypeInfinite logical : infiniteTypes) {
 				if (candidateCounts[i] == raw.size()) {
@@ -1207,6 +1196,7 @@ public class TextAnalyzer {
 								count++;
 						}
 					}
+
 					// If a reasonable number look genuine then we are convinced
 					if (count >= logical.getThreshold()/100.0 * raw.size())
 						matchPatternInfo = candidate;
@@ -1617,7 +1607,8 @@ public class TextAnalyzer {
 			if (outliers.size() == maxOutliers) {
 				if (matchPatternInfo.typeQualifier != null) {
 					// Do we need to back out from any of our Infinite type determinations
-					for (LogicalType logical : infiniteTypes) {
+					LogicalType logical = registered.get(matchPatternInfo.typeQualifier);
+					if (logical != null) {
 						if (logical.getQualifier().equals(matchPatternInfo.typeQualifier) && "US_ZIP5".equals(matchPatternInfo.typeQualifier))
 							backoutLogicalLongType(logical, realSamples);
 						else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
@@ -1747,6 +1738,7 @@ public class TextAnalyzer {
 		String minValue = null;
 		String maxValue = null;
 		String sum = null;
+		PatternInfo save = matchPatternInfo;
 
 		// If we have not already determined the type, now we need to
 		if (matchPatternInfo == null || matchPatternInfo.type == null)
@@ -1771,24 +1763,23 @@ public class TextAnalyzer {
 			confidence = (double) matchCount / realSamples;
 		}
 
-		// Do we need to back out from any of our Infinite type determinations
-		if (matchPatternInfo.typeQualifier != null)
-			for (LogicalType logical : infiniteTypes) {
-				String newPattern;
-				if (matchPatternInfo.typeQualifier.equals(logical.getQualifier()) &&
-						(newPattern = logical.shouldBackout(matchCount, realSamples, cardinality, outliers)) != null) {
-					if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
-						backoutToPattern(realSamples, newPattern);
-						confidence = (double) matchCount / realSamples;
-						break;
-					}
-					else if (PatternInfo.Type.LONG.equals(logical.getBaseType())) {
-						backoutLogicalLongType(logical, realSamples);
-						confidence = (double) matchCount / realSamples;
-						break;
-					}
+		// Do we need to back out from any of our Logical type determinations.  Most of the time this backs out of
+		// Infinite type determinations (since we have not yet declared it to be a Finite type).  However it is possible
+		// that this is a subsequent call to getResult()!!
+		if (matchPatternInfo.typeQualifier != null) {
+			LogicalType logical = registered.get(matchPatternInfo.typeQualifier);
+			String newPattern;
+			if (logical != null && (newPattern = logical.shouldBackout(matchCount, realSamples, cardinality, outliers)) != null) {
+				if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
+					backoutToPattern(realSamples, newPattern);
+					confidence = (double) matchCount / realSamples;
+				}
+				else if (PatternInfo.Type.LONG.equals(logical.getBaseType())) {
+					backoutLogicalLongType(logical, realSamples);
+					confidence = (double) matchCount / realSamples;
 				}
 			}
+		}
 
 		if (PATTERN_LONG.equals(matchPatternInfo.regexp) || PATTERN_SIGNED_LONG.equals(matchPatternInfo.regexp)) {
 			if (PATTERN_LONG.equals(matchPatternInfo.regexp) && matchPatternInfo.typeQualifier == null && minLong < 0)
@@ -2041,9 +2032,14 @@ public class TextAnalyzer {
 				}
 			}
 		}
-		return new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace, trailingWhiteSpace, sampleCount,
+
+		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace, trailingWhiteSpace, sampleCount,
 				nullCount, blankCount, totalLeadingZeros, confidence, minValue, maxValue, minRawLength, maxRawLength, sum,
 				cardinality, outliers, key);
+
+		matchPatternInfo = save;
+
+		return result;
 	}
 
 	/**
