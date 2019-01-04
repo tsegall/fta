@@ -103,7 +103,8 @@ public class TextAnalyzer {
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 	private char decimalSeparator;
 	private char monetaryDecimalSeparator;
-	private NumberFormat numberFormatter;
+	private NumberFormat longFormatter;
+	private NumberFormat doubleFormatter;
 	private char groupingSeparator;
 	private char minusSign;
 	private long sampleCount;
@@ -588,7 +589,7 @@ public class TextAnalyzer {
 			l = Long.parseLong(input);
 		} catch (NumberFormatException e) {
 			ParsePosition pos = new ParsePosition(0);
-			Number n = numberFormatter.parse(input, pos);
+			Number n = longFormatter.parse(input, pos);
 			if (n == null || input.length() != pos.getIndex())
 				return false;
 			l = n.longValue();
@@ -690,7 +691,10 @@ public class TextAnalyzer {
 		try {
 			Double.parseDouble(input.trim());
 		} catch (NumberFormatException e) {
-			return false;
+			ParsePosition pos = new ParsePosition(0);
+			Number n = doubleFormatter.parse(input, pos);
+			if (n == null || input.length() != pos.getIndex())
+				return false;
 		}
 		return true;
 	}
@@ -701,7 +705,11 @@ public class TextAnalyzer {
 		try {
 			d = Double.parseDouble(input.trim());
 		} catch (NumberFormatException e) {
-			return false;
+			ParsePosition pos = new ParsePosition(0);
+			Number n = doubleFormatter.parse(input, pos);
+			if (n == null || input.length() != pos.getIndex())
+				return false;
+			d = n.doubleValue();
 		}
 
 		if (patternInfo.typeQualifier != null) {
@@ -850,7 +858,8 @@ public class TextAnalyzer {
 					logical.setThreshold(pluginThreshold);
 			}
 
-			numberFormatter = NumberFormat.getIntegerInstance(locale);
+			longFormatter = NumberFormat.getIntegerInstance(locale);
+			doubleFormatter = NumberFormat.getInstance(locale);
 
 			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 			decimalSeparator = formatSymbols.getDecimalSeparator();
@@ -1154,7 +1163,8 @@ public class TextAnalyzer {
 			// - we have different keys but same type (signed vs. not-signed)
 			// - we have different keys, two numeric types and an improvement of at least 5%
 			// - we have different keys, different types and an improvement of at least 10%
-			if (level2 != null && (matchPatternInfo == null
+			if (level2 != null &&
+					((matchPatternInfo == null && level2patternInfo != null)
 					|| (best.getKey().equals(level2pattern) && level2value > best.getValue())
 					|| (!best.getKey().equals(level2pattern) && level2patternInfo != null
 							&& matchPatternInfo.type.equals(level2patternInfo.type)
@@ -1162,9 +1172,9 @@ public class TextAnalyzer {
 					|| (!best.getKey().equals(level2pattern) && level2patternInfo != null
 							&& matchPatternInfo.isNumeric()
 							&& level2patternInfo.isNumeric()
-							&& level2.getValue() >= best.getValue() + samples / 20)
+							&& (double)level2.getValue() >= 1.05 * best.getValue())
 					|| (!best.getKey().equals(level2pattern)
-							&& level2.getValue() >= best.getValue() + samples / 10))) {
+							&& (double)level2.getValue() >= 1.10 * best.getValue()))) {
 				best = level2;
 				matchPatternInfo = level2patternInfo;
 			}
@@ -1954,8 +1964,8 @@ public class TextAnalyzer {
 			break;
 
 		case DOUBLE:
-			minValue = String.valueOf(minDouble);
-			maxValue = String.valueOf(maxDouble);
+			minValue = doubleFormatter.format(minDouble);
+			maxValue = doubleFormatter.format(maxDouble);
 			sum = sumBD.toString();
 			break;
 

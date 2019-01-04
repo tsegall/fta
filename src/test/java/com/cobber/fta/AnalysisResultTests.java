@@ -2586,8 +2586,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getLeadingZeroCount(), 218);
 		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getMinValue(), "0.0");
-		Assert.assertEquals(result.getMaxValue(), "3.0");
+		Assert.assertEquals(result.getMinValue(), "0");
+		Assert.assertEquals(result.getMaxValue(), "3");
 
 		String regExp = result.getRegExp();
 		for (int i = 0; i < inputs.length; i++) {
@@ -2820,6 +2820,98 @@ public class AnalysisResultTests {
 		for (String sample : samples) {
 			Assert.assertTrue(sample.matches(regExp), sample);
 		}
+	}
+
+	@Test
+	public void monetaryDecimalSeparatorDefault() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		//analysis.setLocale(Locale.FRENCH);
+		final Random random = new Random();
+		final int SAMPLE_SIZE = 100;
+		double min = Double.MAX_VALUE;
+		double max = Double.MIN_VALUE;
+		String minValue = String.valueOf(min);
+		String maxValue = String.valueOf(max);
+		Set<String> samples = new HashSet<String>();
+
+		for (int i = 0; i < SAMPLE_SIZE; i++) {
+			double d = random.nextDouble();
+			String sample = NumberFormat.getNumberInstance().format(d).toString();
+			if (d < min) {
+				min = d;
+				minValue = sample;
+			}
+			if (d > max) {
+				max = d;
+				maxValue = sample;
+			}
+			samples.add(sample);
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getMinValue(), minValue);
+		Assert.assertEquals(result.getMaxValue(), maxValue);
+		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(TextAnalyzer.PATTERN_DOUBLE), sample);
+		}
+	}
+
+	@Test
+	public void monetaryDecimalSeparatorFrench() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		analysis.setLocale(Locale.FRENCH);
+		final Random random = new Random();
+		final int SAMPLE_SIZE = 100;
+		double min = Double.MAX_VALUE;
+		double max = Double.MIN_VALUE;
+		String minValue = String.valueOf(min);
+		String maxValue = String.valueOf(max);
+		Set<String> samples = new HashSet<String>();
+
+		for (int i = 0; i < SAMPLE_SIZE; i++) {
+			double d = random.nextDouble();
+			String sample = NumberFormat.getNumberInstance(Locale.FRENCH).format(d).toString();
+			if (d < min) {
+				min = d;
+				minValue = sample;
+			}
+			if (d > max) {
+				max = d;
+				maxValue = sample;
+			}
+			samples.add(sample);
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getMinValue(), minValue);
+		Assert.assertEquals(result.getMaxValue(), maxValue);
+		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		/*
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(TextAnalyzer.PATTERN_DOUBLE), sample);
+		}
+		*/
 	}
 
 	@Test
@@ -4866,8 +4958,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getRegExp(), "-?\\d+|-?(\\d+)?\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getMinValue(), "-101.0");
-		Assert.assertEquals(result.getMaxValue(), "119.0");
+		Assert.assertEquals(result.getMinValue(), "-101");
+		Assert.assertEquals(result.getMaxValue(), "119");
 	}
 
 	public String[] decoder = new String[] {
