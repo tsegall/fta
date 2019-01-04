@@ -2586,8 +2586,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getLeadingZeroCount(), 218);
 		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getMinValue(), "0");
-		Assert.assertEquals(result.getMaxValue(), "3");
+		Assert.assertEquals(result.getMinValue(), "0.0");
+		Assert.assertEquals(result.getMaxValue(), "3.0");
 
 		String regExp = result.getRegExp();
 		for (int i = 0; i < inputs.length; i++) {
@@ -2721,7 +2721,7 @@ public class AnalysisResultTests {
 	public void groupingSeparatorLarge() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Random random = new Random();
-		final int SAMPLE_SIZE = 100;
+		final int SAMPLE_SIZE = 10000;
 		long min = Long.MAX_VALUE;
 		long max = Long.MIN_VALUE;
 		String minValue = String.valueOf(min);
@@ -2773,7 +2773,7 @@ public class AnalysisResultTests {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		analysis.setLocale(Locale.FRENCH);
 		final Random random = new Random();
-		final int SAMPLE_SIZE = 100;
+		final int SAMPLE_SIZE = 10000;
 		long min = Long.MAX_VALUE;
 		long max = Long.MIN_VALUE;
 		String minValue = String.valueOf(min);
@@ -2825,18 +2825,19 @@ public class AnalysisResultTests {
 	@Test
 	public void monetaryDecimalSeparatorDefault() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
-		//analysis.setLocale(Locale.FRENCH);
 		final Random random = new Random();
-		final int SAMPLE_SIZE = 100;
+		final int SAMPLE_SIZE = 10000;
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
 		String minValue = String.valueOf(min);
 		String maxValue = String.valueOf(max);
 		Set<String> samples = new HashSet<String>();
 
+		NumberFormat nf = NumberFormat.getNumberInstance();
+		nf.setMinimumFractionDigits(1);
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			double d = random.nextDouble();
-			String sample = NumberFormat.getNumberInstance().format(d).toString();
+			String sample = nf.format(d).toString();
 			if (d < min) {
 				min = d;
 				minValue = sample;
@@ -2871,17 +2872,19 @@ public class AnalysisResultTests {
 	public void monetaryDecimalSeparatorFrench() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		analysis.setLocale(Locale.FRENCH);
-		final Random random = new Random();
-		final int SAMPLE_SIZE = 100;
+		final Random random = new Random(314159265);
+		final int SAMPLE_SIZE = 10000;
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
 		String minValue = String.valueOf(min);
 		String maxValue = String.valueOf(max);
 		Set<String> samples = new HashSet<String>();
 
+		NumberFormat nf = NumberFormat.getNumberInstance(Locale.FRENCH);
+		nf.setMinimumFractionDigits(1);
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			double d = random.nextDouble();
-			String sample = NumberFormat.getNumberInstance(Locale.FRENCH).format(d).toString();
+			String sample = nf.format(d).toString();
 			if (d < min) {
 				min = d;
 				minValue = sample;
@@ -4958,8 +4961,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getRegExp(), "-?\\d+|-?(\\d+)?\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getMinValue(), "-101");
-		Assert.assertEquals(result.getMaxValue(), "119");
+		Assert.assertEquals(result.getMinValue(), "-101.0");
+		Assert.assertEquals(result.getMaxValue(), "119.0");
 	}
 
 	public String[] decoder = new String[] {

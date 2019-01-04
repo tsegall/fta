@@ -10,7 +10,7 @@ mainClassName = "com.cobber.fta.Main"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "1.0.33"
+version = "1.0.34"
 
 repositories {
     mavenCentral()

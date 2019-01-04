@@ -593,7 +593,8 @@ public class TextAnalyzer {
 			if (n == null || input.length() != pos.getIndex())
 				return false;
 			l = n.longValue();
-			groupingSeparators++;
+			if (input.indexOf(groupingSeparator) != -1)
+				groupingSeparators++;
 		}
 
 		if (register) {
@@ -710,6 +711,8 @@ public class TextAnalyzer {
 			if (n == null || input.length() != pos.getIndex())
 				return false;
 			d = n.doubleValue();
+			if (input.indexOf(groupingSeparator) != -1)
+				groupingSeparators++;
 		}
 
 		if (patternInfo.typeQualifier != null) {
@@ -1842,6 +1845,16 @@ public class TextAnalyzer {
 		} else if (PATTERN_DOUBLE.equals(matchPatternInfo.regexp)) {
 			if (matchPatternInfo.typeQualifier == null && minDouble < 0.0)
 				matchPatternInfo = patternInfo.get(PATTERN_SIGNED_DOUBLE);
+
+			if (groupingSeparators > 0) {
+				String newQualifier = matchPatternInfo.typeQualifier;
+				if (newQualifier == null)
+					newQualifier = "GROUPING";
+				else
+					newQualifier += ",GROUPING";
+				matchPatternInfo = new PatternInfo(matchPatternInfo);
+				matchPatternInfo.typeQualifier = newQualifier;
+			}
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
 			final int length = determineLength(matchPatternInfo.regexp);
 			// We thought it was a fixed length string, but on reflection it does not feel like it
@@ -1964,8 +1977,13 @@ public class TextAnalyzer {
 			break;
 
 		case DOUBLE:
-			minValue = doubleFormatter.format(minDouble);
-			maxValue = doubleFormatter.format(maxDouble);
+			NumberFormat formatter = NumberFormat.getInstance(locale);
+			formatter.setMaximumFractionDigits(12);
+			formatter.setMinimumFractionDigits(1);
+			formatter.setGroupingUsed(false);
+
+			minValue = formatter.format(minDouble);
+			maxValue = formatter.format(maxDouble);
 			sum = sumBD.toString();
 			break;
 

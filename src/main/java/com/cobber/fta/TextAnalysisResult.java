@@ -117,8 +117,8 @@ public class TextAnalysisResult {
 	 * Get the optional Type Qualifier.  Possible qualifiers are:
 	 * <ul>
 	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "CA_PROVINCE", "COUNTRY", "EMAIL", "MONTHABBR", "ADDRESS", "NA_STATE", "NULL", "US_STATE", "URL", "ZIP"</li>
-	 *  <li>Type: LONG - "SIGNED"</li>
-	 * 	<li>Type: DOUBLE - "SIGNED"</li>
+	 *  <li>Type: LONG - "GROUPING", "SIGNED".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
+	 * 	<li>Type: DOUBLE - "GROUPING", "SIGNED".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
 	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - the detailed date format string</li>
 	 * </ul>
 	 * @return The Type Qualifier for the Type.
