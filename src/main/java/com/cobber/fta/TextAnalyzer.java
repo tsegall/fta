@@ -510,12 +510,13 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Set the maximum cardinality that will be tracked. Note: It is not
-	 * possible to change the cardinality once training has started.
+	 * Set the maximum cardinality that will be tracked.
+	 * Note:
+	 *  - The Cardinality must be larger than the Cardinality of the largest Finite Logical type.
+	 *  - It is not possible to change the cardinality once training has started.
 	 *
 	 * @param newCardinality
-	 *            The maximum Cardinality that will be tracked (0 implies no
-	 *            tracking)
+	 *            The maximum Cardinality that will be tracked (0 implies no tracking)
 	 * @return The previous value of this parameter.
 	 */
 	public int setMaxCardinality(final int newCardinality) {
@@ -835,8 +836,11 @@ public class TextAnalyzer {
 			// Run the initializers for the Logical Types
 			for (LogicalType logical : infiniteTypes)
 				logical.initialize();
-			for (LogicalType logical : finiteTypes)
+			for (LogicalTypeFinite logical : finiteTypes) {
 				logical.initialize();
+				if (logical.getSize() + 10 > getMaxCardinality())
+					throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
+			}
 
 			if (pluginThreshold != -1) {
 				// Set the threshold for all Logical Types
@@ -1652,7 +1656,7 @@ public class TextAnalyzer {
 		long misses = 0;					// count of number of groups that are misses
 		long missCount = 0;				// count of number of misses
 
-		// Sweep the current outliers and check they are part of the set
+		// Check how many outliers we have
 		for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
 			misses++;
 			missCount += entry.getValue();

@@ -1888,8 +1888,9 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void register() throws IOException {
+	public void testRegister() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
+		analysis.setMaxCardinality(20000);
 		Assert.assertTrue(analysis.registerLogicalType("com.cobber.fta.PluginCUSIP"));
 		final String input =
 				"75605A702|G39637955|029326105|63009R109|04269E957|666666666|00768Y727|23908L306|126349AF6|73937B589|" +
