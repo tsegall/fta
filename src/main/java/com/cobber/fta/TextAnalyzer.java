@@ -78,6 +78,9 @@ public class TextAnalyzer {
 	/** Should we enable Default Logical Type detection. */
 	private boolean logicalTypeDetection = true;
 
+	/** Should we attempt to qualifier the size of the returned RexExp. */
+	private boolean lengthQualifier = true;
+
 	/** Plugin Threshold for detection - by default this is unset and sensible defaults are used. */
 	private int pluginThreshold = -1;
 
@@ -569,6 +572,31 @@ public class TextAnalyzer {
 	 */
 	public int getMaxOutliers() {
 		return maxOutliers;
+	}
+
+	/**
+	 * Indicate whether we should qualify the size of the RegExp.
+	 * For example "\d{3,6}" vs. "\d+"
+	 * Note: This only impacts simple Numerics/Alphas/AlphaNumerics.
+	 *
+	 * @param newLengthQualifier The new value.
+
+	 * @return The previous value of this parameter.
+	 */
+	public boolean setLengthQualifier(final boolean newLengthQualifier) {
+
+		final boolean ret = this.lengthQualifier;
+		lengthQualifier = newLengthQualifier;
+		return ret;
+	}
+
+	/**
+	 * Indicates whether the size of the RegExp pattern is being defined.
+	 *
+	 * @return True if lengths are being qualified.
+	 */
+	public boolean getLengthQualifier() {
+		return lengthQualifier;
 	}
 
 	private boolean trackLong(final String rawInput, PatternInfo patternInfo, final boolean register) {
@@ -1745,6 +1773,18 @@ public class TextAnalyzer {
 		return true;
 	}
 
+	private String lengthQualifier(int min, int max) {
+		if (!lengthQualifier)
+			return min > 0 ? "+" : ".";
+
+		String ret = "{" + min;
+		if (min != max)
+			ret += "," + max;
+		ret += "}";
+
+		return ret;
+	}
+
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
@@ -1833,7 +1873,7 @@ public class TextAnalyzer {
 				}
 				else
 					newPattern += "\\d";
-				newPattern += Utils.lengthQualifier(minTrimmedLength, maxTrimmedLength);
+				newPattern += lengthQualifier(minTrimmedLength, maxTrimmedLength);
 				matchPatternInfo = new PatternInfo(newPattern, matchPatternInfo.type, updatedTypeQualifier, -1, -1, null, null);
 
 				if (realSamples >= reflectionSamples && confidence < threshold/100.0) {
@@ -1946,7 +1986,7 @@ public class TextAnalyzer {
 			// Qualify Alpha or Alnum with a min and max length
 			if ((PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
 				String newPattern = matchPatternInfo.regexp;
-				newPattern = newPattern.substring(0, newPattern.length() - 1) + Utils.lengthQualifier(minTrimmedLength, maxTrimmedLength);
+				newPattern = newPattern.substring(0, newPattern.length() - 1) + lengthQualifier(minTrimmedLength, maxTrimmedLength);
 				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minTrimmedLength, maxTrimmedLength, null,
 						null);
 			}
@@ -1957,7 +1997,7 @@ public class TextAnalyzer {
 				if (uniformShape && cardinality.size() > 1)
 					newPattern = shapeToRegExp(shape);
 				if (newPattern == null)
-					newPattern = PATTERN_ANY + Utils.lengthQualifier(minTrimmedLength, maxTrimmedLength);
+					newPattern = PATTERN_ANY + lengthQualifier(minTrimmedLength, maxTrimmedLength);
 				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minRawLength, maxRawLength, null,
 						null);
 			}

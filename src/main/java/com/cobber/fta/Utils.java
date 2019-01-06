@@ -27,13 +27,4 @@ public class Utils {
 		return map.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
-
-	public static String lengthQualifier(int min, int max) {
-		String ret = "{" + min;
-		if (min != max)
-			ret += "," + max;
-		ret += "}";
-
-		return ret;
-	}
 }

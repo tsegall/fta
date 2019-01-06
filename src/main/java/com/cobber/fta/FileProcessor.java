@@ -81,11 +81,11 @@ class FileProcessor {
 		}
 	}
 
-	final Options options;
+	final DriverOptions options;
 	private PrintStream logger;
 	private String filename;
 
-	FileProcessor(PrintStream logger, String filename, Options options) {
+	FileProcessor(PrintStream logger, String filename, DriverOptions options) {
 		this.logger = logger;
 		this.filename = filename;
 		this.options = options;

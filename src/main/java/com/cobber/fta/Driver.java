@@ -25,12 +25,12 @@ import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 class Driver {
 
-	static Options options;
+	static DriverOptions options;
 
 	public static void main(final String[] args) throws IOException {
 		final PrintStream logger = System.err;
 
-		options = new Options();
+		options = new DriverOptions();
 		int idx = 0;
 		while (idx < args.length && args[idx].charAt(0) == '-') {
 			if ("--charset".equals(args[idx]))

@@ -2775,6 +2775,7 @@ public class AnalysisResultTests {
 		final Random random = new Random();
 		final int SAMPLE_SIZE = 10000;
 		long min = Long.MAX_VALUE;
+		long absMin = Long.MAX_VALUE;
 		long max = Long.MIN_VALUE;
 		String minValue = String.valueOf(min);
 		String maxValue = String.valueOf(max);
@@ -2782,9 +2783,14 @@ public class AnalysisResultTests {
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			long l = random.nextInt(100000000);
+			if (l%10 == 0)
+				l = -l;
 			String sample = NumberFormat.getNumberInstance(Locale.FRENCH).format(l).toString();
 			if (l < min) {
 				min = l;
+			}
+			if (Math.abs(l) < absMin) {
+				absMin = Math.abs(l);
 				minValue = sample;
 			}
 			if ( l > max) {
@@ -2798,7 +2804,7 @@ public class AnalysisResultTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
 		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2807,7 +2813,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
 		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.FRENCH);
 
-		String regExp = "[0-9" + formatSymbols.getGroupingSeparator() + "]{";
+		String regExp = "-?[0-9" + formatSymbols.getGroupingSeparator() + "]{";
 		if (minValue.length() == maxValue.length())
 			regExp += minValue.length();
 		else {
@@ -2978,6 +2984,72 @@ public class AnalysisResultTests {
 			Assert.assertTrue(sample.matches(regExp), sample);
 		}
 
+	}
+
+	@Test
+	public void testQualifierNumeric() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Numeric");
+		analysis.setLengthQualifier(false);
+
+		final int start = 10000;
+		final int end = 99999;
+
+		int locked = -1;
+
+		for (int i = start; i < end; i++) {
+			if (analysis.train(String.valueOf(i)) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "\\d+");
+	}
+
+	@Test
+	public void testQualifierAlpha() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Alpha");
+		final Random random = new Random(21456);
+		final int STRING_LENGTH = 5;
+		analysis.setLengthQualifier(false);
+		String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+		final int start = 10000;
+		final int end = 99999;
+
+		int locked = -1;
+
+		for (int i = start; i < end; i++) {
+			StringBuilder sample = new StringBuilder(STRING_LENGTH);
+			for (int j = 0; j < STRING_LENGTH; j++)
+				sample.append(alphabet.charAt(random.nextInt(52)));
+			if (analysis.train(sample.toString()) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}+");
+	}
+
+	@Test
+	public void testQualifierAlphaNumeric() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("AlphaNumeric");
+		analysis.setLengthQualifier(false);
+
+		final int start = 10000;
+		final int end = 99999;
+
+		int locked = -1;
+
+		for (int i = start; i < end; i++) {
+			if (analysis.train('A' + String.valueOf(i)) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "\\p{Alnum}+");
 	}
 
 	@Test
@@ -4404,6 +4476,7 @@ public class AnalysisResultTests {
 
 
 		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLengthQualifier(false);
 		for (String sample : samples) {
 			analysis.train(sample);
 		}

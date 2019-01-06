@@ -21,7 +21,7 @@ import org.apache.commons.csv.CSVFormat;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
-class Options {
+class DriverOptions {
 	int col = -1;
 	DateResolutionMode resolutionMode = DateResolutionMode.None;
 	boolean noStatistics = false;
