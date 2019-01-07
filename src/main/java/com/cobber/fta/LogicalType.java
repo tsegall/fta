@@ -26,7 +26,7 @@ public abstract class LogicalType {
 
 	/**
 	 * The percentage when we declare success 0 - 100.
-	 * We use this percentage in the determination of the Logical Type.  When and how it is used varies based on the plugin. 
+	 * We use this percentage in the determination of the Logical Type.  When and how it is used varies based on the plugin.
 	 * @return The threshold percentage.
 	 */
 	public int getThreshold() {
@@ -35,7 +35,7 @@ public abstract class LogicalType {
 
 	/**
 	 * The percentage when we declare success 0 - 100.
-	 * We use this percentage in the determination of the Logical Type.  When and how it is used varies based on the plugin. 
+	 * We use this percentage in the determination of the Logical Type.  When and how it is used varies based on the plugin.
 	 * @param threshold the new threshold.
 	 */
 	public void setThreshold(int threshold) {
@@ -48,9 +48,9 @@ public abstract class LogicalType {
 	 */
 	public abstract PatternInfo.Type getBaseType();
 
-	/** 
+	/**
 	 * Is the supplied String an instance of this logical type?
-	 * @param input String to check
+	 * @param input String to check (trimmed for Numeric base Types, un-trimmed for String base Type)
 	 * @return true iff the supplied String is an instance of this Logical type.
 	 */
 	public abstract boolean isValid(String input);

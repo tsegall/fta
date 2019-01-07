@@ -20,7 +20,7 @@ package com.cobber.fta;
  * This is used to derive a Type from a pattern. For example, new
  * PatternInfo("(?i)true|false", null, "", "Boolean", null) indicates that a
  * case insensitive match for true or false indicates a boolean type
- * ("Boolean").
+ * ("BOOLEAN").
  */
 public class PatternInfo {
 
@@ -97,6 +97,7 @@ public class PatternInfo {
 	public String format;
 	public Type type;
 	public String typeQualifier;
+	public boolean isLogicalType;
 
 	/**
 	 * Construct a new information block for the supplied pattern.
@@ -107,6 +108,8 @@ public class PatternInfo {
 	 *            The type of the pattern.
 	 * @param typeQualifier
 	 *            The type qualifier of the pattern (optional).
+	 * @param isLogicalType
+	 *			  A boolean indicating if this is a Logical Type.
 	 * @param minLength
 	 *            The minimum length of this pattern (-1 implies undefined)
 	 * @param maxLength
@@ -116,11 +119,12 @@ public class PatternInfo {
 	 * @param format
 	 *            The Java format specified for a date pattern (optional).
 	 */
-	public PatternInfo(final String regexp, final Type type, final String typeQualifier, final int minLength,
-			final int maxLength, final String generalPattern, final String format) {
+	public PatternInfo(final String regexp, final Type type, final String typeQualifier, boolean isLogicalType,
+			final int minLength, final int maxLength, final String generalPattern, final String format) {
 		this.regexp = regexp;
 		this.type = type;
 		this.typeQualifier = typeQualifier;
+		this.isLogicalType = isLogicalType;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 		this.generalPattern = generalPattern;
@@ -153,5 +157,14 @@ public class PatternInfo {
 	 */
 	public boolean isAlphabetic() {
 		return this.regexp.startsWith(TextAnalyzer.PATTERN_ALPHA);
+	}
+
+	/**
+	 * Is this PatternInfo a Logical Type?
+	 *
+	 * @return A boolean indicating if this is a Logical Type.
+	 */
+	public boolean isLogicalType() {
+		return isLogicalType;
 	}
 }

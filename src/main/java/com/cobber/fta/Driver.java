@@ -19,6 +19,7 @@ package com.cobber.fta;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Locale;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
@@ -29,6 +30,7 @@ class Driver {
 
 	public static void main(final String[] args) throws IOException {
 		final PrintStream logger = System.err;
+		boolean helpRequested = false;
 
 		options = new DriverOptions();
 		int idx = 0;
@@ -56,7 +58,7 @@ class Driver {
 				logger.println(" --samples <n> - Set the size of the sample window");
 				logger.println(" --validate - Validate the result of the analysis by reprocessing file against results");
 				logger.println(" --verbose - Output each record as it is processed");
-				System.exit(0);
+				helpRequested = true;
 			}
 			else if ("--locale".equals(args[idx]))
 				options.locale = new Locale(args[++idx]);
@@ -79,6 +81,31 @@ class Driver {
 				System.exit(1);
 			}
 			idx++;
+		}
+
+		if (helpRequested) {
+			// Create a dummy Analyzer to retrieve the Logical Types
+			TextAnalyzer analysis = new TextAnalyzer("Dummy");
+			if (options.locale != null)
+				analysis.setLocale(options.locale);
+
+			// Need to start training to force registration of Logical Types
+			analysis.train("Hello");
+			Collection<LogicalType> registered = analysis.getRegisteredLogicalTypes();
+
+			if (registered.size() != 0) {
+				logger.println("\nRegistered Logical Types:");
+				for (LogicalType logical : registered) {
+					if (logical instanceof LogicalTypeFinite) {
+						LogicalTypeFinite finite = (LogicalTypeFinite)logical;
+						logger.printf("\t%s (Finite), Cardinality: %d, MaxLength: %d, MinLength: %d\n",
+								logical.getQualifier(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
+					}
+					else
+						logger.printf("\t%s (Infinite)\n", logical.getQualifier());
+				}
+			}
+			System.exit(0);
 		}
 
 		if (idx == args.length) {

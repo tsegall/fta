@@ -34,7 +34,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -212,7 +214,7 @@ public class TextAnalyzer {
 
 	private static void addPattern(final Map<String, PatternInfo> map, final boolean patternIsKey, final String regexp, final PatternInfo.Type type,
 			final String typeQualifier, final int minLength, final int maxLength, final String generalPattern, final String format) {
-		map.put(patternIsKey ? regexp : (type.toString() + "." + typeQualifier), new PatternInfo(regexp, type, typeQualifier, minLength, maxLength, generalPattern, format));
+		map.put(patternIsKey ? regexp : (type.toString() + "." + typeQualifier), new PatternInfo(regexp, type, typeQualifier, false, minLength, maxLength, generalPattern, format));
 	}
 
 	static {
@@ -334,6 +336,15 @@ public class TextAnalyzer {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Return the set of registered Logical Types.
+
+	 * @return A Collection of the currently registered Logical Types.
+	 */
+	public Collection<LogicalType> getRegisteredLogicalTypes() {
+		return new HashSet<LogicalType>(registered.values());
 	}
 
 	/**
@@ -646,10 +657,10 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (patternInfo.typeQualifier != null) {
+		if (patternInfo.isLogicalType()) {
 			// If it is a registered Infinite Logical Type then validate it
 			LogicalType logical = registered.get(patternInfo.typeQualifier);
-			if (logical != null && PatternInfo.Type.LONG.equals(logical.getBaseType()))
+			if (PatternInfo.Type.LONG.equals(logical.getBaseType()))
 				return logical.isValid(input);
 		}
 
@@ -677,21 +688,19 @@ public class TextAnalyzer {
 		return isTrue || isFalse;
 	}
 
-	private boolean trackString(final String input, PatternInfo patternInfo, final boolean register) {
-		String cleaned = input;
-
+	private boolean trackString(final String rawInput, PatternInfo patternInfo, final boolean register) {
 		if (patternInfo.typeQualifier == null) {
-			if (patternInfo.isAlphabetic() && !cleaned.trim().chars().allMatch(Character::isAlphabetic))
+			if (patternInfo.isAlphabetic() && !rawInput.trim().chars().allMatch(Character::isAlphabetic))
 				return false;
 		}
-		else {
+		else if (patternInfo.isLogicalType) {
 			// If it is a registered Infinite Logical Type then validate it
 			LogicalType logical = registered.get(patternInfo.typeQualifier);
-			if (logical != null && PatternInfo.Type.STRING.equals(logical.getBaseType()) && !logical.isValid(input))
+			if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && !logical.isValid(rawInput))
 				return false;
 		}
 
-		return updateStats(cleaned);
+		return updateStats(rawInput);
 	}
 
 	private boolean updateStats(final String cleaned) {
@@ -728,11 +737,12 @@ public class TextAnalyzer {
 		return true;
 	}
 
-	private boolean trackDouble(final String input, PatternInfo patternInfo, final boolean register) {
+	private boolean trackDouble(final String rawInput, PatternInfo patternInfo, final boolean register) {
+		final String input = rawInput.trim();
 		double d;
 
 		try {
-			d = Double.parseDouble(input.trim());
+			d = Double.parseDouble(input);
 		} catch (NumberFormatException e) {
 			ParsePosition pos = new ParsePosition(0);
 			Number n = doubleFormatter.parse(input, pos);
@@ -743,10 +753,10 @@ public class TextAnalyzer {
 				groupingSeparators++;
 		}
 
-		if (patternInfo.typeQualifier != null) {
+		if (patternInfo.isLogicalType()) {
 			// If it is a registered Infinite Logical Type then validate it
 			LogicalType logical = registered.get(patternInfo.typeQualifier);
-			if (logical != null && PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && !logical.isValid(input))
+			if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && !logical.isValid(input))
 				return false;
 		}
 
@@ -1021,7 +1031,7 @@ public class TextAnalyzer {
 		if (DateTimeParser.determineFormatString(input, resolutionMode) != null)
 			possibleDateTime++;
 
-		// Check to see if this input is one of our registered Logical Types
+		// Check to see if this input is one of our registered Infinite Logical Types
 		int c = 0;
 		for (LogicalTypeInfinite logical : infiniteTypes) {
 			if (logical.isCandidate(input, compressedl0, charCounts, lastIndex))
@@ -1217,16 +1227,15 @@ public class TextAnalyzer {
 
 				final DateTimeParserResult result = det.getResult();
 				final String formatString = result.getFormatString();
-				matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), formatString, -1, -1, null,
-						formatString);
+				matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), formatString, false, -1, -1, null, formatString);
 			}
 
-			// Check to see if it might be one of our known Infinite Logical Types
+			// Check to see if it might be one of the known Infinite Logical Types
 			int i = 0;
 			for (LogicalTypeInfinite logical : infiniteTypes) {
-				if (candidateCounts[i] == raw.size()) {
+				if ((double)candidateCounts[i]/raw.size() >= logical.getThreshold()/100.0) {
 					int count = 0;
-					PatternInfo candidate = new PatternInfo(logical.getRegexp(), logical.getBaseType(), logical.getQualifier(), -1, -1, null, null);
+					PatternInfo candidate = new PatternInfo(logical.getRegexp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 					for (final String sample : raw) {
 						if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
 							if (trackString(sample, candidate, false))
@@ -1440,7 +1449,7 @@ public class TextAnalyzer {
 
 		// If it is not one of our known types then construct a suitable PatternInfo
 		if (matchPatternInfo == null)
-			matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, null, -1, -1, null, null);
+			matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, null, false, -1, -1, null, null);
 
 		// All outliers are now part of the cardinality set and there are now no outliers
 		cardinality.putAll(outliers);
@@ -1628,8 +1637,7 @@ public class TextAnalyzer {
 						try {
 							final String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
 							result = DateTimeParserResult.asResult(formatString, resolutionMode);
-							matchPatternInfo = new PatternInfo(result.getRegExp(), matchPatternInfo.type, formatString, -1, -1, null,
-									formatString);
+							matchPatternInfo = new PatternInfo(result.getRegExp(), matchPatternInfo.type, formatString, false, -1, -1, null, formatString);
 
 							trackDateTime(matchPatternInfo.format, input);
 							matchCount++;
@@ -1730,7 +1738,7 @@ public class TextAnalyzer {
 			return false;
 
 		matchCount = validCount;
-		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), -1, -1, null, null);
+		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
 		outliers.putAll(newOutliers);
 		cardinality.keySet().removeAll(newOutliers.keySet());
 
@@ -1768,7 +1776,7 @@ public class TextAnalyzer {
 		outliers.putAll(newOutliers);
 		cardinalityUpper.keySet().removeAll(newOutliers.keySet());
 		matchCount = validCount;
-		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), -1, -1, null, null);
+		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
 		cardinality = cardinalityUpper;
 		return true;
 	}
@@ -1844,13 +1852,13 @@ public class TextAnalyzer {
 
 			if (groupingSeparators == 0 && minLong > 19000101 && maxLong < 20400101 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
-				matchPatternInfo = new PatternInfo("\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", 8, 8, null, "yyyyMMdd");
+				matchPatternInfo = new PatternInfo("\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern(matchPatternInfo.format);
 				minLocalDate = LocalDate.parse(String.valueOf(minLong), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
 			} else if (groupingSeparators == 0 && minLong > 1800 && maxLong < 2030 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("year") || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
-				matchPatternInfo = new PatternInfo("\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", 4, 4, null, "yyyy");
+				matchPatternInfo = new PatternInfo("\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLong, 1, 1);
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
 			} else if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
@@ -1874,7 +1882,7 @@ public class TextAnalyzer {
 				else
 					newPattern += "\\d";
 				newPattern += lengthQualifier(minTrimmedLength, maxTrimmedLength);
-				matchPatternInfo = new PatternInfo(newPattern, matchPatternInfo.type, updatedTypeQualifier, -1, -1, null, null);
+				matchPatternInfo = new PatternInfo(newPattern, matchPatternInfo.type, updatedTypeQualifier, false, -1, -1, null, null);
 
 				if (realSamples >= reflectionSamples && confidence < threshold/100.0) {
 					// We thought it was an integer field, but on reflection it does not feel like it
@@ -1987,8 +1995,8 @@ public class TextAnalyzer {
 			if ((PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
 				String newPattern = matchPatternInfo.regexp;
 				newPattern = newPattern.substring(0, newPattern.length() - 1) + lengthQualifier(minTrimmedLength, maxTrimmedLength);
-				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minTrimmedLength, maxTrimmedLength, null,
-						null);
+				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength, maxTrimmedLength,
+						null, null);
 			}
 
 			// Qualify random string with a min and max length
@@ -1998,8 +2006,8 @@ public class TextAnalyzer {
 					newPattern = shapeToRegExp(shape);
 				if (newPattern == null)
 					newPattern = PATTERN_ANY + lengthQualifier(minTrimmedLength, maxTrimmedLength);
-				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, minRawLength, maxRawLength, null,
-						null);
+				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minRawLength, maxRawLength,
+						null, null);
 			}
 		}
 

@@ -10,7 +10,7 @@ mainClassName = "com.cobber.fta.Main"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "1.0.35"
+version = "1.0.36"
 
 repositories {
     mavenCentral()
@@ -93,6 +93,8 @@ dependencies {
 	compile group: 'org.testng', name: 'testng', version: '6.14.3'
 	// https://mvnrepository.com/artifact/javax.mail/mail
 	compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+	// https://mvnrepository.com/artifact/commons-validator/commons-validator
+	compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
 }
 
 distributions {

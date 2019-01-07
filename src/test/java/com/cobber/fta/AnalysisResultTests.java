@@ -704,13 +704,13 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getTypeQualifier(), "US_STATE");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*\\p{Alpha}{2}\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.get("SA"), Integer.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+			Assert.assertTrue(inputs[i].trim().matches(result.getRegExp()), inputs[i]);
 		}
 	}
 
@@ -1888,7 +1888,7 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void testRegister() throws IOException {
+	public void testRegisterFinite() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		analysis.setMaxCardinality(20000);
 		Assert.assertTrue(analysis.registerLogicalType("com.cobber.fta.PluginCUSIP"));
@@ -1932,6 +1932,67 @@ public class AnalysisResultTests {
 				matchCount++;
 		}
 		Assert.assertEquals(matchCount, result.getMatchCount() + 1);
+	}
+
+	@Test
+	public void testRegisterInfinite() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("CC");
+		Assert.assertTrue(analysis.registerLogicalType("com.cobber.fta.PluginCreditCard"));
+		final String[] input = {
+//				"Credit Card Type,Credit Card Number",
+				"American Express,378282246310005",
+				"American Express,371449635398431",
+				"American Express Corporate,378734493671000 ",
+				"Australian BankCard,5610591081018250",
+				"Diners Club,30569309025904",
+				"Diners Club,38520000023237",
+				"Discover,6011111111111117",
+				"Discover,6011000990139424",
+				"JCB,3530111333300000",
+				"JCB,3566002020360505",
+				"MasterCard,5555555555554444",
+				"MasterCard,5105105105105100",
+				"Visa,4111111111111111",
+				"Visa,4012888888881881",
+				"Visa,4222222222222",
+//				"Dankort (PBS),76009244561",
+				"Dankort (PBS),5019717010103742",
+				"Switch/Solo (Paymentech),6331101999990016",
+				"MasterCard,5555 5555 5555 4444",
+				"MasterCard,5105 1051 0510 5100",
+				"Visa,4111 1111 1111 1111",
+				"Visa,4012 8888 8888 1881",
+				"MasterCard,5555-5555-5555-4444",
+				"MasterCard,5105-1051-0510-5100",
+				"Visa,4111-1111-1111-1111",
+				"Visa,4012-8888-8888-1881"
+		};
+
+		Set<String>  samples = new HashSet<String>();
+
+		for (int i = 0; i < input.length; i++) {
+			String s = input[i].split(",")[1];
+			samples.add(s);
+			analysis.train(s);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "CREDITCARD");
+		Assert.assertEquals(result.getSampleCount(), input.length);
+		Assert.assertEquals(result.getMatchCount(), input.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getMinLength(), 13);
+		Assert.assertEquals(result.getMaxLength(), 19);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertTrue(result.isLogicalType());
+		Assert.assertEquals(result.getRegExp(), "(?:\\d[ -]*?){13,16}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (String s : samples) {
+			Assert.assertTrue(s.matches(result.getRegExp()), s);
+		}
 	}
 
 	@Test
@@ -2772,8 +2833,8 @@ public class AnalysisResultTests {
 	public void groupingSeparatorLargeFRENCH() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		analysis.setLocale(Locale.FRENCH);
-		final Random random = new Random();
-		final int SAMPLE_SIZE = 10000;
+		final Random random = new Random(1);
+		final int SAMPLE_SIZE = 1000;
 		long min = Long.MAX_VALUE;
 		long absMin = Long.MAX_VALUE;
 		long max = Long.MIN_VALUE;
@@ -4091,6 +4152,7 @@ public class AnalysisResultTests {
 		int maxLength = Integer.MIN_VALUE;
 		int locked = -1;
 		int samples;
+		int bad = 0;
 
 		for (samples = 0; samples <= TextAnalyzer.SAMPLE_DEFAULT; samples++) {
 			final String input = String.valueOf(random.nextInt(1000000));
@@ -4104,6 +4166,7 @@ public class AnalysisResultTests {
 		}
 		while (samples++ < analysis.getReflectionSampleSize() - 1) {
 			analysis.train(String.valueOf(random.nextDouble()));
+			bad++;
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -4118,7 +4181,7 @@ public class AnalysisResultTests {
 		}
 		pattern += "}";
 		Assert.assertEquals(result.getRegExp(), pattern);
-		Assert.assertEquals(result.getConfidence(), 0.7241379310344828);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)bad/result.getSampleCount());
 	}
 
 	@Test
@@ -4742,9 +4805,62 @@ public class AnalysisResultTests {
 			"324 North Lancaster Dr."
 	};
 
+	String validUSStreets2[] = new String[] {
+			"6649 N Blue Gum St",
+			"4 B Blue Ridge Blvd",
+			"8 W Cerritos Ave #54",
+			"639 Main St",
+			"34 Center St",
+			"3 Mcauley Dr",
+			"7 Eads St",
+			"7 W Jackson Blvd",
+			"5 Boston Ave #88",
+			"228 Runamuck Pl #2808",
+			"2371 Jerrold Ave",
+			"37275 St  Rt 17m M",
+			"25 E 75th St #69",
+			"98 Connecticut Ave Nw",
+			"56 E Morehead St",
+			"73 State Road 434 E",
+			"69734 E Carrillo St",
+			"322 New Horizon Blvd",
+			"1 State Route 27",
+			"394 Manchester Blvd",
+			"6 S 33rd St",
+			"6 Greenleaf Ave",
+			"618 W Yakima Ave",
+			"74 S Westgate St",
+			"3273 State St",
+			"1 Central Ave",
+			"86 Nw 66th St #8673",
+			"2 Cedar Ave #84",
+			"90991 Thorburn Ave",
+			"386 9th Ave N",
+			"74874 Atlantic Ave",
+			"366 South Dr",
+			"45 E Liberty St",
+			"4 Ralph Ct",
+			"2742 Distribution Way",
+			"426 Wolf St",
+			"128 Bransten Rd",
+			"17 Morena Blvd",
+			"775 W 17th St",
+			"6980 Dorsett Rd",
+			"2881 Lewis Rd",
+			"7219 Woodfield Rd",
+			"1048 Main St",
+			"678 3rd Ave",
+			"20 S Babcock St",
+			"2 Lighthouse Ave",
+			"38938 Park Blvd",
+			"5 Tomahawk Dr",
+			"762 S Main St",
+	};
+
 	String validUSAddresses[] = new String[] {
 			"9885 Princeton Court Shakopee, MN 55379",
 			"11 San Pablo Rd.  Nottingham, MD 21236",
+			"",
 			"365 3rd St.  Woodhaven, NY 11421",
 			"426 Brewery Street Horn Lake, MS 38637",
 			"676 Thatcher St.  Hagerstown, MD 21740",
@@ -4762,6 +4878,7 @@ public class AnalysisResultTests {
 			"7691 Beacon Street Marysville, OH 43040",
 			"187 Lake View Drive Redford, MI 48239",
 			"318 Summerhouse Road Lenoir, NC 28645",
+			"",
 			"609 Taylor Ave.  Fort Myers, FL 33905",
 			"47 Broad St.  Baldwin, NY 11510",
 			"525 Valley View St.  Natick, MA 01760",
@@ -4793,6 +4910,27 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getTypeQualifier(), "ADDRESS_EN");
 		Assert.assertEquals(result.getRegExp(), ".+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void basicUSStreet2() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		for (String s : validUSStreets2) {
+			analysis.train(s);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), validUSStreets2.length);
+		Assert.assertEquals(result.getCardinality(), validUSStreets2.length - 1);
+		Assert.assertEquals(result.getMatchCount(), validUSStreets2.length - 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "ADDRESS_EN");
+		Assert.assertEquals(result.getRegExp(), ".+");
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}
 
 	@Test

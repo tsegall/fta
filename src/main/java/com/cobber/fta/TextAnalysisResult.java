@@ -128,6 +128,15 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * Is this a Logical Type?
+	 *
+	 * @return True if this is a Logical Type.
+	 */
+	public boolean isLogicalType() {
+		return patternInfo.isLogicalType();
+	}
+
+	/**
 	 * Get the minimum value for Numeric, Boolean and String types.
 	 * @return The minimum value as a String.
 	 */
@@ -179,7 +188,7 @@ public class TextAnalysisResult {
 	public String getRegExp() {
 		String answer = patternInfo.regexp;
 
-		if (!leadingWhiteSpace && !trailingWhiteSpace)
+		if (patternInfo.isLogicalType || (!leadingWhiteSpace && !trailingWhiteSpace))
 			return answer;
 
 		if (TextAnalyzer.PATTERN_BOOLEAN.equals(answer) || TextAnalyzer.PATTERN_YESNO.equals(answer)) {

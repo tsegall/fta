@@ -50,14 +50,49 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(String input) {
+		int length = input.length();
+
+		// Attempt to fail fast
+		if (input.length() > 60)
+			return false;
+
+		// Simple case first - last 'word is something we recognize
 		int spaceIndex = input.lastIndexOf(' ');
-		return spaceIndex != -1 && addressMarkers.contains(input.substring(spaceIndex + 1).toUpperCase(Locale.ROOT));
+		if (spaceIndex != -1 && addressMarkers.contains(input.substring(spaceIndex + 1).toUpperCase(Locale.ROOT)))
+			return true;
+
+		// Accept something of the form, initial digit followed by an address marker word (e.g. Road, Street, etc).
+		if (!Character.isDigit(input.charAt(0)))
+			return false;
+
+		String[] words = input.split(" ");
+		if (words.length < 4)
+			return false;
+
+		for (int i = 1; i < words.length  - 1; i++) {
+			if (addressMarkers.contains(words[i].toUpperCase(Locale.ROOT)))
+				return true;
+		}
+
+		return false;
 	}
 
 	@Override
 	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
 		int spaceIndex = lastIndex[' '];
-		return spaceIndex != -1 && addressMarkers.contains(input.substring(spaceIndex + 1, input.length()).toUpperCase(Locale.ROOT));
+		if (spaceIndex != -1 && addressMarkers.contains(input.substring(spaceIndex + 1, input.length()).toUpperCase(Locale.ROOT)))
+			return true;
+
+		if (!Character.isDigit(input.charAt(0)) || charCounts[' '] < 3)
+			return false;
+
+		String[] words = input.split(" ");
+		for (int i = 1; i < words.length  - 1; i++) {
+			if (addressMarkers.contains(words[i].toUpperCase(Locale.ROOT)))
+				return true;
+		}
+
+		return false;
 	}
 
 	@Override
