@@ -128,6 +128,7 @@ public class TextAnalyzer {
 	private PatternInfo matchPatternInfo;
 
 	private boolean trainingStarted;
+	private boolean initialized;
 
 	private boolean leadingWhiteSpace = false;
 	private boolean trailingWhiteSpace = false;
@@ -179,109 +180,14 @@ public class TextAnalyzer {
 	private long totalLeadingZeros;
 	private long groupingSeparators;
 
-	private static Map<String, PatternInfo> patternInfo;
-	private static Map<String, PatternInfo> typeInfo;
-	private static Map<String, String> promotion;
-
 	private Map<String, LogicalType> registered = new HashMap<String, LogicalType>();
 	private ArrayList<LogicalTypeInfinite> infiniteTypes = new ArrayList<LogicalTypeInfinite>();
 	private int[] candidateCounts;
 	private ArrayList<LogicalTypeFinite> finiteTypes = new ArrayList<LogicalTypeFinite>();
 
-	public static final String PATTERN_ANY = ".";
-	public static final String PATTERN_ANY_VARIABLE = ".+";
-	public static final String PATTERN_ALPHA = "\\p{Alpha}";
-	public static final String PATTERN_ALPHA_VARIABLE = PATTERN_ALPHA + "+";
-	public static final String PATTERN_ALPHA_2 = PATTERN_ALPHA + "{2}";
-	public static final String PATTERN_ALPHA_3 = PATTERN_ALPHA + "{3}";
-
-	public static final String PATTERN_ALPHANUMERIC = "\\p{Alnum}";
-	public static final String PATTERN_ALPHANUMERIC_VARIABLE = PATTERN_ALPHANUMERIC + "+";
-	public static final String PATTERN_ALPHANUMERIC_2 = PATTERN_ALPHANUMERIC + "{2}";
-	public static final String PATTERN_ALPHANUMERIC_3 = PATTERN_ALPHANUMERIC + "{3}";
-
-	public static final String PATTERN_BOOLEAN = "(?i)(true|false)";
-	public static final String PATTERN_YESNO = "(?i)(yes|no)";
-
-	public static final String PATTERN_LONG = "\\d+";
-	public static final String PATTERN_SIGNED_LONG = "-?\\d+";
-	public static final String PATTERN_DOUBLE = PATTERN_LONG + "|" + "(\\d+)?\\.\\d+";
-	public static final String PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + "-?(\\d+)?\\.\\d+";
-	public static final String PATTERN_DOUBLE_WITH_EXPONENT = PATTERN_LONG + "|" + "(\\d+)?\\.\\d+(?:[eE]([-+]?\\d+))?";
-	public static final String PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = PATTERN_SIGNED_LONG + "|" + "-?(\\d+)?\\.\\d+(?:[eE]([-+]?\\d+))?";
-
 	private final Map<String, DateTimeFormatter> formatterCache = new HashMap<String, DateTimeFormatter>();
 
-	private static void addPattern(final Map<String, PatternInfo> map, final boolean patternIsKey, final String regexp, final PatternInfo.Type type,
-			final String typeQualifier, final int minLength, final int maxLength, final String generalPattern, final String format) {
-		map.put(patternIsKey ? regexp : (type.toString() + "." + typeQualifier), new PatternInfo(regexp, type, typeQualifier, false, minLength, maxLength, generalPattern, format));
-	}
-
-	static {
-		patternInfo = new HashMap<String, PatternInfo>();
-		typeInfo = new HashMap<String, PatternInfo>();
-		promotion = new HashMap<String, String>();
-
-		addPattern(patternInfo, true, PATTERN_BOOLEAN, PatternInfo.Type.BOOLEAN, null, 4, 5, null, "");
-		addPattern(patternInfo, true, PATTERN_YESNO, PatternInfo.Type.BOOLEAN, null, 2, 3, null, "");
-		addPattern(patternInfo, true, "[0|1]", PatternInfo.Type.BOOLEAN, null, -1, -1, null, null);
-
-		addPattern(patternInfo, true, PATTERN_ANY_VARIABLE, PatternInfo.Type.STRING, null, 1, -1, null, "");
-		addPattern(patternInfo, true, PATTERN_ALPHA_VARIABLE, PatternInfo.Type.STRING, null, 1, -1, null, "");
-		addPattern(patternInfo, true, PATTERN_ALPHANUMERIC_VARIABLE, PatternInfo.Type.STRING, null, 1, -1, null, "");
-		addPattern(patternInfo, true, PATTERN_ALPHA_2, PatternInfo.Type.STRING, null, 2, 2, null, "");
-		addPattern(patternInfo, true, PATTERN_ALPHA_3, PatternInfo.Type.STRING, null, 3, 3, null, "");
-		addPattern(patternInfo, true, PATTERN_ALPHANUMERIC_2, PatternInfo.Type.STRING, null, 2, 2, null, "");
-		addPattern(patternInfo, true, PATTERN_ALPHANUMERIC_3, PatternInfo.Type.STRING, null, 3, 3, null, "");
-
-		addPattern(patternInfo, true, PATTERN_LONG, PatternInfo.Type.LONG, null, 1, -1, null, "");
-		addPattern(patternInfo, true, PATTERN_SIGNED_LONG, PatternInfo.Type.LONG, "SIGNED", 1, -1, null, "");
-		addPattern(patternInfo, true, PATTERN_DOUBLE, PatternInfo.Type.DOUBLE, null, -1, -1, null, "");
-		addPattern(patternInfo, true, PATTERN_SIGNED_DOUBLE, PatternInfo.Type.DOUBLE, "SIGNED", -1, -1, null, "");
-		addPattern(patternInfo, true, PATTERN_DOUBLE_WITH_EXPONENT, PatternInfo.Type.DOUBLE, null, -1, -1, null, "");
-		addPattern(patternInfo, true, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PatternInfo.Type.DOUBLE, "SIGNED", -1, -1, null, "");
-
-		// Logical Types
-		addPattern(typeInfo, false, "[NULL]", PatternInfo.Type.STRING, "NULL", -1, -1, null, null);
-		addPattern(typeInfo, false, "\\p{javaWhitespace}*", PatternInfo.Type.STRING, "BLANKORNULL", -1, -1, null, null);
-		addPattern(typeInfo, false, "\\p{javaWhitespace}*", PatternInfo.Type.STRING, "BLANK", -1, -1, null, null);
-
-		promotion.put(PATTERN_LONG + "---" + PATTERN_SIGNED_LONG, PATTERN_SIGNED_LONG);
-		promotion.put(PATTERN_LONG + "---" + PATTERN_DOUBLE, PATTERN_DOUBLE);
-		promotion.put(PATTERN_LONG + "---" + PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE);
-		promotion.put(PATTERN_LONG + "---" + PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_LONG + "---" + PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-
-		promotion.put(PATTERN_SIGNED_LONG + "---" + PATTERN_LONG, PATTERN_SIGNED_LONG);
-		promotion.put(PATTERN_SIGNED_LONG + "---" + PATTERN_DOUBLE, PATTERN_DOUBLE);
-		promotion.put(PATTERN_SIGNED_LONG + "---" + PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE);
-		promotion.put(PATTERN_SIGNED_LONG + "---" + PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_SIGNED_LONG + "---" + PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-
-		promotion.put(PATTERN_DOUBLE + "---" + PATTERN_LONG, PATTERN_DOUBLE);
-		promotion.put(PATTERN_DOUBLE + "---" + PATTERN_SIGNED_LONG, PATTERN_DOUBLE);
-		promotion.put(PATTERN_DOUBLE + "---" + PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE);
-		promotion.put(PATTERN_DOUBLE + "---" + PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_DOUBLE + "---" + PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-
-		promotion.put(PATTERN_SIGNED_DOUBLE + "---" + PATTERN_LONG, PATTERN_SIGNED_DOUBLE);
-		promotion.put(PATTERN_SIGNED_DOUBLE + "---" + PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE);
-		promotion.put(PATTERN_SIGNED_DOUBLE + "---" + PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE);
-		promotion.put(PATTERN_SIGNED_DOUBLE + "---" + PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_SIGNED_DOUBLE + "---" + PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-
-		promotion.put(PATTERN_DOUBLE_WITH_EXPONENT + "---" + PATTERN_LONG, PATTERN_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_DOUBLE_WITH_EXPONENT + "---" + PATTERN_SIGNED_LONG, PATTERN_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_DOUBLE_WITH_EXPONENT + "---" + PATTERN_DOUBLE, PATTERN_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_DOUBLE_WITH_EXPONENT + "---" + PATTERN_SIGNED_DOUBLE, PATTERN_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_DOUBLE_WITH_EXPONENT + "---" + PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-
-		promotion.put(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT + "---" + PATTERN_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT + "---" + PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT + "---" + PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT + "---" + PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-		promotion.put(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT + "---" + PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-	}
+	private KnownPatterns knownPatterns = new KnownPatterns();
 
 	/**
 	 * Construct a Text Analyzer for the named data stream with the supplied DateResolutionMode.
@@ -850,6 +756,59 @@ public class TextAnalyzer {
 		}
 	}
 
+	private void initialize() {
+		raw = new ArrayList<String>(samples);
+		levels[0] = new ArrayList<StringBuilder>(samples);
+		levels[1] = new ArrayList<StringBuilder>(samples);
+		levels[2] = new ArrayList<StringBuilder>(samples);
+
+		if (logicalTypeDetection) {
+			// Load the default set of plugins for Logical Type detection
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.txt")))){
+				String line = null;
+
+				while ((line = reader.readLine()) != null) {
+					if (line.trim().length() == 0 || line.charAt(0) == '#')
+						continue;
+					registerLogicalType(line);
+				}
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Internal error: Issues with plugins file");
+			}
+		}
+
+		candidateCounts = new int[infiniteTypes.size()];
+
+		// Run the initializers for the Logical Types
+		for (LogicalType logical : infiniteTypes)
+			logical.initialize();
+		for (LogicalTypeFinite logical : finiteTypes) {
+			logical.initialize();
+			if (logical.getSize() + 10 > getMaxCardinality())
+				throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
+		}
+
+		if (pluginThreshold != -1) {
+			// Set the threshold for all Logical Types
+			for (LogicalType logical : infiniteTypes)
+				logical.setThreshold(pluginThreshold);
+			for (LogicalType logical : finiteTypes)
+				logical.setThreshold(pluginThreshold);
+		}
+
+		longFormatter = NumberFormat.getIntegerInstance(locale);
+		doubleFormatter = NumberFormat.getInstance(locale);
+
+		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+		decimalSeparator = formatSymbols.getDecimalSeparator();
+		monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
+		groupingSeparator = formatSymbols.getGroupingSeparator();
+		minusSign = formatSymbols.getMinusSign();
+
+		knownPatterns.initialize(locale);
+		initialized = true;
+	}
+
 	/**
 	 * Train is the core entry point used to supply input to the Text Analyzer.
 	 *
@@ -859,55 +818,8 @@ public class TextAnalyzer {
 	 */
 	public boolean train(final String rawInput) {
 		// Initialize if we have not already done so
-		if (!trainingStarted) {
-			raw = new ArrayList<String>(samples);
-			levels[0] = new ArrayList<StringBuilder>(samples);
-			levels[1] = new ArrayList<StringBuilder>(samples);
-			levels[2] = new ArrayList<StringBuilder>(samples);
-
-			if (logicalTypeDetection) {
-				// Load the default set of plugins for Logical Type detection
-				try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.txt")))){
-					String line = null;
-
-					while ((line = reader.readLine()) != null) {
-						if (line.trim().length() == 0 || line.charAt(0) == '#')
-							continue;
-						registerLogicalType(line);
-					}
-				} catch (IOException e) {
-					throw new IllegalArgumentException("Internal error: Issues with plugins file");
-				}
-			}
-
-			candidateCounts = new int[infiniteTypes.size()];
-
-			// Run the initializers for the Logical Types
-			for (LogicalType logical : infiniteTypes)
-				logical.initialize();
-			for (LogicalTypeFinite logical : finiteTypes) {
-				logical.initialize();
-				if (logical.getSize() + 10 > getMaxCardinality())
-					throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
-			}
-
-			if (pluginThreshold != -1) {
-				// Set the threshold for all Logical Types
-				for (LogicalType logical : infiniteTypes)
-					logical.setThreshold(pluginThreshold);
-				for (LogicalType logical : finiteTypes)
-					logical.setThreshold(pluginThreshold);
-			}
-
-			longFormatter = NumberFormat.getIntegerInstance(locale);
-			doubleFormatter = NumberFormat.getInstance(locale);
-
-			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
-			decimalSeparator = formatSymbols.getDecimalSeparator();
-			monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
-			groupingSeparator = formatSymbols.getGroupingSeparator();
-			minusSign = formatSymbols.getMinusSign();
-
+		if (!initialized) {
+			initialize();
 			trainingStarted = true;
 		}
 
@@ -996,11 +908,11 @@ public class TextAnalyzer {
 
 		final StringBuilder compressedl0 = new StringBuilder(length);
 		if (alphasSeen != 0 && digitsSeen != 0 && alphasSeen + digitsSeen == length) {
-			compressedl0.append(PATTERN_ALPHANUMERIC).append('{').append(String.valueOf(length)).append('}');
+			compressedl0.append(KnownPatterns.PATTERN_ALPHANUMERIC).append('{').append(String.valueOf(length)).append('}');
 		} else if ("true".equalsIgnoreCase(input) || "false".equalsIgnoreCase(input)) {
-			compressedl0.append(PATTERN_BOOLEAN);
+			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_TRUE_FALSE);
 		} else if ("yes".equalsIgnoreCase(input) || "no".equalsIgnoreCase(input)) {
-			compressedl0.append(PATTERN_YESNO);
+			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_YES_NO);
 		} else {
 			String l0withSentinel = l0.toString() + "|";
 			// Walk the new level0 to create the new level1
@@ -1014,7 +926,7 @@ public class TextAnalyzer {
 					repetitions++;
 				} else {
 					if (last == 'd' || last == 'a') {
-						compressedl0.append(last == 'd' ? "\\d" : PATTERN_ALPHA);
+						compressedl0.append(last == 'd' ? "\\d" : KnownPatterns.PATTERN_ALPHA);
 						compressedl0.append('{').append(String.valueOf(repetitions)).append('}');
 					} else {
 						for (int j = 0; j < repetitions; j++) {
@@ -1045,17 +957,17 @@ public class TextAnalyzer {
 			StringBuilder l2 = null;
 			if (numericDecimalSeparators == 1) {
 				if (possibleExponentSeen == -1) {
-					l1 = new StringBuilder(numericSigned ? PATTERN_SIGNED_DOUBLE : PATTERN_DOUBLE);
-					l2 = new StringBuilder(PATTERN_SIGNED_DOUBLE);
+					l1 = new StringBuilder(numericSigned ? KnownPatterns.PATTERN_SIGNED_DOUBLE : KnownPatterns.PATTERN_DOUBLE);
+					l2 = new StringBuilder(KnownPatterns.PATTERN_SIGNED_DOUBLE);
 				}
 				else {
-					l1 = new StringBuilder(numericSigned ? PATTERN_SIGNED_DOUBLE_WITH_EXPONENT : PATTERN_DOUBLE_WITH_EXPONENT);
-					l2 = new StringBuilder(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+					l1 = new StringBuilder(numericSigned ? KnownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT : KnownPatterns.PATTERN_DOUBLE_WITH_EXPONENT);
+					l2 = new StringBuilder(KnownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 				}
 			}
 			else {
-				l1 = new StringBuilder(numericSigned ? PATTERN_SIGNED_LONG : PATTERN_LONG);
-				l2 = new StringBuilder(PATTERN_SIGNED_LONG);
+				l1 = new StringBuilder(numericSigned ? KnownPatterns.PATTERN_SIGNED_LONG : KnownPatterns.PATTERN_LONG);
+				l2 = new StringBuilder(KnownPatterns.PATTERN_SIGNED_LONG);
 			}
 			levels[1].add(l1);
 			levels[2].add(l2);
@@ -1073,13 +985,13 @@ public class TextAnalyzer {
 
 			// Level 1 is the collapsed version e.g. convert \d{4}-\d{2}-\d{2] to
 			// \d+-\d+-\d+
-			final PatternInfo found = patternInfo.get(compressedl0.toString());
+			final PatternInfo found = knownPatterns.getByRegExp(compressedl0.toString());
 			if (found != null && found.generalPattern != null) {
 				levels[1].add(new StringBuilder(found.generalPattern));
 				levels[2].add(new StringBuilder(collapsed));
 			} else {
 				levels[1].add(new StringBuilder(collapsed));
-				levels[2].add(new StringBuilder(PATTERN_ANY_VARIABLE));
+				levels[2].add(new StringBuilder(KnownPatterns.PATTERN_ANY_VARIABLE));
 			}
 
 		}
@@ -1122,23 +1034,23 @@ public class TextAnalyzer {
 
 			if (best == null) {
 				best = entry;
-				bestPattern = patternInfo.get(best.getKey());
+				bestPattern = knownPatterns.getByRegExp(best.getKey());
 			}
 			else if (secondBest == null) {
 				secondBest = entry;
-				secondBestPattern = patternInfo.get(secondBest.getKey());
+				secondBestPattern = knownPatterns.getByRegExp(secondBest.getKey());
 				if (levelIndex != 0 && bestPattern != null && secondBestPattern != null &&
 						bestPattern.isNumeric() && secondBestPattern.isNumeric()) {
-					newKey = promotion.get(bestPattern.regexp + "---" + secondBestPattern.regexp);
+					newKey = knownPatterns.numericPromotion(bestPattern.regexp, secondBestPattern.regexp);
 					best = new AbstractMap.SimpleEntry<String, Integer>(newKey, best.getValue() + secondBest.getValue());
 				}
 			}
 			else if (thirdBest == null) {
 				thirdBest = entry;
-				thirdBestPattern = patternInfo.get(thirdBest.getKey());
+				thirdBestPattern = knownPatterns.getByRegExp(thirdBest.getKey());
 				if (levelIndex != 0 && bestPattern != null && secondBestPattern != null && thirdBestPattern != null &&
 						bestPattern.isNumeric() && secondBestPattern.isNumeric() && thirdBestPattern.isNumeric()) {
-					newKey = promotion.get(newKey + "---" + thirdBestPattern.regexp);
+					newKey = knownPatterns.numericPromotion(newKey, thirdBestPattern.regexp);
 					best = new AbstractMap.SimpleEntry<String, Integer>(newKey, best.getValue() + thirdBest.getValue());
 				}
 			}
@@ -1161,7 +1073,7 @@ public class TextAnalyzer {
 	private void determineType() {
 		// If we have fewer than 6 samples do not even pretend
 		if (sampleCount == 0) {
-			matchPatternInfo = patternInfo.get(PATTERN_ANY_VARIABLE);
+			matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_ANY_VARIABLE);
 			return;
 		}
 
@@ -1176,17 +1088,17 @@ public class TextAnalyzer {
 		if (level0 != null) {
 			level0pattern = level0.getKey();
 			level0value = level0.getValue();
-			level0patternInfo = patternInfo.get(level0pattern);
+			level0patternInfo = knownPatterns.getByRegExp(level0pattern);
 		}
 		if (level1 != null) {
 			level1pattern = level1.getKey();
 			level1value = level1.getValue();
-			level1patternInfo = patternInfo.get(level1pattern);
+			level1patternInfo = knownPatterns.getByRegExp(level1pattern);
 		}
 		if (level2 != null) {
 			level2pattern = level2.getKey();
 			level2value = level2.getValue();
-			level2patternInfo = patternInfo.get(level2pattern);
+			level2patternInfo = knownPatterns.getByRegExp(level2pattern);
 		}
 
 		if (best != null) {
@@ -1227,7 +1139,7 @@ public class TextAnalyzer {
 
 				final DateTimeParserResult result = det.getResult();
 				final String formatString = result.getFormatString();
-				matchPatternInfo = new PatternInfo(result.getRegExp(), result.getType(), formatString, false, -1, -1, null, formatString);
+				matchPatternInfo = new PatternInfo(null, result.getRegExp(), result.getType(), formatString, false, -1, -1, null, formatString);
 			}
 
 			// Check to see if it might be one of the known Infinite Logical Types
@@ -1235,7 +1147,7 @@ public class TextAnalyzer {
 			for (LogicalTypeInfinite logical : infiniteTypes) {
 				if ((double)candidateCounts[i]/raw.size() >= logical.getThreshold()/100.0) {
 					int count = 0;
-					PatternInfo candidate = new PatternInfo(logical.getRegexp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
+					PatternInfo candidate = new PatternInfo(null, logical.getRegexp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 					for (final String sample : raw) {
 						if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
 							if (trackString(sample, candidate, false))
@@ -1287,7 +1199,7 @@ public class TextAnalyzer {
 				repetitions++;
 			} else {
 				if (last == '1' || last == 'a') {
-					result.append(last == '1' ? "\\d" : PATTERN_ALPHA);
+					result.append(last == '1' ? "\\d" : KnownPatterns.PATTERN_ALPHA);
 					result.append('{').append(String.valueOf(repetitions)).append('}');
 				} else {
 					for (int j = 0; j < repetitions; j++) {
@@ -1418,38 +1330,46 @@ public class TextAnalyzer {
 		// If we are currently Numeric and the only errors are alpha then convert to AlphaNumeric
 		else if (badCharacters != 0 && spaces == 0 && other == 0 && PatternInfo.Type.LONG.equals(current.type)) {
 			if (outlierMap.size() == maxOutliers || alphas > .01 * realSamples) {
-				backoutToPattern(realSamples, "\\p{Alnum}+");
+				backoutToPattern(realSamples, KnownPatterns.PATTERN_ALNUM_VARIABLE);
 				return true;
 			}
 		}
 		// If we are currently Numeric and the only errors are doubles then convert to double
 		else if (outlierMap.size() == doubles && PatternInfo.Type.LONG.equals(current.type)) {
-			backoutToPattern(realSamples, doublePattern(negative, exponent));
+			KnownPatterns.ID id;
+			if (exponent)
+				id = negative ? KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT;
+			else
+				id = negative ? KnownPatterns.ID.ID_SIGNED_DOUBLE : KnownPatterns.ID.ID_DOUBLE;
+			backoutToPatternID(realSamples, id);
 			return true;
 		}
 		else if ((realSamples > reflectionSamples && outlierMap.size() == maxOutliers)
 					|| (badCharacters + nonAlphaNumeric) > .01 * realSamples) {
-				backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
+				backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
 				return true;
 		}
 
 		return false;
 	}
 
-	private String doublePattern(boolean negative, boolean exponent) {
-		if (exponent)
-			return negative ? PATTERN_SIGNED_DOUBLE_WITH_EXPONENT : PATTERN_DOUBLE_WITH_EXPONENT;
-
-		return negative ? PATTERN_SIGNED_DOUBLE : PATTERN_DOUBLE;
-	}
-
 	private void backoutToPattern(final long realSamples, String newPattern) {
-		matchCount = realSamples;
-		matchPatternInfo = patternInfo.get(newPattern);
+		PatternInfo newPatternInfo = knownPatterns.getByRegExp(newPattern);
 
 		// If it is not one of our known types then construct a suitable PatternInfo
-		if (matchPatternInfo == null)
-			matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, null, false, -1, -1, null, null);
+		if (newPatternInfo == null)
+			newPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, null, false, -1, -1, null, null);
+
+		backoutToPatternInfo(realSamples, newPatternInfo);
+	}
+
+	private void backoutToPatternID(final long realSamples, KnownPatterns.ID patternID) {
+		backoutToPatternInfo(realSamples, knownPatterns.getByID(patternID));
+	}
+
+	private void backoutToPatternInfo(final long realSamples, PatternInfo newPatternInfo) {
+		matchCount = realSamples;
+		matchPatternInfo = newPatternInfo;
 
 		// All outliers are now part of the cardinality set and there are now no outliers
 		cardinality.putAll(outliers);
@@ -1510,9 +1430,9 @@ public class TextAnalyzer {
 
 		matchCount += otherLongs;
 		if ((double) matchCount / realSamples > threshold/100.0)
-			matchPatternInfo = patternInfo.get(PATTERN_LONG);
+			matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_LONG);
 		else
-			backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
+			backoutToPatternID(realSamples, KnownPatterns.ID.ID_ANY_VARIABLE);
 	}
 
 	private boolean uniformShape = true;
@@ -1637,7 +1557,7 @@ public class TextAnalyzer {
 						try {
 							final String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
 							result = DateTimeParserResult.asResult(formatString, resolutionMode);
-							matchPatternInfo = new PatternInfo(result.getRegExp(), matchPatternInfo.type, formatString, false, -1, -1, null, formatString);
+							matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, formatString, false, -1, -1, null, formatString);
 
 							trackDateTime(matchPatternInfo.format, input);
 							matchCount++;
@@ -1665,7 +1585,7 @@ public class TextAnalyzer {
 						if (logical.getQualifier().equals(matchPatternInfo.typeQualifier) && "US_ZIP5".equals(matchPatternInfo.typeQualifier))
 							backoutLogicalLongType(logical, realSamples);
 						else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
-							backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
+							backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
 					}
 				}
 				else {
@@ -1738,7 +1658,7 @@ public class TextAnalyzer {
 			return false;
 
 		matchCount = validCount;
-		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
+		matchPatternInfo = new PatternInfo(null, logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
 		outliers.putAll(newOutliers);
 		cardinality.keySet().removeAll(newOutliers.keySet());
 
@@ -1776,7 +1696,7 @@ public class TextAnalyzer {
 		outliers.putAll(newOutliers);
 		cardinalityUpper.keySet().removeAll(newOutliers.keySet());
 		matchCount = validCount;
-		matchPatternInfo = new PatternInfo(logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
+		matchPatternInfo = new PatternInfo(null, logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
 		cardinality = cardinalityUpper;
 		return true;
 	}
@@ -1800,6 +1720,10 @@ public class TextAnalyzer {
 	 * @return A TextAnalysisResult with the analysis of any training completed.
 	 */
 	public TextAnalysisResult getResult() {
+		// Normally we will initialize as a consequence of the first call to train() but just in case no training happens!
+		if (!initialized)
+			initialize();
+
 		String minValue = null;
 		String maxValue = null;
 		String sum = null;
@@ -1816,11 +1740,11 @@ public class TextAnalyzer {
 		// Check to see if we are all blanks or all nulls
 		if (blankCount == sampleCount || nullCount == sampleCount || blankCount + nullCount == sampleCount) {
 			if (nullCount == sampleCount)
-				matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "NULL");
+				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_NULL);
 			else if (blankCount == sampleCount)
-				matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "BLANK");
+				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BLANK);
 			else
-				matchPatternInfo = typeInfo.get(PatternInfo.Type.STRING.toString() + "." + "BLANKORNULL");
+				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BLANKORNULL);
 			matchCount = sampleCount;
 			confidence = sampleCount >= 10 ? 1.0 : 0.0;
 		}
@@ -1846,43 +1770,35 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (PATTERN_LONG.equals(matchPatternInfo.regexp) || PATTERN_SIGNED_LONG.equals(matchPatternInfo.regexp)) {
-			if (PATTERN_LONG.equals(matchPatternInfo.regexp) && matchPatternInfo.typeQualifier == null && minLong < 0)
-				matchPatternInfo = patternInfo.get(PATTERN_SIGNED_LONG);
+		if (KnownPatterns.PATTERN_LONG.equals(matchPatternInfo.regexp) || KnownPatterns.PATTERN_SIGNED_LONG.equals(matchPatternInfo.regexp)) {
+			if (KnownPatterns.PATTERN_LONG.equals(matchPatternInfo.regexp) && matchPatternInfo.typeQualifier == null && minLong < 0)
+				matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_SIGNED_LONG);
 
 			if (groupingSeparators == 0 && minLong > 19000101 && maxLong < 20400101 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
-				matchPatternInfo = new PatternInfo("\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
+				matchPatternInfo = new PatternInfo(null, "\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern(matchPatternInfo.format);
 				minLocalDate = LocalDate.parse(String.valueOf(minLong), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
 			} else if (groupingSeparators == 0 && minLong > 1800 && maxLong < 2030 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("year") || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
-				matchPatternInfo = new PatternInfo("\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
+				matchPatternInfo = new PatternInfo(null, "\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLong, 1, 1);
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
 			} else if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
 				// boolean by any other name
 				minBoolean = "0";
 				maxBoolean = "1";
-				matchPatternInfo = patternInfo.get("[0|1]");
+				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO);
 			} else {
-				String newPattern = "";
-				String updatedTypeQualifier = matchPatternInfo.typeQualifier;
-				boolean signed = "SIGNED".equals(updatedTypeQualifier);
-				if (signed)
-					newPattern += "-?";
-				if (groupingSeparators != 0) {
-					if (signed)
-						updatedTypeQualifier += ",GROUPING";
+				if (groupingSeparators != 0)
+					if (matchPatternInfo.id == KnownPatterns.ID.ID_LONG)
+						matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_LONG_GROUPING);
 					else
-						updatedTypeQualifier = "GROUPING";
-					newPattern += "[0-9" + groupingSeparator + "]";
-				}
-				else
-					newPattern += "\\d";
-				newPattern += lengthQualifier(minTrimmedLength, maxTrimmedLength);
-				matchPatternInfo = new PatternInfo(newPattern, matchPatternInfo.type, updatedTypeQualifier, false, -1, -1, null, null);
+						matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG_GROUPING);
+
+				matchPatternInfo = new PatternInfo(matchPatternInfo);
+				matchPatternInfo.regexp = matchPatternInfo.regexp.replace("+", lengthQualifier(minTrimmedLength, maxTrimmedLength));
 
 				if (realSamples >= reflectionSamples && confidence < threshold/100.0) {
 					// We thought it was an integer field, but on reflection it does not feel like it
@@ -1890,24 +1806,20 @@ public class TextAnalyzer {
 					confidence = (double) matchCount / realSamples;
 				}
 			}
-		} else if (PATTERN_DOUBLE.equals(matchPatternInfo.regexp)) {
+		} else if (PatternInfo.Type.DOUBLE.equals(matchPatternInfo.type)) {
 			if (matchPatternInfo.typeQualifier == null && minDouble < 0.0)
-				matchPatternInfo = patternInfo.get(PATTERN_SIGNED_DOUBLE);
+				matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_SIGNED_DOUBLE);
 
-			if (groupingSeparators > 0) {
-				String newQualifier = matchPatternInfo.typeQualifier;
-				if (newQualifier == null)
-					newQualifier = "GROUPING";
+			if (groupingSeparators != 0)
+				if (matchPatternInfo.id == KnownPatterns.ID.ID_DOUBLE)
+					matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_DOUBLE_GROUPING);
 				else
-					newQualifier += ",GROUPING";
-				matchPatternInfo = new PatternInfo(matchPatternInfo);
-				matchPatternInfo.typeQualifier = newQualifier;
-			}
+					matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_DOUBLE_GROUPING);
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
 			final int length = determineLength(matchPatternInfo.regexp);
 			// We thought it was a fixed length string, but on reflection it does not feel like it
 			if (length != -1 && realSamples >= reflectionSamples && (double) matchCount / realSamples < 0.95) {
-				backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
+				backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
 				confidence = (double) matchCount / realSamples;
 			}
 
@@ -1978,7 +1890,7 @@ public class TextAnalyzer {
 					}
 				}
 				if ((double)count/matchCount > 0.01 && !fail) {
-					backoutToPattern(realSamples, PATTERN_ANY_VARIABLE);
+					backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
 					confidence = (double) matchCount / realSamples;
 				}
 			}
@@ -1992,22 +1904,22 @@ public class TextAnalyzer {
 
 		if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier == null) {
 			// Qualify Alpha or Alnum with a min and max length
-			if ((PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
+			if ((KnownPatterns.PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
 				String newPattern = matchPatternInfo.regexp;
 				newPattern = newPattern.substring(0, newPattern.length() - 1) + lengthQualifier(minTrimmedLength, maxTrimmedLength);
-				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength, maxTrimmedLength,
-						null, null);
+				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+						maxTrimmedLength, null, null);
 			}
 
 			// Qualify random string with a min and max length
-			if (PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
+			if (KnownPatterns.PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
 				String newPattern = null;
 				if (uniformShape && cardinality.size() > 1)
 					newPattern = shapeToRegExp(shape);
 				if (newPattern == null)
-					newPattern = PATTERN_ANY + lengthQualifier(minTrimmedLength, maxTrimmedLength);
-				matchPatternInfo = new PatternInfo(newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minRawLength, maxRawLength,
-						null, null);
+					newPattern = KnownPatterns.PATTERN_ANY + lengthQualifier(minTrimmedLength, maxTrimmedLength);
+				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minRawLength,
+						maxRawLength, null, null);
 			}
 		}
 

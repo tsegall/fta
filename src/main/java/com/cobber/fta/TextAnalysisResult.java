@@ -114,13 +114,17 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the optional Type Qualifier.  Possible qualifiers are:
+	 * Get the optional Type Qualifier.  Predefined qualifiers are:
 	 * <ul>
-	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "CA_PROVINCE", "COUNTRY", "EMAIL", "MONTHABBR", "ADDRESS", "NA_STATE", "NULL", "US_STATE", "URL", "ZIP"</li>
+	 *  <li>Type: BOOLEAN - "TRUE_FALSE", "YES_NO", "ONE_ZERO"</li>
+	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "NULL"</li>
 	 *  <li>Type: LONG - "GROUPING", "SIGNED".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
 	 * 	<li>Type: DOUBLE - "GROUPING", "SIGNED".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
-	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - the detailed date format string</li>
+	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The qualifier is the detailed date format string</li>
 	 * </ul>
+	 *
+	 * Note: Additional Type Qualifiers will may be returned if any Logical Type plugins are installed.
+	 * For example: If the Month Abbreviation plugin installed, the Base Type will be STRING, and the Qualifier will be "MONTHABBR".
 	 * @return The Type Qualifier for the Type.
 	 */
 	public String getTypeQualifier() {
@@ -186,49 +190,21 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression.
 	 */
 	public String getRegExp() {
-		String answer = patternInfo.regexp;
-
 		if (patternInfo.isLogicalType || (!leadingWhiteSpace && !trailingWhiteSpace))
-			return answer;
+			return patternInfo.regexp;
 
-		if (TextAnalyzer.PATTERN_BOOLEAN.equals(answer) || TextAnalyzer.PATTERN_YESNO.equals(answer)) {
-			if (leadingWhiteSpace)
-				answer = "\\p{javaWhitespace}*" + answer;
-			if (trailingWhiteSpace)
-				answer += "\\p{javaWhitespace}*";
-			return answer;
-		}
-
-		if (TextAnalyzer.PATTERN_ANY_VARIABLE.equals(answer))
-			return answer;
-
-		String pattern1 = null;
-		String pattern2 = null;
-		int orIndex = answer.indexOf('|');
-		if (orIndex == -1) {
-			pattern1 = answer.substring(0);
-			pattern2 = null;
-		}
-		else {
-			pattern1 = answer.substring(0, orIndex);
-			pattern2 = answer.substring(orIndex + 1);
-		}
-
+		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
+		String answer = "";
 		if (leadingWhiteSpace)
-			pattern1 = "\\p{javaWhitespace}*" + pattern1;
+			answer = "\\p{javaWhitespace}*";
+		boolean optional = patternInfo.regexp.indexOf('|') != -1;
+		if (optional)
+			answer += "(";
+		answer += patternInfo.regexp;
+		if (optional)
+			answer += ")";
 		if (trailingWhiteSpace)
-			pattern1 += "\\p{javaWhitespace}*";
-
-		answer = pattern1;
-
-		if (pattern2 != null) {
-			if (leadingWhiteSpace)
-				pattern2 = "\\p{javaWhitespace}*" + pattern2;
-			if (trailingWhiteSpace)
-				pattern2 += "\\p{javaWhitespace}*";
-
-			answer += '|' + pattern2;
-		}
+			answer += "\\p{javaWhitespace}*";
 
 		return answer;
 	}

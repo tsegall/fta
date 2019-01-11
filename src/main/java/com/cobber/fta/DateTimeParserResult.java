@@ -753,11 +753,11 @@ public class DateTimeParserResult {
 					break;
 
 				case DAY_OF_WEEK_ABBR:
-					ret.append(TextAnalyzer.PATTERN_ALPHA_3);
+					ret.append(KnownPatterns.PATTERN_ALPHA + "{3}");
 					break;
 
 				case MONTH_ABBR:
-					ret.append(TextAnalyzer.PATTERN_ALPHA_3);
+					ret.append(KnownPatterns.PATTERN_ALPHA + "{3}");
 					break;
 
 				case AMPM:

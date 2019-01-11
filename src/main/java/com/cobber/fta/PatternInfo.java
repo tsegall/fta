@@ -15,6 +15,8 @@
  */
 package com.cobber.fta;
 
+import com.cobber.fta.KnownPatterns.ID;
+
 /**
  * The PatternInfo class maintains a set of information about a simple pattern.
  * This is used to derive a Type from a pattern. For example, new
@@ -90,6 +92,7 @@ public class PatternInfo {
 		}
 	}
 
+	public KnownPatterns.ID id;
 	public String regexp;
 	public String generalPattern;
 	public int minLength;
@@ -101,7 +104,8 @@ public class PatternInfo {
 
 	/**
 	 * Construct a new information block for the supplied pattern.
-	 *
+	 * @param id
+	 *            The ID of interest.
 	 * @param regexp
 	 *            The pattern of interest.
 	 * @param type
@@ -119,8 +123,9 @@ public class PatternInfo {
 	 * @param format
 	 *            The Java format specified for a date pattern (optional).
 	 */
-	public PatternInfo(final String regexp, final Type type, final String typeQualifier, boolean isLogicalType,
-			final int minLength, final int maxLength, final String generalPattern, final String format) {
+	public PatternInfo(ID id, final String regexp, final Type type, final String typeQualifier,
+			boolean isLogicalType, final int minLength, final int maxLength, final String generalPattern, final String format) {
+		this.id = id;
 		this.regexp = regexp;
 		this.type = type;
 		this.typeQualifier = typeQualifier;
@@ -132,9 +137,11 @@ public class PatternInfo {
 	}
 
 	public PatternInfo(PatternInfo that) {
+		this.id = that.id;
 		this.regexp = that.regexp;
 		this.type = that.type;
 		this.typeQualifier = that.typeQualifier;
+		this.isLogicalType = that.isLogicalType;
 		this.minLength = that.minLength;
 		this.maxLength = that.maxLength;
 		this.generalPattern = that.generalPattern;
@@ -156,7 +163,7 @@ public class PatternInfo {
 	 * @return A boolean indicating if the Type for this pattern is Alphabetic.
 	 */
 	public boolean isAlphabetic() {
-		return this.regexp.startsWith(TextAnalyzer.PATTERN_ALPHA);
+		return this.regexp.startsWith(KnownPatterns.PATTERN_ALPHA);
 	}
 
 	/**

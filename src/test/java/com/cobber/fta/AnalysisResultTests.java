@@ -229,6 +229,47 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void doublesWithSpaces() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input =
+				" 0.56000537| 0.4644182| 0.53597438| 0.66897142| 0.58498305| 0.53236401| 0.57459098| 0.66013932| 0.52850509| 0.59274352| 0.63449258|" +
+						" 0.53062689| 0.62101597| 0.54467571| 0.55982822| 0.55236143| 0.52536035| -9999| 0.60300124| 0.56447577| 0.52936405| 0.529791|" +
+						" 0.66758442| 0.48754925| 0.53641158| 0.51493853| 0.50437933| 0.59817135| 0.5593698| 0.57516289| 0.51756728| 0.55499005| 0.50622934|" +
+						" 0.61930555| 0.61162853| 0.62606031| 0.61473697| 0.58204252| 0.54705042| 0.59241235| 0.56348866| 0.63005126| 0.55131644| 0.59083325|" +
+						" 0.6401121| 0.56351823| 0.55042273| 0.61309111| 0.50556493| 0.62455976| 0.58180296| 0.65038371| 0.5766986| 0.60995877| 0.57004404|" +
+						" 0.68236881| 0.49527445| 0.59514475| 0.56920892| 0.61952943| 0.56751066| 0.56773728| 0.57786775| 0.56001669| 0.49182054| 0.61677784|" +
+						" 0.61103219| 0.57788509| 0.5439918| 0.62966329| 0.52707005| 0.69334954| 0.59485507| 0.54186255| 0.56574053| 0.54190195| 0.50607115|" +
+						" 0.48150891| 0.50916439| 0.56314766| 0.56764281| 0.51959276| 0.53935015| 0.56686914| 0.57895356| 0.577981| 0.48543748| 0.62048388|" +
+						" 0.58613783| 0.52769667| 0.60062158| 0.61381048| 0.53795183| 0.56081986| 0.64281517| 0.53652996| 0.59506911| 0.56369746| 0.58791381|" +
+						" 0.5822112| 0.50465667| 0.51010394| 0.54944164| 0.47499654| 0.59955311| 0.60433054| 0.53369552| 0.59793103| -9999| 0.58600241|";
+
+		final String inputs[] = input.split("\\|");
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked != -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*(-?\\d+|-?(\\d+)?\\.\\d+)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		Assert.assertEquals(result.getMinValue(), "-9999.0");
+		Assert.assertEquals(result.getMaxValue(), "0.69334954");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void constantLengthInteger() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "456789|456089|456700|116789|433339|409187".split("\\|");
@@ -302,7 +343,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
@@ -333,7 +374,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
@@ -400,7 +441,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_SIGNED_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_SIGNED_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -1575,9 +1616,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*(?i)(true|false)\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*((?i)(true|false))\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), .9375);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
+		Assert.assertEquals(result.getTypeQualifier(), "TRUE_FALSE");
 		Assert.assertEquals(result.getMinLength(), 4);
 		Assert.assertEquals(result.getMaxLength(), 12);
 		Assert.assertEquals(result.getMinValue(), "false");
@@ -1612,9 +1654,10 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*(?i)(yes|no)\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*((?i)(yes|no))\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), .9375);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
+		Assert.assertEquals(result.getTypeQualifier(), "YES_NO");
 		Assert.assertEquals(result.getMinLength(), 2);
 		Assert.assertEquals(result.getMaxLength(), 9);
 		Assert.assertEquals(result.getMinValue(), "no");
@@ -2767,7 +2810,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "[0-9,]{3,6}");
+		Assert.assertEquals(result.getRegExp(), "[\\d,]{3,6}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "200");
 		Assert.assertEquals(result.getMaxValue(), "13000");
@@ -2814,7 +2857,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 		Assert.assertEquals(result.getMinValue(), String.valueOf(min));
 		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
-		String regExp = "[0-9,]{";
+		String regExp = "[\\d,]{";
 		if (minValue.length() == maxValue.length())
 			regExp += minValue.length();
 		else {
@@ -2874,7 +2917,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
 		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.FRENCH);
 
-		String regExp = "-?[0-9" + formatSymbols.getGroupingSeparator() + "]{";
+		String regExp = "-?[\\d" + formatSymbols.getGroupingSeparator() + "]{";
 		if (minValue.length() == maxValue.length())
 			regExp += minValue.length();
 		else {
@@ -2927,11 +2970,11 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 		Assert.assertEquals(result.getMinValue(), minValue);
 		Assert.assertEquals(result.getMaxValue(), maxValue);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (String sample : samples) {
-			Assert.assertTrue(sample.matches(TextAnalyzer.PATTERN_DOUBLE), sample);
+			Assert.assertTrue(sample.matches(KnownPatterns.PATTERN_DOUBLE), sample);
 		}
 	}
 
@@ -2974,14 +3017,12 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 		Assert.assertEquals(result.getMinValue(), minValue);
 		Assert.assertEquals(result.getMaxValue(), maxValue);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?,\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		/*
 		for (String sample : samples) {
-			Assert.assertTrue(sample.matches(TextAnalyzer.PATTERN_DOUBLE), sample);
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 		}
-		*/
 	}
 
 	@Test
@@ -3031,7 +3072,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 		Assert.assertEquals(result.getMinValue(), String.valueOf(min));
 		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
-		String regExp = "-?[0-9,]{";
+		String regExp = "-?[\\d,]{";
 		if (minValue.length() == maxValue.length())
 			regExp += minValue.length();
 		else {
@@ -3044,7 +3085,6 @@ public class AnalysisResultTests {
 		for (String sample : samples) {
 			Assert.assertTrue(sample.matches(regExp), sample);
 		}
-
 	}
 
 	@Test
@@ -3375,7 +3415,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{2,3}");
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2,3}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -3549,26 +3589,19 @@ public class AnalysisResultTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2,3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length + unknownCount + 1);
-		Assert.assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(1));
-		Assert.assertEquals(result.getMatchCount(), inputs.length + unknownCount);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length + unknownCount + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
-		int matches = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].matches(result.getRegExp()))
-				matches++;
-		}
-		Assert.assertEquals(result.getMatchCount() - unknownCount, matches);
+		for (int i = 0; i < inputs.length; i++)
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
 	}
 
 	@Test
@@ -3978,7 +4011,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -4214,7 +4247,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_DOUBLE_WITH_EXPONENT);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_DOUBLE_WITH_EXPONENT);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -4252,7 +4285,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getRegExp(), TextAnalyzer.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
