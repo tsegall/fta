@@ -514,7 +514,7 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3,9} \\d{1,2}, \\d{4}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{1,2}, \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -546,7 +546,7 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,2} \\p{Alpha}{3,9} \\d{4}");
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2} " + KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -568,7 +568,7 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(formatString, "MMM d',' yyyy");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\p{Alpha}{3} \\d{1,2}, \\d{4}");
+		Assert.assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3} \\d{1,2}, \\d{4}");
 		Assert.assertTrue(trimmed.matches(regExp));
 
 		try {
@@ -891,7 +891,7 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getFormatString(), "MMMM-d-yyyy");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\p{Alpha}{3,9}-\\d{1,2}-\\d{4}");
+		Assert.assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3,9}-\\d{1,2}-\\d{4}");
 		Assert.assertTrue(sample.trim().matches(regExp));
 
 		Assert.assertTrue(result.isValid("April-1-1939"));
@@ -1110,7 +1110,7 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "d MMM yyyy");
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{1,2} \\p{Alpha}{3} \\d{4}");
+		Assert.assertEquals(regExp, "\\d{1,2} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{4}");
 		Assert.assertTrue(sample.matches(regExp));
 
 		Assert.assertTrue(result.isValid("20 Jun 2017"));
@@ -1686,7 +1686,7 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getFormatString(), "d-MMM-yy");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{1,2}-\\p{Alpha}{3}-\\d{2}");
+		Assert.assertEquals(regExp, "\\d{1,2}-" + KnownPatterns.PATTERN_ALPHA + "{3}-\\d{2}");
 		Assert.assertTrue(sample.trim().matches(regExp));
 
 		Assert.assertTrue(result.isValid("1-Jan-14"));
@@ -1714,7 +1714,7 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss z yyyy");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\p{Alpha}{3} \\p{Alpha}{3} \\d{2} \\d{2}:\\d{2}:\\d{2} .* \\d{4}");
+		Assert.assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{2} \\d{2}:\\d{2}:\\d{2} .* \\d{4}");
 		Assert.assertTrue(d.toString().matches(regExp));
 		Assert.assertTrue(result.isValid8(d.toString()));
 		Assert.assertTrue(result.isValid(d.toString()));
