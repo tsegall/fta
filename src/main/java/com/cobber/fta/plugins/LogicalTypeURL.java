@@ -3,6 +3,7 @@ package com.cobber.fta.plugins;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.LogicalTypeInfinite;
@@ -10,7 +11,7 @@ import com.cobber.fta.PatternInfo;
 
 public class LogicalTypeURL extends LogicalTypeInfinite {
 	@Override
-	public boolean initialize() {
+	public boolean initialize(Locale locale) {
 		threshold = 95;
 
 		return true;
@@ -48,7 +49,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

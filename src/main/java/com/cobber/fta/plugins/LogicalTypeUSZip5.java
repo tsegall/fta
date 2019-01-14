@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,17 +22,20 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize() {
+	public synchronized boolean initialize(Locale locale) {
 		threshold = 95;
 
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_zips.csv")))){
-			String line = null;
+		// Only set up the Static Data once
+		if (zips.isEmpty()) {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_zips.csv")))){
+				String line = null;
 
-			while ((line = reader.readLine()) != null) {
-				zips.add(line);
+				while ((line = reader.readLine()) != null) {
+					zips.add(line);
+				}
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Internal error: Issues with US Zip database");
 			}
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Internal error: Issues with US Zip database");
 		}
 
 		return true;
@@ -58,7 +62,8 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
-		return cardinality.size() < 5 || (double)matchCount/realSamples < getThreshold()/100.0 ? "\\d{5}" : null;
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+		boolean zipName = dataStreamName != null && dataStreamName.toUpperCase().contains("ZIP");
+		return (cardinality.size() < 5 && !zipName) || (double)matchCount/realSamples < getThreshold()/100.0 ? "\\d{5}" : null;
 	}
 }

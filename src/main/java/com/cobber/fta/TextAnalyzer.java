@@ -781,9 +781,9 @@ public class TextAnalyzer {
 
 		// Run the initializers for the Logical Types
 		for (LogicalType logical : infiniteTypes)
-			logical.initialize();
+			logical.initialize(locale);
 		for (LogicalTypeFinite logical : finiteTypes) {
-			logical.initialize();
+			logical.initialize(locale);
 			if (logical.getSize() + 10 > getMaxCardinality())
 				throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
 		}
@@ -1297,7 +1297,9 @@ public class TextAnalyzer {
 			boolean foundDigit = false;
 			boolean foundSpace = false;
 			boolean foundOther = false;
-			for (int c : key.codePoints().toArray()) {
+			int len = key.length();
+			for (int i = 0; i < len; i++) {
+				Character c = key.charAt(i);
 			    if (Character.isAlphabetic(c))
 			    	foundAlpha = true;
 			    else if (Character.isDigit(c))
@@ -1685,12 +1687,12 @@ public class TextAnalyzer {
 				missCount += entry.getValue();
 				newOutliers.put(entry.getKey(), entry.getValue());
 				// Break out early if we know we are going to fail
-				if (logical.shouldBackout(realSamples - missCount, realSamples, cardinalityUpper, newOutliers) != null)
+				if (logical.isValidSet(dataStreamName, realSamples - missCount, realSamples, cardinalityUpper, newOutliers) != null)
 					return false;
 			}
 		}
 
-		if (logical.shouldBackout(realSamples - missCount, realSamples, cardinalityUpper, newOutliers) != null)
+		if (logical.isValidSet(dataStreamName, realSamples - missCount, realSamples, cardinalityUpper, newOutliers) != null)
 			return false;
 
 		outliers.putAll(newOutliers);
@@ -1705,12 +1707,7 @@ public class TextAnalyzer {
 		if (!lengthQualifier)
 			return min > 0 ? "+" : ".";
 
-		String ret = "{" + min;
-		if (min != max)
-			ret += "," + max;
-		ret += "}";
-
-		return ret;
+		return Utils.regExpLength(min, max);
 	}
 
 	/**
@@ -1758,7 +1755,7 @@ public class TextAnalyzer {
 		if (matchPatternInfo.typeQualifier != null) {
 			LogicalType logical = registered.get(matchPatternInfo.typeQualifier);
 			String newPattern;
-			if (logical != null && (newPattern = logical.shouldBackout(matchCount, realSamples, cardinality, outliers)) != null) {
+			if (logical != null && (newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, cardinality, outliers)) != null) {
 				if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
 					backoutToPattern(realSamples, newPattern);
 					confidence = (double) matchCount / realSamples;
@@ -1882,7 +1879,9 @@ public class TextAnalyzer {
 				for (final Map.Entry<String, Integer> entry : outliersCompressed.entrySet()) {
 					String key = entry.getKey();
 					count += entry.getValue();
-					for (int c : key.codePoints().toArray()) {
+					int len = key.length();
+					for (int i = 0; i < len; i++) {
+						char c = key.charAt(i);
 						if (c != '1' && c != 'a' && c != '-' && c != '_') {
 							fail = true;
 							break;

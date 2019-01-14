@@ -1,5 +1,6 @@
 package com.cobber.fta;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.validator.routines.CreditCardValidator;
@@ -18,7 +19,7 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize() {
+	public boolean initialize(Locale locale) {
 		return true;
 	}
 
@@ -43,8 +44,8 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality,
-			Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
+			Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

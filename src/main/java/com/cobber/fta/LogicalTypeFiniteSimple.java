@@ -3,12 +3,10 @@ package com.cobber.fta;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
-	private Set<String> members;
 	private String qualifier;
 	private String regexp;
 	private String backout;
@@ -23,26 +21,23 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public boolean initialize() {
-		members = new HashSet<String>();	
-		try (BufferedReader bufferedReader = new BufferedReader(reader)){
-			String line = null;
+	public synchronized boolean initialize(Locale locale) {
+		// Only set up the Static Data once
+		if (getMembers().isEmpty()) {
+			try (BufferedReader bufferedReader = new BufferedReader(reader)){
+				String line = null;
 
-			while ((line = bufferedReader.readLine()) != null) {
-				members.add(line);
+				while ((line = bufferedReader.readLine()) != null) {
+					getMembers().add(line);
+				}
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Internal error: Issues with database for: " + qualifier);
 			}
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Internal error: Issues with database for: " + qualifier);
 		}
-		
-		super.initialize();
+
+		super.initialize(locale);
 
 		return true;
-	}
-
-	@Override
-	public Set<String> getMembers() {
-		return members;
 	}
 
 	@Override
@@ -56,12 +51,11 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String shouldBackout(long matchCount, long realsamples, Map<String, Integer> cardinality,
-			Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realsamples,
+			Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		if (outliers.size() > 1)
 			return backout;
 
 		return (double)matchCount / realsamples >= getThreshold()/100.0 ? null : backout;
 	}
-
 }

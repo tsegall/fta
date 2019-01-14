@@ -17,7 +17,7 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 	private static Set<String> addressMarkers = new HashSet<String>();
 
 	@Override
-	public boolean initialize() {
+	public boolean initialize(Locale locale) {
 		threshold = 90;
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/address_markers.csv")))){
@@ -96,7 +96,7 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

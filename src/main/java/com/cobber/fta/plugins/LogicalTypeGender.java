@@ -1,6 +1,7 @@
 package com.cobber.fta.plugins;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,8 +16,8 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 	}
 
 	@Override
-	public boolean initialize() {
-		super.initialize();
+	public boolean initialize(Locale locale) {
+		super.initialize(locale);
 
 		threshold = 95;
 
@@ -39,7 +40,7 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		// Feel like this should be a little more inclusive in this day and age but not sure what setß to use!! 
 		if (outliers.size() > 1)
 			return "\\p{Alpha}+";

@@ -1,5 +1,6 @@
 package com.cobber.fta;
 
+import java.util.Locale;
 import java.util.Map;
 
 public abstract class LogicalType {
@@ -7,9 +8,10 @@ public abstract class LogicalType {
 
 	/**
 	 * Called to perform any initialization.
+	 * @param locale The locale used for this analysis
 	 * @return True if initialization was successful.
 	 */
-	public abstract boolean initialize();
+	public abstract boolean initialize(Locale locale);
 
 	/**
 	 *  The user-friendly name of the Qualifier.  For example, EMAIL for an email address
@@ -59,11 +61,12 @@ public abstract class LogicalType {
 	 * Given the data to date as embodied by the arguments return null if we think this is an instance
 	 * of this logical type, if not return a new suitable pattern.
 	 * instance of this logical type.
+	 * @param dataStreamName The name of the Data Stream
 	 * @param matchCount Number of samples that match so far (as determined by isValid()
 	 * @param realSamples Number of real (i.e. non-blank and non-null) samples that we have processed so far.
 	 * @param cardinality Cardinality set, up to the maximum maintained
 	 * @param outliers Outlier set, up to the maximum maintained
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract String shouldBackout(long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers);
+	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers);
 }

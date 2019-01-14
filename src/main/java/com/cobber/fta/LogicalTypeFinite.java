@@ -1,5 +1,6 @@
 package com.cobber.fta;
 
+import java.util.Locale;
 import java.util.Set;
 
 import com.cobber.fta.PatternInfo.Type;
@@ -25,7 +26,7 @@ public abstract class LogicalTypeFinite extends LogicalType {
 	}
 	
 	@Override
-	public boolean initialize() {
+	public boolean initialize(Locale locale) {
 		for (String member : getMembers()) {
 			int len = member.length();
 			if (len < minLength)

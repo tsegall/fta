@@ -2537,7 +2537,7 @@ public class AnalysisResultTests {
 
 	@Test
 	public void sameZip() throws IOException {
-		final TextAnalyzer analysis = new TextAnalyzer("sameZip");
+		final TextAnalyzer analysis = new TextAnalyzer();
 		final int copies = 100;
 		final String sample = "02421";
 
@@ -2553,6 +2553,34 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), copies);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), copies);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), copies);
+		Assert.assertEquals(result.getRegExp(), "\\d{5}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertTrue(sample.matches(result.getRegExp()));
+	}
+
+	@Test
+	public void sameZipWithHeader() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("ZipCode");
+		final int copies = 100;
+		final String sample = "02421";
+
+		int locked = -1;
+
+		for (int i = 0; i < copies; i++) {
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), "US_ZIP5");
 		Assert.assertEquals(result.getSampleCount(), copies);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), copies);
@@ -3515,6 +3543,11 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
 		Assert.assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
+
+		// Even the UNK match the RE
+		for (int i = 0; i < inputs.length; i++)
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+
 /*
 		analysis.train("Another bad element");
 		result = analysis.getResult();
@@ -3534,6 +3567,101 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)(badCount + 1)/result.getSampleCount());
 		*/
+	}
+
+	// Set of valid months + 4 x "UNK"
+	private final static String MONTH_TEST_FRENCH =
+			"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
+					"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
+					"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
+					"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
+					"janv.|févr.|mars|UNK|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
+					"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
+					"janv.|févr.|mars|avr.|mai|UNK|juil.|août|sept.|oct.|nov.|déc.|" +
+					"janv.|févr.|mars|UNK|mai|juin|juil.|août|sept.|UNK|nov.|déc.|";
+
+	@Test
+	public void basicMonthAbbrFrench() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(Locale.FRENCH);
+		final int badCount = 4;
+		final String inputs[] = MONTH_TEST_FRENCH.split("\\|");
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\.]{3,5}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 1);
+		Assert.assertEquals(outliers.get("UNK"), Integer.valueOf(4));
+		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
+		Assert.assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
+
+		// Even the UNK match the RE
+		for (int i = 0; i < inputs.length; i++)
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+	}
+
+	// Set of valid months + 4 x "UNK"
+	private final static String MONTH_TEST_GERMAN =
+			"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
+					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
+					"Jan|Feb|Mär|UNK|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
+					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
+					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|UNK|Nov|Dez|" +
+					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
+					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
+					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
+					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|UNK|Sep|Okt|Nov|Dez|" +
+					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
+					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|UNK|Nov|Dez|";
+
+	@Test
+	public void basicMonthAbbrGerman() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(Locale.GERMAN);
+		final int badCount = 4;
+		final String inputs[] = MONTH_TEST_GERMAN.split("\\|");
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 1);
+		Assert.assertEquals(outliers.get("UNK"), Integer.valueOf(4));
+		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
+		Assert.assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
+
+		// Even the UNK match the RE
+		for (int i = 0; i < inputs.length; i++)
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 	}
 
 	@Test
@@ -3602,6 +3730,44 @@ public class AnalysisResultTests {
 
 		for (int i = 0; i < inputs.length; i++)
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+	}
+
+	@Test
+	public void frenchName() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "Adrien|Alain|Albert|Alexandre|Alexis|André|Antoine|Arnaud|Arthur|Aurélien|" +
+				"Baptiste|Benjamin|Benoît|Bernard|Bertrand|Bruno|Cédric|Charles|Christian|Christophe|" +
+				"Claude|Clément|Cyril|Damien|Daniel|David|Denis|Didier|Dominique|Dylan|" +
+				"Emmanuel|Éric|Étienne|Enzo|Fabien|Fabrice|Florent|Florian|Francis|Franck|" +
+				"François|Frédéric|Gabriel|Gaétan|Georges|Gérard|Gilbert|Gilles|Grégory|Guillaume|" +
+				"Guy|Henri|Hervé|Hugo|Jacques|Jean|";
+		//Jean-Claude|Jean-François|Jean-Louis|Jean-Luc|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3,10}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		// BUG
+		/*
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
+		*/
 	}
 
 	@Test
