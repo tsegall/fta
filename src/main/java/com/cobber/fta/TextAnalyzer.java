@@ -574,7 +574,7 @@ public class TextAnalyzer {
 	}
 
 	private boolean trackBoolean(final String input) {
-		final String trimmedLower = input.trim().toLowerCase(Locale.ROOT);
+		final String trimmedLower = input.trim().toLowerCase(locale);
 
 		final boolean isTrue = "true".equals(trimmedLower) || "yes".equals(trimmedLower);
 		final boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower));
@@ -1325,14 +1325,14 @@ public class TextAnalyzer {
 		// If we are currently Alphabetic and the only errors are digits then convert to AlphaNumeric
 		if (badCharacters != 0 && spaces == 0 && other == 0 && current.isAlphabetic()) {
 			if (outlierMap.size() == maxOutliers || digits > .01 * realSamples) {
-				backoutToPattern(realSamples, current.regexp.replace("Alpha", "Alnum"));
+				backoutToPatternID(realSamples, KnownPatterns.ID.ID_ALPHANUMERIC_VARIABLE);
 				return true;
 			}
 		}
 		// If we are currently Numeric and the only errors are alpha then convert to AlphaNumeric
 		else if (badCharacters != 0 && spaces == 0 && other == 0 && PatternInfo.Type.LONG.equals(current.type)) {
 			if (outlierMap.size() == maxOutliers || alphas > .01 * realSamples) {
-				backoutToPattern(realSamples, KnownPatterns.PATTERN_ALNUM_VARIABLE);
+				backoutToPattern(realSamples, KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE);
 				return true;
 			}
 		}
@@ -1642,7 +1642,7 @@ public class TextAnalyzer {
 		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
 		if ((double) missCount / realSamples <= missThreshold) {
 			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
-				if (logical.isValid(entry.getKey().trim().toUpperCase(Locale.ROOT)))
+				if (logical.isValid(entry.getKey().trim().toUpperCase(locale)))
 					validCount += entry.getValue();
 				else {
 					misses++;
@@ -1772,13 +1772,13 @@ public class TextAnalyzer {
 				matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_SIGNED_LONG);
 
 			if (groupingSeparators == 0 && minLong > 19000101 && maxLong < 20400101 &&
-					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
+					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("date"))) {
 				matchPatternInfo = new PatternInfo(null, "\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern(matchPatternInfo.format);
 				minLocalDate = LocalDate.parse(String.valueOf(minLong), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
 			} else if (groupingSeparators == 0 && minLong > 1800 && maxLong < 2030 &&
-					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(Locale.ROOT).contains("year") || dataStreamName.toLowerCase(Locale.ROOT).contains("date"))) {
+					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("year") || dataStreamName.toLowerCase(locale).contains("date"))) {
 				matchPatternInfo = new PatternInfo(null, "\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLong, 1, 1);
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
@@ -1825,7 +1825,7 @@ public class TextAnalyzer {
 			int maxKeyLength = 0;
 			Map<String, Integer> cardinalityUpper = new HashMap<String, Integer>();
 			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
-				String key = entry.getKey().toUpperCase(Locale.ROOT).trim();
+				String key = entry.getKey().toUpperCase(locale).trim();
 				int keyLength = key.length();
 				if (keyLength < minKeyLength)
 					minKeyLength = keyLength;

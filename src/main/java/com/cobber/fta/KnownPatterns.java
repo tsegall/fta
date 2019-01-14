@@ -30,17 +30,14 @@ public class KnownPatterns {
 
 	public static final String PATTERN_ANY = ".";
 	public static final String PATTERN_ANY_VARIABLE = ".+";
-	public static final String PATTERN_ALPHA = "\\p{Alpha}";
+	public static final String PATTERN_ALPHA = "\\p{IsAlphabetic}";
 	public static final String PATTERN_ALPHA_VARIABLE = PATTERN_ALPHA + "+";
-	public static final String PATTERN_ALNUM = "\\p{Alnum}";
-	public static final String PATTERN_ALNUM_VARIABLE = PATTERN_ALNUM + "+";
-
+	public static final String PATTERN_ALPHANUMERIC = "[\\p{IsAlphabetic}\\p{IsDigit}]";
+	public static final String PATTERN_ALPHANUMERIC_VARIABLE = PATTERN_ALPHANUMERIC + "+";
 
 	public static final String PATTERN_NULL = "[NULL]";
 	public static final String PATTERN_WHITESPACE = "\\p{javaWhitespace}*";
 
-	public static final String PATTERN_ALPHANUMERIC = "\\p{Alnum}";
-	public static final String PATTERN_ALPHANUMERIC_VARIABLE = PATTERN_ALPHANUMERIC + "+";
 	public static final String PATTERN_BOOLEAN_TRUE_FALSE = "(?i)(true|false)";
 	public static final String PATTERN_BOOLEAN_YES_NO = "(?i)(yes|no)";
 	public static final String PATTERN_BOOLEAN_ONE_ZERO = "[0|1]";
@@ -78,7 +75,7 @@ public class KnownPatterns {
 		knownPatterns.put(PATTERN_ALPHA_VARIABLE,
 				new PatternInfo(ID.ID_ALPHA_VARIABLE, PATTERN_ALPHA_VARIABLE, PatternInfo.Type.STRING, null, false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_ALPHANUMERIC_VARIABLE,
-				new PatternInfo(ID.ID_ALPHA_VARIABLE, PATTERN_ALPHANUMERIC_VARIABLE, PatternInfo.Type.STRING, null, false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_ALPHANUMERIC_VARIABLE, PATTERN_ALPHANUMERIC_VARIABLE, PatternInfo.Type.STRING, null, false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_LONG,
 				new PatternInfo(ID.ID_LONG, PATTERN_LONG, PatternInfo.Type.LONG, null, false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_LONG,
