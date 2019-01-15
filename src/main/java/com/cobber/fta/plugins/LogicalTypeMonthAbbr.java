@@ -26,7 +26,6 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 			return true;
 		}
 
-		boolean alphabetic = false;
 		boolean alphabeticWithPunctuation = false;
 
 		HashSet<String> thisLanguage = new HashSet<String>();
@@ -34,10 +33,8 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 		for (int i = 0; i < 12; i++) {
 			String thisMonthAbbr = shortMonths[i].toUpperCase(locale);
 			thisLanguage.add(thisMonthAbbr);
-			if (thisMonthAbbr.matches("\\p{Alpha}*"))
+			if (thisMonthAbbr.matches("\\p{IsAlphabetic}*"))
 				;
-			else if (thisMonthAbbr.matches("\\p{IsAlphabetic}*"))
-				alphabetic = true;
 			else if (thisMonthAbbr.matches("[\\p{IsAlphabetic}\\.]*"))
 				alphabeticWithPunctuation = true;
 		}
@@ -45,8 +42,7 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 
 		super.initialize(locale);
 
-		String baseRE = alphabeticWithPunctuation ? "[\\p{IsAlphabetic}\\.]" :
-				(alphabetic ? "\\p{IsAlphabetic}" : "\\p{Alpha}");
+		String baseRE = alphabeticWithPunctuation ? "[\\p{IsAlphabetic}\\.]" : "\\p{IsAlphabetic}";
 		regExps.put(ISO3Language, baseRE + Utils.regExpLength(getMinLength(), getMaxLength()));
 
 		return true;

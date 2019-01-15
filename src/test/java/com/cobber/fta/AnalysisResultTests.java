@@ -3530,7 +3530,7 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");
@@ -3613,6 +3613,43 @@ public class AnalysisResultTests {
 		// Even the UNK match the RE
 		for (int i = 0; i < inputs.length; i++)
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+	}
+
+
+	//BUG @Test
+	public void basicFrenchDate() throws IOException {
+		Set<String> samples = new HashSet<String>();
+		LocalDate localDate = LocalDate.now();
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(Locale.FRENCH);
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.FRANCE);
+
+		int locked = -1;
+
+		for (int i = 0; i < 100; i++) {
+			String sample = localDate.format(formatter);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+			localDate = localDate.minusDays(100);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\.]{3,5}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");
+		Assert.assertEquals(result.getSampleCount(), samples.size());
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), samples);
+		Assert.assertEquals(result.getNullCount(), 0);
+
+		// Even the UNK match the RE
+		for (String sample : samples)
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
 	// Set of valid months + 4 x "UNK"
@@ -4349,6 +4386,48 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void textBlocks() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int iterations = 100000;
+		final Random random = new Random(478031);
+		int locked = -1;
+		StringBuilder line = new StringBuilder();
+		int minLength = Integer.MAX_VALUE;
+		int maxLength = Integer.MIN_VALUE;
+		String alphabet = "abcdefhijklmnopqrstuvwxyz";
+
+		for (int i = 0; i < iterations; i++) {
+			line.setLength(0);
+			int wordCount = random.nextInt(20);
+			for (int words = 0; words < wordCount; words++) {
+				int charCount = random.nextInt(10);
+				for (int chars = 0; chars < charCount; chars++) {
+					line.append(alphabet.charAt(random.nextInt(25)));
+				}
+				line.append(' ');
+			}
+			String sample = line.toString().trim();
+			int len = sample.length();
+			if (len > maxLength)
+				maxLength = len;
+			if (len < minLength && len != 0)
+				minLength = len;
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), iterations);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), ".{" + minLength + "," + maxLength + "}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
