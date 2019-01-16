@@ -18,17 +18,30 @@ package com.cobber.fta;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * Helper class to manage several of the fixed length date inputs.
  * Used to match from an internal normalized form to a Java DateTimeFormatter.
+ *
+ * Vector returned is:
+ *   DayOffset DayLength MonthOffset MonthLength YearOffset YearLength
+ *   Offsets can be positive from the start of the string, or negative from the end of the string
+ *   Lengths can be positive which reflects true length or negative field separated
+ *
+ * Note: Currently the set of string supported does not depend on the Locale supplied.  Need to survey
+ * additional languages to identify whether this is necessary or not.
  */
 public class SimpleDateMatcher {
-	private static Map<String, SimpleDateMatcher> knownMatchers = new HashMap<String, SimpleDateMatcher>();
+	private static HashMap<String, HashMap<String, SimpleDateMatcher>> knownMatchers = new HashMap<String, HashMap<String, SimpleDateMatcher>>();
 
-	static {
+	private static HashMap<String, SimpleDateMatcher> getSimpleDataMatchers(Locale locale) {
+		final String language = locale.getISO3Language();
+
+		// Check to see if we are already in the cache
+		if (knownMatchers.get(language) != null)
+			return knownMatchers.get(language);
+
 		Set<SimpleDateMatcher> matchers = new HashSet<SimpleDateMatcher>();
 
 		matchers.add(new SimpleDateMatcher("d{4} d{2} d{2}", "yyyy MM dd", new int[] {8, 2, 5, 2, 0, 4}));
@@ -38,40 +51,40 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleDateMatcher("d{4} d{2} d", "yyyy MM d", new int[] {8, 1, 5, 2, 0, 4}));
 		matchers.add(new SimpleDateMatcher("d{4} d d", "yyyy M d", new int[] {7, 1, 5, 1, 0, 4}));
 
-		matchers.add(new SimpleDateMatcher("d{2} a{3} d{4}", "dd MMM yyyy", new int[] {0, 2, 3, 3, 7, 4}));
-		matchers.add(new SimpleDateMatcher("d a{3} d{4}", "d MMM yyyy", new int[] {0, 1, 2, 3, 6, 4}));
-		matchers.add(new SimpleDateMatcher("d{2}-a{3}-d{4}", "dd-MMM-yyyy", new int[] {0, 2, 3, 3, 7, 4}));
-		matchers.add(new SimpleDateMatcher("d-a{3}-d{4}", "d-MMM-yyyy", new int[] {0, 1, 2, 3, 6, 4}));
-		matchers.add(new SimpleDateMatcher("d{2}/a{3}/d{4}", "dd/MMM/yyyy", new int[] {0, 2, 3, 3, 7, 4}));
-		matchers.add(new SimpleDateMatcher("d/a{3}/d{4}", "d/MMM/yyyy", new int[] {0, 1, 2, 3, 6, 4}));
+		matchers.add(new SimpleDateMatcher("d{2} a{3} d{4}", "dd MMM yyyy", new int[] {0, 2, 3, -2, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d a{3} d{4}", "d MMM yyyy", new int[] {0, 1, 2, -2, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d{2}-a{3}-d{4}", "dd-MMM-yyyy", new int[] {0, 2, 3, -2, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d-a{3}-d{4}", "d-MMM-yyyy", new int[] {0, 1, 2, -2, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d{2}/a{3}/d{4}", "dd/MMM/yyyy", new int[] {0, 2, 3, -2, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d/a{3}/d{4}", "d/MMM/yyyy", new int[] {0, 1, 2, -2, -4, 4}));
 
-		matchers.add(new SimpleDateMatcher("d{2} a{4} d{4}", "dd MMMM yyyy", new int[] {0, 2, 3, -5, -4, 4}));
-		matchers.add(new SimpleDateMatcher("d a{4} d{4}", "d MMMM yyyy", new int[] {0, 1, 2, -5, -4, 4}));
-		matchers.add(new SimpleDateMatcher("d{2}-a{4}-d{4}", "dd-MMMM-yyyy", new int[] {0, 2, 3, -5, -4, 4}));
-		matchers.add(new SimpleDateMatcher("d-a{4}-d{4}", "d-MMMM-yyyy", new int[] {0, 1, 2, -5, -4, 4}));
-		matchers.add(new SimpleDateMatcher("d{2}/a{4}/d{4}", "dd/MMMM/yyyy", new int[] {0, 2, 3, -5, -4, 4}));
-		matchers.add(new SimpleDateMatcher("d/a{4}/d{4}", "d/MMMM/yyyy", new int[] {0, 1, 2, -5, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d{2} a{4} d{4}", "dd MMMM yyyy", new int[] {0, 2, 3, -1, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d a{4} d{4}", "d MMMM yyyy", new int[] {0, 1, 2, -1, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d{2}-a{4}-d{4}", "dd-MMMM-yyyy", new int[] {0, 2, 3, -1, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d-a{4}-d{4}", "d-MMMM-yyyy", new int[] {0, 1, 2, -1, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d{2}/a{4}/d{4}", "dd/MMMM/yyyy", new int[] {0, 2, 3, -1, -4, 4}));
+		matchers.add(new SimpleDateMatcher("d/a{4}/d{4}", "d/MMMM/yyyy", new int[] {0, 1, 2, -1, -4, 4}));
 
-		matchers.add(new SimpleDateMatcher("d{2} a{3} d{2}", "dd MMM yy", new int[] {0, 2, 3, 3, 7, 2}));
-		matchers.add(new SimpleDateMatcher("d a{3} d{2}", "d MMM yy", new int[] {0, 1, 2, 3, 6, 2}));
-		matchers.add(new SimpleDateMatcher("d{2}-a{3}-d{2}", "dd-MMM-yy", new int[] {0, 2, 3, 3, 7, 2}));
-		matchers.add(new SimpleDateMatcher("d-a{3}-d{2}", "d-MMM-yy", new int[] {0, 1, 2, 3, 6, 2}));
-		matchers.add(new SimpleDateMatcher("d{2}/a{3}/d{2}", "dd/MMM/yy", new int[] {0, 2, 3, 3, 7, 2}));
-		matchers.add(new SimpleDateMatcher("d/a{3}/d{2}", "d/MMM/yy", new int[] {0, 1, 2, 3, 6, 2}));
+		matchers.add(new SimpleDateMatcher("d{2} a{3} d{2}", "dd MMM yy", new int[] {0, 2, 3, -2, -2, 2}));
+		matchers.add(new SimpleDateMatcher("d a{3} d{2}", "d MMM yy", new int[] {0, 1, 2, -2, -2, 2}));
+		matchers.add(new SimpleDateMatcher("d{2}-a{3}-d{2}", "dd-MMM-yy", new int[] {0, 2, 3, -2, -2, 2}));
+		matchers.add(new SimpleDateMatcher("d-a{3}-d{2}", "d-MMM-yy", new int[] {0, 1, 2, -2, -2, 2}));
+		matchers.add(new SimpleDateMatcher("d{2}/a{3}/d{2}", "dd/MMM/yy", new int[] {0, 2, 3, -2, -2, 2}));
+		matchers.add(new SimpleDateMatcher("d/a{3}/d{2}", "d/MMM/yy", new int[] {0, 1, 2, -2, -2, 2}));
 
-		matchers.add(new SimpleDateMatcher("a{3} d{2}, d{4}", "MMM dd',' yyyy", new int[] {4, 2, 0, 3, 8, 4}));
-		matchers.add(new SimpleDateMatcher("a{3} d, d{4}", "MMM d',' yyyy", new int[] {4, 1, 0, 3, 7, 4}));
-		matchers.add(new SimpleDateMatcher("a{3} d d{4}", "MMM dd yyyy", new int[] {4, 2, 0, 3, 7, 4}));
-		matchers.add(new SimpleDateMatcher("a{3} d d{4}", "MMM d yyyy", new int[] {4, 1, 0, 3, 6, 4}));
-		matchers.add(new SimpleDateMatcher("a{3}-d{2}-d{4}", "MMM-dd-yyyy", new int[] {4, 2, 0, 3, 7, 4}));
-		matchers.add(new SimpleDateMatcher("a{3}-d-d{4}", "MMM-d-yyyy", new int[] {4, 1, 0, 3, 6, 4}));
+		matchers.add(new SimpleDateMatcher("a{3} d{2}, d{4}", "MMM dd',' yyyy", new int[] {4, 2, 0, -2, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{3} d, d{4}", "MMM d',' yyyy", new int[] {4, 1, 0, -2, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{3} d d{4}", "MMM dd yyyy", new int[] {4, 2, 0, -2, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{3} d d{4}", "MMM d yyyy", new int[] {4, 1, 0, -2, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{3}-d{2}-d{4}", "MMM-dd-yyyy", new int[] {4, 2, 0, -2, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{3}-d-d{4}", "MMM-d-yyyy", new int[] {4, 1, 0, -2, -4, 4}));
 
-		matchers.add(new SimpleDateMatcher("a{4} d{2}, d{4}", "MMMM dd',' yyyy", new int[] {-8, 2, 0, 3, -4, 4}));
-		matchers.add(new SimpleDateMatcher("a{4} d, d{4}", "MMMM d',' yyyy", new int[] {-7, 1, 0, 3, -4, 4}));
-		matchers.add(new SimpleDateMatcher("a{4} d{2} d{4}", "MMMM dd yyyy", new int[] {-7, 2, 0, 3, -4, 4}));
-		matchers.add(new SimpleDateMatcher("a{4} d d{4}", "MMMM d yyyy", new int[] {-6, 1, 0, 3, -4, 4}));
-		matchers.add(new SimpleDateMatcher("a{4}-d{2}-d{4}", "MMMM-dd-yyyy", new int[] {-7, 2, 0, 3, -4, 4}));
-		matchers.add(new SimpleDateMatcher("a{4}-d-d{4}", "MMMM-d-yyyy", new int[] {-6, 1, 0, 3, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{4} d{2}, d{4}", "MMMM dd',' yyyy", new int[] {-8, 2, 0, -1, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{4} d, d{4}", "MMMM d',' yyyy", new int[] {-7, 1, 0, -1, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{4} d{2} d{4}", "MMMM dd yyyy", new int[] {-7, 2, 0, -1, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{4} d d{4}", "MMMM d yyyy", new int[] {-6, 1, 0, -1, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{4}-d{2}-d{4}", "MMMM-dd-yyyy", new int[] {-7, 2, 0, -1, -4, 4}));
+		matchers.add(new SimpleDateMatcher("a{4}-d-d{4}", "MMMM-d-yyyy", new int[] {-6, 1, 0, -1, -4, 4}));
 
 		matchers.add(new SimpleDateMatcher("d{8}Td{6}Z", "yyyyMMdd'T'HHmmss'Z'", new int[] {6, 2, 4, 2, 0, 4}));
 		matchers.add(new SimpleDateMatcher("d{8}Td{6}", "yyyyMMdd'T'HHmmss", new int[] {6, 2, 4, 2, 0, 4}));
@@ -80,14 +93,19 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleDateMatcher("d{8}Td{6}.d{3}+d{4}", "yyyyMMdd'T'HHmmss.SSSx", new int[] {6, 2, 4, 2, 0, 4}));
 		matchers.add(new SimpleDateMatcher("d{8}Td{6}.d{3}-d{4}", "yyyyMMdd'T'HHmmss.SSSx", new int[] {6, 2, 4, 2, 0, 4}));
 
-		matchers.add(new SimpleDateMatcher("d{2}/a{3}/d{2} d:d{2} P", "dd/MMM/yy h:mm a", new int[] {0, 2, 3, 3, 7, 2}));
-		matchers.add(new SimpleDateMatcher("d{2}/a{3}/d{2} d{2}:d{2} P", "dd/MMM/yy hh:mm a", new int[] {0, 2, 3, 3, 7, 2}));
+		matchers.add(new SimpleDateMatcher("d{2}/a{3}/d{2} d:d{2} P", "dd/MMM/yy h:mm a", new int[] {0, 2, 3, -2, 7, 2}));
+		matchers.add(new SimpleDateMatcher("d{2}/a{3}/d{2} d{2}:d{2} P", "dd/MMM/yy hh:mm a", new int[] {0, 2, 3, -2, 7, 2}));
 
-		matchers.add(new SimpleDateMatcher("a{3} a{3} d{2} d{2}:d{2}:d{2} a{3} d{4}", "EEE MMM dd HH:mm:ss z yyyy", new int[] {8, 2, 4, 3, 24, 4}));
+		matchers.add(new SimpleDateMatcher("a{3} a{3} d{2} d{2}:d{2}:d{2} a{3} d{4}", "EEE MMM dd HH:mm:ss z yyyy", new int[] {8, 2, 4, -2, 24, 4}));
 
+		HashMap<String, SimpleDateMatcher> localeMatcher = new HashMap<String, SimpleDateMatcher>();
 		for (SimpleDateMatcher sdm : matchers) {
-			knownMatchers.put(sdm.getMatcher(), sdm);
+			localeMatcher.put(sdm.getMatcher(), sdm);
 		}
+
+		knownMatchers.put(language, localeMatcher);
+
+		return localeMatcher;
 	}
 
 	private final String matcher;
@@ -151,18 +169,36 @@ public class SimpleDateMatcher {
 	 * <li>Strings of alphas replaced by a{4} for n &gt; 4, a{n} for n &gt; 1 and n &lt; 4, or a for n = 1</li>
 	 * </ul>
 	 * @param input The input string to be matched
+	 * @param locale The Locale the date String is in
 	 * @return The compressed representation
 	 */
-	public static String compress(final String input) {
+	public static String compress(String input, Locale locale) {
 		final StringBuilder result = new StringBuilder();
 		int len = input.length();
 		char lastCh = '=';
 		int count = 0;
 		boolean amIndicator = false;
-		if (input.toLowerCase(Locale.ROOT).endsWith("am") || input.toLowerCase(Locale.ROOT).endsWith("pm")) {
+
+		input = input.toUpperCase(locale);
+
+		if (input.endsWith("AM") || input.endsWith("PM")) {
 			len -= 2;
 			amIndicator = true;
 		}
+
+		for (String monthAbbr : LocaleInfo.getMonthAbbrs(locale).keySet())
+			if (input.contains(monthAbbr)) {
+				input = input.replaceFirst(monthAbbr, "aaa");
+				len -= monthAbbr.length() - 3;
+				break;
+			}
+
+		for (String month : LocaleInfo.getMonths(locale).keySet())
+			if (input.contains(month)) {
+				input = input.replaceFirst(month, "aaaa");
+				len -= month.length() - 4;
+				break;
+			}
 
 		for (int i = 0; i < len; i++) {
 			final char ch = input.charAt(i);
@@ -217,10 +253,11 @@ public class SimpleDateMatcher {
 
 	/**
 	 * Retrieve the SimpleDateMatcher for this compressed pattern.
-	 * @param pattern The compressed pattern as generated by {@link #compress(String) compress()} method.
+	 * @param pattern The compressed pattern as generated by {@link #compress(String, Locale) compress()} method.
+	 * @param locale The Locale we are currently processing
 	 * @return The SimpleDateMatcher found or null if no match.
 	 */
-	public static SimpleDateMatcher get(String pattern) {
-		return knownMatchers.get(pattern);
+	public static SimpleDateMatcher get(String pattern, Locale locale) {
+		return getSimpleDataMatchers(locale).get(pattern);
 	}
 }

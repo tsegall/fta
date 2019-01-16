@@ -15,11 +15,9 @@
  */
 package com.cobber.fta;
 
-import java.text.DateFormatSymbols;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -58,41 +56,12 @@ public class DateTimeParser {
 	}
 
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
-
-	private static Map<String, Integer> months = new HashMap<String, Integer>();
-	private static Map<String, Integer> monthAbbr = new HashMap<String, Integer>();
+	private Locale locale;
 
 	public static Set<String> timeZones = new HashSet<String>();
-	public static String monthPattern;
+
 
 	static {
-
-		final GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance();
-
-		final int actualMonths = cal.getActualMaximum(GregorianCalendar.MONTH);
-
-		// Setup the Months
-		int shortestMonth = Integer.MAX_VALUE;
-		int longestMonth = Integer.MIN_VALUE;
-		final String[] longMonths = new DateFormatSymbols().getMonths();
-		for (int i = 0; i <= actualMonths; i++) {
-			final String month = longMonths[i].toUpperCase(Locale.ROOT);
-			months.put(month, i + 1);
-			final int len = month.length();
-			if (len < shortestMonth)
-				shortestMonth = len;
-			if (len > longestMonth)
-				longestMonth = len;
-		}
-		monthPattern = KnownPatterns.PATTERN_ALPHA + "{" + shortestMonth + "," + longestMonth + "}";
-
-
-		// Setup the Monthly abbreviations
-		final String[] shortMonths = new DateFormatSymbols().getShortMonths();
-		for (int i = 0; i <= actualMonths; i++) {
-			monthAbbr.put(shortMonths[i].toUpperCase(Locale.ROOT), i + 1);
-		}
-
 		// Cache the set of available Time Zones
 		Collections.addAll(timeZones, TimeZone.getAvailableIDs());
 		// Add the non-real Time Zones (that people use)
@@ -100,13 +69,13 @@ public class DateTimeParser {
 
 	}
 
-	public static int monthAbbreviationOffset(final String month) {
-		final Integer offset = monthAbbr.get(month.toUpperCase(Locale.ROOT));
+	public static int monthAbbreviationOffset(final String month, Locale locale) {
+		final Integer offset = LocaleInfo.getMonthAbbrs(locale).get(month.toUpperCase(locale));
 		return offset == null ? -1 : offset;
 	}
 
-	public static int monthOffset(final String month) {
-		final Integer offset = months.get(month.toUpperCase(Locale.ROOT));
+	public static int monthOffset(final String month, Locale locale) {
+		final Integer offset = LocaleInfo.getMonths(locale).get(month.toUpperCase(locale));
 		return offset == null ? -1 : offset;
 	}
 
@@ -117,11 +86,16 @@ public class DateTimeParser {
 	private int invalidCount;
 
 	DateTimeParser(final DateResolutionMode resolutionMode) {
-		this.resolutionMode = resolutionMode;
+		this(resolutionMode, Locale.getDefault());
 	}
 
 	DateTimeParser() {
-		this(DateResolutionMode.None);
+		this(DateResolutionMode.None, Locale.getDefault());
+	}
+
+	DateTimeParser(final DateResolutionMode resolutionMode, Locale locale) {
+		this.resolutionMode = resolutionMode;
+		this.locale = locale;
 	}
 
 	/**
@@ -143,7 +117,7 @@ public class DateTimeParser {
 		}
 
 		final String trimmed = input.trim();
-		final String ret = determineFormatString(trimmed, DateResolutionMode.None);
+		final String ret = determineFormatString(trimmed, DateResolutionMode.None, locale);
 		if (ret == null) {
 			invalidCount++;
 			return null;
@@ -178,7 +152,7 @@ public class DateTimeParser {
 
 		// If there is only one result then it must be correct :-)
 		if (results.size() == 1)
-			return DateTimeParserResult.asResult(results.keySet().iterator().next(), resolutionMode);
+			return DateTimeParserResult.asResult(results.keySet().iterator().next(), resolutionMode, locale);
 
 		DateTimeParserResult answerResult = null;
 
@@ -189,7 +163,7 @@ public class DateTimeParser {
 		StringBuffer answerBuffer = null;
 		for (final Map.Entry<String, Integer> entry : byValue.entrySet()) {
 			final String key = entry.getKey();
-			final DateTimeParserResult result = DateTimeParserResult.asResult(key, resolutionMode);
+			final DateTimeParserResult result = DateTimeParserResult.asResult(key, resolutionMode, locale);
 
 			// First entry
 			if (answerBuffer == null) {
@@ -354,9 +328,10 @@ public class DateTimeParser {
 	 * DateTime, OffsetDateTime or a ZonedDateTime.
 	 * @param input The String representing a date with optional leading/trailing whitespace
 	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
+	 * @param locale TODO
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
-	public static String determineFormatString(final String input, final DateResolutionMode resolutionMode) {
+	public static String determineFormatString(final String input, final DateResolutionMode resolutionMode, Locale locale) {
 		int len = input.length();
 
 		// Remove leading spaces
@@ -373,24 +348,30 @@ public class DateTimeParser {
 		final String trimmed = input.substring(start, len + start);
 
 		// Fail fast if we can
-		if (len < 4 || (!Character.isDigit(trimmed.charAt(0)) && !Character.isAlphabetic(trimmed.charAt(0))))
+		if (len < 4 || len > 50 || (!Character.isDigit(trimmed.charAt(0)) && !Character.isAlphabetic(trimmed.charAt(0))))
 			return null;
 
 		if (trimmed.indexOf('þ') != -1)
 			return null;
 
-		final String compressed = SimpleDateMatcher.compress(trimmed);
+		final String compressed = SimpleDateMatcher.compress(trimmed, locale);
 
-		final SimpleDateMatcher matcher = SimpleDateMatcher.get(compressed);
+		final SimpleDateMatcher matcher = SimpleDateMatcher.get(compressed, locale);
 		if (matcher != null) {
 			int[] dateValue = new int[] {-1, -1, -1};
 			if (matcher.getMonthLength() < 0) {
-				dateValue[1] = DateTimeParser.monthOffset(trimmed.substring(matcher.getMonthOffset(), len + matcher.getMonthLength()));
-				if (dateValue[1] == -1)
-					return null;
-			}
-			else if (matcher.getMonthLength() == 3) {
-				dateValue[1] = DateTimeParser.monthAbbreviationOffset(trimmed.substring(matcher.getMonthOffset(), matcher.getMonthOffset() + matcher.getMonthLength()));
+				int i = matcher.getMonthOffset();
+				while (i < len) {
+					char ch = trimmed.charAt(i);
+					if (ch == ' ' || ch == '/' || ch == '-')
+						break;
+					i++;
+				}
+				String month = trimmed.substring(matcher.getMonthOffset(), i);
+				if (matcher.getMonthLength() == -1)
+					dateValue[1] = DateTimeParser.monthOffset(month, locale);
+				else
+					dateValue[1] = DateTimeParser.monthAbbreviationOffset(month, locale);
 				if (dateValue[1] == -1)
 					return null;
 			}
@@ -506,7 +487,7 @@ public class DateTimeParser {
 
 					i++;
 
-					final String offset = SimpleDateMatcher.compress(trimmed.substring(i, len));
+					final String offset = SimpleDateMatcher.compress(trimmed.substring(i, len), locale);
 
 					// Expecting DD:DD:DD or DDDDDD or DD:DD or DDDD or DD
 					if (i + 8 <= len && "d{2}:d{2}:d{2}".equals(offset)) {

@@ -685,17 +685,17 @@ public class TextAnalyzer {
 	}
 
 	private void trackDateTime(final String dateFormat, final String input) throws DateTimeParseException {
-		final DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, resolutionMode);
+		final DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, resolutionMode, locale);
 		if (result == null) {
 			throw new InternalErrorException("NULL result for " + dateFormat);
 		}
 
 		// Grab the cached Formatter
 		final String formatString = result.getFormatString();
-		DateTimeFormatter formatter = formatterCache.get(formatString);
+		DateTimeFormatter formatter = formatterCache.get(locale.getISO3Language() + "---" + formatString);
 		if (formatter == null) {
-			formatter = DateTimeFormatter.ofPattern(formatString);
-			formatterCache.put(formatString, formatter);
+			formatter = DateTimeFormatter.ofPattern(formatString, locale);
+			formatterCache.put(locale.getISO3Language() + "---" + formatString, formatter);
 		}
 
 		final String trimmed = input.trim();
@@ -940,7 +940,7 @@ public class TextAnalyzer {
 		}
 		levels[0].add(compressedl0);
 
-		if (DateTimeParser.determineFormatString(input, resolutionMode) != null)
+		if (DateTimeParser.determineFormatString(input, resolutionMode, locale) != null)
 			possibleDateTime++;
 
 		// Check to see if this input is one of our registered Infinite Logical Types
@@ -1133,7 +1133,7 @@ public class TextAnalyzer {
 			}
 
 			if (possibleDateTime == raw.size()) {
-				final DateTimeParser det = new DateTimeParser(resolutionMode);
+				final DateTimeParser det = new DateTimeParser(resolutionMode, locale);
 				for (final String sample : raw)
 					det.train(sample);
 
@@ -1550,7 +1550,7 @@ public class TextAnalyzer {
 				valid = true;
 			}
 			catch (DateTimeParseException reale) {
-				DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, resolutionMode);
+				DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, resolutionMode, locale);
 				try {
 					result.parse(input);
 				}
@@ -1558,7 +1558,7 @@ public class TextAnalyzer {
 					if ("Insufficient digits in input (d)".equals(e.getMessage()) || "Insufficient digits in input (M)".equals(e.getMessage())) {
 						try {
 							final String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
-							result = DateTimeParserResult.asResult(formatString, resolutionMode);
+							result = DateTimeParserResult.asResult(formatString, resolutionMode, locale);
 							matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, formatString, false, -1, -1, null, formatString);
 
 							trackDateTime(matchPatternInfo.format, input);

@@ -3616,7 +3616,7 @@ public class AnalysisResultTests {
 	}
 
 
-	//BUG @Test
+	@Test
 	public void basicFrenchDate() throws IOException {
 		Set<String> samples = new HashSet<String>();
 		LocalDate localDate = LocalDate.now();
@@ -3638,13 +3638,13 @@ public class AnalysisResultTests {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\.]{3,5}");
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2} [\\p{IsAlphabetic}\\.]{3,5} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "MONTHABBR");
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), samples.size());
 		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), samples);
+		Assert.assertEquals(result.getMatchCount(), samples.size());
 		Assert.assertEquals(result.getNullCount(), 0);
 
 		// Even the UNK match the RE

@@ -25,6 +25,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,16 +52,18 @@ public class DateTimeParserResult {
 	public Boolean amPmIndicator;
 
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
+	private Locale locale;
 	private int hourLength = -1;
 
 	static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<String, DateTimeParserResult>();
 
-	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, final int timeElements, final int[] timeFieldLengths,
-			final int[] timeFieldOffsets, final int hourLength, final int dateElements, final int[] dateFieldLengths, final int[] dateFieldOffsets,
-			final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset, final int dayOffset,
-			final Character dateSeparator, final String timeZone, final Boolean amPmIndicator) {
+	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, Locale locale, final int timeElements,
+			final int[] timeFieldLengths, final int[] timeFieldOffsets, final int hourLength, final int dateElements, final int[] dateFieldLengths,
+			final int[] dateFieldOffsets, final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset,
+			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator) {
 		this.formatString = formatString;
 		this.resolutionMode = resolutionMode;
+		this.locale = locale;
 		this.timeElements = timeElements;
 		this.timeFieldLengths = timeFieldLengths;
 		this.timeFieldOffsets = timeFieldOffsets;
@@ -79,13 +82,13 @@ public class DateTimeParserResult {
 	}
 
 	public static DateTimeParserResult newInstance(final DateTimeParserResult r) {
-		return new DateTimeParserResult(r.formatString, r.resolutionMode, r.timeElements,
+		return new DateTimeParserResult(r.formatString, r.resolutionMode, r.locale,
+				r.timeElements,
 				r.timeFieldLengths != null ? Arrays.copyOf(r.timeFieldLengths, r.timeFieldLengths.length) : null,
-				r.timeFieldOffsets != null ? Arrays.copyOf(r.timeFieldOffsets, r.timeFieldOffsets.length) : null,
-				r.hourLength, r.dateElements,
+				r.timeFieldOffsets != null ? Arrays.copyOf(r.timeFieldOffsets, r.timeFieldOffsets.length) : null, r.hourLength,
+				r.dateElements,
 				r.dateFieldLengths != null ? Arrays.copyOf(r.dateFieldLengths, r.dateFieldLengths.length) : null,
-				r.dateFieldOffsets != null ? Arrays.copyOf(r.dateFieldOffsets, r.dateFieldOffsets.length) : null,
-				r.timeFirst, r.dateTimeSeparator, r.yearOffset, r.monthOffset, r.dayOffset, r.dateSeparator, r.timeZone, r.amPmIndicator);
+				r.dateFieldOffsets != null ? Arrays.copyOf(r.dateFieldOffsets, r.dateFieldOffsets.length) : null, r.timeFirst, r.dateTimeSeparator, r.yearOffset, r.monthOffset, r.dayOffset, r.dateSeparator, r.timeZone, r.amPmIndicator);
 	}
 
 	enum Token {
@@ -139,10 +142,11 @@ public class DateTimeParserResult {
 	 * Given an input string in SimpleDateTimeFormat convert to a DateTimeParserResult
 	 * @param formatString A DateTimeString using DateTimeFormatter patterns
 	 * @param resolutionMode 	When we have ambiguity - should we prefer to conclude day first, month first or unspecified
+	 * @param locale Locale the input string is in
 	 * @return The corresponding DateTimeParserResult
 	 */
-	public static DateTimeParserResult asResult(final String formatString, final DateResolutionMode resolutionMode) {
-		final String key = resolutionMode.name() + '#' + formatString;
+	public static DateTimeParserResult asResult(final String formatString, final DateResolutionMode resolutionMode, Locale locale) {
+		final String key = resolutionMode.name() + '#' + locale + '#' + formatString;
 		DateTimeParserResult ret = dtpCache.get(key);
 		if (ret != null)
 			return newInstance(ret);
@@ -305,8 +309,8 @@ public class DateTimeParserResult {
 			timeElements = -1;
 
 		// Add to cache
-		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, timeElements, timeFieldLengths, timeFieldOffsets, hourLength, dateElements, dateFieldLengths,
-				dateFieldOffsets, timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator);
+		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, locale, timeElements, timeFieldLengths, timeFieldOffsets, hourLength, dateElements,
+				dateFieldLengths, dateFieldOffsets, timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator);
 		dtpCache.put(key, ret);
 
 		return newInstance(ret);
@@ -502,7 +506,7 @@ public class DateTimeParserResult {
 				while (upto < inputLength && Character.isAlphabetic(input.charAt(upto)))
 					upto++;
 				final String month = input.substring(start, upto);
-				if (DateTimeParser.monthOffset(month) == -1)
+				if (DateTimeParser.monthOffset(month, locale) == -1)
 					throw new DateTimeParseException("Month invalid", input, start);
 				break;
 
@@ -510,7 +514,7 @@ public class DateTimeParserResult {
 				if (upto + 3 > inputLength)
 					throw new DateTimeParseException("Month Abbreviation not complete", input, upto);
 				final String monthAbbreviation = input.substring(upto, upto + 3);
-				if (DateTimeParser.monthAbbreviationOffset(monthAbbreviation) == -1)
+				if (DateTimeParser.monthAbbreviationOffset(monthAbbreviation, locale) == -1)
 					throw new DateTimeParseException("Month Abbreviation invalid", input, upto);
 				upto += 3;
 				break;
@@ -749,7 +753,7 @@ public class DateTimeParserResult {
 					break;
 
 				case MONTH:
-					ret.append(DateTimeParser.monthPattern);
+					ret.append(LocaleInfo.getMonthRegExp(locale));
 					break;
 
 				case DAY_OF_WEEK_ABBR:
@@ -757,7 +761,7 @@ public class DateTimeParserResult {
 					break;
 
 				case MONTH_ABBR:
-					ret.append(KnownPatterns.PATTERN_ALPHA + "{3}");
+					ret.append(LocaleInfo.getMonthAbbrRegExp(locale));
 					break;
 
 				case AMPM:
