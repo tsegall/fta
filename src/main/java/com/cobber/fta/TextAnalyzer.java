@@ -197,10 +197,8 @@ public class TextAnalyzer {
 	 *   of the fields is the day or the month.  If resolutionMode is DayFirst, then assume day is first, if resolutionMode is
 	 *   MonthFirst then assume month is first, if it is None then the pattern returned may have '?' in to represent
 	 *   this ambiguity.
-	 * @throws IOException
-	 *             If an internal error occurred.
 	 */
-	public TextAnalyzer(final String name, final DateResolutionMode resolutionMode) throws IOException {
+	public TextAnalyzer(final String name, final DateResolutionMode resolutionMode) {
 		this.dataStreamName = name;
 		this.resolutionMode = resolutionMode;
 	}
