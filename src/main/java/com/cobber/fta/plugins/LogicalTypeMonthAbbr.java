@@ -23,7 +23,7 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 
 	@Override
 	public Set<String> getMembers() {
-		return LocaleInfo.getMonthAbbrs(locale).keySet();
+		return LocaleInfo.getShortMonths(locale).keySet();
 	}
 
 	@Override
@@ -33,14 +33,14 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 
 	@Override
 	public String getRegexp() {
-		return LocaleInfo.getMonthAbbrRegExp(locale);
+		return LocaleInfo.getShortMonthsRegExp(locale);
 	}
 
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		if (outliers.size() > 1)
-			return LocaleInfo.getMonthAbbrRegExp(locale);
+			return LocaleInfo.getShortMonthsRegExp(locale);
 
-		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : LocaleInfo.getMonthAbbrRegExp(locale);
+		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : LocaleInfo.getShortMonthsRegExp(locale);
 	}
 }

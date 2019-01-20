@@ -16,14 +16,19 @@
 package com.cobber.fta;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.text.DateFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -454,42 +459,183 @@ public class AnalysisResultTests {
 	}
 
 	@Test
-	public void basicAMPM() throws IOException {
+	public void basicAMPMVietname() throws IOException {
+		final Locale locale = Locale.forLanguageTag("vi-VN");
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input = "09/Mar/17 3:14 PM|09/Mar/17 11:36 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 8:14 AM|" +
-				"09/Mar/17 7:02 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|" +
-				"09/Mar/17 6:59 AM|09/Mar/17 6:57 AM|08/Mar/17 8:12 AM|07/Mar/17 9:27 PM|07/Mar/17 3:34 PM|07/Mar/17 3:01 PM|" +
-				"07/Mar/17 3:00 PM|07/Mar/17 2:51 PM|07/Mar/17 2:46 PM|07/Mar/17 2:40 PM|07/Mar/17 2:23 PM|07/Mar/17 11:04 AM|" +
-				"02/Mar/17 10:57 AM|01/Mar/17 11:56 AM|01/Mar/17 6:14 AM|28/Feb/17 4:56 AM|27/Feb/17 5:58 AM|27/Feb/17 5:58 AM|" +
-				"22/Feb/17 6:48 AM|18/Jan/17 8:29 AM|04/Jan/17 7:37 AM|10/Nov/16 10:42 AM|";
-		final String inputs[] = input.split("\\|");
-		final PrintStream logger = System.err;
+		analysis.setLocale(locale);
+		final String dateTimeFormat = "dd/MMM/yy h:mm a";
+		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat, locale);
+		final int sampleCount = 100;
+		final Set<String> samples = new HashSet<>();
 		int locked = -1;
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
+		LocalDateTime localDateTime = LocalDateTime.now();
+		for (int i = 0; i < sampleCount; i++) {
+			String sample = null;
+			sample = localDateTime.format(dtf);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
 				locked = i;
+			localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
 		}
-
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
-		for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
-			logger.printf("Key: %s, value: %d\n", entry.getKey(), entry.getValue());
-		}
+		Assert.assertEquals(result.getSampleCount(), sampleCount);
 		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), sampleCount);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{2}/" + KnownPatterns.PATTERN_ALPHA + "{3}/\\d{2} \\d{1,2}:\\d{2} (am|AM|pm|PM)");
+		Assert.assertEquals(result.getRegExp(), "\\d{2}/[\\p{IsAlphabetic}\\p{IsDigit} ]{5,6}/\\d{2} \\d{1,2}:\\d{2} (?i)(SA|CH)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MMM/yy h:mm a");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 		}
+	}
 
+	@Test
+	public void basicAMPM_enUS() throws IOException {
+		final Locale locale = Locale.forLanguageTag("en-US");
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(locale);
+		final String dateTimeFormat = "dd/MMM/yy h:mm a";
+		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat, locale);
+		final int sampleCount = 100;
+		final Set<String> samples = new HashSet<>();
+		int locked = -1;
+
+		LocalDateTime localDateTime = LocalDateTime.now();
+		for (int i = 0; i < sampleCount; i++) {
+			String sample = null;
+			sample = localDateTime.format(dtf);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+			localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+		}
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), sampleCount);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), sampleCount);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\p{IsAlphabetic}{3}/\\d{2} \\d{1,2}:\\d{2} (?i)(AM|PM)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "dd/MMM/yy h:mm a");
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+		}
+	}
+
+	@Test
+	public void basicAMPM_enUSNotSimple() throws IOException {
+		final Locale locale = Locale.forLanguageTag("en-US");
+		final TextAnalyzer analysis = new TextAnalyzer("h:mm a dd/MM/yy", DateResolutionMode.DayFirst);
+		analysis.setLocale(locale);
+		final String dateTimeFormat = "h:mm a dd/MM/yy";
+		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat, locale);
+		final int sampleCount = 100;
+		final Set<String> samples = new HashSet<>();
+		int locked = -1;
+
+		LocalDateTime localDateTime = LocalDateTime.now();
+		for (int i = 0; i < sampleCount; i++) {
+			String sample = null;
+			sample = localDateTime.format(dtf);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+			localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+		}
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), sampleCount);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2} (?i)(AM|PM) \\d{2}/\\d{2}/\\d{2}");
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "h:mm a dd/MM/yy");
+		Assert.assertEquals(result.getMatchCount(), sampleCount);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+		}
+	}
+
+	@Test
+	public void basicAMPM_viVNNotSimple() throws IOException {
+		final Locale locale = Locale.forLanguageTag("vi-VN");
+		final TextAnalyzer analysis = new TextAnalyzer("h:mm a dd/MM/yy", DateResolutionMode.DayFirst);
+		analysis.setLocale(locale);
+		final String dateTimeFormat = "h:mm a dd/MM/yy";
+		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat, locale);
+		final int sampleCount = 100;
+		final Set<String> samples = new HashSet<>();
+		int locked = -1;
+
+		LocalDateTime localDateTime = LocalDateTime.now();
+		for (int i = 0; i < sampleCount; i++) {
+			String sample = null;
+			sample = localDateTime.format(dtf);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+			localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+		}
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), sampleCount);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2} (?i)(SA|CH) \\d{2}/\\d{2}/\\d{2}");
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "h:mm a dd/MM/yy");
+		Assert.assertEquals(result.getMatchCount(), sampleCount);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+		}
+	}
+
+	@Test
+	public void basicAMPMBug() throws IOException {
+		final Locale locale = Locale.forLanguageTag("en-US");
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(locale);
+		final String dateTimeFormat = "h:mm 'a'";
+		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat, locale);
+		final int sampleCount = 100;
+		final Set<String> samples = new HashSet<>();
+		int locked = -1;
+
+		LocalDateTime localDateTime = LocalDateTime.now();
+		for (int i = 0; i < sampleCount; i++) {
+			String sample = null;
+			sample = localDateTime.format(dtf);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+			localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+		}
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), sampleCount);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), sampleCount);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), ".{6,7}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+		}
 	}
 
 	@Test
@@ -3615,14 +3761,14 @@ public class AnalysisResultTests {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 	}
 
-
 	@Test
 	public void basicFrenchDate() throws IOException {
+
 		Set<String> samples = new HashSet<String>();
 		LocalDate localDate = LocalDate.now();
 
 		final TextAnalyzer analysis = new TextAnalyzer();
-		analysis.setLocale(Locale.FRENCH);
+		analysis.setLocale(Locale.FRANCE);
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.FRANCE);
 
@@ -3650,6 +3796,325 @@ public class AnalysisResultTests {
 		// Even the UNK match the RE
 		for (String sample : samples)
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+	}
+
+	@Test
+	public void basicBulgarianDate() throws IOException {
+
+		Set<String> samples = new HashSet<String>();
+		LocalDate localDate = LocalDate.now();
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(Locale.forLanguageTag("bg"));
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.forLanguageTag("bg"));
+
+		int locked = -1;
+
+		for (int i = 0; i < 100; i++) {
+			String sample = localDate.format(formatter);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+			localDate = localDate.minusDays(100);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2} \\p{IsAlphabetic}{1,4} \\d{4}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
+		Assert.assertEquals(result.getSampleCount(), samples.size());
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), samples.size());
+		Assert.assertEquals(result.getNullCount(), 0);
+
+		// Even the UNK match the RE
+		for (String sample : samples)
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+	}
+
+
+
+	@Test
+	public void basicCatalanDate() throws IOException {
+
+		Set<String> samples = new HashSet<String>();
+		LocalDate localDate = LocalDate.now();
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(Locale.forLanguageTag("ca-ES"));
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.forLanguageTag("ca-ES"));
+
+		int locked = -1;
+
+		for (int i = 0; i < 100; i++) {
+			String sample = localDate.format(formatter);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+			localDate = localDate.minusDays(100);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2} .{5,8} \\d{4}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
+		Assert.assertEquals(result.getSampleCount(), samples.size());
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), samples.size());
+		Assert.assertEquals(result.getNullCount(), 0);
+
+		// Even the UNK match the RE
+		for (String sample : samples)
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+	}
+
+	@Test
+	public void basicGermanDate() throws IOException {
+
+		Set<String> samples = new HashSet<String>();
+		LocalDate localDate = LocalDate.now();
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(Locale.forLanguageTag("de-AT"));
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.forLanguageTag("de-AT"));
+
+		int locked = -1;
+
+		for (int i = 0; i < 100; i++) {
+			String sample = localDate.format(formatter);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+			localDate = localDate.minusDays(100);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2} \\p{IsAlphabetic}{3} \\d{4}");
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
+		Assert.assertEquals(result.getSampleCount(), samples.size());
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), samples.size());
+		Assert.assertEquals(result.getNullCount(), 0);
+
+		// Even the UNK match the RE
+		for (String sample : samples)
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+	}
+
+	@Test
+	public void trailingAM() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String inputs[] = new String[] {
+				"02s500000023SQ3AAM", "02s5000000233ThAAI", "02s5000000238JRAAY", "02s500000023QCEAA2",
+				"02s500000023QCFAA2", "02s500000023SKAAA2", "02s5000000233TgAAI", "02s500000023Sw9AAE",
+				"02s500000023T0pAAE", "02s500000023U6FAAU", "02s500000023qQVAAY", "02s500000023qQWAAY",
+				"02s500000023r2FAAQ", "02s500000023rFiAAI", "02s500000023x3qAAA", "02s50000002GgdtAAC",
+				"02s50000002GgduAAC", "02s50000002GkKXAA0", "02s50000002GrukAAC", "02s50000002GrulAAC",
+				"02s50000002GsLCAA0", "02s50000002HCnGAAW", "02s50000002HUaFAAW", "02s50000002HUaGAAW",
+				"02s50000002HV82AAG", "02s50000002HjVvAAK", "02s50000002Hl4NAAS", "02s50000002HnXRAA0",
+				"02s50000002Hq1sAAC", "02s50000002HrQPAA0", "02s50000002HrraAAC", "02s50000002HxoKAAS",
+				"02s50000002I6lQAAS", "02s50000002I90MAAS", "02s50000002I93BAAS", "02s50000002I9CSAA0"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{18}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+
+	}
+
+
+	@Test
+	public void localeDateTest() throws IOException {
+
+		Locale[] locales = DateFormat.getAvailableLocales();
+//		Locale[] locales = new Locale[] {Locale.forLanguageTag("is-IS")};
+
+		String testCases[] = {
+				"yyyy MM dd", "yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
+				"dd MMM yyyy", "d MMM yyyy", "dd-MMM-yyyy", "d-MMM-yyyy", "dd/MMM/yyyy",
+				"d/MMM/yyyy", "dd MMMM yyyy", "d MMMM yyyy", "dd-MMMM-yyyy", "d-MMMM-yyyy",
+				"dd/MMMM/yyyy", "d/MMMM/yyyy", "dd MMM yy", "d MMM yy", "dd-MMM-yy",
+				"d-MMM-yy", "dd/MMM/yy", "d/MMM/yy", "MMM dd',' yyyy", "MMM d',' yyyy",
+				"MMM dd yyyy", "MMM d yyyy", "MMM-dd-yyyy", "MMM-d-yyyy", "MMMM dd',' yyyy",
+				"MMMM d',' yyyy", "MMMM dd yyyy", "MMMM d yyyy", "MMMM-dd-yyyy", "MMMM-d-yyyy",
+				"yyyyMMdd'T'HHmmss'Z'", "yyyyMMdd'T'HHmmss", "yyyyMMdd'T'HHmmssxx", "yyyyMMdd'T'HHmmssxx",
+				"yyyyMMdd'T'HHmmss.SSSxx", "yyyyMMdd'T'HHmmss.SSSxx",
+				"dd/MMM/yy h:mm a",
+				"dd/MMM/yy hh:mm a",
+				"EEE MMM dd HH:mm:ss z yyyy"
+		};
+
+		Set <String> problems = new HashSet<>();
+		int countTests = 0;
+		int countNotGregorian = 0;
+		int	countNoMonthAbbreviations = 0;
+		int countProblems = 0;
+
+		for (String testCase : testCases) {
+
+			nextLocale:
+			for (Locale locale : locales) {
+				Set<String> samples = new HashSet<String>();
+				LocalDate localDate = null;
+				LocalDateTime localDateTime = null;
+				OffsetDateTime offsetDateTime = null;
+				ZonedDateTime zonedDateTime = null;
+
+				String testID = locale.toLanguageTag() + " (" + testCase + ") ...";
+
+				Calendar cal = GregorianCalendar.getInstance(locale);
+				if (!(cal instanceof GregorianCalendar)) {
+					countNotGregorian++;
+					continue;
+				}
+
+				if (LocaleInfo.getShortMonths(locale).keySet().equals(LocaleInfo.getMonths(locale).keySet()) &&
+					testCase.contains("MMMM")) {
+					countNoMonthAbbreviations++;
+					continue;
+				}
+
+				final TextAnalyzer analysis = new TextAnalyzer();
+
+				// We do not like Japanese the Month Abbreviations are 1, 2, 3, 4, 5, ... which causes issues
+				if ("Japanese".equals(locale.getDisplayLanguage()))
+					continue;
+
+//				System.err.println("TestCas " + testCase + ", Locale: " + locale + ", country: " + locale.getCountry() +
+//						", language: " + locale.getDisplayLanguage() + ", name: " + locale.toLanguageTag());
+
+				countTests++;
+
+				analysis.setLocale(locale);
+
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(testCase, locale);
+				PatternInfo.Type type = SimpleDateMatcher.getType(testCase, locale);
+
+				if (type.equals(PatternInfo.Type.LOCALDATE))
+					localDate = LocalDate.now();
+				else if (type.equals(PatternInfo.Type.LOCALDATETIME))
+					localDateTime = LocalDateTime.now();
+				else if (type.equals(PatternInfo.Type.OFFSETDATETIME))
+					offsetDateTime = OffsetDateTime.now();
+				else if (type.equals(PatternInfo.Type.ZONEDDATETIME))
+					zonedDateTime = ZonedDateTime.now();
+
+				String sample = null;
+				int locked = -1;
+
+				for (int i = 0; i < 100; i++) {
+					if (type.equals(PatternInfo.Type.LOCALDATE))
+						sample = localDate.format(formatter);
+					else if (type.equals(PatternInfo.Type.LOCALDATETIME))
+						sample = localDateTime.format(formatter);
+					else if (type.equals(PatternInfo.Type.OFFSETDATETIME))
+						sample = offsetDateTime.format(formatter);
+					else if (type.equals(PatternInfo.Type.ZONEDDATETIME))
+						sample = zonedDateTime.format(formatter);
+
+					samples.add(sample);
+					if (analysis.train(sample) && locked == -1)
+						locked = i;
+
+					if (type.equals(PatternInfo.Type.LOCALDATE)) {
+						localDate = localDate.minusDays(100);
+					}
+					else if (type.equals(PatternInfo.Type.LOCALDATETIME)) {
+						localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+					}
+					else if (type.equals(PatternInfo.Type.OFFSETDATETIME)) {
+						offsetDateTime = offsetDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+					}
+					else if (type.equals(PatternInfo.Type.ZONEDDATETIME)) {
+						zonedDateTime = zonedDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+					}
+				}
+
+				TextAnalysisResult result = analysis.getResult();
+
+				if (locked != TextAnalyzer.SAMPLE_DEFAULT) {
+					problems.add(testID + "Locked incorrect: " + locked);
+					countProblems++;
+					continue;
+				}
+				if (!result.getType().equals(type)) {
+					problems.add(testID + "Type incorrect: '" + result.getType() + "' '" + type + "'");
+					countProblems++;
+					continue;
+				}
+				if (!result.getTypeQualifier().equals(testCase)) {
+					problems.add(testID + "TypeQualifer incorrect: '" + result.getTypeQualifier() + "'");
+					countProblems++;
+					continue;
+				}
+				if (result.getSampleCount() != samples.size()) {
+					problems.add(testID + "Samples != Samples " + result.getSampleCount() + " " + samples.size());
+					countProblems++;
+					continue;
+				}
+				if (result.getOutlierCount() != 0) {
+					problems.add(testID + "Outliers: " + result.getOutlierCount());
+					countProblems++;
+					continue;
+				}
+				if (result.getMatchCount() != samples.size()) {
+					problems.add(testID + "Matches: " + result.getMatchCount());
+					countProblems++;
+					continue;
+				}
+				if (result.getNullCount() != 0) {
+					problems.add(testID + "Nulls: " + result.getNullCount());
+					countProblems++;
+					continue;
+				}
+				Assert.assertEquals(result.getNullCount(), 0);
+
+				// Even the UNK match the RE
+				for (String s : samples)
+					if (!s.matches(result.getRegExp())) {
+						problems.add(testID + "RE: " + result.getRegExp() + ", !match: " + s);
+						countProblems++;
+						continue nextLocale;
+					}
+			}
+		}
+
+		for (String problem : problems) {
+			System.err.println(problem);
+		}
+
+		System.err.printf("%d not Gregorian (skipped), %d no Month abbr. (skipped), %d locales, %d failures (of %d tests)\n",
+				countNotGregorian, countNoMonthAbbreviations, locales.length, countProblems, countTests);
+
+		Assert.assertEquals(countProblems, 0);
 	}
 
 	// Set of valid months + 4 x "UNK"
@@ -5549,7 +6014,7 @@ public class AnalysisResultTests {
 
 		@Override
 		public void run() {
-			long start = System.currentTimeMillis();
+//			long start = System.currentTimeMillis();
 			for (int i = 0; i < stream.length; i++)
 				analysis.train(stream[i]);
 

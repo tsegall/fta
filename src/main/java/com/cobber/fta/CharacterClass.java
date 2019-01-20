@@ -26,6 +26,7 @@ public class CharacterClass {
 	boolean isAlphabetic = false;
 	boolean isDigit = false;
 	boolean isPeriod = false;
+	boolean isSpace = false;
 	boolean isOther = false;
 	int maxClasses = 0;
 
@@ -41,6 +42,8 @@ public class CharacterClass {
 				isDigit = true;
 			else if (ch == '.')
 				isPeriod = true;
+			else if (ch == ' ')
+				isSpace = true;
 			else
 				isOther = true;
 		}
@@ -50,6 +53,8 @@ public class CharacterClass {
 		if (isDigit)
 			classes++;
 		if (isPeriod)
+			classes++;
+		if (isSpace)
 			classes++;
 		if (classes > maxClasses)
 			maxClasses = classes;
@@ -71,9 +76,11 @@ public class CharacterClass {
 			if (isAlphabetic)
 				ret += "\\p{IsAlphabetic}";
 			if (isDigit)
-				ret += "\\p{isDigit}";
+				ret += "\\p{IsDigit}";
 			if (isPeriod)
 				ret += "\\.";
+			if (isSpace)
+				ret += " ";
 			if (maxClasses > 1)
 				ret += "]";
 		}

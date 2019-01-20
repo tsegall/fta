@@ -34,7 +34,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -184,8 +186,6 @@ public class TextAnalyzer {
 	private ArrayList<LogicalTypeInfinite> infiniteTypes = new ArrayList<LogicalTypeInfinite>();
 	private int[] candidateCounts;
 	private ArrayList<LogicalTypeFinite> finiteTypes = new ArrayList<LogicalTypeFinite>();
-
-	private final Map<String, DateTimeFormatter> formatterCache = new HashMap<String, DateTimeFormatter>();
 
 	private KnownPatterns knownPatterns = new KnownPatterns();
 
@@ -374,7 +374,8 @@ public class TextAnalyzer {
 
 	/**
 	 * Override the default Locale.
-	 * @param locale The new Locale used to determine separators in numbers, default plugins, etc.
+	 * @param locale The new Locale used to determine separators in numbers, date processing, default plugins, etc.
+	 * Note: There is no support for Locales that do not use the Gregorian Calendar.
 	 */
 	public void setLocale(Locale locale) {
 		if (trainingStarted)
@@ -688,13 +689,7 @@ public class TextAnalyzer {
 			throw new InternalErrorException("NULL result for " + dateFormat);
 		}
 
-		// Grab the cached Formatter
-		final String formatString = result.getFormatString();
-		DateTimeFormatter formatter = formatterCache.get(locale.getISO3Language() + "---" + formatString);
-		if (formatter == null) {
-			formatter = DateTimeFormatter.ofPattern(formatString, locale);
-			formatterCache.put(locale.getISO3Language() + "---" + formatString, formatter);
-		}
+		DateTimeFormatter formatter = LocaleInfo.getFormatter(result.getFormatString(), locale);
 
 		final String trimmed = input.trim();
 
@@ -755,6 +750,10 @@ public class TextAnalyzer {
 	}
 
 	private void initialize() {
+		Calendar cal = GregorianCalendar.getInstance(locale);
+		if (!(cal instanceof GregorianCalendar))
+			throw new IllegalArgumentException("No support for locales that do not use the Gregorian Calendar");
+
 		raw = new ArrayList<String>(samples);
 		levels[0] = new ArrayList<StringBuilder>(samples);
 		levels[1] = new ArrayList<StringBuilder>(samples);
@@ -1750,7 +1749,7 @@ public class TextAnalyzer {
 		// Do we need to back out from any of our Logical type determinations.  Most of the time this backs out of
 		// Infinite type determinations (since we have not yet declared it to be a Finite type).  However it is possible
 		// that this is a subsequent call to getResult()!!
-		if (matchPatternInfo.typeQualifier != null) {
+		if (matchPatternInfo.isLogicalType()) {
 			LogicalType logical = registered.get(matchPatternInfo.typeQualifier);
 			String newPattern;
 			if (logical != null && (newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, cardinality, outliers)) != null) {

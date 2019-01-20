@@ -36,4 +36,24 @@ public class Utils {
 
 		return ret;
 	}
+
+	/**
+	 * Give a String as input with an offset and length return the integer at that position.
+	 * @param input String to extract integer from
+	 * @param offset Integer offset that marks the start
+	 * @param minLength minimum length of integer to be extracted.
+	 * @param maxLength maximum length of integer to be extracted.
+	 * @return An integer value from the supplied String.
+	 */
+	public static int getValue(final String input, final int offset, final int minLength, int maxLength) {
+		try {
+			if (minLength == maxLength || (offset + maxLength > input.length()) || !Character.isDigit(input.charAt(offset + maxLength -1)))
+				return Integer.valueOf(input.substring(offset, offset + minLength));
+
+			return Integer.valueOf(input.substring(offset, offset + maxLength));
+		}
+		catch (NumberFormatException e) {
+			return -1;
+		}
+	}
 }

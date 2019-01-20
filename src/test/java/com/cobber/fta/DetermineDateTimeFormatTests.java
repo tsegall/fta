@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 public class DetermineDateTimeFormatTests {
-	//@Test
+	@Test
 	public void allOptions() {
 		// "H_mm","MM/dd/yy","dd/MM/yyyy","yyyy/MM/dd","yyyy-MM-dd'T'HH_mm_ssx",
 		// "yyyy-MM-dd'T'HH_mm_ssxxx","yyyy-MM-dd'T'HH_mm_ssxxxxx","dd MMMM yyyy",
@@ -59,40 +59,30 @@ public class DetermineDateTimeFormatTests {
 		OffsetDateTime offsetDateTime = OffsetDateTime.now();
 		final Set<String> seen = new HashSet<String>();
 		final Set<Integer> ignore = new HashSet<Integer>();
-		final PrintStream logger = System.err;
 
 		final StringBuilder headerLine = new StringBuilder("RowID,");
 
 		// Work out headers and which columns we want.
 		for (int i = 0; i < inputs.length; i++) {
 			fmts[i] = DateTimeParser.determineFormatString(inputs[i], DateResolutionMode.None, Locale.getDefault());
-			if (fmts[i] == null) {
-				logger.println("Null returned from determineFormatString for '" + inputs[i] + "'");
-				continue;
-			}
+				Assert.assertNotNull(fmts[i], inputs[i]);
 
 			final String header = fmts[i].replace(':', '_').replace('\'', '_');
 
-			//logger.printf("i: %d, Header: '%s', input '%s'", i, header, fmts[i], header);
-			// Ignore duplicates
 			if (!seen.add(header)) {
 				ignore.add(i);
-				//logger.println(" - IGNORED");
 				continue;
 			}
 			headerLine.append('"').append(header).append('"');
 			if (i + 1 < inputs.length)
 				headerLine.append(',');
-			//logger.println();
 		}
-		logger.println(headerLine.toString());
 
 
 		for (int rows = 0; rows < 30; rows++) {
 			answer.append(rows).append(',');
 			for (int i = 0; i < inputs.length; i++) {
 				if (ignore.contains(i)) {
-					//logger.println("Ignoring " + i);
 					continue;
 				}
 				final DateTimeParser det = new DateTimeParser();
@@ -132,7 +122,6 @@ public class DetermineDateTimeFormatTests {
 				}
 			}
 		}
-		logger.print(answer.toString());
 		Assert.assertEquals(DateTimeParser.determineFormatString("9:57", DateResolutionMode.None, Locale.getDefault()), "H:mm");
 	}
 
@@ -424,6 +413,42 @@ public class DetermineDateTimeFormatTests {
 		}
 	}
 
+	//@Test TODO
+	public void basicAMPM_viVN() {
+		final Locale locale = Locale.forLanguageTag("vi-VN");
+		Assert.assertEquals(DateTimeParser.determineFormatString("09/thg 3/17 3:14 SA", DateResolutionMode.None, locale), "dd/MMM/yy h:mm a");
+
+		final String input = "09/thg 3/17 3:14 CH|09/thg 3/17 11:36 SA|09/thg 3/17 9:12 SA|09/thg 3/17 9:12 SA|09/thg 3/17 9:12 SA|09/thg 3/17 8:14 SA|" +
+				"09/thg 3/17 7:02 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|" +
+				"09/thg 3/17 6:59 SA|09/thg 3/17 6:57 SA|08/thg 3/17 8:12 SA|07/thg 3/17 9:27 CH|07/thg 3/17 3:34 CH|07/thg 3/17 3:01 CH|" +
+				"07/thg 3/17 3:00 CH|07/thg 3/17 2:51 CH|07/thg 3/17 2:46 CH|07/thg 3/17 2:40 CH|07/thg 3/17 2:23 CH|07/thg 3/17 11:04 SA|" +
+				"02/thg 3/17 10:57 SA|01/thg 3/17 11:56 SA|01/thg 3/17 6:14 SA|28/thg 2/17 4:56 SA|27/thg 2/17 5:58 SA|27/thg 2/17 5:58 SA|" +
+				"22/thg 2/17 6:48 SA|18/thg 1/17 8:29 SA|04/thg 1/17 7:37 SA|10/thg 11/16 10:42 SA|";
+		final String inputs[] = input.split("\\|");
+		final DateTimeParser det = new DateTimeParser(DateResolutionMode.None, locale);
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		final DateTimeParserResult result = det.getResult();
+
+		final String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "dd/MMM/yy h:mm a");
+
+		Assert.assertTrue(result.isValid("09/thg 3/17 3:14 SA"));
+		Assert.assertTrue(result.isValid8("09/Mar/17 3:14 CH"));
+		Assert.assertTrue(result.isValid("09/Mar/17 3:14 SA"));
+		Assert.assertTrue(result.isValid8("09/Mar/17 3:14 SA"));
+
+		final String regExp = result.getRegExp();
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(regExp));
+		}
+	}
+
 	@Test
 	public void basic_hhmmss_AMPM() {
 		final String input = "06:58:20 AM|07:25:18 PM|01:47:06 AM|05:32:48 AM|11:29:53 PM|02:21:10 PM|04:55:48 AM|" +
@@ -703,7 +728,7 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void intuitDateTime() {
 		Assert.assertEquals(DateTimeParser.determineFormatString("  2/12/98 9:57    ", DateResolutionMode.None, Locale.getDefault()), "?/??/yy H:mm");
-		Assert.assertNull(DateTimeParser.determineFormatString("0þþþþþ", DateResolutionMode.None, Locale.getDefault()));
+		Assert.assertNull(DateTimeParser.determineFormatString("0¶¶¶¶¶", DateResolutionMode.None, Locale.getDefault()));
 		Assert.assertNull(DateTimeParser.determineFormatString("2/12/98 :57", DateResolutionMode.None, Locale.getDefault()));
 		Assert.assertNull(DateTimeParser.determineFormatString("2/12/98 9:5", DateResolutionMode.None, Locale.getDefault()));
 		Assert.assertNull(DateTimeParser.determineFormatString("2/12/98 9:55:5", DateResolutionMode.None, Locale.getDefault()));
@@ -1097,8 +1122,8 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void parseddMMMyyyy() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("2-Jan-2017", DateResolutionMode.None, Locale.getDefault()), "d-MMM-yyyy");
 		Assert.assertEquals(DateTimeParser.determineFormatString("12-May-14", DateResolutionMode.None, Locale.getDefault()), "dd-MMM-yy");
+		Assert.assertEquals(DateTimeParser.determineFormatString("2-Jan-2017", DateResolutionMode.None, Locale.getDefault()), "d-MMM-yyyy");
 		Assert.assertEquals(DateTimeParser.determineFormatString("21 Jan 2017", DateResolutionMode.None, Locale.getDefault()), "dd MMM yyyy");
 		Assert.assertEquals(DateTimeParser.determineFormatString("8 Dec 1993", DateResolutionMode.None, Locale.getDefault()), "d MMM yyyy");
 		Assert.assertEquals(DateTimeParser.determineFormatString("25-Dec-2017", DateResolutionMode.None, Locale.getDefault()), "dd-MMM-yyyy");
@@ -1227,47 +1252,6 @@ public class DetermineDateTimeFormatTests {
 			final DateTimeParserResult result = det.getResult();
 			Assert.assertNull(result, testCase);
 		}
-	}
-
-	//@Test
-	public void bogusInput2() {
-		final String testInput = "12:45:.085";
-		final DateTimeParser det = new DateTimeParser();
-		det.train(testInput);
-		final DateTimeParserResult result = det.getResult();
-		final String formatString = result.getFormatString();
-		final PatternInfo.Type type = result.getType();
-		final PrintStream logger = System.err;
-
-		logger.printf("getFormatString(): '%s', getType(): '%s'\n", formatString, type);
-
-		final String trimmed = testInput.trim();
-
-		try {
-			result.parse(trimmed);
-		}
-		catch (DateTimeParseException e) {
-			logger.printf("Message: '%s', at '%s', offset %d\n", e.getMessage(), e.getParsedString(), e.getErrorIndex());
-		}
-		if (testInput.indexOf('?') != -1)
-			return;
-		try {
-			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
-			if (PatternInfo.Type.LOCALTIME.equals(type))
-				LocalTime.parse(trimmed, formatter);
-			else if (PatternInfo.Type.LOCALDATE.equals(type))
-				LocalDate.parse(trimmed, formatter);
-			else if (PatternInfo.Type.LOCALDATETIME.equals(type))
-				LocalDateTime.parse(trimmed, formatter);
-			else if (PatternInfo.Type.ZONEDDATETIME.equals(type))
-				ZonedDateTime.parse(trimmed, formatter);
-			else
-				OffsetDateTime.parse(trimmed, formatter);
-		}
-		catch (DateTimeParseException e) {
-			logger.printf("Java Message: '%s', at '%s', offset %d\n", e.getMessage(), e.getParsedString(), e.getErrorIndex());
-		}
-		Assert.assertNull(result);
 	}
 
 	@Test

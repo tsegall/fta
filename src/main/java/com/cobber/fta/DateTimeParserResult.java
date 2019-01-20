@@ -316,10 +316,7 @@ public class DateTimeParserResult {
 		return newInstance(ret);
 	}
 
-	private FormatterToken[] tokenize() {
-		if (formatString == null)
-			formatString = getFormatString();
-
+	public static FormatterToken[] tokenize(String formatString) {
 		final List<FormatterToken> ret = new ArrayList<FormatterToken>();
 		int upto = 0;
 
@@ -486,7 +483,7 @@ public class DateTimeParserResult {
 		if (formatString == null)
 			formatString = getFormatString();
 
-		for (final FormatterToken token : tokenize()) {
+		for (final FormatterToken token : tokenize(formatString)) {
 			final Token nextToken = token.getType();
 
 			char inputChar;
@@ -514,7 +511,7 @@ public class DateTimeParserResult {
 				if (upto + 3 > inputLength)
 					throw new DateTimeParseException("Month Abbreviation not complete", input, upto);
 				final String monthAbbreviation = input.substring(upto, upto + 3);
-				if (DateTimeParser.monthAbbreviationOffset(monthAbbreviation, locale) == -1)
+				if (DateTimeParser.shortMonthOffset(monthAbbreviation, locale) == -1)
 					throw new DateTimeParseException("Month Abbreviation invalid", input, upto);
 				upto += 3;
 				break;
@@ -643,22 +640,22 @@ public class DateTimeParserResult {
 				if (upto + len >= inputLength)
 					throw new DateTimeParseException("Expecting time zone offset, end of input", input, upto);
 
-				final String[] timeZonePattern = { null, "þþ", "þþþþ", "þþ:þþ", "þþþþþþ", "þþ:þþ:þþ" };
+				final String[] timeZonePattern = { null, "¶¶", "¶¶¶¶", "¶¶:¶¶", "¶¶¶¶¶¶", "¶¶:¶¶:¶¶" };
 				final String pattern = timeZonePattern[token.getCount()];
 				final char direction = input.charAt(upto);
-				final String offset = input.substring(upto + 1, upto + 1 + len).replaceAll("[0-9]", "þ");
+				final String offset = input.substring(upto + 1, upto + 1 + len).replaceAll("[0-9]", "¶");
 				if ((direction != '-' && direction != '+') || !pattern.equals(offset))
 					throw new DateTimeParseException("Expecting time zone offset, bad time zone offset", input, upto);
 
 				// Validate hour offset
-				final int hour = DateTimeParser.getValue(input, upto + 1, 2);
+				final int hour = Utils.getValue(input, upto + 1, 2, 2);
 				if (hour > 18)
 					throw new DateTimeParseException("Expecting time zone offset, invalid hour offset", input, upto + 1);
 
 				final int[] minuteOffset = { -1, -1, 2, 3, 2, 3 };
 				// Validate minute offset (if necessary)
 				if (minuteOffset[token.getCount()] != -1) {
-					final int minute = DateTimeParser.getValue(input, upto + 1 + minuteOffset[token.getCount()], 2);
+					final int minute = Utils.getValue(input, upto + 1 + minuteOffset[token.getCount()], 2, 2);
 					if (minute > 59)
 						throw new DateTimeParseException("Expecting time zone offset, invalid minute offset", input, upto + 1 + minuteOffset[token.getCount()]);
 				}
@@ -666,7 +663,7 @@ public class DateTimeParserResult {
 				final int[] secondOffset = { -1, -1, -1, -1, 4, 6 };
 				// Validate second offset (if necessary)
 				if (secondOffset[token.getCount()] != -1) {
-					final int second = DateTimeParser.getValue(input, upto + 1 + secondOffset[token.getCount()], 2);
+					final int second = Utils.getValue(input, upto + 1 + secondOffset[token.getCount()], 2, 2);
 					if (second > 59)
 						throw new DateTimeParseException("Expecting time zone offset, invalid second offset", input, upto + 1 + secondOffset[token.getCount()]);
 				}
@@ -711,18 +708,6 @@ public class DateTimeParserResult {
 		return ret.toString();
 	}
 
-	private String digitsRegExp(final int digitsMin, final int digitsMax) {
-		final StringBuilder ret = new StringBuilder();
-
-		ret.append("\\d{").append(digitsMin);
-		if (digitsMax != digitsMin) {
-			ret.append(',').append(digitsMax);
-		}
-		ret.append('}');
-
-		return ret.toString();
-	}
-
 	/**
 	 * Return the Regular Expression that matches this Date/Time object. All valid inputs should match this
 	 * Regular Expression, however, not all inputs that match this RE are necessarily valid.  For example,
@@ -735,13 +720,16 @@ public class DateTimeParserResult {
 		int digitsMin = 0;
 		int digitsMax = 0;
 
-		for (final FormatterToken token : tokenize()) {
+		if (formatString == null)
+			formatString = getFormatString();
+
+		for (final FormatterToken token : tokenize(formatString)) {
 			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.MONTH ||
 					token.getType() == Token.MONTH_ABBR || token.getType() == Token.DAY_OF_WEEK_ABBR ||
 					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE ||
 					token.getType() == Token.TIMEZONE_OFFSET) {
 				if (digitsMin != 0) {
-					ret.append(digitsRegExp(digitsMin, digitsMax));
+					ret.append("\\d").append(Utils.regExpLength(digitsMin, digitsMax));
 					digitsMin = digitsMax = 0;
 				}
 				switch (token.getType()) {
@@ -753,19 +741,19 @@ public class DateTimeParserResult {
 					break;
 
 				case MONTH:
-					ret.append(LocaleInfo.getMonthRegExp(locale));
+					ret.append(LocaleInfo.getMonthsRegExp(locale));
 					break;
 
 				case DAY_OF_WEEK_ABBR:
-					ret.append(KnownPatterns.PATTERN_ALPHA + "{3}");
+					ret.append(LocaleInfo.getShortWeekdaysRegExp(locale));
 					break;
 
 				case MONTH_ABBR:
-					ret.append(LocaleInfo.getMonthAbbrRegExp(locale));
+					ret.append(LocaleInfo.getShortMonthsRegExp(locale));
 					break;
 
 				case AMPM:
-					ret.append("(am|AM|pm|PM)");
+					ret.append(LocaleInfo.getAMPMRegExp(locale));
 					break;
 
 				case TIMEZONE:
@@ -841,7 +829,7 @@ public class DateTimeParserResult {
 		}
 
 		if (digitsMin != 0)
-			ret.append(digitsRegExp(digitsMin, digitsMax));
+			ret.append("\\d").append(Utils.regExpLength(digitsMin, digitsMax));
 
 		return ret.toString();
 	}

@@ -69,8 +69,8 @@ public class DateTimeParser {
 
 	}
 
-	public static int monthAbbreviationOffset(final String month, Locale locale) {
-		final Integer offset = LocaleInfo.getMonthAbbrs(locale).get(month.toUpperCase(locale));
+	public static int shortMonthOffset(final String month, Locale locale) {
+		final Integer offset = LocaleInfo.getShortMonths(locale).get(month.toUpperCase(locale));
 		return offset == null ? -1 : offset;
 	}
 
@@ -285,17 +285,6 @@ public class DateTimeParser {
 		return ret + patternChar + patternChar + patternChar;
 	}
 
-	/**
-	 * Give a String as input with an offset and length return the integer at that position.
-	 * @param input String to extract integer from
-	 * @param offset Integer offset that marks the start
-	 * @param length Integer length of integer to be extracted.
-	 * @return An integer value from the supplied String.
-	 */
-	public static int getValue(final String input, final int offset, final int length) {
-		return Integer.valueOf(input.substring(offset, offset + length));
-	}
-
 	private static boolean plausibleDate(final int[] dateValues, final int[] dateDigits, final int[] fieldOffsets) {
 		final int year = dateValues[fieldOffsets[2]];
 		if (year == 0 && dateDigits[fieldOffsets[2]] == 4)
@@ -328,7 +317,7 @@ public class DateTimeParser {
 	 * DateTime, OffsetDateTime or a ZonedDateTime.
 	 * @param input The String representing a date with optional leading/trailing whitespace
 	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
-	 * @param locale TODO
+	 * @param locale The Locale used to interpret the input
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public static String determineFormatString(final String input, final DateResolutionMode resolutionMode, Locale locale) {
@@ -351,35 +340,19 @@ public class DateTimeParser {
 		if (len < 4 || len > 50 || (!Character.isDigit(trimmed.charAt(0)) && !Character.isAlphabetic(trimmed.charAt(0))))
 			return null;
 
-		if (trimmed.indexOf('þ') != -1)
+		if (trimmed.indexOf('¶') != -1)
 			return null;
 
-		final String compressed = SimpleDateMatcher.compress(trimmed, locale);
-
-		final SimpleDateMatcher matcher = SimpleDateMatcher.get(compressed, locale);
-		if (matcher != null) {
+		final SimpleDateMatcher matcher = new SimpleDateMatcher(trimmed, locale);
+		if (matcher.isKnown()) {
 			int[] dateValue = new int[] {-1, -1, -1};
-			if (matcher.getMonthLength() < 0) {
-				int i = matcher.getMonthOffset();
-				while (i < len) {
-					char ch = trimmed.charAt(i);
-					if (ch == ' ' || ch == '/' || ch == '-')
-						break;
-					i++;
-				}
-				String month = trimmed.substring(matcher.getMonthOffset(), i);
-				if (matcher.getMonthLength() == -1)
-					dateValue[1] = DateTimeParser.monthOffset(month, locale);
-				else
-					dateValue[1] = DateTimeParser.monthAbbreviationOffset(month, locale);
-				if (dateValue[1] == -1)
-					return null;
-			}
-			else {
-				dateValue[1] = getValue(trimmed, matcher.getMonthOffset(), matcher.getMonthLength());
-			}
-			dateValue[0] = getValue(trimmed, matcher.getDayOffset() >= 0 ? matcher.getDayOffset() : len + matcher.getDayOffset(), matcher.getDayLength());
-			dateValue[2] = getValue(trimmed, matcher.getYearOffset() >= 0 ? matcher.getYearOffset() : len + matcher.getYearOffset(), matcher.getYearLength());
+
+			if (!matcher.parse())
+				return null;
+
+			dateValue[0] = matcher.getDayOfMonth();
+			dateValue[1] = matcher.getMonthValue();
+			dateValue[2] = matcher.getYear();
 
 			if (!plausibleDate(dateValue, new int[] {matcher.getDayLength(), matcher.getMonthLength(), matcher.getYearLength()}, new int[] {0,1,2}))
 				return null;
@@ -388,7 +361,7 @@ public class DateTimeParser {
 		}
 
 		// Fail fast if we can
-		if (!compressed.contains(":d{") && !compressed.contains("/d{") && !compressed.contains("-d{"))
+		if (!matcher.getCompressed().contains(":d{") && !matcher.getCompressed().contains("/d{") && !matcher.getCompressed().contains("-d{"))
 			return null;
 
 		// Fail fast if we can
@@ -417,7 +390,7 @@ public class DateTimeParser {
 		boolean iso8601 = false;
 		boolean expectingAlphaTimeZone = false;
 
-		int lastCh = 'þ';
+		int lastCh = '¶';
 		for (int i = 0; i < len && timeZone.length() == 0; i++) {
 			final char ch = trimmed.charAt(i);
 
@@ -514,20 +487,20 @@ public class DateTimeParser {
 						return null;
 
 					// Validate the hours
-					int hours = getValue(trimmed, i, 2);
+					int hours = Utils.getValue(trimmed, i, 2, 2);
 					if (hours != Integer.MIN_VALUE && hours > 18)
 						return null;
 
 					// Validate the minutes
 					if (minutesOffset != Integer.MIN_VALUE) {
-						final int minutes = getValue(trimmed, i + minutesOffset, 2);
+						final int minutes = Utils.getValue(trimmed, i + minutesOffset, 2, 2);
 						if (minutes != Integer.MIN_VALUE && minutes > 59)
 							return null;
 					}
 
 					// Validate the seconds
 					if (secondsOffset != Integer.MIN_VALUE) {
-						final int seconds = getValue(trimmed, i + secondsOffset, 2);
+						final int seconds = Utils.getValue(trimmed, i + secondsOffset, 2, 2);
 						if (seconds != Integer.MIN_VALUE && seconds > 59)
 							return null;
 					}
@@ -572,20 +545,6 @@ public class DateTimeParser {
 				value = 0;
 				break;
 
-			case 'T':
-				// ISO 8601
-				if (timeSeen)
-					return null;
-				if (!dateSeen || dateClosed || digits != 2 || dateSeparator != '-' || !fourDigitYear || !yearInDateFirst)
-					return null;
-				iso8601 = true;
-				dateValue[dateComponent] = value;
-				dateDigits[dateComponent] = digits;
-				dateClosed = true;
-				digits = 0;
-				value = 0;
-				break;
-
 			case ' ':
 				if (!dateSeen && !timeSeen)
 					return null;
@@ -615,21 +574,42 @@ public class DateTimeParser {
 					expectingAlphaTimeZone = true;
 				break;
 
-			case 'a':
-			case 'A':
-			case 'p':
-			case 'P':
-				// We are prepared to accept AM or PM at the end
-				final char second = trimmed.charAt(i + 1);
-				if (i + 2 != len || (second != 'M' && second != 'm'))
+			default:
+				if (!Character.isAlphabetic(ch))
 					return null;
 
-				amPmIndicator = trimmed.charAt(i - 1) == ' ' ? " a" : "a";
-				i++;
-				break;
+				String rest = input.substring(i).toUpperCase(locale);
+				boolean ampmDetected = false;
+				for (String s : LocaleInfo.getAMPMStrings(locale)) {
+					if (rest.startsWith(s)) {
+						amPmIndicator = trimmed.charAt(i - 1) == ' ' ? " a" : "a";
+						i += s.length();
+						ampmDetected = true;
+						break;
+					}
+				}
 
-			default:
-				return null;
+				if (ampmDetected) {
+					// Eat the space after if it exists
+					if (i + 1 < len && trimmed.charAt(i + 1) == ' ')
+						i++;
+				}
+				else if (ch == 'T') {
+					// ISO 8601
+					if (timeSeen)
+						return null;
+					if (!dateSeen || dateClosed || digits != 2 || dateSeparator != '-' || !fourDigitYear || !yearInDateFirst)
+						return null;
+					iso8601 = true;
+					dateValue[dateComponent] = value;
+					dateDigits[dateComponent] = digits;
+					dateClosed = true;
+					digits = 0;
+					value = 0;
+				}
+				else
+					return null;
+				break;
 			}
 		}
 
@@ -764,7 +744,7 @@ public class DateTimeParser {
 		}
 
 		if (timeFirst)
-			return timeAnswer + (iso8601 ? "'T'" : " ") + dateAnswer + timeZone;
+			return timeAnswer + amPmIndicator + (iso8601 ? "'T'" : " ") + dateAnswer + timeZone;
 		else
 			return dateAnswer + (iso8601 ? "'T'" : " ") + timeAnswer + amPmIndicator + timeZone;
 	}

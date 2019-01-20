@@ -3,7 +3,8 @@
 Analyze Text data to determine type information and other key metrics associated with a text stream.
 A key objective of the analysis is that it should be sufficiently fast to be in-line (e.g. as the
 data is input from some source it should be possible to stream the data through this class without
-undue performance degradation).
+undue performance degradation).  Support for non-English date detection is relatively robust,
+however, neither Japanese or non-Gregorian calendars are supported.
 
 Typical usage is:
 ```java
