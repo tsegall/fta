@@ -413,7 +413,7 @@ public class DetermineDateTimeFormatTests {
 		}
 	}
 
-	//@Test TODO
+	//@Test FIX
 	public void basicAMPM_viVN() {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
 		Assert.assertEquals(DateTimeParser.determineFormatString("09/thg 3/17 3:14 SA", DateResolutionMode.None, locale), "dd/MMM/yy h:mm a");

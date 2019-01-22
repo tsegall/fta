@@ -37,6 +37,10 @@ public class Utils {
 		return ret;
 	}
 
+	public static String slosh(char ch) {
+		return ch == '.' ? "\\." : String.valueOf(ch);
+	}
+
 	/**
 	 * Give a String as input with an offset and length return the integer at that position.
 	 * @param input String to extract integer from

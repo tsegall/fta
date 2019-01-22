@@ -4,7 +4,8 @@ Analyze Text data to determine type information and other key metrics associated
 A key objective of the analysis is that it should be sufficiently fast to be in-line (e.g. as the
 data is input from some source it should be possible to stream the data through this class without
 undue performance degradation).  Support for non-English date detection is relatively robust,
-however, neither Japanese or non-Gregorian calendars are supported.
+with the following excpetions: No support for non-Gregorian calendars, no support for
+non-Arabic numerals and no support for Japanese.
 
 Typical usage is:
 ```java

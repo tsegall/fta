@@ -54,6 +54,8 @@ class Driver {
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				logger.println(" --maxCardinality <n> - Set the Maximum Cardinality size");
 				logger.println(" --monthFirst - If dates are ambigous assume Month precedes Day");
+				logger.println(" --noAnalysis - Do not do analysis");
+				logger.println(" --noStatistics - Do not track statistics");
 				logger.println(" --records <n> - The number of records to analyze");
 				logger.println(" --samples <n> - Set the size of the sample window");
 				logger.println(" --validate - Validate the result of the analysis by reprocessing file against results");
@@ -66,7 +68,9 @@ class Driver {
 				options.maxCardinality = Integer.valueOf(args[++idx]);
 			else if ("--monthFirst".equals(args[idx]))
 				options.resolutionMode = DateResolutionMode.MonthFirst;
-			else if ("--noStatistics".equals(args[idx]))
+			else if ("--noAnalysis".equals(args[idx]))
+				options.noAnalysis = true;
+			else if ("--noAnalysis".equals(args[idx]))
 				options.noStatistics = true;
 			else if ("--records".equals(args[idx]))
 				options.recordsToAnalyze = Long.valueOf(args[++idx]);

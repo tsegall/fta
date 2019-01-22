@@ -138,7 +138,8 @@ class FileProcessor {
 						if (options.col == -1 || options.col == i) {
 							if (options.verbose)
 								System.out.printf("\"%s\"\n", record.get(i));
-							analysis[i].train(record.get(i));
+							if (!options.noAnalysis)
+								analysis[i].train(record.get(i));
 						}
 					}
 				}
@@ -146,6 +147,9 @@ class FileProcessor {
 					break;
 			}
 		}
+
+		if (options.noAnalysis)
+			System.exit(0);
 
 		// Validate the result of the analysis if requested
 		int[] matched = new int[numFields];

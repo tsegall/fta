@@ -42,27 +42,70 @@ public class KnownPatterns {
 	public static final String PATTERN_BOOLEAN_YES_NO = "(?i)(yes|no)";
 	public static final String PATTERN_BOOLEAN_ONE_ZERO = "[0|1]";
 
-	public static final String PATTERN_LONG = "\\d+";
-	public static final String PATTERN_SIGNED_LONG = "-?\\d+";
-	public static final String PATTERN_DOUBLE = PATTERN_LONG + "|" + "(\\d+)?\\.\\d+";
-	public static final String PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + "-?(\\d+)?\\.\\d+";
-	public static final String PATTERN_DOUBLE_WITH_EXPONENT = PATTERN_LONG + "|" + "(\\d+)?\\.\\d+(?:[eE]([-+]?\\d+))?";
-	public static final String PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = PATTERN_SIGNED_LONG + "|" + "-?(\\d+)?\\.\\d+(?:[eE]([-+]?\\d+))?";
+	public String PATTERN_LONG;
+	public String PATTERN_LONG_GROUPING;
+	public String PATTERN_SIGNED_LONG;
+	public String PATTERN_SIGNED_LONG_GROUPING;
+	public String PATTERN_DOUBLE;
+	public String PATTERN_DOUBLE_GROUPING;
+	public String PATTERN_SIGNED_DOUBLE;
+	public String PATTERN_SIGNED_DOUBLE_GROUPING;
+	public String PATTERN_DOUBLE_WITH_EXPONENT;
+	public String PATTERN_SIGNED_DOUBLE_WITH_EXPONENT;
 
 	Map<String, PatternInfo> knownPatterns = new HashMap<String, PatternInfo>();
 	Map<ID, PatternInfo> knownIDs = new HashMap<ID, PatternInfo>();
 	Map<String, PatternInfo> promotions = new HashMap<String, PatternInfo>();
 
 	static String withGrouping(String regExp, char groupingSeparator) {
+		String re = groupingSeparator == '.' ? "\\\\." : String.valueOf(groupingSeparator);
+		return regExp.replaceAll("\\\\d", "[\\\\d" + re + "]");
+	}
 
-		return regExp.replaceAll("\\\\d", "[\\\\d" + groupingSeparator + "]");
+	String getRegExp(KnownPatterns.ID id) {
+		switch (id) {
+		case ID_LONG:
+			return PATTERN_LONG;
+		case ID_LONG_GROUPING:
+			return PATTERN_LONG_GROUPING;
+		case ID_SIGNED_LONG:
+			return PATTERN_SIGNED_LONG;
+		case ID_SIGNED_LONG_GROUPING:
+			return PATTERN_SIGNED_LONG_GROUPING;
+		case ID_DOUBLE:
+			return PATTERN_DOUBLE;
+		case ID_DOUBLE_GROUPING:
+			return PATTERN_DOUBLE_GROUPING;
+		case ID_SIGNED_DOUBLE:
+			return PATTERN_SIGNED_DOUBLE;
+		case ID_SIGNED_DOUBLE_GROUPING:
+			return PATTERN_SIGNED_DOUBLE_GROUPING;
+		case ID_DOUBLE_WITH_EXPONENT:
+			return PATTERN_DOUBLE_WITH_EXPONENT;
+		case ID_SIGNED_DOUBLE_WITH_EXPONENT:
+			return PATTERN_SIGNED_DOUBLE_WITH_EXPONENT;
+		}
+
+		return null;
 	}
 
 	void initialize(Locale locale) {
 		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 		char groupingSeparator = formatSymbols.getGroupingSeparator();
-		char monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
+		char decimalSeparator = formatSymbols.getDecimalSeparator();
 
+		PATTERN_LONG = "\\d+";
+		PATTERN_SIGNED_LONG = "-?\\d+";
+		PATTERN_DOUBLE = PATTERN_LONG + "|" + "(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+";
+		PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + "-?(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+";
+
+		PATTERN_LONG_GROUPING = withGrouping(PATTERN_LONG, groupingSeparator);
+		PATTERN_SIGNED_LONG_GROUPING = withGrouping(PATTERN_SIGNED_LONG, groupingSeparator);
+		PATTERN_DOUBLE_GROUPING = withGrouping(PATTERN_DOUBLE, groupingSeparator);
+		PATTERN_SIGNED_DOUBLE_GROUPING = withGrouping(PATTERN_SIGNED_DOUBLE, groupingSeparator);
+
+		PATTERN_DOUBLE_WITH_EXPONENT = PATTERN_DOUBLE + "(?:[eE]([-+]?\\d+))?";
+		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = PATTERN_SIGNED_DOUBLE + "(?:[eE]([-+]?\\d+))?";
 
 		knownPatterns.put(PATTERN_BOOLEAN_TRUE_FALSE,
 				new PatternInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, PatternInfo.Type.BOOLEAN, "TRUE_FALSE", false, 4, 5, null, ""));
@@ -89,19 +132,15 @@ public class KnownPatterns {
 		knownPatterns.put(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT,
 				new PatternInfo(ID.ID_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PatternInfo.Type.DOUBLE, "SIGNED", false, -1, -1, null, ""));
 
-		String regExp = withGrouping(PATTERN_LONG, groupingSeparator);
-		knownPatterns.put(regExp,
-				new PatternInfo(ID.ID_LONG_GROUPING, regExp, PatternInfo.Type.LONG, "GROUPING", false, 1, -1, null, ""));
-		regExp = withGrouping(PATTERN_SIGNED_LONG, groupingSeparator);
-		knownPatterns.put(regExp,
-				new PatternInfo(ID.ID_SIGNED_LONG_GROUPING, regExp, PatternInfo.Type.LONG, "SIGNED,GROUPING", false, 1, -1, null, ""));
+		knownPatterns.put(PATTERN_LONG_GROUPING,
+				new PatternInfo(ID.ID_LONG_GROUPING, PATTERN_LONG_GROUPING, PatternInfo.Type.LONG, "GROUPING", false, 1, -1, null, ""));
+		knownPatterns.put(PATTERN_SIGNED_LONG_GROUPING,
+				new PatternInfo(ID.ID_SIGNED_LONG_GROUPING, PATTERN_SIGNED_LONG_GROUPING, PatternInfo.Type.LONG, "SIGNED,GROUPING", false, 1, -1, null, ""));
 
-		regExp = withGrouping(PATTERN_DOUBLE, groupingSeparator);
-		knownPatterns.put(regExp,
-				new PatternInfo(ID.ID_DOUBLE_GROUPING, regExp, PatternInfo.Type.DOUBLE, "GROUPING", false, 1, -1, null, ""));
-		regExp = withGrouping(PATTERN_SIGNED_DOUBLE, groupingSeparator);
-		knownPatterns.put(regExp,
-				new PatternInfo(ID.ID_SIGNED_DOUBLE_GROUPING, regExp, PatternInfo.Type.DOUBLE, "SIGNED,GROUPING", false, 1, -1, null, ""));
+		knownPatterns.put(PATTERN_DOUBLE_GROUPING,
+				new PatternInfo(ID.ID_DOUBLE_GROUPING, PATTERN_DOUBLE_GROUPING, PatternInfo.Type.DOUBLE, "GROUPING", false, 1, -1, null, ""));
+		knownPatterns.put(PATTERN_SIGNED_DOUBLE_GROUPING,
+				new PatternInfo(ID.ID_SIGNED_DOUBLE_GROUPING, PATTERN_SIGNED_DOUBLE_GROUPING, PatternInfo.Type.DOUBLE, "SIGNED,GROUPING", false, 1, -1, null, ""));
 
 		knownPatterns.put(PATTERN_NULL,
 				new PatternInfo(ID.ID_NULL, PATTERN_NULL, PatternInfo.Type.STRING, "NULL", false, -1, -1, null, ""));
@@ -112,8 +151,6 @@ public class KnownPatterns {
 
 		// Build the mapping from ID to PatternInfo
 		for (PatternInfo patternInfo : knownPatterns.values()) {
-			if (patternInfo.isNumeric() && monetaryDecimalSeparator != '.')
-				patternInfo.regexp = patternInfo.regexp.replace("\\.", String.valueOf(monetaryDecimalSeparator));
 			knownIDs.put(patternInfo.id, patternInfo);
 		}
 

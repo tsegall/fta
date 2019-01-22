@@ -348,7 +348,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
@@ -379,7 +379,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
@@ -446,7 +446,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_SIGNED_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -3107,6 +3107,67 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void localeNumberTest() throws IOException {
+		final Random random = new Random(1);
+		final int SAMPLE_SIZE = 1000;
+		Locale[] locales = DateFormat.getAvailableLocales();
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("hr-HR") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("hi-IN") };
+
+		for (Locale locale : locales) {
+			final TextAnalyzer analysis = new TextAnalyzer("Separator");
+			analysis.setLocale(locale);
+
+			boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
+
+			if (!simple) {
+				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+				continue;
+			}
+
+			Calendar cal = GregorianCalendar.getInstance(locale);
+			if (!(cal instanceof GregorianCalendar)) {
+				System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
+				continue;
+			}
+
+			Set<String> samples = new HashSet<String>();
+			NumberFormat nf = NumberFormat.getNumberInstance(locale);
+			nf.setMinimumFractionDigits(2);
+			for (int i = 0; i < SAMPLE_SIZE; i++) {
+				double d = random.nextDouble() * 100000000;
+				String sample = nf.format(d).toString();
+				samples.add(sample);
+				analysis.train(sample);
+			}
+
+			final TextAnalysisResult result = analysis.getResult();
+
+			Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+			Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
+			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getNullCount(), 0);
+			Assert.assertEquals(result.getLeadingZeroCount(), 0);
+			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+			String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
+			String dec = formatSymbols.getDecimalSeparator() == '.' ? "\\." : "" + formatSymbols.getDecimalSeparator();
+
+			String regExp = "[\\d" + grp + "]+|([\\d" + grp + "]+)?" + dec + "[\\d" + grp +"]+";
+
+//			System.err.println("Locale: " + locale + ", grp = '" + grp + "', dec = '" + dec + "', re: " + regExp + "'");
+
+			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getConfidence(), 1.0);
+
+			for (String sample : samples) {
+				Assert.assertTrue(sample.matches(regExp), sample + " " + regExp);
+			}
+		}
+	}
+
+	@Test
 	public void monetaryDecimalSeparatorDefault() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Random random = new Random();
@@ -3144,11 +3205,11 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 		Assert.assertEquals(result.getMinValue(), minValue);
 		Assert.assertEquals(result.getMaxValue(), maxValue);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (String sample : samples) {
-			Assert.assertTrue(sample.matches(KnownPatterns.PATTERN_DOUBLE), sample);
+			Assert.assertTrue(sample.matches(analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE)), sample);
 		}
 	}
 
@@ -3975,6 +4036,7 @@ public class AnalysisResultTests {
 		Set <String> problems = new HashSet<>();
 		int countTests = 0;
 		int countNotGregorian = 0;
+		int countNotArabicNumerals = 0;
 		int	countNoMonthAbbreviations = 0;
 		int countProblems = 0;
 
@@ -3996,12 +4058,16 @@ public class AnalysisResultTests {
 					continue;
 				}
 
+				if (!NumberFormat.getNumberInstance(locale).format(0).matches("\\d")) {
+					countNotArabicNumerals++;
+					continue;
+				}
+
 				if (LocaleInfo.getShortMonths(locale).keySet().equals(LocaleInfo.getMonths(locale).keySet()) &&
 					testCase.contains("MMMM")) {
 					countNoMonthAbbreviations++;
 					continue;
 				}
-
 				final TextAnalyzer analysis = new TextAnalyzer();
 
 				// We do not like Japanese the Month Abbreviations are 1, 2, 3, 4, 5, ... which causes issues
@@ -4111,8 +4177,8 @@ public class AnalysisResultTests {
 			System.err.println(problem);
 		}
 
-		System.err.printf("%d not Gregorian (skipped), %d no Month abbr. (skipped), %d locales, %d failures (of %d tests)\n",
-				countNotGregorian, countNoMonthAbbreviations, locales.length, countProblems, countTests);
+		System.err.printf("%d not Gregorian (skipped), %d not Arabic numerals, %d no Month abbr. (skipped), %d locales, %d failures (of %d tests)\n",
+				countNotGregorian, countNotArabicNumerals, countNoMonthAbbreviations, locales.length, countProblems, countTests);
 
 		Assert.assertEquals(countProblems, 0);
 	}
@@ -4688,7 +4754,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_DOUBLE);
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -4966,7 +5032,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_DOUBLE_WITH_EXPONENT);
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -5004,7 +5070,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -6176,6 +6242,41 @@ public class AnalysisResultTests {
 			Assert.assertEquals(result.getMinValue(), min);
 			Assert.assertEquals(result.getMaxValue(), max);
 		}
+	}
+
+	@Test
+	public void dateSwitcher() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Contract Signed Date");
+		final String inputs[] = new String[] {
+				"3/14/2012", "3/14/2012", "6/30/2011", "3/14/2012", "3/14/2012", "3/14/2012",
+				"3/14/2012", "3/14/2012", "3/14/2012", "3/14/2012", "3/14/2012", "3/14/2012",
+				"3/14/2012", "6/30/2011", "6/30/2011", "6/30/2011", "6/30/2011", "6/30/2011",
+				"6/30/2011", "9/11/2013", "10/2/2013", "10/2/2013", "10/2/2013", "10/2/2013",
+				"10/2/2013", "10/2/2013", "2/18/2014", "2/18/2014", "2/18/2014", "6/2/2014",
+				"6/2/2014", "6/2/2014", "6/2/2014", "6/2/2014", "10/17/2012"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "M/d/yyyy");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+
+
 	}
 
 	@Test

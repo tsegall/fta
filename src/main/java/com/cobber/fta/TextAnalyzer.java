@@ -244,7 +244,6 @@ public class TextAnalyzer {
 
 	/**
 	 * Return the set of registered Logical Types.
-
 	 * @return A Collection of the currently registered Logical Types.
 	 */
 	public Collection<LogicalType> getRegisteredLogicalTypes() {
@@ -388,7 +387,6 @@ public class TextAnalyzer {
      * Set the number of Samples to collect before attempting to determine the
      * type. Note: It is not possible to change the Sample Size once training
      * has started.
-     * Indicate whether to collect statistics or not.
      *
      * @param samples
      *            The number of samples to collect
@@ -513,6 +511,10 @@ public class TextAnalyzer {
 	 */
 	public boolean getLengthQualifier() {
 		return lengthQualifier;
+	}
+
+	String getRegExp(KnownPatterns.ID id) {
+		return knownPatterns.getRegExp(id);
 	}
 
 	private boolean trackLong(final String rawInput, PatternInfo patternInfo, final boolean register) {
@@ -754,6 +756,9 @@ public class TextAnalyzer {
 		if (!(cal instanceof GregorianCalendar))
 			throw new IllegalArgumentException("No support for locales that do not use the Gregorian Calendar");
 
+		if (!NumberFormat.getNumberInstance(locale).format(0).matches("\\d"))
+			throw new IllegalArgumentException("No support for locales that do not use Arabic numerals");
+
 		raw = new ArrayList<String>(samples);
 		levels[0] = new ArrayList<StringBuilder>(samples);
 		levels[1] = new ArrayList<StringBuilder>(samples);
@@ -954,17 +959,17 @@ public class TextAnalyzer {
 			StringBuilder l2 = null;
 			if (numericDecimalSeparators == 1) {
 				if (possibleExponentSeen == -1) {
-					l1 = new StringBuilder(numericSigned ? KnownPatterns.PATTERN_SIGNED_DOUBLE : KnownPatterns.PATTERN_DOUBLE);
-					l2 = new StringBuilder(KnownPatterns.PATTERN_SIGNED_DOUBLE);
+					l1 = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_DOUBLE : knownPatterns.PATTERN_DOUBLE);
+					l2 = new StringBuilder(knownPatterns.PATTERN_SIGNED_DOUBLE);
 				}
 				else {
-					l1 = new StringBuilder(numericSigned ? KnownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT : KnownPatterns.PATTERN_DOUBLE_WITH_EXPONENT);
-					l2 = new StringBuilder(KnownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+					l1 = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT : knownPatterns.PATTERN_DOUBLE_WITH_EXPONENT);
+					l2 = new StringBuilder(knownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 				}
 			}
 			else {
-				l1 = new StringBuilder(numericSigned ? KnownPatterns.PATTERN_SIGNED_LONG : KnownPatterns.PATTERN_LONG);
-				l2 = new StringBuilder(KnownPatterns.PATTERN_SIGNED_LONG);
+				l1 = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_LONG : knownPatterns.PATTERN_LONG);
+				l2 = new StringBuilder(knownPatterns.PATTERN_SIGNED_LONG);
 			}
 			levels[1].add(l1);
 			levels[2].add(l2);
@@ -990,7 +995,6 @@ public class TextAnalyzer {
 				levels[1].add(new StringBuilder(collapsed));
 				levels[2].add(new StringBuilder(KnownPatterns.PATTERN_ANY_VARIABLE));
 			}
-
 		}
 
 		return matchPatternInfo != null && matchPatternInfo.type != null;
@@ -1129,7 +1133,7 @@ public class TextAnalyzer {
 				matchPatternInfo = level2patternInfo;
 			}
 
-			if (possibleDateTime == raw.size()) {
+			if (possibleDateTime != 0 && possibleDateTime + 1 >= raw.size()) {
 				final DateTimeParser det = new DateTimeParser(resolutionMode, locale);
 				for (final String sample : raw)
 					det.train(sample);
@@ -1429,7 +1433,7 @@ public class TextAnalyzer {
 
 		matchCount += otherLongs;
 		if ((double) matchCount / realSamples > threshold/100.0)
-			matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_LONG);
+			matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_LONG);
 		else
 			backoutToPatternID(realSamples, KnownPatterns.ID.ID_ANY_VARIABLE);
 	}
@@ -1552,11 +1556,18 @@ public class TextAnalyzer {
 					result.parse(input);
 				}
 				catch (DateTimeParseException e) {
-					if ("Insufficient digits in input (d)".equals(e.getMessage()) || "Insufficient digits in input (M)".equals(e.getMessage())) {
+					char ditch = '_';
+					if ("Insufficient digits in input (d)".equals(e.getMessage()))
+						ditch = 'd';
+					else if ("Insufficient digits in input (M)".equals(e.getMessage()))
+						ditch = 'M';
+					if (ditch != '_') {
 						try {
-							final String formatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(e.getErrorIndex()).toString();
-							result = DateTimeParserResult.asResult(formatString, resolutionMode, locale);
-							matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, formatString, false, -1, -1, null, formatString);
+
+							int offset = matchPatternInfo.format.indexOf(ditch);
+							final String newFormatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(offset).toString();
+							result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
+							matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, newFormatString, false, -1, -1, null, newFormatString);
 
 							trackDateTime(matchPatternInfo.format, input);
 							matchCount++;
@@ -1764,9 +1775,10 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (KnownPatterns.PATTERN_LONG.equals(matchPatternInfo.regexp) || KnownPatterns.PATTERN_SIGNED_LONG.equals(matchPatternInfo.regexp)) {
-			if (KnownPatterns.PATTERN_LONG.equals(matchPatternInfo.regexp) && matchPatternInfo.typeQualifier == null && minLong < 0)
-				matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_SIGNED_LONG);
+
+		if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id || KnownPatterns.ID.ID_SIGNED_LONG == matchPatternInfo.id) {
+			if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id && matchPatternInfo.typeQualifier == null && minLong < 0)
+				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG);
 
 			if (groupingSeparators == 0 && minLong > 19000101 && maxLong < 20400101 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("date"))) {
@@ -1802,7 +1814,7 @@ public class TextAnalyzer {
 			}
 		} else if (PatternInfo.Type.DOUBLE.equals(matchPatternInfo.type)) {
 			if (matchPatternInfo.typeQualifier == null && minDouble < 0.0)
-				matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_SIGNED_DOUBLE);
+				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_DOUBLE);
 
 			if (groupingSeparators != 0)
 				if (matchPatternInfo.id == KnownPatterns.ID.ID_DOUBLE)

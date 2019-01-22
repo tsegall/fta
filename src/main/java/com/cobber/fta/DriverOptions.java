@@ -25,6 +25,7 @@ class DriverOptions {
 	int col = -1;
 	DateResolutionMode resolutionMode = DateResolutionMode.None;
 	boolean noStatistics = false;
+	boolean noAnalysis = false;
 	long recordsToAnalyze = -1;
 	int sampleSize = -1;
 	Locale locale = null;
