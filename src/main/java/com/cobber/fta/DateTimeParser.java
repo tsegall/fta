@@ -59,6 +59,7 @@ public class DateTimeParser {
 	private Locale locale;
 
 	public static Set<String> timeZones = new HashSet<String>();
+	private static final int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 
 	static {
@@ -66,7 +67,6 @@ public class DateTimeParser {
 		Collections.addAll(timeZones, TimeZone.getAvailableIDs());
 		// Add the non-real Time Zones (that people use)
 		timeZones.addAll(Arrays.asList(new String[] {"EDT", "CDT", "MDT", "PDT"}));
-
 	}
 
 	public static int shortMonthOffset(final String month, Locale locale) {
@@ -84,6 +84,9 @@ public class DateTimeParser {
 	private int nullCount;
 	private int blankCount;
 	private int invalidCount;
+
+	// lenient allows dates of the form 00/00/00 etc to be viewed as valid for the purpose of Format detection
+	private boolean lenient = true;
 
 	DateTimeParser(final DateResolutionMode resolutionMode) {
 		this(resolutionMode, Locale.getDefault());
@@ -117,7 +120,7 @@ public class DateTimeParser {
 		}
 
 		final String trimmed = input.trim();
-		final String ret = determineFormatString(trimmed, DateResolutionMode.None, locale);
+		final String ret = determineFormatString(trimmed, resolutionMode.None);
 		if (ret == null) {
 			invalidCount++;
 			return null;
@@ -285,15 +288,18 @@ public class DateTimeParser {
 		return ret + patternChar + patternChar + patternChar;
 	}
 
-	private static boolean plausibleDate(final int[] dateValues, final int[] dateDigits, final int[] fieldOffsets) {
+	private boolean plausibleDate(final int[] dateValues, final int[] dateDigits, final int[] fieldOffsets) {
 		final int year = dateValues[fieldOffsets[2]];
+		final int month = dateValues[fieldOffsets[1]];
+		final int day = dateValues[fieldOffsets[0]];
+
+		if (lenient && year == 0 && month == 0 && day == 0)
+			return true;
+
 		if (year == 0 && dateDigits[fieldOffsets[2]] == 4)
 			return false;
-		final int month = dateValues[fieldOffsets[1]];
 		if (month == 0 || month > 12)
 			return false;
-		final int day = dateValues[fieldOffsets[0]];
-		final int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 		if (day == 0 || day > monthDays[month])
 			return false;
 		return true;
@@ -316,11 +322,21 @@ public class DateTimeParser {
 	 * Determine a FormatString from an input string that may represent a Date, Time,
 	 * DateTime, OffsetDateTime or a ZonedDateTime.
 	 * @param input The String representing a date with optional leading/trailing whitespace
-	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
-	 * @param locale The Locale used to interpret the input
+	 * The resolution mode will default to the mode provided when the DateTimeParser was initially constructed.
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
-	public static String determineFormatString(final String input, final DateResolutionMode resolutionMode, Locale locale) {
+	public String determineFormatString(final String input) {
+		return determineFormatString(input,  resolutionMode);
+	}
+
+	/**
+	 * Determine a FormatString from an input string that may represent a Date, Time,
+	 * DateTime, OffsetDateTime or a ZonedDateTime.
+	 * @param input The String representing a date with optional leading/trailing whitespace
+	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
+	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
+	 */
+	public String determineFormatString(final String input, final DateResolutionMode resolutionMode) {
 		int len = input.length();
 
 		// Remove leading spaces
@@ -677,7 +693,8 @@ public class DateTimeParser {
 			// If we don't have two date components then it is invalid
 			if (dateComponent == 1)
 				return null;
-			if (dateValue[1] == 0 || dateValue[1] > 31)
+			boolean freePass = lenient && dateValue[0] == 0 && dateValue[1] == 0 && dateValue[2] == 0;
+			if ((!freePass && dateValue[1] == 0) || dateValue[1] > 31)
 				return null;
 			if (yearInDateFirst) {
 				if (!plausibleDate(dateValue, dateDigits, new int[] {2,1,0}))
@@ -702,7 +719,7 @@ public class DateTimeParser {
 				} else {
 					// If the first group of digits is of length 1, then it is either d/MM/yy or M/dd/yy
 					if (dateDigits[0] == 1) {
-						if (dateValue[0] == 0)
+						if (!freePass && dateValue[0] == 0)
 							return null;
 						if (dateValue[1] > 12) {
 							if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))

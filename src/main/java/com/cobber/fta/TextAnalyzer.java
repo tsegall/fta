@@ -189,6 +189,9 @@ public class TextAnalyzer {
 
 	private KnownPatterns knownPatterns = new KnownPatterns();
 
+	private DateTimeParser dateTimeParser;
+
+
 	/**
 	 * Construct a Text Analyzer for the named data stream with the supplied DateResolutionMode.
 	 *
@@ -808,6 +811,9 @@ public class TextAnalyzer {
 		minusSign = formatSymbols.getMinusSign();
 
 		knownPatterns.initialize(locale);
+
+		dateTimeParser = new DateTimeParser(resolutionMode, locale);
+
 		initialized = true;
 	}
 
@@ -942,7 +948,7 @@ public class TextAnalyzer {
 		}
 		levels[0].add(compressedl0);
 
-		if (DateTimeParser.determineFormatString(input, resolutionMode, locale) != null)
+		if (dateTimeParser.determineFormatString(input) != null)
 			possibleDateTime++;
 
 		// Check to see if this input is one of our registered Infinite Logical Types

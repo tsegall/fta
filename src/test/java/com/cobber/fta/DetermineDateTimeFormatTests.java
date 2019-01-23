@@ -47,7 +47,8 @@ public class DetermineDateTimeFormatTests {
 						"25 July 2018|25-July-2018|7 June 2017|7-June-2017|June 23, 2017|" +
 						"August 8, 2017|August 18 2017|December 9 2017|January-14-2017|February-4-2017|";
 
-		Assert.assertEquals(DateTimeParser.determineFormatString("9:57", DateResolutionMode.None, Locale.getDefault()), "H:mm");
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		Assert.assertEquals(dtp.determineFormatString("9:57"), "H:mm");
 		final String inputs[] = input.split("\\|");
 		final String fmts[] = new String[inputs.length];
 		String text;
@@ -64,7 +65,7 @@ public class DetermineDateTimeFormatTests {
 
 		// Work out headers and which columns we want.
 		for (int i = 0; i < inputs.length; i++) {
-			fmts[i] = DateTimeParser.determineFormatString(inputs[i], DateResolutionMode.None, Locale.getDefault());
+			fmts[i] = dtp.determineFormatString(inputs[i]);
 				Assert.assertNotNull(fmts[i], inputs[i]);
 
 			final String header = fmts[i].replace(':', '_').replace('\'', '_');
@@ -122,48 +123,52 @@ public class DetermineDateTimeFormatTests {
 				}
 			}
 		}
-		Assert.assertEquals(DateTimeParser.determineFormatString("9:57", DateResolutionMode.None, Locale.getDefault()), "H:mm");
+		Assert.assertEquals(dtp.determineFormatString("9:57"), "H:mm");
 	}
 
 	@Test
 	public void intuitTimeOnly() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("9:57", DateResolutionMode.None, Locale.getDefault()), "H:mm");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12:57", DateResolutionMode.None, Locale.getDefault()), "HH:mm");
-		Assert.assertEquals(DateTimeParser.determineFormatString("8:57:02", DateResolutionMode.None, Locale.getDefault()), "H:mm:ss");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12:57:02", DateResolutionMode.None, Locale.getDefault()), "HH:mm:ss");
-		Assert.assertNull(DateTimeParser.determineFormatString(":57:02", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("123:02", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12:023", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12:023:12", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12:0", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12:02:1", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12:02:12:14", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12:02:124", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12:02:", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12::02", DateResolutionMode.None, Locale.getDefault()));
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("9:57"), "H:mm");
+		Assert.assertEquals(dtp.determineFormatString("12:57"), "HH:mm");
+		Assert.assertEquals(dtp.determineFormatString("8:57:02"), "H:mm:ss");
+		Assert.assertEquals(dtp.determineFormatString("12:57:02"), "HH:mm:ss");
+		Assert.assertNull(dtp.determineFormatString(":57:02"));
+		Assert.assertNull(dtp.determineFormatString("123:02"));
+		Assert.assertNull(dtp.determineFormatString("12:023"));
+		Assert.assertNull(dtp.determineFormatString("12:023:12"));
+		Assert.assertNull(dtp.determineFormatString("12:0"));
+		Assert.assertNull(dtp.determineFormatString("12:02:1"));
+		Assert.assertNull(dtp.determineFormatString("12:02:12:14"));
+		Assert.assertNull(dtp.determineFormatString("12:02:124"));
+		Assert.assertNull(dtp.determineFormatString("12:02:"));
+		Assert.assertNull(dtp.determineFormatString("12::02"));
 	}
 
 	@Test
 	public void intuitDateOnlySlash() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("2/12/98", DateResolutionMode.None, Locale.getDefault()), "?/??/yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("2/2/02", DateResolutionMode.None, Locale.getDefault()), "?/?/yy");
-		Assert.assertNull(DateTimeParser.determineFormatString("2/31/02", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertEquals(DateTimeParser.determineFormatString("31/02/02", DateResolutionMode.None, Locale.getDefault()), "??/??/??");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12/12/98", DateResolutionMode.None, Locale.getDefault()), "??/??/yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("14/12/98", DateResolutionMode.None, Locale.getDefault()), "dd/MM/yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12/14/98", DateResolutionMode.None, Locale.getDefault()), "MM/dd/yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12/12/2012", DateResolutionMode.None, Locale.getDefault()), "??/??/yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("20/12/2012", DateResolutionMode.None, Locale.getDefault()), "dd/MM/yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("11/15/2012", DateResolutionMode.None, Locale.getDefault()), "MM/dd/yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("2012/12/12", DateResolutionMode.None, Locale.getDefault()), "yyyy/MM/dd");
-		Assert.assertNull(DateTimeParser.determineFormatString("/57/02", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("123/02", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12/023", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12/0", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12/02/1", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12/023/12", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12/02/", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("12/02-99", DateResolutionMode.None, Locale.getDefault()));
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("2/12/98"), "?/??/yy");
+		Assert.assertEquals(dtp.determineFormatString("2/2/02"), "?/?/yy");
+		Assert.assertNull(dtp.determineFormatString("2/31/02"));
+		Assert.assertEquals(dtp.determineFormatString("31/02/02"), "??/??/??");
+		Assert.assertEquals(dtp.determineFormatString("12/12/98"), "??/??/yy");
+		Assert.assertEquals(dtp.determineFormatString("14/12/98"), "dd/MM/yy");
+		Assert.assertEquals(dtp.determineFormatString("12/14/98"), "MM/dd/yy");
+		Assert.assertEquals(dtp.determineFormatString("12/12/2012"), "??/??/yyyy");
+		Assert.assertEquals(dtp.determineFormatString("20/12/2012"), "dd/MM/yyyy");
+		Assert.assertEquals(dtp.determineFormatString("11/15/2012"), "MM/dd/yyyy");
+		Assert.assertEquals(dtp.determineFormatString("2012/12/12"), "yyyy/MM/dd");
+		Assert.assertNull(dtp.determineFormatString("/57/02"));
+		Assert.assertNull(dtp.determineFormatString("123/02"));
+		Assert.assertNull(dtp.determineFormatString("12/023"));
+		Assert.assertNull(dtp.determineFormatString("12/0"));
+		Assert.assertNull(dtp.determineFormatString("12/02/1"));
+		Assert.assertNull(dtp.determineFormatString("12/023/12"));
+		Assert.assertNull(dtp.determineFormatString("12/02/"));
+		Assert.assertNull(dtp.determineFormatString("12/02-99"));
 	}
 
 	/*
@@ -175,18 +180,22 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitDateOnlyDash() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("2-12-98", DateResolutionMode.None, Locale.getDefault()), "?-??-yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12-12-98", DateResolutionMode.None, Locale.getDefault()), "??-??-yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("14-12-98", DateResolutionMode.None, Locale.getDefault()), "dd-MM-yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12-14-98", DateResolutionMode.None, Locale.getDefault()), "MM-dd-yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12-12-2012", DateResolutionMode.None, Locale.getDefault()), "??-??-yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("2012-12-12", DateResolutionMode.None, Locale.getDefault()), "yyyy-MM-dd");
-		Assert.assertNull(DateTimeParser.determineFormatString("20120-12-12", DateResolutionMode.None, Locale.getDefault()));
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("2-12-98"), "?-??-yy");
+		Assert.assertEquals(dtp.determineFormatString("12-12-98"), "??-??-yy");
+		Assert.assertEquals(dtp.determineFormatString("14-12-98"), "dd-MM-yy");
+		Assert.assertEquals(dtp.determineFormatString("12-14-98"), "MM-dd-yy");
+		Assert.assertEquals(dtp.determineFormatString("12-12-2012"), "??-??-yyyy");
+		Assert.assertEquals(dtp.determineFormatString("2012-12-12"), "yyyy-MM-dd");
+		Assert.assertNull(dtp.determineFormatString("20120-12-12"));
 	}
 
 	@Test
 	public void intuit8601DD() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("2004-01-01T00:00:00+05", DateResolutionMode.None, Locale.getDefault()), "yyyy-MM-dd'T'HH:mm:ssx");
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("2004-01-01T00:00:00+05"), "yyyy-MM-dd'T'HH:mm:ssx");
 
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "2004-01-01T00:00:00+05";
@@ -237,7 +246,9 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuit8601DDDDDD() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("2004-01-01T00:00:00+05:00:00", DateResolutionMode.None, Locale.getDefault()), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("2004-01-01T00:00:00+05:00:00"), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
 
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "2004-01-01T00:00:00+05:00:00";
@@ -266,17 +277,19 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void fullMonths() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("25 July 2018", DateResolutionMode.None, Locale.getDefault()), "dd MMMM yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("25-July-2018", DateResolutionMode.None, Locale.getDefault()), "dd-MMMM-yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("7 June 2017", DateResolutionMode.None, Locale.getDefault()), "d MMMM yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("7-June-2017", DateResolutionMode.None, Locale.getDefault()), "d-MMMM-yyyy");
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(DateTimeParser.determineFormatString("June 23, 2017", DateResolutionMode.None, Locale.getDefault()), "MMMM dd',' yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("August 8, 2017", DateResolutionMode.None, Locale.getDefault()), "MMMM d',' yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("August 18 2017", DateResolutionMode.None, Locale.getDefault()), "MMMM dd yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("December 9 2017", DateResolutionMode.None, Locale.getDefault()), "MMMM d yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("January-14-2017", DateResolutionMode.None, Locale.getDefault()), "MMMM-dd-yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("February-4-2017", DateResolutionMode.None, Locale.getDefault()), "MMMM-d-yyyy");
+		Assert.assertEquals(dtp.determineFormatString("25 July 2018"), "dd MMMM yyyy");
+		Assert.assertEquals(dtp.determineFormatString("25-July-2018"), "dd-MMMM-yyyy");
+		Assert.assertEquals(dtp.determineFormatString("7 June 2017"), "d MMMM yyyy");
+		Assert.assertEquals(dtp.determineFormatString("7-June-2017"), "d-MMMM-yyyy");
+
+		Assert.assertEquals(dtp.determineFormatString("June 23, 2017"), "MMMM dd',' yyyy");
+		Assert.assertEquals(dtp.determineFormatString("August 8, 2017"), "MMMM d',' yyyy");
+		Assert.assertEquals(dtp.determineFormatString("August 18 2017"), "MMMM dd yyyy");
+		Assert.assertEquals(dtp.determineFormatString("December 9 2017"), "MMMM d yyyy");
+		Assert.assertEquals(dtp.determineFormatString("January-14-2017"), "MMMM-dd-yyyy");
+		Assert.assertEquals(dtp.determineFormatString("February-4-2017"), "MMMM-d-yyyy");
 	}
 
 	@Test
@@ -380,7 +393,9 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void basicAMPM() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("09/Mar/17 3:14 PM", DateResolutionMode.None, Locale.getDefault()), "dd/MMM/yy h:mm a");
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("09/Mar/17 3:14 PM"), "dd/MMM/yy h:mm a");
 
 		final String input = "09/Mar/17 3:14 PM|09/Mar/17 11:36 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 8:14 AM|" +
 				"09/Mar/17 7:02 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|" +
@@ -416,7 +431,9 @@ public class DetermineDateTimeFormatTests {
 	//@Test FIX
 	public void basicAMPM_viVN() {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
-		Assert.assertEquals(DateTimeParser.determineFormatString("09/thg 3/17 3:14 SA", DateResolutionMode.None, locale), "dd/MMM/yy h:mm a");
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("09/thg 3/17 3:14 SA"), "dd/MMM/yy h:mm a");
 
 		final String input = "09/thg 3/17 3:14 CH|09/thg 3/17 11:36 SA|09/thg 3/17 9:12 SA|09/thg 3/17 9:12 SA|09/thg 3/17 9:12 SA|09/thg 3/17 8:14 SA|" +
 				"09/thg 3/17 7:02 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|" +
@@ -727,18 +744,19 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitDateTime() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("  2/12/98 9:57    ", DateResolutionMode.None, Locale.getDefault()), "?/??/yy H:mm");
-		Assert.assertNull(DateTimeParser.determineFormatString("0¶¶¶¶¶", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("2/12/98 :57", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("2/12/98 9:5", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParser.determineFormatString("2/12/98 9:55:5", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertEquals(DateTimeParser.determineFormatString("2/13/98 9:57", DateResolutionMode.None, Locale.getDefault()), "M/dd/yy H:mm");
-		Assert.assertEquals(DateTimeParser.determineFormatString("13/12/98 12:57", DateResolutionMode.None, Locale.getDefault()), "dd/MM/yy HH:mm");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12/12/2012 8:57:02", DateResolutionMode.None, Locale.getDefault()), "??/??/yyyy H:mm:ss");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12/12/2012 8:57:02 GMT", DateResolutionMode.None, Locale.getDefault()),
-				"??/??/yyyy H:mm:ss z");
-		Assert.assertEquals(DateTimeParser.determineFormatString("13/12/2012 8:57:02", DateResolutionMode.None, Locale.getDefault()), "dd/MM/yyyy H:mm:ss");
-		Assert.assertEquals(DateTimeParser.determineFormatString("2012/12/12 12:57:02", DateResolutionMode.None, Locale.getDefault()), "yyyy/MM/dd HH:mm:ss");
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("  2/12/98 9:57    "), "?/??/yy H:mm");
+		Assert.assertNull(dtp.determineFormatString("0¶¶¶¶¶"));
+		Assert.assertNull(dtp.determineFormatString("2/12/98 :57"));
+		Assert.assertNull(dtp.determineFormatString("2/12/98 9:5"));
+		Assert.assertNull(dtp.determineFormatString("2/12/98 9:55:5"));
+		Assert.assertEquals(dtp.determineFormatString("2/13/98 9:57"), "M/dd/yy H:mm");
+		Assert.assertEquals(dtp.determineFormatString("13/12/98 12:57"), "dd/MM/yy HH:mm");
+		Assert.assertEquals(dtp.determineFormatString("12/12/2012 8:57:02"), "??/??/yyyy H:mm:ss");
+		Assert.assertEquals(dtp.determineFormatString("12/12/2012 8:57:02 GMT"), "??/??/yyyy H:mm:ss z");
+		Assert.assertEquals(dtp.determineFormatString("13/12/2012 8:57:02"), "dd/MM/yyyy H:mm:ss");
+		Assert.assertEquals(dtp.determineFormatString("2012/12/12 12:57:02"), "yyyy/MM/dd HH:mm:ss");
 
 		DateTimeParserResult result;
 		final DateTimeParser detUnspecified = new DateTimeParser();
@@ -1023,7 +1041,7 @@ public class DetermineDateTimeFormatTests {
 	public void intuitAlmostISO3() {
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "2004-01-01 12:35:41.0";
-		Assert.assertEquals(DateTimeParser.determineFormatString(sample, DateResolutionMode.None, Locale.getDefault()), "yyyy-MM-dd HH:mm:ss.S");
+		Assert.assertEquals(det.determineFormatString(sample), "yyyy-MM-dd HH:mm:ss.S");
 
 		det.train(sample);
 		det.train("2004-01-01 02:00:00.0");
@@ -1068,7 +1086,7 @@ public class DetermineDateTimeFormatTests {
 	public void intuitAlmostISO4() {
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "2004-01-01 12:35:41.999";
-		Assert.assertEquals(DateTimeParser.determineFormatString(sample, DateResolutionMode.None, Locale.getDefault()), "yyyy-MM-dd HH:mm:ss.SSS");
+		Assert.assertEquals(det.determineFormatString(sample), "yyyy-MM-dd HH:mm:ss.SSS");
 
 		det.train(sample);
 		det.train("2004-01-01 02:00:00.000");
@@ -1113,21 +1131,25 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitTimeDate() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("9:57 2/13/98", DateResolutionMode.None, Locale.getDefault()), "H:mm M/dd/yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("9:57 2/12/98", DateResolutionMode.None, Locale.getDefault()), "H:mm ?/??/yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12:57 13/12/98", DateResolutionMode.None, Locale.getDefault()), "HH:mm dd/MM/yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("8:57:02 12/12/2012", DateResolutionMode.None, Locale.getDefault()), "H:mm:ss ??/??/yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("12:57:02 2012/12/12", DateResolutionMode.None, Locale.getDefault()), "HH:mm:ss yyyy/MM/dd");
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("9:57 2/13/98"), "H:mm M/dd/yy");
+		Assert.assertEquals(dtp.determineFormatString("9:57 2/12/98"), "H:mm ?/??/yy");
+		Assert.assertEquals(dtp.determineFormatString("12:57 13/12/98"), "HH:mm dd/MM/yy");
+		Assert.assertEquals(dtp.determineFormatString("8:57:02 12/12/2012"), "H:mm:ss ??/??/yyyy");
+		Assert.assertEquals(dtp.determineFormatString("12:57:02 2012/12/12"), "HH:mm:ss yyyy/MM/dd");
 	}
 
 	@Test
 	public void parseddMMMyyyy() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("12-May-14", DateResolutionMode.None, Locale.getDefault()), "dd-MMM-yy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("2-Jan-2017", DateResolutionMode.None, Locale.getDefault()), "d-MMM-yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("21 Jan 2017", DateResolutionMode.None, Locale.getDefault()), "dd MMM yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("8 Dec 1993", DateResolutionMode.None, Locale.getDefault()), "d MMM yyyy");
-		Assert.assertEquals(DateTimeParser.determineFormatString("25-Dec-2017", DateResolutionMode.None, Locale.getDefault()), "dd-MMM-yyyy");
-		Assert.assertNull(DateTimeParser.determineFormatString("21-Jam-2017", DateResolutionMode.None, Locale.getDefault()));
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("12-May-14"), "dd-MMM-yy");
+		Assert.assertEquals(dtp.determineFormatString("2-Jan-2017"), "d-MMM-yyyy");
+		Assert.assertEquals(dtp.determineFormatString("21 Jan 2017"), "dd MMM yyyy");
+		Assert.assertEquals(dtp.determineFormatString("8 Dec 1993"), "d MMM yyyy");
+		Assert.assertEquals(dtp.determineFormatString("25-Dec-2017"), "dd-MMM-yyyy");
+		Assert.assertNull(dtp.determineFormatString("21-Jam-2017"));
 
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "2 Jan 2017";
@@ -1162,8 +1184,9 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitTimeDateWithTimeZone() {
-		Assert.assertEquals(DateTimeParser.determineFormatString("01/30/2012 10:59:48 GMT", null, Locale.getDefault()),
-				"MM/dd/yyyy HH:mm:ss z");
+		DateTimeParser dtp = new DateTimeParser(null, Locale.getDefault());
+
+		Assert.assertEquals(dtp.determineFormatString("01/30/2012 10:59:48 GMT"), "MM/dd/yyyy HH:mm:ss z");
 	}
 
 	@Test
