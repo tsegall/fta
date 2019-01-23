@@ -121,7 +121,7 @@ class FileProcessor {
 						if (options.noStatistics)
 							analysis[i].setCollectStatistics(false);
 						if (options.sampleSize != -1)
-							analysis[i].setSampleSize(options.sampleSize);
+							analysis[i].setDetectWindow(options.sampleSize);
 						if (options.maxCardinality != -1)
 							analysis[i].setMaxCardinality(options.maxCardinality);
 						if (options.locale != null)

@@ -384,7 +384,7 @@ public class TextAnalyzer {
 	}
 
     /**
-     * Set the number of Samples to collect before attempting to determine the
+     * Set the size of the Detect Window (i.e. number of samples) to collect before attempting to determine the
      * type. Note: It is not possible to change the Sample Size once training
      * has started.
      *
@@ -392,7 +392,7 @@ public class TextAnalyzer {
      *            The number of samples to collect
      * @return The previous value of this parameter.
 	*/
-	public int setSampleSize(final int samples) {
+	public int setDetectWindow(final int samples) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot change sample size once training has started");
 		if (samples < SAMPLE_DEFAULT)
@@ -401,7 +401,7 @@ public class TextAnalyzer {
 		final int ret = samples;
 		this.samples = samples;
 
-		// Never want the Sample Size to be greater than the Reflection point
+		// Never want the Detect Window to be greater than the Reflection point
 		if (samples >= reflectionSamples)
 			reflectionSamples = samples + 1;
 		return ret;
@@ -1591,12 +1591,11 @@ public class TextAnalyzer {
 				if (matchPatternInfo.typeQualifier != null) {
 					// Do we need to back out from any of our Infinite type determinations
 					LogicalType logical = registered.get(matchPatternInfo.typeQualifier);
-					if (logical != null) {
+					if (logical != null && logical.isValidSet(dataStreamName, matchCount, realSamples, cardinality, outliers) != null)
 						if (logical.getQualifier().equals(matchPatternInfo.typeQualifier) && "US_ZIP5".equals(matchPatternInfo.typeQualifier))
 							backoutLogicalLongType(logical, realSamples);
 						else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
-					}
 				}
 				else {
 					// Need to evaluate if we got this wrong
@@ -1774,7 +1773,6 @@ public class TextAnalyzer {
 				}
 			}
 		}
-
 
 		if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id || KnownPatterns.ID.ID_SIGNED_LONG == matchPatternInfo.id) {
 			if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id && matchPatternInfo.typeQualifier == null && minLong < 0)

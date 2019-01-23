@@ -5016,7 +5016,7 @@ public class AnalysisResultTests {
 		int locked = -1;
 		int sample = 0;
 
-		analysis.setSampleSize(2* TextAnalyzer.SAMPLE_DEFAULT);
+		analysis.setDetectWindow(2* TextAnalyzer.SAMPLE_DEFAULT);
 		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
 			if (analysis.train(samples[sample++]) && locked == -1)
 				locked = sample;
@@ -5054,7 +5054,7 @@ public class AnalysisResultTests {
 		int locked = -1;
 		int sample = 0;
 
-		analysis.setSampleSize(2* TextAnalyzer.SAMPLE_DEFAULT);
+		analysis.setDetectWindow(2* TextAnalyzer.SAMPLE_DEFAULT);
 		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
 			if (analysis.train(samples[sample++]) && locked == -1)
 				locked = sample;
@@ -5086,7 +5086,7 @@ public class AnalysisResultTests {
 		int locked = -1;
 		int sample = 0;
 
-		analysis.setSampleSize(2* TextAnalyzer.SAMPLE_DEFAULT);
+		analysis.setDetectWindow(2* TextAnalyzer.SAMPLE_DEFAULT);
 		for (int i = 0; i <= TextAnalyzer.SAMPLE_DEFAULT; i++) {
 			sample++;
 			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
@@ -5120,7 +5120,7 @@ public class AnalysisResultTests {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		try {
-			analysis.setSampleSize(TextAnalyzer.SAMPLE_DEFAULT - 1);
+			analysis.setDetectWindow(TextAnalyzer.SAMPLE_DEFAULT - 1);
 		}
 		catch (IllegalArgumentException e) {
 			Assert.assertEquals(e.getMessage(), "Cannot set sample size below " + TextAnalyzer.SAMPLE_DEFAULT);
@@ -5142,7 +5142,7 @@ public class AnalysisResultTests {
 		}
 
 		try {
-			analysis.setSampleSize(2* TextAnalyzer.SAMPLE_DEFAULT);
+			analysis.setDetectWindow(2* TextAnalyzer.SAMPLE_DEFAULT);
 		}
 		catch (IllegalArgumentException e) {
 			Assert.assertEquals(e.getMessage(), "Cannot change sample size once training has started");
@@ -5741,14 +5741,14 @@ public class AnalysisResultTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), validUSStreets2.length);
-		Assert.assertEquals(result.getCardinality(), validUSStreets2.length - 1);
-		Assert.assertEquals(result.getMatchCount(), validUSStreets2.length - 1);
+		Assert.assertEquals(result.getCardinality(), validUSStreets2.length);
+		Assert.assertEquals(result.getMatchCount(), validUSStreets2.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "ADDRESS_EN");
 		Assert.assertEquals(result.getRegExp(), ".+");
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test

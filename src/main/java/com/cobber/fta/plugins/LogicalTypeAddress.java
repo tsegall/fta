@@ -50,6 +50,7 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(String input) {
+		String inputUpper = input.toUpperCase(Locale.ENGLISH);
 		int length = input.length();
 
 		// Attempt to fail fast
@@ -58,19 +59,22 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 
 		// Simple case first - last 'word is something we recognize
 		int spaceIndex = input.lastIndexOf(' ');
-		if (spaceIndex != -1 && addressMarkers.contains(input.substring(spaceIndex + 1).toUpperCase(Locale.ENGLISH)))
+		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1)))
+			return true;
+
+		if (inputUpper.startsWith("PO BOX"))
 			return true;
 
 		// Accept something of the form, initial digit followed by an address marker word (e.g. Road, Street, etc).
-		if (!Character.isDigit(input.charAt(0)))
+		if (!Character.isDigit(inputUpper.charAt(0)))
 			return false;
 
-		String[] words = input.split(" ");
-		if (words.length < 4)
+		String[] words = inputUpper.replace(",", "").split(" ");
+		if (words.length < 3)
 			return false;
 
 		for (int i = 1; i < words.length  - 1; i++) {
-			if (addressMarkers.contains(words[i].toUpperCase(Locale.ENGLISH)))
+			if (addressMarkers.contains(words[i]))
 				return true;
 		}
 
@@ -79,16 +83,21 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+		String inputUpper = input.toUpperCase(Locale.ENGLISH);
 		int spaceIndex = lastIndex[' '];
-		if (spaceIndex != -1 && addressMarkers.contains(input.substring(spaceIndex + 1, input.length()).toUpperCase(Locale.ENGLISH)))
+
+		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1, inputUpper.length())))
 			return true;
 
-		if (!Character.isDigit(input.charAt(0)) || charCounts[' '] < 3)
+		if (inputUpper.startsWith("PO BOX"))
+			return true;
+
+		if (!Character.isDigit(inputUpper.charAt(0)) || charCounts[' '] < 3)
 			return false;
 
-		String[] words = input.split(" ");
+		String[] words = inputUpper.replace(",", "").split(" ");
 		for (int i = 1; i < words.length  - 1; i++) {
-			if (addressMarkers.contains(words[i].toUpperCase(Locale.ENGLISH)))
+			if (addressMarkers.contains(words[i]))
 				return true;
 		}
 
