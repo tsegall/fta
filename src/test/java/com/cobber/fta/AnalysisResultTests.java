@@ -3875,10 +3875,10 @@ public class AnalysisResultTests {
 		Set<String> samples = new HashSet<String>();
 		LocalDate localDate = LocalDate.now();
 
-		if (!isValidLocale("bg"))
+		if (!isValidLocale("bg_BG"))
 			return;
 
-		Locale bulgarian = Locale.forLanguageTag("bg");
+		Locale bulgarian = Locale.forLanguageTag("bg-BG");
 
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setLocale(bulgarian);
@@ -3919,7 +3919,7 @@ public class AnalysisResultTests {
 		Set<String> samples = new HashSet<String>();
 		LocalDate localDate = LocalDate.now();
 
-		if (!isValidLocale("ca-ES"))
+		if (!isValidLocale("ca_ES"))
 			return;
 
 		Locale catalan = Locale.forLanguageTag("ca-ES");
@@ -3961,7 +3961,7 @@ public class AnalysisResultTests {
 		Set<String> samples = new HashSet<String>();
 		LocalDate localDate = LocalDate.now();
 
-		if (!isValidLocale("de-AT"))
+		if (!isValidLocale("de_AT"))
 			return;
 
 		Locale german = Locale.forLanguageTag("de-AT");
@@ -4225,10 +4225,10 @@ public class AnalysisResultTests {
 	@Test
 	public void basicMonthAbbrGerman() throws IOException {
 
-		if (!isValidLocale("de-AT"))
+		if (!isValidLocale("de"))
 			return;
 
-		Locale german = Locale.forLanguageTag("de-AT");
+		Locale german = Locale.forLanguageTag("de");
 
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setLocale(german);
