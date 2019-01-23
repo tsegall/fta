@@ -3859,16 +3859,31 @@ public class AnalysisResultTests {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
+	static boolean isValidLocale(String value) {
+		Locale[] locales = Locale.getAvailableLocales();
+		for (Locale locale : locales) {
+			if (value.equals(locale.toString())) {
+				return true;
+		    }
+		}
+		return false;
+	}
+
 	@Test
 	public void basicBulgarianDate() throws IOException {
 
 		Set<String> samples = new HashSet<String>();
 		LocalDate localDate = LocalDate.now();
 
-		final TextAnalyzer analysis = new TextAnalyzer();
-		analysis.setLocale(Locale.forLanguageTag("bg"));
+		if (!isValidLocale("bg"))
+			return;
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.forLanguageTag("bg"));
+		Locale bulgarian = Locale.forLanguageTag("bg");
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(bulgarian);
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", bulgarian);
 
 		int locked = -1;
 
@@ -3904,10 +3919,15 @@ public class AnalysisResultTests {
 		Set<String> samples = new HashSet<String>();
 		LocalDate localDate = LocalDate.now();
 
-		final TextAnalyzer analysis = new TextAnalyzer();
-		analysis.setLocale(Locale.forLanguageTag("ca-ES"));
+		if (!isValidLocale("ca-ES"))
+			return;
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.forLanguageTag("ca-ES"));
+		Locale catalan = Locale.forLanguageTag("ca-ES");
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(catalan);
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", catalan);
 
 		int locked = -1;
 
@@ -3941,10 +3961,15 @@ public class AnalysisResultTests {
 		Set<String> samples = new HashSet<String>();
 		LocalDate localDate = LocalDate.now();
 
-		final TextAnalyzer analysis = new TextAnalyzer();
-		analysis.setLocale(Locale.forLanguageTag("de-AT"));
+		if (!isValidLocale("de-AT"))
+			return;
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.forLanguageTag("de-AT"));
+		Locale german = Locale.forLanguageTag("de-AT");
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(german);
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", german);
 
 		int locked = -1;
 
@@ -4199,8 +4224,15 @@ public class AnalysisResultTests {
 
 	@Test
 	public void basicMonthAbbrGerman() throws IOException {
+
+		if (!isValidLocale("de-AT"))
+			return;
+
+		Locale german = Locale.forLanguageTag("de-AT");
+
 		final TextAnalyzer analysis = new TextAnalyzer();
-		analysis.setLocale(Locale.GERMAN);
+		analysis.setLocale(german);
+
 		final int badCount = 4;
 		final String inputs[] = MONTH_TEST_GERMAN.split("\\|");
 
