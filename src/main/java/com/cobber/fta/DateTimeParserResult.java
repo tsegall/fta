@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,7 +104,7 @@ public class DateTimeParserResult {
 	 * @return A boolean indicating if the input is valid.
 	 */
 	public boolean isValid8(final String input) {
-		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(getFormatString());
+		final DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(getFormatString()).toFormatter(locale);
 
 		try {
 			if (PatternInfo.Type.LOCALTIME.equals(getType()))
@@ -444,7 +445,6 @@ public class DateTimeParserResult {
 
 		return ret.toArray(new FormatterToken[ret.size()]);
 	}
-
 
 	@SuppressWarnings("incomplete-switch")
 	void validateTokenValue(final Token token, final int value, final String input, final int upto) {

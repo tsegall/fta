@@ -31,6 +31,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -1787,7 +1788,7 @@ public class TextAnalyzer {
 			if (groupingSeparators == 0 && minLong > 19000101 && maxLong < 20400101 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("date"))) {
 				matchPatternInfo = new PatternInfo(null, "\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
-				DateTimeFormatter dtf = DateTimeFormatter.ofPattern(matchPatternInfo.format);
+				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
 				minLocalDate = LocalDate.parse(String.valueOf(minLong), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
 			} else if (groupingSeparators == 0 && minLong > 1800 && maxLong < 2030 &&
@@ -1985,36 +1986,46 @@ public class TextAnalyzer {
 
 		case LOCALDATE:
 			if (collectStatistics) {
-				minValue = minLocalDate == null ? null : minLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxLocalDate == null ? null : maxLocalDate.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+
+				minValue = minLocalDate == null ? null : minLocalDate.format(dtf);
+				maxValue = maxLocalDate == null ? null : maxLocalDate.format(dtf);
 			}
 			break;
 
 		case LOCALTIME:
 			if (collectStatistics) {
-				minValue = minLocalTime == null ? null : minLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxLocalTime == null ? null : maxLocalTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+
+				minValue = minLocalTime == null ? null : minLocalTime.format(dtf);
+				maxValue = maxLocalTime == null ? null : maxLocalTime.format(dtf);
 			}
 			break;
 
 		case LOCALDATETIME:
 			if (collectStatistics) {
-				minValue = minLocalDateTime == null ? null : minLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+
+				minValue = minLocalDateTime == null ? null : minLocalDateTime.format(dtf);
+				maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(dtf);
 			}
 			break;
 
 		case ZONEDDATETIME:
 			if (collectStatistics) {
-				minValue = minZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxZonedDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+
+				minValue = minZonedDateTime.format(dtf);
+				maxValue = maxZonedDateTime.format(dtf);
 			}
 			break;
 
 		case OFFSETDATETIME:
 			if (collectStatistics) {
-				minValue = minOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
-				maxValue = maxOffsetDateTime.format(DateTimeFormatter.ofPattern(matchPatternInfo.format));
+				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+
+				minValue = minOffsetDateTime.format(dtf);
+				maxValue = maxOffsetDateTime.format(dtf);
 			}
 			break;
 		}

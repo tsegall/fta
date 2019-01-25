@@ -1,7 +1,8 @@
 package com.cobber.fta;
 
 /**
- * Analyze a set of strings and return a suitable Regular Expression.  Will not ever be a optimal Regular Expression.
+ * Analyze a set of strings and return a suitable Regular Expression.
+ * Not likely to be an optimal Regular Expression!!
  *
  * <p>
  * Typical usage is:
@@ -9,18 +10,18 @@ package com.cobber.fta;
  *
  * <pre>
  * {@code
- * 		CharacterClass characterClass = new CharacterClass();
+ * 		RegExpGenerator generator = new RegExpGenerator();
  *
- * 		characterClass.train("janv.");
- * 		characterClass.train("oct");
- * 		characterClass.train("dec.");
+ * 		generator.train("janv.");
+ * 		generator.train("oct");
+ * 		generator.train("dec.");
  * 		...
  *
- * 		String result = characterClass.getResult();
+ * 		String result = generator.getResult();
  * }
  * </pre>
  */
-public class CharacterClass {
+public class RegExpGenerator {
 	int shortest = Integer.MAX_VALUE;
 	int longest = Integer.MIN_VALUE;
 	boolean isAlphabetic = false;
@@ -30,7 +31,11 @@ public class CharacterClass {
 	boolean isOther = false;
 	int maxClasses = 0;
 
-	void train(String input) {
+	/**
+	 * This method should be called for each string in the set.
+	 * @param input The String to be used as part of the set.
+	 */
+	public void train(String input) {
 		final int len = input.length();
 		int classes = 0;
 
@@ -65,6 +70,10 @@ public class CharacterClass {
 			longest = len;
 	}
 
+	/**
+	 * Given the set of Strings trained() return a Regular Expression which will accept any of the training set.
+	 * @return A regular expression matching the training set.
+	 */
 	String getResult() {
 		String ret = "";
 

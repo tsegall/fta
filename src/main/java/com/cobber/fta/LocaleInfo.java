@@ -2,6 +2,7 @@ package com.cobber.fta;
 
 import java.text.DateFormatSymbols;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -53,30 +54,30 @@ public class LocaleInfo {
 		// Setup the Months
 		final String[] longMonths = dfs.getMonths();
 		Map<String, Integer> monthsLocale = new TreeMap<>(localeInfo.new LengthComparator());
-		CharacterClass characterClass = new CharacterClass();
+		RegExpGenerator generator = new RegExpGenerator();
 
 		for (int i = 0; i <= actualMonths; i++) {
 			final String month = longMonths[i].toUpperCase(locale);
 			monthsLocale.put(month, i + 1);
-			characterClass.train(month);
-			characterClass.train(longMonths[i]);
+			generator.train(month);
+			generator.train(longMonths[i]);
 		}
 		months.put(languageTag, monthsLocale);
-		monthsRegExp.put(languageTag, characterClass.getResult());
+		monthsRegExp.put(languageTag, generator.getResult());
 
 		// Setup the Monthly abbreviations
 		final String[] m = dfs.getShortMonths();
 		Map<String, Integer> shortMonthsLocale = new TreeMap<>(localeInfo.new LengthComparator());
-		characterClass = new CharacterClass();
+		generator = new RegExpGenerator();
 
 		for (int i = 0; i <= actualMonths; i++) {
 			final String shortMonth = m[i].toUpperCase(locale);
 			shortMonthsLocale.put(shortMonth, i + 1);
-			characterClass.train(shortMonth);
-			characterClass.train(m[i]);
+			generator.train(shortMonth);
+			generator.train(m[i]);
 		}
 		shortMonths.put(languageTag, shortMonthsLocale);
-		shortMonthsRegExp.put(languageTag, characterClass.getResult());
+		shortMonthsRegExp.put(languageTag, generator.getResult());
 
 		// Setup the AM/PM strings
 		Set<String> ampmStringsLocale = new LinkedHashSet<>();
@@ -92,17 +93,17 @@ public class LocaleInfo {
 
 		// Setup the Short Week Day strings
 		Set<String> shortWeekdaysLocale = new TreeSet<>(localeInfo.new LengthComparator());
-		characterClass = new CharacterClass();
+		generator = new RegExpGenerator();
 		for (String week : dfs.getShortWeekdays()) {
 			if (week.isEmpty())
 				continue;
 			final String weekUpper = week.toUpperCase(locale);
 			shortWeekdaysLocale.add(weekUpper);
-			characterClass.train(week);
-			characterClass.train(weekUpper);
+			generator.train(week);
+			generator.train(weekUpper);
 		}
 		shortWeekdays.put(languageTag, shortWeekdaysLocale);
-		shortWeekdaysRegExp.put(languageTag, characterClass.getResult());
+		shortWeekdaysRegExp.put(languageTag, generator.getResult());
 	}
 
 	/**
@@ -184,7 +185,7 @@ public class LocaleInfo {
 		if (formatter != null)
 			return formatter;
 
-		formatter = DateTimeFormatter.ofPattern(formatString, locale);
+		formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(formatString).toFormatter(locale);
 		formatterCache.put(locale.toLanguageTag() + "---" + formatString, formatter);
 
 		return formatter;

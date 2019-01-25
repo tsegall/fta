@@ -121,7 +121,7 @@ public class SimpleDateMatcher {
 		return sf.type;
 	}
 
-	private static String replaceString(String input, int len, String target, String replacement) {
+	private static String replaceString(String input, int len, String target, String replacement, boolean wordBoundary) {
 		int found = input.indexOf(target);
 		if (found == -1)
 			return null;
@@ -129,12 +129,12 @@ public class SimpleDateMatcher {
 		char ch;
 		if (found != 0) {
 			ch = input.charAt(found - 1);
-			if (ch != '/' && ch != ' ' && ch != '-')
+			if (Character.isAlphabetic(ch) || (wordBoundary && ch != ' '))
 				return null;
 		}
 		if (found + target.length() < len) {
 			ch = input.charAt(found + target.length());
-			if (ch != '/' && ch != ' ' && ch != '-')
+			if (Character.isAlphabetic(ch) || (wordBoundary && ch != ' '))
 				return null;
 		}
 
@@ -173,7 +173,7 @@ public class SimpleDateMatcher {
 
 		String replaced = null;
 		for (String shortMonth : LocaleInfo.getShortMonths(locale).keySet()) {
-			replaced = replaceString(input, len, shortMonth, "aaa");
+			replaced = replaceString(input, len, shortMonth, "aaa", false);
 			if (replaced != null) {
 				input = replaced;
 				len = input.length();
@@ -183,7 +183,7 @@ public class SimpleDateMatcher {
 
 		if (replaced == null)
 			for (String month : LocaleInfo.getMonths(locale).keySet()) {
-				replaced = replaceString(input, len, month, "aaaa");
+				replaced = replaceString(input, len, month, "aaaa", false);
 				if (replaced != null) {
 					input = replaced;
 					len = input.length();
@@ -192,7 +192,7 @@ public class SimpleDateMatcher {
 			}
 
 		for (String weekday : LocaleInfo.getShortWeekdays(locale)) {
-			replaced = replaceString(input, len, weekday, "aaa");
+			replaced = replaceString(input, len, weekday, "aaa", true);
 			if (replaced != null) {
 				input = replaced;
 				len = input.length();
@@ -207,7 +207,7 @@ public class SimpleDateMatcher {
 					count++;
 				else {
 					if (count != 0) {
-						result.append("{" + count + "}");
+						result.append("{" + String.valueOf(count + 1) + "}");
 						count = 0;
 					}
 					result.append('d');
@@ -255,6 +255,7 @@ public class SimpleDateMatcher {
 	private SimpleFacts simpleFacts;
 	private String input;
 	private String compressed;
+	private int componentCount;
 	private Locale locale;
 	private int dayOfMonth = -1;
 	private int dayLength = -1;
@@ -273,6 +274,10 @@ public class SimpleDateMatcher {
 
 	public String getCompressed() {
 		return compressed;
+	}
+
+	public int getComponentCount() {
+		return componentCount;
 	}
 
 	public int getDayOfMonth() {
@@ -513,6 +518,29 @@ public class SimpleDateMatcher {
 		return eating.length() == 0 ? true : false;
 	}
 
+	private int countComponents(String compressed) {
+		int len = compressed.length();
+		int result = 0;
+
+		for (int i = 0; i < len; i++) {
+			char ch = compressed.charAt(i);
+			if (ch == 'a' || ch == 'd') {
+				result++;
+				if (i + 1 == len)
+					return result;
+				i++;
+				ch = compressed.charAt(i);
+				if (ch == '{') {
+					i++;
+					do {
+						i++;
+					} while (compressed.charAt(i) != '}');
+				}
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * Construct the SimpleDateMatcher for this input (if possible).
 	 * @param input The input to be parsed
@@ -521,6 +549,7 @@ public class SimpleDateMatcher {
 	public SimpleDateMatcher(String input, Locale locale) {
 		this.input = input;
 		this.compressed = compress(input, locale);
+		this.componentCount = countComponents(compressed);
 		this.locale = locale;
 		simpleFacts = getSimpleDataFacts(locale).get(compressed);
 	}

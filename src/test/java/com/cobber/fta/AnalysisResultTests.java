@@ -4084,7 +4084,7 @@ public class AnalysisResultTests {
 	public void localeDateTest() throws IOException {
 
 		Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] {Locale.forLanguageTag("is-IS")};
+//		Locale[] locales = new Locale[] {Locale.forLanguageTag("lv-LV")};
 
 		String testCases[] = {
 				"yyyy MM dd", "yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
@@ -6352,6 +6352,97 @@ public class AnalysisResultTests {
 		}
 
 
+	}
+
+	@Test
+	public void novelApproachDateTime() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE");
+		final String inputs[] = new String[] {
+				"04OCT2012:16:27:03", "04OCT2012:16:27:03", "04OCT2012:16:27:03", "04OCT2012:16:27:03", "04OCT2012:16:27:03", "04OCT2012:16:27:03", "03DEC2012:16:23:30", "03DEC2012:16:23:30", "03DEC2012:16:33:46", "03DEC2012:16:57:14",
+				"05DEC2012:11:31:06", "03DEC2012:16:23:30", "03DEC2012:16:23:30", "03DEC2012:16:33:46", "03DEC2012:16:57:14", "05DEC2012:11:31:06", "03DEC2012:16:23:30", "03DEC2012:16:23:30", "03DEC2012:16:23:30", "03DEC2012:16:23:30",
+				"03DEC2012:16:23:30", "03DEC2012:16:23:30", "03DEC2012:16:33:46", "03DEC2012:16:33:46", "03DEC2012:16:33:46", "03DEC2012:16:57:14", "03DEC2012:16:57:14", "03DEC2012:16:57:14", "05DEC2012:11:31:06", "05DEC2012:11:31:06",
+				"05DEC2012:11:31:06", "15DEC2012:21:02:35", "15DEC2012:21:02:35", "15DEC2012:21:02:35", "15DEC2012:21:02:35", "20FEB2013:22:25:28", "20FEB2013:22:25:28", "20FEB2013:22:25:28", "21FEB2013:16:55:29", "21FEB2013:16:55:29",
+				"21FEB2013:16:55:29", "22FEB2013:14:10:14", "22FEB2013:14:10:14", "22FEB2013:14:10:14", "22FEB2013:14:10:14", "25FEB2013:10:16:21", "25FEB2013:10:16:21", "25FEB2013:10:16:21", "25FEB2013:10:16:21", "25FEB2013:10:30:27",
+				"25FEB2013:10:30:27", "25FEB2013:10:30:27", "25FEB2013:10:30:27", "25FEB2013:13:13:29", "25FEB2013:13:13:29", "25FEB2013:13:13:29", "26FEB2013:08:10:28", "26FEB2013:08:10:28", "26FEB2013:08:10:28",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "ddMMMyyyy:HH:mm:ss");
+		Assert.assertEquals(result.getRegExp(), "\\d{2}\\p{IsAlphabetic}{3}\\d{4}:\\d{2}:\\d{2}:\\d{2}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void novelApproachDate() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
+		final String inputs[] = new String[] {
+				"04OCT2012", "04OCT2012", "04OCT2012", "04OCT2012", "04OCT2012", "04OCT2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012",
+				"05DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "05DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012",
+				"03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "05DEC2012", "05DEC2012",
+				"05DEC2012", "15DEC2012", "15DEC2012", "15DEC2012", "15DEC2012", "20FEB2013", "20FEB2013", "20FEB2013", "21FEB2013", "21FEB2013",
+				"21FEB2013", "22FEB2013", "22FEB2013", "22FEB2013", "22FEB2013", "25FEB2013", "25FEB2013", "25FEB2013", "25FEB2013", "25FEB2013",
+				"25FEB2013", "25FEB2013", "25FEB2013", "25FEB2013", "25FEB2013", "25FEB2013", "26FEB2013", "26FEB2013", "26FEB2013",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "ddMMMyyyy");
+		Assert.assertEquals(result.getRegExp(), "\\d{2}\\p{IsAlphabetic}{3}\\d{4}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void timMBug1() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TimMeagherBug1");
+
+		analysis.train("01/12/2018 12:34:44+0000");
+		analysis.train("12/01/2017 11:23:21-0100");
+		analysis.train("06/05/1998 18:19:21+0100");
+		analysis.train("  ");
+		analysis.train(null);
+		analysis.train("31/12/2015 08:05:55-0500");
+		analysis.train("15/06/2019 23:15:31-0500");
+		analysis.train("00/00/0000 00:00:00+0000");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.OFFSETDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy HH:mm:ssxx");
+		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}[-+][0-9]{4}");
+		Assert.assertEquals(result.getBlankCount(), 1);
+		Assert.assertEquals(result.getNullCount(), 1);
+		Assert.assertEquals(result.getSampleCount(), 8);
+		Assert.assertEquals(result.getMatchCount(), 5);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - 2));
 	}
 
 	@Test

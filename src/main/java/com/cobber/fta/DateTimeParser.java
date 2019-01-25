@@ -52,7 +52,14 @@ import java.util.stream.Collectors;
 public class DateTimeParser {
 	/** When we have ambiguity - should we prefer to conclude day first, month first or unspecified. */
 	public enum DateResolutionMode {
-		None, DayFirst, MonthFirst
+		/** Result returned may have unbound elements, for example ??/??/yyyy. */
+		None,
+		/** In order to resolve ambiguity the day will be assumed to be first. */
+		DayFirst,
+		/** In order to resolve ambiguity the month will be assumed to be first. */
+		MonthFirst,
+		/** Auto will choose DayFirst or MonthFirst based on the Locale. */
+		Auto
 	}
 
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
@@ -289,14 +296,15 @@ public class DateTimeParser {
 	}
 
 	private boolean plausibleDate(final int[] dateValues, final int[] dateDigits, final int[] fieldOffsets) {
-		final int year = dateValues[fieldOffsets[2]];
-		final int month = dateValues[fieldOffsets[1]];
-		final int day = dateValues[fieldOffsets[0]];
+		return plausibleDateCore(dateValues[fieldOffsets[0]], dateValues[fieldOffsets[1]],
+				dateValues[fieldOffsets[2]], dateDigits[fieldOffsets[2]]);
+	}
 
+	private boolean plausibleDateCore(final int day, final int month, final int year, final int yearLength) {
 		if (lenient && year == 0 && month == 0 && day == 0)
 			return true;
 
-		if (year == 0 && dateDigits[fieldOffsets[2]] == 4)
+		if (year == 0 && yearLength == 4)
 			return false;
 		if (month == 0 || month > 12)
 			return false;
@@ -377,12 +385,23 @@ public class DateTimeParser {
 		}
 
 		// Fail fast if we can
-		if (!matcher.getCompressed().contains(":d{") && !matcher.getCompressed().contains("/d{") && !matcher.getCompressed().contains("-d{"))
+		if (matcher.getComponentCount() < 2)
 			return null;
 
 		// Fail fast if we can
 		if (!Character.isDigit(trimmed.charAt(0)))
 			return null;
+
+		String attempt = phaseTwo(trimmed, resolutionMode);
+
+		if (attempt != null)
+			return attempt;
+
+		return phaseThree(trimmed, matcher);
+	}
+
+	String phaseTwo(String trimmed, final DateResolutionMode resolutionMode) {
+		int len = trimmed.length();
 
 		int digits = 0;
 		int value = 0;
@@ -464,13 +483,10 @@ public class DateTimeParser {
 				break;
 
 			case '+':
-				if (!iso8601)
-					return null;
-
 				// FALL THROUGH
 
 			case '-':
-				if (iso8601 || (dateSeen && dateClosed && timeSeen && timeComponent == 2)) {
+				if (dateSeen && dateClosed && timeSeen && timeComponent >= 2) {
 					int minutesOffset = Integer.MIN_VALUE;
 					int secondsOffset = Integer.MIN_VALUE;
 
@@ -594,7 +610,7 @@ public class DateTimeParser {
 				if (!Character.isAlphabetic(ch))
 					return null;
 
-				String rest = input.substring(i).toUpperCase(locale);
+				String rest = trimmed.substring(i).toUpperCase(locale);
 				boolean ampmDetected = false;
 				for (String s : LocaleInfo.getAMPMStrings(locale)) {
 					if (rest.startsWith(s)) {
@@ -764,5 +780,86 @@ public class DateTimeParser {
 			return timeAnswer + amPmIndicator + (iso8601 ? "'T'" : " ") + dateAnswer + timeZone;
 		else
 			return dateAnswer + (iso8601 ? "'T'" : " ") + timeAnswer + amPmIndicator + timeZone;
+	}
+
+	/**
+	 * This is our last attempt to construct a date pattern from the input
+	 * @param trimmed The input we are scouring for a date/datetime/time
+	 * @param compressed The compressed form of the input
+	 * @return a DateTimeFormatter pattern.
+	 */
+	String phaseThree(String trimmed, SimpleDateMatcher matcher) {
+		String compressed = matcher.getCompressed();
+		int components = matcher.getComponentCount();
+
+		if (components == 6) {
+			if (compressed.indexOf("d{2}:d{2}:d{2}") == -1)
+				return null;
+
+			compressed = compressed.replace("d{2}:d{2}:d{2}", "HH:mm:ss");
+			components = 3;
+
+			int monthIndex = compressed.indexOf("a{3}");
+			if (monthIndex == -1)
+				return null;
+
+			compressed = compressed.replace("a{3}", "MMM");
+			components--;
+
+			if (compressed.indexOf("d{4}") != -1) {
+				compressed = compressed.replace("d{4}", "yyyy");
+				components--;
+			}
+
+			if (components == 1) {
+				if (compressed.indexOf("d{2}") == -1)
+					return null;
+				compressed = compressed.replace("d{2}", "dd");
+			}
+			else {
+				int first = compressed.indexOf("d{2}");
+				int second = compressed.substring(monthIndex + 4).indexOf("d{2}");
+
+				if (first == -1 || second == -1)
+					return null;
+
+				compressed = compressed.replace("d{2}", "dd").replace("d{2}", "yy");
+			}
+		}
+		else if (components == 3) {
+			if (compressed.indexOf(':') != -1) {
+				if (compressed.indexOf("d{2}:d{2}:d{2}") == -1)
+					return null;
+				compressed = compressed.replace("d{2}:d{2}:d{2}", "HH:mm:ss");
+			}
+			else {
+				if (compressed.indexOf("d{4}") != -1) {
+					compressed = compressed.replace("d{4}", "yyyy");
+					components--;
+				}
+
+				if (compressed.indexOf("a{3}") == -1)
+					return null;
+
+				compressed = compressed.replace("a{3}", "MMM");
+				components--;
+
+				if (components != 1)
+					return null;
+
+				if (compressed.indexOf("d{2}") == -1)
+					return null;
+
+				compressed = compressed.replace("d{2}", "dd");
+			}
+		}
+		else
+			return null;
+
+		// So we think we have nailed it - but it only counts if it happily passes a validity check
+
+		DateTimeParserResult dtp = DateTimeParserResult.asResult(compressed, resolutionMode, locale);
+
+		return dtp.isValid(trimmed) ? compressed : null;
 	}
 }
