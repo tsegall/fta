@@ -141,6 +141,7 @@ public class TextAnalyzer {
 	private BigDecimal sumBD = BigDecimal.ZERO;
 
 	private long minLong = Long.MAX_VALUE;
+	private long minLongNonZero = Long.MAX_VALUE;
 	private long maxLong = Long.MIN_VALUE;
 	private BigInteger sumBI = BigInteger.ZERO;
 
@@ -554,6 +555,9 @@ public class TextAnalyzer {
 			if (collectStatistics) {
 				if (l < minLong) {
 					minLong = l;
+				}
+				if (l != 0 && l < minLongNonZero) {
+					minLongNonZero = l;
 				}
 				if (l > maxLong) {
 					maxLong = l;
@@ -1785,16 +1789,16 @@ public class TextAnalyzer {
 			if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id && matchPatternInfo.typeQualifier == null && minLong < 0)
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG);
 
-			if (groupingSeparators == 0 && minLong > 19000101 && maxLong < 20400101 &&
+			if (groupingSeparators == 0 && minLongNonZero > 19000101 && maxLong < 20400101 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("date"))) {
 				matchPatternInfo = new PatternInfo(null, "\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
 				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
-				minLocalDate = LocalDate.parse(String.valueOf(minLong), dtf);
+				minLocalDate = LocalDate.parse(String.valueOf(minLongNonZero), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
-			} else if (groupingSeparators == 0 && minLong > 1800 && maxLong < 2030 &&
+			} else if (groupingSeparators == 0 && minLongNonZero > 1800 && maxLong < 2030 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("year") || dataStreamName.toLowerCase(locale).contains("date"))) {
 				matchPatternInfo = new PatternInfo(null, "\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
-				minLocalDate = LocalDate.of((int)minLong, 1, 1);
+				minLocalDate = LocalDate.of((int)minLongNonZero, 1, 1);
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
 			} else if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
 				// boolean by any other name
