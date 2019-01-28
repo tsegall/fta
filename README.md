@@ -9,15 +9,27 @@ non-Arabic numerals and no support for Japanese.
 
 Typical usage is:
 ```java
-  		TextAnalyzer analysis = new TextAnalyzer("Age");
- 
-  		analysis.train("12");
-  		analysis.train("62");
-  		analysis.train("21");
-  		analysis.train("37");
-  		...
- 
-  		TextAnalysisResult result = analysis.getResult();
+import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.TextAnalysisResult;
+import java.util.Locale;
+
+class Sample {
+
+        public static void main(String args[]) {
+
+                TextAnalyzer analysis = new TextAnalyzer("Age");
+
+                analysis.train("12");
+                analysis.train("62");
+                analysis.train("21");
+                analysis.train("37");
+
+                TextAnalysisResult result = analysis.getResult();
+
+                System.err.printf("Result: %s, Regular Expression: %s, Max: %s, Min: %s.\n", result.getType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
+        }
+
+}
 ```
 
 ## Building ##
