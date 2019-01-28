@@ -734,10 +734,7 @@ public class DateTimeParserResult {
 				}
 				switch (token.getType()) {
 				case CONSTANT_CHAR:
-					// Cope with the Character being a '.' which needs to be sloshed as an RE
-					if (token.getValue() == '.')
-						ret.append('\\');
-					ret.append(token.getValue());
+					ret.append(Utils.slosh(token.getValue()));
 					break;
 
 				case MONTH:

@@ -110,11 +110,12 @@ public class TextAnalyzer {
 	private String dataStreamName;
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 	private char decimalSeparator;
-	private char monetaryDecimalSeparator;
+	private char utilizedDecimalSeparator = '.';
 	private NumberFormat longFormatter;
 	private NumberFormat doubleFormatter;
 	private char groupingSeparator;
 	private char minusSign;
+	private boolean signLeading;
 	private long sampleCount;
 	private long nullCount;
 	private long blankCount;
@@ -534,8 +535,8 @@ public class TextAnalyzer {
 
 		long l;
 
-		// Interpret the String as a long, first attempt uses parseLong which is fast, if that fails, then try
-		// using a NumberFormatter which will cope with grouping separators (e.g. 1,000).
+		// Interpret the String as a long, first attempt uses parseLong which is fast (although not localized), if that fails,
+		// then try using a NumberFormatter which will cope with grouping separators (e.g. 1,000).
 		try {
 			l = Long.parseLong(input);
 		} catch (NumberFormatException e) {
@@ -666,6 +667,8 @@ public class TextAnalyzer {
 			d = n.doubleValue();
 			if (input.indexOf(groupingSeparator) != -1)
 				groupingSeparators++;
+			if (decimalSeparator != '.' && input.indexOf(decimalSeparator) != -1)
+				utilizedDecimalSeparator = decimalSeparator;
 		}
 
 		if (patternInfo.isLogicalType()) {
@@ -811,15 +814,37 @@ public class TextAnalyzer {
 
 		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 		decimalSeparator = formatSymbols.getDecimalSeparator();
-		monetaryDecimalSeparator = formatSymbols.getMonetaryDecimalSeparator();
 		groupingSeparator = formatSymbols.getGroupingSeparator();
 		minusSign = formatSymbols.getMinusSign();
+		signLeading = NumberFormat.getNumberInstance(locale).format(-1).charAt(0) == minusSign;
 
 		knownPatterns.initialize(locale);
 
 		dateTimeParser = new DateTimeParser(resolutionMode, locale);
 
 		initialized = true;
+	}
+
+	StringBuilder[]
+	determineNumericPattern(boolean numericSigned, int numericDecimalSeparators, int possibleExponentSeen) {
+		StringBuilder[] result = new StringBuilder[2];
+
+		if (numericDecimalSeparators == 1) {
+			if (possibleExponentSeen == -1) {
+				result[0] = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_DOUBLE : knownPatterns.PATTERN_DOUBLE);
+				result[1] = new StringBuilder(knownPatterns.PATTERN_SIGNED_DOUBLE);
+			}
+			else {
+				result[0] = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT : knownPatterns.PATTERN_DOUBLE_WITH_EXPONENT);
+				result[1] = new StringBuilder(knownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+			}
+		}
+		else {
+				result[0] = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_LONG : knownPatterns.PATTERN_LONG);
+				result[1] = new StringBuilder(knownPatterns.PATTERN_SIGNED_LONG);
+		}
+
+		return result;
 	}
 
 	/**
@@ -885,7 +910,7 @@ public class TextAnalyzer {
 				lastIndex[ch] = i;
 			}
 
-			if (i == 0 && ch == minusSign) {
+			if (ch == minusSign && (i == 0 || (i == length - 1 && !signLeading))) {
 				numericSigned = true;
 			} else if (Character.isDigit(ch)) {
 				l0.append('d');
@@ -966,24 +991,9 @@ public class TextAnalyzer {
 
 		// Create the level 1 and 2
 		if (digitsSeen > 0 && couldBeNumeric && numericDecimalSeparators <= 1) {
-			StringBuilder l1 = null;
-			StringBuilder l2 = null;
-			if (numericDecimalSeparators == 1) {
-				if (possibleExponentSeen == -1) {
-					l1 = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_DOUBLE : knownPatterns.PATTERN_DOUBLE);
-					l2 = new StringBuilder(knownPatterns.PATTERN_SIGNED_DOUBLE);
-				}
-				else {
-					l1 = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT : knownPatterns.PATTERN_DOUBLE_WITH_EXPONENT);
-					l2 = new StringBuilder(knownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-				}
-			}
-			else {
-				l1 = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_LONG : knownPatterns.PATTERN_LONG);
-				l2 = new StringBuilder(knownPatterns.PATTERN_SIGNED_LONG);
-			}
-			levels[1].add(l1);
-			levels[2].add(l2);
+			StringBuilder[] result = determineNumericPattern(numericSigned, numericDecimalSeparators, possibleExponentSeen);
+			levels[1].add(result[0]);
+			levels[2].add(result[1]);
 		} else {
 			// Fast version of replaceAll("\\{\\d*\\}", "+"), e.g. replace \d{5} with \d+
 			final StringBuilder collapsed = new StringBuilder(compressedl0);
@@ -1742,7 +1752,6 @@ public class TextAnalyzer {
 		String minValue = null;
 		String maxValue = null;
 		String sum = null;
-		PatternInfo save = matchPatternInfo;
 
 		// If we have not already determined the type, now we need to
 		if (matchPatternInfo == null || matchPatternInfo.type == null)
@@ -1807,10 +1816,7 @@ public class TextAnalyzer {
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO);
 			} else {
 				if (groupingSeparators != 0)
-					if (matchPatternInfo.id == KnownPatterns.ID.ID_LONG)
-						matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_LONG_GROUPING);
-					else
-						matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG_GROUPING);
+					matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
 
 				matchPatternInfo = new PatternInfo(matchPatternInfo);
 				matchPatternInfo.regexp = matchPatternInfo.regexp.replace("+", lengthQualifier(minTrimmedLength, maxTrimmedLength));
@@ -1821,15 +1827,12 @@ public class TextAnalyzer {
 					confidence = (double) matchCount / realSamples;
 				}
 			}
-		} else if (PatternInfo.Type.DOUBLE.equals(matchPatternInfo.type)) {
-			if (matchPatternInfo.typeQualifier == null && minDouble < 0.0)
-				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_DOUBLE);
+		} else if (PatternInfo.Type.DOUBLE.equals(matchPatternInfo.type) && !matchPatternInfo.isLogicalType()) {
+			if (minDouble < 0.0)
+				matchPatternInfo = knownPatterns.negation(matchPatternInfo.regexp);
 
 			if (groupingSeparators != 0)
-				if (matchPatternInfo.id == KnownPatterns.ID.ID_DOUBLE)
-					matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_DOUBLE_GROUPING);
-				else
-					matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_DOUBLE_GROUPING);
+				matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
 			final int length = determineLength(matchPatternInfo.regexp);
 			// We thought it was a fixed length string, but on reflection it does not feel like it
@@ -2053,10 +2056,8 @@ public class TextAnalyzer {
 		}
 
 		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace, trailingWhiteSpace, sampleCount,
-				nullCount, blankCount, totalLeadingZeros, confidence, minValue, maxValue, minRawLength, maxRawLength, sum,
-				cardinality, outliers, key);
-
-		matchPatternInfo = save;
+				nullCount, blankCount, totalLeadingZeros, confidence, minValue, maxValue,
+				minRawLength, maxRawLength, utilizedDecimalSeparator, sum, cardinality, outliers, key);
 
 		return result;
 	}

@@ -259,13 +259,13 @@ public class AnalysisResultTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*(-?\\d+|-?(\\d+)?\\.\\d+)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
 		Assert.assertEquals(result.getMinValue(), "-9999.0");
 		Assert.assertEquals(result.getMaxValue(), "0.69334954");
 
@@ -3048,66 +3048,70 @@ public class AnalysisResultTests {
 
 	@Test
 	public void groupingSeparatorLargeFRENCH() throws IOException {
-		final TextAnalyzer analysis = new TextAnalyzer("Separator");
-		analysis.setLocale(Locale.FRENCH);
+		Locale locales[] = new Locale[] { Locale.GERMAN, Locale.FRANCE };
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
-		long min = Long.MAX_VALUE;
-		long absMin = Long.MAX_VALUE;
-		long max = Long.MIN_VALUE;
-		String minValue = String.valueOf(min);
-		String maxValue = String.valueOf(max);
 		Set<String> samples = new HashSet<String>();
 
-		for (int i = 0; i < SAMPLE_SIZE; i++) {
-			long l = random.nextInt(100000000);
-			if (l%10 == 0)
-				l = -l;
-			String sample = NumberFormat.getNumberInstance(Locale.FRENCH).format(l).toString();
-			if (l < min) {
-				min = l;
+		for (Locale locale : locales) {
+			long min = Long.MAX_VALUE;
+			long absMin = Long.MAX_VALUE;
+			long max = Long.MIN_VALUE;
+			String minValue = String.valueOf(min);
+			String maxValue = String.valueOf(max);
+			NumberFormat nf = NumberFormat.getNumberInstance(locale);
+			final TextAnalyzer analysis = new TextAnalyzer("Separator");
+			analysis.setLocale(locale);
+			samples.clear();
+
+			for (int i = 0; i < SAMPLE_SIZE; i++) {
+				long l = random.nextInt(100000000);
+				if (l%2 == 0)
+					l = -l;
+				String sample = nf.format(l).toString();
+				if (l < min) {
+					min = l;
+				}
+				if (Math.abs(l) < absMin) {
+					absMin = Math.abs(l);
+					minValue = sample;
+				}
+				if (l < min) {
+					min = l;
+				}
+				if (l > max) {
+					max = l;
+					maxValue = sample;
+				}
+				samples.add(sample);
+				analysis.train(sample);
 			}
-			if (Math.abs(l) < absMin) {
-				absMin = Math.abs(l);
-				minValue = sample;
+
+			final TextAnalysisResult result = analysis.getResult();
+
+			Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toString());
+			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getNullCount(), 0);
+			Assert.assertEquals(result.getLeadingZeroCount(), 0);
+			Assert.assertEquals(result.getMinValue(), String.valueOf(min));
+			Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
+			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+			String regExp = "-?[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]";
+			regExp += Utils.regExpLength(minValue.length(), maxValue.length());
+			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getConfidence(), 1.0);
+
+			for (String sample : samples) {
+				Assert.assertTrue(sample.matches(regExp), sample);
 			}
-			if ( l > max) {
-				max = l;
-				maxValue = sample;
-			}
-			samples.add(sample);
-			analysis.train(sample);
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
-		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
-		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getMinValue(), String.valueOf(min));
-		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
-		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.FRENCH);
-
-		String regExp = "-?[\\d" + formatSymbols.getGroupingSeparator() + "]{";
-		if (minValue.length() == maxValue.length())
-			regExp += minValue.length();
-		else {
-			regExp += minValue.length() + "," + maxValue.length();
-		}
-		regExp += "}";
-		Assert.assertEquals(result.getRegExp(), regExp);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-
-		for (String sample : samples) {
-			Assert.assertTrue(sample.matches(regExp), sample);
 		}
 	}
 
 	@Test
-	public void localeNumberTest() throws IOException {
+	public void localeDoubleTest() throws IOException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		Locale[] locales = DateFormat.getAvailableLocales();
@@ -3157,6 +3161,281 @@ public class AnalysisResultTests {
 			String regExp = "[\\d" + grp + "]+|([\\d" + grp + "]+)?" + dec + "[\\d" + grp +"]+";
 
 //			System.err.println("Locale: " + locale + ", grp = '" + grp + "', dec = '" + dec + "', re: " + regExp + "'");
+
+			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getConfidence(), 1.0);
+
+			for (String sample : samples) {
+				Assert.assertTrue(sample.matches(regExp), sample + " " + regExp);
+			}
+		}
+	}
+
+//	@Test
+	public void localeNegativeDoubleTest() throws IOException {
+		final Random random = new Random(1);
+		final int SAMPLE_SIZE = 1000;
+//		Locale[] locales = DateFormat.getAvailableLocales();
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("hr-HR") };
+		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-AE") };
+
+		for (Locale locale : locales) {
+			final TextAnalyzer analysis = new TextAnalyzer("Separator");
+			analysis.setLocale(locale);
+
+			boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
+			boolean signFront = NumberFormat.getNumberInstance(locale).format(-1).charAt(0) == '-';
+
+			if (!simple) {
+				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+				continue;
+			}
+
+			Calendar cal = GregorianCalendar.getInstance(locale);
+			if (!(cal instanceof GregorianCalendar)) {
+				System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
+				continue;
+			}
+
+			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+			String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
+			String dec = formatSymbols.getDecimalSeparator() == '.' ? "\\." : "" + formatSymbols.getDecimalSeparator();
+			System.err.printf("Locale '%s', grouping: %s, decimal: %s.\n", locale, grp, dec);
+
+			Set<String> samples = new HashSet<String>();
+			NumberFormat nf = NumberFormat.getNumberInstance(locale);
+			nf.setMinimumFractionDigits(2);
+			for (int i = 0; i < SAMPLE_SIZE; i++) {
+				double d = random.nextDouble() * -100000000;
+				String sample = nf.format(d).toString();
+				samples.add(sample);
+				analysis.train(sample);
+			}
+
+			final TextAnalysisResult result = analysis.getResult();
+
+			Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getNullCount(), 0);
+			Assert.assertEquals(result.getLeadingZeroCount(), 0);
+
+			String regExp = "-?[\\d" + grp + "]+|-?([\\d" + grp + "]+)?" + dec + "[\\d" + grp +"]+";
+
+//			System.err.println("Locale: " + locale + ", grp = '" + grp + "', dec = '" + dec + "', re: " + regExp + "'");
+
+			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getConfidence(), 1.0);
+
+			for (String sample : samples) {
+				Assert.assertTrue(sample.matches(regExp), sample + " " + regExp);
+			}
+		}
+	}
+
+//	@Test
+	public void localeLongTest() throws IOException {
+		final Random random = new Random(1);
+		final int SAMPLE_SIZE = 1000;
+		Locale[] locales = DateFormat.getAvailableLocales();
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("hr-HR") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-AE") };
+
+		for (Locale locale : locales) {
+			long min = Long.MAX_VALUE;
+			long absMin = Long.MAX_VALUE;
+			long max = Long.MIN_VALUE;
+			String minValue = String.valueOf(min);
+			String maxValue = String.valueOf(max);
+			final TextAnalyzer analysis = new TextAnalyzer("Separator");
+			analysis.setLocale(locale);
+
+			boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
+
+			if (!simple) {
+				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+				continue;
+			}
+
+			Calendar cal = GregorianCalendar.getInstance(locale);
+			if (!(cal instanceof GregorianCalendar)) {
+				System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
+				continue;
+			}
+
+			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+			String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
+			char minusSign = formatSymbols.getMinusSign();
+			boolean signLeading = NumberFormat.getNumberInstance(locale).format(-1).charAt(0) == minusSign;
+
+			System.err.printf("Locale '%s', grouping: %s.\n", locale, grp);
+
+			Set<String> samples = new HashSet<String>();
+			NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+			for (int i = 0; i < SAMPLE_SIZE; i++) {
+				long l = random.nextLong();
+				if (l % 2 == 0)
+					l = -l;
+				String sample = nf.format(l).toString();
+
+				if (l < min) {
+					min = l;
+				}
+				if (Math.abs(l) < absMin) {
+					absMin = Math.abs(l);
+					minValue = sample;
+				}
+				if (l < min) {
+					min = l;
+				}
+				if (l > max) {
+					max = l;
+					maxValue = sample;
+				}
+
+				samples.add(sample);
+				analysis.train(sample);
+			}
+
+			final TextAnalysisResult result = analysis.getResult();
+
+			Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getNullCount(), 0);
+			Assert.assertEquals(result.getLeadingZeroCount(), 0);
+			Assert.assertEquals(result.getDecimalSeparator(), formatSymbols.getDecimalSeparator());
+
+			String regExp = "";
+			if (signLeading)
+				regExp += Utils.slosh(minusSign) + "?";
+			regExp += "[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]";
+			regExp += Utils.regExpLength(minValue.length(), maxValue.length());
+			if (!signLeading)
+				regExp += Utils.slosh(minusSign) + "?";
+
+//			System.err.println("Locale: " + locale + ", grp = '" + grp + "', dec = '" + dec + "', re: " + regExp + "'");
+
+//			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getConfidence(), 1.0);
+
+			for (String sample : samples) {
+				Assert.assertTrue(sample.matches(regExp), sample + " " + regExp);
+			}
+		}
+	}
+
+	//@Test
+	public void decimalSeparatorTest_Period() throws IOException {
+		final Random random = new Random(1);
+		final int SAMPLE_SIZE = 1000;
+		Locale[] locales = new Locale[] { Locale.forLanguageTag("de-DE") };
+
+		for (Locale locale : locales) {
+			long min = Long.MAX_VALUE;
+			long absMin = Long.MAX_VALUE;
+			long max = Long.MIN_VALUE;
+			String minValue = String.valueOf(min);
+			String maxValue = String.valueOf(max);
+			final TextAnalyzer analysis = new TextAnalyzer("DecimalSeparator");
+			analysis.setLocale(locale);
+
+			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+			String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
+
+			System.err.printf("Locale '%s', grouping: %s.\n", locale, grp);
+
+			Set<String> samples = new HashSet<String>();
+			NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+			for (int i = 0; i < SAMPLE_SIZE; i++) {
+				long l = random.nextInt(10000000);
+				if (l % 2 == 0)
+					l = -l;
+				String sample = String.valueOf(l) + "." + random.nextInt(10);
+
+				if (l < min) {
+					min = l;
+				}
+				if (Math.abs(l) < absMin) {
+					absMin = Math.abs(l);
+					minValue = sample;
+				}
+				if (l < min) {
+					min = l;
+				}
+				if (l > max) {
+					max = l;
+					maxValue = sample;
+				}
+
+				samples.add(sample);
+				analysis.train(sample);
+			}
+
+			final TextAnalysisResult result = analysis.getResult();
+
+			Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getNullCount(), 0);
+			Assert.assertEquals(result.getLeadingZeroCount(), 0);
+			Assert.assertEquals(result.getDecimalSeparator(), formatSymbols.getDecimalSeparator());
+
+			String regExp = "-?";
+			regExp += "[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]";
+			regExp += Utils.regExpLength(minValue.length(), maxValue.length());
+
+//			System.err.println("Locale: " + locale + ", grp = '" + grp + "', dec = '" + dec + "', re: " + regExp + "'");
+
+//			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getConfidence(), 1.0);
+
+			for (String sample : samples) {
+				Assert.assertTrue(sample.matches(regExp), sample + " " + regExp);
+			}
+		}
+	}
+
+	@Test
+	public void decimalSeparatorTest_Locale() throws IOException {
+		final Random random = new Random(1);
+		final int SAMPLE_SIZE = 1000;
+		Locale[] locales = new Locale[] { Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("en-US") };
+
+		for (Locale locale : locales) {
+			final TextAnalyzer analysis = new TextAnalyzer("DecimalSeparator");
+			analysis.setLocale(locale);
+
+			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+			Set<String> samples = new HashSet<String>();
+			for (int i = 0; i < SAMPLE_SIZE; i++) {
+				long l = random.nextInt(10000000);
+				if (l % 2 == 0)
+					l = -l;
+				String sample = String.valueOf(l) + formatSymbols.getDecimalSeparator() + random.nextInt(10);
+
+				samples.add(sample);
+				analysis.train(sample);
+			}
+
+			final TextAnalysisResult result = analysis.getResult();
+
+			Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+			Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getNullCount(), 0);
+			Assert.assertEquals(result.getLeadingZeroCount(), 0);
+			Assert.assertEquals(result.getDecimalSeparator(), formatSymbols.getDecimalSeparator());
+
+			String regExp = "-?\\d+|-?(\\d+)?" + Utils.slosh(formatSymbols.getDecimalSeparator()) + "\\d+";
 
 			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
@@ -5145,8 +5424,8 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.SAMPLE_DEFAULT + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -5411,6 +5690,82 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getRegExp(), "\\d{10}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void manyConstantLengthDoublesI18N_1() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int nullIterations = 50;
+		final int iterations = 10000;
+		final Random random = new Random();
+		int locked = -1;
+		Locale locale = Locale.forLanguageTag("de-AT");
+		analysis.setLocale(locale);
+		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+		char grpSep = formatSymbols.getDecimalSeparator();
+		final Set<String> samples = new HashSet<>();
+
+		for (int i = 0; i < nullIterations; i++) {
+			analysis.train(null);
+		}
+		int cnt = 0;
+		while (cnt < iterations) {
+			final long randomLong = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
+			if (randomLong >  9999999999L)
+				continue;
+			String sample = String.valueOf(randomLong) + formatSymbols.getDecimalSeparator() + random.nextInt(10);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = cnt;
+			cnt++;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getNullCount(), nullIterations);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?" + Utils.slosh(grpSep) + "\\d+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	//@Test
+	public void manyConstantLengthDoublesI18N_2() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final int nullIterations = 50;
+		final int iterations = 10000;
+		final Random random = new Random();
+		int locked = -1;
+		Locale locale = Locale.forLanguageTag("de-DE");
+		analysis.setLocale(locale);
+		final Set<String> samples = new HashSet<>();
+
+		for (int i = 0; i < nullIterations; i++) {
+			analysis.train(null);
+		}
+		int cnt = 0;
+		while (cnt < iterations) {
+			final long randomLong = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
+			if (randomLong >  9999999999L)
+				continue;
+			String sample = String.valueOf(randomLong) + "." + random.nextInt(10);
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = cnt;
+			cnt++;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getNullCount(), nullIterations);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?" + Utils.slosh('.') + "\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -6443,6 +6798,40 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), 8);
 		Assert.assertEquals(result.getMatchCount(), 5);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - 2));
+	}
+
+	@Test
+	public void longAsDateWith0() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("stringField:string");
+
+		final String inputs[] = new String[] {
+				"20180112", "20171201", "19980605", "19990605", "20000605", "20010605", "20020605", "20030605", "20040605", "20050605",
+				"20060605", "20070605", "20080605", "20090605", "20100605", "20110605", "20120605", "20130605", "20140605", "20150605",
+				"20160605", "20170605", "20180605", "20190605", "20200605", "20210605", "20220605", "20230605", "20240605", "20250605",
+				"20260605", "20270605", "", "19990101", "0", "20151231", "20190615",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyyMMdd");
+		Assert.assertEquals(result.getRegExp(), "\\d{8}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 1);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty() && !"0".equals(inputs[i]))
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
 	}
 
 	@Test

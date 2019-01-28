@@ -1,6 +1,7 @@
 package com.cobber.fta;
 
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -53,9 +54,11 @@ public class KnownPatterns {
 	public String PATTERN_DOUBLE_WITH_EXPONENT;
 	public String PATTERN_SIGNED_DOUBLE_WITH_EXPONENT;
 
-	Map<String, PatternInfo> knownPatterns = new HashMap<String, PatternInfo>();
-	Map<ID, PatternInfo> knownIDs = new HashMap<ID, PatternInfo>();
-	Map<String, PatternInfo> promotions = new HashMap<String, PatternInfo>();
+	Map<String, PatternInfo> knownPatterns = new HashMap<>();
+	Map<ID, PatternInfo> knownIDs = new HashMap<>();
+	Map<String, PatternInfo> promotion = new HashMap<>();
+	Map<String, PatternInfo> negation = new HashMap<>();
+	Map<String, PatternInfo> grouping = new HashMap<>();
 
 	static String withGrouping(String regExp, char groupingSeparator) {
 		String re = groupingSeparator == '.' ? "\\\\." : String.valueOf(groupingSeparator);
@@ -93,9 +96,14 @@ public class KnownPatterns {
 		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 		char groupingSeparator = formatSymbols.getGroupingSeparator();
 		char decimalSeparator = formatSymbols.getDecimalSeparator();
+		char minusSign = formatSymbols.getMinusSign();
+		boolean isSignLeading = NumberFormat.getNumberInstance(locale).format(-1).charAt(0) == minusSign;
+		String optionalSign = Utils.slosh(minusSign) + "?";
+		String signLeading = isSignLeading ? optionalSign : "";
+		String signTrailing = isSignLeading ? "" : optionalSign;
 
 		PATTERN_LONG = "\\d+";
-		PATTERN_SIGNED_LONG = "-?\\d+";
+		PATTERN_SIGNED_LONG = signLeading + "\\d+" + signTrailing;
 		PATTERN_DOUBLE = PATTERN_LONG + "|" + "(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+";
 		PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + "-?(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+";
 
@@ -154,41 +162,53 @@ public class KnownPatterns {
 			knownIDs.put(patternInfo.id, patternInfo);
 		}
 
-		addPromotion(PATTERN_LONG, PATTERN_SIGNED_LONG, knownPatterns.get(PATTERN_SIGNED_LONG));
-		addPromotion(PATTERN_LONG, PATTERN_DOUBLE, knownPatterns.get(PATTERN_DOUBLE));
-		addPromotion(PATTERN_LONG, PATTERN_SIGNED_DOUBLE, knownPatterns.get(PATTERN_SIGNED_DOUBLE));
-		addPromotion(PATTERN_LONG, PATTERN_DOUBLE_WITH_EXPONENT, knownPatterns.get(PATTERN_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, knownPatterns.get(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT));
+		addBinary(promotion, PATTERN_LONG, PATTERN_SIGNED_LONG, PATTERN_SIGNED_LONG);
+		addBinary(promotion, PATTERN_LONG, PATTERN_DOUBLE, PATTERN_DOUBLE);
+		addBinary(promotion, PATTERN_LONG, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE);
+		addBinary(promotion, PATTERN_LONG, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 
-		addPromotion(PATTERN_SIGNED_LONG, PATTERN_LONG, knownPatterns.get(PATTERN_SIGNED_LONG));
-		addPromotion(PATTERN_SIGNED_LONG, PATTERN_DOUBLE, knownPatterns.get(PATTERN_DOUBLE));
-		addPromotion(PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE, knownPatterns.get(PATTERN_SIGNED_DOUBLE));
-		addPromotion(PATTERN_SIGNED_LONG, PATTERN_DOUBLE_WITH_EXPONENT, knownPatterns.get(PATTERN_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, knownPatterns.get(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT));
+		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_LONG, PATTERN_SIGNED_LONG);
+		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE);
+		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE);
+		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 
-		addPromotion(PATTERN_DOUBLE, PATTERN_LONG, knownPatterns.get(PATTERN_DOUBLE));
-		addPromotion(PATTERN_DOUBLE, PATTERN_SIGNED_LONG, knownPatterns.get(PATTERN_DOUBLE));
-		addPromotion(PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE, knownPatterns.get(PATTERN_SIGNED_DOUBLE));
-		addPromotion(PATTERN_DOUBLE, PATTERN_DOUBLE_WITH_EXPONENT, knownPatterns.get(PATTERN_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, knownPatterns.get(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT));
+		addBinary(promotion, PATTERN_DOUBLE, PATTERN_LONG, PATTERN_DOUBLE);
+		addBinary(promotion, PATTERN_DOUBLE, PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE);
+		addBinary(promotion, PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE);
+		addBinary(promotion, PATTERN_DOUBLE, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 
-		addPromotion(PATTERN_SIGNED_DOUBLE, PATTERN_LONG, knownPatterns.get(PATTERN_SIGNED_DOUBLE));
-		addPromotion(PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_LONG, knownPatterns.get(PATTERN_SIGNED_DOUBLE));
-		addPromotion(PATTERN_SIGNED_DOUBLE, PATTERN_DOUBLE, knownPatterns.get(PATTERN_SIGNED_DOUBLE));
-		addPromotion(PATTERN_SIGNED_DOUBLE, PATTERN_DOUBLE_WITH_EXPONENT, knownPatterns.get(PATTERN_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, knownPatterns.get(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT));
+		addBinary(promotion, PATTERN_SIGNED_DOUBLE, PATTERN_LONG, PATTERN_SIGNED_DOUBLE);
+		addBinary(promotion, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE);
+		addBinary(promotion, PATTERN_SIGNED_DOUBLE, PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE);
+		addBinary(promotion, PATTERN_SIGNED_DOUBLE, PATTERN_DOUBLE_WITH_EXPONENT,PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 
-		addPromotion(PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_LONG, knownPatterns.get(PATTERN_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_LONG, knownPatterns.get(PATTERN_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE, knownPatterns.get(PATTERN_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE, knownPatterns.get(PATTERN_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, knownPatterns.get(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT));
+		addBinary(promotion, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_LONG, PATTERN_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE, PATTERN_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 
-		addPromotion(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_LONG, knownPatterns.get(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_LONG, knownPatterns.get(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE, knownPatterns.get(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE, knownPatterns.get(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT));
-		addPromotion(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT, knownPatterns.get(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT));
+		addBinary(promotion, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+
+		addUnary(negation, PATTERN_LONG, PATTERN_SIGNED_LONG);
+		addUnary(negation, PATTERN_SIGNED_LONG, PATTERN_SIGNED_LONG);
+		addUnary(negation, PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE);
+		addUnary(negation, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE);
+		addUnary(negation, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addUnary(negation, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+
+		addUnary(grouping, PATTERN_LONG, PATTERN_LONG_GROUPING);
+		addUnary(grouping, PATTERN_SIGNED_LONG, PATTERN_SIGNED_LONG_GROUPING);
+		addUnary(grouping, PATTERN_DOUBLE, PATTERN_DOUBLE_GROUPING);
+		addUnary(grouping, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE_GROUPING);
 	}
 
 	void put(String key, PatternInfo patternInfo) {
@@ -204,15 +224,27 @@ public class KnownPatterns {
 	}
 
 	PatternInfo numericPromotion(ID left, ID right) {
-		return promotions.get(left.toString() + "---" + right.toString());
+		return promotion.get(left.toString() + "---" + right.toString());
 	}
 
 	String numericPromotion(String leftPattern, String rightPattern) {
-		PatternInfo result = promotions.get(leftPattern + "---" + rightPattern);
+		PatternInfo result = promotion.get(leftPattern + "---" + rightPattern);
 		return result == null ? null : result.regexp;
 	}
 
-	void addPromotion(String left, String right, PatternInfo result) {
-		promotions.put(left + "---" + right, result);
+	PatternInfo negation(String id) {
+		return negation.get(id);
+	}
+
+	PatternInfo grouping(String id) {
+		return grouping.get(id);
+	}
+
+	void addUnary(Map<String, PatternInfo> transformation, String input, String result) {
+		transformation.put(input.toString(), knownPatterns.get(result));
+	}
+
+	void addBinary(Map<String, PatternInfo> transformation, String left, String right, String result) {
+		transformation.put(left + "---" + right, knownPatterns.get(result));
 	}
 }

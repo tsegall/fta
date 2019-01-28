@@ -38,6 +38,7 @@ public class TextAnalysisResult {
 	private final String maxValue;
 	private final int minLength;
 	private final int maxLength;
+	private final char decimalSeparator;
 	private final String sum;
 	private final Map<String, Integer> cardinality;
 	private final Map<String, Integer> outliers;
@@ -58,6 +59,7 @@ public class TextAnalysisResult {
 	 * @param maxValue A String representation of the maximum value.  Only relevant for Numeric/String types.
 	 * @param minLength Get the minimum length. Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace.
 	 * @param maxLength Get the maximum length. Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace.
+	 * @param decimalSeparator Get the Decimal separator used to interpret this field (only relevant for type double.
 	 * @param sum A String representation of the sum of all values seen.  Only relevant for numeric types.
 	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
@@ -65,7 +67,7 @@ public class TextAnalysisResult {
 	 */
 	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, boolean trailingWhiteSpace,
 			final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount, final double confidence,
-			final String minValue, final String maxValue, final int minLength, final int maxLength,
+			final String minValue, final String maxValue, final int minLength, final int maxLength, char decimalSeparator,
 			final String sum, final Map<String, Integer> cardinality, final Map<String, Integer> outliers, final boolean key) {
 		this.name = name;
 		this.matchCount = matchCount;
@@ -81,6 +83,7 @@ public class TextAnalysisResult {
 		this.maxValue = maxValue;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
+		this.decimalSeparator = decimalSeparator;
 		this.sum = sum;
 		this.cardinality = cardinality;
 		this.outliers = outliers;
@@ -174,6 +177,15 @@ public class TextAnalysisResult {
 	 */
 	public int getMaxLength() {
 		return maxLength;
+	}
+
+	/**
+	 * Get the Decimal Separator used to interpret Doubles.
+	 * Note: This will either be the Decimal Separator as per the locale or possibly a period.
+	 * @return The Decimal Separator.
+	 */
+	public char getDecimalSeparator() {
+		return decimalSeparator;
 	}
 
 	/**
