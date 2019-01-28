@@ -28,7 +28,6 @@ class Sample {
 
                 System.err.printf("Result: %s, Regular Expression: %s, Max: %s, Min: %s.\n", result.getType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
         }
-
 }
 ```
 

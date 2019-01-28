@@ -102,10 +102,10 @@ public class KnownPatterns {
 		String optionalNegativeSuffix = null;
 		NumberFormat simple = NumberFormat.getNumberInstance(locale);
 		if (simple instanceof DecimalFormat) {
-			optionalNegativePrefix = ((DecimalFormat) simple).getNegativePrefix();
+			optionalNegativePrefix = Utils.slosh(((DecimalFormat) simple).getNegativePrefix());
 			if (!optionalNegativePrefix.isEmpty())
 				optionalNegativePrefix += "?";
-			optionalNegativeSuffix = ((DecimalFormat) simple).getNegativeSuffix();
+			optionalNegativeSuffix = Utils.slosh(((DecimalFormat) simple).getNegativeSuffix());
 			if (!optionalNegativeSuffix.isEmpty())
 				optionalNegativeSuffix += "?";
 		}
@@ -117,7 +117,7 @@ public class KnownPatterns {
 		PATTERN_LONG = "\\d+";
 		PATTERN_SIGNED_LONG = optionalNegativePrefix + "\\d+" + optionalNegativeSuffix;
 		PATTERN_DOUBLE = PATTERN_LONG + "|" + "(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+";
-		PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + "-?(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+";
+		PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + optionalNegativePrefix + "(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+" + optionalNegativeSuffix;
 
 		PATTERN_LONG_GROUPING = withGrouping(PATTERN_LONG, groupingSeparator);
 		PATTERN_SIGNED_LONG_GROUPING = withGrouping(PATTERN_SIGNED_LONG, groupingSeparator);

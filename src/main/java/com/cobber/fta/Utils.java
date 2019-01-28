@@ -38,7 +38,19 @@ public class Utils {
 	}
 
 	public static String slosh(char ch) {
-		return ch == '.' ? "\\." : String.valueOf(ch);
+		if (ch == '.' || ch == '(' || ch == ')' || ch == '+' || ch == '*')
+			return "\\" + ch;
+		return String.valueOf(ch);
+	}
+
+	public static String slosh(String input) {
+		StringBuilder result = new StringBuilder();
+
+		for (int i = 0; i < input.length(); i++) {
+			result.append(slosh(input.charAt(i)));
+		}
+
+		return result.toString();
 	}
 
 	/**

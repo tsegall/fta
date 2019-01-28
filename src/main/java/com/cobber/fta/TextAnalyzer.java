@@ -533,8 +533,10 @@ public class TextAnalyzer {
 
 		// Interpret the String as a long, first attempt uses parseLong which is fast (although not localized), if that fails,
 		// then try using a NumberFormatter which will cope with grouping separators (e.g. 1,000).
+		int digits = input.length();
 		try {
 			l = Long.parseLong(input);
+			digits = l < 0 ? input.length() - 1 : input.length();
 		} catch (NumberFormatException e) {
 			ParsePosition pos = new ParsePosition(0);
 			Number n = longFormatter.parse(input, pos);
@@ -543,6 +545,7 @@ public class TextAnalyzer {
 			l = n.longValue();
 			if (input.indexOf(groupingSeparator) != -1)
 				groupingSeparators++;
+			digits = l < 0 ? input.length() - negativePrefix.length() - negativeSuffix.length() : input.length();
 		}
 
 		if (register) {
@@ -559,7 +562,6 @@ public class TextAnalyzer {
 				if (l > maxLong) {
 					maxLong = l;
 				}
-				final int digits = l < 0 ? input.length() - 1 : input.length();
 				if (digits < minTrimmedLength)
 					minTrimmedLength = digits;
 				if (digits > maxTrimmedLength)
