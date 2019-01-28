@@ -17,6 +17,7 @@ package com.cobber.fta;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -3235,20 +3236,21 @@ public class AnalysisResultTests {
 		}
 	}
 
-//	@Test
+	//@Test
 	public void localeLongTest() throws IOException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("hr-HR") };
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-AE") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("mk-MK") };
 
 		for (Locale locale : locales) {
 			long min = Long.MAX_VALUE;
 			long absMin = Long.MAX_VALUE;
 			long max = Long.MIN_VALUE;
-			String minValue = String.valueOf(min);
-			String maxValue = String.valueOf(max);
+			long absMax = Long.MIN_VALUE;
+			String absMinValue = String.valueOf(absMin);
+			String absMaxValue = String.valueOf(max);
 			final TextAnalyzer analysis = new TextAnalyzer("Separator");
 			analysis.setLocale(locale);
 
@@ -3268,13 +3270,16 @@ public class AnalysisResultTests {
 			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
 			String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
-			char minusSign = formatSymbols.getMinusSign();
-			boolean signLeading = NumberFormat.getNumberInstance(locale).format(-1).charAt(0) == minusSign;
-
-			System.err.printf("Locale '%s', grouping: %s.\n", locale, grp);
+			String negPrefix = "-";
+			String negSuffix = "";
 
 			Set<String> samples = new HashSet<String>();
 			NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+			 if (nf instanceof DecimalFormat) {
+			     negPrefix = ((DecimalFormat) nf).getNegativePrefix();
+			     negSuffix = ((DecimalFormat) nf).getNegativeSuffix();
+			 }
+
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
 				long l = random.nextLong();
 				if (l % 2 == 0)
@@ -3284,16 +3289,16 @@ public class AnalysisResultTests {
 				if (l < min) {
 					min = l;
 				}
-				if (Math.abs(l) < absMin) {
-					absMin = Math.abs(l);
-					minValue = sample;
-				}
-				if (l < min) {
-					min = l;
-				}
 				if (l > max) {
 					max = l;
-					maxValue = sample;
+				}
+				if (Math.abs(l) < absMin) {
+					absMin = Math.abs(l);
+					absMinValue = nf.format(Math.abs(l)).toString();
+				}
+				if (Math.abs(l) > absMax) {
+					absMax = Math.abs(l);
+					absMaxValue = nf.format(Math.abs(l)).toString();
 				}
 
 				samples.add(sample);
@@ -3302,25 +3307,28 @@ public class AnalysisResultTests {
 
 			final TextAnalysisResult result = analysis.getResult();
 
+			System.err.printf("Locale '%s', re: '%s', grouping: %s, negPrefix: %s, negSuffix: %s, min: %s, max: %s, absMax:%s.\n",
+					locale, result.getRegExp(), grp, negPrefix, negSuffix, String.valueOf(min), String.valueOf(max), absMinValue);
+
 			Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
 			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			Assert.assertEquals(result.getNullCount(), 0);
+			Assert.assertEquals(result.getMinValue(), String.valueOf(min));
+			Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
 			Assert.assertEquals(result.getLeadingZeroCount(), 0);
-			Assert.assertEquals(result.getDecimalSeparator(), formatSymbols.getDecimalSeparator());
 
 			String regExp = "";
-			if (signLeading)
-				regExp += Utils.slosh(minusSign) + "?";
+			if (!negPrefix.isEmpty())
+				regExp += negPrefix + "?";
 			regExp += "[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]";
-			regExp += Utils.regExpLength(minValue.length(), maxValue.length());
-			if (!signLeading)
-				regExp += Utils.slosh(minusSign) + "?";
+			regExp += Utils.regExpLength(absMinValue.length(), absMaxValue.length());
+			if (!negSuffix.isEmpty())
+				regExp += negSuffix + "?";
+			Assert.assertEquals(result.getDecimalSeparator(), '.');
 
-//			System.err.println("Locale: " + locale + ", grp = '" + grp + "', dec = '" + dec + "', re: " + regExp + "'");
-
-//			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
 
 			for (String sample : samples) {

@@ -22,6 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
@@ -115,7 +116,8 @@ public class TextAnalyzer {
 	private NumberFormat doubleFormatter;
 	private char groupingSeparator;
 	private char minusSign;
-	private boolean signLeading;
+	private String negativePrefix;
+	private String negativeSuffix;
 	private long sampleCount;
 	private long nullCount;
 	private long blankCount;
@@ -260,21 +262,15 @@ public class TextAnalyzer {
 	 * Construct a Text Analyzer for the named data stream.  Note: The resolution mode will be 'None'.
 	 *
 	 * @param name The name of the data stream (e.g. the column of the CSV file)
-	 *
-	 * @throws IOException
-	 *             If an internal error occurred.
 	 */
-	public TextAnalyzer(final String name) throws IOException {
+	public TextAnalyzer(final String name) {
 		this(name, DateResolutionMode.None);
 	}
 
 	/**
 	 * Construct an anonymous Text Analyzer for a data stream.  Note: The resolution mode will be 'None'.
-	 *
-	 * @throws IOException
-	 *             If an internal error occurred.
 	 */
-	public TextAnalyzer() throws IOException {
+	public TextAnalyzer() {
 		this("anonymous", DateResolutionMode.None);
 	}
 
@@ -816,7 +812,15 @@ public class TextAnalyzer {
 		decimalSeparator = formatSymbols.getDecimalSeparator();
 		groupingSeparator = formatSymbols.getGroupingSeparator();
 		minusSign = formatSymbols.getMinusSign();
-		signLeading = NumberFormat.getNumberInstance(locale).format(-1).charAt(0) == minusSign;
+		NumberFormat simple = NumberFormat.getNumberInstance(locale);
+		if (simple instanceof DecimalFormat) {
+		     negativePrefix = ((DecimalFormat) simple).getNegativePrefix();
+		     negativeSuffix = ((DecimalFormat) simple).getNegativeSuffix();
+		}
+		else {
+			negativePrefix = String.valueOf(formatSymbols.getMinusSign());
+			negativeSuffix = "";
+		}
 
 		knownPatterns.initialize(locale);
 
@@ -900,8 +904,29 @@ public class TextAnalyzer {
 		int alphasSeen = 0;
 		int[] charCounts = new int[128];
 		int[] lastIndex = new int[128];
+		int startLooking = 0;
+		int stopLooking = length;
 
-		for (int i = 0; i < length; i++) {
+		int matchesRequired = 0;
+		int matches = 0;
+		if (!negativePrefix.isEmpty()) {
+			matchesRequired++;
+			if (input.startsWith(negativePrefix)) {
+				matches++;
+				startLooking = negativePrefix.length();
+			}
+		}
+		if (!negativeSuffix.isEmpty()) {
+			matchesRequired++;
+			if (input.endsWith(negativeSuffix)) {
+				matches++;
+				stopLooking = length - negativeSuffix.length();
+			}
+		}
+		if (matches == matchesRequired && matches > 0)
+			numericSigned = true;
+
+		for (int i = startLooking; i < stopLooking; i++) {
 			char ch = input.charAt(i);
 
 			// Track counts and last occurrence for simple characters
@@ -910,7 +935,7 @@ public class TextAnalyzer {
 				lastIndex[ch] = i;
 			}
 
-			if (ch == minusSign && (i == 0 || (i == length - 1 && !signLeading))) {
+			if (ch == minusSign && i == 0) {
 				numericSigned = true;
 			} else if (Character.isDigit(ch)) {
 				l0.append('d');

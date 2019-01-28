@@ -1,5 +1,6 @@
 package com.cobber.fta;
 
+import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -97,13 +98,24 @@ public class KnownPatterns {
 		char groupingSeparator = formatSymbols.getGroupingSeparator();
 		char decimalSeparator = formatSymbols.getDecimalSeparator();
 		char minusSign = formatSymbols.getMinusSign();
-		boolean isSignLeading = NumberFormat.getNumberInstance(locale).format(-1).charAt(0) == minusSign;
-		String optionalSign = Utils.slosh(minusSign) + "?";
-		String signLeading = isSignLeading ? optionalSign : "";
-		String signTrailing = isSignLeading ? "" : optionalSign;
+		String optionalNegativePrefix = null;
+		String optionalNegativeSuffix = null;
+		NumberFormat simple = NumberFormat.getNumberInstance(locale);
+		if (simple instanceof DecimalFormat) {
+			optionalNegativePrefix = ((DecimalFormat) simple).getNegativePrefix();
+			if (!optionalNegativePrefix.isEmpty())
+				optionalNegativePrefix += "?";
+			optionalNegativeSuffix = ((DecimalFormat) simple).getNegativeSuffix();
+			if (!optionalNegativeSuffix.isEmpty())
+				optionalNegativeSuffix += "?";
+		}
+		else {
+			optionalNegativePrefix = String.valueOf(minusSign) + "?";
+			optionalNegativeSuffix = "";
+		}
 
 		PATTERN_LONG = "\\d+";
-		PATTERN_SIGNED_LONG = signLeading + "\\d+" + signTrailing;
+		PATTERN_SIGNED_LONG = optionalNegativePrefix + "\\d+" + optionalNegativeSuffix;
 		PATTERN_DOUBLE = PATTERN_LONG + "|" + "(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+";
 		PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + "-?(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+";
 
