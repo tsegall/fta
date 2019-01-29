@@ -98,26 +98,36 @@ public class KnownPatterns {
 		char groupingSeparator = formatSymbols.getGroupingSeparator();
 		char decimalSeparator = formatSymbols.getDecimalSeparator();
 		char minusSign = formatSymbols.getMinusSign();
-		String optionalNegativePrefix = null;
-		String optionalNegativeSuffix = null;
+
+		String optionalSignPrefix = "";
+		String optionalSignSuffix = "";
 		NumberFormat simple = NumberFormat.getNumberInstance(locale);
 		if (simple instanceof DecimalFormat) {
-			optionalNegativePrefix = Utils.slosh(((DecimalFormat) simple).getNegativePrefix());
-			if (!optionalNegativePrefix.isEmpty())
-				optionalNegativePrefix += "?";
-			optionalNegativeSuffix = Utils.slosh(((DecimalFormat) simple).getNegativeSuffix());
-			if (!optionalNegativeSuffix.isEmpty())
-				optionalNegativeSuffix += "?";
+			String negPrefix = ((DecimalFormat) simple).getNegativePrefix();
+			String negSuffix = ((DecimalFormat) simple).getNegativeSuffix();
+
+			if (!negPrefix.isEmpty()) {
+				if (negPrefix.charAt(0) == minusSign)
+					optionalSignPrefix = "[+-]?";
+				else
+					optionalSignPrefix = Utils.slosh(negPrefix) + "?";
+			}
+			if (!negSuffix.isEmpty()) {
+				if (negSuffix.charAt(0) == minusSign)
+					optionalSignSuffix = "[+-]?";
+				else
+					optionalSignSuffix = Utils.slosh(negSuffix) + "?";
+			}
 		}
 		else {
-			optionalNegativePrefix = String.valueOf(minusSign) + "?";
-			optionalNegativeSuffix = "";
+			optionalSignPrefix = "[+-]?";
+			optionalSignSuffix = "";
 		}
 
 		PATTERN_LONG = "\\d+";
-		PATTERN_SIGNED_LONG = optionalNegativePrefix + "\\d+" + optionalNegativeSuffix;
+		PATTERN_SIGNED_LONG = optionalSignPrefix + "\\d+" + optionalSignSuffix;
 		PATTERN_DOUBLE = PATTERN_LONG + "|" + "(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+";
-		PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + optionalNegativePrefix + "(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+" + optionalNegativeSuffix;
+		PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + optionalSignPrefix + "(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+" + optionalSignSuffix;
 
 		PATTERN_LONG_GROUPING = withGrouping(PATTERN_LONG, groupingSeparator);
 		PATTERN_SIGNED_LONG_GROUPING = withGrouping(PATTERN_SIGNED_LONG, groupingSeparator);

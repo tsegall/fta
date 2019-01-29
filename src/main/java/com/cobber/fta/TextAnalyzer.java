@@ -116,8 +116,10 @@ public class TextAnalyzer {
 	private NumberFormat doubleFormatter;
 	private char groupingSeparator;
 	private char minusSign;
-	private String negativePrefix;
-	private String negativeSuffix;
+	private char negativePrefix;
+	private boolean hasNegativePrefix;
+	private char negativeSuffix;
+	private boolean hasNegativeSuffix;
 	private long sampleCount;
 	private long nullCount;
 	private long blankCount;
@@ -536,7 +538,10 @@ public class TextAnalyzer {
 		int digits = input.length();
 		try {
 			l = Long.parseLong(input);
-			digits = l < 0 ? input.length() - 1 : input.length();
+			digits = input.length();
+			char ch = input.charAt(0);
+			if (ch == '-' || ch == '+')
+				digits--;
 		} catch (NumberFormatException e) {
 			ParsePosition pos = new ParsePosition(0);
 			Number n = longFormatter.parse(input, pos);
@@ -545,7 +550,12 @@ public class TextAnalyzer {
 			l = n.longValue();
 			if (input.indexOf(groupingSeparator) != -1)
 				groupingSeparators++;
-			digits = l < 0 ? input.length() - negativePrefix.length() - negativeSuffix.length() : input.length();
+			digits = input.length();
+			char ch = input.charAt(0);
+			if (hasNegativePrefix && (ch == '-' || ch == '+' || ch == negativePrefix))
+				digits--;
+			if (l < 0 && hasNegativeSuffix)
+				digits--;
 		}
 
 		if (register) {
@@ -816,12 +826,24 @@ public class TextAnalyzer {
 		minusSign = formatSymbols.getMinusSign();
 		NumberFormat simple = NumberFormat.getNumberInstance(locale);
 		if (simple instanceof DecimalFormat) {
-		     negativePrefix = ((DecimalFormat) simple).getNegativePrefix();
-		     negativeSuffix = ((DecimalFormat) simple).getNegativeSuffix();
+			String signFacts = ((DecimalFormat) simple).getNegativePrefix();
+			if (signFacts.length() > 1)
+				throw new IllegalArgumentException("No support for locales with multi-character sign prefixes");
+			hasNegativePrefix = !signFacts.isEmpty();
+			if (hasNegativePrefix)
+				negativePrefix = signFacts.charAt(0);
+			signFacts = ((DecimalFormat) simple).getNegativeSuffix();
+			if (signFacts.length() > 1)
+				throw new IllegalArgumentException("No support for locales with multi-character sign suffixes");
+			hasNegativeSuffix = !signFacts.isEmpty();
+			if (hasNegativeSuffix)
+				negativeSuffix = signFacts.charAt(0);
 		}
 		else {
-			negativePrefix = String.valueOf(formatSymbols.getMinusSign());
-			negativeSuffix = "";
+			String signFacts = String.valueOf(formatSymbols.getMinusSign());
+			hasNegativePrefix = true;
+			negativePrefix = signFacts.charAt(0);
+			hasNegativeSuffix = false;
 		}
 
 		knownPatterns.initialize(locale);
@@ -911,18 +933,18 @@ public class TextAnalyzer {
 
 		int matchesRequired = 0;
 		int matches = 0;
-		if (!negativePrefix.isEmpty()) {
+		if (hasNegativePrefix) {
 			matchesRequired++;
-			if (input.startsWith(negativePrefix)) {
+			if (negativePrefix == input.charAt(0)) {
 				matches++;
-				startLooking = negativePrefix.length();
+				startLooking = 1;
 			}
 		}
-		if (!negativeSuffix.isEmpty()) {
+		if (hasNegativeSuffix) {
 			matchesRequired++;
-			if (input.endsWith(negativeSuffix)) {
+			if (negativeSuffix == input.charAt(length - 1)) {
 				matches++;
-				stopLooking = length - negativeSuffix.length();
+				stopLooking = length - 1;
 			}
 		}
 		if (matches == matchesRequired && matches > 0)
@@ -937,7 +959,7 @@ public class TextAnalyzer {
 				lastIndex[ch] = i;
 			}
 
-			if (ch == minusSign && i == 0) {
+			if ((ch == minusSign || ch == '+') && i == 0) {
 				numericSigned = true;
 			} else if (Character.isDigit(ch)) {
 				l0.append('d');
@@ -1097,9 +1119,9 @@ public class TextAnalyzer {
 			else if (thirdBest == null) {
 				thirdBest = entry;
 				thirdBestPattern = knownPatterns.getByRegExp(thirdBest.getKey());
-				if (levelIndex != 0 && bestPattern != null && secondBestPattern != null && thirdBestPattern != null &&
-						bestPattern.isNumeric() && secondBestPattern.isNumeric() && thirdBestPattern.isNumeric()) {
-					newKey = knownPatterns.numericPromotion(newKey, thirdBestPattern.regexp);
+				if (levelIndex != 0 && bestPattern != null && thirdBestPattern != null &&
+						bestPattern.isNumeric() && thirdBestPattern.isNumeric()) {
+					newKey = knownPatterns.numericPromotion(newKey != null ? newKey : bestPattern.regexp, thirdBestPattern.regexp);
 					best = new AbstractMap.SimpleEntry<String, Integer>(newKey, best.getValue() + thirdBest.getValue());
 				}
 			}
@@ -1765,6 +1787,40 @@ public class TextAnalyzer {
 		return Utils.regExpLength(min, max);
 	}
 
+
+	/**
+	 * Given a Regular Expression with an unbound Integer freeze it with the low and high size.
+	 * For example, given something like \d+, convert to \d{4,9}.
+	 * @return If possible an updated String, if not found then the original string.
+	 */
+	private String freezeNumeric(String input) {
+		StringBuilder result = new StringBuilder(input);
+		boolean characterClass = false;
+		boolean numericStarted = false;
+		int idx = 0;
+
+		while (idx < result.length()) {
+			char ch = result.charAt(idx);
+			if (ch == '\\') {
+				ch = result.charAt(++idx);
+				if (ch == 'd')
+					numericStarted = true;
+			} else if (ch == '[')
+				characterClass = true;
+			else if (ch == ']')
+				characterClass = false;
+			else if (ch == '+') {
+				if (numericStarted && !characterClass) {
+					break;
+				}
+			}
+			idx++;
+		}
+
+		return idx == result.length() ? input :
+			result.replace(idx, idx + 1, lengthQualifier(minTrimmedLength, maxTrimmedLength)).toString();
+	}
+
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
@@ -1846,7 +1902,7 @@ public class TextAnalyzer {
 					matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
 
 				matchPatternInfo = new PatternInfo(matchPatternInfo);
-				matchPatternInfo.regexp = matchPatternInfo.regexp.replace("+", lengthQualifier(minTrimmedLength, maxTrimmedLength));
+				matchPatternInfo.regexp = freezeNumeric(matchPatternInfo.regexp);
 
 				if (realSamples >= reflectionSamples && confidence < threshold/100.0) {
 					// We thought it was an integer field, but on reflection it does not feel like it

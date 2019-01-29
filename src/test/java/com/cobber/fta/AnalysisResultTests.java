@@ -222,7 +222,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "-?\\d{1,6}");
+		Assert.assertEquals(result.getRegExp(), "[+-]?\\d{1,6}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -265,7 +265,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*(-?\\d+|-?(\\d+)?\\.\\d+)");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*([+-]?\\d+|[+-]?(\\d+)?\\.\\d+)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "-9999.0");
 		Assert.assertEquals(result.getMaxValue(), "0.69334954");
@@ -3100,7 +3100,7 @@ public class AnalysisResultTests {
 			Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
 			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
-			String regExp = "-?[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]";
+			String regExp = "[+-]?[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]";
 			regExp += Utils.regExpLength(minValue.length(), maxValue.length());
 			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
@@ -3185,8 +3185,8 @@ public class AnalysisResultTests {
 			analysis.setLocale(locale);
 
 			boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
-			String negPrefix = "-";
-			String negSuffix = "";
+			String negPrefix = getNegativePrefix(locale);
+			String negSuffix = getNegativeSuffix(locale);
 
 			if (!simple) {
 				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
@@ -3204,10 +3204,6 @@ public class AnalysisResultTests {
 			String grp = Utils.slosh(formatSymbols.getGroupingSeparator());
 			String dec = Utils.slosh(formatSymbols.getDecimalSeparator());
 			NumberFormat nf = NumberFormat.getIntegerInstance(locale);
-			 if (nf instanceof DecimalFormat) {
-			     negPrefix = ((DecimalFormat) nf).getNegativePrefix();
-			     negSuffix = ((DecimalFormat) nf).getNegativeSuffix();
-			 }
 //			System.err.printf("Locale '%s', grouping: %s, decimal: %s.\n", locale, grp, dec);
 
 			Set<String> samples = new HashSet<String>();
@@ -3230,16 +3226,16 @@ public class AnalysisResultTests {
 
 			String regExp = "";
 			if (!negPrefix.isEmpty())
-				regExp += Utils.slosh(negPrefix) + "?";
+				regExp += negPrefix;
 			regExp += "[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]+";
 			if (!negSuffix.isEmpty())
-				regExp += Utils.slosh(negSuffix) + "?";
+				regExp += negSuffix;
 			regExp += "|";
 			if (!negPrefix.isEmpty())
-				regExp += Utils.slosh(negPrefix) + "?";
+				regExp += negPrefix;
 			regExp += "([\\d" + grp + "]+)?" + dec + "[\\d" + grp +"]+";
 			if (!negSuffix.isEmpty())
-				regExp += Utils.slosh(negSuffix) + "?";
+				regExp += negSuffix;
 
 			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
@@ -3251,11 +3247,168 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void simpleDoubleExponentTest() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("simpleDoubleExponentTest");
+		DecimalFormat df = new DecimalFormat("0.00E00");
+		final Random random = new Random(1);
+		final int SAMPLE_SIZE = 1000;
+		String sample;
+
+		Set<String> samples = new HashSet<String>();
+		NumberFormat nf = NumberFormat.getNumberInstance();
+		nf.setMinimumFractionDigits(1);
+		for (int i = 0; i < 10; i++) {
+			double d = random.nextDouble();
+			sample = nf.format(d);
+			samples.add(sample);
+			analysis.train(sample);
+		}
+
+		for (int i = 0; i < SAMPLE_SIZE; i++) {
+			double d = random.nextDouble() * random.nextInt();
+			sample = df.format(d).toString();
+			samples.add(sample);
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE + 10);
+		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE + 10);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+
+		Assert.assertEquals(result.getRegExp(), "[+-]?\\d+|[+-]?(\\d+)?\\.\\d+(?:[eE]([-+]?\\d+))?");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		String actualRegExp = result.getRegExp();
+
+		for (String s : samples) {
+			Assert.assertTrue(s.matches(actualRegExp), s + " " + actualRegExp);
+		}
+	}
+
+	//FIX@Test
+	public void localeNegativeDoubleExponentTest() throws IOException {
+		final Random random = new Random(1);
+		final int SAMPLE_SIZE = 1000;
+		Locale[] locales = DateFormat.getAvailableLocales();
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("hr-HR") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-AE") };
+
+		for (Locale locale : locales) {
+			final TextAnalyzer analysis = new TextAnalyzer("localeNegativeDoubleExponentTest");
+			analysis.setLocale(locale);
+
+			boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
+			String negPrefix = getNegativePrefix(locale);
+			String negSuffix = getNegativeSuffix(locale);
+
+			if (!simple) {
+				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+				continue;
+			}
+
+			Calendar cal = GregorianCalendar.getInstance(locale);
+			if (!(cal instanceof GregorianCalendar)) {
+				System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
+				continue;
+			}
+
+			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+			DecimalFormat df = new DecimalFormat("0.00E00");
+
+			String grp = Utils.slosh(formatSymbols.getGroupingSeparator());
+			String dec = Utils.slosh(formatSymbols.getDecimalSeparator());
+//			System.err.printf("Locale '%s', grouping: %s, decimal: %s.\n", locale, grp, dec);
+
+			Set<String> samples = new HashSet<String>();
+			for (int i = 0; i < SAMPLE_SIZE; i++) {
+				double d = random.nextDouble() * random.nextInt();
+				int pow = random.nextInt(10);
+				if (pow % 2 == 0)
+					d *= Math.pow(d, pow);
+				else
+					d *= Math.pow(d,  -pow);
+
+				String sample = df.format(d).toString();
+				samples.add(sample);
+				analysis.train(sample);
+			}
+
+			final TextAnalysisResult result = analysis.getResult();
+
+			Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+			Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getNullCount(), 0);
+			Assert.assertEquals(result.getLeadingZeroCount(), 0);
+
+			String regExp = "";
+			if (!negPrefix.isEmpty())
+				regExp += negPrefix;
+			regExp += "[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]+";
+			if (!negSuffix.isEmpty())
+				regExp += negSuffix;
+			regExp += "|";
+			if (!negPrefix.isEmpty())
+				regExp += negPrefix;
+			regExp += "([\\d" + grp + "]+)?" + dec + "[\\d" + grp +"]+";
+			if (!negSuffix.isEmpty())
+				regExp += negSuffix;
+
+//			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getConfidence(), 1.0);
+
+			String actualRegExp = result.getRegExp();
+
+			for (String sample : samples) {
+				Assert.assertTrue(sample.matches(actualRegExp), sample + " " + actualRegExp);
+			}
+		}
+	}
+
+	String
+	getNegativePrefix(Locale locale) {
+		String negPrefix = "-";
+		NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+		if (nf instanceof DecimalFormat) {
+			negPrefix = ((DecimalFormat) nf).getNegativePrefix();
+			if (!negPrefix.isEmpty())
+				if ("-".equals(negPrefix))
+					negPrefix = "[+-]?";
+				else
+					negPrefix = Utils.slosh(negPrefix) + "?";
+		}
+		return negPrefix;
+	}
+
+	String
+	getNegativeSuffix(Locale locale) {
+		String negSuffix = "";
+		NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+		if (nf instanceof DecimalFormat) {
+			negSuffix = ((DecimalFormat) nf).getNegativeSuffix();
+			if (!negSuffix.isEmpty())
+				if ("-".equals(negSuffix))
+					negSuffix = "[+-]?";
+				else
+					negSuffix = Utils.slosh(negSuffix) + "?";
+		}
+		return negSuffix;
+	}
+
+	@Test
 	public void localeLongTest() throws IOException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] { Locale.forLanguageTag("mk-MK") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-JO") };
 
 		for (Locale locale : locales) {
 			long min = Long.MAX_VALUE;
@@ -3283,15 +3436,11 @@ public class AnalysisResultTests {
 			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
 			String grp = Utils.slosh(formatSymbols.getGroupingSeparator());
-			String negPrefix = "-";
-			String negSuffix = "";
+			String negPrefix = getNegativePrefix(locale);
+			String negSuffix = getNegativeSuffix(locale);
 
 			Set<String> samples = new HashSet<String>();
 			NumberFormat nf = NumberFormat.getIntegerInstance(locale);
-			 if (nf instanceof DecimalFormat) {
-			     negPrefix = ((DecimalFormat) nf).getNegativePrefix();
-			     negSuffix = ((DecimalFormat) nf).getNegativeSuffix();
-			 }
 
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
 				long l = random.nextLong();
@@ -3334,11 +3483,11 @@ public class AnalysisResultTests {
 
 			String regExp = "";
 			if (!negPrefix.isEmpty())
-				regExp += Utils.slosh(negPrefix) + "?";
+				regExp += negPrefix;
 			regExp += "[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]";
 			regExp += Utils.regExpLength(absMinValue.length(), absMaxValue.length());
 			if (!negSuffix.isEmpty())
-				regExp += Utils.slosh(negSuffix) + "?";
+				regExp += negSuffix;
 			Assert.assertEquals(result.getDecimalSeparator(), '.');
 
 			Assert.assertEquals(result.getRegExp(), regExp);
@@ -3482,7 +3631,7 @@ public class AnalysisResultTests {
 			Assert.assertEquals(result.getLeadingZeroCount(), 0);
 			Assert.assertEquals(result.getDecimalSeparator(), formatSymbols.getDecimalSeparator());
 
-			String regExp = "-?\\d+|-?(\\d+)?" + Utils.slosh(formatSymbols.getDecimalSeparator()) + "\\d+";
+			String regExp = "[+-]?\\d+|[+-]?(\\d+)?" + Utils.slosh(formatSymbols.getDecimalSeparator()) + "\\d+";
 
 			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
@@ -3633,7 +3782,7 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 		Assert.assertEquals(result.getMinValue(), String.valueOf(min));
 		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
-		String regExp = "-?[\\d,]{";
+		String regExp = "[+-]?[\\d,]{";
 		if (minValue.length() == maxValue.length())
 			regExp += minValue.length();
 		else {
@@ -5741,6 +5890,36 @@ public class AnalysisResultTests {
 	}
 
 	@Test
+	public void signedLongs() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
+		final String inputs[] = new String[] {
+				"+400089", "2000931", "-3287392873", "-327398267", "-34", "56", "93823908", "34567", "-757363", "0",
+				"4345689", "2333931", "4457892873", "+398267", "-3334464", "78912356", "93823908", "34567", "-757363", "0",
+				"489", "931", "-3287373", "-398267", "-234534", "565656", "23908", "7734567", "-99757363", "0"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		Assert.assertEquals(result.getRegExp(), "[+-]?\\d{1,10}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void manyConstantLengthDoublesI18N_1() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
@@ -6464,9 +6643,9 @@ public class AnalysisResultTests {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "-?\\d+|-?(\\d+)?\\.\\d+");
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getRegExp(), "[+-]?\\d+|[+-]?(\\d+)?\\.\\d+");
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getMinValue(), "-101.0");
 		Assert.assertEquals(result.getMaxValue(), "119.0");
 	}
