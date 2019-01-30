@@ -135,7 +135,8 @@ public class KnownPatterns {
 		PATTERN_SIGNED_DOUBLE_GROUPING = withGrouping(PATTERN_SIGNED_DOUBLE, groupingSeparator);
 
 		PATTERN_DOUBLE_WITH_EXPONENT = PATTERN_DOUBLE + "(?:[eE]([-+]?\\d+))?";
-		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = PATTERN_SIGNED_DOUBLE + "(?:[eE]([-+]?\\d+))?";
+		// Not localized!!
+		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = "[+-]?\\d+" + "|" + "[+-]?(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+(?:[eE]([-+]?\\d+))?";
 
 		knownPatterns.put(PATTERN_BOOLEAN_TRUE_FALSE,
 				new PatternInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, PatternInfo.Type.BOOLEAN, "TRUE_FALSE", false, 4, 5, null, ""));

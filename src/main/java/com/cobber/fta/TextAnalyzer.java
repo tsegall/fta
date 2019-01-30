@@ -675,7 +675,7 @@ public class TextAnalyzer {
 			d = n.doubleValue();
 			if (input.indexOf(groupingSeparator) != -1)
 				groupingSeparators++;
-			if (decimalSeparator != '.' && input.indexOf(decimalSeparator) != -1)
+			if (decimalSeparator != '.' && utilizedDecimalSeparator != decimalSeparator && input.indexOf(decimalSeparator) != -1)
 				utilizedDecimalSeparator = decimalSeparator;
 		}
 
@@ -974,7 +974,7 @@ public class TextAnalyzer {
 				l0.append('a');
 				alphasSeen++;
 				if (couldBeNumeric && (ch == 'e' || ch == 'E')) {
-					if (possibleExponentSeen != -1 || i < 3 || i + 1 >= length)
+					if (possibleExponentSeen != -1 || i < 2 || i + 1 >= length)
 						couldBeNumeric = false;
 					else
 						possibleExponentSeen = i;
