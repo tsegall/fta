@@ -171,8 +171,6 @@ public class TestDoubles {
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		System.err.println("RE: " + result.getRegExp());
-
 		for (int i = 0; i < samples.length; i++) {
 			Assert.assertTrue(samples[i].matches(result.getRegExp()), samples[i]);
 		}

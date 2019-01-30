@@ -137,36 +137,40 @@ public class TestDates {
 	@Test
 	public void basicAMPM_enUSNotSimple() throws IOException {
 		final Locale locale = Locale.forLanguageTag("en-US");
-		final TextAnalyzer analysis = new TextAnalyzer("h:mm a dd/MM/yy", DateResolutionMode.DayFirst);
-		analysis.setLocale(locale);
-		final String dateTimeFormat = "h:mm a dd/MM/yy";
-		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat, locale);
-		final int sampleCount = 100;
-		final Set<String> samples = new HashSet<>();
-		int locked = -1;
+		DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
 
-		LocalDateTime localDateTime = LocalDateTime.now();
-		for (int i = 0; i < sampleCount; i++) {
-			String sample = null;
-			sample = localDateTime.format(dtf);
-			samples.add(sample);
-			if (analysis.train(sample) && locked == -1)
-				locked = i;
-			localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
-		}
-		final TextAnalysisResult result = analysis.getResult();
+		for (DateResolutionMode resolutionMode : cases) {
+			final TextAnalyzer analysis = new TextAnalyzer("h:mm a dd/MM/yy", resolutionMode);
+			analysis.setLocale(locale);
+			final String dateTimeFormat = "h:mm a dd/MM/yy";
+			final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat, locale);
+			final int sampleCount = 100;
+			final Set<String> samples = new HashSet<>();
+			int locked = -1;
 
-		Assert.assertEquals(result.getSampleCount(), sampleCount);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2} (?i)(AM|PM) \\d{2}/\\d{2}/\\d{2}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
-		Assert.assertEquals(result.getTypeQualifier(), "h:mm a dd/MM/yy");
-		Assert.assertEquals(result.getMatchCount(), sampleCount);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+			LocalDateTime localDateTime = LocalDateTime.now();
+			for (int i = 0; i < sampleCount; i++) {
+				String sample = null;
+				sample = localDateTime.format(dtf);
+				samples.add(sample);
+				if (analysis.train(sample) && locked == -1)
+					locked = i;
+				localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+			}
+			final TextAnalysisResult result = analysis.getResult();
 
-		for (String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+			Assert.assertEquals(result.getSampleCount(), sampleCount);
+			Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2} (?i)(AM|PM) \\d{2}/\\d{2}/\\d{2}");
+			Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+			Assert.assertEquals(result.getTypeQualifier(), "h:mm a dd/MM/yy");
+			Assert.assertEquals(result.getMatchCount(), sampleCount);
+			Assert.assertEquals(result.getOutlierCount(), 0);
+			Assert.assertEquals(result.getNullCount(), 0);
+			Assert.assertEquals(result.getConfidence(), 1.0);
+
+			for (String sample : samples) {
+				Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+			}
 		}
 	}
 
@@ -244,31 +248,88 @@ public class TestDates {
 
 	@Test
 	public void basicHHmmddMyy() throws IOException {
-		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.DayFirst);
-		final String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
-				"16:53 26/9/12|09:53 10/3/12|02:53 23/8/11|19:53 03/2/11|12:53 18/7/10|05:53 30/12/09|22:53 12/6/09|15:53 24/11/08|" +
-				"08:53 08/5/08|01:53 21/10/07|18:53 03/4/07|11:53 15/9/06|04:53 27/2/06|21:53 10/8/05|14:53 22/1/05|07:53 06/7/04|" +
-				"00:53 19/12/03|17:53 01/6/03|10:53 13/11/02|03:53 27/4/02|20:53 08/10/01|13:53 22/3/01|";
-		final String inputs[] = input.split("\\|");
-		int locked = -1;
+		DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
+		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
+		for (Locale locale : locales) {
+			for (DateResolutionMode resolutionMode : cases) {
+				final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", resolutionMode);
+				analysis.setLocale(locale);
+				final String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
+						"16:53 26/9/12|09:53 10/3/12|02:53 23/8/11|19:53 03/2/11|12:53 18/7/10|05:53 30/12/09|22:53 12/6/09|15:53 24/11/08|" +
+						"08:53 08/5/08|01:53 21/10/07|18:53 03/4/07|11:53 15/9/06|04:53 27/2/06|21:53 10/8/05|14:53 22/1/05|07:53 06/7/04|" +
+						"00:53 19/12/03|17:53 01/6/03|10:53 13/11/02|03:53 27/4/02|20:53 08/10/01|13:53 22/3/01|";
+				final String inputs[] = input.split("\\|");
+				int locked = -1;
+
+				for (int i = 0; i < inputs.length; i++) {
+					if (analysis.train(inputs[i]) && locked == -1)
+						locked = i;
+				}
+
+				final TextAnalysisResult result = analysis.getResult();
+
+				Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+				Assert.assertEquals(result.getTypeQualifier(), "HH:mm dd/M/yy");
+				Assert.assertEquals(result.getSampleCount(), inputs.length);
+				Assert.assertEquals(result.getMatchCount(), inputs.length);
+				Assert.assertEquals(result.getNullCount(), 0);
+				Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2} \\d{2}/\\d{1,2}/\\d{2}");
+				Assert.assertEquals(result.getConfidence(), 1.0);
+
+				for (int i = 0; i < inputs.length; i++) {
+					Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+				}
+			}
 		}
+	}
 
-		final TextAnalysisResult result = analysis.getResult();
+	@Test
+	public void basicResolutionMode() throws IOException {
+		DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.MonthFirst, DateResolutionMode.Auto };
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2} \\d{2}/\\d{1,2}/\\d{2}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
-		Assert.assertEquals(result.getTypeQualifier(), "HH:mm dd/M/yy");
+		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
+		for (Locale locale : locales) {
+			for (DateResolutionMode resolutionMode : cases) {
+				final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", resolutionMode);
+				analysis.setLocale(locale);
+				final String input = "2/2/34|3/3/19|4/4/48|5/5/55|6/6/66|7/7/77|8/8/88|9/9/99|" +
+							"12/12/34|4/5/19|6/4/48|7/5/55|12/6/66|12/7/77|3/8/88|2/9/99|" +
+							"1/1/26|4/5/33|6/9/48|9/5/55|12/2/66|11/11/78|3/4/98|2/3/39|";
+				final String inputs[] = input.split("\\|");
+				int locked = -1;
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+				for (int i = 0; i < inputs.length; i++) {
+					if (analysis.train(inputs[i]) && locked == -1)
+						locked = i;
+				}
+
+				final TextAnalysisResult result = analysis.getResult();
+
+				Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+				String expected = "";
+				switch (resolutionMode) {
+				case DayFirst:
+					expected = "d/M/yy";
+					break;
+				case MonthFirst:
+					expected = "M/d/yy";
+					break;
+				case Auto:
+					expected = locale.toLanguageTag().equals("en-GB") ? "d/M/yy" : "M/d/yy";
+					break;
+				}
+				Assert.assertEquals(result.getTypeQualifier(), expected);
+				Assert.assertEquals(result.getSampleCount(), inputs.length);
+				Assert.assertEquals(result.getMatchCount(), inputs.length);
+				Assert.assertEquals(result.getNullCount(), 0);
+				Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{2}");
+				Assert.assertEquals(result.getConfidence(), 1.0);
+
+				for (int i = 0; i < inputs.length; i++) {
+					Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+				}
+			}
 		}
 	}
 

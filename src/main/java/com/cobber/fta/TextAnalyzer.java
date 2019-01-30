@@ -22,10 +22,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -198,6 +200,21 @@ public class TextAnalyzer {
 
 	private DateTimeParser dateTimeParser;
 
+	/**
+	 * Construct a Text Analyzer for the named data stream.  Note: The resolution mode will be 'None'.
+	 *
+	 * @param name The name of the data stream (e.g. the column of the CSV file)
+	 */
+	public TextAnalyzer(final String name) {
+		this(name, DateResolutionMode.None);
+	}
+
+	/**
+	 * Construct an anonymous Text Analyzer for a data stream.  Note: The resolution mode will be 'None'.
+	 */
+	public TextAnalyzer() {
+		this("anonymous", DateResolutionMode.None);
+	}
 
 	/**
 	 * Construct a Text Analyzer for the named data stream with the supplied DateResolutionMode.
@@ -258,22 +275,6 @@ public class TextAnalyzer {
 	 */
 	public Collection<LogicalType> getRegisteredLogicalTypes() {
 		return new HashSet<LogicalType>(registered.values());
-	}
-
-	/**
-	 * Construct a Text Analyzer for the named data stream.  Note: The resolution mode will be 'None'.
-	 *
-	 * @param name The name of the data stream (e.g. the column of the CSV file)
-	 */
-	public TextAnalyzer(final String name) {
-		this(name, DateResolutionMode.None);
-	}
-
-	/**
-	 * Construct an anonymous Text Analyzer for a data stream.  Note: The resolution mode will be 'None'.
-	 */
-	public TextAnalyzer() {
-		this("anonymous", DateResolutionMode.None);
 	}
 
 	/**
@@ -847,6 +848,18 @@ public class TextAnalyzer {
 		}
 
 		knownPatterns.initialize(locale);
+
+		// If Resolution mode is auto then set DayFirst or MonthFirst based on the Locale
+		if (resolutionMode == DateResolutionMode.Auto) {
+			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
+			String pattern = ((SimpleDateFormat)df).toPattern();
+			int dayIndex = pattern.indexOf('d');
+			int monthIndex = pattern.indexOf('M');
+			if (dayIndex == -1 || monthIndex == -1)
+				throw new IllegalArgumentException("Failed to determine DateResolutionMode for this locale");
+			// We assume that if Day is before Month, then Day is also before Year!
+			resolutionMode = dayIndex < monthIndex ? DateResolutionMode.DayFirst : DateResolutionMode.MonthFirst;
+		}
 
 		dateTimeParser = new DateTimeParser(resolutionMode, locale);
 
