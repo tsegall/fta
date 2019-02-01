@@ -46,7 +46,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String getRegexp() {
+	public String getRegExp() {
 		return regexp;
 	}
 

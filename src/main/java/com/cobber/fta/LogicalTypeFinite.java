@@ -19,12 +19,12 @@ public abstract class LogicalTypeFinite extends LogicalType {
 	public Type getBaseType() {
 		return PatternInfo.Type.STRING;
 	}
-	
+
 	@Override
 	public boolean isValid(String input) {
 		return input.length() >= minLength && input.length() <= maxLength && getMembers().contains(input);
 	}
-	
+
 	@Override
 	public boolean initialize(Locale locale) {
 		for (String member : getMembers()) {
@@ -37,15 +37,20 @@ public abstract class LogicalTypeFinite extends LogicalType {
 		return true;
 	}
 
-	/** 
+	@Override
+	public boolean isRegExpComplete() {
+		return false;
+	}
+
+	/**
 	 * Get the number of members in this Logical Type.
 	 * @return The number of members
 	 */
 	public int getSize() {
 		return getMembers().size();
 	}
-	
-	/** 
+
+	/**
 	 * Get the minimum length of instances of this Logical Type.
 	 * @return The minimum length of instances
 	 */
@@ -53,7 +58,7 @@ public abstract class LogicalTypeFinite extends LogicalType {
 		return minLength;
 	}
 
-	/** 
+	/**
 	 * Get the maximum length of instances of this Logical Type.
 	 * @return The maximum length of instances
 	 */

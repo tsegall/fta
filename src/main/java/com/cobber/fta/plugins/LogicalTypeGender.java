@@ -35,7 +35,7 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String getRegexp() {
+	public String getRegExp() {
 		return 	"\\p{Alpha}+";
 	}
 

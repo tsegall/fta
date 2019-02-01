@@ -39,7 +39,7 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getRegexp() {
+	public String getRegExp() {
 		return ".+";
 	}
 

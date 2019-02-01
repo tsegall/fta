@@ -47,7 +47,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getRegexp() {
+	public String getRegExp() {
 		return "\\d{5}";
 	}
 

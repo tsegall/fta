@@ -460,6 +460,38 @@ public class TestLongs {
 	}
 
 	@Test
+	public void paddedLongs() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("RowID");
+		final String inputs[] = new String[] {
+			    "    0", "    1", "    2", "    3", "    4", "    5", "    6", "    7", "    8", "    9",
+			    "    10", "    11", "    12", "    13", "    14", "    15", "    16", "    17", "    18", "    19",
+			    "    20", "    21", "    22", "    23", "    24", "    25", "    26", "    27", "    28", "    29"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getMinValue(), "0");
+		Assert.assertEquals(result.getMaxValue(), "29");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*\\d{1,2}");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void signedLongs() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
 		final String inputs[] = new String[] {

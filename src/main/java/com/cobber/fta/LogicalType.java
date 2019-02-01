@@ -20,11 +20,18 @@ public abstract class LogicalType {
 	public abstract String getQualifier();
 
 	/**
-	 * The RE that most closely matches this Logical Type.
+	 * The Regular Expression that most closely matches (See {@link #isRegExpComplete()}) this Logical Type.
 	 * Note: All valid matches will match this RE, but the inverse is not necessarily true.
-	 * @return The Java RE that most closely matches this Logical Type.
+	 * @return The Java Regular Expression that most closely matches this Logical Type.
 	 */
-	public abstract String getRegexp();
+	public abstract String getRegExp();
+
+	/**
+	 * Is the returned Regular Expression a true representation of the Logical Type.
+	 * For example, \\d{5} is not for US ZIP codes, whereas (?i)(male|female) could be valid for a Gender.
+	 * @return The Java Regular Expression that most closely matches this Logical Type.
+	 */
+	public abstract boolean isRegExpComplete();
 
 	/**
 	 * The percentage when we declare success 0 - 100.

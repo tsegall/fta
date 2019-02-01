@@ -32,7 +32,7 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String getRegexp() {
+	public String getRegExp() {
 		return LocaleInfo.getShortMonthsRegExp(locale);
 	}
 

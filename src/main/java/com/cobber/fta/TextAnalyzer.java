@@ -1231,7 +1231,7 @@ public class TextAnalyzer {
 			for (LogicalTypeInfinite logical : infiniteTypes) {
 				if ((double)candidateCounts[i]/raw.size() >= logical.getThreshold()/100.0) {
 					int count = 0;
-					PatternInfo candidate = new PatternInfo(null, logical.getRegexp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
+					PatternInfo candidate = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 					for (final String sample : raw) {
 						if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
 							if (trackString(sample, candidate, false))
@@ -1565,9 +1565,9 @@ public class TextAnalyzer {
 
 		final int trimmedLength = input.trim().length();
 
-		if (trimmedLength < minRawLength)
+		if (trimmedLength < minRawLength && trimmedLength < minTrimmedLength)
 			minTrimmedLength = trimmedLength;
-		if (trimmedLength > maxRawLength)
+		if (trimmedLength > maxRawLength && trimmedLength > maxTrimmedLength)
 			maxTrimmedLength = trimmedLength;
 	}
 
@@ -1750,7 +1750,7 @@ public class TextAnalyzer {
 			return false;
 
 		matchCount = validCount;
-		matchPatternInfo = new PatternInfo(null, logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
+		matchPatternInfo = new PatternInfo(null, logical.getRegExp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
 		outliers.putAll(newOutliers);
 		cardinality.keySet().removeAll(newOutliers.keySet());
 
@@ -1788,7 +1788,7 @@ public class TextAnalyzer {
 		outliers.putAll(newOutliers);
 		cardinalityUpper.keySet().removeAll(newOutliers.keySet());
 		matchCount = validCount;
-		matchPatternInfo = new PatternInfo(null, logical.getRegexp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
+		matchPatternInfo = new PatternInfo(null, logical.getRegExp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
 		cardinality = cardinalityUpper;
 		return true;
 	}

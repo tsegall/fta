@@ -23,10 +23,15 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getRegexp() {
+	public String getRegExp() {
 		return 	"^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 	}
-		
+
+	@Override
+	public boolean isRegExpComplete() {
+		return true;
+	}
+
 	@Override
 	public PatternInfo.Type getBaseType() {
 		return PatternInfo.Type.STRING;

@@ -29,7 +29,7 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getRegexp() {
+	public String getRegExp() {
 		return "(?:\\d[ -]*?){13,16}";
 	}
 

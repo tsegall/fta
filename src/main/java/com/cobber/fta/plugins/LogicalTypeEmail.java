@@ -29,8 +29,13 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getRegexp() {
+	public String getRegExp() {
 		return "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}";
+	}
+
+	@Override
+	public boolean isRegExpComplete() {
+		return true;
 	}
 
 	@Override
