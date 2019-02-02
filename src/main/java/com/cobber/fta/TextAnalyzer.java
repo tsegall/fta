@@ -615,8 +615,13 @@ public class TextAnalyzer {
 
 	private boolean trackString(final String rawInput, PatternInfo patternInfo, final boolean register) {
 		if (patternInfo.typeQualifier == null) {
-			if (patternInfo.isAlphabetic() && !rawInput.trim().chars().allMatch(Character::isAlphabetic))
-				return false;
+			String trimmed = rawInput.trim();
+			for (int i = 0; i < trimmed.length(); i++) {
+				if (patternInfo.isAlphabetic() && !Character.isAlphabetic(trimmed.charAt(i)))
+					return false;
+				if (patternInfo.isAlphanumeric() && !Character.isLetterOrDigit((trimmed.charAt(i))))
+					return false;
+			}
 		}
 		else if (patternInfo.isLogicalType) {
 			// If it is a registered Infinite Logical Type then validate it
@@ -1930,11 +1935,13 @@ public class TextAnalyzer {
 			if (groupingSeparators != 0)
 				matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
-			final int length = determineLength(matchPatternInfo.regexp);
-			// We thought it was a fixed length string, but on reflection it does not feel like it
-			if (length != -1 && realSamples >= reflectionSamples && (double) matchCount / realSamples < 0.95) {
-				backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
-				confidence = (double) matchCount / realSamples;
+			if (!matchPatternInfo.isLogicalType) {
+				final int length = determineLength(matchPatternInfo.regexp);
+				// We thought it was a fixed length string, but on reflection it does not feel like it
+				if (length != -1 && realSamples >= reflectionSamples && (double) matchCount / realSamples < 0.95) {
+					backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
+					confidence = (double) matchCount / realSamples;
+				}
 			}
 
 			// Build Cardinality map ignoring case (and white space)

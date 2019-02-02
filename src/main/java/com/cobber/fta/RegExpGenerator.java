@@ -1,5 +1,9 @@
 package com.cobber.fta;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 /**
  * Analyze a set of strings and return a suitable Regular Expression.
  * Not likely to be an optimal Regular Expression!!
@@ -22,20 +26,35 @@ package com.cobber.fta;
  * </pre>
  */
 public class RegExpGenerator {
-	int shortest = Integer.MAX_VALUE;
-	int longest = Integer.MIN_VALUE;
-	boolean isAlphabetic = false;
-	boolean isDigit = false;
-	boolean isPeriod = false;
-	boolean isSpace = false;
-	boolean isOther = false;
-	int maxClasses = 0;
+	private int shortest = Integer.MAX_VALUE;
+	private int longest = Integer.MIN_VALUE;
+	private boolean isAlphabetic = false;
+	private boolean isDigit = false;
+	private boolean isPeriod = false;
+	private boolean isSpace = false;
+	private boolean isOther = false;
+	private int maxClasses = 0;
+	private boolean asSet = false;
+	private Locale locale = null;
+	private Set<String> memory = new HashSet<>();
+
+	public RegExpGenerator() {
+		this.asSet = false;
+	}
+
+	public RegExpGenerator(boolean asSet, Locale locale) {
+		this.asSet = true;
+		this.locale = locale;
+	}
 
 	/**
 	 * This method should be called for each string in the set.
 	 * @param input The String to be used as part of the set.
 	 */
 	public void train(String input) {
+		if (asSet)
+			memory.add(input.toUpperCase(locale));
+
 		final int len = input.length();
 		int classes = 0;
 
@@ -74,26 +93,39 @@ public class RegExpGenerator {
 	 * Given the set of Strings trained() return a Regular Expression which will accept any of the training set.
 	 * @return A regular expression matching the training set.
 	 */
-	String getResult() {
-		String ret = "";
+	public String getResult() {
+		StringBuilder result = new StringBuilder();
 
-		if (isOther)
-			ret = ".";
-		else {
-			if (maxClasses > 1)
-				ret += "[";
-			if (isAlphabetic)
-				ret += "\\p{IsAlphabetic}";
-			if (isDigit)
-				ret += "\\p{IsDigit}";
-			if (isPeriod)
-				ret += "\\.";
-			if (isSpace)
-				ret += " ";
-			if (maxClasses > 1)
-				ret += "]";
+		if (asSet && memory.size() < 10) {
+			result.append("(?i)");
+			if (memory.size() != 1)
+				result.append("(");
+			for (String element : memory) {
+				result.append(element).append("|");
+			}
+			result.deleteCharAt(result.length() - 1);
+			if (memory.size() != 1)
+				result.append(")");
+			return result.toString();
 		}
 
-		return ret + Utils.regExpLength(shortest, longest);
+		if (isOther)
+			result.append(".");
+		else {
+			if (maxClasses > 1)
+				result.append("[");
+			if (isAlphabetic)
+				result.append("\\p{IsAlphabetic}");
+			if (isDigit)
+				result.append("\\p{IsDigit}");
+			if (isPeriod)
+				result.append("\\.");
+			if (isSpace)
+				result.append(" ");
+			if (maxClasses > 1)
+				result.append("]");
+		}
+
+		return result.append(Utils.regExpLength(shortest, longest)).toString();
 	}
 }

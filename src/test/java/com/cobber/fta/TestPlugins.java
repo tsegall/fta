@@ -10,8 +10,47 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.plugins.LogicalTypeAddressEN;
+import com.cobber.fta.plugins.LogicalTypeCAProvince;
+import com.cobber.fta.plugins.LogicalTypeEmail;
+import com.cobber.fta.plugins.LogicalTypeISO3166_2;
+import com.cobber.fta.plugins.LogicalTypeISO3166_3;
+import com.cobber.fta.plugins.LogicalTypeURL;
+import com.cobber.fta.plugins.LogicalTypeUSState;
+import com.cobber.fta.plugins.LogicalTypeUSZip5;
 
 public class TestPlugins {
+	@Test
+	public void basicGenderTwoValues() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		final String input = "Female|MALE|Male|Female|Female|MALE|Female|Female|Male|" +
+				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
+				"MALE|FEMALE|MALE|FEMALE|FEMALE|MALE|FEMALE|MALE|" +
+				"Female|Male|Female|FEMALE|Male|Female|male|Male|Male|male|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "GENDER_EN");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "(?i)(MALE|FEMALE)");
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
 	@Test
 	public void basicGender() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
@@ -32,7 +71,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "GENDER_EN");
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}+");
+		Assert.assertEquals(result.getRegExp(), "(?i)(UNKNOWN|MALE|FEMALE)");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		int outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
@@ -64,7 +103,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "GENDER_EN");
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}+");
+		Assert.assertEquals(result.getRegExp(), "(?i)(UNKNOWN|MALE|FEMALE)");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		int outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
@@ -207,7 +246,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMaxLength(), 19);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertTrue(result.isLogicalType());
-		Assert.assertEquals(result.getRegExp(), "(?:\\d[ -]*?){13,16}");
+		Assert.assertEquals(result.getRegExp(), PluginCreditCard.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (String s : samples) {
@@ -250,11 +289,11 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeEmail.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)2/(result.getSampleCount() - result.getNullCount()));
 
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 		}
 	}
 
@@ -286,7 +325,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length + 1 - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeURL.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "URL");
@@ -389,7 +428,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 32);
-		Assert.assertEquals(result.getRegExp(), "\\d{5}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -605,7 +644,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), copies);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), copies);
-		Assert.assertEquals(result.getRegExp(), "\\d{5}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertTrue(sample.matches(result.getRegExp()));
 	}
@@ -634,7 +673,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getTypeQualifier(), "US_STATE");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.get("SA"), Integer.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
@@ -674,7 +713,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeEmail.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		// Only simple emails match the regexp, so the count will not the 4 that include email lists :-(
@@ -716,7 +755,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeEmail.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}
 
@@ -746,7 +785,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)5/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -781,7 +820,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 5);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)5/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -819,7 +858,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{2}");
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -853,7 +892,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -881,7 +920,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeCAProvince.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -910,7 +949,7 @@ public class TestPlugins {
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), end + 1 - start);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{5}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
 		Assert.assertEquals(result.getMatchCount(), end - start);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}
@@ -1240,7 +1279,7 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeISO3166_3.REGEXP);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "ISO-3166-3");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -1271,7 +1310,7 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeISO3166_2.REGEXP);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "ISO-3166-2");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -1444,7 +1483,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "ADDRESS_EN");
-		Assert.assertEquals(result.getRegExp(), ".+");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeAddressEN.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1465,9 +1504,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "ADDRESS_EN");
-		Assert.assertEquals(result.getRegExp(), ".+");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeAddressEN.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
-
-
 }

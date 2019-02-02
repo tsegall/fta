@@ -11,6 +11,9 @@ import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 
 public class LogicalTypeEmail extends LogicalTypeInfinite {
+//	public final static String EMAIL_REGEXP = "[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?";
+	public final static String REGEXP = "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}";
+
 	@Override
 	public boolean initialize(Locale locale) {
 		threshold = 95;
@@ -30,7 +33,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}";
+		return REGEXP;
 	}
 
 	@Override

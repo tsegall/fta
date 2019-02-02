@@ -10,6 +10,8 @@ import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 
 public class LogicalTypeURL extends LogicalTypeInfinite {
+	public final static String REGEXP = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+
 	@Override
 	public boolean initialize(Locale locale) {
 		threshold = 95;

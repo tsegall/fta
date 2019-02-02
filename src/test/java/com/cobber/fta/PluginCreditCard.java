@@ -8,6 +8,7 @@ import org.apache.commons.validator.routines.CreditCardValidator;
 import com.cobber.fta.PatternInfo.Type;
 
 public class PluginCreditCard extends LogicalTypeInfinite {
+	public final static String REGEXP = "(?:\\d[ -]*?){13,16}";
 	static CreditCardValidator validator = null;
 	static {
 		validator = CreditCardValidator.genericCreditCardValidator();
@@ -30,7 +31,7 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return "(?:\\d[ -]*?){13,16}";
+		return REGEXP;
 	}
 
 	@Override

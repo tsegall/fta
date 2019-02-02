@@ -167,6 +167,15 @@ public class PatternInfo {
 	}
 
 	/**
+	 * Is this pattern Alphanumeric?
+	 *
+	 * @return A boolean indicating if the Type for this pattern is Alphanumeric.
+	 */
+	public boolean isAlphanumeric() {
+		return this.regexp.startsWith(KnownPatterns.PATTERN_ALPHANUMERIC);
+	}
+
+	/**
 	 * Is this PatternInfo a Logical Type?
 	 *
 	 * @return A boolean indicating if this is a Logical Type.

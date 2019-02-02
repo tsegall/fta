@@ -1472,7 +1472,7 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertTrue(result.isValid8("01/26/2012 10:42:23 GMT"));
 	}
 
-	//@Test
+	@Test
 	public void testPerf() {
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "01/26/2012 10:42:23 GMT";

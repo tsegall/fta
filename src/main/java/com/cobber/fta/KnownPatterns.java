@@ -222,16 +222,23 @@ public class KnownPatterns {
 		addBinary(promotion, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 
 		addUnary(negation, PATTERN_LONG, PATTERN_SIGNED_LONG);
+		addUnary(negation, PATTERN_LONG_GROUPING, PATTERN_SIGNED_LONG_GROUPING);
 		addUnary(negation, PATTERN_SIGNED_LONG, PATTERN_SIGNED_LONG);
+		addUnary(negation, PATTERN_SIGNED_LONG_GROUPING, PATTERN_SIGNED_LONG_GROUPING);
 		addUnary(negation, PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE);
 		addUnary(negation, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE);
+		addUnary(negation, PATTERN_SIGNED_DOUBLE_GROUPING, PATTERN_SIGNED_DOUBLE_GROUPING);
 		addUnary(negation, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 		addUnary(negation, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 
 		addUnary(grouping, PATTERN_LONG, PATTERN_LONG_GROUPING);
+		addUnary(grouping, PATTERN_LONG_GROUPING, PATTERN_LONG_GROUPING);
 		addUnary(grouping, PATTERN_SIGNED_LONG, PATTERN_SIGNED_LONG_GROUPING);
+		addUnary(grouping, PATTERN_SIGNED_LONG_GROUPING, PATTERN_SIGNED_LONG_GROUPING);
 		addUnary(grouping, PATTERN_DOUBLE, PATTERN_DOUBLE_GROUPING);
+		addUnary(grouping, PATTERN_DOUBLE_GROUPING, PATTERN_DOUBLE_GROUPING);
 		addUnary(grouping, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE_GROUPING);
+		addUnary(grouping, PATTERN_SIGNED_DOUBLE_GROUPING, PATTERN_SIGNED_DOUBLE_GROUPING);
 	}
 
 	void put(String key, PatternInfo patternInfo) {
@@ -255,12 +262,12 @@ public class KnownPatterns {
 		return result == null ? null : result.regexp;
 	}
 
-	PatternInfo negation(String id) {
-		return negation.get(id);
+	PatternInfo negation(String pattern) {
+		return negation.get(pattern);
 	}
 
-	PatternInfo grouping(String id) {
-		return grouping.get(id);
+	PatternInfo grouping(String pattern) {
+		return grouping.get(pattern);
 	}
 
 	void addUnary(Map<String, PatternInfo> transformation, String input, String result) {

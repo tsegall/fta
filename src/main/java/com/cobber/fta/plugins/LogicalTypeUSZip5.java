@@ -14,6 +14,7 @@ import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.TextAnalyzer;
 
 public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
+	public final static String REGEXP = "\\d{5}";
 	private static Set<String> zips = new HashSet<String>();
 
 	@Override
@@ -48,7 +49,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return "\\d{5}";
+		return REGEXP;
 	}
 
 	@Override
@@ -64,6 +65,6 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		boolean zipName = dataStreamName != null && dataStreamName.toUpperCase().contains("ZIP");
-		return (cardinality.size() < 5 && !zipName) || (double)matchCount/realSamples < getThreshold()/100.0 ? "\\d{5}" : null;
+		return (cardinality.size() < 5 && !zipName) || (double)matchCount/realSamples < getThreshold()/100.0 ? REGEXP : null;
 	}
 }

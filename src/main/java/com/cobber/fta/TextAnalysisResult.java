@@ -408,6 +408,9 @@ public class TextAnalysisResult {
 			}
 		}
 
+		if (isLogicalType())
+			ret.append(", LogicalType");
+
 		if (key)
 			ret.append(", PossibleKey");
 

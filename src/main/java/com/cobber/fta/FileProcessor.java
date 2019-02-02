@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -153,20 +156,25 @@ class FileProcessor {
 
 		// Validate the result of the analysis if requested
 		int[] matched = new int[numFields];
+		Set<String> failures = new HashSet<>();
 		if (options.validate) {
 			try (RecordReader r = new RecordReader(logger, options.csvFormat, filename, options.charset)) {
 				records = r.getRecords();
 
 				long thisRecord = -1;
 				TextAnalysisResult[] results = null;
+				Pattern[] patterns = null;
 				for (final CSVRecord record : records) {
 					thisRecord = record.getRecordNumber();
 					if (thisRecord == 1) {
 						numFields = record.size();
 						results = new TextAnalysisResult[numFields];
+						patterns = new Pattern[numFields];
 						for (int i = 0; i < numFields; i++)
-							if (options.col == -1 || options.col == i)
+							if (options.col == -1 || options.col == i) {
 								results[i] = analysis[i].getResult();
+								patterns[i] = Pattern.compile(results[i].getRegExp());
+							}
 					}
 					else {
 						if (record.size() != numFields) {
@@ -174,8 +182,10 @@ class FileProcessor {
 						}
 						for (int i = 0; i < numFields; i++) {
 							if (options.col == -1 || options.col == i) {
-								if (record.get(i).matches(results[i].getRegExp()))
+								if (patterns[i].matcher(record.get(i)).matches())
 									matched[i]++;
+								else if (options.verbose)
+									failures.add(record.get(i));
 							}
 						}
 					}
@@ -197,6 +207,11 @@ class FileProcessor {
 				sampleCount += result.getSampleCount();
 				if (options.validate && matched[i] != result.getMatchCount()) {
 					logger.printf("\t*** Match Count via RegExp (%d) does not match analysis (%d) ***\n", matched[i], result.getMatchCount());
+					if (options.verbose) {
+						logger.println("Failed to match:");
+						for (String failure : failures)
+							logger.println("\t" + failure);
+					}
 				}
 			}
 		}

@@ -13,7 +13,8 @@ import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.TextAnalyzer;
 
-public class LogicalTypeAddress extends LogicalTypeInfinite {
+public class LogicalTypeAddressEN extends LogicalTypeInfinite {
+	public final static String REGEXP = "(?s).+";
 	private static Set<String> addressMarkers = new HashSet<String>();
 
 	@Override
@@ -40,7 +41,7 @@ public class LogicalTypeAddress extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return ".+";
+		return REGEXP;
 	}
 
 	@Override

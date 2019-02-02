@@ -8,10 +8,10 @@ import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFiniteSimple;
 
-public class LogicalTypeCountry extends LogicalTypeFiniteSimple {
+public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	private static Set<String> members = new HashSet<String>();
 
-	public LogicalTypeCountry() throws FileNotFoundException {
+	public LogicalTypeCountryEN() throws FileNotFoundException {
 		super("COUNTRY_EN", ".+", ".+}",
 				new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/countries.csv")), 95);
 	}

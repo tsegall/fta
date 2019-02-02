@@ -8,10 +8,11 @@ import java.util.Set;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 
 public class LogicalTypeCAProvince extends LogicalTypeFiniteSimple {
+	public final static String REGEXP = "\\p{Alpha}{2}";
 	private static Set<String> members = new HashSet<String>();
 
 	public LogicalTypeCAProvince() throws FileNotFoundException {
-		super("CA_PROVINCE", "\\p{Alpha}{2}", "\\p{Alpha}{2}",
+		super("CA_PROVINCE", REGEXP, REGEXP,
 				new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ca_provinces.csv")), 95);
 	}
 

@@ -2,11 +2,11 @@
 com.cobber.fta.plugins.LogicalTypeURL
 com.cobber.fta.plugins.LogicalTypeEmail
 com.cobber.fta.plugins.LogicalTypeUSZip5
-com.cobber.fta.plugins.LogicalTypeAddress
+com.cobber.fta.plugins.LogicalTypeAddressEN
 
 # Finite - Variable length ...
-com.cobber.fta.plugins.LogicalTypeGender
-com.cobber.fta.plugins.LogicalTypeCountry
+com.cobber.fta.plugins.LogicalTypeGenderEN
+com.cobber.fta.plugins.LogicalTypeCountryEN
 
 # Finite - Fixed length ...
 com.cobber.fta.plugins.LogicalTypeMonthAbbr
