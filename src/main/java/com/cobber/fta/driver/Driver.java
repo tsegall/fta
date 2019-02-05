@@ -15,13 +15,16 @@
  *
  * Simple Driver to utilize the FTA framework.
  */
-package com.cobber.fta;
+package com.cobber.fta.driver;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Locale;
 
+import com.cobber.fta.LogicalType;
+import com.cobber.fta.LogicalTypeFinite;
+import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 class Driver {

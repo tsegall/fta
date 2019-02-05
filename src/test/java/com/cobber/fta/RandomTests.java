@@ -899,8 +899,15 @@ public class RandomTests {
 		}
 		Assert.assertEquals(matches, result.getMatchCount());
 
-		if (result.getMatchCount() != 0)
-			Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
+		if (result.getMatchCount() != 0) {
+			String re = "";
+			if (result.getLeadingWhiteSpace())
+				re += "\\p{javaWhitespace}*";
+			re += KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline());
+			if (result.getTrailingWhiteSpace())
+				re += "\\p{javaWhitespace}*";
+			Assert.assertEquals(result.getRegExp(), re);
+		}
 	}
 
 	@Test
@@ -958,7 +965,7 @@ public class RandomTests {
 	@Test
 	public void blanksInInput() throws IOException {
 		final String[] inputs = new String[] {
-				" D12345",
+				" D12345", "  C123456789",
 				"A123 56", "A1234567", "A12345678", "        ", "A123456", "A1234567", "A12345678", "A123456789",
 				"B123 56", "B1234567", "B12345678", "B123456789", "B123456", "B1234567", "B12345678", "B123456789",
 				"C123 56", "C1234567", "C12345678", "C123456789", "    ", "C1234567", "C12345678", "C123456789"

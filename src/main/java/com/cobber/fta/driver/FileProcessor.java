@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta;
+package com.cobber.fta.driver;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,6 +30,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+
+import com.cobber.fta.TextAnalysisResult;
+import com.cobber.fta.TextAnalyzer;
 
 class FileProcessor {
 	class RecordReader implements AutoCloseable {
@@ -186,10 +189,10 @@ class FileProcessor {
 								String value = record.get(i);
 								if (value.trim().isEmpty())
 									blanks[i]++;
-								else if (patterns[i].matcher(record.get(i)).matches())
+								else if (patterns[i].matcher(value).matches())
 									matched[i]++;
 								else if (options.verbose)
-									failures.add(record.get(i));
+									failures.add(value);
 							}
 						}
 					}

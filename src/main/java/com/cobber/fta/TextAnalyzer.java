@@ -1563,26 +1563,15 @@ public class TextAnalyzer {
 	// Track basic facts for the field - called for any Valid input
 	private void trackTrimmedLengthAndWhiteSpace(final String input) {
 		final int length = input.length();
+		final int trimmedLength = input.trim().length();
 
 		// Determine if there is leading or trailing White space (if not done previously)
-		if (length != 0 && (!leadingWhiteSpace || !trailingWhiteSpace)) {
-			leadingWhiteSpace = Character.isSpaceChar(input.charAt(0));
-			if (length >= 2 && !trailingWhiteSpace) {
-				boolean maybe = Character.isSpaceChar(input.charAt(length - 1));
-				if (maybe) {
-					int i = length - 2;
-					while (i >= 0) {
-						if (!Character.isSpaceChar(input.charAt(i))) {
-							trailingWhiteSpace = true;
-							break;
-						}
-						i--;
-					}
-				}
-			}
+		if (trimmedLength != 0) {
+			if (!leadingWhiteSpace)
+				leadingWhiteSpace = Character.isSpaceChar(input.charAt(0));
+			if (!trailingWhiteSpace)
+				trailingWhiteSpace = Character.isSpaceChar(input.charAt(length - 1));
 		}
-
-		final int trimmedLength = input.trim().length();
 
 		if (trimmedLength < minRawLength && trimmedLength < minTrimmedLength)
 			minTrimmedLength = trimmedLength;

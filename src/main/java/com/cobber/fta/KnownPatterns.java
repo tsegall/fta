@@ -63,9 +63,12 @@ public class KnownPatterns {
 
 	public static String freezeANY(int minTrimmed, int maxTrimmed, int minRawNonBlankLength, int maxRawNonBlankLength, boolean leadingWhiteSpace, boolean trailingWhiteSpace, boolean multiline) {
 		String leadIn = multiline ? "(?s)." : ".";
+
+		// If there is no leading or trailing space then use the simple min & max of non-blank fields
 		if (!leadingWhiteSpace && !trailingWhiteSpace)
 			return leadIn + Utils.regExpLength(minRawNonBlankLength, maxRawNonBlankLength);
 
+		// If there was either leading or trailing space then cop out and allow white space on either end and go with the min and max of the trimmed values
 		return leadIn + Utils.regExpLength(minTrimmed, maxTrimmed);
 	}
 
