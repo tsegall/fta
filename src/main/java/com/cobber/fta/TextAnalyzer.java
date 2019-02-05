@@ -140,6 +140,7 @@ public class TextAnalyzer {
 	private boolean trainingStarted;
 	private boolean initialized;
 
+	private boolean multiline = false;
 	private boolean leadingWhiteSpace = false;
 	private boolean trailingWhiteSpace = false;
 
@@ -176,10 +177,15 @@ public class TextAnalyzer {
 	private OffsetDateTime minOffsetDateTime;
 	private OffsetDateTime maxOffsetDateTime;
 
-	// The minimum length (inclusive of spaces)
+	// The minimum length (not trimmed)
 	private int minRawLength = Integer.MAX_VALUE;
-	// The maximum length (inclusive of spaces)
+	// The maximum length (not trimmed)
 	private int maxRawLength = Integer.MIN_VALUE;
+
+	// The minimum length (not trimmed) - but must be non-Blank
+	private int minRawNonBlankLength = Integer.MAX_VALUE;
+	// The maximum length (not trimmed) - but must be non-Blank
+	private int maxRawNonBlankLength = Integer.MIN_VALUE;
 
 	private int minTrimmedLength = Integer.MAX_VALUE;
 	private int maxTrimmedLength = Integer.MIN_VALUE;
@@ -1528,6 +1534,7 @@ public class TextAnalyzer {
 
 	private boolean uniformShape = true;
 	private String shape = null;
+	// Track basic facts for the field - called for all input
 	private void trackLengthAndShape(final String input) {
 		// We always want to track basic facts for the field
 		final int length = input.length();
@@ -1536,6 +1543,13 @@ public class TextAnalyzer {
 			minRawLength = length;
 		if (length > maxRawLength)
 			maxRawLength = length;
+
+		if (input.trim().length() != 0) {
+			if (length != 0 && length < minRawNonBlankLength)
+				minRawNonBlankLength = length;
+			if (length > maxRawNonBlankLength)
+				maxRawNonBlankLength = length;
+		}
 
 		if (uniformShape) {
 			String inputShape = compress(input);
@@ -1546,8 +1560,8 @@ public class TextAnalyzer {
 		}
 	}
 
+	// Track basic facts for the field - called for any Valid input
 	private void trackTrimmedLengthAndWhiteSpace(final String input) {
-		// We always want to track basic facts for the field
 		final int length = input.length();
 
 		// Determine if there is leading or trailing White space (if not done previously)
@@ -1574,6 +1588,10 @@ public class TextAnalyzer {
 			minTrimmedLength = trimmedLength;
 		if (trimmedLength > maxRawLength && trimmedLength > maxTrimmedLength)
 			maxTrimmedLength = trimmedLength;
+
+		// Determine if this is a multi-line field (if not already decided)
+		if (!multiline)
+			multiline = input.indexOf('\n') != -1 || input.indexOf('\r') != -1;
 	}
 
 	/**
@@ -1870,7 +1888,6 @@ public class TextAnalyzer {
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BLANK);
 			else
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BLANKORNULL);
-			matchCount = sampleCount;
 			confidence = sampleCount >= 10 ? 1.0 : 0.0;
 		}
 		else {
@@ -1901,13 +1918,13 @@ public class TextAnalyzer {
 
 			if (groupingSeparators == 0 && minLongNonZero > 19000101 && maxLong < 20400101 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("date"))) {
-				matchPatternInfo = new PatternInfo(null, "\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
+				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{8}" : "0|\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
 				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
 				minLocalDate = LocalDate.parse(String.valueOf(minLongNonZero), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
 			} else if (groupingSeparators == 0 && minLongNonZero > 1800 && maxLong < 2030 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("year") || dataStreamName.toLowerCase(locale).contains("date"))) {
-				matchPatternInfo = new PatternInfo(null, "\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
+				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{4}" : "0|\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLongNonZero, 1, 1);
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
 			} else if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
@@ -1935,15 +1952,6 @@ public class TextAnalyzer {
 			if (groupingSeparators != 0)
 				matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
-			if (!matchPatternInfo.isLogicalType) {
-				final int length = determineLength(matchPatternInfo.regexp);
-				// We thought it was a fixed length string, but on reflection it does not feel like it
-				if (length != -1 && realSamples >= reflectionSamples && (double) matchCount / realSamples < 0.95) {
-					backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
-					confidence = (double) matchCount / realSamples;
-				}
-			}
-
 			// Build Cardinality map ignoring case (and white space)
 			int minKeyLength = Integer.MAX_VALUE;
 			int maxKeyLength = 0;
@@ -2040,7 +2048,7 @@ public class TextAnalyzer {
 				if (uniformShape && cardinality.size() > 1)
 					newPattern = shapeToRegExp(shape);
 				if (newPattern == null)
-					newPattern = KnownPatterns.PATTERN_ANY + lengthQualifier(minTrimmedLength, maxTrimmedLength);
+					newPattern = KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minRawNonBlankLength, maxRawNonBlankLength, leadingWhiteSpace, trailingWhiteSpace, multiline);
 				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minRawLength,
 						maxRawLength, null, null);
 			}
@@ -2158,9 +2166,9 @@ public class TextAnalyzer {
 			}
 		}
 
-		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace, trailingWhiteSpace, sampleCount,
-				nullCount, blankCount, totalLeadingZeros, confidence, minValue, maxValue,
-				minRawLength, maxRawLength, utilizedDecimalSeparator, sum, cardinality, outliers, key);
+		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,
+				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, minValue,
+				maxValue, minRawLength, maxRawLength, utilizedDecimalSeparator, sum, cardinality, outliers, key);
 
 		return result;
 	}

@@ -156,6 +156,7 @@ class FileProcessor {
 
 		// Validate the result of the analysis if requested
 		int[] matched = new int[numFields];
+		int[] blanks = new int[numFields];
 		Set<String> failures = new HashSet<>();
 		if (options.validate) {
 			try (RecordReader r = new RecordReader(logger, options.csvFormat, filename, options.charset)) {
@@ -182,7 +183,10 @@ class FileProcessor {
 						}
 						for (int i = 0; i < numFields; i++) {
 							if (options.col == -1 || options.col == i) {
-								if (patterns[i].matcher(record.get(i)).matches())
+								String value = record.get(i);
+								if (value.trim().isEmpty())
+									blanks[i]++;
+								else if (patterns[i].matcher(record.get(i)).matches())
 									matched[i]++;
 								else if (options.verbose)
 									failures.add(record.get(i));
@@ -206,7 +210,13 @@ class FileProcessor {
 				matchCount += result.getMatchCount();
 				sampleCount += result.getSampleCount();
 				if (options.validate && matched[i] != result.getMatchCount()) {
-					logger.printf("\t*** Match Count via RegExp (%d) does not match analysis (%d) ***\n", matched[i], result.getMatchCount());
+					if (result.isLogicalType())
+						if (matched[i] > result.getMatchCount())
+							logger.printf("\t*** Warning: Match Count via RegExp (%d) > LogicalType match analysis (%d) ***\n", matched[i], result.getMatchCount());
+						else
+							logger.printf("\t*** Error: Match Count via RegExp (%d) < LogicalType match analysis (%d) ***\n", matched[i], result.getMatchCount());
+					else
+						logger.printf("\t*** Error: Match Count via RegExp (%d) does not match analysis (%d) ***\n", matched[i], result.getMatchCount());
 					if (options.verbose) {
 						logger.println("Failed to match:");
 						for (String failure : failures)

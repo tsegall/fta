@@ -23,7 +23,7 @@ public class TestStrings {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{1,11}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(1, 11, 1, 11, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getMinValue(), "A");
@@ -32,7 +32,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getMaxLength(), 11);
 
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 		}
 	}
 

@@ -236,7 +236,7 @@ public class TestDates {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), sampleCount);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{6,7}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(6, 7, 6, 7, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
@@ -308,17 +308,12 @@ public class TestDates {
 
 				Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 				String expected = "";
-				switch (resolutionMode) {
-				case DayFirst:
+				if (resolutionMode == DateResolutionMode.DayFirst)
 					expected = "d/M/yy";
-					break;
-				case MonthFirst:
+				else if (resolutionMode == DateResolutionMode.MonthFirst)
 					expected = "M/d/yy";
-					break;
-				case Auto:
+				else
 					expected = locale.toLanguageTag().equals("en-GB") ? "d/M/yy" : "M/d/yy";
-					break;
-				}
 				Assert.assertEquals(result.getTypeQualifier(), expected);
 				Assert.assertEquals(result.getSampleCount(), inputs.length);
 				Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1850,7 +1845,7 @@ public class TestDates {
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyyMMdd");
-		Assert.assertEquals(result.getRegExp(), "\\d{8}");
+		Assert.assertEquals(result.getRegExp(), "0|\\d{8}");
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -1858,7 +1853,7 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty() && !"0".equals(inputs[i]))
+			if (!inputs[i].isEmpty())
 				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 		}
 	}

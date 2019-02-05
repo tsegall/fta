@@ -33,6 +33,7 @@ public class TextAnalysisResult {
 	private final PatternInfo patternInfo;
 	private final boolean leadingWhiteSpace;
 	private final boolean trailingWhiteSpace;
+	private final boolean multiline;
 	private final double confidence;
 	private final String minValue;
 	private final String maxValue;
@@ -48,8 +49,9 @@ public class TextAnalysisResult {
 	 * @param name The name of the data stream being analyzed.
 	 * @param matchCount The number of samples that match the patternInfo.
 	 * @param patternInfo The PatternInfo associated with this matchCount.
-	 * @param leadingWhiteSpace Is there leading White Space?
-	 * @param trailingWhiteSpace Is there trailing White Space?
+	 * @param leadingWhiteSpace Do any elements have leading White Space?
+	 * @param trailingWhiteSpace Do any elements have trailing White Space?
+	 * @param multiline Are any elements multi-line?
 	 * @param sampleCount The total number of samples seen.
 	 * @param nullCount The number of nulls seen in the sample set.
 	 * @param blankCount The number of blanks seen in the sample set.
@@ -66,14 +68,15 @@ public class TextAnalysisResult {
 	 * @param key Do we think this field is a key.
 	 */
 	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, boolean trailingWhiteSpace,
-			final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount, final double confidence,
-			final String minValue, final String maxValue, final int minLength, final int maxLength, char decimalSeparator,
-			final String sum, final Map<String, Integer> cardinality, final Map<String, Integer> outliers, final boolean key) {
+			boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
+			final double confidence, final String minValue, final String maxValue, final int minLength, final int maxLength,
+			char decimalSeparator, final String sum, final Map<String, Integer> cardinality, final Map<String, Integer> outliers, final boolean key) {
 		this.name = name;
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
 		this.leadingWhiteSpace = leadingWhiteSpace;
 		this.trailingWhiteSpace = trailingWhiteSpace;
+		this.multiline = multiline;
 		this.sampleCount = sampleCount;
 		this.nullCount = nullCount;
 		this.blankCount = blankCount;
@@ -225,10 +228,35 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the count of all (non-blank/non-null) samples that matched the determined type.
+	 * More formally the SampleCount is equal to the MatchCount + BlankCount + NullCount.
 	 * @return Count of all matches.
 	 */
 	public long getMatchCount() {
 		return matchCount;
+	}
+
+	/**
+	 * Does the set of elements contain any elements with leading White Space?
+	 * @return True if any elements matched have leading White Space.
+	 */
+	public boolean getLeadingWhiteSpace() {
+		return leadingWhiteSpace;
+	}
+
+	/**
+	 * Does the set of elements contain any elements with trailing White Space?
+	 * @return True if any elements matched have trailing White Space.
+	 */
+	public boolean getTrailingWhiteSpace() {
+		return trailingWhiteSpace;
+	}
+
+	/**
+	 * Does the set of elements contain any multi-line elements?
+	 * @return True if any elements matched are multi-line.
+	 */
+	public boolean getMultiline() {
+		return multiline;
 	}
 
 	/**

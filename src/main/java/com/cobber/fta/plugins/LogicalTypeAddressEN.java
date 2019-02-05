@@ -14,7 +14,7 @@ import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.TextAnalyzer;
 
 public class LogicalTypeAddressEN extends LogicalTypeInfinite {
-	public final static String REGEXP = "(?s).+";
+	private boolean multiline = false;
 	private static Set<String> addressMarkers = new HashSet<String>();
 
 	@Override
@@ -41,7 +41,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return REGEXP;
+		return multiline ? "(?s).+" : ".+";
 	}
 
 	@Override
@@ -86,6 +86,11 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
 		String inputUpper = input.toUpperCase(Locale.ENGLISH);
 		int spaceIndex = lastIndex[' '];
+
+		// Track whether this is a multi-line field or not
+		if (!multiline)
+			multiline = input.indexOf('\n') != -1 || input.indexOf('\r') != -1;
+
 
 		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1, inputUpper.length())))
 			return true;

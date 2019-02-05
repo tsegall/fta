@@ -69,7 +69,7 @@ public class RandomTests {
 	@Test
 	public void rubbish() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String[] inputs = "47|hello|hello,world|=====47=====|aaaa|0|12|b,b,b,b390|4083|dddddd|90|-------|+++++|42987|8901".split("\\|");
+		final String[] inputs = "47|hello|hello,world|=====47=====|aaaa|0|12|b,b,b,b390|4083|ddd ddd|90|-------|+++++|42987|8901".split("\\|");
 
 		int locked = -1;
 
@@ -82,7 +82,7 @@ public class RandomTests {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{1,12}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(1, 12, 1, 12, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getMinValue(), "+++++");
@@ -168,7 +168,7 @@ public class RandomTests {
 
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), iterations);
+		Assert.assertEquals(result.getMatchCount(), 0);
 		Assert.assertEquals(result.getNullCount(), iterations);
 		Assert.assertEquals(result.getMinLength(), 0);
 		Assert.assertEquals(result.getMaxLength(), 0);
@@ -203,7 +203,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getMinValue(), " ");
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), 3 * iterations + 1);
+		Assert.assertEquals(result.getMatchCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 3 * iterations + 1);
 		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -234,7 +234,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getMinValue(), "      ");
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), iterations);
+		Assert.assertEquals(result.getMatchCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), iterations);
 		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -262,7 +262,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getMinValue(), "");
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), iterations);
+		Assert.assertEquals(result.getMatchCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), iterations);
 		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -292,7 +292,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "BLANKORNULL");
 		Assert.assertEquals(result.getSampleCount(), 22);
-		Assert.assertEquals(result.getMatchCount(), 22);
+		Assert.assertEquals(result.getMatchCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 9);
@@ -456,7 +456,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getMatchCount() + result.getBlankCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{6,40}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(6, 40, 6, 40, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "Audio disc ; Volume");
 		Assert.assertEquals(result.getMaxValue(), "Volume");
@@ -653,7 +653,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), iters);
 		Assert.assertEquals(result.getCardinality(), 0);
 		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), iters);
+		Assert.assertEquals(result.getMatchCount(), iters - result.getBlankCount());
 		Assert.assertEquals(result.getMinLength(), 2);
 		Assert.assertEquals(result.getMaxLength(), 2 + iters - 1);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -724,7 +724,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*.{3,8}\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*" + KnownPatterns.freezeANY(3, 8, 3, 8, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()) + "\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -840,9 +840,71 @@ public class RandomTests {
 		}
 	}
 
+
+	void simpleStringTest(final String name, final String input) {
+		simpleArrayTest(name, input.split("\\|"));
+	}
+
+	void simpleArrayTest(final String name, final String[] inputs) {
+		final TextAnalyzer analysis = new TextAnalyzer("DataValueFootnoteSymbol");
+		int locked = -1;
+		int realSamples = 0;
+		int empty = 0;
+		int minTrimmedLength = Integer.MAX_VALUE;
+		int maxTrimmedLength = Integer.MIN_VALUE;
+		int minLength = Integer.MAX_VALUE;
+		int maxLength = Integer.MIN_VALUE;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = realSamples;
+			if (inputs[i].trim().isEmpty())
+				empty++;
+			else
+				realSamples++;
+
+			int len = inputs[i].trim().length();
+			if (len != 0) {
+				if (len > maxTrimmedLength)
+					maxTrimmedLength = len;
+				if (len != 0 && len < minTrimmedLength)
+					minTrimmedLength = len;
+				len = inputs[i].length();
+				if (len > maxLength)
+					maxLength = len;
+				if (len != 0 && len < minLength)
+					minLength = len;
+			}
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, realSamples >= TextAnalyzer.SAMPLE_DEFAULT ? TextAnalyzer.SAMPLE_DEFAULT : -1);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		if (inputs.length == empty)
+			Assert.assertEquals(result.getTypeQualifier(), "BLANK");
+		else
+			Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), empty);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		int matches = 0;
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].trim().isEmpty() && inputs[i].matches(result.getRegExp()))
+				matches++;
+		}
+		Assert.assertEquals(matches, result.getMatchCount());
+
+		if (result.getMatchCount() != 0)
+			Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
+	}
+
 	@Test
 	public void basicEnum() throws IOException {
-		final TextAnalyzer analysis = new TextAnalyzer();
 		final String input = "APARTMENT|APARTMENT|DUPLEX|APARTMENT|DUPLEX|CONDO|DUPLEX|CONDO|" +
 				"DUPLEX|DUPLEX|CONDO|CONDODUPLEX|DUPLEX|CONDO|APARTMENT|" +
 				"DUPLEX|CONDO|CONDO|CONDO|DUPLEX|DUPLEX|DUPLEX|DUPLEX|CONDO|" +
@@ -878,29 +940,72 @@ public class RandomTests {
 				"DUPLEX|DUPLEX|APARTMENT|DUPLEX|CONDO|APARTMENT|APARTMENT|MULTI-FAMILY|DUPLEX|" +
 				"APARTMENT|APARTMENT|CONDO|CONDO|DUPLEX|CONDO|DUPLEX|DUPLEX|DUPLEX|" +
 				"APARTMENT|CONDO|CONDO|CONDO|APARTMENT|";
-		final String inputs[] = input.split("\\|");
-		int locked = -1;
+		simpleStringTest("basicEnum", input);
+	}
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
+	@Test
+	public void blanksLeft() throws IOException {
+		final String[] inputs = new String[] {
+				" D12345",
+				"A123 56", "A1234567", "A12345678", "A123456789", "A123456", "A1234567", "A12345678", "A123456789",
+				"B123 56", "B1234567", "B12345678", "B123456789", "B123456", "B1234567", "B12345678", "B123456789",
+				"C123 56", "C1234567", "C12345678", "C123456789", "C123456", "C1234567", "C12345678", "C123456789"
+		};
 
-		final TextAnalysisResult result = analysis.getResult();
+		simpleArrayTest("blanksLeft", inputs);
+	}
 
-		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{5,12}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+	@Test
+	public void blanksInInput() throws IOException {
+		final String[] inputs = new String[] {
+				" D12345",
+				"A123 56", "A1234567", "A12345678", "        ", "A123456", "A1234567", "A12345678", "A123456789",
+				"B123 56", "B1234567", "B12345678", "B123456789", "B123456", "B1234567", "B12345678", "B123456789",
+				"C123 56", "C1234567", "C12345678", "C123456789", "    ", "C1234567", "C12345678", "C123456789"
+		};
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-		}
+		simpleArrayTest("blanksLeft", inputs);
+	}
+
+	@Test
+	public void allEmpty() throws IOException {
+		final String[] inputs = new String[] {
+				"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+				"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+		};
+
+		simpleArrayTest("allEmpty", inputs);
+	}
+
+	@Test
+	public void blanksInField() throws IOException {
+		final String[] inputs = new String[] {
+				"-", "-", "", "", "", "", "^^^", "", "", "", "-", "", "", "", "", "", "", "", "",
+				"", "-", "", "", "", "", "", "-", "", "", "-", "", "-", "-", "", "", "", "-", "", "",
+				"-", "", "", "", "-", "", "-", "-", "", "", "", "-", "", "-", "", "", "", "****", "****", "",
+				"", "", "", "", "", "****", "****", "", "****", "****", "****", "****", "", "", "", "", "", "", "****", "****",
+				"", "", "", "****", "****", "****", "****", "", "", "", "", "****", "****", "", "", "****", "", "", "", "", " "
+		};
+
+		simpleArrayTest("DataValueFootnoteSymbol", inputs);
+	}
+
+	@Test
+	public void blanksAtEndOfField() throws IOException {
+		final String[] inputs = new String[] {
+				"", "Foster Road", "", "Grove Road", "", "Library", "", "Bradgers Hill Road", "", "Tomlinson Avenue", "Wheatfield Road", "Tomlinson Avenue", "",
+				"Bradgers Hill Road", "", "Nixon Street", "", "Moor Lane", "", "West Hanningfield Road", "Fambridge Road", "Victoria Drive", "Maypole Road",
+				"Station Road", "Roundbush Road", "Harborough Hall Lane", "Colchester Road", "Church Road", "Roundbush Road", "Harborough Hall Lane", "Colchester Road", "The Folly",
+				"Little Horkesley Road", "London Road", "Home Farm Lane", "Damants Farm Lane", "Hospital Lane", "Clarendon Way", "North Station Rbt", "New Writtle Street", "Oxford Road", "School Lane",
+				"Tog Lane", "Station Road", "Colchester Road", "Cooks Hill", "Clarendon Way", "North Station Rbt", "Kelvedon Road", "Latchingdon Road", "Barnhall Road", "Trusses Road",
+				"", "School Lane", "Castle Drive", "The Street", "Fairstead Hall Road", "Pepples Lane", "", "Eastern Avenue", "", "Red Lane",
+				"", "Granville Street", "", "yes ", "Yes Tactile", "", "Wilmot Road", "Wilmot Lane", "", "Victoria Street",
+				"", "Kirk Gate", "", "Gables Lea", "", "Village Hall", "", "Morley Road", "", "Beach Road",
+				"Marine Parade", "", "Mount Pleasant", "", "Heol Camlan", "", "Golwg y Mynydd", "", "Sraid na h-Eaglaise", "",
+				"Geilear", "", "Tom na Ba", "", "Rathad Ur", "", "Geilear", "Rathad Ur", "", "Struan Ruadh",
+				"", "Struan Ruadh", "", "Rubhachlachainn", "", "Sraid a' Chaisteil", "Sraid a' Bhanca", "Ionad Casimir", "Ionad Mhicceallaig", "", "Slighe Ruairidh", ""
+		};
+		simpleArrayTest("blanksAtEndOfField", inputs);
 	}
 
 	@Test
@@ -979,6 +1084,8 @@ public class RandomTests {
 		final Random random = new Random(478031);
 		int locked = -1;
 		StringBuilder line = new StringBuilder();
+		int minTrimmedLength = Integer.MAX_VALUE;
+		int maxTrimmedLength = Integer.MIN_VALUE;
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
 		String alphabet = "abcdefhijklmnopqrstuvwxyz";
@@ -999,6 +1106,11 @@ public class RandomTests {
 				maxLength = len;
 			if (len < minLength && len != 0)
 				minLength = len;
+			len = sample.trim().length();
+			if (len > maxTrimmedLength)
+				maxTrimmedLength = len;
+			if (len < minTrimmedLength && len != 0)
+				minTrimmedLength = len;
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
 		}
@@ -1010,7 +1122,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), ".{" + minLength + "," + maxLength + "}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 

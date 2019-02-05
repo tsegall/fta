@@ -61,6 +61,14 @@ public class KnownPatterns {
 	Map<String, PatternInfo> negation = new HashMap<>();
 	Map<String, PatternInfo> grouping = new HashMap<>();
 
+	public static String freezeANY(int minTrimmed, int maxTrimmed, int minRawNonBlankLength, int maxRawNonBlankLength, boolean leadingWhiteSpace, boolean trailingWhiteSpace, boolean multiline) {
+		String leadIn = multiline ? "(?s)." : ".";
+		if (!leadingWhiteSpace && !trailingWhiteSpace)
+			return leadIn + Utils.regExpLength(minRawNonBlankLength, maxRawNonBlankLength);
+
+		return leadIn + Utils.regExpLength(minTrimmed, maxTrimmed);
+	}
+
 	static String withGrouping(String regExp, char groupingSeparator) {
 		String re = groupingSeparator == '.' ? "\\\\." : String.valueOf(groupingSeparator);
 		return regExp.replaceAll("\\\\d", "[\\\\d" + re + "]");

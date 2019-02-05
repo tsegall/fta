@@ -10,7 +10,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
-import com.cobber.fta.plugins.LogicalTypeAddressEN;
 import com.cobber.fta.plugins.LogicalTypeCAProvince;
 import com.cobber.fta.plugins.LogicalTypeEmail;
 import com.cobber.fta.plugins.LogicalTypeISO3166_2;
@@ -361,7 +360,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 //		Assert.assertEquals(result.getMatchCount(), inputs.length + badURLs + result.getNullCount());
-		Assert.assertEquals(result.getRegExp(), ".{1,35}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(1, 35, 1, 35, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -395,7 +394,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2 + result.getNullCount());
 		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getRegExp(), ".{3,15}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(3, 15, 3, 15, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getMatchCount(), inputs.length + 2);
@@ -1483,7 +1482,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "ADDRESS_EN");
-		Assert.assertEquals(result.getRegExp(), LogicalTypeAddressEN.REGEXP);
+		Assert.assertEquals(result.getRegExp(), ".+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1504,7 +1503,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "ADDRESS_EN");
-		Assert.assertEquals(result.getRegExp(), LogicalTypeAddressEN.REGEXP);
+		Assert.assertEquals(result.getRegExp(), ".+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 }
