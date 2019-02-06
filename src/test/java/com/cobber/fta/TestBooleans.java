@@ -200,8 +200,6 @@ public class TestBooleans {
 		final Map<String, Integer> details = result.getCardinalityDetails();
 		Assert.assertEquals(details.get("0"), Integer.valueOf(13));
 		Assert.assertEquals(details.get("5"), Integer.valueOf(14));
-		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=anonymous, matchCount=27, sampleCount=30, nullCount=2, blankCount=0, regexp=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", minLength=1, maxLength=1, sum=\"70\", cardinality=2 {\"5\":14 \"0\":13 }, outliers=1 {\"A\":1 }]");
-		Assert.assertEquals(result.dump(false), "TextAnalysisResult [name=anonymous, matchCount=27, sampleCount=30, nullCount=2, blankCount=0, regexp=\"\\d{1}\", confidence=0.9642857142857143, type=Long, min=\"0\", max=\"5\", minLength=1, maxLength=1, sum=\"70\", cardinality=2, outliers=1]");
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
@@ -211,6 +209,4 @@ public class TestBooleans {
 		}
 		Assert.assertEquals(result.getMatchCount(), matches);
 	}
-
-
 }

@@ -63,7 +63,6 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 0.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "NULL");
-		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=anonymous, matchCount=0, sampleCount=0, nullCount=0, blankCount=0, regexp=\"[NULL]\", confidence=0.0, type=String(NULL), min=null, max=null, minLength=0, maxLength=0, sum=null, cardinality=0]");
 	}
 
 	@Test
@@ -1575,7 +1574,6 @@ public class RandomTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertTrue(result.isKey());
 		Assert.assertEquals(result.getConfidence(), 1 - (double)15/result.getSampleCount());
-		Assert.assertEquals(result.dump(true), "TextAnalysisResult [name=Alphabet, matchCount=2000, sampleCount=2015, nullCount=0, blankCount=0, regexp=\"\\d{5}\", confidence=0.9925558312655087, type=Long, min=\"10000\", max=\"11999\", minLength=1, maxLength=5, sum=\"21999000\", cardinality=MAX, outliers=12 {\"A\":1 \"B\":1 \"C\":1 \"D\":1 \"E\":1 \"F\":1 \"G\":1 \"H\":1 \"I\":1 \"J\":1 ...}, PossibleKey]");
 	}
 
 	@Test

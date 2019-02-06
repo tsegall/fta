@@ -207,7 +207,7 @@ class FileProcessor {
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
 				result = analysis[i].getResult();
-				logger.printf("Field '%s' (%d) - %s\n", header[i], i, result.dump(options.verbose));
+				logger.printf("Field '%s' (%d) - %s\n", header[i], i, result.asJSON(false, options.verbose));
 				if (result.getType() != null)
 					typesDetected++;
 				matchCount += result.getMatchCount();

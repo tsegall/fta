@@ -1701,25 +1701,6 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Parse a String regexp to determine length.
-	 *
-	 * @param input
-	 *            String input that must be either a variable length string
-	 *            (\\p{Alpha}+) or fixed length, e.g. \\p{Alpha}{3}
-	 * @return The length of the input string or -1 if length is variable
-	 */
-	private int determineLength(final String input) {
-		final int len = input.length();
-		if (len > 0 && (input.charAt(len - 1) == '+' || input.charAt(len - 1) == '*') || input.indexOf(',') != -1)
-			return -1;
-		final int lengthInformation = input.lastIndexOf('{');
-		if (lengthInformation == -1)
-			return -1;
-		final String lengthString = input.substring(lengthInformation + 1, len - 1);
-		return Integer.parseInt(lengthString);
-	}
-
-	/**
 	 * Determine if the current dataset reflects a logical type (of uniform length).
 	 * @param logical The Logical type we are testing
 	 * @return True if we believe that this data set is defined by the provided set

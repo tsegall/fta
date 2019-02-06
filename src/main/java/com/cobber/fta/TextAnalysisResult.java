@@ -362,87 +362,113 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * A String representation of the Analysis.  This is not suitable for anything other than
-	 * debug output and is likely to change with no notice!!
+	 * A String representation of the Analysis.
 	 * @return A String representation of the analysis to date.
 	 */
 	@Override
 	public String toString() {
-		return dump(false);
+		return asJSON(false, false);
+	}
+
+	private String Q(String input) {
+		StringBuilder ret = new StringBuilder();
+		ret.append('"');
+		for (int i = 0; i < input.length(); i++) {
+			char ch = input.charAt(i);
+			if (ch == '\\' || ch == '"') {
+				ret.append('\\');
+				ret.append(ch);
+			}
+			else if (ch == '\t')
+				ret.append("\\t");
+			else if (ch == '\n')
+				ret.append("\\n");
+			else if (ch == '\r')
+				ret.append("\\r");
+			else
+				ret.append(ch);
+		}
+		return ret.append('"').toString();
+	}
+
+	private String K(String input) {
+		return Q(input) + ": ";
 	}
 
 	/**
-	 * A String representation of the Analysis.  This is not suitable for anything other than
-	 * debug output and is likely to change with no notice!!
-	 * @param verbose If set, dump additional information related to cardinality and outliers.
-	 * @return A String representation of the analysis to date.
+	 * A JSON representation of the Analysis.
+	 * @param pretty If set, add minimal whitespace formatting.
+	 * @param verbose If set, return additional information related to cardinality and outliers.
+	 * @return A JSON representation of the analysis.
 	 */
-	public String dump(final boolean verbose) {
+	public String asJSON(boolean pretty, boolean verbose) {
 		StringBuilder ret = new StringBuilder();
-		ret.append("TextAnalysisResult [name=").append(name).append(", matchCount=")
-		.append(matchCount).append(", sampleCount=").append(sampleCount).append(", nullCount=").append(nullCount)
-		.append(", blankCount=").append(blankCount).append(", regexp=\"").append(getRegExp()).append("\", confidence=")
-		.append(confidence).append(", type=").append(patternInfo.type);
+		String eol = pretty ? "\n" : " ";
+		String indent = pretty ? "\t" : "";
+		String newField = pretty ? ",\n\t" : ", ";
+
+		ret.append("{").append(eol).append(indent);
+
+		ret.append(K("fieldName")).append(Q(name)).append(newField);
+		ret.append(K("sampleCount")).append(sampleCount).append(newField);
+		ret.append(K("matchCount")).append(matchCount).append(newField);
+		ret.append(K("nullCount")).append(nullCount).append(newField);
+		ret.append(K("blankCount")).append(blankCount).append(newField);
+		ret.append(K("regExp")).append(Q(getRegExp())).append(newField);
+		ret.append(K("confidence")).append(confidence).append(newField);
+		ret.append(K("type")).append(Q(patternInfo.type.toString())).append(newField);
 		if (patternInfo.typeQualifier != null)
-			ret.append('(').append(patternInfo.typeQualifier).append(')');
-		ret.append(", min=");
+			ret.append(K("typeQualifier")).append(Q(patternInfo.typeQualifier)).append(newField);
+		if (PatternInfo.Type.DOUBLE == patternInfo.type)
+			ret.append(K("decimalSeparator")).append(Q(String.valueOf(decimalSeparator))).append(newField);
 		if (minValue != null)
-			ret.append('"').append(minValue).append('"');
-		else
-			ret.append("null");
-		ret.append(", max=");
+			ret.append(K("min")).append(Q(minValue)).append(newField);
 		if (maxValue != null)
-			ret.append('"').append(maxValue).append('"');
-		else
-			ret.append("null");
-		ret.append(", minLength=").append(minLength);
-		ret.append(", maxLength=").append(maxLength);
-		ret.append(", sum=");
+			ret.append(K("max")).append(Q(maxValue)).append(newField);
+		ret.append(K("minLength")).append(minLength).append(newField);
+		ret.append(K("maxLength")).append(maxLength).append(newField);
 		if (sum != null)
-			ret.append('"').append(sum).append('"');
-		else
-			ret.append("null");
-		ret.append(", cardinality=").append(cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX");
+			ret.append(K("sum")).append(Q(sum)).append(newField);
+
+		ret.append(K("cardinality")).append(Q(cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX")).append(newField);
 		if (verbose && cardinality.size() != 0 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {
-			ret.append(" {");
-			int i = 0;
+			ret.append(K("cardinalityDetail")).append('[').append(eol).append(indent).append(indent);
 			final SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(cardinality);
+			int i = ordered.size();
 			for (final Map.Entry<String,Integer> entry : ordered) {
-				if (i++ == 10) {
-					ret.append("...");
-					break;
-				}
-				ret.append('"').append(entry.getKey()).append("\":").append(entry.getValue());
-				ret.append(' ');
+				ret.append("{ ").append(K("key")).append(Q(entry.getKey())).append(", ").append(K("count")).append(entry.getValue()).append(" }");
+				if (i-- > 1)
+					ret.append(newField).append(indent);
+				else
+					ret.append(eol);
 			}
-			ret.append('}');
+			ret.append(indent).append(']').append(newField);
 		}
 
-		if (!outliers.isEmpty()) {
-			ret.append(", outliers=").append(outliers.size() < TextAnalyzer.MAX_OUTLIERS_DEFAULT ? String.valueOf(outliers.size()) : "MAX");
-			if (verbose && !outliers.isEmpty() && outliers.size() < .2 * sampleCount) {
-				ret.append(" {");
-				int i = 0;
-				final SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(outliers);
-				for (final Map.Entry<String,Integer> entry : ordered) {
-					if (i++ == 10) {
-						ret.append("...");
-						break;
-					}
-					ret.append('"').append(entry.getKey()).append("\":").append(entry.getValue());
-					ret.append(' ');
-				}
-				ret.append('}');
+		ret.append(K("outliers")).append(Q(outliers.size() < TextAnalyzer.MAX_OUTLIERS_DEFAULT ? String.valueOf(outliers.size()) : "MAX")).append(newField);
+		if (verbose && !outliers.isEmpty() && outliers.size() < .2 * sampleCount) {
+			ret.append(K("outlierDetail")).append('[').append(eol).append(indent).append(indent);
+			final SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(outliers);
+			int i = ordered.size();
+			for (final Map.Entry<String,Integer> entry : ordered) {
+				ret.append("{ ").append(K("key")).append(Q(entry.getKey())).append(", ").append(K("count")).append(entry.getValue()).append(" }");
+				if (i-- > 1)
+					ret.append(newField).append(indent);
+				else
+					ret.append(eol);
 			}
+			ret.append(indent).append(']').append(newField);
 		}
 
-		if (isLogicalType())
-			ret.append(", LogicalType");
+		ret.append(K("leadingWhiteSpace")).append(getLeadingWhiteSpace()).append(newField);
+		ret.append(K("trailingWhiteSpace")).append(getTrailingWhiteSpace()).append(newField);
+		ret.append(K("multiline")).append(getMultiline()).append(newField);
 
-		if (key)
-			ret.append(", PossibleKey");
+		ret.append(K("logicalType")).append(isLogicalType()).append(newField);
+		ret.append(K("possibleKey")).append(key).append(eol);
 
-		ret.append(']');
+		ret.append("}");
+
 		return ret.toString();
 	}
 }
