@@ -13,7 +13,7 @@ import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.TextAnalysisResult;
 import java.util.Locale;
 
-class Sample {
+class Trivial {
 
         public static void main(String args[]) {
 
@@ -30,6 +30,10 @@ class Sample {
         }
 }
 ```
+
+## Starting ##
+
+Fastest way to get started is to review the samples provided.
 
 ## Building ##
 

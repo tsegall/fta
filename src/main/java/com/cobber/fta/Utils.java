@@ -37,6 +37,28 @@ public class Utils {
 		return ret;
 	}
 
+	public static boolean getLength(RegExpLength facts, String input) {
+		if (input == null || input.length() == 0 || input.charAt(0) != '{')
+			return false;
+
+		int comma = input.indexOf(',');
+		int close = input.indexOf('}');
+		if (close == -1)
+			return false;
+
+		if (comma != -1) {
+			facts.min = getValue(input, 1, 1, comma - 1);
+			facts.max = getValue(input, comma + 1, 1, close - comma);
+		}
+		else {
+			facts.min = getValue(input, 1, 1, close - 1);
+			facts.max = facts.min;
+		}
+
+		facts.length = close + 1;
+
+		return true;
+	}
 	public static String slosh(char ch) {
 		if (ch == '.' || ch == '(' || ch == ')' || ch == '+' || ch == '*')
 			return "\\" + ch;
@@ -53,6 +75,16 @@ public class Utils {
 		return result.toString();
 	}
 
+	public static String replaceFirst(String input, String oldString, String newString) {
+		int index = input.indexOf(oldString);
+		if (index == -1)
+			return input;
+
+		return input.substring(0, index)
+		        .concat(newString)
+		        .concat(input.substring(index + oldString.length()));
+	}
+
 	/**
 	 * Give a String as input with an offset and length return the integer at that position.
 	 * @param input String to extract integer from
@@ -63,7 +95,7 @@ public class Utils {
 	 */
 	public static int getValue(final String input, final int offset, final int minLength, int maxLength) {
 		try {
-			if (minLength == maxLength || (offset + maxLength > input.length()) || !Character.isDigit(input.charAt(offset + maxLength -1)))
+			if (minLength == maxLength || (offset + maxLength > input.length()) || !Character.isDigit(input.charAt(offset + maxLength - 1)))
 				return Integer.valueOf(input.substring(offset, offset + minLength));
 
 			return Integer.valueOf(input.substring(offset, offset + maxLength));

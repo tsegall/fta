@@ -1914,6 +1914,126 @@ public class TestDates {
 	}
 
 	@Test
+	public void bizarreFractions() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
+
+		final String inputs[] = new String[] {
+			"2017-10-01 00:00:01,189", "2017-10-01 00:00:02,926", "2017-10-01 00:00:03,285", "", "2017-10-01 00:00:26,263", "2017-10-01 00:00:26,427", "2017-10-01 00:00:26,430", "2017-10-01 00:00:26,659",
+			"2017-10-01 00:00:26,742", "2017-10-01 00:00:27,001", "2017-10-01 00:00:27,004", "2017-10-01 00:00:27,376", "2017-10-01 00:00:28,194", "2017-10-01 00:00:28,218", "2017-10-01 00:00:28,799",
+			"2017-10-01 00:00:29,771", "2017-10-01 00:00:30,015", "2017-10-01 00:00:30,586", "2017-10-01 00:00:30,875", "2017-10-01 00:00:31,042", "2017-10-01 00:00:31,138", "2017-10-01 00:00:31,428",
+			"2017-10-01 00:00:31,433", "2017-10-01 00:00:31,660", "2017-10-01 00:00:32,525", "2017-10-01 00:00:32,785", "2017-10-01 00:00:32,788", "2017-10-01 00:00:33,054", "2017-10-01 00:00:33,067",
+			"2017-10-01 00:00:33,275", "2017-10-01 00:00:33,733", "2017-10-01 00:00:33,820", "2017-10-01 00:00:33,924", "2017-10-01 00:00:33,937", "2017-10-01 00:00:34,690", "2017-10-01 00:00:35,068",
+			"2017-10-01 00:00:35,108", "2017-10-01 00:00:35,170", "2017-10-01 00:00:35,174", "2017-10-01 00:00:35,177", "2017-10-01 00:00:35,177", "2017-10-01 00:00:35,178", "2017-10-01 00:00:35,178",
+			"2017-10-01 00:00:35,179", "2017-10-01 00:00:35,179", "2017-10-01 00:00:35,179", "2017-10-01 00:00:35,180", "2017-10-01 00:00:35,180", "2017-10-01 00:00:35,180", "2017-10-01 00:00:35,181",
+			"2017-10-01 00:00:35,181", "2017-10-01 00:00:35,813", "2017-10-01 00:00:36,131", "2017-10-01 00:00:36,619", "2017-10-01 00:00:37,221", "2017-10-01 00:00:37,921", "2017-10-01 00:00:38,256"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss,SSS");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 1);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
+		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty())
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
+	@Test
+	public void variableLengthFractions() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
+
+		final String inputs[] = new String[] {
+				"2017-10-01 00:00:00.913", "2017-10-01 00:00:01.862", "2017-10-01 00:00:01.666", "2017-10-01 00:00:03.286", "2017-10-01 00:00:26.079", "2017-10-01 00:00:26.165",
+				"2017-10-01 00:00:26.429", "2017-10-01 00:00:26.265", "2017-10-01 00:00:26.461", "2017-10-01 00:00:26.743", "2017-10-01 00:00:27.003", "2017-10-01 00:00:27.005",
+				"2017-10-01 00:00:27.687", "2017-10-01 00:00:28.217", "2017-10-01 00:00:28.641", "2017-10-01 00:00:29.68", "2017-10-01 00:00:29.778", "2017-10-01 00:00:30.415",
+				"2017-10-01 00:00:30.555", "2017-10-01 00:00:30.59", "2017-10-01 00:00:30.875", "2017-10-01 00:00:31.29", "2017-10-01 00:00:31.139", "2017-10-01 00:00:31.433",
+				"2017-10-01 00:00:32.247", "2017-10-01 00:00:32.525", "2017-10-01 00:00:32.787", "2017-10-01 00:00:31.993", "2017-10-01 00:00:33.066", "2017-10-01 00:00:32.789",
+				"2017-10-01 00:00:33.5", "2017-10-01 00:00:33.734", "2017-10-01 00:00:33.594", "2017-10-01 00:00:33.936", "2017-10-01 00:00:34.576", "2017-10-01 00:00:34.697",
+				"2017-10-01 00:00:34.911", "2017-10-01 00:00:32.124", "2017-10-01 00:00:35.173", "2017-10-01 00:00:35.177", "2017-10-01 00:00:35.177", "2017-10-01 00:00:35.178",
+				"2017-10-01 00:00:35.178", "2017-10-01 00:00:35.178", "2017-10-01 00:00:35.179", "2017-10-01 00:00:35.179", "2017-10-01 00:00:35.18", "2017-10-01 00:00:35.18",
+				"2017-10-01 00:00:35.18", "2017-10-01 00:00:35.181", "2017-10-01 00:00:35.181", "2017-10-01 00:00:35.685", "2017-10-01 00:00:35.816", "2017-10-01 00:00:36.461",
+				"2017-10-01 00:00:36.648", "2017-10-01 00:00:37.706", "2017-10-01 00:00:37.969", "2017-10-01 00:00:37.924", "2017-10-01 00:00:38.257", "2017-10-01 00:00:38.539",
+				"2017-10-01 00:00:39.574", "2017-10-01 00:00:39.849", "2017-10-01 00:00:40.113", "2017-10-01 00:00:40.373", "2017-10-01 00:00:41.415", "2017-10-01 00:00:42.281",
+				"2017-10-01 00:00:42.801", "2017-10-01 00:00:44.176", "2017-10-01 00:00:44.505", "2017-10-01 00:00:44.812", "2017-10-01 00:00:45.799", "2017-10-01 00:00:46.148",
+				"2017-10-01 00:00:46.077", "2017-10-01 00:00:46.344", "2017-10-01 00:00:46.307", "2017-10-01 00:00:46.6", "2017-10-01 00:00:46.719", "2017-10-01 00:00:47.212",
+				"2017-10-01 00:00:47.669", "2017-10-01 00:00:48.168", "2017-10-01 00:00:50.276", "2017-10-01 00:00:50.398", "2017-10-01 00:00:50.491", "2017-10-01 00:00:51.845",
+				"2017-10-01 00:00:51.968", "2017-10-01 00:00:52.465", "2017-10-01 00:00:52.652", "2017-10-01 00:00:52.722", "2017-10-01 00:00:52.873", "2017-10-01 00:00:52.939",
+				"2017-10-01 00:00:52.857", "2017-10-01 00:00:53.446", "2017-10-01 00:00:53.777", "2017-10-01 00:00:53.754", "2017-10-01 00:00:54.023", "2017-10-01 00:00:54.025"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty())
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
+	@Test
+	public void dateIssueAMPM() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("CREATED_ON");
+		final String inputs[] = new String[] {
+				"11/25/2010 11:13:38 AM",  "9/20/2010 7:31:26 AM", "9/17/2010 2:37:58 PM", "12/14/2010 11:08:17 AM",
+				"10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM",
+				"10/13/2010 1:17:04 PM","11/25/2010 11:13:38 AM", "11/25/2010 11:13:38 AM", "9/20/2010 7:31:26 AM",
+				"9/17/2010 2:37:58 PM", "12/14/2010 11:08:17 AM", "10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM",
+				"10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM", "9/20/2010 7:31:26 AM",
+				"9/17/2010 2:37:58 PM", "12/14/2010 11:08:17 AM", "10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM",
+				"10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} (?i)(AM|PM)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "M/dd/yyyy h:mm:ss a");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void dateSwitcher() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Contract Signed Date");
 		final String inputs[] = new String[] {

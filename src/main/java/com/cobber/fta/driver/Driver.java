@@ -22,10 +22,10 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Locale;
 
+import com.cobber.fta.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.TextAnalyzer;
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 class Driver {
 

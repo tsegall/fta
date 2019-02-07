@@ -1,8 +1,6 @@
 package com.cobber.fta;
 
 import java.text.DateFormatSymbols;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -26,7 +24,6 @@ public class LocaleInfo {
 	private static Map<String, String> ampmRegExp = new HashMap<>();
 	private static Map<String, String> shortWeekdaysRegExp = new HashMap<>();
 	private static LocaleInfo localeInfo = new LocaleInfo();
-	private static final Map<String, DateTimeFormatter> formatterCache = new HashMap<>();
 
 	class LengthComparator implements Comparator<String> {
 		@Override
@@ -175,20 +172,4 @@ public class LocaleInfo {
 		cacheLocaleInfo(locale);
 		return ampmRegExp.get(locale.toLanguageTag());
 	}
-
-	/*
-	 * Get a DateTimeFormatter suitable for the supplied formatString and Locale.
-	 */
-	public static DateTimeFormatter getFormatter(String formatString, Locale locale) {
-		DateTimeFormatter formatter = formatterCache.get(locale.toLanguageTag() + "---" + formatString);
-
-		if (formatter != null)
-			return formatter;
-
-		formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(formatString).toFormatter(locale);
-		formatterCache.put(locale.toLanguageTag() + "---" + formatString, formatter);
-
-		return formatter;
-	}
-
 }

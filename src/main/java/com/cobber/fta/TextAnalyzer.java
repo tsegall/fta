@@ -34,7 +34,6 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -722,7 +721,7 @@ public class TextAnalyzer {
 			throw new InternalErrorException("NULL result for " + dateFormat);
 		}
 
-		DateTimeFormatter formatter = LocaleInfo.getFormatter(result.getFormatString(), locale);
+		DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getFormatString(), locale);
 
 		final String trimmed = input.trim();
 
@@ -1651,16 +1650,24 @@ public class TextAnalyzer {
 					result.parse(input);
 				}
 				catch (DateTimeParseException e) {
-					char ditch = '_';
+					char ditch = '?';
 					if ("Insufficient digits in input (d)".equals(e.getMessage()))
 						ditch = 'd';
 					else if ("Insufficient digits in input (M)".equals(e.getMessage()))
 						ditch = 'M';
-					if (ditch != '_') {
+					else if ("Insufficient digits in input (S)".equals(e.getMessage()))
+						ditch = 'S';
+					if (ditch != '?') {
 						try {
 
 							int offset = matchPatternInfo.format.indexOf(ditch);
-							final String newFormatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(offset).toString();
+							String newFormatString;
+
+							if (ditch == 'S')
+								newFormatString = Utils.replaceFirst(matchPatternInfo.format, "SSS", "S{1,3}");
+							else
+								newFormatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(offset).toString();
+
 							result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
 							matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, newFormatString, false, -1, -1, null, newFormatString);
 
@@ -1886,13 +1893,15 @@ public class TextAnalyzer {
 			if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id && matchPatternInfo.typeQualifier == null && minLong < 0)
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG);
 
-			if (groupingSeparators == 0 && minLongNonZero > 19000101 && maxLong < 20400101 &&
+			if (groupingSeparators == 0 && minLongNonZero > 19000101 && maxLong < 20410101 &&
+					DateTimeParser.plausibleDateCore(false, (int)minLongNonZero%100, ((int)minLongNonZero/100)%100, (int)minLongNonZero/10000, 4)  &&
+					DateTimeParser.plausibleDateCore(false, (int)maxLong%100, ((int)maxLong/100)%100, (int)maxLong/10000, 4)  &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("date"))) {
 				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{8}" : "0|\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
-				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 				minLocalDate = LocalDate.parse(String.valueOf(minLongNonZero), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
-			} else if (groupingSeparators == 0 && minLongNonZero > 1800 && maxLong < 2030 &&
+			} else if (groupingSeparators == 0 && minLongNonZero > 1800 && maxLong < 2041 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("year") || dataStreamName.toLowerCase(locale).contains("date"))) {
 				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{4}" : "0|\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLongNonZero, 1, 1);
@@ -2074,7 +2083,7 @@ public class TextAnalyzer {
 
 		case LOCALDATE:
 			if (collectStatistics) {
-				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
 				minValue = minLocalDate == null ? null : minLocalDate.format(dtf);
 				maxValue = maxLocalDate == null ? null : maxLocalDate.format(dtf);
@@ -2083,7 +2092,7 @@ public class TextAnalyzer {
 
 		case LOCALTIME:
 			if (collectStatistics) {
-				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
 				minValue = minLocalTime == null ? null : minLocalTime.format(dtf);
 				maxValue = maxLocalTime == null ? null : maxLocalTime.format(dtf);
@@ -2092,7 +2101,7 @@ public class TextAnalyzer {
 
 		case LOCALDATETIME:
 			if (collectStatistics) {
-				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
 				minValue = minLocalDateTime == null ? null : minLocalDateTime.format(dtf);
 				maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(dtf);
@@ -2101,7 +2110,7 @@ public class TextAnalyzer {
 
 		case ZONEDDATETIME:
 			if (collectStatistics) {
-				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
 				minValue = minZonedDateTime.format(dtf);
 				maxValue = maxZonedDateTime.format(dtf);
@@ -2110,7 +2119,7 @@ public class TextAnalyzer {
 
 		case OFFSETDATETIME:
 			if (collectStatistics) {
-				DateTimeFormatter dtf = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(matchPatternInfo.format).toFormatter(locale);
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
 				minValue = minOffsetDateTime.format(dtf);
 				maxValue = maxOffsetDateTime.format(dtf);

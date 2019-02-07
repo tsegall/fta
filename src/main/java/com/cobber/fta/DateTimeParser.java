@@ -15,6 +15,9 @@
  */
 package com.cobber.fta;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -68,7 +71,6 @@ public class DateTimeParser {
 	public static Set<String> timeZones = new HashSet<String>();
 	private static final int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-
 	static {
 		// Cache the set of available Time Zones
 		Collections.addAll(timeZones, TimeZone.getAvailableIDs());
@@ -108,6 +110,42 @@ public class DateTimeParser {
 		this.locale = locale;
 	}
 
+	private static final Map<String, DateTimeFormatter> formatterCache = new HashMap<>();
+
+	/**
+	 * Given an input string with a DateTimeFormatter pattern return a suitable DateTimeFormatter.
+	 * @param formatString A DateTimeString using DateTimeFormatter patterns
+	 * @param locale Locale the input string is in
+	 * @return The corresponding DateTimeFormatter (note - this will be a case-insensitive parser).
+	 */
+	public static DateTimeFormatter ofPattern(final String formatString, Locale locale) {
+		DateTimeFormatter formatter = formatterCache.get(locale.toLanguageTag() + "---" + formatString);
+
+		if (formatter != null)
+			return formatter;
+
+		int fractionOffset = formatString.indexOf("S{");
+		if (fractionOffset != -1)
+			formatter = new DateTimeFormatterBuilder()
+			.appendPattern(formatString.substring(0, fractionOffset))
+			.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 3, false)
+			.toFormatter();
+		else if ("yyyy".equals(formatString))
+            // The default formatter with "yyyy" will not default the month/day, make it so!
+            formatter = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy")
+            .parseCaseInsensitive()
+            .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
+            .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+            .toFormatter(locale);
+		else
+			formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(formatString).toFormatter(locale);
+
+		formatterCache.put(locale.toLanguageTag() + "---" + formatString, formatter);
+
+		return formatter;
+	}
+
 	/**
 	 * Train is the core entry point used to supply input to the DateTimeParser.
 	 * @param input The String representing a date with possible surrounding whitespace.
@@ -127,7 +165,7 @@ public class DateTimeParser {
 		}
 
 		final String trimmed = input.trim();
-		final String ret = determineFormatString(trimmed, resolutionMode.None);
+		final String ret = determineFormatString(trimmed, DateResolutionMode.None);
 		if (ret == null) {
 			invalidCount++;
 			return null;
@@ -296,11 +334,11 @@ public class DateTimeParser {
 	}
 
 	private boolean plausibleDate(final int[] dateValues, final int[] dateDigits, final int[] fieldOffsets) {
-		return plausibleDateCore(dateValues[fieldOffsets[0]], dateValues[fieldOffsets[1]],
+		return plausibleDateCore(lenient, dateValues[fieldOffsets[0]], dateValues[fieldOffsets[1]],
 				dateValues[fieldOffsets[2]], dateDigits[fieldOffsets[2]]);
 	}
 
-	private boolean plausibleDateCore(final int day, final int month, final int year, final int yearLength) {
+	public static boolean plausibleDateCore(boolean lenient, final int day, final int month, final int year, final int yearLength) {
 		if (lenient && year == 0 && month == 0 && day == 0)
 			return true;
 
@@ -397,7 +435,7 @@ public class DateTimeParser {
 		if (attempt != null)
 			return attempt;
 
-		return phaseThree(trimmed, matcher);
+		return phaseThree(trimmed, matcher, resolutionMode);
 	}
 
 	String phaseTwo(String trimmed, final DateResolutionMode resolutionMode) {
@@ -433,14 +471,6 @@ public class DateTimeParser {
 			if (lastCh == ' ' && ch == ' ')
 				return null;
 			lastCh = ch;
-
-			if (expectingAlphaTimeZone) {
-				final String currentTimeZone = trimmed.substring(i, len);
-				if (!DateTimeParser.timeZones.contains(currentTimeZone))
-					return null;
-				timeZone = " z";
-				continue;
-			}
 
 			switch (ch) {
 			case '0':
@@ -626,6 +656,13 @@ public class DateTimeParser {
 					if (i + 1 < len && trimmed.charAt(i + 1) == ' ')
 						i++;
 				}
+				else if (expectingAlphaTimeZone) {
+					final String currentTimeZone = trimmed.substring(i, len);
+					if (!DateTimeParser.timeZones.contains(currentTimeZone))
+						return null;
+					timeZone = " z";
+					break;
+				}
 				else if (ch == 'T') {
 					// ISO 8601
 					if (timeSeen)
@@ -783,65 +820,92 @@ public class DateTimeParser {
 	}
 
 	/**
-	 * This is our last attempt to construct a date pattern from the input
+	 * This is our last attempt to construct a date pattern from the input.
+	 *
+	 * We use a brute force approach to repeatedly remove 'known' good patterns until we end up with a fully qualified pattern.
+	 * This technique has the advantage that it is relatively forgiving of input with strange characters used to separate the components.
+	 * For example, this will recognize input like the following:
+	 * 	2017-10-12 16:45:30,403 or 2015-12-03:16:03:50 or 01APR2019
+	 *
 	 * @param trimmed The input we are scouring for a date/datetime/time
 	 * @param compressed The compressed form of the input
 	 * @return a DateTimeFormatter pattern.
 	 */
-	String phaseThree(String trimmed, SimpleDateMatcher matcher) {
+	String phaseThree(String trimmed, SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
 		String compressed = matcher.getCompressed();
 		int components = matcher.getComponentCount();
+
+		if (components == 7) {
+			if (compressed.indexOf("d{3}") == -1)
+				return null;
+			compressed = Utils.replaceFirst(compressed, "d{3}", "SSS");
+			components--;
+		}
 
 		if (components == 6) {
 			if (compressed.indexOf("d{2}:d{2}:d{2}") == -1)
 				return null;
 
-			compressed = compressed.replace("d{2}:d{2}:d{2}", "HH:mm:ss");
-			components = 3;
+			compressed = Utils.replaceFirst(compressed, "d{2}:d{2}:d{2}", "HH:mm:ss");
+			components -= 3;
 
-			int monthIndex = compressed.indexOf("a{3}");
-			if (monthIndex == -1)
-				return null;
-
-			compressed = compressed.replace("a{3}", "MMM");
-			components--;
-
-			if (compressed.indexOf("d{4}") != -1) {
-				compressed = compressed.replace("d{4}", "yyyy");
+			int yearIndex = compressed.indexOf("d{4}");
+			if (yearIndex != -1) {
+				compressed = Utils.replaceFirst(compressed, "d{4}", "yyyy");
 				components--;
 			}
+
+			int monthIndex = compressed.indexOf("a{3}");
+			if (monthIndex != -1) {
+				compressed = Utils.replaceFirst(compressed, "a{3}", "MMM");
+				components--;
+			}
+
+			// We failed to find a 4 digit year or a alpha month so give up
+			if (components == 3)
+				return null;
 
 			if (components == 1) {
 				if (compressed.indexOf("d{2}") == -1)
 					return null;
-				compressed = compressed.replace("d{2}", "dd");
+				compressed = Utils.replaceFirst(compressed, "d{2}", "dd");
 			}
 			else {
 				int first = compressed.indexOf("d{2}");
-				int second = compressed.substring(monthIndex + 4).indexOf("d{2}");
+				int second = compressed.indexOf("d{2}", first + 4);
 
 				if (first == -1 || second == -1)
 					return null;
 
-				compressed = compressed.replace("d{2}", "dd").replace("d{2}", "yy");
+				if (monthIndex != -1)
+					compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "dd"), "d{2}", "yy");
+				else
+					if (first > yearIndex)
+						compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "MM"), "d{2}", "dd");
+					else
+						if (resolutionMode == DateResolutionMode.DayFirst)
+							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "dd"), "d{2}", "MM");
+						else
+							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "MM"), "d{2}", "dd");
+
 			}
 		}
 		else if (components == 3) {
 			if (compressed.indexOf(':') != -1) {
 				if (compressed.indexOf("d{2}:d{2}:d{2}") == -1)
 					return null;
-				compressed = compressed.replace("d{2}:d{2}:d{2}", "HH:mm:ss");
+				compressed = Utils.replaceFirst(compressed, "d{2}:d{2}:d{2}", "HH:mm:ss");
 			}
 			else {
 				if (compressed.indexOf("d{4}") != -1) {
-					compressed = compressed.replace("d{4}", "yyyy");
+					compressed = Utils.replaceFirst(compressed, "d{4}", "yyyy");
 					components--;
 				}
 
 				if (compressed.indexOf("a{3}") == -1)
 					return null;
 
-				compressed = compressed.replace("a{3}", "MMM");
+				compressed = Utils.replaceFirst(compressed, "a{3}", "MMM");
 				components--;
 
 				if (components != 1)
@@ -850,7 +914,7 @@ public class DateTimeParser {
 				if (compressed.indexOf("d{2}") == -1)
 					return null;
 
-				compressed = compressed.replace("d{2}", "dd");
+				compressed = Utils.replaceFirst(compressed, "d{2}", "dd");
 			}
 		}
 		else

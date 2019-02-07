@@ -21,7 +21,6 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -104,19 +103,19 @@ public class DateTimeParserResult {
 	 * @return A boolean indicating if the input is valid.
 	 */
 	public boolean isValid8(final String input) {
-		final DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(getFormatString()).toFormatter(locale);
+		DateTimeFormatter dtf = DateTimeParser.ofPattern(getFormatString(), locale);
 
 		try {
 			if (PatternInfo.Type.LOCALTIME.equals(getType()))
-				LocalTime.parse(input, formatter);
+				LocalTime.parse(input, dtf);
 			else if (PatternInfo.Type.LOCALDATE.equals(getType()))
-				LocalDate.parse(input, formatter);
+				LocalDate.parse(input, dtf);
 			else if (PatternInfo.Type.LOCALDATETIME.equals(getType()))
-				LocalDateTime.parse(input, formatter);
+				LocalDateTime.parse(input, dtf);
 			else if (PatternInfo.Type.ZONEDDATETIME.equals(getType()))
-				ZonedDateTime.parse(input, formatter);
+				ZonedDateTime.parse(input, dtf);
 			else
-				OffsetDateTime.parse(input, formatter);
+				OffsetDateTime.parse(input, dtf);
 			return true;
 		}
 		catch (DateTimeParseException exc) {
@@ -140,7 +139,7 @@ public class DateTimeParserResult {
 	}
 
 	/**
-	 * Given an input string in SimpleDateTimeFormat convert to a DateTimeParserResult
+	 * Given an input string with a DateTimeFormatter pattern convert to a DateTimeParserResult
 	 * @param formatString A DateTimeString using DateTimeFormatter patterns
 	 * @param resolutionMode 	When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @param locale Locale the input string is in
@@ -257,9 +256,21 @@ public class DateTimeParserResult {
 			case 'S':
 				timeFieldOffsets[timeElements] = i;
 				int fractions = 1;
-				while (i + 1 < formatLength && formatString.charAt(i + 1) == 'S') {
-					i++;
-					fractions++;
+				if (i + 1 < formatLength) {
+					char next = formatString.charAt(i + 1);
+					if (next == 'S') {
+						while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
+							fractions++;
+							i++;
+						}
+					}
+					else if (next == '{') {
+						RegExpLength facts = new RegExpLength();
+						if (!Utils.getLength(facts, formatString.substring(i + 1)))
+							return null;
+						i += facts.length;
+						fractions = facts.min;
+					}
 				}
 				timeFieldLengths[timeElements] = fractions;
 				timeElements++;
@@ -412,13 +423,36 @@ public class DateTimeParserResult {
 				break;
 
 			case 'S':
+				int count = 1;
+				int high = 1;
+				if (i + 1 < formatLength) {
+					char next = formatString.charAt(i + 1);
+					if (next == 'S') {
+						while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
+							count++;
+							i++;
+						}
+						high = count;
+					}
+					else if (next == '{') {
+						RegExpLength facts = new RegExpLength();
+						if (!Utils.getLength(facts, formatString.substring(i + 1)))
+							return null;
+						i += facts.length;
+						count = facts.min;
+						high = facts.max;
+					}
+				}
+				ret.add(new FormatterToken(Token.FRACTION, count, high));
+				break;
+
 			case 'x':
 				int nextCount = 1;
 				while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 					nextCount++;
 					i++;
 				}
-				ret.add(new FormatterToken(ch == 'x' ? Token.TIMEZONE_OFFSET : Token.FRACTION, nextCount));
+				ret.add(new FormatterToken(Token.TIMEZONE_OFFSET, nextCount));
 				break;
 
 			case 'z':
@@ -560,7 +594,7 @@ public class DateTimeParserResult {
 			case FRACTION:
 				for (int i = 0; i < token.getCount(); i++) {
 					if (upto == inputLength)
-						throw new DateTimeParseException("Expecting digit, end of input", input, upto);
+						throw new DateTimeParseException("Insufficient digits in input (S)", input, upto);
 					if (!Character.isDigit(input.charAt(upto)))
 						throw new DateTimeParseException("Expecting digit", input, upto);
 					upto++;
@@ -819,7 +853,7 @@ public class DateTimeParserResult {
 
 				case FRACTION:
 					digitsMin += token.getCount();
-					digitsMax += token.getCount();
+					digitsMax += token.getHigh();
 					break;
 				}
 			}

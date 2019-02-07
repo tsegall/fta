@@ -20,6 +20,7 @@ import com.cobber.fta.DateTimeParserResult.Token;
 class FormatterToken {
 	private final Token type;
 	private final int count;
+	private final int high;
 	private final char value;
 
 	public Token getType() {
@@ -30,6 +31,10 @@ class FormatterToken {
 		return count;
 	}
 
+	public int getHigh() {
+		return high;
+	}
+
 	public char getValue() {
 		return value;
 	}
@@ -37,18 +42,28 @@ class FormatterToken {
 	FormatterToken(final Token type) {
 		this.type = type;
 		this.count = 0;
+		this.high = 0;
 		this.value = '\0';
 	}
 
 	FormatterToken(final Token type, final int count) {
 		this.type = type;
 		this.count = count;
+		this.high = 0;
+		this.value = '\0';
+	}
+
+	FormatterToken(final Token type, final int low, int high) {
+		this.type = type;
+		this.count = low;
+		this.high = high;
 		this.value = '\0';
 	}
 
 	FormatterToken(final Token type, final char value) {
 		this.type = type;
 		this.count = 0;
+		this.high = 0;
 		this.value = value;
 	}
 }
