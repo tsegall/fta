@@ -51,7 +51,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(String input) {
-		String inputUpper = input.toUpperCase(Locale.ENGLISH);
+		String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
 		int length = input.length();
 
 		// Attempt to fail fast
@@ -59,7 +59,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 			return false;
 
 		// Simple case first - last 'word is something we recognize
-		int spaceIndex = input.lastIndexOf(' ');
+		int spaceIndex = inputUpper.trim().lastIndexOf(' ');
 		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1)))
 			return true;
 
@@ -84,7 +84,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		String inputUpper = input.toUpperCase(Locale.ENGLISH);
+		String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
 		int spaceIndex = lastIndex[' '];
 
 		// Track whether this is a multi-line field or not

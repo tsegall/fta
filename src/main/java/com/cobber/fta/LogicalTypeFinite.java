@@ -22,7 +22,8 @@ public abstract class LogicalTypeFinite extends LogicalType {
 
 	@Override
 	public boolean isValid(String input) {
-		return input.length() >= minLength && input.length() <= maxLength && getMembers().contains(input);
+		String trimmed = input.trim();
+		return trimmed.length() >= minLength && trimmed.length() <= maxLength && getMembers().contains(trimmed);
 	}
 
 	@Override

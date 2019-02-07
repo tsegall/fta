@@ -18,6 +18,8 @@ public class SamplePlugin {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("Colors");
+
+		// Register our new magic plugin
 		Assert.assertTrue(analysis.registerLogicalType("com.cobber.fta.examples.PluginColor"));
 
 		for (int i = 0; i < inputs.length; i++)

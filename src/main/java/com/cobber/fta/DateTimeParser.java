@@ -114,6 +114,12 @@ public class DateTimeParser {
 
 	/**
 	 * Given an input string with a DateTimeFormatter pattern return a suitable DateTimeFormatter.
+	 * This is very similar to DateTimeFormatter.ofPattern(), however, there are a set of key differences:
+	 *  - This will cache the Formatters
+	 *  - It supports a slightly extended syntax, e.g. "yyyy" will work as will S{min,max} to reflect a variable number of
+	 *  digits in a fractional seconds component.
+	 *  - The formatter returned is always case-insensitive
+	 *
 	 * @param formatString A DateTimeString using DateTimeFormatter patterns
 	 * @param locale Locale the input string is in
 	 * @return The corresponding DateTimeFormatter (note - this will be a case-insensitive parser).

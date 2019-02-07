@@ -82,6 +82,37 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void basicGenderWithSpaces() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		final String input = " Female| MALE|Male| Female|Female|MALE |Female |Female |Unknown |Male |" +
+				" Male|Female |Male|Male|Male|Female | Female|Male |Male |Male |" +
+				" Female|Male |Female|FEMALE|Male| Female| male| Male| Male|  male |";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "GENDER_EN");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "(?i)(UNKNOWN|MALE|FEMALE)");
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		int outlierCount = outliers.get("UNKNOWN");
+		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].trim().matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
+	@Test
 	public void basicGenderTriValue() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String input = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
