@@ -135,7 +135,7 @@ public class DateTimeParser {
 			formatter = new DateTimeFormatterBuilder()
 			.appendPattern(formatString.substring(0, fractionOffset))
 			.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 3, false)
-			.toFormatter();
+			.toFormatter(locale);
 		else if ("yyyy".equals(formatString))
             // The default formatter with "yyyy" will not default the month/day, make it so!
             formatter = new DateTimeFormatterBuilder()
