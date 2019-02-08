@@ -1083,6 +1083,66 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void testDTPResult_Date() {
+		String[] tests = new String[] { "MM", "MMM", "MMMM", "dd", "yy", "yyyy", "xxx", "x", "EEE", "z", "a" };
+
+		for (String test : tests) {
+			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+			Assert.assertEquals(det.getType(), PatternInfo.Type.LOCALDATE);
+		}
+	}
+
+	@Test
+	public void testDTPResult_Time() {
+		String[] tests = new String[] { "HH", "mm", "ss", "SSS" };
+
+		for (String test : tests) {
+			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+			Assert.assertEquals(det.getType(), PatternInfo.Type.LOCALTIME);
+		}
+	}
+
+	@Test
+	public void testDTPResult_DateTime() {
+		String[] tests = new String[] { "MM/dd/yyyy HH:mm:ss" };
+
+		for (String test : tests) {
+			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+			Assert.assertEquals(det.getType(), PatternInfo.Type.LOCALDATETIME);
+		}
+	}
+
+	@Test
+	public void testDTPResult_OffsetDateTime() {
+		String[] tests = new String[] { "yyyyMMdd'T'HHmmssxx" };
+
+		for (String test : tests) {
+			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+			Assert.assertEquals(det.getType(), PatternInfo.Type.OFFSETDATETIME);
+		}
+	}
+
+	@Test
+	public void testDTPResult_ZonedDateTime() {
+		String[] tests = new String[] { "EEE MMM dd HH:mm:ss z yyyy" };
+
+		for (String test : tests) {
+			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+			Assert.assertEquals(det.getType(), PatternInfo.Type.ZONEDDATETIME);
+		}
+	}
+
+	@Test
+	public void testDTPResult_Unknown() {
+		String[] tests = new String[] { "W", "V", "G", "u", "L", "Q", "e", "c", "K", "k", "n", "N", "O" };
+
+		for (String test : tests) {
+			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+			Assert.assertEquals(det.getType(), PatternInfo.Type.LOCALDATE);
+		}
+	}
+
+	@Test
 	public void intuitAlmostISO4() {
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "2004-01-01 12:35:41.999";

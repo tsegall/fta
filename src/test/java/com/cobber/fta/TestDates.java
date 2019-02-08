@@ -1800,6 +1800,37 @@ public class TestDates {
 	}
 
 	@Test
+	public void basicHours24() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("RETURN_TIME");
+		final String inputs[] = new String[] {
+				"19:40:03", "21:30:30", "18:00:00", "17:54:00", "10:03:03", "09:09:30", "07:00:00", "21:30:30", "22:30:05", "20:08:08",
+				"17:40:23", "20:10:30", "18:00:00", "11:24:00", "11:04:03", "08:09:30", "07:00:05", "13:30:30", "22:30:05", "20:08:08",
+				"15:40:23", "19:10:30", "14:00:00", "13:14:00", "12:03:03", "09:09:30", "07:00:00", "21:30:30", "22:30:05", "20:08:08",
+				"13:40:13", "20:30:30", "17:00:00", "16:34:00", "11:13:03", "19:09:30", "07:11:11", "11:30:30", "22:30:05", "20:08:08",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getTypeQualifier(), "HH:mm:ss");
+		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2}:\\d{2}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void timMBug1() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimMeagherBug1");
 

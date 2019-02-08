@@ -186,8 +186,12 @@ public class DateTimeParserResult {
 				else {
 					dateFieldLengths[dateElements - 1] = 1;
 				}
-				if (dateElements == 1)
-					dateSeparator = formatString.charAt(i + 1);
+
+				if (dateElements == 1 && i + 1 < formatLength) {
+					char nextCh = formatString.charAt(i + 1);
+					if (!Character.isAlphabetic(nextCh))
+						dateSeparator = nextCh;
+				}
 				fullyBound = false;
 				break;
 
@@ -211,8 +215,11 @@ public class DateTimeParserResult {
 					monthLength = 1;
 				dateFieldLengths[dateElements - 1] = monthLength;
 
-				if (dateElements == 1)
-					dateSeparator = formatString.charAt(i + 1);
+				if (dateElements == 1 && i + 1 < formatLength) {
+					char nextCh = formatString.charAt(i + 1);
+					if (!Character.isAlphabetic(nextCh))
+						dateSeparator = nextCh;
+				}
 				break;
 
 			case 'd':
@@ -225,8 +232,12 @@ public class DateTimeParserResult {
 				else
 					dayLength = 1;
 				dateFieldLengths[dateElements - 1] = dayLength;
-				if (dateElements == 1)
-					dateSeparator = formatString.charAt(i + 1);
+
+				if (dateElements == 1 && i + 1 < formatLength) {
+					char nextCh = formatString.charAt(i + 1);
+					if (!Character.isAlphabetic(nextCh))
+						dateSeparator = nextCh;
+				}
 				break;
 
 			case 'h':
@@ -286,8 +297,12 @@ public class DateTimeParserResult {
 				} else
 					yearLength = 2;
 				dateFieldLengths[dateElements - 1] = yearLength;
-				if (dateElements == 1)
-					dateSeparator = formatString.charAt(i + 1);
+
+				if (dateElements == 1 && i + 1 < formatLength) {
+					char nextCh = formatString.charAt(i + 1);
+					if (!Character.isAlphabetic(nextCh))
+						dateSeparator = nextCh;
+				}
 				break;
 
 			case 'x':
@@ -573,9 +588,11 @@ public class DateTimeParserResult {
 					throw new DateTimeParseException("Expecting digit", input, upto);
 				value = inputChar - '0';
 				upto++;
-				if (nextToken == Token.DAYS_2 && upto < inputLength && dateSeparator == input.charAt(upto))
+				if (nextToken == Token.DAYS_2 && upto < inputLength &&
+						dateSeparator != null && dateSeparator == input.charAt(upto))
 					throw new DateTimeParseException("Insufficient digits in input (d)", input, upto);
-				if (nextToken == Token.MONTHS_2 && upto < inputLength && dateSeparator == input.charAt(upto))
+				if (nextToken == Token.MONTHS_2 && upto < inputLength &&
+						dateSeparator != null && dateSeparator == input.charAt(upto))
 					throw new DateTimeParseException("Insufficient digits in input (M)", input, upto);
 
 				if ((nextToken == Token.DAYS_2 || nextToken == Token.MONTHS_2) && (upto == inputLength || !Character.isDigit(input.charAt(upto))))
