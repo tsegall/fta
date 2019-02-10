@@ -1890,6 +1890,73 @@ public class TestDates {
 	}
 
 	@Test
+	public void dottedDates() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("dottedDate");
+
+		final String inputs[] = new String[] {
+				"1.1.2011", "1.1.2012", "1.1.2013", "1.1.2014", "1.1.2015", "1.1.2016", "1.10.2011", "1.10.2012", "1.10.2013", "1.10.2014",
+				"1.10.2015", "1.11.2011", "1.11.2012", "1.15.2013", "1.11.2014", "1.11.2015", "1.12.2011", "1.12.2012", "1.12.2013", "1.12.2014",
+				"9.6.2014", "9.6.2015", "9.6.2016", "9.7.2011", "9.7.2012", "9.7.2013", "9.7.2014", "9.7.2015", "9.7.2016", "9.8.2011",
+				"9.8.2012", "9.8.2013", "9.8.2014", "9.8.2015", "9.9.2011", "9.9.2012", "9.9.2013", "9.9.2014", "9.9.2015"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "M.d.yyyy");
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}\\.\\d{1,2}\\.\\d{4}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty())
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
+	@Test
+	public void doubleStep() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("doubleStep");
+
+		final String inputs[] = new String[] {
+				"30.12.2011", "28.11.2012", "21.12.2013", "22.10.2014", "23.11.2015", "24.12.2016", "25.10.2011", "26.10.2012", "27.10.2013", "28.10.2014",
+				"20.12.2011", "18.11.2012", "11.12.2013", "12.10.2014", "13.11.2015", "14.12.2016", "15.10.2011", "16.10.2012", "17.10.2013", "18.10.2014",
+				"1.11.2015"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "d.M.yyyy");
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}\\.\\d{1,2}\\.\\d{4}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty())
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
+	@Test
 	public void intuitDateddMMyyyyHHmmss() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 

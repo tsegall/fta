@@ -1677,6 +1677,7 @@ public class TextAnalyzer {
 							valid = true;
 						}
 						catch (DateTimeParseException e2) {
+							System.err.println("**** " + e2.getMessage() + "***");
 							// Ignore and record as outlier below
 						}
 					}
@@ -1889,6 +1890,8 @@ public class TextAnalyzer {
 			}
 		}
 
+		Map<String, Integer> cardinalityUpper = new HashMap<String, Integer>();
+
 		if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id || KnownPatterns.ID.ID_SIGNED_LONG == matchPatternInfo.id) {
 			if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id && matchPatternInfo.typeQualifier == null && minLong < 0)
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG);
@@ -1934,7 +1937,6 @@ public class TextAnalyzer {
 			// Build Cardinality map ignoring case (and white space)
 			int minKeyLength = Integer.MAX_VALUE;
 			int maxKeyLength = 0;
-			Map<String, Integer> cardinalityUpper = new HashMap<String, Integer>();
 			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
 				String key = entry.getKey().toUpperCase(locale).trim();
 				int keyLength = key.length();
@@ -2013,8 +2015,15 @@ public class TextAnalyzer {
 		}
 
 		if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier == null) {
+			if (KnownPatterns.PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) && sampleCount > reflectionSamples && cardinalityUpper.size() > 1 && cardinalityUpper.size() < 5) {
+				RegExpGenerator gen = new RegExpGenerator(true, locale);
+				for (String elt : cardinalityUpper.keySet())
+					gen.train(elt);
+				matchPatternInfo = new PatternInfo(null, gen.getResult(), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+						maxTrimmedLength, null, null);
+			}
 			// Qualify Alpha or Alnum with a min and max length
-			if ((KnownPatterns.PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
+			else if ((KnownPatterns.PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
 				String newPattern = matchPatternInfo.regexp;
 				newPattern = newPattern.substring(0, newPattern.length() - 1) + lengthQualifier(minTrimmedLength, maxTrimmedLength);
 				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,

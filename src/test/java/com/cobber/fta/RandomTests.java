@@ -369,7 +369,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 1);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*" + KnownPatterns.PATTERN_ALPHA + "{2,5}\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*((?i)(HI|HELLO|WORLD))\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());

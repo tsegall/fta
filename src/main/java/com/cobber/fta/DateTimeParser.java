@@ -412,39 +412,56 @@ public class DateTimeParser {
 			return null;
 
 		final SimpleDateMatcher matcher = new SimpleDateMatcher(trimmed, locale);
-		if (matcher.isKnown()) {
-			int[] dateValue = new int[] {-1, -1, -1};
 
-			if (!matcher.parse())
-				return null;
-
-			dateValue[0] = matcher.getDayOfMonth();
-			dateValue[1] = matcher.getMonthValue();
-			dateValue[2] = matcher.getYear();
-
-			if (!plausibleDate(dateValue, new int[] {matcher.getDayLength(), matcher.getMonthLength(), matcher.getYearLength()}, new int[] {0,1,2}))
-				return null;
-
+		// Initial pass is a simple match against a set of known patterns
+		if (passOne(matcher) != null)
 			return matcher.getFormat();
-		}
 
 		// Fail fast if we can
-		if (matcher.getComponentCount() < 2)
+		if (matcher.getComponentCount() < 2 || !Character.isDigit(trimmed.charAt(0)))
 			return null;
 
-		// Fail fast if we can
-		if (!Character.isDigit(trimmed.charAt(0)))
-			return null;
-
-		String attempt = phaseTwo(trimmed, resolutionMode);
+		// Second pass is an attempt to 'parse' the provided input string and derive a format
+		String attempt = passTwo(trimmed, resolutionMode);
 
 		if (attempt != null)
 			return attempt;
 
-		return phaseThree(trimmed, matcher, resolutionMode);
+		// Third and final pass is brute force by elimination
+		return passThree(trimmed, matcher, resolutionMode);
 	}
 
-	String phaseTwo(String trimmed, final DateResolutionMode resolutionMode) {
+	/**
+	 * @param matcher The previously computer matcher which provides both the compressed form of the input as well as a component count
+	 * @return
+	 */
+	String passOne(SimpleDateMatcher matcher) {
+		if (!matcher.isKnown())
+			return null;
+
+		int[] dateValue = new int[] {-1, -1, -1};
+
+		if (!matcher.parse())
+			return null;
+
+		dateValue[0] = matcher.getDayOfMonth();
+		dateValue[1] = matcher.getMonthValue();
+		dateValue[2] = matcher.getYear();
+
+		if (!plausibleDate(dateValue, new int[] {matcher.getDayLength(), matcher.getMonthLength(), matcher.getYearLength()}, new int[] {0,1,2}))
+			return null;
+
+		return matcher.getFormat();
+	}
+
+	/**
+	 * This is core 'intuitive' phase where we hunt in some logical fashion for something that looks like a date/time.
+	 *
+	 * @param trimmed The input we are scouring for a date/datetime/time
+	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
+	 * @return a DateTimeFormatter pattern.
+	 */
+	String passTwo(String trimmed, final DateResolutionMode resolutionMode) {
 		int len = trimmed.length();
 
 		int digits = 0;
@@ -604,11 +621,33 @@ public class DateTimeParser {
 				break;
 
 			case '.':
-				if ((dateSeen && !dateClosed) || (timeSeen && timeClosed) || timeComponent != 2 || digits != 2)
-					return null;
-				timeValue[timeComponent] = value;
-				timeDigits[timeComponent] = digits;
-				timeComponent++;
+				if (!timeSeen || timeClosed) {
+					// Expecting a 'dotted' date - e.g. 9.12.2008
+					dateSeen = true;
+					dateValue[dateComponent] = value;
+					dateDigits[dateComponent] = digits;
+					if (dateComponent == 0) {
+						dateSeparator = ch;
+						fourDigitYear = digits == 4;
+						yearInDateFirst = fourDigitYear || (digits == 2 && value > 31);
+						if (!yearInDateFirst && digits != 1 && digits != 2)
+							return null;
+					} else if (dateComponent == 1) {
+						if (ch != dateSeparator)
+							return null;
+						if (digits != 1 && digits != 2)
+							return null;
+					}
+
+					dateComponent++;
+				}
+				else {
+					if ((dateSeen && !dateClosed) || (timeSeen && timeClosed) || timeComponent != 2 || digits != 2)
+						return null;
+					timeValue[timeComponent] = value;
+					timeDigits[timeComponent] = digits;
+					timeComponent++;
+				}
 				digits = 0;
 				value = 0;
 				break;
@@ -834,10 +873,11 @@ public class DateTimeParser {
 	 * 	2017-10-12 16:45:30,403 or 2015-12-03:16:03:50 or 01APR2019
 	 *
 	 * @param trimmed The input we are scouring for a date/datetime/time
-	 * @param compressed The compressed form of the input
+	 * @param matcher The previously computer matcher which provides both the compressed form of the input as well as a component count
+	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @return a DateTimeFormatter pattern.
 	 */
-	String phaseThree(String trimmed, SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
+	String passThree(String trimmed, SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
 		String compressed = matcher.getCompressed();
 		int components = matcher.getComponentCount();
 
