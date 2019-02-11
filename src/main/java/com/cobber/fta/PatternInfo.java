@@ -158,6 +158,16 @@ public class PatternInfo {
 	}
 
 	/**
+	 * Is this pattern a Date Type?
+	 *
+	 * @return A boolean indicating if the Type for this pattern includes a Date.
+	 */
+	public boolean isDateType() {
+		return PatternInfo.Type.LOCALDATE.equals(this.type) || PatternInfo.Type.LOCALDATETIME.equals(this.type) ||
+				PatternInfo.Type.OFFSETDATETIME.equals(this.type) || PatternInfo.Type.ZONEDDATETIME.equals(this.type);
+	}
+
+	/**
 	 * Is this pattern Alphabetic?
 	 *
 	 * @return A boolean indicating if the Type for this pattern is Alphabetic.

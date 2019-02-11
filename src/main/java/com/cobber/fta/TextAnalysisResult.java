@@ -445,6 +445,7 @@ public class TextAnalysisResult {
 		ret.append(K("maxLength")).append(maxLength).append(newField);
 		if (sum != null)
 			ret.append(K("sum")).append(Q(sum)).append(newField);
+		ret.append(K("leadingZeroCount")).append(getLeadingZeroCount()).append(newField);
 
 		ret.append(K("cardinality")).append(Q(cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX")).append(newField);
 		if (verbose && cardinality.size() != 0 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {
@@ -480,7 +481,8 @@ public class TextAnalysisResult {
 		ret.append(K("trailingWhiteSpace")).append(getTrailingWhiteSpace()).append(newField);
 		ret.append(K("multiline")).append(getMultiline()).append(newField);
 
-		ret.append(K("dateResolutionMode")).append(getDateResolutionMode()).append(newField);
+		if (patternInfo.isDateType())
+			ret.append(K("dateResolutionMode")).append(getDateResolutionMode()).append(newField);
 		ret.append(K("logicalType")).append(isLogicalType()).append(newField);
 		ret.append(K("possibleKey")).append(key).append(eol);
 
