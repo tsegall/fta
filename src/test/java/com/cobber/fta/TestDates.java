@@ -1930,7 +1930,7 @@ public class TestDates {
 		final String inputs[] = new String[] {
 				"30.12.2011", "28.11.2012", "21.12.2013", "22.10.2014", "23.11.2015", "24.12.2016", "25.10.2011", "26.10.2012", "27.10.2013", "28.10.2014",
 				"20.12.2011", "18.11.2012", "11.12.2013", "12.10.2014", "13.11.2015", "14.12.2016", "15.10.2011", "16.10.2012", "17.10.2013", "18.10.2014",
-				"1.11.2015"
+				"1.1.2015"
 		};
 		int locked = -1;
 
@@ -1944,6 +1944,41 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d.M.yyyy");
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}\\.\\d{1,2}\\.\\d{4}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty())
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
+	@Test
+	public void tripleStep() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("tripleStep");
+
+		final String inputs[] = new String[] {
+				"30.12.2011 16:40:00.123", "28.11.2012 16:40:00.123", "21.12.2013 16:40:00.123", "22.10.2014 16:40:00.123", "23.11.2015 16:40:00.123",
+				"24.12.2016 16:40:00.123", "25.10.2011 16:40:00.123", "26.10.2012 16:40:00.123", "27.10.2013 16:40:00.123", "28.10.2014 16:40:00.123",
+				"20.12.2011 16:40:00.123", "18.11.2012 16:40:00.123", "11.12.2013 16:40:00.123", "12.10.2014 16:40:00.123", "13.11.2015 16:40:00.123",
+				"14.12.2016 16:40:00.123", "15.10.2011 16:40:00.123", "16.10.2012 16:40:00.123", "17.10.2013 16:40:00.123", "18.10.2014 16:40:00.123",
+				"1.1.2015 16:40:00.12"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "d.M.yyyy HH:mm:ss.S{1,3}");
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}\\.\\d{1,2}\\.\\d{4} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);

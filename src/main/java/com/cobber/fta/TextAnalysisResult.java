@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.cobber.fta.DateTimeParser.DateResolutionMode;
+
 /**
  * TextAnalysisResult is the result of a {@link TextAnalyzer} analysis of a data stream.
  */
@@ -39,8 +41,9 @@ public class TextAnalysisResult {
 	private final String maxValue;
 	private final int minLength;
 	private final int maxLength;
-	private final char decimalSeparator;
 	private final String sum;
+	private final char decimalSeparator;
+	private final DateResolutionMode resolutionMode;
 	private final Map<String, Integer> cardinality;
 	private final Map<String, Integer> outliers;
 	private final boolean key;
@@ -61,8 +64,12 @@ public class TextAnalysisResult {
 	 * @param maxValue A String representation of the maximum value.  Only relevant for Numeric/String types.
 	 * @param minLength Get the minimum length. Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace.
 	 * @param maxLength Get the maximum length. Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace.
-	 * @param decimalSeparator Get the Decimal separator used to interpret this field (only relevant for type double.
 	 * @param sum A String representation of the sum of all values seen.  Only relevant for numeric types.
+	 * @param decimalSeparator Get the Decimal separator used to interpret this field (only relevant for type double.
+	 * @param resolutionMode Determines what to do when the Date field is ambiguous (i.e. we cannot determine which
+	 *   of the fields is the day or the month.  If resolutionMode is DayFirst, then assume day is first, if resolutionMode is
+	 *   MonthFirst then assume month is first, if it is Auto then choose either DayFirst or MonthFirst based on the locale, if it
+	 *   is None then the pattern returned will have '?' in to represent any ambiguity present.
 	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param key Do we think this field is a key.
@@ -70,7 +77,7 @@ public class TextAnalysisResult {
 	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, boolean trailingWhiteSpace,
 			boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
 			final double confidence, final String minValue, final String maxValue, final int minLength, final int maxLength,
-			char decimalSeparator, final String sum, final Map<String, Integer> cardinality, final Map<String, Integer> outliers, final boolean key) {
+			final String sum, char decimalSeparator, DateResolutionMode resolutionMode, final Map<String, Integer> cardinality, final Map<String, Integer> outliers, final boolean key) {
 		this.name = name;
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
@@ -86,8 +93,9 @@ public class TextAnalysisResult {
 		this.maxValue = maxValue;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
-		this.decimalSeparator = decimalSeparator;
 		this.sum = sum;
+		this.decimalSeparator = decimalSeparator;
+		this.resolutionMode = resolutionMode;
 		this.cardinality = cardinality;
 		this.outliers = outliers;
 		this.key = key;
@@ -189,6 +197,14 @@ public class TextAnalysisResult {
 	 */
 	public char getDecimalSeparator() {
 		return decimalSeparator;
+	}
+
+	/**
+	 * Get the DateResolutionMode actually used to process Dates.
+	 * @return The DateResolution mode used to process Dates.
+	 */
+	public DateResolutionMode getDateResolutionMode() {
+		return resolutionMode;
 	}
 
 	/**
@@ -464,6 +480,7 @@ public class TextAnalysisResult {
 		ret.append(K("trailingWhiteSpace")).append(getTrailingWhiteSpace()).append(newField);
 		ret.append(K("multiline")).append(getMultiline()).append(newField);
 
+		ret.append(K("dateResolutionMode")).append(getDateResolutionMode()).append(newField);
 		ret.append(K("logicalType")).append(isLogicalType()).append(newField);
 		ret.append(K("possibleKey")).append(key).append(eol);
 

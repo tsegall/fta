@@ -227,8 +227,8 @@ public class TextAnalyzer {
 	 * @param name The name of the data stream (e.g. the column of the CSV file)
 	 * @param resolutionMode Determines what to do when the Date field is ambiguous (i.e. we cannot determine which
 	 *   of the fields is the day or the month.  If resolutionMode is DayFirst, then assume day is first, if resolutionMode is
-	 *   MonthFirst then assume month is first, if it is None then the pattern returned may have '?' in to represent
-	 *   this ambiguity.
+	 *   MonthFirst then assume month is first, if it is Auto then choose either DayFirst or MonthFirst based on the locale, if it
+	 *   is None then the pattern returned will have '?' in to represent any ambiguity present.
 	 */
 	public TextAnalyzer(final String name, final DateResolutionMode resolutionMode) {
 		this.dataStreamName = name;
@@ -1646,41 +1646,45 @@ public class TextAnalyzer {
 			}
 			catch (DateTimeParseException reale) {
 				DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, resolutionMode, locale);
-				try {
-					result.parse(input);
-				}
-				catch (DateTimeParseException e) {
-					char ditch = '?';
-					if ("Insufficient digits in input (d)".equals(e.getMessage()))
-						ditch = 'd';
-					else if ("Insufficient digits in input (M)".equals(e.getMessage()))
-						ditch = 'M';
-					else if ("Insufficient digits in input (S)".equals(e.getMessage()))
-						ditch = 'S';
-					if (ditch != '?') {
-						try {
-
-							int offset = matchPatternInfo.format.indexOf(ditch);
-							String newFormatString;
-
-							if (ditch == 'S')
-								newFormatString = Utils.replaceFirst(matchPatternInfo.format, "SSS", "S{1,3}");
-							else
-								newFormatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(offset).toString();
-
-							result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
-							matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, newFormatString, false, -1, -1, null, newFormatString);
-
-							trackDateTime(matchPatternInfo.format, input);
-							matchCount++;
-							addValid(input);
-							valid = true;
-						}
-						catch (DateTimeParseException e2) {
-							System.err.println("**** " + e2.getMessage() + "***");
-							// Ignore and record as outlier below
-						}
+				boolean success = false;
+				do {
+					try {
+						result.parse(input);
+						success = true;
 					}
+					catch (DateTimeParseException e) {
+						char ditch = '?';
+						if ("Insufficient digits in input (d)".equals(e.getMessage()))
+							ditch = 'd';
+						else if ("Insufficient digits in input (M)".equals(e.getMessage()))
+							ditch = 'M';
+						else if ("Insufficient digits in input (S)".equals(e.getMessage()))
+							ditch = 'S';
+
+						if (ditch == '?')
+							break;
+
+						int offset = matchPatternInfo.format.indexOf(ditch);
+						String newFormatString;
+
+						if (ditch == 'S')
+							newFormatString = Utils.replaceFirst(matchPatternInfo.format, "SSS", "S{1,3}");
+						else
+							newFormatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(offset).toString();
+
+						result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
+						matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, newFormatString, false, -1, -1, null, newFormatString);
+					}
+				} while (!success);
+
+				try {
+					trackDateTime(matchPatternInfo.format, input);
+					matchCount++;
+					addValid(input);
+					valid = true;
+				}
+				catch (DateTimeParseException eIgnore) {
+					// Ignore and record as outlier below
 				}
 			}
 			break;
@@ -2156,7 +2160,7 @@ public class TextAnalyzer {
 
 		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,
 				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, minValue,
-				maxValue, minRawLength, maxRawLength, utilizedDecimalSeparator, sum, cardinality, outliers, key);
+				maxValue, minRawLength, maxRawLength, sum, utilizedDecimalSeparator, resolutionMode, cardinality, outliers, key);
 
 		return result;
 	}

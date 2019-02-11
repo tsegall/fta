@@ -42,8 +42,6 @@ class Driver {
 				options.charset = args[++idx];
 			else if ("--col".equals(args[idx]))
 				options.col = Integer.valueOf(args[++idx]);
-			else if ("--dayFirst".equals(args[idx]))
-				options.resolutionMode = DateResolutionMode.DayFirst;
 			else if ("--delimiter".equals(args[idx])) {
 				String delim = args[++idx];
 				options.csvFormat = options.csvFormat.withDelimiter("\\t".equals(delim) ? '\t' : delim.charAt(0));
@@ -52,14 +50,15 @@ class Driver {
 				logger.println("Usage: [--charset <charset>] [--col <n>] [--dayFirst] [--help] [--maxCardinality <n>] [--monthFirst] [--records <n>] [--samples <n>] [--verbose] file ...");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
-				logger.println(" --dayFirst - If dates are ambigous assume Day precedes Month");
 				logger.println(" --delimiter - Delimiter to use - must be a single character");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				logger.println(" --maxCardinality <n> - Set the Maximum Cardinality size");
 				logger.println(" --monthFirst - If dates are ambigous assume Month precedes Day");
 				logger.println(" --noAnalysis - Do not do analysis");
 				logger.println(" --noStatistics - Do not track statistics");
+				logger.println(" --pretty - Pretty print analysis");
 				logger.println(" --records <n> - The number of records to analyze");
+				logger.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
 				logger.println(" --samples <n> - Set the size of the sample window");
 				logger.println(" --validate - Validate the result of the analysis by reprocessing file against results");
 				logger.println(" --verbose - Output each record as it is processed");
@@ -69,14 +68,29 @@ class Driver {
 				options.locale = new Locale(args[++idx]);
 			else if ("--maxCardinality".equals(args[idx]))
 				options.maxCardinality = Integer.valueOf(args[++idx]);
-			else if ("--monthFirst".equals(args[idx]))
-				options.resolutionMode = DateResolutionMode.MonthFirst;
 			else if ("--noAnalysis".equals(args[idx]))
 				options.noAnalysis = true;
 			else if ("--noAnalysis".equals(args[idx]))
 				options.noStatistics = true;
+			else if ("--pretty".equals(args[idx]))
+				options.pretty = true;
 			else if ("--records".equals(args[idx]))
 				options.recordsToAnalyze = Long.valueOf(args[++idx]);
+			else if ("--resolutionMode".equals(args[idx])) {
+				String mode = args[++idx];
+				if (mode.equals("DayFirst"))
+					options.resolutionMode = DateResolutionMode.DayFirst;
+				else if (mode.equals("MonthFirst"))
+					options.resolutionMode = DateResolutionMode.MonthFirst;
+				else if (mode.equals("Auto"))
+					options.resolutionMode = DateResolutionMode.Auto;
+				else if (mode.equals("None"))
+					options.resolutionMode = DateResolutionMode.None;
+				else {
+					logger.printf("Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None\n", mode);
+					System.exit(1);
+				}
+			}
 			else if ("--samples".equals(args[idx]))
 				options.sampleSize = Integer.valueOf(args[++idx]);
 			else if ("--validate".equals(args[idx]))

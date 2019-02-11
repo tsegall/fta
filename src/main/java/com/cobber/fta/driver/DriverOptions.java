@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import org.apache.commons.csv.CSVFormat;
 
-import com.cobber.fta.DateTimeParser;
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 class DriverOptions {
@@ -35,4 +34,5 @@ class DriverOptions {
 	String charset = "UTF-8";
 	CSVFormat csvFormat = CSVFormat.DEFAULT;
 	boolean validate = false;
+	boolean pretty = false;
 }
