@@ -445,7 +445,9 @@ public class TextAnalysisResult {
 		ret.append(K("maxLength")).append(maxLength).append(newField);
 		if (sum != null)
 			ret.append(K("sum")).append(Q(sum)).append(newField);
-		ret.append(K("leadingZeroCount")).append(getLeadingZeroCount()).append(newField);
+
+		if (patternInfo.isNumeric())
+			ret.append(K("leadingZeroCount")).append(getLeadingZeroCount()).append(newField);
 
 		ret.append(K("cardinality")).append(Q(cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX")).append(newField);
 		if (verbose && cardinality.size() != 0 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {

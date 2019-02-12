@@ -1645,6 +1645,8 @@ public class TextAnalyzer {
 				valid = true;
 			}
 			catch (DateTimeParseException reale) {
+				// The real parse threw an Exception, this does not give us enough facts to usefully determine if there is any
+				// improvements to our assumptions we could make to do better, so re-parse and handle our more nuanced exception
 				DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, resolutionMode, locale);
 				boolean success = false;
 				do {
@@ -1653,13 +1655,13 @@ public class TextAnalyzer {
 						success = true;
 					}
 					catch (DateTimeParseException e) {
+						// If the parse exception is of the form 'Insufficient digits in input (M)' or similar
+						// then worth updating our pattern and retrying.
+						final String insufficient = "Insufficient digits in input (";
 						char ditch = '?';
-						if ("Insufficient digits in input (d)".equals(e.getMessage()))
-							ditch = 'd';
-						else if ("Insufficient digits in input (M)".equals(e.getMessage()))
-							ditch = 'M';
-						else if ("Insufficient digits in input (S)".equals(e.getMessage()))
-							ditch = 'S';
+						int find = e.getMessage().indexOf(insufficient);
+						if (find != -1)
+							ditch = e.getMessage().charAt(insufficient.length());
 
 						if (ditch == '?')
 							break;
@@ -1667,6 +1669,7 @@ public class TextAnalyzer {
 						int offset = matchPatternInfo.format.indexOf(ditch);
 						String newFormatString;
 
+						// S is s special case (unlike H, H, M, d) and is *NOT* handled by the default DateTimeFormatter.ofPattern
 						if (ditch == 'S')
 							newFormatString = Utils.replaceFirst(matchPatternInfo.format, "SSS", "S{1,3}");
 						else

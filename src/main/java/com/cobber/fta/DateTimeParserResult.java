@@ -591,7 +591,7 @@ public class DateTimeParserResult {
 				if (nextToken == Token.DAYS_2 && upto < inputLength &&
 						dateSeparator != null && dateSeparator == input.charAt(upto))
 					throw new DateTimeParseException("Insufficient digits in input (d)", input, upto);
-				if (nextToken == Token.MONTHS_2 && upto < inputLength &&
+				else if (nextToken == Token.MONTHS_2 && upto < inputLength &&
 						dateSeparator != null && dateSeparator == input.charAt(upto))
 					throw new DateTimeParseException("Insufficient digits in input (M)", input, upto);
 
@@ -634,6 +634,12 @@ public class DateTimeParserResult {
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				inputChar = input.charAt(upto);
+				if (nextToken == Token.HOURS12_2 && upto < inputLength &&
+						input.charAt(upto) == ':')
+					throw new DateTimeParseException("Insufficient digits in input (h)", input, upto);
+				else if (nextToken == Token.HOURS24_2 && upto < inputLength &&
+						input.charAt(upto) == ':')
+					throw new DateTimeParseException("Insufficient digits in input (H)", input, upto);
 				if (!Character.isDigit(inputChar))
 					throw new DateTimeParseException("Expecting digit", input, upto);
 				value = 10 * value + (inputChar - '0');

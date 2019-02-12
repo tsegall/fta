@@ -894,7 +894,16 @@ public class DateTimeParser {
 
 			compressed = Utils.replaceFirst(compressed, "d{2}:d{2}:d{2}", "HH:mm:ss");
 			components -= 3;
+		}
 
+		if (components != 3)
+			return null;
+
+		if (compressed.indexOf("d{2}:d{2}:d{2}") != -1) {
+			compressed = Utils.replaceFirst(compressed, "d{2}:d{2}:d{2}", "HH:mm:ss");
+			components -= 3;
+		}
+		else {
 			int yearIndex = compressed.indexOf("d{4}");
 			if (yearIndex != -1) {
 				compressed = Utils.replaceFirst(compressed, "d{4}", "yyyy");
@@ -928,43 +937,23 @@ public class DateTimeParser {
 				else
 					if (first > yearIndex)
 						compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "MM"), "d{2}", "dd");
-					else
-						if (resolutionMode == DateResolutionMode.DayFirst)
+					else {
+						int firstValue = Utils.getValue(trimmed, first, 2, 2);
+						int secondValue = Utils.getValue(trimmed, second, 2, 2);
+
+						if (firstValue > 12)
 							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "dd"), "d{2}", "MM");
-						else
+						else if (secondValue > 12)
 							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "MM"), "d{2}", "dd");
+						else
+							if (resolutionMode == DateResolutionMode.DayFirst)
+								compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "dd"), "d{2}", "MM");
+							else
+								compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "MM"), "d{2}", "dd");
+					}
 
 			}
 		}
-		else if (components == 3) {
-			if (compressed.indexOf(':') != -1) {
-				if (compressed.indexOf("d{2}:d{2}:d{2}") == -1)
-					return null;
-				compressed = Utils.replaceFirst(compressed, "d{2}:d{2}:d{2}", "HH:mm:ss");
-			}
-			else {
-				if (compressed.indexOf("d{4}") != -1) {
-					compressed = Utils.replaceFirst(compressed, "d{4}", "yyyy");
-					components--;
-				}
-
-				if (compressed.indexOf("a{3}") == -1)
-					return null;
-
-				compressed = Utils.replaceFirst(compressed, "a{3}", "MMM");
-				components--;
-
-				if (components != 1)
-					return null;
-
-				if (compressed.indexOf("d{2}") == -1)
-					return null;
-
-				compressed = Utils.replaceFirst(compressed, "d{2}", "dd");
-			}
-		}
-		else
-			return null;
 
 		// So we think we have nailed it - but it only counts if it happily passes a validity check
 
