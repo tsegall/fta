@@ -621,7 +621,11 @@ public class DateTimeParser {
 				break;
 
 			case '.':
-				if (!timeSeen || timeClosed) {
+				// If are not processing the time component
+				if ((!timeSeen || timeClosed)) {
+					if (dateComponent == 2)
+						return null;
+
 					// Expecting a 'dotted' date - e.g. 9.12.2008
 					dateSeen = true;
 					dateValue[dateComponent] = value;

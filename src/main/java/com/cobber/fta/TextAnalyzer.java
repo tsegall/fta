@@ -921,15 +921,29 @@ public class TextAnalyzer {
 			return matchType != null;
 		}
 
-		final String input = rawInput.trim();
+		final String trimmed = rawInput.trim();
 
-		final int length = input.length();
+		final int length = trimmed.length();
 
 		if (length == 0) {
 			blankCount++;
 			trackLengthAndShape(rawInput);
 			return matchType != null;
 		}
+
+		// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
+		// if there happens to be an issue then we will lose this training event.
+		boolean result;
+		try {
+			result = trainCore(rawInput, trimmed, length);
+		}
+		catch (RuntimeException e) {
+			return false;
+		}
+		return result;
+	}
+
+	public boolean trainCore(final String rawInput, String trimmed, final int length) {
 
 		trackResult(rawInput);
 
@@ -958,14 +972,14 @@ public class TextAnalyzer {
 		int matches = 0;
 		if (hasNegativePrefix) {
 			matchesRequired++;
-			if (negativePrefix == input.charAt(0)) {
+			if (negativePrefix == trimmed.charAt(0)) {
 				matches++;
 				startLooking = 1;
 			}
 		}
 		if (hasNegativeSuffix) {
 			matchesRequired++;
-			if (negativeSuffix == input.charAt(length - 1)) {
+			if (negativeSuffix == trimmed.charAt(length - 1)) {
 				matches++;
 				stopLooking = length - 1;
 			}
@@ -974,7 +988,7 @@ public class TextAnalyzer {
 			numericSigned = true;
 
 		for (int i = startLooking; i < stopLooking; i++) {
-			char ch = input.charAt(i);
+			char ch = trimmed.charAt(i);
 
 			// Track counts and last occurrence for simple characters
 			if (ch <= 127) {
@@ -1019,9 +1033,9 @@ public class TextAnalyzer {
 		final StringBuilder compressedl0 = new StringBuilder(length);
 		if (alphasSeen != 0 && digitsSeen != 0 && alphasSeen + digitsSeen == length) {
 			compressedl0.append(KnownPatterns.PATTERN_ALPHANUMERIC).append('{').append(String.valueOf(length)).append('}');
-		} else if ("true".equalsIgnoreCase(input) || "false".equalsIgnoreCase(input)) {
+		} else if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
 			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_TRUE_FALSE);
-		} else if ("yes".equalsIgnoreCase(input) || "no".equalsIgnoreCase(input)) {
+		} else if ("yes".equalsIgnoreCase(trimmed) || "no".equalsIgnoreCase(trimmed)) {
 			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_YES_NO);
 		} else {
 			String l0withSentinel = l0.toString() + "|";
@@ -1050,13 +1064,13 @@ public class TextAnalyzer {
 		}
 		levels[0].add(compressedl0);
 
-		if (dateTimeParser.determineFormatString(input) != null)
+		if (dateTimeParser.determineFormatString(trimmed) != null)
 			possibleDateTime++;
 
 		// Check to see if this input is one of our registered Infinite Logical Types
 		int c = 0;
 		for (LogicalTypeInfinite logical : infiniteTypes) {
-			if (logical.isCandidate(input, compressedl0, charCounts, lastIndex))
+			if (logical.isCandidate(trimmed, compressedl0, charCounts, lastIndex))
 				candidateCounts[c]++;
 			c++;
 		}

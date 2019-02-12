@@ -1930,7 +1930,8 @@ public class TestDates {
 				"1.1.2011", "1.1.2012", "1.1.2013", "1.1.2014", "1.1.2015", "1.1.2016", "1.10.2011", "1.10.2012", "1.10.2013", "1.10.2014",
 				"1.10.2015", "1.11.2011", "1.11.2012", "1.15.2013", "1.11.2014", "1.11.2015", "1.12.2011", "1.12.2012", "1.12.2013", "1.12.2014",
 				"9.6.2014", "9.6.2015", "9.6.2016", "9.7.2011", "9.7.2012", "9.7.2013", "9.7.2014", "9.7.2015", "9.7.2016", "9.8.2011",
-				"9.8.2012", "9.8.2013", "9.8.2014", "9.8.2015", "9.9.2011", "9.9.2012", "9.9.2013", "9.9.2014", "9.9.2015"
+				"9.8.2012", "9.8.2013", "9.8.2014", "9.8.2015", "9.9.2011", "9.9.2012", "9.9.2013", "9.9.2014", "9.9.2015",
+				"1.1.2011.12.12.2012",
 		};
 		int locked = -1;
 
@@ -1947,10 +1948,10 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
+		Assert.assertEquals(result.getConfidence(), 1.0 - (double)1/result.getSampleCount());
 
-		for (int i = 0; i < inputs.length; i++) {
+		for (int i = 0; i < inputs.length - 1; i++) {
 			if (!inputs[i].isEmpty())
 				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 		}
@@ -1993,7 +1994,7 @@ public class TestDates {
 
 	@Test
 	public void colonDates_MMddyyyy() throws IOException {
-		final TextAnalyzer analysis = new TextAnalyzer("dottedDate");
+		final TextAnalyzer analysis = new TextAnalyzer("colonDates_MMddyyyy");
 
 		final String inputs[] = new String[] {
 				"08:16:2014", "05:16:2018", "08:15:2013", "08:16:2043", "08:15:2043", "08:16:2013",
