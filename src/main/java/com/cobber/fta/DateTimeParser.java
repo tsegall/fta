@@ -741,6 +741,8 @@ public class DateTimeParser {
 					return null;
 			}
 			fourDigitYear = digits == 4;
+			if (dateComponent != 2)
+				return null;
 			dateValue[dateComponent] = value;
 			dateDigits[dateComponent] = digits;
 			digits = 0;
