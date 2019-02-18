@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
@@ -106,6 +107,9 @@ public class TextAnalyzer {
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
 	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
 
+	/** We are prepared to recognize any set of this size as an enum (and give a suitable regular expression). */
+	private final int MAX_ENUM_SIZE = 40;
+
 	private static final int REFLECTION_SAMPLES = 30;
 	private int reflectionSamples = REFLECTION_SAMPLES;
 
@@ -125,8 +129,8 @@ public class TextAnalyzer {
 	private long nullCount;
 	private long blankCount;
 	private Map<String, Integer> cardinality = new HashMap<String, Integer>();
-	private final Map<String, Integer> outliers = new HashMap<String, Integer>();
-	private final Map<String, Integer> outliersCompressed = new HashMap<String, Integer>();
+	private Map<String, Integer> outliers = new HashMap<String, Integer>();
+	private final Map<String, Integer> outliersSmashed = new HashMap<String, Integer>();
 	private List<String> raw; // 0245-11-98
 	// 0: d{4}-d{2}-d{2} 1: d{+}-d{+}-d{+} 2: d{+}-d{+}-d{+}
 	// 0: d{4} 1: d{+} 2: [-]d{+}
@@ -1325,25 +1329,6 @@ public class TextAnalyzer {
 		return result.toString();
 	}
 
-	private String compress(final String input) {
-		StringBuilder b = new StringBuilder();
-
-		int len = input.length();
-		if (len > 30)
-			return ".+";
-		for (int i = 0; i < len; i++) {
-			char ch = input.charAt(i);
-			if (Character.isDigit(ch))
-				b.append('1');
-			else if (Character.isAlphabetic(ch))
-				b.append('a');
-			else
-				b.append(ch);
-		}
-
-		return b.toString();
-	}
-
 	private int outlier(final String input) {
 		final String cleaned = input.trim();
 		final int trimmedLength = cleaned.length();
@@ -1359,13 +1344,13 @@ public class TextAnalyzer {
 		if (maxOutlierString == null || maxOutlierString.compareTo(cleaned) < 0)
 			maxOutlierString = cleaned;
 
-		String compressed = compress(input);
-		Integer seen = outliersCompressed.get(compressed);
+		String smashed = RegExpGenerator.smash(input);
+		Integer seen = outliersSmashed.get(smashed);
 		if (seen == null) {
-			if (outliersCompressed.size() < maxOutliers)
-				outliersCompressed.put(compressed, 1);
+			if (outliersSmashed.size() < maxOutliers)
+				outliersSmashed.put(smashed, 1);
 		} else {
-			outliersCompressed.put(compressed, seen + 1);
+			outliersSmashed.put(smashed, seen + 1);
 		}
 
 		seen = outliers.get(input);
@@ -1388,7 +1373,7 @@ public class TextAnalyzer {
 		int nonAlphaNumeric = 0;
 		boolean negative = false;
 		boolean exponent = false;
-		Map<String, Integer> outlierMap = useCompressed ? outliersCompressed : outliers;
+		Map<String, Integer> outlierMap = useCompressed ? outliersSmashed : outliers;
 
 		// Sweep the current outliers
 		for (final Map.Entry<String, Integer> entry : outlierMap.entrySet()) {
@@ -1508,7 +1493,7 @@ public class TextAnalyzer {
 		}
 
 		outliers.clear();
-		outliersCompressed.clear();
+		outliersSmashed.clear();
 	}
 
 	/**
@@ -1565,7 +1550,7 @@ public class TextAnalyzer {
 		}
 
 		if (uniformShape) {
-			String inputShape = compress(input);
+			String inputShape = RegExpGenerator.smash(input);
 			if (shape == null)
 				shape = inputShape;
 			else if (!shape.contentEquals(inputShape))
@@ -2006,53 +1991,163 @@ public class TextAnalyzer {
 			}
 
 			// Fixup any likely enums
-			if (matchPatternInfo.typeQualifier == null && cardinalityUpper.size() < 100 && outliersCompressed.size() != 0) {
-				boolean fail = false;
-				int count = 0;
+			if (matchPatternInfo.typeQualifier == null && cardinalityUpper.size() < MAX_ENUM_SIZE && outliers.size() != 0 && outliers.size() < 10) {
+				boolean updated = false;
 
-				for (final Map.Entry<String, Integer> entry : outliersCompressed.entrySet()) {
+				Set<String> killSet = new HashSet<>();
+
+				// Sort the outliers so that we consider the most frequent first
+				outliers = Utils.sortByValue(outliers);
+
+				// Iterate through the outliers adding them to the core cardinality set if we think they are reasonable.
+				for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
 					String key = entry.getKey();
-					count += entry.getValue();
-					int len = key.length();
-					for (int i = 0; i < len; i++) {
-						char c = key.charAt(i);
-						if (c != '1' && c != 'a' && c != '-' && c != '_') {
-							fail = true;
-							break;
+					String keyUpper = key.toUpperCase(locale).trim();
+					String validChars = " _-";
+					boolean skip = false;
+
+					// We are wary of outliers that only have one instance, do an extra check that the characters in the
+					// outlier exist in the real set.
+					if (entry.getValue() == 1) {
+						// Build the universe of valid characters
+						for (String existing : cardinalityUpper.keySet()) {
+							for (int i = 0; i < existing.length(); i++) {
+								char ch = existing.charAt(i);
+								if (!Character.isAlphabetic(ch) && !Character.isDigit(ch))
+									if (validChars.indexOf(ch) == -1)
+										validChars += ch;
+							}
+						}
+						for (int i = 0; i < keyUpper.length(); i++) {
+							char ch = keyUpper.charAt(i);
+							if (!Character.isAlphabetic(ch) && !Character.isDigit(ch) && validChars.indexOf(ch) == -1) {
+								skip = true;
+								break;
+							}
 						}
 					}
+					else
+						skip = false;
+
+					if (!skip) {
+						Integer value = cardinalityUpper.get(keyUpper);
+						if (value == null)
+							cardinalityUpper.put(keyUpper, entry.getValue());
+						else
+							cardinalityUpper.put(keyUpper, value + entry.getValue());
+						killSet.add(key);
+						updated = true;
+					}
 				}
-				if ((double)count/matchCount > 0.01 && !fail) {
+
+				// If we updated the set then we need to remove the outliers we OK'd and
+				// also update the pattern to reflect the looser definition
+				if (updated) {
+					Map<String, Integer> remainingOutliers = new HashMap<String, Integer>();
+					remainingOutliers.putAll(outliers);
+					for (String elt : killSet)
+						remainingOutliers.remove(elt);
+
 					backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
 					confidence = (double) matchCount / realSamples;
+					outliers = remainingOutliers;
 				}
 			}
 
 			// Need to evaluate if we got the type wrong
-			if (matchPatternInfo.typeQualifier == null && matchPatternInfo.isAlphabetic() && realSamples >= reflectionSamples) {
+			if (matchPatternInfo.typeQualifier == null && outliers.size() != 0 && matchPatternInfo.isAlphabetic() && realSamples >= reflectionSamples) {
 				conditionalBackoutToPattern(realSamples, matchPatternInfo, false);
 				confidence = (double) matchCount / realSamples;
+
+				// Rebuild the cardinalityUpper Map
+				cardinalityUpper.clear();
+				for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+					String key = entry.getKey().toUpperCase(locale).trim();
+					final Integer seen = cardinalityUpper.get(key);
+					if (seen == null) {
+						cardinalityUpper.put(key, entry.getValue());
+					} else
+						cardinalityUpper.put(key, seen + entry.getValue());
+				}
 			}
 		}
 
 		if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier == null) {
-			if (KnownPatterns.PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) && sampleCount > reflectionSamples && cardinalityUpper.size() > 1 && cardinalityUpper.size() < 5) {
-				RegExpGenerator gen = new RegExpGenerator(true, locale);
-				for (String elt : cardinalityUpper.keySet())
+
+			// We would really like to say something better than it is a String!
+
+			boolean updated = false;
+			long interestingSamples = sampleCount - (nullCount + blankCount);
+
+			// First try a nice discrete enum
+			if ((interestingSamples > reflectionSamples || interestingSamples / cardinalityUpper.size() >= 3) && cardinalityUpper.size() > 1 && cardinalityUpper.size() <= MAX_ENUM_SIZE) {
+				// Rip through the enum doing some basic sanity checks
+				RegExpGenerator gen = new RegExpGenerator(true, MAX_ENUM_SIZE, locale);
+				boolean fail = false;
+				int excessiveDigits = 0;
+				for (String elt : cardinalityUpper.keySet()) {
+					int length = elt.length();
+					// Give up if any one of the string is too long
+					if (length > 40) {
+						fail = true;
+						break;
+					}
+					int digits = 0;
+					for (int i = 0; i < length; i++) {
+						char ch = elt.charAt(i);
+						// Give up if we have some non-expected character
+						if (!Character.isAlphabetic(ch) && !Character.isDigit(ch) &&
+								ch != '-' && ch != '_' && ch != ' ' && ch != ';' && ch != '.' && ch != ',' && ch != '/' && ch != '(' && ch != ')') {
+							fail = true;
+							break;
+						}
+
+						// Record how many of the elements have 3 or more digits
+						if (Character.isDigit(ch)) {
+							digits++;
+							if (digits == 3)
+								excessiveDigits++;
+						}
+					}
+
+					if (fail)
+						break;
 					gen.train(elt);
-				matchPatternInfo = new PatternInfo(null, gen.getResult(), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
-						maxTrimmedLength, null, null);
+				}
+
+				// If we did not find any reason to reject, output it as an enum
+				if (excessiveDigits != cardinalityUpper.size() && !fail) {
+					matchPatternInfo = new PatternInfo(null, gen.getResult(), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+							maxTrimmedLength, null, null);
+					updated = true;
+				}
 			}
+
+			/*
+			if (!updated && cardinality.size() == 1 && interestingSamples > reflectionSamples) {
+				matchPatternInfo = new PatternInfo(null, RegExpGenerator.slosh(cardinality.keySet().iterator().next().trim()), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+						maxTrimmedLength, null, null);
+				updated = true;
+			}
+			*/
+
+			if (!updated && uniformShape && interestingSamples > reflectionSamples) {
+				matchPatternInfo = new PatternInfo(null, RegExpGenerator.smashedAsRegExp(shape.trim()), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+						maxTrimmedLength, null, null);
+				updated = true;
+			}
+
 			// Qualify Alpha or Alnum with a min and max length
-			else if ((KnownPatterns.PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
+			if (!updated && (KnownPatterns.PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
 				String newPattern = matchPatternInfo.regexp;
 				newPattern = newPattern.substring(0, newPattern.length() - 1) + lengthQualifier(minTrimmedLength, maxTrimmedLength);
 				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 						maxTrimmedLength, null, null);
+				updated = true;
 			}
 
 			// Qualify random string with a min and max length
-			if (KnownPatterns.PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
+			if (!updated && KnownPatterns.PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
 				String newPattern = null;
 				if (uniformShape && cardinality.size() > 1)
 					newPattern = shapeToRegExp(shape);
@@ -2060,6 +2155,7 @@ public class TextAnalyzer {
 					newPattern = KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minRawNonBlankLength, maxRawNonBlankLength, leadingWhiteSpace, trailingWhiteSpace, multiline);
 				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minRawLength,
 						maxRawLength, null, null);
+				updated = true;
 			}
 		}
 

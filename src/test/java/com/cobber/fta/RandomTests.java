@@ -369,7 +369,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 1);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*((?i)(HI|HELLO|WORLD))\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*((?i)(HELLO|HI|WORLD))\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
@@ -455,7 +455,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getMatchCount() + result.getBlankCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(6, 40, 6, 40, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
+		Assert.assertEquals(result.getRegExp(), "(?i)(AUDIO DISC ; VOLUME|COMPUTER DISC|ONLINE RESOURCE|\\QONLINE RESOURCE (EPUB EBOOK)\\E|\\QONLINE RESOURCE (PDF EBOOK ; EPUB EBOOK)\\E|VOLUME)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "Audio disc ; Volume");
 		Assert.assertEquals(result.getMaxValue(), "Volume");
@@ -491,7 +491,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "+");
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{5}");
 	}
 
 	@Test
@@ -511,7 +511,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "+");
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\p{IsDigit}{5}");
 	}
 
 	@Test
@@ -543,7 +543,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{2,3}");
+		Assert.assertEquals(result.getRegExp(), "(?i)(AB|APR|AUG|BC|DEC|FEB|JAN|JUL|JUN|MAR|MAY|MB|NA|NB|NL|NOV|NS|NT|NU|OCT|ON|PE|QC|SEP|SK|YT)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -748,7 +748,7 @@ public class RandomTests {
 			"aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|ççç|iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|" +
 			"iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
 			"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
-			"mmm|iii|uuu|fff|ggg|ggg|uuu|uuu|uuu|uuu|";
+			"kkk|lll|nnn|ooo|qqq|ppp|rrr|ttt|www|zzz|mmm|iii|uuu|fff|ggg|ggg|uuu|uuu|uuu|uuu|";
 	final String number3 = "111|123|707|902|104|223|537|902|111|443|" +
 			"121|234|738|902|002|431|679|093|124|557|886|631|235|569|002|149|963|271|905|501|" +
 			"171|734|038|002|882|215|875|193|214|997|126|361|098|888|314|111|222|341|458|082|" +
@@ -759,27 +759,26 @@ public class RandomTests {
 	public void constantLength3_alpha() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = alpha3.split("\\|");
-		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
+			analysis.train("a" + inputs[i]);
+			analysis.train("b" + inputs[i]);
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}");
-		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{4}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getSampleCount(), inputs.length * 2);
 		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length * 2);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+			Assert.assertTrue(("a" + inputs[i]).matches(result.getRegExp()));
+			Assert.assertTrue(("b" + inputs[i]).matches(result.getRegExp()));
 		}
 	}
 
@@ -898,7 +897,7 @@ public class RandomTests {
 		}
 		Assert.assertEquals(matches, result.getMatchCount());
 
-		if (result.getMatchCount() != 0) {
+		if (result.getMatchCount() != 0 && !result.getRegExp().startsWith("(?i)")) {
 			String re = "";
 			if (result.getLeadingWhiteSpace())
 				re += "\\p{javaWhitespace}*";
@@ -912,7 +911,7 @@ public class RandomTests {
 	@Test
 	public void basicEnum() throws IOException {
 		final String input = "APARTMENT|APARTMENT|DUPLEX|APARTMENT|DUPLEX|CONDO|DUPLEX|CONDO|" +
-				"DUPLEX|DUPLEX|CONDO|CONDODUPLEX|DUPLEX|CONDO|APARTMENT|" +
+				"DUPLEX|DUPLEX|CONDO|CONDO|DUPLEX|DUPLEX|CONDO|APARTMENT|" +
 				"DUPLEX|CONDO|CONDO|CONDO|DUPLEX|DUPLEX|DUPLEX|DUPLEX|CONDO|" +
 				"DUPLEX|DUPLEX|APARTMENT|CONDO|DUPLEX|CONDO|APARTMENT|APARTMENT|DUPLEX|" +
 				"DUPLEX|APARTMENT|APARTMENT|APARTMENT|CONDO|CONDO|APARTMENT|CONDO|DUPLEX|" +
@@ -1079,7 +1078,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), 5 * iterations + 1);
 		Assert.assertEquals(result.getNullCount(), iterations);
 		Assert.assertEquals(result.getCardinality(), 5);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{7,9}");
+		Assert.assertEquals(result.getRegExp(), "(?i)(FICTIONAL|PRIMARY|SECONDARY|SECONDORY|TERTIARY)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1319,7 +1318,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
+		Assert.assertEquals(result.getRegExp(), "\\p{IsDigit}{3}-\\p{IsDigit}{2}-\\p{IsDigit}{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -1356,7 +1355,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\+\\d{1} \\d{3} \\d{3} \\d{4}");
+		Assert.assertEquals(result.getRegExp(), "\\+\\p{IsDigit} \\p{IsDigit}{3} \\p{IsDigit}{3} \\p{IsDigit}{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -1393,7 +1392,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\d{1}\\.\\d{3}\\.\\d{3}\\.\\d{4}");
+		Assert.assertEquals(result.getRegExp(), "\\p{IsDigit}\\.\\p{IsDigit}{3}\\.\\p{IsDigit}{3}\\.\\p{IsDigit}{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -1430,7 +1429,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\(\\d{3}\\) \\d{3} \\d{4}");
+		Assert.assertEquals(result.getRegExp(), "\\(\\p{IsDigit}{3}\\) \\p{IsDigit}{3} \\p{IsDigit}{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -1467,7 +1466,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\[\\d{3}\\)\\{\\[\\d{1}-\\d{1}\\] \\^\\d{3}\\$\\d{4}");
+		Assert.assertEquals(result.getRegExp(), "\\[\\p{IsDigit}{3}\\)\\{\\[\\p{IsDigit}-\\p{IsDigit}\\] \\^\\p{IsDigit}{3}\\$\\p{IsDigit}{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -1594,7 +1593,7 @@ public class RandomTests {
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), end - start);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{7}");
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\p{IsDigit}{6}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertTrue(result.isKey());
 		Assert.assertEquals(result.getConfidence(), 1.0);

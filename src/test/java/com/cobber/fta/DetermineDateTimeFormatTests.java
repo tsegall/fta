@@ -130,6 +130,7 @@ public class DetermineDateTimeFormatTests {
 	public void intuitTimeOnly() {
 		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
+		Assert.assertNull(dtp.determineFormatString("12:02:1"));
 		Assert.assertEquals(dtp.determineFormatString("9:57"), "H:mm");
 		Assert.assertEquals(dtp.determineFormatString("12:57"), "HH:mm");
 		Assert.assertEquals(dtp.determineFormatString("8:57:02"), "H:mm:ss");
@@ -139,7 +140,6 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertNull(dtp.determineFormatString("12:023"));
 		Assert.assertNull(dtp.determineFormatString("12:023:12"));
 		Assert.assertNull(dtp.determineFormatString("12:0"));
-		Assert.assertNull(dtp.determineFormatString("12:02:1"));
 		Assert.assertNull(dtp.determineFormatString("12:02:12:14"));
 		Assert.assertNull(dtp.determineFormatString("12:02:124"));
 		Assert.assertNull(dtp.determineFormatString("12:02:"));

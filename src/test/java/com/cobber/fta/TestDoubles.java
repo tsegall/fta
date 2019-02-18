@@ -286,7 +286,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?" + Utils.slosh(grpSep) + "\\d+");
+		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?" + RegExpGenerator.slosh(grpSep) + "\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -323,7 +323,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?" + Utils.slosh('.') + "\\d+");
+		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?" + RegExpGenerator.slosh('.') + "\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -430,8 +430,8 @@ public class TestDoubles {
 
 			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
-			String grp = Utils.slosh(formatSymbols.getGroupingSeparator());
-			String dec = Utils.slosh(formatSymbols.getDecimalSeparator());
+			String grp = RegExpGenerator.slosh(formatSymbols.getGroupingSeparator());
+			String dec = RegExpGenerator.slosh(formatSymbols.getDecimalSeparator());
 			NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 //			System.err.printf("Locale '%s', grouping: %s, decimal: %s.\n", locale, grp, dec);
 
@@ -456,7 +456,7 @@ public class TestDoubles {
 			String regExp = "";
 			if (!negPrefix.isEmpty())
 				regExp += negPrefix;
-			regExp += "[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]+";
+			regExp += "[\\d" + RegExpGenerator.slosh(formatSymbols.getGroupingSeparator()) + "]+";
 			if (!negSuffix.isEmpty())
 				regExp += negSuffix;
 			regExp += "|";
@@ -663,7 +663,7 @@ public class TestDoubles {
 			Assert.assertEquals(result.getLeadingZeroCount(), 0);
 			Assert.assertEquals(result.getDecimalSeparator(), formatSymbols.getDecimalSeparator());
 
-			String regExp = "[+-]?\\d+|[+-]?(\\d+)?" + Utils.slosh(formatSymbols.getDecimalSeparator()) + "\\d+";
+			String regExp = "[+-]?\\d+|[+-]?(\\d+)?" + RegExpGenerator.slosh(formatSymbols.getDecimalSeparator()) + "\\d+";
 
 			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
@@ -886,7 +886,7 @@ public class TestDoubles {
 
 			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
-			String grp = Utils.slosh(formatSymbols.getGroupingSeparator());
+			String grp = RegExpGenerator.slosh(formatSymbols.getGroupingSeparator());
 
 			boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 

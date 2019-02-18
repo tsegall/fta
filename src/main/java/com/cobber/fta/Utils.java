@@ -59,21 +59,6 @@ public class Utils {
 
 		return true;
 	}
-	public static String slosh(char ch) {
-		if (ch == '.' || ch == '(' || ch == ')' || ch == '+' || ch == '*')
-			return "\\" + ch;
-		return String.valueOf(ch);
-	}
-
-	public static String slosh(String input) {
-		StringBuilder result = new StringBuilder();
-
-		for (int i = 0; i < input.length(); i++) {
-			result.append(slosh(input.charAt(i)));
-		}
-
-		return result.toString();
-	}
 
 	public static String replaceFirst(String input, String oldString, String newString) {
 		int index = input.indexOf(oldString);

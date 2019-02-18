@@ -75,7 +75,29 @@ public class DateTimeParser {
 		// Cache the set of available Time Zones
 		Collections.addAll(timeZones, TimeZone.getAvailableIDs());
 		// Add the non-real Time Zones (that people use)
-		timeZones.addAll(Arrays.asList(new String[] {"EDT", "CDT", "MDT", "PDT"}));
+		timeZones.addAll(Arrays.asList(new String[] {
+				"ACDT", "ACST", "ACT", "ACWST", "ADS", "ADST", "ADT", "AEDT", "AEST", "AET", "AFT", "AKDT",
+				"AKST", "ALMT", "AMDT", "AMST", "AMT", "ANAST", "ANAT", "AQTT", "ART", "AST", "AT", "AWDT",
+				"AWST", "AZODT", "AZOST", "AZOT", "AZST", "AZT", "BDST", "BDT", "BNT", "BOT", "BRST", "BST",
+				"BT", "BTT", "CAST", "CAT", "CCT", "CDST", "CDT", "CEDT", "CEST", "CET", "CHADT", "CHAST",
+				"CHODST", "CHODT", "CHOST", "CHOT", "CHUT", "CIDST", "CIST", "CIT", "CKT", "CLDT", "CLST", "CLT",
+				"COT", "CST", "CT", "CVT", "CXT", "ChST", "DAVT", "DDUT", "EADT", "EASST", "EAST", "EAT",
+				"ECST", "ECT", "EDST", "EDT", "EEDT", "EEST", "EET", "EFATE", "EGST", "EGT", "EST", "ET",
+				"FET", "FJDT", "FJST", "FJT", "FKDT", "FKST", "FKT", "FNT", "GALT", "GAMT", "GET", "GFT",
+				"GILT", "GMT", "GST", "GT", "GYT", "HAA", "HAC", "HADT", "HAE", "HAP", "HAR", "HAST",
+				"HAT", "HDT", "HKT", "HLV", "HNA", "HNC", "HNE", "HNP", "HNR", "HNT", "HOVDST", "HOVDT",
+				"HOVST", "HOVT", "HST", "ICT", "IDT", "IOT", "IRDT", "IRKST", "IRKT", "IRST", "IST", "IT",
+				"JST", "KGT", "KIT", "KOST", "KRAST", "KRAT", "KST", "KT", "KUYT", "LHDT", "LHST", "LINT",
+				"MAGST", "MAGT", "MART", "MAWT", "MCK", "MDST", "MDT", "MESZ", "MEZ", "MHT", "MMT", "MSD",
+				"MSK", "MST", "MT", "MUT", "MVT", "MYT", "NACDT", "NACST", "NAEDT", "NAEST", "NAMDT", "NAMST",
+				"NAPDT", "NAPST", "NCT", "NDT", "NFT", "NOVST", "NOVT", "NPT", "NRT", "NST", "NUT", "NZDT",
+				"NZST", "OESZ", "OEZ", "OMSST", "OMST", "ORAT", "PDST", "PDT", "PET", "PETST", "PETT", "PGT",
+				"PHOT", "PHT", "PKT", "PMDT", "PMST", "PONT", "PST", "PT", "PWT", "PYST", "PYT", "Pacific",
+				"QYZT", "RET", "ROTT", "SAKT", "SAMST", "SAMT", "SAST", "SBT", "SCT", "SGT", "SRET", "SRT",
+				"SST", "ST", "SYOT", "TAHT", "TFT", "TJT", "TKT", "TLT", "TMT", "TOST", "TOT", "TRT",
+				"TVT", "ULAST", "ULAT", "UYST", "UYT", "UZT", "VET", "VLAST", "VLAT", "VOST", "VUT", "WAKT",
+				"WARST", "WAST", "WAT", "WDT", "WEDT", "WEST", "WESZ", "WET", "WEZ", "WFT", "WGST", "WGT",
+				"WIB", "WIT", "WITA", "WST", "WT", "YAKST", "YAKT", "YAPT", "YEKST", "YEKT" }));
 	}
 
 	public static int shortMonthOffset(final String month, Locale locale) {
@@ -887,43 +909,36 @@ public class DateTimeParser {
 		String compressed = matcher.getCompressed();
 		int components = matcher.getComponentCount();
 
-		if (components == 7) {
+		if (components >= 6) {
 			if (compressed.indexOf("d{3}") == -1)
 				return null;
 			compressed = Utils.replaceFirst(compressed, "d{3}", "SSS");
 			components--;
 		}
 
-		if (components == 6) {
-			if (compressed.indexOf("d{2}:d{2}:d{2}") == -1)
-				return null;
-
+		if (components >= 3 && compressed.indexOf("d{2}:d{2}:d{2}") != -1) {
 			compressed = Utils.replaceFirst(compressed, "d{2}:d{2}:d{2}", "HH:mm:ss");
 			components -= 3;
 		}
 
-		if (components != 3)
+		if (components > 3)
 			return null;
 
-		if (compressed.indexOf("d{2}:d{2}:d{2}") != -1) {
-			compressed = Utils.replaceFirst(compressed, "d{2}:d{2}:d{2}", "HH:mm:ss");
-			components -= 3;
-		}
-		else {
+		if (components != 0) {
+			int alreadyResolved = 0;
 			int yearIndex = compressed.indexOf("d{4}");
 			if (yearIndex != -1) {
 				compressed = Utils.replaceFirst(compressed, "d{4}", "yyyy");
 				components--;
+				alreadyResolved++;
 			}
 
-			int monthIndex = compressed.indexOf("a{3}");
-			if (monthIndex != -1) {
-				compressed = Utils.replaceFirst(compressed, "a{3}", "MMM");
-				components--;
-			}
+			int monthIndex = compressed.indexOf("MMM");
+			if (monthIndex != -1)
+				alreadyResolved++;
 
-			// We failed to find a 4 digit year or a alpha month so give up
-			if (components == 3)
+			// At this point we need at most two unresolved components
+			if (alreadyResolved == 0 || components + alreadyResolved != 3)
 				return null;
 
 			if (components == 1) {

@@ -37,7 +37,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 5.1.1`
+`$ gradle wrapper --gradle-version 5.2.1`
 
 `$ ./gradlew installDist`
 

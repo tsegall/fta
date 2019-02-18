@@ -108,7 +108,7 @@ public class TestUtils {
 				if ("-".equals(negPrefix))
 					negPrefix = "[+-]?";
 				else
-					negPrefix = Utils.slosh(negPrefix) + "?";
+					negPrefix = RegExpGenerator.slosh(negPrefix) + "?";
 		}
 		return negPrefix;
 	}
@@ -123,7 +123,7 @@ public class TestUtils {
 				if ("-".equals(negSuffix))
 					negSuffix = "[+-]?";
 				else
-					negSuffix = Utils.slosh(negSuffix) + "?";
+					negSuffix = RegExpGenerator.slosh(negSuffix) + "?";
 		}
 		return negSuffix;
 	}

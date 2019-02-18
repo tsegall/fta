@@ -57,7 +57,7 @@ public class TestStrings {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length * ITERATIONS + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{1,10}");
+		Assert.assertEquals(result.getRegExp(), "(?i)(A|ASK|CAN|DO|H|HELLO|HELLOWORLD|NOT|WHAT|YOU|Z)");
 		Assert.assertEquals(result.getMatchCount(), inputs.length * ITERATIONS);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
@@ -103,5 +103,31 @@ public class TestStrings {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void niceEnum() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = new String[] { "Corrective", "Discretionary", "Marketing/Retention", "Reactivation(FS Only)", "Undefined" };
+		final int iterations = 10;
+
+		for (int i = 0; i < iterations; i++) {
+			for (String sample : inputs)
+				analysis.train(sample);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "(?i)(CORRECTIVE|DISCRETIONARY|MARKETING/RETENTION|\\QREACTIVATION(FS ONLY)\\E|UNDEFINED)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
 	}
 }

@@ -51,7 +51,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 
 		// If we have seen both Male & Female and no more than one outlier then we are feeling pretty good unless we are in Strict mode (e.g. 100%)
 		if ((threshold != 100 && outliers.size() <= 1) || (double)matchCount / realSamples >= getThreshold()/100.0) {
-			RegExpGenerator re = new RegExpGenerator(true, locale);
+			RegExpGenerator re = new RegExpGenerator(true, 3, locale);
 			for (String element : members)
 				re.train(element);
 			if (!outliers.isEmpty())

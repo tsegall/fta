@@ -1566,7 +1566,7 @@ public class TestDates {
 	public void localeDateTest() throws IOException {
 
 		Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] {Locale.forLanguageTag("lv-LV")};
+//		Locale[] locales = new Locale[] {Locale.forLanguageTag("it")};
 
 		String testCases[] = {
 				"yyyy MM dd", "yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",

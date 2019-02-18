@@ -121,13 +121,13 @@ public class KnownPatterns {
 				if (negPrefix.charAt(0) == minusSign)
 					optionalSignPrefix = "[+-]?";
 				else
-					optionalSignPrefix = Utils.slosh(negPrefix) + "?";
+					optionalSignPrefix = RegExpGenerator.slosh(negPrefix) + "?";
 			}
 			if (!negSuffix.isEmpty()) {
 				if (negSuffix.charAt(0) == minusSign)
 					optionalSignSuffix = "[+-]?";
 				else
-					optionalSignSuffix = Utils.slosh(negSuffix) + "?";
+					optionalSignSuffix = RegExpGenerator.slosh(negSuffix) + "?";
 			}
 		}
 		else {
@@ -137,8 +137,8 @@ public class KnownPatterns {
 
 		PATTERN_LONG = "\\d+";
 		PATTERN_SIGNED_LONG = optionalSignPrefix + "\\d+" + optionalSignSuffix;
-		PATTERN_DOUBLE = PATTERN_LONG + "|" + "(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+";
-		PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + optionalSignPrefix + "(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+" + optionalSignSuffix;
+		PATTERN_DOUBLE = PATTERN_LONG + "|" + "(\\d+)?" + RegExpGenerator.slosh(decimalSeparator) + "\\d+";
+		PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + optionalSignPrefix + "(\\d+)?" + RegExpGenerator.slosh(decimalSeparator) + "\\d+" + optionalSignSuffix;
 
 		PATTERN_LONG_GROUPING = withGrouping(PATTERN_LONG, groupingSeparator);
 		PATTERN_SIGNED_LONG_GROUPING = withGrouping(PATTERN_SIGNED_LONG, groupingSeparator);
@@ -147,7 +147,7 @@ public class KnownPatterns {
 
 		PATTERN_DOUBLE_WITH_EXPONENT = PATTERN_DOUBLE + "(?:[eE]([-+]?\\d+))?";
 		// Not localized!!
-		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = "[+-]?\\d+" + "|" + "[+-]?(\\d+)?" + Utils.slosh(decimalSeparator) + "\\d+(?:[eE]([-+]?\\d+))?";
+		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = "[+-]?\\d+" + "|" + "[+-]?(\\d+)?" + RegExpGenerator.slosh(decimalSeparator) + "\\d+(?:[eE]([-+]?\\d+))?";
 
 		knownPatterns.put(PATTERN_BOOLEAN_TRUE_FALSE,
 				new PatternInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, PatternInfo.Type.BOOLEAN, "TRUE_FALSE", false, 4, 5, null, ""));

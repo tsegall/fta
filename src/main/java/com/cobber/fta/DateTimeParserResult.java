@@ -791,7 +791,7 @@ public class DateTimeParserResult {
 				}
 				switch (token.getType()) {
 				case CONSTANT_CHAR:
-					ret.append(Utils.slosh(token.getValue()));
+					ret.append(RegExpGenerator.slosh(token.getValue()));
 					break;
 
 				case MONTH:

@@ -40,7 +40,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "GENDER_EN");
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "(?i)(MALE|FEMALE)");
+		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE)");
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -70,7 +70,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "GENDER_EN");
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "(?i)(UNKNOWN|MALE|FEMALE)");
+		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		int outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
@@ -101,7 +101,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "GENDER_EN");
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "(?i)(UNKNOWN|MALE|FEMALE)");
+		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		int outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
@@ -133,7 +133,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "GENDER_EN");
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "(?i)(UNKNOWN|MALE|FEMALE)");
+		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		int outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
@@ -167,7 +167,7 @@ public class TestPlugins {
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{4,7}");
+		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -1084,7 +1084,7 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}");
+		Assert.assertEquals(result.getRegExp(), "(?i)(APR|AUG|DEC|FEB|JAN|JUL|JUN|MAR|MAY|NOV|OCT|SEP|UNK)");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
@@ -1120,7 +1120,7 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{2,3}");
+		Assert.assertEquals(result.getRegExp(), "(?i)(APR|AUG|BAD|DEC|FEB|JAN|JUL|JUN|MAR|MAY|NA|NOV|OCT|SEP|UNK)");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
