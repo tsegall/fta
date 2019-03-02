@@ -15,7 +15,7 @@ public class LogicalTypeUSState extends LogicalTypeFiniteSimple {
 	private static Set<String> members = new HashSet<String>();
 
 	public LogicalTypeUSState() throws FileNotFoundException {
-		super("US_STATE", REGEXP, REGEXP,
+		super("US_STATE", REGEXP, "\\p{IsAlphabetic}{2}",
 				new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/us_states.csv")), 95);
 	}
 
