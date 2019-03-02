@@ -8,6 +8,9 @@ import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFiniteSimple;
 
+/**
+ * Plugin to detect Country names. (English-language only).
+ */
 public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	private static Set<String> members = new HashSet<String>();
 

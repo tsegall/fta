@@ -7,6 +7,9 @@ import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFiniteSimple;
 
+/**
+ * Plugin to detect ISO 3166-2 - two letter country codes.
+ */
 public class LogicalTypeISO3166_2 extends LogicalTypeFiniteSimple {
 	public final static String REGEXP = "\\p{Alpha}{2}";
 	private static Set<String> members = new HashSet<String>();

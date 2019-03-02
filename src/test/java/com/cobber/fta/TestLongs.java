@@ -1,5 +1,7 @@
 package com.cobber.fta;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormatSymbols;
@@ -15,9 +17,11 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class TestLongs {
-	@Test
-	public void variableLengthPositiveInteger() throws IOException {
+	public void _variableLengthPositiveInteger(boolean collectStatistics) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
+		if (!collectStatistics)
+			analysis.setCollectStatistics(false);
+
 		final String[] inputs = "47|909|809821|34590|2|0|12|390|4083|4499045|90|9003|8972|42987|8901".split("\\|");
 
 		int locked = -1;
@@ -34,8 +38,10 @@ public class TestLongs {
 		Assert.assertEquals(result.getRegExp(), "\\d{1,7}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
-		Assert.assertEquals(result.getMinValue(), "0");
-		Assert.assertEquals(result.getMaxValue(), "4499045");
+		if (collectStatistics) {
+			Assert.assertEquals(result.getMinValue(), "0");
+			Assert.assertEquals(result.getMaxValue(), "4499045");
+		}
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 7);
 
@@ -45,8 +51,19 @@ public class TestLongs {
 	}
 
 	@Test
-	public void variableLengthInteger() throws IOException {
+	public void variableLengthPositiveInteger() throws IOException {
+		_variableLengthPositiveInteger(true);
+	}
+
+	@Test
+	public void variableLengthPositiveInteger_ns() throws IOException {
+		_variableLengthPositiveInteger(false);
+	}
+
+	public void _variableLengthInteger(boolean collectStatistics) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
+		if (!collectStatistics)
+			analysis.setCollectStatistics(false);
 		final String[] inputs = "-100000|-1000|-100|-10|-3|-2|-1|100|200|300|400|500|600|1000|10000|601|602|6033|604|605|606|607|608|609|610|911|912|913|914|915".split("\\|");
 
 		int locked = -1;
@@ -65,12 +82,24 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
-		Assert.assertEquals(result.getMinValue(), "-100000");
-		Assert.assertEquals(result.getMaxValue(), "10000");
+		if (collectStatistics) {
+			Assert.assertEquals(result.getMinValue(), "-100000");
+			Assert.assertEquals(result.getMaxValue(), "10000");
+		}
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
 		}
+	}
+
+	@Test
+	public void variableLengthInteger() throws IOException {
+		_variableLengthInteger(true);
+	}
+
+	@Test
+	public void variableLengthInteger_ns() throws IOException {
+		_variableLengthInteger(false);
 	}
 
 	@Test
@@ -702,5 +731,81 @@ public class TestLongs {
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void noStatistics() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+		final Random random = new Random(314);
+		String[] samples = new String[10000];
+
+		int iters = 0;
+		for (iters = 0; iters < samples.length; iters++) {
+			analysis.train(String.valueOf(random.nextInt(100000000)));
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), iters);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getMinLength(), 5);
+		Assert.assertEquals(result.getMaxLength(), 8);
+		Assert.assertEquals(result.getRegExp(), "\\d{5,8}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+	}
+
+	@Test
+	public void longPerf() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setDefaultLogicalTypes(false);
+		analysis.setCollectStatistics(false);
+		final Random random = new Random(314);
+		final long sampleCount = 100_000_000_000L;
+		boolean saveOutput = false;
+		BufferedWriter bw = null;
+		String[] samples = new String[10000];
+
+		if (saveOutput)
+			bw = new BufferedWriter(new FileWriter("/tmp/longPerf.csv"));
+
+		for (int i = 0; i < samples.length; i++)
+			samples[i] = String.valueOf(random.nextInt(100000000));
+
+		long start = System.currentTimeMillis();
+
+		long iters = 0;
+		// Run for about 10 seconds
+		for (iters = 0; iters < sampleCount; iters++) {
+			String sample = samples[(int)(iters%samples.length)];
+			analysis.train(sample);
+			if (bw != null)
+				bw.write(sample + '\n');
+			if (iters%100 == 0 && System.currentTimeMillis()  - start >= 10_000)
+				break;
+
+		}
+		final TextAnalysisResult result = analysis.getResult();
+		if (bw != null)
+			bw.close();
+
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), iters + 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getMinLength(), 5);
+		Assert.assertEquals(result.getMaxLength(), 8);
+		Assert.assertEquals(result.getRegExp(), "\\d{5,8}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/10);
+
+		// With Statistics & LogicalTypes
+		//   - Count 109980301, duration: 10003ms, ~10,998,030 per second
+		// No Statistics & No LogicalTypes
+		//   - Count 15141740, duration: 10002ms, ~15,141,740 per second
 	}
 }

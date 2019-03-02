@@ -7,6 +7,9 @@ import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFiniteSimple;
 
+/**
+ * Plugin to detect ISO 4127 - Currency codes.
+ */
 public class LogicalTypeISO4217 extends LogicalTypeFiniteSimple {
 	public final static String REGEXP = "\\p{Alpha}{3}";
 	private static Set<String> members = new HashSet<String>();

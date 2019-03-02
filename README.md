@@ -3,9 +3,10 @@
 Analyze Text data to determine type information and other key metrics associated with a text stream.
 A key objective of the analysis is that it should be sufficiently fast to be in-line (e.g. as the
 data is input from some source it should be possible to stream the data through this class without
-undue performance degradation).  Support for non-English date detection is relatively robust,
-with the following excpetions: No support for non-Gregorian calendars, no support for
-non-Arabic numerals and no support for Japanese.
+undue performance degradation).  See Performance notes below.
+Support for non-English date detection is relatively robust, with the following exceptions:
+* No support for non-Gregorian calendars
+* No support for non-Arabic numerals and no support for Japanese.
 
 Typical usage is:
 ```java
@@ -69,3 +70,12 @@ repository](http://repo1.maven.org/maven2/com/cobber/fta/fta/).
 ## Javadoc ##
 
 Javadoc is automatically updated to reflect the latest release at http://javadoc.io/doc/com.cobber.fta/fta/.
+
+## Performance  ##
+
+Indicative performance on an Intel 2.6Ghz i7.  The slower number is with Statistics enabled.
+
+* ~1-2 million dates/sec
+* ~2-4 million doubles/sec
+* ~3-3 million strings/sec
+* ~10-15 million longs/sec

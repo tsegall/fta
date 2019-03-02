@@ -22,71 +22,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 
 class FileProcessor {
-	class RecordReader implements AutoCloseable {
-		BufferedReader in = null;
-		PrintStream logger;
-		CSVFormat csvFormat;
-		String filename;
-		String charset;
-		CSVParser records = null;
-
-		RecordReader(PrintStream logger, CSVFormat csvFormat, String filename, String charset) {
-			this.logger = logger;
-			this.csvFormat = csvFormat;
-			this.filename = filename;
-			this.charset = charset;
-
-			try {
-				in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), charset));
-			} catch (UnsupportedEncodingException e1) {
-				logger.printf("Charset '%s' not supported\n", charset);
-				System.exit(1);
-			} catch (FileNotFoundException e1) {
-				logger.printf("File '%s' not found\n", filename);
-				System.exit(1);
-			}
-		}
-
-		CSVParser getRecords() {
-
-			// Parse the input using commons-csv
-			try {
-				records = csvFormat.parse(in);
-				return records;
-			} catch (IOException e) {
-				logger.printf("Failed to parse input file '%s'\n", filename);
-				System.exit(1);
-			}
-
-			return null;
-		}
-
-		@Override
-		public void close() {
-			try {
-				if (records != null)
-					records.close();
-				if (in != null)
-					in.close();
-			} catch (IOException e) {
-				// Silently eat
-			}
-		}
-	}
-
 	final DriverOptions options;
 	private PrintStream logger;
 	private String filename;
@@ -100,59 +45,77 @@ class FileProcessor {
 	void process() throws IOException {
 		final long start = System.currentTimeMillis();
 		TextAnalyzer[] analysis = null;
-		CSVParser records = null;
 		String[] header = null;
 		int numFields = 0;
 
-		try (RecordReader r = new RecordReader(logger, options.csvFormat, filename, options.charset)) {
-			records = r.getRecords();
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(true);
+		settings.detectFormatAutomatically();
+		settings.setLineSeparatorDetectionEnabled(true);
+		settings.setDelimiterDetectionEnabled(true, ',', '\t', '|', ';');
+		settings.setIgnoreLeadingWhitespaces(false);
+		settings.setIgnoreTrailingWhitespaces(false);
+		settings.setNullValue("");
+		settings.setEmptyValue("");
+		if (options.xMaxCharsPerColumn != -1)
+			settings.setMaxCharsPerColumn(options.xMaxCharsPerColumn);
 
-			long thisRecord = -1;
-			for (final CSVRecord record : records) {
-				thisRecord = record.getRecordNumber();
-				// If this is the header we need to build the header
-				if (thisRecord == 1) {
-					numFields = record.size();
-					header = new String[numFields];
-					analysis = new TextAnalyzer[numFields];
-					if (options.col > numFields) {
-						logger.printf("Column %d does not exist.  Only %d field(s) in input.\n", options.col, numFields);
-						System.exit(1);
-					}
-					for (int i = 0; i < numFields; i++) {
-						header[i] = record.get(i);
-						if ((options.col == -1 || options.col == i) && options.verbose)
-							System.out.println(record.get(i));
-						analysis[i] = new TextAnalyzer(header[i], options.resolutionMode);
-						if (options.noStatistics)
-							analysis[i].setCollectStatistics(false);
-						if (options.sampleSize != -1)
-							analysis[i].setDetectWindow(options.sampleSize);
-						if (options.maxCardinality != -1)
-							analysis[i].setMaxCardinality(options.maxCardinality);
-						if (options.locale != null)
-							analysis[i].setLocale(options.locale);
-					}
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
+
+			CsvParser parser = new CsvParser(settings);
+			parser.beginParsing(in);
+
+			header = parser.getRecordMetadata().headers();
+			numFields = header.length;
+			analysis = new TextAnalyzer[numFields];
+			if (options.col > numFields) {
+				logger.printf("Column %d does not exist.  Only %d field(s) in input.\n", options.col, numFields);
+				System.exit(1);
+			}
+			for (int i = 0; i < numFields; i++) {
+				if ((options.col == -1 || options.col == i) && options.verbose)
+					System.out.println(header[i]);
+				analysis[i] = new TextAnalyzer(header[i], options.resolutionMode);
+				if (options.noStatistics)
+					analysis[i].setCollectStatistics(false);
+				if (options.noLogicalTypes)
+					analysis[i].setDefaultLogicalTypes(false);
+				if (options.sampleSize != -1)
+					analysis[i].setDetectWindow(options.sampleSize);
+				if (options.maxCardinality != -1)
+					analysis[i].setMaxCardinality(options.maxCardinality);
+				if (options.locale != null)
+					analysis[i].setLocale(options.locale);
+			}
+
+			long thisRecord = 0;
+			String[] row;
+
+			while ((row = parser.parseNext()) != null) {
+				thisRecord++;
+				if (row.length != numFields) {
+					logger.printf("Record %d has %d fields, expected %d, skipping\n",
+							thisRecord, row.length, numFields);
+					continue;
 				}
-				else {
-					if (record.size() != numFields) {
-						logger.printf("Record %d has %d fields, expected %d, skipping\n",
-								record.getRecordNumber(), record.size(), numFields);
-						continue;
-					}
-					for (int i = 0; i < numFields; i++) {
-						if (options.col == -1 || options.col == i) {
-							if (options.verbose)
-								System.out.printf("\"%s\"\n", record.get(i));
-							if (!options.noAnalysis)
-								analysis[i].train(record.get(i));
-						}
+				for (int i = 0; i < numFields; i++) {
+					if (options.col == -1 || options.col == i) {
+						if (options.verbose)
+							System.out.printf("\"%s\"\n", row[i]);
+						if (!options.noAnalysis)
+							analysis[i].train(row[i]);
 					}
 				}
 				if (thisRecord == options.recordsToAnalyze)
 					break;
 			}
 		}
+		catch (FileNotFoundException e) {
+			logger.printf("Filename '%s' not found.\n", filename);
+			System.exit(1);
+		}
+
 
 		if (options.noAnalysis)
 			System.exit(0);
@@ -162,38 +125,35 @@ class FileProcessor {
 		int[] blanks = new int[numFields];
 		Set<String> failures = new HashSet<>();
 		if (options.validate) {
-			try (RecordReader r = new RecordReader(logger, options.csvFormat, filename, options.charset)) {
-				records = r.getRecords();
+			try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
-				long thisRecord = -1;
-				TextAnalysisResult[] results = null;
-				Pattern[] patterns = null;
-				for (final CSVRecord record : records) {
-					thisRecord = record.getRecordNumber();
-					if (thisRecord == 1) {
-						numFields = record.size();
-						results = new TextAnalysisResult[numFields];
-						patterns = new Pattern[numFields];
-						for (int i = 0; i < numFields; i++)
-							if (options.col == -1 || options.col == i) {
-								results[i] = analysis[i].getResult();
-								patterns[i] = Pattern.compile(results[i].getRegExp());
-							}
+				CsvParser parser = new CsvParser(settings);
+				parser.beginParsing(in);
+				numFields = parser.getRecordMetadata().headers().length;
+
+				TextAnalysisResult[] results = new TextAnalysisResult[numFields];
+				Pattern[] patterns = new Pattern[numFields];
+
+				for (int i = 0; i < numFields; i++)
+					if (options.col == -1 || options.col == i) {
+						results[i] = analysis[i].getResult();
+						patterns[i] = Pattern.compile(results[i].getRegExp());
 					}
-					else {
-						if (record.size() != numFields) {
-							continue;
-						}
-						for (int i = 0; i < numFields; i++) {
-							if (options.col == -1 || options.col == i) {
-								String value = record.get(i);
-								if (value.trim().isEmpty())
-									blanks[i]++;
-								else if (patterns[i].matcher(value).matches())
-									matched[i]++;
-								else if (options.verbose)
-									failures.add(value);
-							}
+
+				String[] row;
+				while ((row = parser.parseNext()) != null) {
+					if (row.length != numFields) {
+						continue;
+					}
+					for (int i = 0; i < numFields; i++) {
+						if (options.col == -1 || options.col == i) {
+							String value = row[i];
+							if (value.trim().isEmpty())
+								blanks[i]++;
+							else if (patterns[i].matcher(value).matches())
+								matched[i]++;
+							else if (options.verbose)
+								failures.add(value);
 						}
 					}
 				}

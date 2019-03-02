@@ -100,16 +100,6 @@ public class DateTimeParser {
 				"WIB", "WIT", "WITA", "WST", "WT", "YAKST", "YAKT", "YAPT", "YEKST", "YEKT" }));
 	}
 
-	public static int shortMonthOffset(final String month, Locale locale) {
-		final Integer offset = LocaleInfo.getShortMonths(locale).get(month.toUpperCase(locale));
-		return offset == null ? -1 : offset;
-	}
-
-	public static int monthOffset(final String month, Locale locale) {
-		final Integer offset = LocaleInfo.getMonths(locale).get(month.toUpperCase(locale));
-		return offset == null ? -1 : offset;
-	}
-
 	private final Map<String, Integer> results = new HashMap<String, Integer>();
 	private int sampleCount;
 	private int nullCount;
@@ -244,7 +234,7 @@ public class DateTimeParser {
 			// First entry
 			if (answerBuffer == null) {
 				answerBuffer = new StringBuffer(key);
-				answerResult = result;
+				answerResult = DateTimeParserResult.newInstance(result);
 				continue;
 			}
 
@@ -348,8 +338,8 @@ public class DateTimeParser {
 		if (answerResult.timeZone == null)
 			answerResult.timeZone = "";
 
-		answerResult.formatString = answerBuffer.toString();
-		return DateTimeParserResult.newInstance(answerResult);
+		answerResult.updateFormatString(answerBuffer.toString());
+		return answerResult;
 	}
 
 	private static String retDigits(final int digitCount, final char patternChar) {

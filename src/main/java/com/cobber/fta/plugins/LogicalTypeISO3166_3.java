@@ -7,6 +7,9 @@ import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFiniteSimple;
 
+/**
+ * Plugin to detect ISO 3166-3 - three letter country codes.
+ */
 public class LogicalTypeISO3166_3 extends LogicalTypeFiniteSimple {
 	public final static String REGEXP = "\\p{Alpha}{3}";
 	private static Set<String> members = new HashSet<String>();

@@ -6,11 +6,11 @@ apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'jacoco'
 
-mainClassName = "com.cobber.fta.Main"
+mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "1.0.70"
+version = "1.0.71"
 
 repositories {
     mavenCentral()
@@ -97,8 +97,8 @@ uploadArchives {
 }
 
 dependencies {
-	// https://mvnrepository.com/artifact/org.apache.commons/commons-csv
-	compile group: 'org.apache.commons', name: 'commons-csv', version: '1.6'
+	// https://mvnrepository.com/artifact/com.univocity/univocity-parsers
+	compile group: 'com.univocity', name: 'univocity-parsers', version: '2.8.1'
 	// https://mvnrepository.com/artifact/org.testng/testng
 	compile group: 'org.testng', name: 'testng', version: '6.14.3'
 	// https://mvnrepository.com/artifact/javax.mail/mail

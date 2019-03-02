@@ -13,6 +13,10 @@ import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.TextAnalyzer;
 
+
+/**
+ * Plugin to detect Addresses. (English-language only).
+ */
 public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	private boolean multiline = false;
 	private static Set<String> addressMarkers = new HashSet<String>();

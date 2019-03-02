@@ -7,6 +7,9 @@ import java.util.Set;
 import com.cobber.fta.LocaleInfo;
 import com.cobber.fta.LogicalTypeFinite;
 
+/**
+ * Plugin to detect Month Abbreviations.
+ */
 public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 	Locale locale;
 

@@ -13,6 +13,9 @@ import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.TextAnalyzer;
 
+/**
+ * Plugin to detect valid US Zip codes.
+ */
 public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	public final static String REGEXP = "\\d{5}";
 	private static Set<String> zips = new HashSet<String>();

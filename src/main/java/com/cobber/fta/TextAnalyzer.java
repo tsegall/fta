@@ -84,7 +84,7 @@ public class TextAnalyzer {
 	private boolean collectStatistics = true;
 
 	/** Should we enable Default Logical Type detection. */
-	private boolean logicalTypeDetection = true;
+	private boolean enableDefaultLogicalTypes = true;
 
 	/** Should we attempt to qualifier the size of the returned RexExp. */
 	private boolean lengthQualifier = true;
@@ -323,7 +323,7 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("Cannot adjust Logical Type detection once training has started");
 
 		final boolean ret = logicalTypeDetection;
-		this.logicalTypeDetection = logicalTypeDetection;
+		this.enableDefaultLogicalTypes = logicalTypeDetection;
 		return ret;
 	}
 
@@ -333,7 +333,7 @@ public class TextAnalyzer {
 	 * @return Whether default Logical Type processing collection is enabled.
 	 */
 	public boolean getDefaultLogicalTypes() {
-		return logicalTypeDetection;
+		return enableDefaultLogicalTypes;
 	}
 
 	/**
@@ -572,23 +572,22 @@ public class TextAnalyzer {
 			if (input.charAt(0) == '0')
 				totalLeadingZeros++;
 
-			if (collectStatistics) {
-				if (l < minLong) {
-					minLong = l;
-				}
-				if (l != 0 && l < minLongNonZero) {
-					minLongNonZero = l;
-				}
-				if (l > maxLong) {
-					maxLong = l;
-				}
-				if (digits < minTrimmedLength)
-					minTrimmedLength = digits;
-				if (digits > maxTrimmedLength)
-					maxTrimmedLength = digits;
+			if (digits < minTrimmedLength)
+				minTrimmedLength = digits;
+			if (digits > maxTrimmedLength)
+				maxTrimmedLength = digits;
 
+			if (l != 0 && l < minLongNonZero)
+				minLongNonZero = l;
+
+			if (l < minLong)
+				minLong = l;
+
+			if (l > maxLong)
+				maxLong = l;
+
+			if (collectStatistics)
 				sumBI = sumBI.add(BigInteger.valueOf(l));
-			}
 		}
 
 		if (patternInfo.isLogicalType()) {
@@ -719,65 +718,81 @@ public class TextAnalyzer {
 		return true;
 	}
 
+	/*
+	 * Validate (and track) the date/time/datetime inoput.
+	 * This routine is called for every date/time/datetime we see in the input, so performance is critical.
+	 */
 	private void trackDateTime(final String dateFormat, final String input) throws DateTimeParseException {
+		// Retrieve the (likely cached) DateTimeParserResult for the supplied dateFormat
 		final DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, resolutionMode, locale);
-		if (result == null) {
+		if (result == null)
 			throw new InternalErrorException("NULL result for " + dateFormat);
-		}
 
 		DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getFormatString(), locale);
 
 		final String trimmed = input.trim();
 
+		// If we are not collecting statistics we can use the parse on DateTimeParserResult which is
+		// significantly faster than the parse on LocalTime/LocalDate/LocalDateTime/...
 		switch (result.getType()) {
 		case LOCALTIME:
-			final LocalTime localTime = LocalTime.parse(trimmed, formatter);
 			if (collectStatistics) {
+				final LocalTime localTime = LocalTime.parse(trimmed, formatter);
 				if (minLocalTime == null || localTime.compareTo(minLocalTime) < 0)
 					minLocalTime = localTime;
 				if (maxLocalTime == null || localTime.compareTo(maxLocalTime) > 0)
 					maxLocalTime = localTime;
 			}
+			else
+				result.parse(trimmed);
 			break;
 
 		case LOCALDATE:
-			final LocalDate localDate = LocalDate.parse(trimmed, formatter);
 			if (collectStatistics) {
+				final LocalDate localDate = LocalDate.parse(trimmed, formatter);
 				if (minLocalDate == null || localDate.compareTo(minLocalDate) < 0)
 					minLocalDate = localDate;
 				if (maxLocalDate == null || localDate.compareTo(maxLocalDate) > 0)
 					maxLocalDate = localDate;
 			}
+			else
+				result.parse(trimmed);
 			break;
 
 		case LOCALDATETIME:
-			final LocalDateTime localDateTime = LocalDateTime.parse(trimmed, formatter);
 			if (collectStatistics) {
+				final LocalDateTime localDateTime = LocalDateTime.parse(trimmed, formatter);
 				if (minLocalDateTime == null || localDateTime.compareTo(minLocalDateTime) < 0)
 					minLocalDateTime = localDateTime;
 				if (maxLocalDateTime == null || localDateTime.compareTo(maxLocalDateTime) > 0)
 					maxLocalDateTime = localDateTime;
 			}
+			else
+				result.parse(trimmed);
 			break;
 
 		case ZONEDDATETIME:
-			final ZonedDateTime zonedDataTime = ZonedDateTime.parse(trimmed, formatter);
 			if (collectStatistics) {
+				final ZonedDateTime zonedDataTime = ZonedDateTime.parse(trimmed, formatter);
 				if (minZonedDateTime == null || zonedDataTime.compareTo(minZonedDateTime) < 0)
 					minZonedDateTime = zonedDataTime;
 				if (maxZonedDateTime == null || zonedDataTime.compareTo(maxZonedDateTime) > 0)
 					maxZonedDateTime = zonedDataTime;
 			}
+			else
+				result.parse(trimmed);
 			break;
 
 		case OFFSETDATETIME:
-			final OffsetDateTime offsetDateTime = OffsetDateTime.parse(trimmed, formatter);
 			if (collectStatistics) {
+				final OffsetDateTime offsetDateTime = OffsetDateTime.parse(trimmed, formatter);
 				if (minOffsetDateTime == null || offsetDateTime.compareTo(minOffsetDateTime) < 0)
 					minOffsetDateTime = offsetDateTime;
 				if (maxOffsetDateTime == null || offsetDateTime.compareTo(maxOffsetDateTime) > 0)
 					maxOffsetDateTime = offsetDateTime;
 			}
+			else
+				result.parse(trimmed);
 			break;
 
 		default:
@@ -798,7 +813,7 @@ public class TextAnalyzer {
 		levels[1] = new ArrayList<StringBuilder>(samples);
 		levels[2] = new ArrayList<StringBuilder>(samples);
 
-		if (logicalTypeDetection) {
+		if (enableDefaultLogicalTypes) {
 			// Load the default set of plugins for Logical Type detection
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.txt")))){
 				String line = null;
@@ -1553,7 +1568,7 @@ public class TextAnalyzer {
 			String inputShape = RegExpGenerator.smash(input);
 			if (shape == null)
 				shape = inputShape;
-			else if (!shape.contentEquals(inputShape))
+			else if (!shape.equals(inputShape))
 				uniformShape = false;
 		}
 	}
@@ -2273,7 +2288,7 @@ public class TextAnalyzer {
 
 		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,
 				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, minValue,
-				maxValue, minRawLength, maxRawLength, sum, utilizedDecimalSeparator, resolutionMode, cardinality, outliers, key);
+				maxValue, minRawLength, maxRawLength, sum, utilizedDecimalSeparator, resolutionMode, cardinality, outliers, key, collectStatistics);
 
 		return result;
 	}

@@ -47,6 +47,7 @@ public class TextAnalysisResult {
 	private final Map<String, Integer> cardinality;
 	private final Map<String, Integer> outliers;
 	private final boolean key;
+	private final boolean collectStatistics;
 
 	/**
 	 * @param name The name of the data stream being analyzed.
@@ -73,11 +74,13 @@ public class TextAnalysisResult {
 	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param key Do we think this field is a key.
+	 * @param collectStatistics Were statistics collected during this analysis.
 	 */
 	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, boolean trailingWhiteSpace,
 			boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
 			final double confidence, final String minValue, final String maxValue, final int minLength, final int maxLength,
-			final String sum, char decimalSeparator, DateResolutionMode resolutionMode, final Map<String, Integer> cardinality, final Map<String, Integer> outliers, final boolean key) {
+			final String sum, char decimalSeparator, DateResolutionMode resolutionMode, final Map<String, Integer> cardinality,
+			final Map<String, Integer> outliers, final boolean key, boolean collectStatistics) {
 		this.name = name;
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
@@ -99,6 +102,7 @@ public class TextAnalysisResult {
 		this.cardinality = cardinality;
 		this.outliers = outliers;
 		this.key = key;
+		this.collectStatistics = collectStatistics;
 	}
 
 	/**
@@ -161,6 +165,8 @@ public class TextAnalysisResult {
 	 * @return The minimum value as a String.
 	 */
 	public String getMinValue() {
+		if (!collectStatistics)
+			throw new IllegalArgumentException("Statistics not enabled.");
 		return minValue;
 	}
 
@@ -169,6 +175,8 @@ public class TextAnalysisResult {
 	 * @return The maximum value as a String.
 	 */
 	public String getMaxValue() {
+		if (!collectStatistics)
+			throw new IllegalArgumentException("Statistics not enabled.");
 		return maxValue;
 	}
 
@@ -212,6 +220,8 @@ public class TextAnalysisResult {
 	 * @return The sum.
 	 */
 	public String getSum() {
+		if (!collectStatistics)
+			throw new IllegalArgumentException("Statistics not enabled.");
 		return sum;
 	}
 
@@ -360,6 +370,14 @@ public class TextAnalysisResult {
 		return key;
 	}
 
+	/**
+	 * Was statistics collection enabled for this analysis.
+	 * @return True if statistics were collected.
+	 */
+	public boolean statisticsEnabled() {
+		return collectStatistics;
+	}
+
 	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
 	    final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
 	        new Comparator<Map.Entry<K,V>>() {
@@ -437,13 +455,13 @@ public class TextAnalysisResult {
 			ret.append(K("typeQualifier")).append(Q(patternInfo.typeQualifier)).append(newField);
 		if (PatternInfo.Type.DOUBLE == patternInfo.type)
 			ret.append(K("decimalSeparator")).append(Q(String.valueOf(decimalSeparator))).append(newField);
-		if (minValue != null)
+		if (statisticsEnabled() && minValue != null)
 			ret.append(K("min")).append(Q(minValue)).append(newField);
-		if (maxValue != null)
+		if (statisticsEnabled() && maxValue != null)
 			ret.append(K("max")).append(Q(maxValue)).append(newField);
 		ret.append(K("minLength")).append(minLength).append(newField);
 		ret.append(K("maxLength")).append(maxLength).append(newField);
-		if (sum != null)
+		if (statisticsEnabled() && sum != null)
 			ret.append(K("sum")).append(Q(sum)).append(newField);
 
 		if (patternInfo.isNumeric())
@@ -484,7 +502,7 @@ public class TextAnalysisResult {
 		ret.append(K("multiline")).append(getMultiline()).append(newField);
 
 		if (patternInfo.isDateType())
-			ret.append(K("dateResolutionMode")).append(getDateResolutionMode()).append(newField);
+			ret.append(K("dateResolutionMode")).append(Q(getDateResolutionMode().toString())).append(newField);
 		ret.append(K("logicalType")).append(isLogicalType()).append(newField);
 		ret.append(K("possibleKey")).append(key).append(eol);
 

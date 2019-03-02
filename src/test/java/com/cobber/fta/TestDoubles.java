@@ -1,5 +1,7 @@
 package com.cobber.fta;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -218,6 +220,7 @@ public class TestDoubles {
 	@Test
 	public void manyRandomDoubles() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
 		final int iterations = 10000;
 		final Random random = new Random();
@@ -254,6 +257,7 @@ public class TestDoubles {
 	@Test
 	public void manyConstantLengthDoublesI18N_1() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
 		final int iterations = 10000;
 		final Random random = new Random();
@@ -298,6 +302,7 @@ public class TestDoubles {
 		final Random random = new Random();
 		int locked = -1;
 		Locale locale = Locale.forLanguageTag("de-DE");
+		analysis.setCollectStatistics(false);
 		analysis.setLocale(locale);
 		final Set<String> samples = new HashSet<>();
 
@@ -478,6 +483,7 @@ public class TestDoubles {
 	@Test
 	public void simpleDoubleExponentTest() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleDoubleExponentTest");
+		analysis.setCollectStatistics(false);
 		DecimalFormat df = new DecimalFormat("0.00E00");
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
@@ -594,6 +600,7 @@ public class TestDoubles {
 	@Test
 	public void spacedDoubles() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("AMT");
+		analysis.setCollectStatistics(false);
 		final String inputs[] = new String[] {
 				" 000000512.80", "-000000512.80", "-000000006.96", "-000000206.43", "-000000078.40", " 000000000.03", "-000000000.03", "-000000010.60", " 000000244.87", " 000000917.60",
 				" 000000150.00", " 000000024.00", " 000000035.00", " 000000150.00", " 000000035.00", " 000000010.00", " 000000035.00", " 000000035.00", " 000000035.00", " 000000002.80",
@@ -638,6 +645,7 @@ public class TestDoubles {
 
 		for (Locale locale : locales) {
 			final TextAnalyzer analysis = new TextAnalyzer("DecimalSeparator");
+			analysis.setCollectStatistics(false);
 			analysis.setLocale(locale);
 
 			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
@@ -959,5 +967,56 @@ public class TestDoubles {
 			System.err.println(failure);
 
 		Assert.assertEquals(failures.size(), 0);
+	}
+
+	@Test
+	public void doublePerf() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setDefaultLogicalTypes(false);
+		analysis.setCollectStatistics(false);
+		final Random random = new Random(314);
+		final long sampleCount = 100_000_000_000L;
+		boolean saveOutput = false;
+		BufferedWriter bw = null;
+		String[] samples = new String[10000];
+
+		if (saveOutput)
+			bw = new BufferedWriter(new FileWriter("/tmp/doublePerf.csv"));
+
+		for (int i = 0; i < samples.length; i++)
+			samples[i] = String.valueOf(random.nextDouble() * 1000000);
+
+		long start = System.currentTimeMillis();
+
+		long iters = 0;
+		// Run for about 10 seconds
+		for (iters = 0; iters < sampleCount; iters++) {
+			String sample = samples[(int)(iters%samples.length)];
+			analysis.train(sample);
+			if (bw != null)
+				bw.write(sample + '\n');
+			if (iters%100 == 0 && System.currentTimeMillis()  - start >= 10_000)
+				break;
+
+		}
+		final TextAnalysisResult result = analysis.getResult();
+		if (bw != null)
+			bw.close();
+
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), iters + 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getMinLength(), 12);
+		Assert.assertEquals(result.getMaxLength(), 18);
+		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?\\.\\d+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertNull(result.getTypeQualifier());
+		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/10);
+
+		// With Statistics & LogicalTypes
+		//   - Count 16248501, duration: 10008ms, ~1,624,850 per second
+		// No Statistics & No LogicalTypes
+		//   - Count 44222501, duration: 10003ms, ~4,422,250 per second
 	}
 }

@@ -42,18 +42,13 @@ class Driver {
 				options.charset = args[++idx];
 			else if ("--col".equals(args[idx]))
 				options.col = Integer.valueOf(args[++idx]);
-			else if ("--delimiter".equals(args[idx])) {
-				String delim = args[++idx];
-				options.csvFormat = options.csvFormat.withDelimiter("\\t".equals(delim) ? '\t' : delim.charAt(0));
-			}
 			else if ("--help".equals(args[idx])) {
-				logger.println("Usage: [--charset <charset>] [--col <n>] [--dayFirst] [--help] [--maxCardinality <n>] [--monthFirst] [--records <n>] [--samples <n>] [--verbose] file ...");
+				logger.println("Usage: [--charset <charset>] [--col <n>] [--help] [--locale <LocaleIdentifier>] [--maxCardinality <n>] [--noAnalysis] [--noStatistics] [--pretty] [--records <n>] [--resolutionMode <DayFirst|MonthFirst|Auto|None>] [--samples <n>] [--validate] [--verbose] [--xMaxCharPerColumn <n>] file ...");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
-				logger.println(" --delimiter - Delimiter to use - must be a single character");
+				logger.println(" --help - Print this help");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				logger.println(" --maxCardinality <n> - Set the Maximum Cardinality size");
-				logger.println(" --monthFirst - If dates are ambigous assume Month precedes Day");
 				logger.println(" --noAnalysis - Do not do analysis");
 				logger.println(" --noStatistics - Do not track statistics");
 				logger.println(" --pretty - Pretty print analysis");
@@ -62,6 +57,7 @@ class Driver {
 				logger.println(" --samples <n> - Set the size of the sample window");
 				logger.println(" --validate - Validate the result of the analysis by reprocessing file against results");
 				logger.println(" --verbose - Output each record as it is processed");
+				logger.println(" --xMaxCharsPerColumn <n> - Set the maximum column width (CSV parsing option)");
 				helpRequested = true;
 			}
 			else if ("--locale".equals(args[idx]))
@@ -70,7 +66,9 @@ class Driver {
 				options.maxCardinality = Integer.valueOf(args[++idx]);
 			else if ("--noAnalysis".equals(args[idx]))
 				options.noAnalysis = true;
-			else if ("--noAnalysis".equals(args[idx]))
+			else if ("--noLogicalTypes".equals(args[idx]))
+				options.noLogicalTypes = true;
+			else if ("--noStatistics".equals(args[idx]))
 				options.noStatistics = true;
 			else if ("--pretty".equals(args[idx]))
 				options.pretty = true;
@@ -97,6 +95,8 @@ class Driver {
 				options.validate = true;
 			else if ("--verbose".equals(args[idx]))
 				options.verbose = true;
+			else if ("--xMaxCharsPerColumn".equals(args[idx]))
+				options.xMaxCharsPerColumn = Integer.valueOf(args[++idx]);
 			else {
 				logger.printf("Unrecognized option: '%s', use --help\n", args[idx]);
 				System.exit(1);

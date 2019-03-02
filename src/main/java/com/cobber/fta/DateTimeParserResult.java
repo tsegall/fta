@@ -50,6 +50,7 @@ public class DateTimeParserResult {
 	public Character dateSeparator;
 	public String formatString;
 	public Boolean amPmIndicator;
+	public FormatterToken[] tokenized;
 
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 	private Locale locale;
@@ -60,7 +61,7 @@ public class DateTimeParserResult {
 	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, Locale locale, final int timeElements,
 			final int[] timeFieldLengths, final int[] timeFieldOffsets, final int hourLength, final int dateElements, final int[] dateFieldLengths,
 			final int[] dateFieldOffsets, final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset,
-			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator) {
+			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final FormatterToken[] tokenized) {
 		this.formatString = formatString;
 		this.resolutionMode = resolutionMode;
 		this.locale = locale;
@@ -79,6 +80,7 @@ public class DateTimeParserResult {
 		this.dateSeparator = dateSeparator;
 		this.timeZone = timeZone;
 		this.amPmIndicator = amPmIndicator;
+		this.tokenized = tokenized;
 	}
 
 	public static DateTimeParserResult newInstance(final DateTimeParserResult r) {
@@ -88,13 +90,24 @@ public class DateTimeParserResult {
 				r.timeFieldOffsets != null ? Arrays.copyOf(r.timeFieldOffsets, r.timeFieldOffsets.length) : null, r.hourLength,
 				r.dateElements,
 				r.dateFieldLengths != null ? Arrays.copyOf(r.dateFieldLengths, r.dateFieldLengths.length) : null,
-				r.dateFieldOffsets != null ? Arrays.copyOf(r.dateFieldOffsets, r.dateFieldOffsets.length) : null, r.timeFirst, r.dateTimeSeparator, r.yearOffset, r.monthOffset, r.dayOffset, r.dateSeparator, r.timeZone, r.amPmIndicator);
+				r.dateFieldOffsets != null ? Arrays.copyOf(r.dateFieldOffsets, r.dateFieldOffsets.length) : null,
+				r.timeFirst, r.dateTimeSeparator, r.yearOffset, r.monthOffset, r.dayOffset, r.dateSeparator, r.timeZone, r.amPmIndicator,
+				r.tokenized != null ? Arrays.copyOf(r.tokenized, r.tokenized.length) : null);
+
 	}
 
 	enum Token {
 		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DAY_OF_WEEK, DAY_OF_WEEK_ABBR, DIGITS_1_OR_2, MONTHS_1_OR_2,
 		MONTHS_2, HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, SECS_2, FRACTION,
 		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET, AMPM
+	}
+
+	/*
+	 * Update the format string and recreate the cached tokenized form.
+	 */
+	public void updateFormatString(String formatString) {
+		this.formatString = formatString;
+		this.tokenized =  DateTimeParserResult.tokenize(formatString);
 	}
 
 	/**
@@ -336,8 +349,9 @@ public class DateTimeParserResult {
 			timeElements = -1;
 
 		// Add to cache
-		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, locale, timeElements, timeFieldLengths, timeFieldOffsets, hourLength, dateElements,
-				dateFieldLengths, dateFieldOffsets, timeFirst, dateTimeSeparator, yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator);
+		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, locale, timeElements, timeFieldLengths, timeFieldOffsets,
+				hourLength, dateElements, dateFieldLengths, dateFieldOffsets, timeFirst, dateTimeSeparator,
+				yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator, fullyBound ? tokenize(formatString) : null);
 		dtpCache.put(key, ret);
 
 		return newInstance(ret);
@@ -532,7 +546,10 @@ public class DateTimeParserResult {
 		if (formatString == null)
 			formatString = getFormatString();
 
-		for (final FormatterToken token : tokenize(formatString)) {
+		if (tokenized == null)
+			tokenized = tokenize(formatString);
+
+		for (final FormatterToken token : tokenized) {
 			final Token nextToken = token.getType();
 
 			char inputChar;
@@ -543,26 +560,26 @@ public class DateTimeParserResult {
 			case DAY_OF_WEEK:
 			case DAY_OF_WEEK_ABBR:
 				start = upto;
-				while (upto < inputLength && Character.isAlphabetic(input.charAt(upto)))
-					upto++;
+				int doyWeekOffset = LocaleInfo.skipValidDayOfWeekAbbr(input.substring(upto), locale);
+				if (doyWeekOffset == -1)
+					throw new DateTimeParseException("Day of Week Abbreviation invalid", input, start);
+				upto += doyWeekOffset;
 				break;
 
 			case MONTH:
 				start = upto;
-				while (upto < inputLength && Character.isAlphabetic(input.charAt(upto)))
-					upto++;
-				final String month = input.substring(start, upto);
-				if (DateTimeParser.monthOffset(month, locale) == -1)
+				int monthOffset = LocaleInfo.skipValidMonth(input.substring(upto), locale);
+				if (monthOffset == -1)
 					throw new DateTimeParseException("Month invalid", input, start);
+				upto += monthOffset;
 				break;
 
 			case MONTH_ABBR:
-				if (upto + 3 > inputLength)
-					throw new DateTimeParseException("Month Abbreviation not complete", input, upto);
-				final String monthAbbreviation = input.substring(upto, upto + 3);
-				if (DateTimeParser.shortMonthOffset(monthAbbreviation, locale) == -1)
-					throw new DateTimeParseException("Month Abbreviation invalid", input, upto);
-				upto += 3;
+				start = upto;
+				int monthAbbrOffset = LocaleInfo.skipValidMonthAbbr(input.substring(upto), locale);
+				if (monthAbbrOffset == -1)
+					throw new DateTimeParseException("Month Abbreviation invalid", input, start);
+				upto += monthAbbrOffset;
 				break;
 
 			case HOURS12_1_OR_2:
@@ -609,11 +626,19 @@ public class DateTimeParserResult {
 				break;
 
 			case FRACTION:
-				for (int i = 0; i < token.getCount(); i++) {
-					if (upto == inputLength)
-						throw new DateTimeParseException("Insufficient digits in input (S)", input, upto);
-					if (!Character.isDigit(input.charAt(upto)))
-						throw new DateTimeParseException("Expecting digit", input, upto);
+				for (int i = 0; i < token.getHigh(); i++) {
+					if (upto == inputLength) {
+						if (i < token.getCount())
+							throw new DateTimeParseException("Insufficient digits in input (S)", input, upto);
+						else
+							break;
+					}
+					if (!Character.isDigit(input.charAt(upto))) {
+						if (i < token.getCount())
+							throw new DateTimeParseException("Expecting digit", input, upto);
+						else
+							break;
+					}
 					upto++;
 				}
 				break;
@@ -666,16 +691,11 @@ public class DateTimeParserResult {
 				break;
 
 			case AMPM:
-				if (upto + 1 >= inputLength)
-					throw new DateTimeParseException("Expecting am/pm indicator, end of input", input, upto);
-				inputChar = input.charAt(upto);
-				if (inputChar != 'a' && inputChar != 'A' && inputChar != 'p' && inputChar != 'P')
-					throw new DateTimeParseException("Expecting am/pm indicator", input, upto);
-				upto++;
-				inputChar = input.charAt(upto);
-				if (inputChar != 'm' && inputChar != 'M')
-					throw new DateTimeParseException("Expecting am/pm indicator", input, upto);
-				upto++;
+				start = upto;
+				int ampmOffset = LocaleInfo.skipValidAMPM(input.substring(upto), locale);
+				if (ampmOffset == -1)
+					throw new DateTimeParseException("Expecting am/pm indicator", input, start);
+				upto += ampmOffset;
 				break;
 
 			case TIMEZONE:

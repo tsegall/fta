@@ -333,7 +333,7 @@ public class SimpleDateMatcher {
 				found = false;
 				for (String month : LocaleInfo.getMonths(locale).keySet())
 					if (eating.indexOf(month) == 0) {
-						monthValue = DateTimeParser.monthOffset(month, locale);
+						monthValue = LocaleInfo.monthOffset(month, locale);
 						eating.delete(0, month.length());
 						found = true;
 						break;
@@ -363,7 +363,7 @@ public class SimpleDateMatcher {
 				found = false;
 				for (String shortMonth : LocaleInfo.getShortMonths(locale).keySet())
 					if (eating.indexOf(shortMonth) == 0) {
-						monthValue = DateTimeParser.shortMonthOffset(shortMonth, locale);
+						monthValue = LocaleInfo.shortMonthOffset(shortMonth, locale);
 						eating.delete(0, shortMonth.length());
 						found = true;
 						break;

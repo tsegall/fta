@@ -7,6 +7,9 @@ import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFiniteSimple;
 
+/**
+ * Plugin to detect US States.
+ */
 public class LogicalTypeUSState extends LogicalTypeFiniteSimple {
 	public final static String REGEXP = "\\p{Alpha}{2}";
 	private static Set<String> members = new HashSet<String>();

@@ -8,6 +8,9 @@ import java.util.Set;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.RegExpGenerator;
 
+/**
+ * Plugin to detect Gender. (English-language only).
+ */
 public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	private static Set<String> members = new HashSet<String>();
 	private String happyRegex = "\\p{Alpha}+";
