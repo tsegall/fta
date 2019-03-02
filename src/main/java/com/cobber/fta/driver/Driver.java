@@ -43,13 +43,14 @@ class Driver {
 			else if ("--col".equals(args[idx]))
 				options.col = Integer.valueOf(args[++idx]);
 			else if ("--help".equals(args[idx])) {
-				logger.println("Usage: [--charset <charset>] [--col <n>] [--help] [--locale <LocaleIdentifier>] [--maxCardinality <n>] [--noAnalysis] [--noStatistics] [--pretty] [--records <n>] [--resolutionMode <DayFirst|MonthFirst|Auto|None>] [--samples <n>] [--validate] [--verbose] [--xMaxCharPerColumn <n>] file ...");
+				logger.println("Usage: [--charset <charset>] [--col <n>] [--help] [--locale <LocaleIdentifier>] [--maxCardinality <n>] [--noAnalysis] [--noLogicalTypes] [--noStatistics] [--pretty] [--records <n>] [--resolutionMode <DayFirst|MonthFirst|Auto|None>] [--samples <n>] [--validate] [--verbose] [--xMaxCharPerColumn <n>] file ...");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
 				logger.println(" --help - Print this help");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				logger.println(" --maxCardinality <n> - Set the Maximum Cardinality size");
 				logger.println(" --noAnalysis - Do not do analysis");
+				logger.println(" --noLogicalTypes - Do not register any Logical Types");
 				logger.println(" --noStatistics - Do not track statistics");
 				logger.println(" --pretty - Pretty print analysis");
 				logger.println(" --records <n> - The number of records to analyze");

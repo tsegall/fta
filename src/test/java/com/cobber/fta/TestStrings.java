@@ -179,11 +179,12 @@ public class TestStrings {
 		}
 	}
 
-	@Test
-	public void stringPerf() throws IOException {
+	public void _stringPerf(boolean statisticsOn) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		analysis.setDefaultLogicalTypes(false);
-		analysis.setCollectStatistics(false);
+		if (!statisticsOn) {
+			analysis.setDefaultLogicalTypes(false);
+			analysis.setCollectStatistics(false);
+		}
 		final Random random = new Random(314);
 		final long sampleCount = 100_000_000_000L;
 		boolean saveOutput = false;
@@ -207,13 +208,14 @@ public class TestStrings {
 		long start = System.currentTimeMillis();
 
 		long iters = 0;
-		// Run for about 10 seconds
+		// Run for about reasonable number of seconds
+		int seconds = 5;
 		for (iters = 0; iters < sampleCount; iters++) {
 			String sample = samples[(int)(iters%samples.length)];
 			analysis.train(sample);
 			if (bw != null)
 				bw.write(sample + '\n');
-			if (iters%100 == 0 && System.currentTimeMillis()  - start >= 10_000)
+			if (iters%100 == 0 && System.currentTimeMillis()  - start >= seconds * 1_000)
 				break;
 
 		}
@@ -230,11 +232,21 @@ public class TestStrings {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
-		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/10);
+		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes
 		//   - Count 27154301, duration: 10003ms, ~2,715,430 per second
 		// No Statistics & No LogicalTypes
 		//   - Count 27322001, duration: 10003ms, ~2,732,200 per second
+	}
+
+	@Test
+	public void stringPerf() throws IOException {
+		_stringPerf(true);
+	}
+
+	@Test
+	public void stringPerfNoStatistics() throws IOException {
+		_stringPerf(false);
 	}
 }

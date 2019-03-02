@@ -758,11 +758,12 @@ public class TestLongs {
 		Assert.assertNull(result.getTypeQualifier());
 	}
 
-	@Test
-	public void longPerf() throws IOException {
+	public void _longPerf(boolean statisticsOn) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		analysis.setDefaultLogicalTypes(false);
-		analysis.setCollectStatistics(false);
+		if (!statisticsOn) {
+			analysis.setDefaultLogicalTypes(false);
+			analysis.setCollectStatistics(false);
+		}
 		final Random random = new Random(314);
 		final long sampleCount = 100_000_000_000L;
 		boolean saveOutput = false;
@@ -778,13 +779,14 @@ public class TestLongs {
 		long start = System.currentTimeMillis();
 
 		long iters = 0;
-		// Run for about 10 seconds
+		// Run for about reasonable number of seconds
+		int seconds = 5;
 		for (iters = 0; iters < sampleCount; iters++) {
 			String sample = samples[(int)(iters%samples.length)];
 			analysis.train(sample);
 			if (bw != null)
 				bw.write(sample + '\n');
-			if (iters%100 == 0 && System.currentTimeMillis()  - start >= 10_000)
+			if (iters%100 == 0 && System.currentTimeMillis()  - start >= seconds * 1_000)
 				break;
 
 		}
@@ -801,11 +803,21 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertNull(result.getTypeQualifier());
-		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/10);
+		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes
 		//   - Count 109980301, duration: 10003ms, ~10,998,030 per second
 		// No Statistics & No LogicalTypes
 		//   - Count 15141740, duration: 10002ms, ~15,141,740 per second
+	}
+
+	@Test
+	public void longPerf() throws IOException {
+		_longPerf(true);
+	}
+
+	@Test
+	public void longPerfNoStatistics() throws IOException {
+		_longPerf(false);
 	}
 }

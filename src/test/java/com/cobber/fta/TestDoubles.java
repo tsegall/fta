@@ -969,11 +969,12 @@ public class TestDoubles {
 		Assert.assertEquals(failures.size(), 0);
 	}
 
-	@Test
-	public void doublePerf() throws IOException {
+	public void _doublePerf(boolean statisticsOn) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		analysis.setDefaultLogicalTypes(false);
-		analysis.setCollectStatistics(false);
+		if (!statisticsOn) {
+			analysis.setDefaultLogicalTypes(false);
+			analysis.setCollectStatistics(false);
+		}
 		final Random random = new Random(314);
 		final long sampleCount = 100_000_000_000L;
 		boolean saveOutput = false;
@@ -989,13 +990,14 @@ public class TestDoubles {
 		long start = System.currentTimeMillis();
 
 		long iters = 0;
-		// Run for about 10 seconds
+		// Run for about reasonable number of seconds
+		int seconds = 5;
 		for (iters = 0; iters < sampleCount; iters++) {
 			String sample = samples[(int)(iters%samples.length)];
 			analysis.train(sample);
 			if (bw != null)
 				bw.write(sample + '\n');
-			if (iters%100 == 0 && System.currentTimeMillis()  - start >= 10_000)
+			if (iters%100 == 0 && System.currentTimeMillis()  - start >= seconds * 1_000)
 				break;
 
 		}
@@ -1012,11 +1014,21 @@ public class TestDoubles {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
-		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/10);
+		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes
 		//   - Count 16248501, duration: 10008ms, ~1,624,850 per second
 		// No Statistics & No LogicalTypes
 		//   - Count 44222501, duration: 10003ms, ~4,422,250 per second
+	}
+
+	@Test
+	public void doublePerf() throws IOException {
+		_doublePerf(true);
+	}
+
+	@Test
+	public void doublePerfNoStatistics() throws IOException {
+		_doublePerf(false);
 	}
 }

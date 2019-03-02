@@ -2358,11 +2358,12 @@ public class TestDates {
 		}
 	}
 
-	@Test
-	public void dateTimePerf() throws IOException {
+	public void _dateTimePerf(boolean statisticsOn) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		analysis.setDefaultLogicalTypes(false);
-		analysis.setCollectStatistics(false);
+		if (!statisticsOn) {
+			analysis.setDefaultLogicalTypes(false);
+			analysis.setCollectStatistics(false);
+		}
 		final String dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
 		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat, Locale.getDefault());
 		final int sampleCount = 100_000_000;
@@ -2383,13 +2384,14 @@ public class TestDates {
 
 		long start = System.currentTimeMillis();
 
-		// Run for about 10 seconds
+		// Run for about reasonable number of seconds
+		int seconds = 5;
 		for (iters = 0; iters < sampleCount; iters++) {
 			String sample = samples[iters%samples.length];
 			analysis.train(sample);
 			if (bw != null)
 				bw.write(sample + '\n');
-			if (iters%100 == 0 && System.currentTimeMillis()  - start >= 10_000)
+			if (iters%100 == 0 && System.currentTimeMillis()  - start >= seconds * 1_000)
 				break;
 
 		}
@@ -2404,7 +2406,7 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss");
-		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/10);
+		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes
 		//   - Count 9684201, duration: 10004ms, ~968,400 per second
@@ -2412,5 +2414,15 @@ public class TestDates {
 		//   - Count 18672901, duration: 10003ms, ~1,867,200 per second
 		// No Parsing!
 		//   - Count 24523501, duration: 10002ms, ~2,452,300 per second
+	}
+
+	@Test
+	public void dateTimePerf() throws IOException {
+		_dateTimePerf(true);
+	}
+
+	@Test
+	public void dateTimePerfNoStatistics() throws IOException {
+		_dateTimePerf(false);
 	}
 }
