@@ -1970,7 +1970,6 @@ public class TextAnalyzer {
 				// Hunt for a fixed length Logical Type
 				for (LogicalTypeFinite logical : finiteTypes) {
 					if (minKeyLength == logical.getMinLength() && logical.getMinLength() == logical.getMaxLength())
-// DELETE						&& realSamples >= reflectionSamples && cardinalityUpper.size() > 1
 						if (!typeIdentified && cardinalityUpper.size() <= logical.getSize() + 2) {
 							typeIdentified = checkUniformLengthSet(logical);
 							if (typeIdentified) {
@@ -1984,7 +1983,6 @@ public class TextAnalyzer {
 				// Hunt for a variable length Logical Type
 				for (LogicalTypeFinite logical : finiteTypes) {
 					if (logical.getMinLength() != logical.getMaxLength())
-//DELETE						&& realSamples >= reflectionSamples && cardinalityUpper.size() > 1
 						if (!typeIdentified && cardinalityUpper.size() <= logical.getSize() + 1) {
 							typeIdentified = checkVariableLengthSet(cardinalityUpper, logical);
 							if (typeIdentified) {
@@ -2136,7 +2134,7 @@ public class TextAnalyzer {
 			}
 			*/
 
-			if (!updated && uniformShape && interestingSamples > reflectionSamples) {
+			if (!updated && uniformShape && !shape.equals(".+") && interestingSamples > reflectionSamples) {
 				matchPatternInfo = new PatternInfo(null, RegExpGenerator.smashedAsRegExp(shape.trim()), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 						maxTrimmedLength, null, null);
 				updated = true;
