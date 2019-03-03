@@ -8,12 +8,14 @@ import java.util.Map;
 
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	private String qualifier;
+	private String[] hotWords;
 	private String regexp;
 	private String backout;
 	private Reader reader;
 
-	public LogicalTypeFiniteSimple(String qualifier, String regexp, String backout, Reader reader, int threshold) {
+	public LogicalTypeFiniteSimple(String qualifier, String[] hotWords, String regexp, String backout, Reader reader, int threshold) {
 		this.qualifier = qualifier;
+		this.hotWords = hotWords;
 		this.regexp = regexp;
 		this.backout = backout;
 		this.reader = reader;
@@ -51,11 +53,31 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realsamples,
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
 			Map<String, Integer> cardinality, Map<String, Integer> outliers) {
-		if (outliers.size() > 1)
+		boolean streamNamePositive = false;
+		for (int i = 0; i < hotWords.length; i++)
+			if (dataStreamName.toLowerCase(locale).contains(hotWords[i])) {
+				streamNamePositive = true;
+				break;
+			}
+
+		int maxOutliers = 1;
+		int minCardinality = 4;
+		int minSamples = 20;
+		if (streamNamePositive) {
+			maxOutliers = 4;
+			minCardinality = 1;
+			minSamples = 4;
+		}
+
+		if (outliers.size() > maxOutliers)
+			return backout;
+		if (cardinality.size() < minCardinality)
+			return backout;
+		if (realSamples < minSamples)
 			return backout;
 
-		return (double)matchCount / realsamples >= getThreshold()/100.0 ? null : backout;
+		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : backout;
 	}
 }

@@ -463,6 +463,31 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void basicZipHeader() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
+		final String inputs[] = new String[] {
+			"", "", "", "", "", "", "", "", "", "27215", "75251", "66045", "", "",
+			"", "", "", "", "94087", "", "", "", "", "", "", "", "", "", "", ""
+		};
+
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), "US_ZIP5");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), 4);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+
+	@Test
 	public void zipUnwind() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String input = "02421|02420|02421|02420|02421|02420|02421|02420|02421|02420|" +
@@ -677,6 +702,32 @@ public class TestPlugins {
 		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertTrue(sample.matches(result.getRegExp()));
+	}
+
+	@Test
+	public void basicStateHeader() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("BillingState");
+
+		final String[] inputs = new String[] {
+				"NY", "CA", "CA", "", "", "CA", "UK", "TX", "NC", "", "", "", "", "", "MA",
+				"", "KS", "IL", "OR", "AZ", "NY", "CA", "CA", "MA", "MI", "ME", "", "", "", "",
+				"", "KS", "IL", "OR", "AZ", "NY", "CA", "CA", "MA", "MI", "ME", "", "", "", ""
+		};
+
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "US_STATE");
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.get("UK"), Integer.valueOf(1));
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 	}
 
 	@Test
@@ -1408,6 +1459,29 @@ public class TestPlugins {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), ".+");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+	}
+
+	@Test
+	public void basicCountryHeader() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("BillingCountry");
+		final String[] inputs = new String[] {
+				"", "", "", "", "", "", "", "", "", "USA", "France", "USA",
+				"", "", "", "", "US", "", "", "", "", "", "", "", "", "", "", "", "", ""
+		};
+
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "COUNTRY_EN");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), 4);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), ".+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
 	String validUSStreets2[] = new String[] {

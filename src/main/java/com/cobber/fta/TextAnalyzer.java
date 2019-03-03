@@ -1736,12 +1736,10 @@ public class TextAnalyzer {
 	 */
 	private boolean checkUniformLengthSet(LogicalTypeFinite logical) {
 		final long realSamples = sampleCount - (nullCount + blankCount);
-		long misses = 0;					// count of number of groups that are misses
 		long missCount = 0;				// count of number of misses
 
 		// Check how many outliers we have
 		for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
-			misses++;
 			missCount += entry.getValue();
 			// Break out early if we know we are going to fail
 			if ((double) missCount / realSamples > .05)
@@ -1757,18 +1755,13 @@ public class TextAnalyzer {
 				if (logical.isValid(entry.getKey().trim().toUpperCase(locale)))
 					validCount += entry.getValue();
 				else {
-					misses++;
 					missCount += entry.getValue();
 					newOutliers.put(entry.getKey(), entry.getValue());
-					// Break out early if we know we are going to fail
-					if (newOutliers.size() > 1 && (double)missCount / realSamples > missThreshold)
-						return false;
 				}
 			}
 		}
 
-		// To declare success we need fewer than threshold failures by count and additionally fewer than 4 groups
-		if (((double)missCount / realSamples > missThreshold || misses >= 4))
+		if (logical.isValidSet(dataStreamName, realSamples - missCount, realSamples, cardinality, newOutliers) != null)
 			return false;
 
 		matchCount = validCount;
@@ -1798,9 +1791,6 @@ public class TextAnalyzer {
 			else {
 				missCount += entry.getValue();
 				newOutliers.put(entry.getKey(), entry.getValue());
-				// Break out early if we know we are going to fail
-				if (logical.isValidSet(dataStreamName, realSamples - missCount, realSamples, cardinalityUpper, newOutliers) != null)
-					return false;
 			}
 		}
 
@@ -1980,8 +1970,8 @@ public class TextAnalyzer {
 				// Hunt for a fixed length Logical Type
 				for (LogicalTypeFinite logical : finiteTypes) {
 					if (minKeyLength == logical.getMinLength() && logical.getMinLength() == logical.getMaxLength())
-						if (!typeIdentified && realSamples >= reflectionSamples && cardinalityUpper.size() > 1
-						&& cardinalityUpper.size() <= logical.getSize() + 2) {
+// DELETE						&& realSamples >= reflectionSamples && cardinalityUpper.size() > 1
+						if (!typeIdentified && cardinalityUpper.size() <= logical.getSize() + 2) {
 							typeIdentified = checkUniformLengthSet(logical);
 							if (typeIdentified) {
 								confidence = (double) matchCount / realSamples;
@@ -1994,8 +1984,8 @@ public class TextAnalyzer {
 				// Hunt for a variable length Logical Type
 				for (LogicalTypeFinite logical : finiteTypes) {
 					if (logical.getMinLength() != logical.getMaxLength())
-						if (!typeIdentified && realSamples >= reflectionSamples && cardinalityUpper.size() > 1
-						&& cardinalityUpper.size() <= logical.getSize() + 1) {
+//DELETE						&& realSamples >= reflectionSamples && cardinalityUpper.size() > 1
+						if (!typeIdentified && cardinalityUpper.size() <= logical.getSize() + 1) {
 							typeIdentified = checkVariableLengthSet(cardinalityUpper, logical);
 							if (typeIdentified) {
 								confidence = (double) matchCount / realSamples;

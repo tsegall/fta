@@ -15,8 +15,8 @@ public class LogicalTypeISO4217 extends LogicalTypeFiniteSimple {
 	private static Set<String> members = new HashSet<String>();
 
 	public LogicalTypeISO4217() throws FileNotFoundException {
-		super("ISO-4217", REGEXP, REGEXP,
-				new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ISO-4217.csv")), 95);
+		super("ISO-4217", new String[] { "4127", "currency" }, REGEXP,
+				REGEXP, new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ISO-4217.csv")), 95);
 	}
 
 	@Override

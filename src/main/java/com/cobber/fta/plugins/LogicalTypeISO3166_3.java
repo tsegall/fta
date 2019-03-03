@@ -15,8 +15,8 @@ public class LogicalTypeISO3166_3 extends LogicalTypeFiniteSimple {
 	private static Set<String> members = new HashSet<String>();
 
 	public LogicalTypeISO3166_3() throws FileNotFoundException {
-		super("ISO-3166-3", REGEXP, "\\p{IsAlphabetic}{3}",
-				new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ISO-3166-3.csv")), 95);
+		super("ISO-3166-3", new String[] { "3166", "country" }, REGEXP,
+				"\\p{IsAlphabetic}{3}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ISO-3166-3.csv")), 95);
 	}
 
 	@Override

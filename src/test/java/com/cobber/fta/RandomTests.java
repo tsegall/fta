@@ -255,6 +255,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), iterations);
+		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 		Assert.assertEquals(result.getMaxLength(), 0);
 		Assert.assertEquals(result.getMinLength(), 0);
 		Assert.assertEquals(result.getMaxValue(), "");
@@ -266,7 +267,6 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 
 		Assert.assertTrue("".matches(result.getRegExp()));
 	}

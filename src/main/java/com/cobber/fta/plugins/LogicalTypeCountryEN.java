@@ -13,10 +13,12 @@ import com.cobber.fta.LogicalTypeFiniteSimple;
  */
 public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	private static Set<String> members = new HashSet<String>();
+	final static String REGEXP = ".+";
+	final static String hotWord = "country";
 
 	public LogicalTypeCountryEN() throws FileNotFoundException {
-		super("COUNTRY_EN", ".+", ".+}",
-				new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/countries.csv")), 95);
+		super("COUNTRY_EN", new String[] { hotWord }, REGEXP,
+				REGEXP, new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/countries.csv")), 95);
 	}
 
 	@Override
@@ -27,8 +29,11 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		if (outliers.size() > Math.sqrt(getMembers().size()))
-			return ".+";
+			return REGEXP;
 
-		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : ".+";
+		if (!dataStreamName.toLowerCase(locale).contains(hotWord) && (realSamples < 10 || cardinality.size() == 1))
+			return REGEXP;
+
+		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : REGEXP;
 	}
 }

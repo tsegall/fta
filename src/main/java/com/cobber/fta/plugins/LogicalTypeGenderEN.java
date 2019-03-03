@@ -13,6 +13,7 @@ import com.cobber.fta.RegExpGenerator;
  */
 public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	private static Set<String> members = new HashSet<String>();
+	private final String backoutREGEX = "\\p{IsAlphabetic}+";
 	private String happyRegex = "\\p{Alpha}+";
 	private Locale locale;
 
@@ -50,7 +51,10 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)
-			return "\\p{IsAlphabetic}+";
+			return backoutREGEX;
+
+		if (!dataStreamName.toLowerCase(locale).contains("gender") && cardinality.size() <= 1)
+			return backoutREGEX;
 
 		// If we have seen both Male & Female and no more than one outlier then we are feeling pretty good unless we are in Strict mode (e.g. 100%)
 		if ((threshold != 100 && outliers.size() <= 1) || (double)matchCount / realSamples >= getThreshold()/100.0) {
@@ -63,6 +67,6 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 			return null;
 		}
 
-		return "\\p{IsAlphabetic}+";
+		return backoutREGEX;
 	}
 }

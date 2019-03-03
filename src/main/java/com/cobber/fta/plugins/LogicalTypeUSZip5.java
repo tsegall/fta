@@ -15,6 +15,7 @@ import com.cobber.fta.TextAnalyzer;
 
 /**
  * Plugin to detect valid US Zip codes.
+ * Note: we used an Infinite :-) Logical Type since the domains is so large.
  */
 public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	public final static String REGEXP = "\\d{5}";
@@ -67,7 +68,9 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
-		boolean zipName = dataStreamName != null && dataStreamName.toUpperCase().contains("ZIP");
+		String upperDataStreamName = dataStreamName.toUpperCase();
+		boolean zipName = dataStreamName != null &&
+				(upperDataStreamName.contains("ZIP") || upperDataStreamName.contains("POSTALCODE") || upperDataStreamName.contains("POSTCODE"));
 		return (cardinality.size() < 5 && !zipName) || (double)matchCount/realSamples < getThreshold()/100.0 ? REGEXP : null;
 	}
 }

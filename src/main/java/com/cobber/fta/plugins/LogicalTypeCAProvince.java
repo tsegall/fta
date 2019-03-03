@@ -15,8 +15,8 @@ public class LogicalTypeCAProvince extends LogicalTypeFiniteSimple {
 	private static Set<String> members = new HashSet<String>();
 
 	public LogicalTypeCAProvince() throws FileNotFoundException {
-		super("CA_PROVINCE", REGEXP, "\\p{IsAlphabetic}{2}",
-				new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ca_provinces.csv")), 95);
+		super("CA_PROVINCE", new String[] { "province" }, REGEXP,
+				"\\p{IsAlphabetic}{2}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ca_provinces.csv")), 95);
 	}
 
 	@Override
