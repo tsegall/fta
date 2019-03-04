@@ -255,7 +255,8 @@ public class RegExpGenerator {
 		StringBuilder result = new StringBuilder();
 
 		if (asSet && memory.size() <= maxSetSize) {
-			result.append("(?i)");
+			if (isAlphabetic)
+				result.append("(?i)");
 			if (memory.size() != 1)
 				result.append("(");
 			for (String element : memory) {

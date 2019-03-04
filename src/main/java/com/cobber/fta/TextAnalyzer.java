@@ -1546,7 +1546,7 @@ public class TextAnalyzer {
 	}
 
 	private boolean uniformShape = true;
-	private String shape = null;
+	private Map<String, Integer> shapes = new HashMap<>();
 	// Track basic facts for the field - called for all input
 	private void trackLengthAndShape(final String input) {
 		// We always want to track basic facts for the field
@@ -1557,19 +1557,28 @@ public class TextAnalyzer {
 		if (length > maxRawLength)
 			maxRawLength = length;
 
-		if (input.trim().length() != 0) {
+		String trimmed = input.trim();
+		if (trimmed.length() != 0) {
 			if (length != 0 && length < minRawNonBlankLength)
 				minRawNonBlankLength = length;
 			if (length > maxRawNonBlankLength)
 				maxRawNonBlankLength = length;
-		}
 
-		if (uniformShape) {
-			String inputShape = RegExpGenerator.smash(input);
-			if (shape == null)
-				shape = inputShape;
-			else if (!shape.equals(inputShape))
-				uniformShape = false;
+			if (uniformShape) {
+				String inputShape = RegExpGenerator.smash(trimmed);
+				if (inputShape.equals(".+"))
+					uniformShape = false;
+				else {
+					Integer seen = shapes.get(inputShape);
+					if (seen == null)
+						if (shapes.size() < 4)
+							shapes.put(inputShape, 1);
+						else
+							uniformShape = false;
+					else
+						shapes.put(inputShape, seen + 1);
+				}
+			}
 		}
 	}
 
@@ -2134,8 +2143,31 @@ public class TextAnalyzer {
 			}
 			*/
 
-			if (!updated && uniformShape && !shape.equals(".+") && interestingSamples > reflectionSamples) {
-				matchPatternInfo = new PatternInfo(null, RegExpGenerator.smashedAsRegExp(shape.trim()), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+			String singleUniformShape = null;
+			if (!updated && uniformShape) {
+				if (shapes.size() == 1)
+					singleUniformShape = shapes.keySet().iterator().next();
+				/* TODO
+				else {
+					if (shapes.size() > 1 && realSamples > 100) {
+						boolean interesting = true;
+						for (Map.Entry<String, Integer> shape : shapes.entrySet()) {
+							if (shape.getValue() < realSamples/10)
+								interesting = false;
+						}
+						if (interesting) {
+							System.err.println("Multishape: ");
+							for (Map.Entry<String, Integer> shape : shapes.entrySet()) {
+								System.err.printf("%s: %d\n", shape.getKey(), shape.getValue());
+							}
+						}
+					}
+				}
+		*/
+			}
+
+			if (!updated && singleUniformShape != null && interestingSamples > reflectionSamples) {
+				matchPatternInfo = new PatternInfo(null, RegExpGenerator.smashedAsRegExp(singleUniformShape.trim()), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 						maxTrimmedLength, null, null);
 				updated = true;
 			}
@@ -2152,8 +2184,8 @@ public class TextAnalyzer {
 			// Qualify random string with a min and max length
 			if (!updated && KnownPatterns.PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
 				String newPattern = null;
-				if (uniformShape && cardinality.size() > 1)
-					newPattern = shapeToRegExp(shape);
+				if (singleUniformShape != null && cardinality.size() > 1)
+					newPattern = shapeToRegExp(singleUniformShape);
 				if (newPattern == null)
 					newPattern = KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minRawNonBlankLength, maxRawNonBlankLength, leadingWhiteSpace, trailingWhiteSpace, multiline);
 				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minRawLength,

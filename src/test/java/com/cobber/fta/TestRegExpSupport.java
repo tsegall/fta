@@ -15,4 +15,15 @@ public class TestRegExpSupport {
 	public void onlyAlpha() throws IOException {
 		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("aaaaa"), "\\p{IsAlphabetic}{5}");
 	}
+
+	@Test
+	public void mixedZip() throws IOException {
+		RegExpGenerator gen = new RegExpGenerator();
+
+		gen.train("1-1-1-11");
+		gen.train("1-1-11-11");
+		gen.train("1-1-11-1");
+		gen.train("1-1-1-1");
+		Assert.assertEquals(gen.getResult(), "[\\p{IsDigit}\\-]{7,9}");
+	}
 }

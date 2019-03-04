@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeCAProvince;
 import com.cobber.fta.plugins.LogicalTypeEmail;
+import com.cobber.fta.plugins.LogicalTypeGUID;
 import com.cobber.fta.plugins.LogicalTypeISO3166_2;
 import com.cobber.fta.plugins.LogicalTypeISO3166_3;
 import com.cobber.fta.plugins.LogicalTypeURL;
@@ -281,6 +282,56 @@ public class TestPlugins {
 
 		for (String s : samples) {
 			Assert.assertTrue(s.matches(result.getRegExp()), s);
+		}
+	}
+
+	@Test
+	public void basicGUID() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("GUID");
+		final String[] inputs = new String[] {
+				"DAA3EDDE-5BCF-4D2A-8FB0-E120089343AF",
+				"B0613BE8-88AF-4591-A9A0-059F80413212",
+				"063BB913-7287-4A8A-B3DF-41EAA0EABF49",
+				"B6011DC1-C4A3-4130-AD42-C3EA2BA35F8B",
+				"327B2624-2467-4461-8CA3-2DCB30D06683",
+				"BDC94786-4016-4C7A-85F7-A7558425FA26",
+				"0525CA73-9A48-497A-AC2D-2596BFE66FF7",
+				"88BD42BA-B4F2-4E9E-8BD3-6846F6692E44",
+				"1456E784-D404-4864-BBD3-691988220732",
+				"FF2B0C44-2277-4EB1-BB25-32CF23181672",
+				"929945CC-E4AA-4FEA-BFD6-43B774C9FB05",
+				"BC2D3965-24A5-4CC7-986A-99B869925ACD",
+				"7C9C9A6C-0A38-41B6-A999-A9A4218D43FA",
+				"3324F2BF-9CC6-446A-A02D-DDE2F2ECF31F",
+				"F17AA339-5DCE-4318-9B1C-C95255D4C5CC",
+				"D67F9D81-DBE7-4214-849F-41B937C628AB",
+				"9892D51B-C490-4B6E-8DF0-B032BAAB0476",
+				"6CBD3302-F067-4378-8955-CD57EA5E83EB",
+				"BEDFFAF8-9E35-4155-A337-7981BA349E7B",
+				"37285247-D431-4381-AC5F-7C3136E276C2",
+				"6D490537-AA7B-45C5-BEDB-8572EBDEFD15",
+				"51E55FD6-74CA-4B1D-B5FD-D210209E3FC4"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "GUID");
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeGUID.REGEXP);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 		}
 	}
 
