@@ -33,6 +33,7 @@ public class KnownPatterns {
 	public static final String PATTERN_ANY = ".";
 	public static final String PATTERN_ANY_VARIABLE = ".+";
 	public static final String PATTERN_ALPHA = "\\p{IsAlphabetic}";
+	public static final String PATTERN_NUMERIC = "\\p{IsDigit}";
 	public static final String PATTERN_ALPHA_VARIABLE = PATTERN_ALPHA + "+";
 	public static final String PATTERN_ALPHANUMERIC = "[\\p{IsAlphabetic}\\p{IsDigit}]";
 	public static final String PATTERN_ALPHANUMERIC_VARIABLE = PATTERN_ALPHANUMERIC + "+";

@@ -1107,7 +1107,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), end - start);
 		Assert.assertEquals(result.getMatchCount(), end - start);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{5,6}");
+		Assert.assertEquals(result.getRegExp(), "\\p{IsDigit}{5}|\\p{IsAlphabetic}\\p{IsDigit}{5}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "10000");
 		Assert.assertEquals(result.getMaxValue(), "A99998");

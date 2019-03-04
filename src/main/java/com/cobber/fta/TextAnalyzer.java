@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -2147,12 +2148,37 @@ public class TextAnalyzer {
 			if (!updated && uniformShape) {
 				if (shapes.size() == 1)
 					singleUniformShape = shapes.keySet().iterator().next();
-				/* TODO
 				else {
-					if (shapes.size() > 1 && realSamples > 100) {
-						boolean interesting = true;
-						for (Map.Entry<String, Integer> shape : shapes.entrySet()) {
-							if (shape.getValue() < realSamples/10)
+					if (shapes.size() == 2 && realSamples > 100) {
+						Iterator<Map.Entry<String, Integer>> iter = shapes.entrySet().iterator();
+						Map.Entry<String, Integer> firstShape = iter.next();
+						Map.Entry<String, Integer> secondShape = iter.next();
+
+						if (firstShape.getValue() > realSamples * 15/100 && secondShape.getValue() > realSamples * 15/100) {
+							String firstKey = firstShape.getKey();
+							String secondKey = secondShape.getKey();
+							int firstLen = firstKey.length();
+							int secondLen = secondKey.length();
+							String newPattern = null;
+							String first = RegExpGenerator.smashedAsRegExp(firstKey);
+							String second = RegExpGenerator.smashedAsRegExp(secondKey);
+							if (firstLen < secondLen && secondKey.contains(firstKey)) {
+// TODO something clever								genPattern(secondKey, firstKey);
+								newPattern = first + '|' + second;
+							}
+							else if (secondLen < firstLen && firstKey.contains(secondKey)) {
+// TODO something clever								genPattern(secondKey, firstKey);
+								newPattern = first + '|' + second;
+							}
+							else {
+								newPattern = first + '|' + second;
+							}
+							matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+									maxTrimmedLength, null, null);
+							updated = true;
+						}
+/*						for (Map.Entry<String, Integer> shape : shapes.entrySet()) {
+							if (shape.getValue() < realSamples/15)
 								interesting = false;
 						}
 						if (interesting) {
@@ -2161,9 +2187,9 @@ public class TextAnalyzer {
 								System.err.printf("%s: %d\n", shape.getKey(), shape.getValue());
 							}
 						}
+						*/
 					}
 				}
-		*/
 			}
 
 			if (!updated && singleUniformShape != null && interestingSamples > reflectionSamples) {

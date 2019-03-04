@@ -795,7 +795,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{3}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}" + '|' + KnownPatterns.PATTERN_NUMERIC + "{3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
@@ -823,7 +823,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{3}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}" + '|' + KnownPatterns.PATTERN_NUMERIC + "{3}");
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
