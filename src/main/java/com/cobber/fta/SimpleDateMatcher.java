@@ -122,23 +122,27 @@ public class SimpleDateMatcher {
 	}
 
 	private static String replaceString(String input, int len, String target, String replacement, boolean wordBoundary) {
-		int found = input.indexOf(target);
-		if (found == -1)
-			return null;
+		int startOffset = 0;
+		int found;
 
-		char ch;
-		if (found != 0) {
-			ch = input.charAt(found - 1);
-			if (Character.isAlphabetic(ch) || (wordBoundary && ch != ' '))
-				return null;
-		}
-		if (found + target.length() < len) {
-			ch = input.charAt(found + target.length());
-			if (Character.isAlphabetic(ch) || (wordBoundary && ch != ' '))
-				return null;
+		while ((found = input.indexOf(target, startOffset)) != -1) {
+			startOffset = found + 1;
+			char ch;
+			if (found != 0) {
+				ch = input.charAt(found - 1);
+				if (Character.isAlphabetic(ch) || (wordBoundary && ch != ' '))
+					continue;
+			}
+			if (found + target.length() < len) {
+				ch = input.charAt(found + target.length());
+				if (Character.isAlphabetic(ch) || (wordBoundary && ch != ' '))
+					continue;
+			}
+
+			return input.substring(0, found) + replacement + input.substring(found + target.length());
 		}
 
-		return input.replaceFirst(target, replacement);
+		return null;
 	}
 
 	/**
@@ -214,7 +218,6 @@ public class SimpleDateMatcher {
 				break;
 			}
 		}
-
 
 		for (int i = 0; i < len; i++) {
 			final char ch = input.charAt(i);

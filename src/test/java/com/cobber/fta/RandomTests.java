@@ -511,7 +511,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\p{IsDigit}{5}");
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d{5}");
 	}
 
 	@Test
@@ -548,6 +548,55 @@ public class RandomTests {
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void mixedZip() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("mixedZip");
+		final String[] inputs = new String[] {
+				"98115-2654", "98007", "98042-8501", "98311-3239", "98074-3322", "98039", "98466-2041", "98136-2633", "98166-3212", "98042-8213",
+				"98121", "98038-8314", "98112-4739", "98059-7315", "20017-4261", "21204-2055", "21158-3604", "21784", "21776-9719", "20854",
+				"22201-2618", "20017-1513", "20016-8001", "20008-5941", "20904-1209", "20901-1040", "20901-3105", "20817-6330", "20164", "20008-2522",
+				"20109-3364", "20112-2759", "20708-1401", "20169-2703", "20155-1824", "20854-5497", "20169-1224", "20194-4323", "20190-4969", "20783-3052",
+				"20716-1843", "20772-3222", "20882-1614", "20007-4104", "20112-3041", "20902", "20874-2915", "22305", "20165-2810", "20110-5357",
+				"21078", "20770-3514", "20032-4801", "20220-0001", "22304-2552", "20772-4505", "20747-5101", "20769-9031", "20715", "20785-4618",
+				"20746-3425", "21030-2210", "21078-1828", "20708-9758", "21228", "20754-9574", "21157-7720", "21048", "22192", "22205-3163",
+				"21122-5702", "21220-1613", "21228", "21102-2059", "21221-3530", "21210-1556", "21040-1054", "21202-3504", "21043-6929", "21224-2141",
+				"21042", "21093-7547", "21001", "21087", "20772-4137", "21111-1120", "21228-5317", "20678-3443", "20639", "20772-8378",
+				"20772", "20735-4560", "21220", "21060-7241", "21220", "21009", "21108", "21201-5097", "22202", "22202", "20036", "20024", "20566",
+				 "21771", "21117", "20005", "21770", "20613", "20009","21229", "21791", "", "22134", "", "", "21225", "20850-3164", "21230", "21236",
+				"20190", "20910", "21225", "21409-6107", "20782-3952", "22201-5798", "21205", "22202", "21250-1000", "20015-2770",
+				"21209-2101", "21227-4817", "21009", "21204-4310", "22205-3163", "20015-1009", "21029", "21228", "20855-1555", "21227-1056",
+				"21157-6530", "21042-3629", "21044-1211", "21794-9604", "20007-4373", "21009", "20903-2019", "20906-5271", "22206", "20769-9161",
+				"20019-6732", "20737-1046", "20872-1867", "21074", "20854-6209", "20818-1328", "20906", "20876", "20740-3170", "20112-4735",
+				"21201", "22202", "20782-2335", "20166-7547", "20019-1501", "20743", "22046-4235", "21218", "20770-1410", "20817-5700",
+				"20905-5003", "20833-1711", "20008-4701", "22201-4502", "20842-9062", "20639-3035", "20166-2117", "20169-1932", "20782-3952", "22203-2054",
+				"20854-2983", "21222", "20772-4237", "20878", "20879", "20874-1517", "20879", "20705", "20165-2496", "20772-5035",
+				"21001", "20878", "21161", "20170-3241", "22201-5798", "20015-2770", "20882-1266", "20854-3916", "20715-3102", "20747"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{5}(-\\d{4})?");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty())
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()));
 		}
 	}
 
@@ -1318,7 +1367,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\p{IsDigit}{3}-\\p{IsDigit}{2}-\\p{IsDigit}{4}");
+		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -1355,7 +1404,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\+\\p{IsDigit} \\p{IsDigit}{3} \\p{IsDigit}{3} \\p{IsDigit}{4}");
+		Assert.assertEquals(result.getRegExp(), "\\+\\d \\d{3} \\d{3} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -1392,7 +1441,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\p{IsDigit}\\.\\p{IsDigit}{3}\\.\\p{IsDigit}{3}\\.\\p{IsDigit}{4}");
+		Assert.assertEquals(result.getRegExp(), "\\d\\.\\d{3}\\.\\d{3}\\.\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -1429,7 +1478,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\(\\p{IsDigit}{3}\\) \\p{IsDigit}{3} \\p{IsDigit}{4}");
+		Assert.assertEquals(result.getRegExp(), "\\(\\d{3}\\) \\d{3} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -1466,7 +1515,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\[\\p{IsDigit}{3}\\)\\{\\[\\p{IsDigit}-\\p{IsDigit}\\] \\^\\p{IsDigit}{3}\\$\\p{IsDigit}{4}");
+		Assert.assertEquals(result.getRegExp(), "\\[\\d{3}\\)\\{\\[\\d-\\d\\] \\^\\d{3}\\$\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -1593,7 +1642,7 @@ public class RandomTests {
 		Assert.assertEquals(locked, TextAnalyzer.SAMPLE_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), end - start);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\p{IsDigit}{6}");
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d{6}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertTrue(result.isKey());
 		Assert.assertEquals(result.getConfidence(), 1.0);

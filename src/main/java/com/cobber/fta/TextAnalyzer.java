@@ -2155,25 +2155,9 @@ public class TextAnalyzer {
 						Map.Entry<String, Integer> secondShape = iter.next();
 
 						if (firstShape.getValue() > realSamples * 15/100 && secondShape.getValue() > realSamples * 15/100) {
-							String firstKey = firstShape.getKey();
-							String secondKey = secondShape.getKey();
-							int firstLen = firstKey.length();
-							int secondLen = secondKey.length();
-							String newPattern = null;
-							String first = RegExpGenerator.smashedAsRegExp(firstKey);
-							String second = RegExpGenerator.smashedAsRegExp(secondKey);
-							if (firstLen < secondLen && secondKey.contains(firstKey)) {
-// TODO something clever								genPattern(secondKey, firstKey);
-								newPattern = first + '|' + second;
-							}
-							else if (secondLen < firstLen && firstKey.contains(secondKey)) {
-// TODO something clever								genPattern(secondKey, firstKey);
-								newPattern = first + '|' + second;
-							}
-							else {
-								newPattern = first + '|' + second;
-							}
-							matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+							String firstRE = RegExpGenerator.smashedAsRegExp(firstShape.getKey());
+							String secondRE = RegExpGenerator.smashedAsRegExp(secondShape.getKey());
+							matchPatternInfo = new PatternInfo(null, RegExpGenerator.merge(firstRE, secondRE), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 									maxTrimmedLength, null, null);
 							updated = true;
 						}

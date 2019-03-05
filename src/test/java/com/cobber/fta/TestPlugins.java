@@ -1107,7 +1107,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), end - start);
 		Assert.assertEquals(result.getMatchCount(), end - start);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{IsDigit}{5}|\\p{IsAlphabetic}\\p{IsDigit}{5}");
+		Assert.assertEquals(result.getRegExp(), "(\\p{IsAlphabetic})?\\d{5}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "10000");
 		Assert.assertEquals(result.getMaxValue(), "A99998");
@@ -1510,6 +1510,36 @@ public class TestPlugins {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), ".+");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+	}
+
+	@Test
+	public void thinAddress() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Example_Address");
+		final String[] inputs = new String[] {
+				"123 Test St",
+				"124 Test St",
+				"125 Test St",
+				"126 Test St",
+				"127 Test St",
+				"128 Test St",
+				"129 Test St",
+				"130 Test St",
+				"131 Test St"
+		};
+
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "ADDRESS_EN");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), ".+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test

@@ -68,6 +68,26 @@ public class RegExpGenerator {
 		return isSpecial(ch) ? "\\" + ch : String.valueOf(ch);
 	}
 
+	public static String merge(String firstRE, String secondRE) {
+		if (!firstRE.contains(secondRE) && !secondRE.contains(firstRE))
+			return firstRE + '|' + secondRE;
+
+		if (secondRE.contains(firstRE)) {
+			String save = firstRE;
+			firstRE = secondRE;
+			secondRE = save;
+		}
+
+		// Now we know that the first RE contains the second
+		if (firstRE.startsWith(secondRE))
+			return secondRE + '(' + firstRE.substring(secondRE.length()) + ")?";
+		if (firstRE.endsWith(secondRE))
+			return '(' + firstRE.substring(0, firstRE.length() - secondRE.length()) + ")?" + secondRE;
+
+		int start = firstRE.indexOf(secondRE);
+		return firstRE.substring(0, start) + '(' + secondRE + ")?" + firstRE.substring(start + secondRE.length());
+	}
+
 	/**
 	 * Return an escaped String (similar to Pattern.quote but not unconditional).
 	 * @param input The String to be protected.
@@ -113,7 +133,7 @@ public class RegExpGenerator {
 		}
 
 		if (digits != 0) {
-			ret.append("\\p{IsDigit}");
+			ret.append("\\d");
 			if (digits > 1)
 				ret.append('{').append(digits).append('}');
 		}
@@ -140,7 +160,8 @@ public class RegExpGenerator {
 			return ".+";
 		for (int i = 0; i < len; i++) {
 			char ch = input.charAt(i);
-			if (Character.isDigit(ch))
+			// Note: we are using 0-9 not isDigit
+			if (ch >= '0' && ch <= '9')
 				b.append('1');
 			else if (Character.isAlphabetic(ch))
 				b.append('a');
