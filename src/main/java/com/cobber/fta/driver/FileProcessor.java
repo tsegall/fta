@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.cobber.fta.PatternInfo;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.univocity.parsers.csv.CsvParser;
@@ -87,6 +88,13 @@ class FileProcessor {
 					analysis[i].setMaxCardinality(options.maxCardinality);
 				if (options.locale != null)
 					analysis[i].setLocale(options.locale);
+				if (options.debug != -1)
+					analysis[i].setDebug(options.debug);
+				for (String logicalDefinition : options.logicalTypes) {
+					String[] components = logicalDefinition.split(",");
+					analysis[i].registerLogicalTypeRegExp(components[0], components[1].split("\\|"), components[2],
+							Integer.valueOf(components[3]), PatternInfo.Type.valueOf(components[4]));
+				}
 			}
 
 			long thisRecord = 0;

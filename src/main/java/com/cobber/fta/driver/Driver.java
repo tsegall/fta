@@ -42,12 +42,15 @@ class Driver {
 				options.charset = args[++idx];
 			else if ("--col".equals(args[idx]))
 				options.col = Integer.valueOf(args[++idx]);
+			else if ("--debug".equals(args[idx]))
+				options.debug = Integer.valueOf(args[++idx]);
 			else if ("--help".equals(args[idx])) {
 				logger.println("Usage: [--charset <charset>] [--col <n>] [--help] [--locale <LocaleIdentifier>] [--maxCardinality <n>] [--noAnalysis] [--noLogicalTypes] [--noStatistics] [--pretty] [--records <n>] [--resolutionMode <DayFirst|MonthFirst|Auto|None>] [--samples <n>] [--validate] [--verbose] [--xMaxCharPerColumn <n>] file ...");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
 				logger.println(" --help - Print this help");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
+				logger.println(" --logicalType qualifier,keyword1|keyword2|...,regExp,threshold,baseType");
 				logger.println(" --maxCardinality <n> - Set the Maximum Cardinality size");
 				logger.println(" --noAnalysis - Do not do analysis");
 				logger.println(" --noLogicalTypes - Do not register any Logical Types");
@@ -60,6 +63,7 @@ class Driver {
 				logger.println(" --verbose - Output each record as it is processed");
 				logger.println(" --xMaxCharsPerColumn <n> - Set the maximum column width (CSV parsing option)");
 				helpRequested = true;
+
 			}
 			else if ("--locale".equals(args[idx]))
 				options.locale = new Locale(args[++idx]);
@@ -75,6 +79,8 @@ class Driver {
 				options.pretty = true;
 			else if ("--records".equals(args[idx]))
 				options.recordsToAnalyze = Long.valueOf(args[++idx]);
+			else if ("--logicalType".equals(args[idx]))
+				options.logicalTypes.add(args[++idx]);
 			else if ("--resolutionMode".equals(args[idx])) {
 				String mode = args[++idx];
 				if (mode.equals("DayFirst"))

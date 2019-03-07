@@ -35,7 +35,7 @@ public class KnownPatterns {
 	public static final String PATTERN_ALPHA = "\\p{IsAlphabetic}";
 	public static final String PATTERN_NUMERIC = "\\d";
 	public static final String PATTERN_ALPHA_VARIABLE = PATTERN_ALPHA + "+";
-	public static final String PATTERN_ALPHANUMERIC = "[\\p{IsAlphabetic}\\p{IsDigit}]";
+	public static final String PATTERN_ALPHANUMERIC = "[" + PATTERN_ALPHA + PATTERN_NUMERIC + "]";
 	public static final String PATTERN_ALPHANUMERIC_VARIABLE = PATTERN_ALPHANUMERIC + "+";
 
 	public static final String PATTERN_NULL = "[NULL]";

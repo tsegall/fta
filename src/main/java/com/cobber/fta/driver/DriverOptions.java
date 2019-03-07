@@ -15,17 +15,21 @@
  */
 package com.cobber.fta.driver;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 class DriverOptions {
 	int col = -1;
+	int debug = -1;
 	DateResolutionMode resolutionMode = DateResolutionMode.None;
 	boolean noAnalysis = false;
 	boolean noLogicalTypes = false;
 	boolean noStatistics = false;
 	long recordsToAnalyze = -1;
+	Set<String> logicalTypes = new HashSet<>();
 	int sampleSize = -1;
 	Locale locale = null;
 	int maxCardinality = -1;

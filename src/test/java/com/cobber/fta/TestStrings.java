@@ -185,7 +185,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\p{IsDigit}]{32}");
+		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{32}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {

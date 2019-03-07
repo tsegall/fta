@@ -52,6 +52,30 @@ public class TestDoubles {
 	}
 
 	@Test
+	public void tinyDouble() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = "0e-17";
+		int locked = -1;
+
+		analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, -1);
+		Assert.assertEquals(result.getSampleCount(), 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getMinValue(), "0.0");
+		Assert.assertEquals(result.getMaxValue(), "0.0");
+		Assert.assertEquals(result.getMinLength(), 5);
+		Assert.assertEquals(result.getMaxLength(), 5);
+//BUG TODO		Assert.assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test
 	public void positiveDouble2() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "43.80|1.1|0.1|2.03|0.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");

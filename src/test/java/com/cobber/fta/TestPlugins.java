@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.testng.Assert;
@@ -1426,6 +1427,116 @@ public class TestPlugins {
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void possibleSSN() throws IOException {
+		final Random random = new Random(314159265);
+		String[] samples = new String[1000];
+
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < samples.length; i++) {
+			b.setLength(0);
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append('-');
+			b.append(String.format("%02d", random.nextInt(100)));
+			b.append('-');
+			b.append(String.format("%04d", random.nextInt(10000)));
+			samples[i] = b.toString();
+		}
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLengthQualifier(false);
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void testRegExpLogicalType_SSN() throws IOException {
+		final Random random = new Random(314159265);
+		String[] samples = new String[1000];
+
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < samples.length; i++) {
+			b.setLength(0);
+			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append('-');
+			b.append(String.format("%02d", random.nextInt(100)));
+			b.append('-');
+			b.append(String.format("%04d", random.nextInt(10000)));
+			samples[i] = b.toString();
+		}
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.registerLogicalTypeRegExp("SSN", new String[] { "SSN", "social" }, "\\d{3}-\\d{2}-\\d{4}", 98, PatternInfo.Type.STRING);
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+		analysis.train("032--45-0981");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length + 1);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "SSN");
+		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 1);
+		Assert.assertEquals(outliers.get("032--45-0981"), Integer.valueOf(1));
+
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void testRegExpLogicalType_CUSIP() throws IOException {
+		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
+		String[] samples = new String[] {
+				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
+				"G0084W951", "G0129K104", "G0129K904", "G0129K954", "G0132V105", "G0176J109", "G0176J909", "G0176J959", "G01767105", "G01767905",
+				"G01767955", "G0177J108", "G0177J908", "G0177J958", "G02602103", "G02602903", "G02602953", "G0335L102", "G0335L902", "G0335L952"
+
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
+		analysis.registerLogicalTypeRegExp("CUSIP", new String[] { "CUSIP" }, CUSIP_REGEXP, 98, PatternInfo.Type.STRING);
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getRegExp(), CUSIP_REGEXP);
+		Assert.assertEquals(result.getTypeQualifier(), "CUSIP");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
 		}
 	}
 
