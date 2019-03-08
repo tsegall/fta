@@ -24,7 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,7 +49,7 @@ public class DateTimeParserResult {
 	public Character dateSeparator;
 	public String formatString;
 	public Boolean amPmIndicator;
-	public FormatterToken[] tokenized;
+	public ArrayList<FormatterToken> tokenized;
 
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 	private Locale locale;
@@ -61,7 +60,7 @@ public class DateTimeParserResult {
 	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, Locale locale, final int timeElements,
 			final int[] timeFieldLengths, final int[] timeFieldOffsets, final int hourLength, final int dateElements, final int[] dateFieldLengths,
 			final int[] dateFieldOffsets, final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset,
-			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final FormatterToken[] tokenized) {
+			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final ArrayList<FormatterToken> tokenized) {
 		this.formatString = formatString;
 		this.resolutionMode = resolutionMode;
 		this.locale = locale;
@@ -92,7 +91,7 @@ public class DateTimeParserResult {
 				r.dateFieldLengths != null ? Arrays.copyOf(r.dateFieldLengths, r.dateFieldLengths.length) : null,
 				r.dateFieldOffsets != null ? Arrays.copyOf(r.dateFieldOffsets, r.dateFieldOffsets.length) : null,
 				r.timeFirst, r.dateTimeSeparator, r.yearOffset, r.monthOffset, r.dayOffset, r.dateSeparator, r.timeZone, r.amPmIndicator,
-				r.tokenized != null ? Arrays.copyOf(r.tokenized, r.tokenized.length) : null);
+				r.tokenized != null ? r.tokenized : null);
 
 	}
 
@@ -357,8 +356,8 @@ public class DateTimeParserResult {
 		return newInstance(ret);
 	}
 
-	public static FormatterToken[] tokenize(String formatString) {
-		final List<FormatterToken> ret = new ArrayList<FormatterToken>();
+	public static ArrayList<FormatterToken> tokenize(String formatString) {
+		final ArrayList<FormatterToken> ret = new ArrayList<FormatterToken>();
 		int upto = 0;
 
 		final int formatLength = formatString.length();
@@ -507,7 +506,7 @@ public class DateTimeParserResult {
 			}
 		}
 
-		return ret.toArray(new FormatterToken[ret.size()]);
+		return ret;
 	}
 
 	@SuppressWarnings("incomplete-switch")
@@ -777,9 +776,18 @@ public class DateTimeParserResult {
 			return PatternInfo.Type.LOCALDATE;
 		if (dateElements == -1)
 			return PatternInfo.Type.LOCALTIME;
-		if (timeZone == null || timeZone.length() == 0)
-			return PatternInfo.Type.LOCALDATETIME;
-		return timeZone.indexOf('z') == -1 ? PatternInfo.Type.OFFSETDATETIME : PatternInfo.Type.ZONEDDATETIME;
+
+		if (tokenized == null)
+			tokenized =  DateTimeParserResult.tokenize(formatString);
+
+		for (FormatterToken t : tokenized) {
+			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_Z))
+				return PatternInfo.Type.OFFSETDATETIME;
+			if (t.getType().equals(Token.TIMEZONE))
+				return PatternInfo.Type.ZONEDDATETIME;
+		}
+
+		return PatternInfo.Type.LOCALDATETIME;
 	}
 
 	private String asDate(final char[] fieldChars) {
