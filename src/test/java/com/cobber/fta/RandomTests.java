@@ -1489,6 +1489,34 @@ public class RandomTests {
 	}
 
 	@Test
+	public void bigExponents() throws IOException {
+		String[] samples = new String[] {
+				"5230CGX16431", "3590E094000", "3590E092401", "3590E012300", "66004890064", "020035020", "270000009882", "020035256", "5520WDB48305", "6200600740",
+				"6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "66004589900", "66004589900",
+				"020035300", "020035300", "020035347", "6020710337", "6020710337", "020035257", "020035053", "020035030", "020035030", "020035031",
+				"020035031", "6200243635", "6200243635", "6200206290", "6200206290", "3590E049400", "3590E094300", "3590E094300", "3590E094300"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{9,12}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void difficultRegExp() throws IOException {
 		final Random random = new Random(314159265);
 		String[] samples = new String[1000];

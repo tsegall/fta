@@ -701,44 +701,50 @@ public class DateTimeParser {
 				if (!Character.isAlphabetic(ch))
 					return null;
 
-				String rest = trimmed.substring(i).toUpperCase(locale);
-				boolean ampmDetected = false;
-				for (String s : LocaleInfo.getAMPMStrings(locale)) {
-					if (rest.startsWith(s)) {
-						amPmIndicator = trimmed.charAt(i - 1) == ' ' ? " a" : "a";
-						i += s.length();
-						ampmDetected = true;
-						break;
+				if (timeSeen) {
+					String rest = trimmed.substring(i).toUpperCase(locale);
+					boolean ampmDetected = false;
+					for (String s : LocaleInfo.getAMPMStrings(locale)) {
+						if (rest.startsWith(s)) {
+							amPmIndicator = trimmed.charAt(i - 1) == ' ' ? " a" : "a";
+							i += s.length();
+							ampmDetected = true;
+						}
+					}
+
+					if (ampmDetected) {
+						// Eat the space after if it exists
+						if (i + 1 < len && trimmed.charAt(i + 1) == ' ')
+							i++;
+					}
+					else {
+						if (ch == 'Z')
+							timeZone = "X";
+						else {
+							final String currentTimeZone = trimmed.substring(i, len);
+							if (!DateTimeParser.timeZones.contains(currentTimeZone))
+								return null;
+							timeZone = " z";
+						}
 					}
 				}
-
-				if (ampmDetected) {
-					// Eat the space after if it exists
-					if (i + 1 < len && trimmed.charAt(i + 1) == ' ')
-						i++;
-				}
-				else if (expectingAlphaTimeZone) {
-					final String currentTimeZone = trimmed.substring(i, len);
-					if (!DateTimeParser.timeZones.contains(currentTimeZone))
+				else {
+					if (ch == 'T') {
+						// ISO 8601
+						if (timeSeen)
+							return null;
+						if (!dateSeen || dateClosed || digits != 2 || dateSeparator != '-' || !fourDigitYear || !yearInDateFirst)
+							return null;
+						iso8601 = true;
+						dateValue[dateComponent] = value;
+						dateDigits[dateComponent] = digits;
+						dateClosed = true;
+						digits = 0;
+						value = 0;
+					}
+					else
 						return null;
-					timeZone = " z";
-					break;
 				}
-				else if (ch == 'T') {
-					// ISO 8601
-					if (timeSeen)
-						return null;
-					if (!dateSeen || dateClosed || digits != 2 || dateSeparator != '-' || !fourDigitYear || !yearInDateFirst)
-						return null;
-					iso8601 = true;
-					dateValue[dateComponent] = value;
-					dateDigits[dateComponent] = digits;
-					dateClosed = true;
-					digits = 0;
-					value = 0;
-				}
-				else
-					return null;
 				break;
 			}
 		}

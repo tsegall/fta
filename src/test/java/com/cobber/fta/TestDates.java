@@ -1042,6 +1042,48 @@ public class TestDates {
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss");
 	}
 
+
+	@Test
+	public void dateTimeYYYYMMDDTHHMMssSSSZ() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+
+		analysis.train("2010-07-01T22:20:22.400Z");
+		analysis.train("2015-03-01T22:20:21.000Z");
+		analysis.train("2015-07-01T22:20:22.300Z");
+		analysis.train("2015-07-01T12:20:32.000Z");
+		analysis.train("2015-07-01T22:20:22.100Z");
+		analysis.train("2011-02-01T02:20:22.000Z");
+		analysis.train("2015-07-01T22:30:22.000Z");
+		analysis.train("2015-07-01T22:20:22.010Z");
+		analysis.train("2012-01-01T22:20:22.000Z");
+		analysis.train("2015-07-01T22:40:22.000Z");
+		analysis.train("2015-07-01T22:20:22.000Z");
+		analysis.train("2015-07-01T22:20:22.200Z");
+		analysis.train("2015-07-01T22:20:22.000Z");
+		analysis.train("2014-08-01T12:10:22.000Z");
+		analysis.train("2015-06-01T22:20:22.010Z");
+		analysis.train("2015-07-01T22:20:22.000Z");
+		analysis.train("2017-07-01T02:20:22.000Z");
+		analysis.train(null);
+		analysis.train("2018-06-01T08:20:22.000Z");
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss.SSSX");
+		Assert.assertEquals(result.getSampleCount(), 20);
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}([-+][0-9]{2}([0-9]{2})?|Z)");
+		Assert.assertEquals(result.getMatchCount(), 18);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		analysis.train("2008-01-01T00:00:00-05:00");
+		result = analysis.getResult();
+		Assert.assertEquals(result.getSampleCount(), 21);
+	}
+
 	@Test
 	public void dateTimeYYYYMMDDTHHMMSSNNNN() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();

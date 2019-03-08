@@ -99,7 +99,7 @@ public class DateTimeParserResult {
 	enum Token {
 		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DAY_OF_WEEK, DAY_OF_WEEK_ABBR, DIGITS_1_OR_2, MONTHS_1_OR_2,
 		MONTHS_2, HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, SECS_2, FRACTION,
-		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET, AMPM
+		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET, TIMEZONE_OFFSET_Z, AMPM
 	}
 
 	/*
@@ -476,12 +476,13 @@ public class DateTimeParserResult {
 				break;
 
 			case 'x':
+			case 'X':
 				int nextCount = 1;
 				while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 					nextCount++;
 					i++;
 				}
-				ret.add(new FormatterToken(Token.TIMEZONE_OFFSET, nextCount));
+				ret.add(new FormatterToken(ch == 'x' ? Token.TIMEZONE_OFFSET : Token.TIMEZONE_OFFSET_Z, nextCount));
 				break;
 
 			case 'z':
@@ -707,6 +708,15 @@ public class DateTimeParserResult {
 					throw new DateTimeParseException("Expecting time zone - bad time zone: " + currentTimeZone, input, upto);
 				break;
 
+			case TIMEZONE_OFFSET_Z:
+				if (upto >= inputLength)
+					throw new DateTimeParseException("Expecting time zone offset, end of input", input, upto);
+				if (input.charAt(upto) == 'Z') {
+					upto++;
+					break;
+				}
+				// FALL THROUGH
+
 			case TIMEZONE_OFFSET:
 				if (token.getCount() < 1 || token.getCount() > 5)
 					throw new DateTimeParseException("Invalid time zone offset", input, upto);
@@ -796,6 +806,11 @@ public class DateTimeParserResult {
 		final StringBuilder ret = new StringBuilder(40);
 		int digitsMin = 0;
 		int digitsMax = 0;
+		final String x = "[-+][0-9]{2}([0-9]{2})?";
+		final String xx = "[-+][0-9]{4}";
+		final String xxx = "[-+][0-9]{2}:[0-9]{2}";
+		final String xxxx = "[-+][0-9]{4}([0-9]{2})?";
+		final String xxxxx = "[-+][0-9]{2}:[0-9]{2}(:[0-9]{2})?";
 
 		if (formatString == null)
 			formatString = getFormatString();
@@ -804,7 +819,7 @@ public class DateTimeParserResult {
 			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.MONTH ||
 					token.getType() == Token.MONTH_ABBR || token.getType() == Token.DAY_OF_WEEK_ABBR ||
 					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE ||
-					token.getType() == Token.TIMEZONE_OFFSET) {
+					token.getType() == Token.TIMEZONE_OFFSET || token.getType() == Token.TIMEZONE_OFFSET_Z) {
 				if (digitsMin != 0) {
 					ret.append("\\d").append(Utils.regExpLength(digitsMin, digitsMax));
 					digitsMin = digitsMax = 0;
@@ -834,7 +849,6 @@ public class DateTimeParserResult {
 					ret.append(".*");
 					break;
 
-				case TIMEZONE_OFFSET:
 //					Offset X and x: This formats the offset based on the number of pattern letters.
 //				    One letter outputs just the hour, such as '+01', unless the minute is non-zero in which case the minute is also output, such as '+0130'.
 //					Two letters outputs the hour and minute, without a colon, such as '+0130'.
@@ -842,25 +856,50 @@ public class DateTimeParserResult {
 //					Four letters outputs the hour and minute and optional second, without a colon, such as '+013015'.
 //					Five letters outputs the hour and minute and optional second, with a colon, such as '+01:30:15'.
 //					Six or more letters throws IllegalArgumentException. Pattern letter 'X' (upper case) will output 'Z' when the offset to be output would be zero, whereas pattern letter 'x' (lower case) will output '+00', '+0000', or '+00:00'.
+				case TIMEZONE_OFFSET_Z:
 					switch (token.getCount()) {
 					case 1:
-						ret.append("[-+][0-9]{2}([0-9]{2})?");
+						ret.append("(" + x + "|Z)");
 						break;
 
 					case 2:
-						ret.append("[-+][0-9]{4}");
+						ret.append("(" + xx + "|Z)");
 						break;
 
 					case 3:
-						ret.append("[-+][0-9]{2}:[0-9]{2}");
+						ret.append("(" + xxx + "|Z)");
 						break;
 
 					case 4:
-						ret.append("[-+][0-9]{4}([0-9]{2})?");
+						ret.append("(" + xxxx + "|Z)");
 						break;
 
 					case 5:
-						ret.append("[-+][0-9]{2}:[0-9]{2}(:[0-9]{2})?");
+						ret.append("(" + xxxxx + "|Z)");
+						break;
+					}
+					break;
+
+				case TIMEZONE_OFFSET:
+					switch (token.getCount()) {
+					case 1:
+						ret.append(x);
+						break;
+
+					case 2:
+						ret.append(xx);
+						break;
+
+					case 3:
+						ret.append(xxx);
+						break;
+
+					case 4:
+						ret.append(xxxx);
+						break;
+
+					case 5:
+						ret.append(xxxxx);
 						break;
 					}
 					break;

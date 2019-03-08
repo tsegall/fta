@@ -1107,6 +1107,10 @@ public class TextAnalyzer {
 			}
 		}
 
+		if (couldBeNumeric && possibleExponentSeen != -1 &&
+			stopLooking - possibleExponentSeen - 1 > 3)
+			couldBeNumeric = false;
+
 		final StringBuilder compressedl0 = new StringBuilder(length);
 		if (alphasSeen != 0 && digitsSeen != 0 && alphasSeen + digitsSeen == length) {
 			compressedl0.append(KnownPatterns.PATTERN_ALPHANUMERIC).append('{').append(String.valueOf(length)).append('}');
