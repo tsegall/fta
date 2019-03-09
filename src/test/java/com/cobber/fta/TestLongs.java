@@ -206,6 +206,30 @@ public class TestLongs {
 	}
 
 	@Test
+	public void leadingZerosWith0() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
+
+		analysis.train("0");
+		analysis.train("1");
+		analysis.train("2");
+		analysis.train("3");
+		analysis.train("0");
+		analysis.train("2");
+		analysis.train("10");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), 7);
+		Assert.assertEquals(result.getMatchCount(), 7);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
 	public void groupingSeparatorLarge() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Random random = new Random();

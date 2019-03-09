@@ -611,7 +611,7 @@ public class TextAnalyzer {
 		}
 
 		if (register) {
-			if (input.charAt(0) == '0')
+			if (input.charAt(0) == '0' && digits != 1)
 				totalLeadingZeros++;
 
 			if (digits < minTrimmedLength)

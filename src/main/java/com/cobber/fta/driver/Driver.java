@@ -50,7 +50,7 @@ class Driver {
 				logger.println(" --col <n> - Only analyze column <n>");
 				logger.println(" --help - Print this help");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
-				logger.println(" --logicalType qualifier,keyword1|keyword2|...,regExp,threshold,baseType");
+				logger.println(" --logicalType qualifier,hotword1|hotword2|...,regExp,threshold,baseType");
 				logger.println(" --maxCardinality <n> - Set the Maximum Cardinality size");
 				logger.println(" --noAnalysis - Do not do analysis");
 				logger.println(" --noLogicalTypes - Do not register any Logical Types");

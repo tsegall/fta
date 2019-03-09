@@ -416,7 +416,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount() + result.getBlankCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 218);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "0.0");

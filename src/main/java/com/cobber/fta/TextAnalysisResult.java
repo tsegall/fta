@@ -311,7 +311,8 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the count of all samples with leading zeros (Type long only)
+	 * Get the count of all samples with leading zeros (Type long only).
+	 * Note: a single '0' does not constitute a sample with a leading zero.
 	 * @return Count of all leading zero samples.
 	 */
 	public long getLeadingZeroCount() {
