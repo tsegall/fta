@@ -45,6 +45,8 @@ public class KnownPatterns {
 	public static final String PATTERN_BOOLEAN_YES_NO = "(?i)(yes|no)";
 	public static final String PATTERN_BOOLEAN_ONE_ZERO = "[0|1]";
 
+	final String EXPONENT_REGEXP = "(?:[eE]([-+]?\\d+))?";
+
 	public String PATTERN_LONG;
 	public String PATTERN_LONG_GROUPING;
 	public String PATTERN_SIGNED_LONG;
@@ -138,17 +140,17 @@ public class KnownPatterns {
 
 		PATTERN_LONG = "\\d+";
 		PATTERN_SIGNED_LONG = optionalSignPrefix + "\\d+" + optionalSignSuffix;
-		PATTERN_DOUBLE = PATTERN_LONG + "|" + "(\\d+)?" + RegExpGenerator.slosh(decimalSeparator) + "\\d+";
-		PATTERN_SIGNED_DOUBLE = PATTERN_SIGNED_LONG + "|" + optionalSignPrefix + "(\\d+)?" + RegExpGenerator.slosh(decimalSeparator) + "\\d+" + optionalSignSuffix;
+		PATTERN_DOUBLE = "\\d*" + RegExpGenerator.slosh(decimalSeparator) + "?" + "\\d+";
+		PATTERN_SIGNED_DOUBLE = optionalSignPrefix + PATTERN_DOUBLE + optionalSignSuffix;
 
 		PATTERN_LONG_GROUPING = withGrouping(PATTERN_LONG, groupingSeparator);
 		PATTERN_SIGNED_LONG_GROUPING = withGrouping(PATTERN_SIGNED_LONG, groupingSeparator);
 		PATTERN_DOUBLE_GROUPING = withGrouping(PATTERN_DOUBLE, groupingSeparator);
 		PATTERN_SIGNED_DOUBLE_GROUPING = withGrouping(PATTERN_SIGNED_DOUBLE, groupingSeparator);
 
-		PATTERN_DOUBLE_WITH_EXPONENT = PATTERN_DOUBLE + "(?:[eE]([-+]?\\d+))?";
-		// Not localized!!
-		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = "[+-]?\\d+" + "|" + "[+-]?(\\d+)?" + RegExpGenerator.slosh(decimalSeparator) + "\\d+(?:[eE]([-+]?\\d+))?";
+		PATTERN_DOUBLE_WITH_EXPONENT = PATTERN_DOUBLE + EXPONENT_REGEXP;
+		// Not quite what you would expect, always use +- if you have an exponent (locale ar_AE for
+		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = "[+-]?" + PATTERN_DOUBLE + EXPONENT_REGEXP;
 
 		knownPatterns.put(PATTERN_BOOLEAN_TRUE_FALSE,
 				new PatternInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, PatternInfo.Type.BOOLEAN, "TRUE_FALSE", false, 4, 5, null, ""));

@@ -72,7 +72,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getMaxValue(), "0.0");
 		Assert.assertEquals(result.getMinLength(), 5);
 		Assert.assertEquals(result.getMaxLength(), 5);
-//BUG TODO		Assert.assertTrue(input.matches(result.getRegExp()));
+		Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test
@@ -314,10 +314,11 @@ public class TestDoubles {
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?" + RegExpGenerator.slosh(grpSep) + "\\d+");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
+	// BUG - In general, even if the locale suggests otherwise we should still cope with 1234.56 as a valid double
 	//@Test
 	public void manyConstantLengthDoublesI18N_2() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
@@ -375,7 +376,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getRegExp(), "[+-]?\\d+|[+-]?(\\d+)?\\.\\d+");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getMinValue(), "-101.0");
 		Assert.assertEquals(result.getMaxValue(), "119.0");
@@ -417,7 +418,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getMatchCount() + result.getBlankCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?\\.\\d+");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "0.0");
 		Assert.assertEquals(result.getMaxValue(), "3.0");
@@ -443,8 +444,6 @@ public class TestDoubles {
 			analysis.setLocale(locale);
 
 			boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
-			String negPrefix = TestUtils.getNegativePrefix(locale);
-			String negSuffix = TestUtils.getNegativeSuffix(locale);
 
 			if (!simple) {
 				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
@@ -457,12 +456,7 @@ public class TestDoubles {
 				continue;
 			}
 
-			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
-
-			String grp = RegExpGenerator.slosh(formatSymbols.getGroupingSeparator());
-			String dec = RegExpGenerator.slosh(formatSymbols.getDecimalSeparator());
 			NumberFormat nf = NumberFormat.getIntegerInstance(locale);
-//			System.err.printf("Locale '%s', grouping: %s, decimal: %s.\n", locale, grp, dec);
 
 			Set<String> samples = new HashSet<String>();
 			nf.setMinimumFractionDigits(2);
@@ -482,24 +476,11 @@ public class TestDoubles {
 			Assert.assertEquals(result.getNullCount(), 0);
 			Assert.assertEquals(result.getLeadingZeroCount(), 0);
 
-			String regExp = "";
-			if (!negPrefix.isEmpty())
-				regExp += negPrefix;
-			regExp += "[\\d" + RegExpGenerator.slosh(formatSymbols.getGroupingSeparator()) + "]+";
-			if (!negSuffix.isEmpty())
-				regExp += negSuffix;
-			regExp += "|";
-			if (!negPrefix.isEmpty())
-				regExp += negPrefix;
-			regExp += "([\\d" + grp + "]+)?" + dec + "[\\d" + grp +"]+";
-			if (!negSuffix.isEmpty())
-				regExp += negSuffix;
-
-			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_GROUPING));
 			Assert.assertEquals(result.getConfidence(), 1.0);
 
 			for (String sample : samples) {
-				Assert.assertTrue(sample.matches(regExp), sample + " " + regExp);
+				Assert.assertTrue(sample.matches(result.getRegExp()), sample + " " + result.getRegExp());
 			}
 		}
 	}
@@ -539,7 +520,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 
-		Assert.assertEquals(result.getRegExp(), "[+-]?\\d+|[+-]?(\\d+)?\\.\\d+(?:[eE]([-+]?\\d+))?");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		String actualRegExp = result.getRegExp();
@@ -650,7 +631,7 @@ public class TestDoubles {
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*([+-]?\\d+|[+-]?(\\d+)?\\.\\d+)");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*" + analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -695,13 +676,11 @@ public class TestDoubles {
 			Assert.assertEquals(result.getLeadingZeroCount(), 0);
 			Assert.assertEquals(result.getDecimalSeparator(), formatSymbols.getDecimalSeparator());
 
-			String regExp = "[+-]?\\d+|[+-]?(\\d+)?" + RegExpGenerator.slosh(formatSymbols.getDecimalSeparator()) + "\\d+";
-
-			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 			Assert.assertEquals(result.getConfidence(), 1.0);
 
 			for (String sample : samples) {
-				Assert.assertTrue(sample.matches(regExp), sample + " " + regExp);
+				Assert.assertTrue(sample.matches(result.getRegExp()), sample + " " + result.getRegExp());
 			}
 		}
 	}
@@ -791,7 +770,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 		Assert.assertEquals(result.getMinValue(), minValue);
 		Assert.assertEquals(result.getMaxValue(), maxValue);
-		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?,\\d+");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (String sample : samples) {
@@ -830,7 +809,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*([+-]?\\d+|[+-]?(\\d+)?\\.\\d+)");
+		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*" + analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "-9999.0");
 		Assert.assertEquals(result.getMaxValue(), "0.69334954");
@@ -888,7 +867,7 @@ public class TestDoubles {
 			String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
 			String dec = formatSymbols.getDecimalSeparator() == '.' ? "\\." : "" + formatSymbols.getDecimalSeparator();
 
-			String regExp = "[\\d" + grp + "]+|([\\d" + grp + "]+)?" + dec + "[\\d" + grp +"]+";
+			String regExp = "[\\d" + grp + "]*" + dec + "?" + "[\\d" + grp +"]+";
 
 //			System.err.println("Locale: " + locale + ", grp = '" + grp + "', dec = '" + dec + "', re: " + regExp + "'");
 
@@ -1034,7 +1013,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getMinLength(), 12);
 		Assert.assertEquals(result.getMaxLength(), 18);
-		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?\\.\\d+");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
