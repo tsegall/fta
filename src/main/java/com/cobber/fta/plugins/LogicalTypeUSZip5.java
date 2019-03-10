@@ -23,7 +23,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	private static Set<String> zips = new HashSet<String>();
 
 	@Override
-	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
 		return compressed.length() == 5 && compressed.toString().equals("\\d{5}");
 	}
 

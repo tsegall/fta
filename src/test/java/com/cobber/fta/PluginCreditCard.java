@@ -15,8 +15,8 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return validator.isValid(input.replaceAll("[\\s\\-]", ""));
+	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+		return validator.isValid(trimmed.replaceAll("[\\s\\-]", ""));
 	}
 
 	@Override

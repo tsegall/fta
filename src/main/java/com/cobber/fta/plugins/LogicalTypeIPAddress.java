@@ -51,8 +51,8 @@ public class LogicalTypeIPAddress extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return input.length() <= 15 && charCounts['.'] == 3;
+	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+		return trimmed.length() <= 15 && charCounts['.'] == 3;
 	}
 
 	@Override

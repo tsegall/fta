@@ -59,7 +59,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
 		int atSigns = charCounts['@'];
 		return atSigns - 1 == charCounts[','] || atSigns - 1 == charCounts[';'];
 	}

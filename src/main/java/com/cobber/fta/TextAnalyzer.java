@@ -1983,6 +1983,10 @@ public class TextAnalyzer {
 		// that this is a subsequent call to getResult()!!
 		if (matchPatternInfo.isLogicalType()) {
 			LogicalType logical = registered.get(matchPatternInfo.typeQualifier);
+
+			// Update our Regular Expression - since it may have changed based on all the data observed
+			matchPatternInfo.regexp = logical.getRegExp();
+
 			String newPattern;
 			if (logical != null && (newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, cardinality, outliers)) != null) {
 				if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {

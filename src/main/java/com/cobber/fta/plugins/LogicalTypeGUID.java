@@ -63,8 +63,8 @@ public class LogicalTypeGUID extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return input.length() == 36 && charCounts['-'] == 4;
+	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+		return trimmed.length() == 36 && charCounts['-'] == 4;
 	}
 
 	@Override

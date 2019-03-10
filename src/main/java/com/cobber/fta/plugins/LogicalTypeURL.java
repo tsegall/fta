@@ -1,10 +1,9 @@
 package com.cobber.fta.plugins;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
+
+import org.apache.commons.validator.routines.UrlValidator;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
@@ -14,7 +13,13 @@ import com.cobber.fta.PatternInfo;
  */
 public class LogicalTypeURL extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "URL";
-	public final static String REGEXP = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+	public final static String REGEXP_PROTOCOL = "(https?|ftp|file)";
+	public final static String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+	static UrlValidator validator = null;
+	static {
+		validator = UrlValidator.getInstance();
+	}
+	int[] protocol = new int[2];
 
 	@Override
 	public boolean initialize(Locale locale) {
@@ -30,7 +35,10 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return 	"^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+		if (protocol[0] != 0)
+			return protocol[1] != 0 ? REGEXP_PROTOCOL + "?" + REGEXP_RESOURCE : REGEXP_PROTOCOL + REGEXP_RESOURCE;
+
+		return REGEXP_RESOURCE;
 	}
 
 	@Override
@@ -45,18 +53,30 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(String input) {
-		try {
-			final URL url = new URL(input);
-			url.toURI();
-			return true;
-		} catch (MalformedURLException | URISyntaxException exception) {
-			return false;
+		int index = 0;
+		if (input.indexOf("://") == -1) {
+			input = "http://" + input;
+			index = 1;
 		}
+
+		boolean ret = validator.isValid(input);
+		if (ret)
+			protocol[index]++;
+
+		return ret;
 	}
 
 	@Override
-	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return charCounts[':'] != 0 && compressed.indexOf("://") != -1;
+	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+		// Quickly rule out rubbish
+		if (charCounts[' '] != 0)
+				return false;
+
+		// Does it have a protocol?
+		if (charCounts[':'] != 0 && compressed.indexOf("://") != -1)
+			return true;
+
+		return validator.isValid("http://" + trimmed);
 	}
 
 	@Override

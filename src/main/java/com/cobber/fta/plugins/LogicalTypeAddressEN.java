@@ -88,13 +88,13 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String input, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
+	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+		String inputUpper = trimmed.toUpperCase(Locale.ENGLISH);
 		int spaceIndex = lastIndex[' '];
 
 		// Track whether this is a multi-line field or not
 		if (!multiline)
-			multiline = input.indexOf('\n') != -1 || input.indexOf('\r') != -1;
+			multiline = trimmed.indexOf('\n') != -1 || trimmed.indexOf('\r') != -1;
 
 
 		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1, inputUpper.length())))

@@ -446,7 +446,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length + 1 - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeURL.REGEXP);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeURL.REGEXP_PROTOCOL + LogicalTypeURL.REGEXP_RESOURCE);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "URL");
@@ -454,6 +454,62 @@ public class TestPlugins {
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
 		}
+	}
+
+	@Test
+	public void basicURLResource() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String inputs[] = INPUT_URLS.split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i].substring(inputs[i].indexOf("://") + 3)) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + result.getNullCount());
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeURL.REGEXP_RESOURCE);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "URL");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void basicURLMixed() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String inputs[] = INPUT_URLS.split("\\|");
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (i % 2 == 1)
+				analysis.train(inputs[i]);
+			else analysis.train(inputs[i].substring(inputs[i].indexOf("://") + 3));
+		}
+		analysis.train(null);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length + result.getNullCount());
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeURL.REGEXP_PROTOCOL + "?" + LogicalTypeURL.REGEXP_RESOURCE);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "URL");
+
+		for (int i = 0; i < inputs.length; i++)
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
 	}
 
 	@Test
