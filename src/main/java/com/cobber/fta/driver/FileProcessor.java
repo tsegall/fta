@@ -82,8 +82,8 @@ class FileProcessor {
 					analysis[i].setCollectStatistics(false);
 				if (options.noLogicalTypes)
 					analysis[i].setDefaultLogicalTypes(false);
-				if (options.sampleSize != -1)
-					analysis[i].setDetectWindow(options.sampleSize);
+				if (options.detectWindow != -1)
+					analysis[i].setDetectWindow(options.detectWindow);
 				if (options.maxCardinality != -1)
 					analysis[i].setMaxCardinality(options.maxCardinality);
 				if (options.locale != null)
@@ -115,15 +115,16 @@ class FileProcessor {
 							analysis[i].train(row[i]);
 					}
 				}
-				if (thisRecord == options.recordsToAnalyze)
+				if (thisRecord == options.recordsToAnalyze) {
+					parser.stopParsing();
 					break;
+				}
 			}
 		}
 		catch (FileNotFoundException e) {
 			logger.printf("Filename '%s' not found.\n", filename);
 			System.exit(1);
 		}
-
 
 		if (options.noAnalysis)
 			System.exit(0);
@@ -148,11 +149,14 @@ class FileProcessor {
 						patterns[i] = Pattern.compile(results[i].getRegExp());
 					}
 
+				long thisRecord = 0;
 				String[] row;
+
 				while ((row = parser.parseNext()) != null) {
-					if (row.length != numFields) {
+					thisRecord++;
+					if (row.length != numFields)
 						continue;
-					}
+
 					for (int i = 0; i < numFields; i++) {
 						if (options.col == -1 || options.col == i) {
 							String value = row[i];
@@ -163,6 +167,10 @@ class FileProcessor {
 							else if (options.verbose)
 								failures.add(value);
 						}
+					}
+					if (thisRecord == options.recordsToAnalyze) {
+						parser.stopParsing();
+						break;
 					}
 				}
 			}

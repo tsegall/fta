@@ -6,6 +6,12 @@
 		"locale": [ ]
 	},
 	{
+		"name": "IPADDRESS.IPV4",
+		"type": "infinite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeIPAddress",
+		"locale": [ ]
+	},
+	{
 		"name": "EMAIL",
 		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail",

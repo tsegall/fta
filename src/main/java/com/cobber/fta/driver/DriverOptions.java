@@ -30,7 +30,7 @@ class DriverOptions {
 	boolean noStatistics = false;
 	long recordsToAnalyze = -1;
 	Set<String> logicalTypes = new HashSet<>();
-	int sampleSize = -1;
+	int detectWindow = -1;
 	Locale locale = null;
 	int maxCardinality = -1;
 	boolean verbose = false;

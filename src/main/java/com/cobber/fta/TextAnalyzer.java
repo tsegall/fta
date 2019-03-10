@@ -80,8 +80,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TextAnalyzer {
 
 	/** The default value for the number of samples to collect before making a type determination. */
-	public static final int SAMPLE_DEFAULT = 20;
-	private int samples = SAMPLE_DEFAULT;
+	public static final int DETECT_WINDOW_DEFAULT = 20;
+	private int detectWindow = DETECT_WINDOW_DEFAULT;
 
 	/** Should we collect statistics (min, max, sum) as we parse the data stream. */
 	private boolean collectStatistics = true;
@@ -453,33 +453,33 @@ public class TextAnalyzer {
      * type. Note: It is not possible to change the Sample Size once training
      * has started.
      *
-     * @param samples
+     * @param detectWindow
      *            The number of samples to collect
      * @return The previous value of this parameter.
 	*/
-	public int setDetectWindow(final int samples) {
+	public int setDetectWindow(final int detectWindow) {
 		if (trainingStarted)
-			throw new IllegalArgumentException("Cannot change sample size once training has started");
-		if (samples < SAMPLE_DEFAULT)
-			throw new IllegalArgumentException("Cannot set sample size below " + SAMPLE_DEFAULT);
+			throw new IllegalArgumentException("Cannot change size of detect window once training has started");
+		if (detectWindow < DETECT_WINDOW_DEFAULT)
+			throw new IllegalArgumentException("Cannot set detect window size below " + DETECT_WINDOW_DEFAULT);
 
-		final int ret = samples;
-		this.samples = samples;
+		final int ret = detectWindow;
+		this.detectWindow = detectWindow;
 
 		// Never want the Detect Window to be greater than the Reflection point
-		if (samples >= reflectionSamples)
-			reflectionSamples = samples + 1;
+		if (detectWindow >= reflectionSamples)
+			reflectionSamples = detectWindow + 1;
 		return ret;
 	}
 
 	/**
-	 * Get the number of Samples used to collect before attempting to determine
+	 * Get the size of the Detect Window (i.e number of Samples used to collect before attempting to determine
 	 * the type.
 	 *
-	 * @return The current size of the sample window.
+	 * @return The current size of the Detect Window.
 	 */
-	public int getSampleSize() {
-		return samples;
+	public int getDetectWindow() {
+		return detectWindow;
 	}
 
 	/**
@@ -861,10 +861,10 @@ public class TextAnalyzer {
 		if (!NumberFormat.getNumberInstance(locale).format(0).matches("\\d"))
 			throw new IllegalArgumentException("No support for locales that do not use Arabic numerals");
 
-		raw = new ArrayList<String>(samples);
-		levels[0] = new ArrayList<StringBuilder>(samples);
-		levels[1] = new ArrayList<StringBuilder>(samples);
-		levels[2] = new ArrayList<StringBuilder>(samples);
+		raw = new ArrayList<String>(detectWindow);
+		levels[0] = new ArrayList<StringBuilder>(detectWindow);
+		levels[1] = new ArrayList<StringBuilder>(detectWindow);
+		levels[2] = new ArrayList<StringBuilder>(detectWindow);
 
 		if (enableDefaultLogicalTypes) {
 			// Load the default set of plugins for Logical Type detection
@@ -1705,7 +1705,7 @@ public class TextAnalyzer {
 		trackLengthAndShape(input);
 
 		// If the cache is full and we have not determined a type compute one
-		if ((matchPatternInfo == null || matchPatternInfo.type == null) && sampleCount - (nullCount + blankCount) > samples)
+		if ((matchPatternInfo == null || matchPatternInfo.type == null) && sampleCount - (nullCount + blankCount) > detectWindow)
 			determineType();
 
 		if (matchPatternInfo == null || matchPatternInfo.type == null)
@@ -2044,7 +2044,7 @@ public class TextAnalyzer {
 
 			if (groupingSeparators != 0)
 				matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
-		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type)) {
+		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && !matchPatternInfo.isLogicalType()) {
 			// Build Cardinality map ignoring case (and white space)
 			int minKeyLength = Integer.MAX_VALUE;
 			int maxKeyLength = 0;
@@ -2414,7 +2414,7 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Access the training set - this will typically be the first {@link #SAMPLE_DEFAULT} records.
+	 * Access the training set - this will typically be the first {@link #DETECT_WINDOW_DEFAULT} records.
 	 *
 	 * @return A List of the raw input strings.
 	 */

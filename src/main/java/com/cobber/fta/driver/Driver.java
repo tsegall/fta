@@ -96,8 +96,8 @@ class Driver {
 					System.exit(1);
 				}
 			}
-			else if ("--samples".equals(args[idx]))
-				options.sampleSize = Integer.valueOf(args[++idx]);
+			else if ("--detectWindow".equals(args[idx]))
+				options.detectWindow = Integer.valueOf(args[++idx]);
 			else if ("--validate".equals(args[idx]))
 				options.validate = true;
 			else if ("--verbose".equals(args[idx]))
