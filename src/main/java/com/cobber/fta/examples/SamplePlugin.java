@@ -1,13 +1,14 @@
 package com.cobber.fta.examples;
 
-import org.testng.Assert;
+import java.io.IOException;
+import java.io.StringReader;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 
 public class SamplePlugin {
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws IOException {
 		final String inputs[] = new String[] {
 				"red",  "red", "blue", "pink", "black", "white", "orange", "purple",
 				"grey", "green", "red", "mauve", "red", "brown", "silver", "gold",
@@ -20,7 +21,9 @@ public class SamplePlugin {
 		final TextAnalyzer analysis = new TextAnalyzer("Colors");
 
 		// Register our new magic plugin
-		Assert.assertTrue(analysis.registerLogicalType("com.cobber.fta.examples.PluginColor"));
+		String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_EN\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"locale\": [ ] } ]";
+		analysis.registerPlugins(new StringReader(colorPlugin));
+
 
 		for (int i = 0; i < inputs.length; i++)
 			analysis.train(inputs[i]);

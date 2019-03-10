@@ -1,84 +1,84 @@
 [
 	{
-		"name": "URL",
+		"qualifier": "URL",
 		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeURL",
 		"locale": [ ]
 	},
 	{
-		"name": "IPADDRESS.IPV4",
+		"qualifier": "IPADDRESS.IPV4",
 		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIPAddress",
 		"locale": [ ]
 	},
 	{
-		"name": "EMAIL",
+		"qualifier": "EMAIL",
 		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail",
 		"locale": [ ]
 	},
 	{
-		"name": "GUID",
+		"qualifier": "GUID",
 		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGUID",
 		"locale": [ ]
 	},
 	{
-		"name": "USZip5",
+		"qualifier": "USZip5",
 		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUSZip5",
 		"locale": [ "en-US" ,"en-CA" ]
 	},
 	{
-		"name": "AddressEN",
+		"qualifier": "AddressEN",
 		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeAddressEN",
 		"locale": [ "en" ]
 	},
 	{
-		"name": "GenderEN",
+		"qualifier": "GenderEN",
 		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGenderEN",
 		"locale": [ "en" ]
 	},
 	{
-		"name": "CountryEN",
+		"qualifier": "CountryEN",
 		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCountryEN",
 		"locale": [ "en" ]
 	},
 	{
-		"name": "MonthAbbr",
+		"qualifier": "MonthAbbr",
 		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthAbbr",
 		"locale": [ ]
 	},
 	{
-		"name": "CAProvince",
+		"qualifier": "CAProvince",
 		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCAProvince",
 		"locale": [ "en-US" ,"en-CA" ]
 	},
 	{
-		"name": "USState",
+		"qualifier": "USState",
 		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUSState",
 		"locale": [ "en-US" ,"en-CA" ]
 	},
 	{
-		"name": "ISO4217",
+		"qualifier": "ISO4217",
 		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO4217",
 		"locale": [ ]
 	},
 	{
-		"name": "ISO3166_3",
+		"qualifier": "ISO3166_3",
 		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_3",
 		"locale": [ ]
 	},
 	{
-		"name": "ISO3166_2",
+		"qualifier": "ISO3166_2",
 		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_2",
 		"locale": [ ]

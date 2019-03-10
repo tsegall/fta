@@ -1,6 +1,7 @@
 package com.cobber.fta;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -218,7 +219,8 @@ public class TestPlugins {
 	public void testRegisterFinite() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		analysis.setMaxCardinality(20000);
-		Assert.assertTrue(analysis.registerLogicalType("com.cobber.fta.PluginCUSIP"));
+		String deepCUSIPPlugin = "[ { \"qualifier\": \"CUSIP\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.PluginCUSIP\", \"locale\": [ ] } ]";
+		analysis.registerPlugins(new StringReader(deepCUSIPPlugin));
 		final String input =
 				"75605A702|G39637955|029326105|63009R109|04269E957|666666666|00768Y727|23908L306|126349AF6|73937B589|" +
 				"516806956|683797104|902973954|600544950|15671L909|00724F951|292104106|00847X904|219350955|67401P958|" +
@@ -264,7 +266,8 @@ public class TestPlugins {
 	@Test
 	public void testRegisterInfinite() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
-		Assert.assertTrue(analysis.registerLogicalType("com.cobber.fta.PluginCreditCard"));
+		String deepCUSIPPlugin = "[ { \"qualifier\": \"CUSIP\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.PluginCreditCard\", \"locale\": [ ] } ]";
+		analysis.registerPlugins(new StringReader(deepCUSIPPlugin));
 		final String[] input = {
 //				"Credit Card Type,Credit Card Number",
 				"American Express,378282246310005",
@@ -1570,7 +1573,10 @@ public class TestPlugins {
 		}
 
 		final TextAnalyzer analysis = new TextAnalyzer();
-		analysis.registerLogicalTypeRegExp("SSN", new String[] { "SSN", "social" }, "\\d{3}-\\d{2}-\\d{4}", 98, PatternInfo.Type.STRING);
+		String SSNPlugin = "[ { \"qualifier\": \"SSN\", \"type\": \"regexp\", \"locale\": [ \"en-US\" ], \"hotWords\": [ \"SSN\", \"social\" ], " +
+				"\"regExp\": \"\\\\d{3}-\\\\d{2}-\\\\d{4}\", \"threshold\": 98, \"baseType\": \"STRING\" } ]";
+		System.err.println(SSNPlugin);
+		analysis.registerPlugins(new StringReader(SSNPlugin));
 		for (String sample : samples) {
 			analysis.train(sample);
 		}
@@ -1607,7 +1613,9 @@ public class TestPlugins {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
-		analysis.registerLogicalTypeRegExp("CUSIP", new String[] { "CUSIP" }, CUSIP_REGEXP, 98, PatternInfo.Type.STRING);
+		String shallowCUSIPPlugin = "[ { \"qualifier\": \"CUSIP\", \"type\": \"regexp\", \"locale\": [ ], \"hotWords\": [ \"CUSIP\" ], " +
+				"\"regExp\": \"[\\\\p{IsAlphabetic}\\\\d]{9}\", \"threshold\": 98, \"baseType\": \"STRING\" } ]";
+		analysis.registerPlugins(new StringReader(shallowCUSIPPlugin));
 		for (String sample : samples) {
 			analysis.train(sample);
 		}

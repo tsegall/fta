@@ -15,9 +15,7 @@
  */
 package com.cobber.fta.driver;
 
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
@@ -29,7 +27,7 @@ class DriverOptions {
 	boolean noLogicalTypes = false;
 	boolean noStatistics = false;
 	long recordsToAnalyze = -1;
-	Set<String> logicalTypes = new HashSet<>();
+	String logicalTypes = null;
 	int detectWindow = -1;
 	Locale locale = null;
 	int maxCardinality = -1;

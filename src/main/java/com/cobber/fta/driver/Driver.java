@@ -80,7 +80,7 @@ class Driver {
 			else if ("--records".equals(args[idx]))
 				options.recordsToAnalyze = Long.valueOf(args[++idx]);
 			else if ("--logicalType".equals(args[idx]))
-				options.logicalTypes.add(args[++idx]);
+				options.logicalTypes = args[++idx];
 			else if ("--resolutionMode".equals(args[idx])) {
 				String mode = args[++idx];
 				if (mode.equals("DayFirst"))

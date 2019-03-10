@@ -8,6 +8,7 @@ import java.util.Set;
 import com.cobber.fta.LogicalTypeFinite;
 
 public class PluginColor extends LogicalTypeFinite {
+	public final static String SEMANTIC_TYPE = "COLOR.TEXT_EN";
 	private static Set<String> members = new HashSet<String>();
 	private static String colors[] = new String[] {
 			"RED",  "GREEN", "BLUE", "PINK", "BLACK", "WHITE", "ORANGE", "PURPLE",
@@ -26,7 +27,7 @@ public class PluginColor extends LogicalTypeFinite {
 
 	@Override
 	public String getQualifier() {
-		return "COLOR_EN";
+		return SEMANTIC_TYPE;
 	}
 
 	@Override
