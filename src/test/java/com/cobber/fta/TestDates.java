@@ -2286,7 +2286,7 @@ public class TestDates {
 	@Test
 	public void variableLengthFractions() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
-// BUG		analysis.setCollectStatistics(false);
+		analysis.setCollectStatistics(false);
 
 		final String inputs[] = new String[] {
 				"2017-10-01 00:00:00.913", "2017-10-01 00:00:01.862", "2017-10-01 00:00:01.666", "2017-10-01 00:00:03.286", "2017-10-01 00:00:26.079", "2017-10-01 00:00:26.165",

@@ -84,6 +84,37 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void basicGenderDE() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.setLocale(Locale.forLanguageTag("de-AT"));
+
+		final String input = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
+				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
+				"Female|Male|Female|FEMALE|Male|Female|male|Male|Male|male|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
+	@Test
 	public void basicGenderWithSpaces() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String input = " Female| MALE|Male| Female|Female|MALE |Female |Female |Unknown |Male |" +
@@ -538,6 +569,30 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
+	@Test
+	public void basicZipHeaderDE() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
+		analysis.setLocale(Locale.forLanguageTag("de-AT"));
+		final String inputs[] = new String[] {
+			"", "", "", "", "", "", "", "", "", "27215", "75251", "66045", "", "",
+			"", "", "", "", "94087", "", "", "", "", "", "", "", "", "", "", ""
+		};
+
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), 4);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
 
 	@Test
 	public void zipUnwind() throws IOException {

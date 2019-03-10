@@ -1,0 +1,80 @@
+[
+	{
+		"name": "URL",
+		"type": "infinite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeURL",
+		"locale": [ ]
+	},
+	{
+		"name": "EMAIL",
+		"type": "infinite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail",
+		"locale": [ ]
+	},
+	{
+		"name": "GUID",
+		"type": "infinite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeGUID",
+		"locale": [ ]
+	},
+	{
+		"name": "USZip5",
+		"type": "infinite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeUSZip5",
+		"locale": [ "en-US" ,"en-CA" ]
+	},
+	{
+		"name": "AddressEN",
+		"type": "infinite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeAddressEN",
+		"locale": [ "en" ]
+	},
+	{
+		"name": "GenderEN",
+		"type": "finite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeGenderEN",
+		"locale": [ "en" ]
+	},
+	{
+		"name": "CountryEN",
+		"type": "finite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeCountryEN",
+		"locale": [ "en" ]
+	},
+	{
+		"name": "MonthAbbr",
+		"type": "finite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthAbbr",
+		"locale": [ ]
+	},
+	{
+		"name": "CAProvince",
+		"type": "finite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeCAProvince",
+		"locale": [ "en-US" ,"en-CA" ]
+	},
+	{
+		"name": "USState",
+		"type": "finite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeUSState",
+		"locale": [ "en-US" ,"en-CA" ]
+	},
+	{
+		"name": "ISO4217",
+		"type": "finite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeISO4217",
+		"locale": [ ]
+	},
+	{
+		"name": "ISO3166_3",
+		"type": "finite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_3",
+		"locale": [ ]
+	},
+	{
+		"name": "ISO3166_2",
+		"type": "finite",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_2",
+		"locale": [ ]
+	}
+]

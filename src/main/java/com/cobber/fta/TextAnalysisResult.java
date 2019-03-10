@@ -21,6 +21,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * TextAnalysisResult is the result of a {@link TextAnalyzer} analysis of a data stream.
@@ -405,31 +410,6 @@ public class TextAnalysisResult {
 		return asJSON(false, false);
 	}
 
-	private String Q(String input) {
-		StringBuilder ret = new StringBuilder();
-		ret.append('"');
-		for (int i = 0; i < input.length(); i++) {
-			char ch = input.charAt(i);
-			if (ch == '\\' || ch == '"') {
-				ret.append('\\');
-				ret.append(ch);
-			}
-			else if (ch == '\t')
-				ret.append("\\t");
-			else if (ch == '\n')
-				ret.append("\\n");
-			else if (ch == '\r')
-				ret.append("\\r");
-			else
-				ret.append(ch);
-		}
-		return ret.append('"').toString();
-	}
-
-	private String K(String input) {
-		return Q(input) + ": ";
-	}
-
 	/**
 	 * A JSON representation of the Analysis.
 	 * @param pretty If set, add minimal whitespace formatting.
@@ -437,78 +417,71 @@ public class TextAnalysisResult {
 	 * @return A JSON representation of the analysis.
 	 */
 	public String asJSON(boolean pretty, boolean verbose) {
-		StringBuilder ret = new StringBuilder();
-		String eol = pretty ? "\n" : " ";
-		String indent = pretty ? "\t" : "";
-		String newField = pretty ? ",\n\t" : ", ";
 
-		ret.append("{").append(eol).append(indent);
+		ObjectMapper mapper = new ObjectMapper();
 
-		ret.append(K("fieldName")).append(Q(name)).append(newField);
-		ret.append(K("sampleCount")).append(sampleCount).append(newField);
-		ret.append(K("matchCount")).append(matchCount).append(newField);
-		ret.append(K("nullCount")).append(nullCount).append(newField);
-		ret.append(K("blankCount")).append(blankCount).append(newField);
-		ret.append(K("regExp")).append(Q(getRegExp())).append(newField);
-		ret.append(K("confidence")).append(confidence).append(newField);
-		ret.append(K("type")).append(Q(patternInfo.type.toString())).append(newField);
+		ObjectWriter writer = pretty ? mapper.writerWithDefaultPrettyPrinter() : mapper.writer();
+
+		ObjectNode analysis = mapper.createObjectNode();
+		analysis.put("fieldName", name);
+		analysis.put("sampleCount", sampleCount);
+		analysis.put("matchCount", matchCount);
+		analysis.put("nullCount", nullCount);
+		analysis.put("blankCount", blankCount);
+		analysis.put("regExp", getRegExp());
+		analysis.put("confidence", confidence);
+		analysis.put("type", patternInfo.type.toString());
+
 		if (patternInfo.typeQualifier != null)
-			ret.append(K("typeQualifier")).append(Q(patternInfo.typeQualifier)).append(newField);
+			analysis.put("typeQualifier", patternInfo.typeQualifier);
 		if (PatternInfo.Type.DOUBLE == patternInfo.type)
-			ret.append(K("decimalSeparator")).append(Q(String.valueOf(decimalSeparator))).append(newField);
+			analysis.put("decimalSeparator", String.valueOf(decimalSeparator));
 		if (statisticsEnabled() && minValue != null)
-			ret.append(K("min")).append(Q(minValue)).append(newField);
+			analysis.put("min", minValue);
 		if (statisticsEnabled() && maxValue != null)
-			ret.append(K("max")).append(Q(maxValue)).append(newField);
-		ret.append(K("minLength")).append(minLength).append(newField);
-		ret.append(K("maxLength")).append(maxLength).append(newField);
+			analysis.put("max", maxValue);
+			analysis.put("minLength", minLength);
+			analysis.put("maxLength", maxLength);
 		if (statisticsEnabled() && sum != null)
-			ret.append(K("sum")).append(Q(sum)).append(newField);
-
+			analysis.put("sum", sum);
 		if (patternInfo.isNumeric())
-			ret.append(K("leadingZeroCount")).append(getLeadingZeroCount()).append(newField);
+			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
-		ret.append(K("cardinality")).append(Q(cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX")).append(newField);
+		analysis.put("cardinality", cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX");
 		if (verbose && cardinality.size() != 0 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {
-			ret.append(K("cardinalityDetail")).append('[').append(eol).append(indent).append(indent);
-			final SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(cardinality);
-			int i = ordered.size();
-			for (final Map.Entry<String,Integer> entry : ordered) {
-				ret.append("{ ").append(K("key")).append(Q(entry.getKey())).append(", ").append(K("count")).append(entry.getValue()).append(" }");
-				if (i-- > 1)
-					ret.append(newField).append(indent);
-				else
-					ret.append(eol);
+			ArrayNode detail = analysis.putArray("cardinalityDetail");
+			for (final Map.Entry<String,Integer> entry : entriesSortedByValues(cardinality)) {
+				ObjectNode elt = mapper.createObjectNode();
+				elt.put("key", entry.getKey());
+				elt.put("count", entry.getValue());
+				detail.add(elt);
 			}
-			ret.append(indent).append(']').append(newField);
 		}
 
-		ret.append(K("outliers")).append(Q(outliers.size() < TextAnalyzer.MAX_OUTLIERS_DEFAULT ? String.valueOf(outliers.size()) : "MAX")).append(newField);
-		if (verbose && !outliers.isEmpty() && outliers.size() < .2 * sampleCount) {
-			ret.append(K("outlierDetail")).append('[').append(eol).append(indent).append(indent);
-			final SortedSet<Map.Entry<String, Integer>> ordered = entriesSortedByValues(outliers);
-			int i = ordered.size();
-			for (final Map.Entry<String,Integer> entry : ordered) {
-				ret.append("{ ").append(K("key")).append(Q(entry.getKey())).append(", ").append(K("count")).append(entry.getValue()).append(" }");
-				if (i-- > 1)
-					ret.append(newField).append(indent);
-				else
-					ret.append(eol);
+		analysis.put("outliers", outliers.size() < TextAnalyzer.MAX_OUTLIERS_DEFAULT ? String.valueOf(outliers.size()) : "MAX");
+ 		if (verbose && !outliers.isEmpty() && outliers.size() < .2 * sampleCount) {
+			ArrayNode detail = analysis.putArray("outlierDetail");
+			for (final Map.Entry<String,Integer> entry : entriesSortedByValues(outliers)) {
+				ObjectNode elt = mapper.createObjectNode();
+				elt.put("key", entry.getKey());
+				elt.put("count", entry.getValue());
+				detail.add(elt);
 			}
-			ret.append(indent).append(']').append(newField);
 		}
 
-		ret.append(K("leadingWhiteSpace")).append(getLeadingWhiteSpace()).append(newField);
-		ret.append(K("trailingWhiteSpace")).append(getTrailingWhiteSpace()).append(newField);
-		ret.append(K("multiline")).append(getMultiline()).append(newField);
+		analysis.put("leadingWhiteSpace", getLeadingWhiteSpace());
+		analysis.put("trailingWhiteSpace", getTrailingWhiteSpace());
+		analysis.put("multiline", getMultiline());
 
 		if (patternInfo.isDateType())
-			ret.append(K("dateResolutionMode")).append(Q(getDateResolutionMode().toString())).append(newField);
-		ret.append(K("logicalType")).append(isLogicalType()).append(newField);
-		ret.append(K("possibleKey")).append(key).append(eol);
+			analysis.put("dateResolutionMode", getDateResolutionMode().toString());
+		analysis.put("logicalType", isLogicalType());
+		analysis.put("possibleKey", key);
 
-		ret.append("}");
-
-		return ret.toString();
+		try {
+			return writer.writeValueAsString(analysis);
+		} catch (JsonProcessingException e) {
+			return "Internal Error";
+		}
 	}
 }

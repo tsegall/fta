@@ -115,8 +115,6 @@ public class TestStrings {
 //		}
 	}
 
-
-
 	@Test
 	public void manyConstantLengthStrings() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();

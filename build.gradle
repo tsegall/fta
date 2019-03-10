@@ -105,6 +105,8 @@ dependencies {
 	compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
 	// https://mvnrepository.com/artifact/commons-validator/commons-validator
 	compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
 }
 
 distributions {

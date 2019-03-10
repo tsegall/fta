@@ -49,6 +49,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Analyze Text data to determine type information and other key metrics
@@ -859,13 +861,35 @@ public class TextAnalyzer {
 
 		if (enableDefaultLogicalTypes) {
 			// Load the default set of plugins for Logical Type detection
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.txt")))){
-				String line = null;
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))){
 
-				while ((line = reader.readLine()) != null) {
-					if (line.trim().length() == 0 || line.charAt(0) == '#')
-						continue;
-					registerLogicalType(line);
+				ObjectMapper mapper = new ObjectMapper();
+				List<PluginDefinition> plugins = mapper.readValue(reader, new TypeReference<List<PluginDefinition>>(){});
+				String languageTag = locale.toLanguageTag();
+				String language = locale.getLanguage();
+
+				// Only register plugins that are valid for this locale
+				for (PluginDefinition plugin : plugins) {
+					boolean register = false;
+					if (plugin.locale.length != 0) {
+						for (String validLocale : plugin.locale) {
+							if (validLocale.indexOf('-') != -1) {
+								if (validLocale.equals(languageTag)) {
+									register = true;
+									break;
+								}
+							}
+							else if (validLocale.equals(language)) {
+								register = true;
+								break;
+							}
+						}
+					}
+					else
+						register = true;
+
+					if (register)
+						registerLogicalType(plugin.clazz);
 				}
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Internal error: Issues with plugins file");
