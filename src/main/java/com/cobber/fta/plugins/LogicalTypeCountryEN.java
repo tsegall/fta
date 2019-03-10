@@ -12,12 +12,13 @@ import com.cobber.fta.LogicalTypeFiniteSimple;
  * Plugin to detect Country names. (English-language only).
  */
 public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
+	public final static String SEMANTIC_TYPE = "COUNTRY.TEXT_EN";
 	private static Set<String> members = new HashSet<String>();
 	final static String REGEXP = ".+";
 	final static String hotWord = "country";
 
 	public LogicalTypeCountryEN() throws FileNotFoundException {
-		super("COUNTRY_EN", new String[] { hotWord }, REGEXP,
+		super(SEMANTIC_TYPE, new String[] { hotWord }, REGEXP,
 				REGEXP, new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/countries.csv")), 95);
 	}
 

@@ -18,6 +18,7 @@ import com.cobber.fta.TextAnalyzer;
  * Plugin to detect Addresses. (English-language only).
  */
 public class LogicalTypeAddressEN extends LogicalTypeInfinite {
+	public final static String SEMANTIC_TYPE = "STREET_ADDRESS";
 	private boolean multiline = false;
 	private static Set<String> addressMarkers = new HashSet<String>();
 
@@ -40,7 +41,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 	@Override
 	public String getQualifier() {
-		return "ADDRESS_EN";
+		return SEMANTIC_TYPE;
 	}
 
 	@Override

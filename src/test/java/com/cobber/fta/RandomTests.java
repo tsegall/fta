@@ -24,6 +24,8 @@ import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.plugins.LogicalTypeUSZip5;
+
 public class RandomTests {
 	@Test
 	public void inadequateData() throws IOException {
@@ -116,7 +118,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getMinValue(), "10000");
 		Assert.assertEquals(result.getMaxValue(), "10049");
-		Assert.assertEquals(result.getTypeQualifier(), "US_ZIP5");
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getConfidence(), 0.96);
 		Assert.assertEquals(result.getSum(), String.valueOf(sum));
 

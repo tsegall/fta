@@ -66,7 +66,7 @@ class Driver {
 
 			}
 			else if ("--locale".equals(args[idx]))
-				options.locale = new Locale(args[++idx]);
+				options.locale = Locale.forLanguageTag(args[++idx]);
 			else if ("--maxCardinality".equals(args[idx]))
 				options.maxCardinality = Integer.valueOf(args[++idx]);
 			else if ("--noAnalysis".equals(args[idx]))

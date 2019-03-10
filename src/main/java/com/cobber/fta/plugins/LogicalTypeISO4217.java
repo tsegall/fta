@@ -11,11 +11,12 @@ import com.cobber.fta.LogicalTypeFiniteSimple;
  * Plugin to detect ISO 4127 - Currency codes.
  */
 public class LogicalTypeISO4217 extends LogicalTypeFiniteSimple {
+	public final static String SEMANTIC_TYPE = "CURRENCY_CODE.ISO-4217";
 	public final static String REGEXP = "\\p{Alpha}{3}";
 	private static Set<String> members = new HashSet<String>();
 
 	public LogicalTypeISO4217() throws FileNotFoundException {
-		super("ISO-4217", new String[] { "4127", "currency" }, REGEXP,
+		super(SEMANTIC_TYPE, new String[] { "4127", "currency" }, REGEXP,
 				REGEXP, new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ISO-4217.csv")), 95);
 	}
 

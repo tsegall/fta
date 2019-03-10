@@ -11,11 +11,12 @@ import com.cobber.fta.LogicalTypeFiniteSimple;
  * Plugin to detect Canadian Provinces.
  */
 public class LogicalTypeCAProvince extends LogicalTypeFiniteSimple {
+	public final static String SEMANTIC_TYPE = "STATE_PROVINCE.STATE_US.PROVINCE_CA";
 	public final static String REGEXP = "\\p{Alpha}{2}";
 	private static Set<String> members = new HashSet<String>();
 
 	public LogicalTypeCAProvince() throws FileNotFoundException {
-		super("CA_PROVINCE", new String[] { "province" }, REGEXP,
+		super(SEMANTIC_TYPE, new String[] { "province" }, REGEXP,
 				"\\p{IsAlphabetic}{2}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ca_provinces.csv")), 95);
 	}
 

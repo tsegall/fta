@@ -18,6 +18,7 @@ import com.cobber.fta.TextAnalyzer;
  * Note: we used an Infinite :-) Logical Type since the domains is so large.
  */
 public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
+	public final static String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_US";
 	public final static String REGEXP = "\\d{5}";
 	private static Set<String> zips = new HashSet<String>();
 
@@ -48,7 +49,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public String getQualifier() {
-		return "US_ZIP5";
+		return SEMANTIC_TYPE;
 	}
 
 	@Override

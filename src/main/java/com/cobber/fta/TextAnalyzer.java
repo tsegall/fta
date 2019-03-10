@@ -259,25 +259,30 @@ public class TextAnalyzer {
 
 		Class<?> newLogicalType;
 		Constructor<?> ctor;
-		LogicalType object;
+		LogicalType logical;
 
 		try {
 			newLogicalType = Class.forName(className);
 			ctor = newLogicalType.getConstructor();
-			object = (LogicalType)ctor.newInstance();
+			logical = (LogicalType)ctor.newInstance();
 
-			if (!(object instanceof LogicalType))
+			if (!(logical instanceof LogicalType))
 				throw new IllegalArgumentException("Logical type: " + className + " does not appear to be a Logical Type.");
 
-			if (registered.containsKey(object.getQualifier()))
-				throw new IllegalArgumentException("Logical type: " + object.getQualifier() + " already registered.");
+			logical.initialize(locale);
 
-			registered.put(object.getQualifier(), object);
+			if ((logical instanceof LogicalTypeFinite) && ((LogicalTypeFinite)logical).getSize() + 10 > getMaxCardinality())
+				throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
 
-			if (object instanceof LogicalTypeInfinite)
-				infiniteTypes.add((LogicalTypeInfinite)object);
+			if (registered.containsKey(logical.getQualifier()))
+				throw new IllegalArgumentException("Logical type: " + logical.getQualifier() + " already registered.");
+
+			registered.put(logical.getQualifier(), logical);
+
+			if (logical instanceof LogicalTypeInfinite)
+				infiniteTypes.add((LogicalTypeInfinite)logical);
 			else
-				finiteTypes.add((LogicalTypeFinite)object);
+				finiteTypes.add((LogicalTypeFinite)logical);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			return false;
@@ -304,6 +309,8 @@ public class TextAnalyzer {
 		try {
 			if (registered.containsKey(logical.getQualifier()))
 				throw new IllegalArgumentException("Logical type: " + logical.getQualifier() + " already registered.");
+
+			logical.initialize(locale);
 
 			registered.put(logical.getQualifier(), logical);
 
@@ -898,17 +905,6 @@ public class TextAnalyzer {
 
 		candidateCounts = new int[infiniteTypes.size()];
 
-		// Run the initializers for the Logical Types
-		for (LogicalType logical : infiniteTypes)
-			logical.initialize(locale);
-		for (LogicalTypeFinite logical : finiteTypes) {
-			logical.initialize(locale);
-			if (logical.getSize() + 10 > getMaxCardinality())
-				throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
-		}
-		for (LogicalType logical : regExpTypes)
-			logical.initialize(locale);
-
 		if (pluginThreshold != -1) {
 			// Set the threshold for all Logical Types
 			for (LogicalType logical : infiniteTypes)
@@ -916,7 +912,7 @@ public class TextAnalyzer {
 			for (LogicalType logical : finiteTypes)
 				logical.setThreshold(pluginThreshold);
 			for (LogicalType logical : regExpTypes)
-				logical.initialize(locale);
+				logical.setThreshold(pluginThreshold);
 		}
 
 		longFormatter = NumberFormat.getIntegerInstance(locale);
@@ -1820,7 +1816,7 @@ public class TextAnalyzer {
 					// Do we need to back out from any of our Infinite type determinations
 					LogicalType logical = registered.get(matchPatternInfo.typeQualifier);
 					if (logical != null && logical.isValidSet(dataStreamName, matchCount, realSamples, cardinality, outliers) != null)
-						if (logical.getQualifier().equals(matchPatternInfo.typeQualifier) && "US_ZIP5".equals(matchPatternInfo.typeQualifier))
+						if (PatternInfo.Type.LONG.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
 						else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);

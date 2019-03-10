@@ -12,6 +12,7 @@ import com.cobber.fta.RegExpGenerator;
  * Plugin to detect Gender. (English-language only).
  */
 public class LogicalTypeGenderEN extends LogicalTypeFinite {
+	public final static String SEMANTIC_TYPE = "GENDER.TEXT_EN";
 	private static Set<String> members = new HashSet<String>();
 	private final String backoutREGEX = "\\p{IsAlphabetic}+";
 	private String happyRegex = "\\p{Alpha}+";
@@ -39,7 +40,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 
 	@Override
 	public String getQualifier() {
-		return "GENDER_EN";
+		return SEMANTIC_TYPE;
 	}
 
 	@Override

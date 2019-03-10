@@ -11,12 +11,8 @@ import com.cobber.fta.LogicalTypeFinite;
  * Plugin to detect Month Abbreviations.
  */
 public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
-	Locale locale;
-
 	@Override
 	public  synchronized boolean initialize(Locale locale) {
-		this.locale = locale;
-
 		threshold = 95;
 
 		super.initialize(locale);
@@ -31,7 +27,7 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 
 	@Override
 	public String getQualifier() {
-		return "MONTHABBR";
+		return "MONTH.ABBR_" + locale.toLanguageTag();
 	}
 
 	@Override

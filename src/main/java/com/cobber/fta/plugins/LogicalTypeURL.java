@@ -13,6 +13,7 @@ import com.cobber.fta.PatternInfo;
  * Plugin to detect URLs.
  */
 public class LogicalTypeURL extends LogicalTypeInfinite {
+	public final static String SEMANTIC_TYPE = "URL";
 	public final static String REGEXP = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 
 	@Override
@@ -24,7 +25,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 
 	@Override
 	public String getQualifier() {
-		return "URL";
+		return SEMANTIC_TYPE;
 	}
 
 	@Override
