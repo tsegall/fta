@@ -1644,6 +1644,43 @@ public class TestDates {
 	}
 
 	@Test
+	public void anotherDateSwitcher() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("INACTIVE DATE");
+		analysis.setCollectStatistics(false);
+		final String inputs[] = new String[] {
+				"7:11:41.00", "7:11:47.00", "7:11:51.00", "7:11:58.00", "8:11:07.00", "8:11:10.00", "8:11:11.00", "8:11:16.00",
+				"8:11:22.00", "8:11:25.00", "8:11:27.00", "8:11:32.00", "8:11:32.00", "8:11:39.00", "8:11:41.00", "8:11:50.00",
+				"8:11:51.00", "8:11:55.00", "8:11:55.00", "8:11:59.00", "9:11:01.00", "9:11:07.00", "9:11:13.00", "9:11:40.00",
+				"9:11:48.00", "10:11:09.0", "10:11:17.0", "10:11:48.0", "11:11:22.0", "13:11:30.0", "13:11:42.0", "14:11:00.0",
+				"14:11:30.0", "14:11:45.0", "15:11:46.0", "19:11:15.0", "20:11:58.0", "21:11:28.0", "21:11:47.0", "22:11:01.0",
+				"22:11:03.0", "22:11:09.0", "22:11:12.0", "22:11:13.0", "22:11:34.0", "22:11:37.0"
+		};
+		int locked = -1;
+		int zeroes = 50;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss.S{1,2}");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void localeDateTest() throws IOException {
 
 		Locale[] locales = DateFormat.getAvailableLocales();

@@ -70,6 +70,12 @@ public class Utils {
 		        .concat(input.substring(index + oldString.length()));
 	}
 
+	public static String replaceAt(String input, int offset, int length, String newString) {
+		return input.substring(0, offset)
+		        .concat(newString)
+		        .concat(input.substring(offset + length));
+	}
+
 	/**
 	 * Give a String as input with an offset and length return the integer at that position.
 	 * @param input String to extract integer from

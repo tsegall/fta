@@ -1785,7 +1785,8 @@ public class TextAnalyzer {
 
 						// S is s special case (unlike H, H, M, d) and is *NOT* handled by the default DateTimeFormatter.ofPattern
 						if (ditch == 'S')
-							newFormatString = Utils.replaceFirst(matchPatternInfo.format, "SSS", "S{1,3}");
+							newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, result.timeFieldLengths[3],
+									"S{1," + result.timeFieldLengths[3] + "}");
 						else
 							newFormatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(offset).toString();
 
