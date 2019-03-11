@@ -2135,7 +2135,14 @@ public class TextAnalyzer {
 				matchPatternInfo = new PatternInfo(matchPatternInfo);
 				matchPatternInfo.regexp = freezeNumeric(matchPatternInfo.regexp);
 
-				if (realSamples >= reflectionSamples && confidence < threshold/100.0) {
+				for (LogicalTypeRegExp logical : regExpTypes) {
+					if (PatternInfo.Type.LONG.equals(logical.getBaseType()) && matchPatternInfo.regexp.equals(logical.getRegExp()) &&
+							logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
+						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
+					}
+				}
+
+				if (!matchPatternInfo.isLogicalType() && realSamples >= reflectionSamples && confidence < threshold/100.0) {
 					// We thought it was an integer field, but on reflection it does not feel like it
 					conditionalBackoutToPattern(realSamples, matchPatternInfo, false);
 					confidence = (double) matchCount / realSamples;
@@ -2147,7 +2154,6 @@ public class TextAnalyzer {
 
 			if (groupingSeparators != 0)
 				matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
-
 
 			for (LogicalTypeRegExp logical : regExpTypes) {
 				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && matchPatternInfo.regexp.equals(logical.getRegExp()) &&
@@ -2382,6 +2388,15 @@ public class TextAnalyzer {
 				matchPatternInfo = new PatternInfo(null, RegExpGenerator.smashedAsRegExp(singleUniformShape.trim()), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 						maxTrimmedLength, null, null);
 				updated = true;
+			}
+
+			for (LogicalTypeRegExp logical : regExpTypes) {
+				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && matchPatternInfo.regexp.equals(logical.getRegExp()) &&
+						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
+					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
+					updated = true;
+					break;
+				}
 			}
 
 			// Qualify Alpha or Alnum with a min and max length
