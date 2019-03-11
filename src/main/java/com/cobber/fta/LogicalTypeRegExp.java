@@ -88,7 +88,13 @@ public class LogicalTypeRegExp extends LogicalType {
 			Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 
 		if (hotWords.size() != 0) {
-			boolean found = hotWords.contains(dataStreamName) || hotWords.contains(dataStreamName.toUpperCase(locale));
+			boolean found = false;
+			for (String hotWord : hotWords)
+				if (dataStreamName.contains(hotWord) || dataStreamName.toUpperCase(locale).contains(hotWord)) {
+					found = true;
+					break;
+				}
+
 			if (defn.hotWordMandatory && !found)
 				return defn.regExp;
 		}

@@ -1579,10 +1579,10 @@ public class TextAnalyzer {
 
 		// Need to update stats to reflect any outliers we previously ignored
 		if (matchPatternInfo.type.equals(PatternInfo.Type.STRING)) {
-			if (minString == null || minString.compareTo(minOutlierString) > 0)
+			if (minString == null || (minOutlierString != null && minString.compareTo(minOutlierString) > 0))
 				minString = minOutlierString;
 
-			if (maxString == null || maxString.compareTo(maxOutlierString) < 0)
+			if (maxString == null || (maxOutlierString != null && maxString.compareTo(maxOutlierString) < 0))
 				maxString = maxOutlierString;
 
 			if (minTrimmedLength > minTrimmedOutlierLength)
