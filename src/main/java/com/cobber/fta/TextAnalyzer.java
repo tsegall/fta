@@ -853,7 +853,15 @@ public class TextAnalyzer {
 
 	public void registerPlugins(Reader JSON) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		List<PluginDefinition> plugins = mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){});
+		registerPluginsCore(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}));
+	}
+
+	public void registerPlugins(String JSON) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		registerPluginsCore(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}));
+	}
+
+	public void registerPluginsCore(List<PluginDefinition> plugins) {
 		String languageTag = locale.toLanguageTag();
 		String language = locale.getLanguage();
 
