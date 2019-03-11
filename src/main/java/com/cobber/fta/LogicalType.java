@@ -71,9 +71,10 @@ public abstract class LogicalType {
 	 * @param dataStreamName The name of the Data Stream
 	 * @param matchCount Number of samples that match so far (as determined by isValid()
 	 * @param realSamples Number of real (i.e. non-blank and non-null) samples that we have processed so far.
+	 * @param stringFacts Facts (min, max, sum) for the analysis to date (optional - i.e. maybe null)
 	 * @param cardinality Cardinality set, up to the maximum maintained
 	 * @param outliers Outlier set, up to the maximum maintained
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers);
+	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Integer> cardinality, Map<String, Integer> outliers);
 }

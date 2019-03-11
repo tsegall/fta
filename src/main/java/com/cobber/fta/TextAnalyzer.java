@@ -312,7 +312,7 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("Cannot register logical types once training has started");
 
 		try {
-			registerLogicalType(new LogicalTypeRegExp(plugin.qualifier, plugin.hotWords, plugin.regExp, plugin.threshold, plugin.baseType));
+			registerLogicalType(new LogicalTypeRegExp(plugin));
 		} catch (SecurityException | IllegalArgumentException e) {
 			return false;
 		}
@@ -1810,7 +1810,7 @@ public class TextAnalyzer {
 				if (matchPatternInfo.typeQualifier != null) {
 					// Do we need to back out from any of our Infinite type determinations
 					LogicalType logical = registered.get(matchPatternInfo.typeQualifier);
-					if (logical != null && logical.isValidSet(dataStreamName, matchCount, realSamples, cardinality, outliers) != null)
+					if (logical != null && logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers) != null)
 						if (PatternInfo.Type.LONG.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
 						else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
@@ -1856,7 +1856,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (logical.isValidSet(dataStreamName, realSamples - missCount, realSamples, cardinality, newOutliers) != null)
+		if (logical.isValidSet(dataStreamName, realSamples - missCount, realSamples, null, cardinality, newOutliers) != null)
 			return false;
 
 		matchCount = validCount;
@@ -1889,7 +1889,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (logical.isValidSet(dataStreamName, realSamples - missCount, realSamples, cardinalityUpper, newOutliers) != null)
+		if (logical.isValidSet(dataStreamName, realSamples - missCount, realSamples, null, cardinalityUpper, newOutliers) != null)
 			return false;
 
 		outliers.putAll(newOutliers);
@@ -1941,6 +1941,106 @@ public class TextAnalyzer {
 			result.replace(idx, idx + 1, lengthQualifier(minTrimmedLength, maxTrimmedLength)).toString();
 	}
 
+	private StringFacts calculateFacts() {
+		StringFacts ret = new StringFacts();
+
+		// We know the type - so calculate a minimum and maximum value
+		switch (matchPatternInfo.type) {
+		case BOOLEAN:
+			ret.minValue = String.valueOf(minBoolean);
+			ret.maxValue = String.valueOf(maxBoolean);
+			break;
+
+		case LONG:
+			ret.minValue = String.valueOf(minLong);
+			ret.maxValue = String.valueOf(maxLong);
+			ret.sum = sumBI.toString();
+			break;
+
+		case DOUBLE:
+			NumberFormat formatter = NumberFormat.getInstance(locale);
+			formatter.setMaximumFractionDigits(12);
+			formatter.setMinimumFractionDigits(1);
+			formatter.setGroupingUsed(false);
+
+			ret.minValue = formatter.format(minDouble);
+			ret.maxValue = formatter.format(maxDouble);
+			ret.sum = sumBD.toString();
+			break;
+
+		case STRING:
+			if ("NULL".equals(matchPatternInfo.typeQualifier)) {
+				minRawLength = maxRawLength = 0;
+			} else if ("BLANK".equals(matchPatternInfo.typeQualifier)) {
+				// If all the fields are blank (i.e. a variable number of spaces) - then we have not saved any of the raw input, so we
+				// need to synthesize the min and max value, as well as the minRawlength if not set.
+				if (minRawLength == Integer.MAX_VALUE)
+					minRawLength = 0;
+				final StringBuilder s = new StringBuilder(maxRawLength);
+				for (int i = 0; i < maxRawLength; i++) {
+					if (i == minRawLength)
+						ret.minValue = new String(s.toString());
+					s.append(' ');
+				}
+				ret.maxValue = s.toString();
+				if (minRawLength == maxRawLength)
+					ret.minValue = ret.maxValue;
+			}
+			else {
+				ret.minValue = minString;
+				ret.maxValue = maxString;
+			}
+			break;
+
+		case LOCALDATE:
+			if (collectStatistics) {
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+
+				ret.minValue = minLocalDate == null ? null : minLocalDate.format(dtf);
+				ret.maxValue = maxLocalDate == null ? null : maxLocalDate.format(dtf);
+			}
+			break;
+
+		case LOCALTIME:
+			if (collectStatistics) {
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+
+				ret.minValue = minLocalTime == null ? null : minLocalTime.format(dtf);
+				ret.maxValue = maxLocalTime == null ? null : maxLocalTime.format(dtf);
+			}
+			break;
+
+		case LOCALDATETIME:
+			if (collectStatistics) {
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+
+				ret.minValue = minLocalDateTime == null ? null : minLocalDateTime.format(dtf);
+				ret.maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(dtf);
+			}
+			break;
+
+		case ZONEDDATETIME:
+			if (collectStatistics) {
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+
+				ret.minValue = minZonedDateTime.format(dtf);
+				ret.maxValue = maxZonedDateTime.format(dtf);
+			}
+			break;
+
+		case OFFSETDATETIME:
+			if (collectStatistics) {
+				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+
+				ret.minValue = minOffsetDateTime.format(dtf);
+				ret.maxValue = maxOffsetDateTime.format(dtf);
+			}
+			break;
+		}
+
+		return ret;
+	}
+
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
@@ -1951,10 +2051,6 @@ public class TextAnalyzer {
 		// Normally we will initialize as a consequence of the first call to train() but just in case no training happens!
 		if (!initialized)
 			initialize();
-
-		String minValue = null;
-		String maxValue = null;
-		String sum = null;
 
 		// If we have not already determined the type, now we need to
 		if (matchPatternInfo == null || matchPatternInfo.type == null)
@@ -1988,7 +2084,7 @@ public class TextAnalyzer {
 			matchPatternInfo.regexp = logical.getRegExp();
 
 			String newPattern;
-			if (logical != null && (newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, cardinality, outliers)) != null) {
+			if (logical != null && (newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers)) != null) {
 				if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
 					backoutToPattern(realSamples, newPattern);
 					confidence = (double) matchCount / realSamples;
@@ -2043,6 +2139,15 @@ public class TextAnalyzer {
 
 			if (groupingSeparators != 0)
 				matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
+
+
+			for (LogicalTypeRegExp logical : regExpTypes) {
+				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && matchPatternInfo.regexp.equals(logical.getRegExp()) &&
+						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
+					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
+					break;
+				}
+			}
 		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && !matchPatternInfo.isLogicalType()) {
 			// Build Cardinality map ignoring case (and white space)
 			int minKeyLength = Integer.MAX_VALUE;
@@ -2293,99 +2398,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		// We know the type - so calculate a minimum and maximum value
-		switch (matchPatternInfo.type) {
-		case BOOLEAN:
-			minValue = String.valueOf(minBoolean);
-			maxValue = String.valueOf(maxBoolean);
-			break;
-
-		case LONG:
-			minValue = String.valueOf(minLong);
-			maxValue = String.valueOf(maxLong);
-			sum = sumBI.toString();
-			break;
-
-		case DOUBLE:
-			NumberFormat formatter = NumberFormat.getInstance(locale);
-			formatter.setMaximumFractionDigits(12);
-			formatter.setMinimumFractionDigits(1);
-			formatter.setGroupingUsed(false);
-
-			minValue = formatter.format(minDouble);
-			maxValue = formatter.format(maxDouble);
-			sum = sumBD.toString();
-			break;
-
-		case STRING:
-			if ("NULL".equals(matchPatternInfo.typeQualifier)) {
-				minRawLength = maxRawLength = 0;
-			} else if ("BLANK".equals(matchPatternInfo.typeQualifier)) {
-				// If all the fields are blank (i.e. a variable number of spaces) - then we have not saved any of the raw input, so we
-				// need to synthesize the min and max value, as well as the minRawlength if not set.
-				if (minRawLength == Integer.MAX_VALUE)
-					minRawLength = 0;
-				final StringBuilder s = new StringBuilder(maxRawLength);
-				for (int i = 0; i < maxRawLength; i++) {
-					if (i == minRawLength)
-						minValue = new String(s.toString());
-					s.append(' ');
-				}
-				maxValue = s.toString();
-				if (minRawLength == maxRawLength)
-					minValue = maxValue;
-			}
-			else {
-				minValue = minString;
-				maxValue = maxString;
-			}
-			break;
-
-		case LOCALDATE:
-			if (collectStatistics) {
-				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-				minValue = minLocalDate == null ? null : minLocalDate.format(dtf);
-				maxValue = maxLocalDate == null ? null : maxLocalDate.format(dtf);
-			}
-			break;
-
-		case LOCALTIME:
-			if (collectStatistics) {
-				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-				minValue = minLocalTime == null ? null : minLocalTime.format(dtf);
-				maxValue = maxLocalTime == null ? null : maxLocalTime.format(dtf);
-			}
-			break;
-
-		case LOCALDATETIME:
-			if (collectStatistics) {
-				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-				minValue = minLocalDateTime == null ? null : minLocalDateTime.format(dtf);
-				maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(dtf);
-			}
-			break;
-
-		case ZONEDDATETIME:
-			if (collectStatistics) {
-				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-				minValue = minZonedDateTime.format(dtf);
-				maxValue = maxZonedDateTime.format(dtf);
-			}
-			break;
-
-		case OFFSETDATETIME:
-			if (collectStatistics) {
-				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-				minValue = minOffsetDateTime.format(dtf);
-				maxValue = maxOffsetDateTime.format(dtf);
-			}
-			break;
-		}
+		StringFacts facts = calculateFacts();
 
 		// Attempt to identify keys?
 		boolean key = false;
@@ -2406,8 +2419,8 @@ public class TextAnalyzer {
 		}
 
 		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,
-				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, minValue,
-				maxValue, minRawLength, maxRawLength, sum, utilizedDecimalSeparator, resolutionMode, cardinality, outliers, key, collectStatistics);
+				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, facts.minValue,
+				facts.maxValue, minRawLength, maxRawLength, facts.sum, utilizedDecimalSeparator, resolutionMode, cardinality, outliers, key, collectStatistics);
 
 		return result;
 	}

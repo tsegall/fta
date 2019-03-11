@@ -82,5 +82,53 @@
 		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_2",
 		"locale": [ ]
+	},
+	{
+		"qualifier": "COORDINATE.LATITUDE_DECIMAL_SIGNED",
+		"type": "regexp",
+		"locale": [ ],
+		"hotWords": [ "latitude" ],
+		"hotWordMandatory": true,
+		"regExp": "[+-]?\\d*\\.?\\d+",
+		"threshold": 98,
+		"baseType": "DOUBLE",
+		"minimum": "-90.0",
+		"maximum": "90.0"
+	},
+	{
+		"qualifier": "COORDINATE.LATITUDE_DECIMAL_UNSIGNED",
+		"type": "regexp",
+		"locale": [ ],
+		"hotWords": [ "latitude" ],
+		"hotWordMandatory": true,
+		"regExp": "\\d*\\.?\\d+",
+		"threshold": 98,
+		"baseType": "DOUBLE",
+		"minimum": "0.0",
+		"maximum": "90.0"
+	},
+	{
+		"qualifier": "COORDINATE.LONGITUDE_DECIMAL_SIGNED",
+		"type": "regexp",
+		"locale": [ ],
+		"hotWords": [ "longitude" ],
+		"hotWordMandatory": true,
+		"regExp": "[+-]?\\d*\\.?\\d+",
+		"threshold": 98,
+		"baseType": "DOUBLE",
+		"minimum": "-180.0",
+		"maximum": "180.0"
+	},
+	{
+		"qualifier": "COORDINATE.LONGITUDE_DECIMAL_UNSIGNED",
+		"type": "regexp",
+		"locale": [ ],
+		"hotWords": [ "longitude" ],
+		"hotWordMandatory": true,
+		"regExp": "\\d*\\.?\\d+",
+		"threshold": 98,
+		"baseType": "DOUBLE",
+		"minimum": "0.0",
+		"maximum": "1800.0"
 	}
 ]

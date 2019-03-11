@@ -9,6 +9,7 @@ import javax.mail.internet.InternetAddress;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.StringFacts;
 
 /**
  * Plugin to detect Email Addresses.
@@ -65,7 +66,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

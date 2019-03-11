@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFinite;
+import com.cobber.fta.StringFacts;
 
 public class PluginColor extends LogicalTypeFinite {
 	public final static String SEMANTIC_TYPE = "COLOR.TEXT_EN";
@@ -36,8 +37,8 @@ public class PluginColor extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality,
-			Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
+			Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		if (outliers.size() > 3)
 			return ".+";
 

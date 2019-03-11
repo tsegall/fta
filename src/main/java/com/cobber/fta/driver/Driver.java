@@ -25,6 +25,8 @@ import java.util.Locale;
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFinite;
+import com.cobber.fta.LogicalTypeInfinite;
+import com.cobber.fta.LogicalTypeRegExp;
 import com.cobber.fta.TextAnalyzer;
 
 class Driver {
@@ -50,7 +52,7 @@ class Driver {
 				logger.println(" --col <n> - Only analyze column <n>");
 				logger.println(" --help - Print this help");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
-				logger.println(" --logicalType qualifier,hotword1|hotword2|...,regExp,threshold,baseType");
+				logger.println(" --logicalType <JSON representation of Logical Type>");
 				logger.println(" --maxCardinality <n> - Set the Maximum Cardinality size");
 				logger.println(" --noAnalysis - Do not do analysis");
 				logger.println(" --noLogicalTypes - Do not register any Logical Types");
@@ -129,8 +131,13 @@ class Driver {
 						logger.printf("\t%s (Finite), Cardinality: %d, MaxLength: %d, MinLength: %d\n",
 								logical.getQualifier(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
 					}
-					else
+					else if (logical instanceof LogicalTypeInfinite)
 						logger.printf("\t%s (Infinite)\n", logical.getQualifier());
+					else {
+						LogicalTypeRegExp logicalRegExp = (LogicalTypeRegExp)logical;
+						logger.printf("\t%s (RegExp), RegExp: '%s', HotWords: '%s'\n",
+								logical.getQualifier(), logical.getRegExp(), String.join("|", logicalRegExp.getHotWords()));
+					}
 				}
 			}
 			System.exit(0);

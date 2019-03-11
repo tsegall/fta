@@ -11,6 +11,7 @@ import java.util.Set;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.StringFacts;
 import com.cobber.fta.TextAnalyzer;
 
 /**
@@ -68,7 +69,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		String upperDataStreamName = dataStreamName.toUpperCase();
 		boolean zipName = dataStreamName != null &&
 				(upperDataStreamName.contains("ZIP") || upperDataStreamName.contains("POSTALCODE") || upperDataStreamName.contains("POSTCODE"));

@@ -8,6 +8,7 @@ import org.apache.commons.validator.routines.InetAddressValidator;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.StringFacts;
 
 
 public class LogicalTypeIPAddress extends LogicalTypeInfinite {
@@ -56,8 +57,8 @@ public class LogicalTypeIPAddress extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, Map<String, Integer> cardinality,
-			Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
+			Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? null : ".+";
 	}
 
