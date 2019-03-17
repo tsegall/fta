@@ -9,12 +9,20 @@ import com.cobber.fta.PatternInfo.Type;
  * All Logical Types that consist of a constrained domain, e.g. a finite (small) number of elements should
  * subclass this abstract class.
  */
-public abstract class LogicalTypeFinite extends LogicalType {
+public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	protected int minLength = Integer.MAX_VALUE;
 	protected int maxLength = Integer.MIN_VALUE;
 	protected Locale locale;
 
 	public abstract Set<String> getMembers();
+
+	public LogicalTypeFinite(PluginDefinition plugin) {
+		super(plugin);
+	}
+
+	public LogicalTypeFinite() {
+		super(null);
+	}
 
 	@Override
 	public Type getBaseType() {

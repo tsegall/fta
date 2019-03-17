@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFiniteSimple;
+import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.StringFacts;
 
 /**
@@ -15,12 +16,13 @@ import com.cobber.fta.StringFacts;
 public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	public final static String SEMANTIC_TYPE = "COUNTRY.TEXT_EN";
 	private static Set<String> members = new HashSet<String>();
+	private static String[] membersArray = null;
 	final static String REGEXP = ".+";
 	final static String hotWord = "country";
 
-	public LogicalTypeCountryEN() throws FileNotFoundException {
-		super(SEMANTIC_TYPE, new String[] { hotWord }, REGEXP,
-				REGEXP, new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/countries.csv")), 95);
+	public LogicalTypeCountryEN(PluginDefinition plugin) throws FileNotFoundException {
+		super(plugin.qualifier, plugin.hotWords, plugin.regExp != null ? plugin.regExp : REGEXP,
+				"\\p{IsAlphabetic}{2}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/countries.csv")), 95);
 	}
 
 	@Override
@@ -37,5 +39,12 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 			return REGEXP;
 
 		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : REGEXP;
+	}
+
+	@Override
+	public String[] getMemberArray() {
+		if (membersArray == null)
+			membersArray = members.toArray(new String[members.size()]);
+		return membersArray;
 	}
 }

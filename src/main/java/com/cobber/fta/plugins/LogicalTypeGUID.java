@@ -2,10 +2,12 @@ package com.cobber.fta.plugins;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.StringFacts;
 
 /**
@@ -14,12 +16,33 @@ import com.cobber.fta.StringFacts;
 public class LogicalTypeGUID extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "GUID";
 	public final static String REGEXP = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
+	private final static char[] HEX = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	private static Random random = null;
+
+	public LogicalTypeGUID(PluginDefinition plugin) {
+		super(plugin);
+	}
 
 	@Override
 	public boolean initialize(Locale locale) {
 		threshold = 99;
 
+		random = new Random(404);
+
 		return true;
+	}
+
+	@Override
+	public String nextRandom() {
+		StringBuffer ret = new StringBuffer(36);
+
+		for (int i = 0; i < 32; i++) {
+			if (i == 8 || i == 12 || i == 16 || i == 20)
+				ret.append('-');
+			ret.append(HEX[random.nextInt(16)]);
+		}
+
+		return ret.toString();
 	}
 
 	@Override

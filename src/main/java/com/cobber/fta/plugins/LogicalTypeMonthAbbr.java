@@ -1,24 +1,42 @@
 package com.cobber.fta.plugins;
 
+import java.io.FileNotFoundException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import com.cobber.fta.LocaleInfo;
 import com.cobber.fta.LogicalTypeFinite;
+import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.StringFacts;
 
 /**
  * Plugin to detect Month Abbreviations.
  */
 public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
+	private static Random random = null;
+	private static String[] months = null;
+
+	public LogicalTypeMonthAbbr(PluginDefinition plugin) throws FileNotFoundException {
+		super(plugin);
+	}
+
 	@Override
 	public  synchronized boolean initialize(Locale locale) {
 		threshold = 95;
 
 		super.initialize(locale);
 
+		random = new Random(402);
+		months = getMembers().toArray(new String[getMembers().size()]);
+
 		return true;
+	}
+
+	@Override
+	public String nextRandom() {
+		return months[random.nextInt(getMembers().size())];
 	}
 
 	@Override

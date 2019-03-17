@@ -3,6 +3,7 @@ package com.cobber.fta.examples;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFinite;
@@ -16,6 +17,7 @@ public class PluginColor extends LogicalTypeFinite {
 			"GREY", "GREEN", "YELLOW", "MAUVE", "CREAM", "BROWN", "SILVER", "GOLD",
 			"PEACH", "OLIVE", "LEMON", "LILAC", "BEIGE", "AMBER", "BURGUNDY"
 	};
+	private static Random random = new Random(401);
 
 	static {
 		members.addAll(Arrays.asList(colors));
@@ -24,6 +26,12 @@ public class PluginColor extends LogicalTypeFinite {
 	@Override
 	public Set<String> getMembers() {
 		return members;
+	}
+
+
+	@Override
+	public String nextRandom() {
+		return colors[random.nextInt(colors.length)];
 	}
 
 	@Override

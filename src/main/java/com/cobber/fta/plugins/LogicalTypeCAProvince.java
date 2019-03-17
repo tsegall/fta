@@ -6,22 +6,31 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFiniteSimple;
+import com.cobber.fta.PluginDefinition;
 
 /**
  * Plugin to detect Canadian Provinces.
  */
 public class LogicalTypeCAProvince extends LogicalTypeFiniteSimple {
-	public final static String SEMANTIC_TYPE = "STATE_PROVINCE.STATE_US.PROVINCE_CA";
+	public final static String SEMANTIC_TYPE = "STATE_PROVINCE.PROVINCE_CA";
 	public final static String REGEXP = "\\p{Alpha}{2}";
 	private static Set<String> members = new HashSet<String>();
+	private static String[] membersArray = null;
 
-	public LogicalTypeCAProvince() throws FileNotFoundException {
-		super(SEMANTIC_TYPE, new String[] { "province" }, REGEXP,
+	public LogicalTypeCAProvince(PluginDefinition plugin) throws FileNotFoundException {
+		super(plugin.qualifier, plugin.hotWords, plugin.regExp != null ? plugin.regExp : REGEXP,
 				"\\p{IsAlphabetic}{2}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ca_provinces.csv")), 95);
 	}
 
 	@Override
 	public Set<String> getMembers() {
 		return members;
+	}
+
+	@Override
+	public String[] getMemberArray() {
+		if (membersArray == null)
+			membersArray = members.toArray(new String[members.size()]);
+		return membersArray;
 	}
 }

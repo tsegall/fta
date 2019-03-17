@@ -6,11 +6,13 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.StringFacts;
 import com.cobber.fta.TextAnalyzer;
 
@@ -22,6 +24,12 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_US";
 	public final static String REGEXP = "\\d{5}";
 	private static Set<String> zips = new HashSet<String>();
+	private static Random random = null;
+	private static String[] zipArray;
+
+	public LogicalTypeUSZip5(PluginDefinition plugin) {
+		super(plugin);
+	}
 
 	@Override
 	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
@@ -45,7 +53,16 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 			}
 		}
 
+		random = new Random(zips.size());
+
 		return true;
+	}
+
+	@Override
+	public String nextRandom() {
+		if (zipArray == null)
+			zipArray = zips.toArray(new String[zips.size()]);
+		return zipArray[random.nextInt(zips.size())];
 	}
 
 	@Override

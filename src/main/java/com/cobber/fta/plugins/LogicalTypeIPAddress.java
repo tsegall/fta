@@ -2,28 +2,52 @@ package com.cobber.fta.plugins;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.validator.routines.InetAddressValidator;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.StringFacts;
 
 
 public class LogicalTypeIPAddress extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "IPADDRESS.IPV4";
 	public final static String REGEXP = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+	private static Random random = null;
 	static InetAddressValidator validator = null;
 	static {
 		validator = InetAddressValidator.getInstance();
+	}
+
+	public LogicalTypeIPAddress(PluginDefinition plugin) {
+		super(plugin);
 	}
 
 	@Override
 	public boolean initialize(Locale locale) {
 		threshold = 99;
 
+		random = new Random(200);
+
 		return true;
+	}
+
+	@Override
+	public String nextRandom() {
+		StringBuffer ret = new StringBuffer(36);
+
+		ret.append(random.nextInt(256));
+		ret.append('.');
+		ret.append(random.nextInt(256));
+		ret.append('.');
+		ret.append(random.nextInt(256));
+		ret.append('.');
+		ret.append(random.nextInt(256));
+
+		return ret.toString();
 	}
 
 	@Override

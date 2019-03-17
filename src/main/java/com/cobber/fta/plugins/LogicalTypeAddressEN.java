@@ -6,22 +6,43 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.StringFacts;
 import com.cobber.fta.TextAnalyzer;
-
 
 /**
  * Plugin to detect Addresses. (English-language only).
  */
 public class LogicalTypeAddressEN extends LogicalTypeInfinite {
-	public final static String SEMANTIC_TYPE = "STREET_ADDRESS";
+	public final static String SEMANTIC_TYPE = "STREET_ADDRESS_EN";
 	private boolean multiline = false;
 	private static Set<String> addressMarkers = new HashSet<String>();
+	private static String[] addressMarkersArray = null;
+	private static Random random = null;
+
+	public LogicalTypeAddressEN(PluginDefinition plugin) {
+		super(plugin);
+	}
+
+	@Override
+	public String nextRandom() {
+		String[] streets = new String[] {
+				"RED",  "GREEN", "BLUE", "PINK", "BLACK", "WHITE", "ORANGE", "PURPLE",
+				"GREY", "GREEN", "YELLOW", "MAUVE", "CREAM", "BROWN", "SILVER", "GOLD",
+				"PEACH", "OLIVE", "LEMON", "LILAC", "BEIGE", "AMBER", "BURGUNDY"
+		};
+
+		if (addressMarkersArray == null)
+			addressMarkersArray = addressMarkers.toArray(new String[addressMarkers.size()]);
+
+		return String.valueOf(random.nextInt(1024)) + ' ' + streets[random.nextInt(streets.length)] + ' ' + addressMarkersArray[random.nextInt(addressMarkers.size())];
+	}
 
 	@Override
 	public boolean initialize(Locale locale) {
@@ -36,6 +57,8 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Internal error: Issues with Address database");
 		}
+
+		random = new Random(addressMarkers.size());
 
 		return true;
 	}

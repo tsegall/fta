@@ -22,4 +22,12 @@ public class PluginDefinition {
 	public PatternInfo.Type baseType;
 	public String minimum;
 	public String maximum;
+
+	public PluginDefinition() {
+	}
+
+	public PluginDefinition(String qualifier, String clazz) {
+		this.qualifier = qualifier;
+		this.clazz = clazz;
+	}
 }

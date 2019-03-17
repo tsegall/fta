@@ -22,7 +22,7 @@ public class SamplePlugin {
 
 		// Register our new magic plugin
 		String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_EN\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"locale\": [ ] } ]";
-		analysis.registerPlugins(new StringReader(colorPlugin));
+		analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", null);
 
 
 		for (int i = 0; i < inputs.length; i++)

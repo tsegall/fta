@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import com.cobber.fta.PatternInfo.Type;
 
 public class LogicalTypeRegExp extends LogicalType {
-	private PluginDefinition defn;
 	private Locale locale;
 	private Pattern pattern;
 	private Long minLong;
@@ -18,11 +17,8 @@ public class LogicalTypeRegExp extends LogicalType {
 	private Double maxDouble;
 	Set<String> hotWords = new HashSet<>();
 
-	/**
-	 * @param plugin The definition of this plugin
-	 */
 	public LogicalTypeRegExp(PluginDefinition plugin) {
-		this.defn = plugin;
+		super(plugin);
 
 		if (defn.minimum != null)
 			switch (defn.baseType) {

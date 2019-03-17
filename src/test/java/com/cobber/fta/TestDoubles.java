@@ -824,8 +824,8 @@ public class TestDoubles {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("hr-HR") };
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("hi-IN") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("en"), Locale.forLanguageTag("es-CO") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("es-CO") };
 
 		for (Locale locale : locales) {
 			final TextAnalyzer analysis = new TextAnalyzer("Separator");
@@ -856,7 +856,7 @@ public class TestDoubles {
 
 			final TextAnalysisResult result = analysis.getResult();
 
-			Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+			Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE, locale.toLanguageTag());
 			Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
 			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);

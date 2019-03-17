@@ -18,9 +18,6 @@ package com.cobber.fta;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -39,7 +36,6 @@ import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,8 +46,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Analyze Text data to determine type information and other key metrics
@@ -207,7 +201,6 @@ public class TextAnalyzer {
 	private long totalLeadingZeros;
 	private long groupingSeparators;
 
-	private Map<String, LogicalType> registered = new HashMap<String, LogicalType>();
 	private ArrayList<LogicalTypeInfinite> infiniteTypes = new ArrayList<LogicalTypeInfinite>();
 	private ArrayList<LogicalTypeFinite> finiteTypes = new ArrayList<LogicalTypeFinite>();
 	private ArrayList<LogicalTypeRegExp> regExpTypes = new ArrayList<LogicalTypeRegExp>();
@@ -216,6 +209,8 @@ public class TextAnalyzer {
 	private KnownPatterns knownPatterns = new KnownPatterns();
 
 	private DateTimeParser dateTimeParser;
+
+	private Plugins plugins = new Plugins();
 
 	/**
 	 * Construct a Text Analyzer for the named data stream.  Note: The resolution mode will be 'None'.
@@ -245,86 +240,6 @@ public class TextAnalyzer {
 	public TextAnalyzer(final String name, final DateResolutionMode resolutionMode) {
 		this.dataStreamName = name;
 		this.resolutionMode = resolutionMode;
-	}
-
-	private void registerLogicalType(LogicalType logical) {
-		logical.initialize(locale);
-
-		if ((logical instanceof LogicalTypeFinite) && ((LogicalTypeFinite)logical).getSize() + 10 > getMaxCardinality())
-			throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
-
-		if (registered.containsKey(logical.getQualifier()))
-			throw new IllegalArgumentException("Logical type: " + logical.getQualifier() + " already registered.");
-
-		registered.put(logical.getQualifier(), logical);
-
-		if (logical instanceof LogicalTypeInfinite)
-			infiniteTypes.add((LogicalTypeInfinite)logical);
-		else if (logical instanceof LogicalTypeFinite)
-			finiteTypes.add((LogicalTypeFinite)logical);
-		else
-			regExpTypes.add((LogicalTypeRegExp)logical);
-
-		if (pluginThreshold != -1)
-			logical.setThreshold(pluginThreshold);
-	}
-
-	/**
-	 * Register a new Logical Type processor.
-	 * See {@link LogicalTypeFinite} or {@link LogicalTypeInfinite}
-	 *
-	 * @param className The name of the class for the new Logical Type
-	 * @return Success if the new Logical type was successfully registered.
-	 */
-	private boolean registerLogicalTypeClass(String className) {
-		if (trainingStarted)
-			throw new IllegalArgumentException("Cannot register logical types once training has started");
-
-		Class<?> newLogicalType;
-		Constructor<?> ctor;
-		LogicalType logical;
-
-		try {
-			newLogicalType = Class.forName(className);
-			ctor = newLogicalType.getConstructor();
-			logical = (LogicalType)ctor.newInstance();
-
-			if (!(logical instanceof LogicalType))
-				throw new IllegalArgumentException("Logical type: " + className + " does not appear to be a Logical Type.");
-
-			registerLogicalType(logical);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Register a new Logical Type processor of type LogicalTypeRegExp. See {@link LogicalTypeRegExp}
-	 *
-	 * @param plugin The Plugin Definition for a RegExp Logical Type
-	 * @return Success if the new Logical type was successfully registered.
-	 */
-	private boolean registerLogicalTypeRegExp(PluginDefinition plugin) {
-
-		if (trainingStarted)
-			throw new IllegalArgumentException("Cannot register logical types once training has started");
-
-		try {
-			registerLogicalType(new LogicalTypeRegExp(plugin));
-		} catch (SecurityException | IllegalArgumentException e) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Return the set of registered Logical Types.
-	 * @return A Collection of the currently registered Logical Types.
-	 */
-	public Collection<LogicalType> getRegisteredLogicalTypes() {
-		return new HashSet<LogicalType>(registered.values());
 	}
 
 	/**
@@ -641,7 +556,7 @@ public class TextAnalyzer {
 
 		if (patternInfo.isLogicalType()) {
 			// If it is a registered Infinite Logical Type then validate it
-			LogicalType logical = registered.get(patternInfo.typeQualifier);
+			LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
 			if (PatternInfo.Type.LONG.equals(logical.getBaseType()))
 				return logical.isValid(input);
 		}
@@ -684,7 +599,7 @@ public class TextAnalyzer {
 		}
 		else if (patternInfo.isLogicalType) {
 			// If it is a registered Infinite Logical Type then validate it
-			LogicalType logical = registered.get(patternInfo.typeQualifier);
+			LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
 			if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && !logical.isValid(rawInput))
 				return false;
 		}
@@ -746,7 +661,7 @@ public class TextAnalyzer {
 
 		if (patternInfo.isLogicalType()) {
 			// If it is a registered Infinite Logical Type then validate it
-			LogicalType logical = registered.get(patternInfo.typeQualifier);
+			LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
 			if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && !logical.isValid(input))
 				return false;
 		}
@@ -851,46 +766,8 @@ public class TextAnalyzer {
 		}
 	}
 
-	public void registerPlugins(Reader JSON) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		registerPluginsCore(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}));
-	}
-
-	public void registerPlugins(String JSON) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		registerPluginsCore(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}));
-	}
-
-	public void registerPluginsCore(List<PluginDefinition> plugins) {
-		String languageTag = locale.toLanguageTag();
-		String language = locale.getLanguage();
-
-		// Only register plugins that are valid for this locale
-		for (PluginDefinition plugin : plugins) {
-			boolean register = false;
-			if (plugin.locale.length != 0) {
-				for (String validLocale : plugin.locale) {
-					if (validLocale.indexOf('-') != -1) {
-						if (validLocale.equals(languageTag)) {
-							register = true;
-							break;
-						}
-					}
-					else if (validLocale.equals(language)) {
-						register = true;
-						break;
-					}
-				}
-			}
-			else
-				register = true;
-
-			if (register)
-				if ("finite".equals(plugin.type) || "infinite".equals(plugin.type))
-					registerLogicalTypeClass(plugin.clazz);
-				else
-					registerLogicalTypeRegExp(plugin);
-		}
+	public Plugins getPlugins() {
+		return plugins;
 	}
 
 	private void initialize() {
@@ -909,9 +786,25 @@ public class TextAnalyzer {
 		if (enableDefaultLogicalTypes) {
 			// Load the default set of plugins for Logical Type detection
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))){
-				registerPlugins(reader);
+				plugins.registerPlugins(reader, dataStreamName, locale);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage());
+			}
+
+			for (LogicalType logical : plugins.getRegisteredLogicalTypes()) {
+
+				if ((logical instanceof LogicalTypeFinite) && ((LogicalTypeFinite)logical).getSize() + 10 > getMaxCardinality())
+					throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
+
+				if (logical instanceof LogicalTypeInfinite)
+					infiniteTypes.add((LogicalTypeInfinite)logical);
+				else if (logical instanceof LogicalTypeFinite)
+					finiteTypes.add((LogicalTypeFinite)logical);
+				else
+					regExpTypes.add((LogicalTypeRegExp)logical);
+
+				if (pluginThreshold != -1)
+					logical.setThreshold(pluginThreshold);
 			}
 		}
 
@@ -1364,6 +1257,7 @@ public class TextAnalyzer {
 
 			// Check to see if it might be one of the known Infinite Logical Types
 			int i = 0;
+			double bestConfidence = 0.0;
 			for (LogicalTypeInfinite logical : infiniteTypes) {
 				if ((double)candidateCounts[i]/raw.size() >= logical.getThreshold()/100.0) {
 					int count = 0;
@@ -1384,8 +1278,11 @@ public class TextAnalyzer {
 					}
 
 					// If a reasonable number look genuine then we are convinced
-					if (count >= logical.getThreshold()/100.0 * raw.size())
+					double currentConfidence = logical.getConfidence(count, raw.size());
+					if (currentConfidence > bestConfidence && currentConfidence >= logical.getThreshold()/100.0) {
 						matchPatternInfo = candidate;
+						bestConfidence = currentConfidence;
+					}
 				}
 				i++;
 			}
@@ -1817,7 +1714,7 @@ public class TextAnalyzer {
 			if (outliers.size() == maxOutliers) {
 				if (matchPatternInfo.typeQualifier != null) {
 					// Do we need to back out from any of our Infinite type determinations
-					LogicalType logical = registered.get(matchPatternInfo.typeQualifier);
+					LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
 					if (logical != null && logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers) != null)
 						if (PatternInfo.Type.LONG.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
@@ -2086,10 +1983,11 @@ public class TextAnalyzer {
 		// Infinite type determinations (since we have not yet declared it to be a Finite type).  However it is possible
 		// that this is a subsequent call to getResult()!!
 		if (matchPatternInfo.isLogicalType()) {
-			LogicalType logical = registered.get(matchPatternInfo.typeQualifier);
+			LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
 
 			// Update our Regular Expression - since it may have changed based on all the data observed
 			matchPatternInfo.regexp = logical.getRegExp();
+			confidence = logical.getConfidence(matchCount, realSamples);
 
 			String newPattern;
 			if (logical != null && (newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers)) != null) {
@@ -2139,6 +2037,7 @@ public class TextAnalyzer {
 					if (PatternInfo.Type.LONG.equals(logical.getBaseType()) && matchPatternInfo.regexp.equals(logical.getRegExp()) &&
 							logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
+						confidence = logical.getConfidence(matchCount, realSamples);
 					}
 				}
 
@@ -2159,6 +2058,7 @@ public class TextAnalyzer {
 				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && matchPatternInfo.regexp.equals(logical.getRegExp()) &&
 						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
+					confidence = logical.getConfidence(matchCount, realSamples);
 					break;
 				}
 			}
@@ -2191,7 +2091,7 @@ public class TextAnalyzer {
 						if (!typeIdentified && cardinalityUpper.size() <= logical.getSize() + 2) {
 							typeIdentified = checkUniformLengthSet(logical);
 							if (typeIdentified) {
-								confidence = (double) matchCount / realSamples;
+								confidence = logical.getConfidence(matchCount, realSamples);
 								break;
 							}
 						}
@@ -2204,7 +2104,7 @@ public class TextAnalyzer {
 						if (!typeIdentified && cardinalityUpper.size() <= logical.getSize() + 1) {
 							typeIdentified = checkVariableLengthSet(cardinalityUpper, logical);
 							if (typeIdentified) {
-								confidence = (double) matchCount / realSamples;
+								confidence = logical.getConfidence(matchCount, realSamples);
 								break;
 							}
 						}
@@ -2394,6 +2294,7 @@ public class TextAnalyzer {
 				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && matchPatternInfo.regexp.equals(logical.getRegExp()) &&
 						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
+					confidence = logical.getConfidence(matchCount, realSamples);
 					updated = true;
 					break;
 				}

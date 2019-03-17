@@ -219,8 +219,8 @@ public class TestPlugins {
 	public void testRegisterFinite() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		analysis.setMaxCardinality(20000);
-		String deepCUSIPPlugin = "[ { \"qualifier\": \"CUSIP\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.PluginCUSIP\", \"locale\": [ ] } ]";
-		analysis.registerPlugins(new StringReader(deepCUSIPPlugin));
+		String deepCUSIPPlugin = "[ { \"qualifier\": \"CUSIP\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.PluginCUSIP\", \"locale\": [ ] , \"hotWords\": [ \"CUSIP\" ], \"regExp\": \"\\\\p{Alnum}{9}\" } ]";
+		analysis.getPlugins().registerPlugins(new StringReader(deepCUSIPPlugin), "C U S I P", null);
 		final String input =
 				"75605A702|G39637955|029326105|63009R109|04269E957|666666666|00768Y727|23908L306|126349AF6|73937B589|" +
 				"516806956|683797104|902973954|600544950|15671L909|00724F951|292104106|00847X904|219350955|67401P958|" +
@@ -266,8 +266,8 @@ public class TestPlugins {
 	@Test
 	public void testRegisterInfinite() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
-		String deepCUSIPPlugin = "[ { \"qualifier\": \"CUSIP\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.PluginCreditCard\", \"locale\": [ ] } ]";
-		analysis.registerPlugins(new StringReader(deepCUSIPPlugin));
+		String deepCCPlugin = "[ { \"qualifier\": \"CreditCard\", \"type\": \"infinite\", \"clazz\": \"com.cobber.fta.PluginCreditCard\", \"locale\": [ ] } ]";
+		analysis.getPlugins().registerPlugins(new StringReader(deepCCPlugin), "Ignore", null);
 		final String[] input = {
 //				"Credit Card Type,Credit Card Number",
 				"American Express,378282246310005",
@@ -476,7 +476,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getRegExp(), LogicalTypeURL.REGEXP_RESOURCE);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getConfidence(), 0.95);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "URL");
 
@@ -607,6 +607,150 @@ public class TestPlugins {
 		Assert.assertEquals(result.getLeadingZeroCount(), 32);
 		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void randomZip() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("GUID", "com.cobber.fta.plugins.LogicalTypeUSZip5");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void randomGUID() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("GUID", "com.cobber.fta.plugins.LogicalTypeGUID");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void randomGender() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("GENDER", "com.cobber.fta.plugins.LogicalTypeGenderEN");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void randomCountry() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("COUNTRY.TEXT_EN", "com.cobber.fta.plugins.LogicalTypeCountryEN");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void random3166_2() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("COUNTRY.ISO-3166-2", "com.cobber.fta.plugins.LogicalTypeISO3166_2");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void random3166_3() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("COUNTRY.ISO-3166-3", "com.cobber.fta.plugins.LogicalTypeISO3166_3");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void random4217() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("CURRENCY_CODE.ISO-4217", "com.cobber.fta.plugins.LogicalTypeISO4217");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+
+	@Test
+	public void randomIPAddress() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV4", "com.cobber.fta.plugins.LogicalTypeIPAddress");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void randomPhoneNumber() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("PHONENUMBER", "com.cobber.fta.plugins.LogicalTypePhoneNumber");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void randomEmail() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("EMAIL", "com.cobber.fta.plugins.LogicalTypeEmail");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void randomFirst() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("FIRST_NAME", "com.cobber.fta.plugins.LogicalTypeFirstName");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void randomLast() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("LAST_NAME", "com.cobber.fta.plugins.LogicalTypeLastName");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void randomURL() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("URL", "com.cobber.fta.plugins.LogicalTypeURL");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
 	@Test
@@ -1631,8 +1775,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		String SSNPlugin = "[ { \"qualifier\": \"SSN\", \"type\": \"regexp\", \"locale\": [ \"en-US\" ], \"hotWords\": [ \"SSN\", \"social\" ], " +
 				"\"regExp\": \"\\\\d{3}-\\\\d{2}-\\\\d{4}\", \"threshold\": 98, \"baseType\": \"STRING\" } ]";
-		System.err.println(SSNPlugin);
-		analysis.registerPlugins(new StringReader(SSNPlugin));
+		analysis.getPlugins().registerPlugins(new StringReader(SSNPlugin), "SSN", null);
 		for (String sample : samples) {
 			analysis.train(sample);
 		}
@@ -1659,6 +1802,36 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void testLatitude() throws IOException {
+		String[] samples = new String[] {
+				"51.5", "39.195", "46.18806", "-36.1333333", "33.52056", "39.79", "40.69361", "36.34333", "32.0666667", "48.8833333", "40.71417",
+				"51.45", "29.42389", "43.69556", "40.03222", "53.6772222", "45.4166667", "17.3833333", "51.52721", "40.76083", "53.5", "51.8630556",
+				"-26.1666667", "32.64", "62.9", "29.61944", "40.71417", "51.52721", "40.61278", "37.22667", "40.71417", "25.77389",
+				"46.2333333", "40.65", "52.3333333", "38.96861", "-27.1666667", "33.44833", "29.76306", "43.77222", "43.77222", "34.33806",
+				"56.0333333", "41.54278", "29.76306", "26.46111", "51.4", "55.6666667", "33.92417", "53.4247222", "26.12194", "-37.8166667"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("Latitude");
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
+		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL_SIGNED");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void testRegExpLogicalType_CUSIP() throws IOException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 		String[] samples = new String[] {
@@ -1671,7 +1844,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		String shallowCUSIPPlugin = "[ { \"qualifier\": \"CUSIP\", \"type\": \"regexp\", \"locale\": [ ], \"hotWords\": [ \"CUSIP\" ], " +
 				"\"regExp\": \"[\\\\p{IsAlphabetic}\\\\d]{9}\", \"threshold\": 98, \"baseType\": \"STRING\" } ]";
-		analysis.registerPlugins(new StringReader(shallowCUSIPPlugin));
+		analysis.getPlugins().registerPlugins(new StringReader(shallowCUSIPPlugin), "CUSIP", null);
 		for (String sample : samples) {
 			analysis.train(sample);
 		}

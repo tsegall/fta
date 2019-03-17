@@ -4,7 +4,11 @@ package com.cobber.fta;
  * All Logical Types that consist of a unconstrained domain, e.g. an infinite (or large) number of elements should
  * subclass this abstract class.
  */
-public abstract class LogicalTypeInfinite extends LogicalType {
+public abstract class LogicalTypeInfinite extends LogicalTypeCode {
+	public LogicalTypeInfinite(PluginDefinition plugin) {
+		super(plugin);
+	}
+
 	/**
 	 * A fast check to see if the supplied String might be an instance of this logical type?
 	 *

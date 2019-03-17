@@ -4,6 +4,12 @@ import java.util.Locale;
 import java.util.Map;
 
 public abstract class LogicalType {
+	protected PluginDefinition defn;
+
+	LogicalType(PluginDefinition plugin) {
+		this.defn = plugin;
+	}
+
 	protected int threshold;
 
 	/**
@@ -49,6 +55,17 @@ public abstract class LogicalType {
 	 */
 	public void setThreshold(int threshold) {
 		this.threshold = threshold;
+	}
+
+	/**
+	 * Confidence in the type classification.
+	 * Typically this will be the number of matches divided by the number of real samples.
+	 * @param matchCount Number of matches (as determined by isValid())
+	 * @param realSamples Number of samples observed - does not include either nulls or blanks
+	 * @return Confidence as a percentage.
+	 */
+	public double getConfidence(long matchCount, long realSamples) {
+		return (double)matchCount/realSamples;
 	}
 
 	/**

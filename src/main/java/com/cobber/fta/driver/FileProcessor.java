@@ -91,7 +91,7 @@ class FileProcessor {
 				if (options.debug != -1)
 					analysis[i].setDebug(options.debug);
 				if (options.logicalTypes != null)
-					analysis[i].registerPlugins(new StringReader(options.logicalTypes));
+					analysis[i].getPlugins().registerPlugins(new StringReader(options.logicalTypes), header[i], options.locale);
 			}
 
 			long thisRecord = 0;

@@ -1,11 +1,14 @@
 package com.cobber.fta.plugins;
 
+import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFinite;
+import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.RegExpGenerator;
 import com.cobber.fta.StringFacts;
 
@@ -17,11 +20,21 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	private static Set<String> members = new HashSet<String>();
 	private final String backoutREGEX = "\\p{IsAlphabetic}+";
 	private String happyRegex = "\\p{Alpha}+";
+	private static Random random = null;
 	private Locale locale;
 
 	static {
 		members.add("FEMALE");
 		members.add("MALE");
+	}
+
+	public LogicalTypeGenderEN(PluginDefinition plugin) throws FileNotFoundException {
+		super(plugin);
+	}
+
+	@Override
+	public String nextRandom() {
+		return random.nextInt(2) != 0 ? "FEMALE" : "MALE";
 	}
 
 	@Override
@@ -30,6 +43,8 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 
 		this.locale = locale;
 		threshold = 95;
+
+		random = new Random(314);
 
 		return true;
 	}

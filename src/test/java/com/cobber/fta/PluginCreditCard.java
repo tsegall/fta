@@ -14,6 +14,10 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 		validator = CreditCardValidator.genericCreditCardValidator();
 	}
 
+	public PluginCreditCard(PluginDefinition plugin) {
+		super(plugin);
+	}
+
 	@Override
 	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
 		return validator.isValid(trimmed.replaceAll("[\\s\\-]", ""));
@@ -22,6 +26,12 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 	@Override
 	public boolean initialize(Locale locale) {
 		return true;
+	}
+
+
+	@Override
+	public String nextRandom() {
+		return null;
 	}
 
 	@Override

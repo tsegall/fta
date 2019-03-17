@@ -121,7 +121,7 @@ class Driver {
 
 			// Need to start training to force registration of Logical Types
 			analysis.train("Hello");
-			Collection<LogicalType> registered = analysis.getRegisteredLogicalTypes();
+			Collection<LogicalType> registered = analysis.getPlugins().getRegisteredLogicalTypes();
 
 			if (registered.size() != 0) {
 				logger.println("\nRegistered Logical Types:");

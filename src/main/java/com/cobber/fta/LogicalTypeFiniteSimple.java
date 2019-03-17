@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	private String qualifier;
@@ -12,6 +13,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	private String regexp;
 	private String backout;
 	private Reader reader;
+	protected Random random;
 
 	public LogicalTypeFiniteSimple(String qualifier, String[] hotWords, String regexp, String backout, Reader reader, int threshold) {
 		this.qualifier = qualifier;
@@ -20,6 +22,12 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		this.backout = backout;
 		this.reader = reader;
 		this.threshold = threshold;
+		this.random = new Random(403);
+	}
+
+	@Override
+	public String nextRandom() {
+		return getMemberArray()[random.nextInt(getMembers().size())];
 	}
 
 	@Override
@@ -42,6 +50,8 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		return true;
 	}
 
+	public abstract String[] getMemberArray();
+
 	@Override
 	public String getQualifier() {
 		return qualifier;
@@ -56,11 +66,12 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
 			StringFacts stringFacts, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 		boolean streamNamePositive = false;
-		for (int i = 0; i < hotWords.length; i++)
-			if (dataStreamName.toLowerCase(locale).contains(hotWords[i])) {
-				streamNamePositive = true;
-				break;
-			}
+		if (hotWords != null)
+			for (int i = 0; i < hotWords.length; i++)
+				if (dataStreamName.toLowerCase(locale).contains(hotWords[i])) {
+					streamNamePositive = true;
+					break;
+				}
 
 		int maxOutliers = 1;
 		int minCardinality = 4;
