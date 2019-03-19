@@ -132,6 +132,6 @@
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "0.0",
-		"maximum": "1800.0"
+		"maximum": "180.0"
 	}
 ]
