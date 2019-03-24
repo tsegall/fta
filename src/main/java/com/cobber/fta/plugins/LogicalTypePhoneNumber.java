@@ -79,10 +79,7 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
 			try {
 				Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(trimmed, locale.getCountry());
-				boolean ret = phoneUtil.isPossibleNumber(phoneNumber);
-				if (ret)
-					return true;
-	        	return false;
+				return phoneUtil.isPossibleNumber(phoneNumber);
 			}
 	        catch (NumberParseException e) {
 	        	return false;

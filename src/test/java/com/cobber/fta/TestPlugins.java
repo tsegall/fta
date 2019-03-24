@@ -23,6 +23,7 @@ import com.cobber.fta.plugins.LogicalTypeIPAddress;
 import com.cobber.fta.plugins.LogicalTypeISO3166_2;
 import com.cobber.fta.plugins.LogicalTypeISO3166_3;
 import com.cobber.fta.plugins.LogicalTypeISO4217;
+import com.cobber.fta.plugins.LogicalTypePhoneNumber;
 import com.cobber.fta.plugins.LogicalTypeURL;
 import com.cobber.fta.plugins.LogicalTypeUSState;
 import com.cobber.fta.plugins.LogicalTypeUSZip5;
@@ -118,6 +119,37 @@ public class TestPlugins {
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
+	@Test
+	public void basicPhoneNumber() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Phone");
+		final String[] inputs = new String[] {
+				"+1 339 223 3709", "(650) 867-3450", "+44 191 4956203", "(650) 450-8810", "(512) 757-6000", "(336) 222-7000", "(014) 427-4427",
+				"(785) 241-6200", "(312) 596-1000", "(503) 421-7800", "(520) 773-9050", "+1 617 875 9183", "(212) 842-5500", "(415) 901-7000",
+				"+1 781 820 1290", "508.822.8383", "617-426-1400", "+1 781-219-3635"
+		};
+
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypePhoneNumber.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), LogicalTypePhoneNumber.REGEXP);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		final Map<String, Integer> outliers = result.getOutlierDetails();
+		int outlierCount = outliers.get("(014) 427-4427");
+		Assert.assertEquals(outlierCount, 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		Assert.assertEquals(result.getConfidence(), 1.0 - (double)1/result.getSampleCount());
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].trim().matches(result.getRegExp()), inputs[i]);
 		}
 	}
 
