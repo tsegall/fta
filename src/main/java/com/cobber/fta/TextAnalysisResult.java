@@ -407,16 +407,16 @@ public class TextAnalysisResult {
 	 */
 	@Override
 	public String toString() {
-		return asJSON(false, false);
+		return asJSON(false, 0);
 	}
 
 	/**
 	 * A JSON representation of the Analysis.
 	 * @param pretty If set, add minimal whitespace formatting.
-	 * @param verbose If set, return additional information related to cardinality and outliers.
+	 * @param verbose If set provides additional details on the core and Outlier sets.
 	 * @return A JSON representation of the analysis.
 	 */
-	public String asJSON(boolean pretty, boolean verbose) {
+	public String asJSON(boolean pretty, int verbose) {
 
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -448,7 +448,9 @@ public class TextAnalysisResult {
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
 		analysis.put("cardinality", cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX");
-		if (verbose && cardinality.size() != 0 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT) {
+
+		if (!cardinality.isEmpty() && (verbose > 1 ||
+				(verbose == 1 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT))) {
 			ArrayNode detail = analysis.putArray("cardinalityDetail");
 			for (final Map.Entry<String,Integer> entry : entriesSortedByValues(cardinality)) {
 				ObjectNode elt = mapper.createObjectNode();
@@ -459,7 +461,7 @@ public class TextAnalysisResult {
 		}
 
 		analysis.put("outliers", outliers.size() < TextAnalyzer.MAX_OUTLIERS_DEFAULT ? String.valueOf(outliers.size()) : "MAX");
- 		if (verbose && !outliers.isEmpty() && outliers.size() < .2 * sampleCount) {
+ 		if (!outliers.isEmpty()  && (verbose > 1 || (verbose == 1 && outliers.size() < .2 * sampleCount))) {
 			ArrayNode detail = analysis.putArray("outlierDetail");
 			for (final Map.Entry<String,Integer> entry : entriesSortedByValues(outliers)) {
 				ObjectNode elt = mapper.createObjectNode();

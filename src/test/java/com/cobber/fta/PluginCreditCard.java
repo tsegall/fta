@@ -25,9 +25,10 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 
 	@Override
 	public boolean initialize(Locale locale) {
+		super.initialize(locale);
+
 		return true;
 	}
-
 
 	@Override
 	public String nextRandom() {

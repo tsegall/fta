@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeInfinite;
@@ -24,7 +23,6 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	private boolean multiline = false;
 	private static Set<String> addressMarkers = new HashSet<String>();
 	private static String[] addressMarkersArray = null;
-	private static Random random = null;
 
 	public LogicalTypeAddressEN(PluginDefinition plugin) {
 		super(plugin);
@@ -46,6 +44,8 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean initialize(Locale locale) {
+		super.initialize(locale);
+
 		threshold = 90;
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/address_markers.csv")))){
@@ -57,8 +57,6 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Internal error: Issues with Address database");
 		}
-
-		random = new Random(addressMarkers.size());
 
 		return true;
 	}

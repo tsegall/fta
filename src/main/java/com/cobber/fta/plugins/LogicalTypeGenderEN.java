@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFinite;
@@ -20,8 +19,6 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	private static Set<String> members = new HashSet<String>();
 	private final String backoutREGEX = "\\p{IsAlphabetic}+";
 	private String happyRegex = "\\p{Alpha}+";
-	private static Random random = null;
-	private Locale locale;
 
 	static {
 		members.add("FEMALE");
@@ -41,10 +38,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	public boolean initialize(Locale locale) {
 		super.initialize(locale);
 
-		this.locale = locale;
 		threshold = 95;
-
-		random = new Random(314);
 
 		return true;
 	}

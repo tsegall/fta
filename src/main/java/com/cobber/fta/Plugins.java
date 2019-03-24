@@ -17,17 +17,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Plugins {
 	private Map<String, LogicalType> registered = new HashMap<String, LogicalType>();
 
-	public void registerPlugins(Reader JSON, String dataStreamName, Locale locale) throws IOException {
+	public void registerPlugins(Reader JSON, String dataStreamName, Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		ObjectMapper mapper = new ObjectMapper();
-		registerPluginsCore(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale);
+		registerPluginList(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale);
 	}
 
-	public void registerPlugins(String JSON, String dataStreamName, Locale locale) throws IOException {
+	public void registerPlugins(String JSON, String dataStreamName, Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		ObjectMapper mapper = new ObjectMapper();
-		registerPluginsCore(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale);
+		registerPluginList(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale);
 	}
 
-	public void registerPluginsCore(List<PluginDefinition> plugins, String dataStreamName, Locale locale) {
+	public void registerPluginList(List<PluginDefinition> plugins, String dataStreamName, Locale locale) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (locale == null)
 			locale = Locale.getDefault();
 		String languageTag = locale.toLanguageTag();
@@ -38,8 +38,8 @@ public class Plugins {
 			boolean register = false;
 
 			// Check to see if this plugin is valid for this locale
-			if (plugin.locale != null && plugin.locale.length != 0) {
-				for (String validLocale : plugin.locale) {
+			if (plugin.validLocales != null && plugin.validLocales.length != 0) {
+				for (String validLocale : plugin.validLocales) {
 					if (validLocale.indexOf('-') != -1) {
 						if (validLocale.equals(languageTag)) {
 							register = true;
@@ -70,7 +70,7 @@ public class Plugins {
 			}
 
 			if (register)
-				if ("finite".equals(plugin.type) || "infinite".equals(plugin.type))
+				if (plugin.clazz != null)
 					registerLogicalTypeClass(plugin, locale);
 				else
 					registerLogicalTypeRegExp(plugin, locale);
@@ -91,44 +91,40 @@ public class Plugins {
 	 * Register a new Logical Type processor.
 	 * See {@link LogicalTypeFinite} or {@link LogicalTypeInfinite}
 	 *
-	 * @param className The name of the class for the new Logical Type
+	 * @param plugin The Plugin Definition for a Finite or Infinite Logical Type
+	 * @param locale The current Locale
 	 * @return Success if the new Logical type was successfully registered.
+	 * @throws ClassNotFoundException
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	private boolean registerLogicalTypeClass(PluginDefinition plugin, Locale locale) {
+	private void registerLogicalTypeClass(PluginDefinition plugin, Locale locale) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class<?> newLogicalType;
 		Constructor<?> ctor;
 		LogicalType logical;
 
-		try {
-			newLogicalType = Class.forName(plugin.clazz);
-			ctor = newLogicalType.getConstructor(PluginDefinition.class);
-			logical = (LogicalType)ctor.newInstance(plugin);
+		newLogicalType = Class.forName(plugin.clazz);
+		ctor = newLogicalType.getConstructor(PluginDefinition.class);
+		logical = (LogicalType)ctor.newInstance(plugin);
 
-			if (!(logical instanceof LogicalType))
-				throw new IllegalArgumentException("Logical type: " + plugin.clazz + " does not appear to be a Logical Type.");
+		if (!(logical instanceof LogicalType))
+			throw new IllegalArgumentException("Logical type: " + plugin.clazz + " does not appear to be a Logical Type.");
 
-			registerLogicalType(logical, locale);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-			return false;
-		}
-		return true;
+		registerLogicalType(logical, locale);
 	}
 
 	/**
 	 * Register a new Logical Type processor of type LogicalTypeRegExp. See {@link LogicalTypeRegExp}
 	 *
 	 * @param plugin The Plugin Definition for a RegExp Logical Type
-	 * @return Success if the new Logical type was successfully registered.
+	 * @param locale The current Locale
 	 */
-	private boolean registerLogicalTypeRegExp(PluginDefinition plugin, Locale locale) {
-
-		try {
-			registerLogicalType(new LogicalTypeRegExp(plugin), locale);
-		} catch (SecurityException | IllegalArgumentException e) {
-			return false;
-		}
-		return true;
+	private void registerLogicalTypeRegExp(PluginDefinition plugin, Locale locale) {
+		registerLogicalType(new LogicalTypeRegExp(plugin), locale);
 	}
 
 	/**
@@ -139,7 +135,12 @@ public class Plugins {
 		return new HashSet<LogicalType>(registered.values());
 	}
 
-	public LogicalType getRegistered(String name) {
-		return registered.get(name);
+	/**
+	 * Return the plugin associated with this named Logical Type.
+	 * @param qualifier Name of this Logical Type.
+	 * @return A Collection of the currently registered Logical Types.
+	 */
+	public LogicalType getRegistered(String qualifier) {
+		return registered.get(qualifier);
 	}
 }

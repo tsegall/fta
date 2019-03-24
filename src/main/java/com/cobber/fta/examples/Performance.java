@@ -32,7 +32,7 @@ public class Performance {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		System.err.println("Result: " + result.asJSON(true, true));
+		System.err.println("Result: " + result.asJSON(true, 1));
 
 		long duration = System.currentTimeMillis() - start;
 

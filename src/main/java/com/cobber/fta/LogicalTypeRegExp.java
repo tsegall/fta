@@ -9,13 +9,12 @@ import java.util.regex.Pattern;
 import com.cobber.fta.PatternInfo.Type;
 
 public class LogicalTypeRegExp extends LogicalType {
-	private Locale locale;
 	private Pattern pattern;
 	private Long minLong;
 	private Long maxLong;
 	private Double minDouble;
 	private Double maxDouble;
-	Set<String> hotWords = new HashSet<>();
+	Set<String> hotWordsUpperAndLower = new HashSet<>();
 
 	public LogicalTypeRegExp(PluginDefinition plugin) {
 		super(plugin);
@@ -36,12 +35,12 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	@Override
 	public boolean initialize(Locale locale) {
-		this.locale = locale;
+		super.initialize(locale);
 
 		if (defn.hotWords.length != 0) {
 			for (String elt : defn.hotWords) {
-				hotWords.add(elt);
-				hotWords.add(elt.toUpperCase(locale));
+				hotWordsUpperAndLower.add(elt);
+				hotWordsUpperAndLower.add(elt.toUpperCase(locale));
 			}
 		}
 
@@ -83,9 +82,9 @@ public class LogicalTypeRegExp extends LogicalType {
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
 			Map<String, Integer> cardinality, Map<String, Integer> outliers) {
 
-		if (hotWords.size() != 0) {
+		if (hotWordsUpperAndLower.size() != 0) {
 			boolean found = false;
-			for (String hotWord : hotWords)
+			for (String hotWord : hotWordsUpperAndLower)
 				if (dataStreamName.contains(hotWord) || dataStreamName.toUpperCase(locale).contains(hotWord)) {
 					found = true;
 					break;

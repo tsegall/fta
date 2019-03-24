@@ -5,6 +5,7 @@ import java.util.Map;
 
 public abstract class LogicalType {
 	protected PluginDefinition defn;
+	protected Locale locale = null;
 
 	LogicalType(PluginDefinition plugin) {
 		this.defn = plugin;
@@ -17,7 +18,14 @@ public abstract class LogicalType {
 	 * @param locale The locale used for this analysis
 	 * @return True if initialization was successful.
 	 */
-	public abstract boolean initialize(Locale locale);
+	public boolean initialize(Locale locale) {
+		if (getBaseType() == null)
+			throw new IllegalArgumentException("baseType cannot be null");
+
+		this.locale = locale;
+
+		return true;
+	}
 
 	/**
 	 *  The user-friendly name of the Qualifier.  For example, EMAIL for an email address

@@ -18,7 +18,7 @@ public class LogicalTypeCAProvince extends LogicalTypeFiniteSimple {
 	private static String[] membersArray = null;
 
 	public LogicalTypeCAProvince(PluginDefinition plugin) throws FileNotFoundException {
-		super(plugin.qualifier, plugin.hotWords, plugin.regExp != null ? plugin.regExp : REGEXP,
+		super(plugin.qualifier, plugin.hotWords, REGEXP,
 				"\\p{IsAlphabetic}{2}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ca_provinces.csv")), 95);
 	}
 

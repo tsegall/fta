@@ -5,11 +5,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PluginCUSIP extends LogicalTypeFiniteSimple {
+	public final static String REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 	private static Set<String> members = new HashSet<String>();
 	private static String[] membersArray = null;
 
 	public PluginCUSIP(PluginDefinition plugin) {
-		super(plugin.qualifier, plugin.hotWords, plugin.regExp, "\\p{Alnum}{9}",
+		super(plugin.qualifier, plugin.hotWords, REGEXP, "\\p{Alnum}{9}",
 				new InputStreamReader(PluginCUSIP.class.getResourceAsStream("/CUSIP.txt")), 99);
 	}
 

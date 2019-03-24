@@ -2,7 +2,6 @@ package com.cobber.fta.plugins;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -12,7 +11,6 @@ import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.Plugins;
 import com.cobber.fta.StringFacts;
 
 /**
@@ -22,19 +20,15 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "EMAIL";
 //	public final static String EMAIL_REGEXP = "[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?";
 	public final static String REGEXP = "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}";
-	private static Random random = null;
 	LogicalTypeCode first = LogicalTypeCode.newInstance(new PluginDefinition("FIRST_NAME", "com.cobber.fta.plugins.LogicalTypeFirstName"), Locale.getDefault());
 	LogicalTypeCode last = LogicalTypeCode.newInstance(new PluginDefinition("LAST_NAME", "com.cobber.fta.plugins.LogicalTypeLastName"), Locale.getDefault());
 	private static String[] mailDomains = new String[] {
 			"gmail.com", "hotmail.com", "yahoo.com"
 	};
 
-	private Plugins plugins = null;
-
 	public LogicalTypeEmail(PluginDefinition plugin) {
 		super(plugin);
 	}
-
 
 	@Override
 	public String nextRandom() {
@@ -43,9 +37,9 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 
 	@Override
 	public boolean initialize(Locale locale) {
-		threshold = 95;
+		super.initialize(locale);
 
-		random = new Random(401);
+		threshold = 95;
 
 		return true;
 	}

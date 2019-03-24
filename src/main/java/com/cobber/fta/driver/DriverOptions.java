@@ -31,7 +31,7 @@ class DriverOptions {
 	int detectWindow = -1;
 	Locale locale = null;
 	int maxCardinality = -1;
-	boolean verbose = false;
+	int verbose = 0;
 	String charset = "UTF-8";
 	boolean validate = false;
 	boolean pretty = false;

@@ -12,7 +12,6 @@ import com.cobber.fta.PatternInfo.Type;
 public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	protected int minLength = Integer.MAX_VALUE;
 	protected int maxLength = Integer.MIN_VALUE;
-	protected Locale locale;
 
 	public abstract Set<String> getMembers();
 
@@ -37,7 +36,8 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 
 	@Override
 	public boolean initialize(Locale locale) {
-		this.locale = locale;
+		super.initialize(locale);
+
 		for (String member : getMembers()) {
 			int len = member.length();
 			if (len < minLength)

@@ -2,7 +2,6 @@ package com.cobber.fta.plugins;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.commons.validator.routines.UrlValidator;
 
@@ -19,7 +18,6 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	public final static String REGEXP_PROTOCOL = "(https?|ftp|file)";
 	public final static String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 	static UrlValidator validator = null;
-	private static Random random = null;
 	private static String[] sitesList = new String[] {
 			"www.jnj.com", "http://www.medifast1.com/index.jsp", "graybar.com", "johnsoncontrols.com", "commscope.com", "www.energizer.com", "ashland.com", "hersheys.com", "www.flowserve.com", "www.exxonmobil.com",
 			"pattersoncompanies.com", "www.campbellsoup.com", "mars.com", "www.bjs.com", "conagra.com", "www.lilly.com", "sap.com", "jci.com", "www.dtcc.com", "bakerhughes.com", "www.microsoft.com", "www.jackson.com",
@@ -42,9 +40,9 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 
 	@Override
 	public boolean initialize(Locale locale) {
-		threshold = 95;
+		super.initialize(locale);
 
-		random = new Random(402);
+		threshold = 95;
 
 		return true;
 	}

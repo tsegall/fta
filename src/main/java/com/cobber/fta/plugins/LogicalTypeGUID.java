@@ -2,7 +2,6 @@ package com.cobber.fta.plugins;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
@@ -17,7 +16,6 @@ public class LogicalTypeGUID extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "GUID";
 	public final static String REGEXP = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
 	private final static char[] HEX = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-	private static Random random = null;
 
 	public LogicalTypeGUID(PluginDefinition plugin) {
 		super(plugin);
@@ -25,9 +23,9 @@ public class LogicalTypeGUID extends LogicalTypeInfinite {
 
 	@Override
 	public boolean initialize(Locale locale) {
-		threshold = 99;
+		super.initialize(locale);
 
-		random = new Random(404);
+		threshold = 99;
 
 		return true;
 	}

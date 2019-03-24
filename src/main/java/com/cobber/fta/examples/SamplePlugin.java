@@ -22,8 +22,12 @@ public class SamplePlugin {
 
 		// Register our new magic plugin
 		String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_EN\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"locale\": [ ] } ]";
-		analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", null);
-
+		try {
+			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", null);
+		} catch (Exception e) {
+			System.err.println("Failed to register plugin: " + e.getMessage());
+			System.exit(1);
+		}
 
 		for (int i = 0; i < inputs.length; i++)
 			analysis.train(inputs[i]);
@@ -32,6 +36,6 @@ public class SamplePlugin {
 
 		System.err.printf("Result: %s, Regular Expression: %s, Max: %s, Min: %s.\n", result.getType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
 
-		System.err.println("Detail: " + result.asJSON(true, true));
+		System.err.println("Detail: " + result.asJSON(true, 1));
 	}
 }

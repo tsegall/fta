@@ -288,8 +288,8 @@ public class DateTimeParserResult {
 						}
 					}
 					else if (next == '{') {
-						RegExpLength facts = new RegExpLength();
-						if (!Utils.getLength(facts, formatString.substring(i + 1)))
+						RegExpSplitter facts = RegExpSplitter.newInstance(formatString.substring(i + 1));
+						if (facts == null)
 							return null;
 						i += facts.length;
 						fractions = facts.min;
@@ -463,8 +463,8 @@ public class DateTimeParserResult {
 						high = count;
 					}
 					else if (next == '{') {
-						RegExpLength facts = new RegExpLength();
-						if (!Utils.getLength(facts, formatString.substring(i + 1)))
+						RegExpSplitter facts = RegExpSplitter.newInstance(formatString.substring(i + 1));
+						if (facts == null)
 							return null;
 						i += facts.length;
 						count = facts.min;
@@ -829,7 +829,7 @@ public class DateTimeParserResult {
 					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE ||
 					token.getType() == Token.TIMEZONE_OFFSET || token.getType() == Token.TIMEZONE_OFFSET_Z) {
 				if (digitsMin != 0) {
-					ret.append("\\d").append(Utils.regExpLength(digitsMin, digitsMax));
+					ret.append("\\d").append(RegExpSplitter.qualify(digitsMin, digitsMax));
 					digitsMin = digitsMax = 0;
 				}
 				switch (token.getType()) {
@@ -950,7 +950,7 @@ public class DateTimeParserResult {
 		}
 
 		if (digitsMin != 0)
-			ret.append("\\d").append(Utils.regExpLength(digitsMin, digitsMax));
+			ret.append("\\d").append(RegExpSplitter.qualify(digitsMin, digitsMax));
 
 		return ret.toString();
 	}

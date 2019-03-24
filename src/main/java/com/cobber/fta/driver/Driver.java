@@ -103,7 +103,7 @@ class Driver {
 			else if ("--validate".equals(args[idx]))
 				options.validate = true;
 			else if ("--verbose".equals(args[idx]))
-				options.verbose = true;
+				options.verbose++;
 			else if ("--xMaxCharsPerColumn".equals(args[idx]))
 				options.xMaxCharsPerColumn = Integer.valueOf(args[++idx]);
 			else {

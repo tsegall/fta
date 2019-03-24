@@ -1656,7 +1656,6 @@ public class TestDates {
 				"22:11:03.0", "22:11:09.0", "22:11:12.0", "22:11:13.0", "22:11:34.0", "22:11:37.0"
 		};
 		int locked = -1;
-		int zeroes = 50;
 
 		for (int i = 0; i < inputs.length; i++) {
 			if (analysis.train(inputs[i]) && locked == -1)

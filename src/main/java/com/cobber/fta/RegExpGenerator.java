@@ -310,6 +310,6 @@ public class RegExpGenerator {
 				result.append("]");
 		}
 
-		return result.append(Utils.regExpLength(shortest, longest)).toString();
+		return result.append(RegExpSplitter.qualify(shortest, longest)).toString();
 	}
 }

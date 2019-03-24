@@ -1,9 +1,7 @@
 package com.cobber.fta.plugins;
 
-
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
@@ -21,10 +19,7 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		public final static String SEMANTIC_TYPE = "PHONENUMBER";
 		public final static String REGEXP = ".*";
 		private PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-		private static Random random = null;
 		private static String[] areaCodes = new String[] { "617", "781", "303", "970", "212" };
-
-		private Locale locale;
 
 		public LogicalTypePhoneNumber(PluginDefinition plugin) {
 			super(plugin);
@@ -42,10 +37,9 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 
 		@Override
 		public boolean initialize(Locale locale) {
-			this.locale = locale;
-			threshold = 80;
+			super.initialize(locale);
 
-			random = new Random(403);
+			threshold = 80;
 
 			return true;
 		}

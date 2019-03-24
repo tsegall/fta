@@ -334,7 +334,7 @@ public class TestLongs {
 			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
 			String regExp = "[+-]?[\\d" + RegExpGenerator.slosh(formatSymbols.getGroupingSeparator()) + "]";
-			regExp += Utils.regExpLength(minValue.length(), maxValue.length());
+			regExp += RegExpSplitter.qualify(minValue.length(), maxValue.length());
 			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -426,7 +426,7 @@ public class TestLongs {
 			if (!negPrefix.isEmpty())
 				regExp += negPrefix;
 			regExp += "[\\d" + RegExpGenerator.slosh(formatSymbols.getGroupingSeparator()) + "]";
-			regExp += Utils.regExpLength(absMinValue.length(), absMaxValue.length());
+			regExp += RegExpSplitter.qualify(absMinValue.length(), absMaxValue.length());
 			if (!negSuffix.isEmpty())
 				regExp += negSuffix;
 			Assert.assertEquals(result.getDecimalSeparator(), '.');

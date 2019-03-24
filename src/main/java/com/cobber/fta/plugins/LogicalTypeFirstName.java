@@ -21,7 +21,7 @@ public class LogicalTypeFirstName extends LogicalTypeFiniteSimple {
 	private Dodge[] iterators = null;
 
 	public LogicalTypeFirstName(PluginDefinition plugin) throws FileNotFoundException {
-		super(plugin.qualifier, plugin.hotWords, plugin.regExp != null ? plugin.regExp : REGEXP, ".*",
+		super(plugin.qualifier, plugin.hotWords, REGEXP, ".*",
 				new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/firstnames.txt")),
 				95);
 	}

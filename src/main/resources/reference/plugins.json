@@ -1,98 +1,82 @@
 [
 	{
 		"qualifier": "URL",
-		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeURL"
 	},
 	{
 		"qualifier": "IPADDRESS.IPV4",
-		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIPAddress",
 		"hotWords": [ "IP" ]
 	},
 	{
 		"qualifier": "EMAIL",
-		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail"
 	},
 	{
 		"qualifier": "PHONENUMBER",
-		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypePhoneNumber",
 		"hotWords": [ "phone", "fax", "mobile", "cell" ],
 		"hotWordMandatory": true
 	},
 	{
 		"qualifier": "GUID",
-		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGUID"
 	},
 	{
 		"qualifier": "POSTAL_CODE.ZIP5_US",
-		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUSZip5",
-		"locale": [ "en-US" ,"en-CA" ]
+		"validLocales": [ "en-US" ,"en-CA" ]
 	},
 	{
 		"qualifier": "STREET_ADDRESS_EN",
-		"type": "infinite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeAddressEN",
-		"locale": [ "en" ]
+		"validLocales": [ "en" ]
 	},
 	{
 		"qualifier": "GENDER.TEXT_EN",
-		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGenderEN",
-		"locale": [ "en" ]
+		"validLocales": [ "en" ]
 	},
 	{
 		"qualifier": "COUNTRY.TEXT_EN",
-		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCountryEN",
-		"locale": [ "en" ],
+		"validLocales": [ "en" ],
 		"hotWords": [ "country" ]
 	},
 	{
 		"qualifier": "MonthAbbr",
-		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthAbbr"
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
-		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCAProvince",
-		"locale": [ "en-US" ,"en-CA" ],
+		"validLocales": [ "en-US" ,"en-CA" ],
 		"hotWords": [ "province" ]
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_US",
-		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUSState",
-		"locale": [ "en-US" ,"en-CA" ],
+		"validLocales": [ "en-US" ,"en-CA" ],
 		"hotWords": [ "state" ]
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
-		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO4217",
 		"hotWords": [ "4217", "currency" ]
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-3",
-		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_3",
 		"hotWords": [ "3166", "country" ]
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-2",
-		"type": "finite",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_2",
 		"hotWords": [ "3166", "country" ]
 	},
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL_SIGNED",
-		"type": "regexp",
-		"locale": [ ],
+		"validLocales": [ ],
 		"hotWords": [ "latitude" ],
 		"hotWordMandatory": true,
 		"regExp": "[+-]?\\d*\\.?\\d+",
@@ -103,7 +87,6 @@
 	},
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL_UNSIGNED",
-		"type": "regexp",
 		"hotWords": [ "latitude" ],
 		"hotWordMandatory": true,
 		"regExp": "\\d*\\.?\\d+",
@@ -114,7 +97,6 @@
 	},
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL_SIGNED",
-		"type": "regexp",
 		"hotWords": [ "longitude" ],
 		"hotWordMandatory": true,
 		"regExp": "[+-]?\\d*\\.?\\d+",
@@ -125,7 +107,6 @@
 	},
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL_UNSIGNED",
-		"type": "regexp",
 		"hotWords": [ "longitude" ],
 		"hotWordMandatory": true,
 		"regExp": "\\d*\\.?\\d+",

@@ -69,10 +69,10 @@ public class KnownPatterns {
 
 		// If there is no leading or trailing space then use the simple min & max of non-blank fields
 		if (!leadingWhiteSpace && !trailingWhiteSpace)
-			return leadIn + Utils.regExpLength(minRawNonBlankLength, maxRawNonBlankLength);
+			return leadIn + RegExpSplitter.qualify(minRawNonBlankLength, maxRawNonBlankLength);
 
 		// If there was either leading or trailing space then cop out and allow white space on either end and go with the min and max of the trimmed values
-		return leadIn + Utils.regExpLength(minTrimmed, maxTrimmed);
+		return leadIn + RegExpSplitter.qualify(minTrimmed, maxTrimmed);
 	}
 
 	static String withGrouping(String regExp, char groupingSeparator) {

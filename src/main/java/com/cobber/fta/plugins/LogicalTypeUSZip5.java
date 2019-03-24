@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeInfinite;
@@ -24,7 +23,6 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_US";
 	public final static String REGEXP = "\\d{5}";
 	private static Set<String> zips = new HashSet<String>();
-	private static Random random = null;
 	private static String[] zipArray;
 
 	public LogicalTypeUSZip5(PluginDefinition plugin) {
@@ -38,6 +36,8 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public synchronized boolean initialize(Locale locale) {
+		super.initialize(locale);
+
 		threshold = 95;
 
 		// Only set up the Static Data once
@@ -52,8 +52,6 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 				throw new IllegalArgumentException("Internal error: Issues with US Zip database");
 			}
 		}
-
-		random = new Random(zips.size());
 
 		return true;
 	}

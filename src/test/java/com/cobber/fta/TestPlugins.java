@@ -1,8 +1,9 @@
 package com.cobber.fta;
 
 import java.io.IOException;
-import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -215,49 +216,58 @@ public class TestPlugins {
 		}
 	}
 
+	final String[] validCUSIPs = new String[] {
+			"000307108", "000307908", "000307958", "000360206", "000360906", "000360956", "000361105", "000361905", "000361955", "000375204", "000375904",
+			"000375954", "00081T108", "00081T908", "00081T958", "000868109", "000899104", "00090Q103", "00090Q903", "00090Q953", "000957100", "000957900",
+			"000957950", "001084902", "020002101", "020002901", "020002951", "03842B901", "095229100", "171484908", "238661902", "260003108", "260003908",
+			"260003958", "29275Y952", "34959E959", "38000Q102", "38000Q902", "38000Q952", "42226A907", "46138E677", "47023A309", "47023A909", "47023A959",
+			"470299108", "47030M106", "47102XAH8", "47103U100", "47103U209", "47103U407", "47103U506", "564563104", "659310906", "67000B104", "67000B904",
+			"67000B954", "670002AB0", "670002104", "670002904", "670002954", "670008AD3", "684000102", "684000902", "684000952", "72201R403", "74640Y114",
+			"800013104", "800013904", "800013954", "80004CAF8", "80007A102", "80007A902", "80007A952", "80007P869", "80007P909", "80007P959", "80007T101",
+			"000957950", "001084902", "020002101", "020002901", "020002951", "03842B901", "095229100", "171484908", "238661902", "260003108", "260003908",
+			"260003958", "29275Y952", "34959E959", "38000Q102", "38000Q902", "38000Q952", "42226A907", "46138E677", "47023A309", "47023A909", "47023A959",
+			"470299108", "47030M106", "47102XAH8", "47103U100", "47103U209", "47103U407", "47103U506", "564563104", "659310906", "67000B104", "67000B904",
+			"67000B954", "670002AB0", "670002104", "670002904", "670002954", "670008AD3", "684000102", "684000902", "684000952", "72201R403", "74640Y114",
+			"80007T901", "80007T951", "80007V106", "80007V906", "80007V956", "80283M901", "87236Y908", "91705J204", "97717W904"
+
+	};
+
 	@Test
 	public void testRegisterFinite() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		analysis.setMaxCardinality(20000);
-		String deepCUSIPPlugin = "[ { \"qualifier\": \"CUSIP\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.PluginCUSIP\", \"locale\": [ ] , \"hotWords\": [ \"CUSIP\" ], \"regExp\": \"\\\\p{Alnum}{9}\" } ]";
-		analysis.getPlugins().registerPlugins(new StringReader(deepCUSIPPlugin), "C U S I P", null);
-		final String input =
-				"75605A702|G39637955|029326105|63009R109|04269E957|666666666|00768Y727|23908L306|126349AF6|73937B589|" +
-				"516806956|683797104|902973954|600544950|15671L909|00724F951|292104106|00847X904|219350955|67401P958|" +
-				"902641752|50218P957|00739L901|06746P903|92189F953|G47567905|06740P650|13123X952|38173M952|29359T102|" +
-				"229663959|33734E103|118230951|883556102|689648103|97382A900|808194954|60649T957|13645T900|075896950|" +
-				"29266S956|80105N905|032332904|73935X951|73935B955|464288125|87612G901|39945C909|97717X957|14575E105|" +
-				"75605A702|G39637955|029326105|63009R109|04269E957|856190953|00768Y727|23908L306|126349AF6|73937B589|" +
-				"516806956|683797104|902973954|600544950|15671L909|00724F951|292104106|00847X904|219350955|67401P958|" +
-				"902641752|50218P957|00739L901|06746P903|92189F953|G47567905|06740P650|13123X952|38173M952|29359T102|" +
-				"229663959|33734E103|118230951|883556102|689648103|97382A900|808194954|60649T957|13645T900|075896950|" +
-				"29266S956|80105N905|032332904|73935X951|73935B955|464288125|87612G901|39945C909|97717X957|14575E105|" +
-				"75605A702|G39637955|029326105|63009R109|04269E957|856190953|00768Y727|23908L306|126349AF6|73937B589|" +
-				"516806956|683797104|902973954|600544950|15671L909|00724F951|292104106|00847X904|219350955|67401P958|" +
-				"902641752|50218P957|00739L901|06746P903|92189F953|G47567905|06740P650|13123X952|38173M952|29359T102|" +
-				"229663959|33734E103|118230951|883556102|689648103|97382A900|808194954|60649T957|13645T900|075896950|" +
-				"29266S956|80105N905|032332904|73935X951|73935B955|464288125|87612G901|39945C909|97717X957|14575E105|";
-		final String inputs[] = input.split("\\|");
+		List<PluginDefinition> plugins = new ArrayList<>();
+		PluginDefinition plugin = new PluginDefinition("CUSIP", "com.cobber.fta.PluginCUSIP");
+		plugin.hotWords = new String[] { "CUSIP" };
+		plugins.add(plugin);
 
-		for (int i = 0; i < inputs.length; i++)
-			analysis.train(inputs[i]);
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "C U S I P", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+		for (int i = 0; i < validCUSIPs.length; i++)
+			analysis.train(validCUSIPs[i]);
+
+		analysis.train("666666666");
 
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), PluginCUSIP.REGEXP);
 		Assert.assertEquals(result.getTypeQualifier(), "CUSIP");
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
+		Assert.assertEquals(result.getSampleCount(), validCUSIPs.length + 1);
+		Assert.assertEquals(result.getMatchCount(), validCUSIPs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getMinLength(), 9);
 		Assert.assertEquals(result.getMaxLength(), 9);
 		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alnum}{9}");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		int matchCount = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].matches(result.getRegExp()))
+		int matchCount = 1;
+		for (int i = 0; i < validCUSIPs.length; i++) {
+			if (validCUSIPs[i].matches(result.getRegExp()))
 				matchCount++;
 		}
 		Assert.assertEquals(matchCount, result.getMatchCount() + 1);
@@ -266,8 +276,14 @@ public class TestPlugins {
 	@Test
 	public void testRegisterInfinite() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
-		String deepCCPlugin = "[ { \"qualifier\": \"CreditCard\", \"type\": \"infinite\", \"clazz\": \"com.cobber.fta.PluginCreditCard\", \"locale\": [ ] } ]";
-		analysis.getPlugins().registerPlugins(new StringReader(deepCCPlugin), "Ignore", null);
+		List<PluginDefinition> plugins = new ArrayList<>();
+		plugins.add(new PluginDefinition("CUSIP", "com.cobber.fta.PluginCreditCard"));
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "Ignore", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
 		final String[] input = {
 //				"Credit Card Type,Credit Card Number",
 				"American Express,378282246310005",
@@ -611,7 +627,7 @@ public class TestPlugins {
 
 	@Test
 	public void randomZip() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("GUID", "com.cobber.fta.plugins.LogicalTypeUSZip5");
+		PluginDefinition plugin = new PluginDefinition("ZIP", "com.cobber.fta.plugins.LogicalTypeUSZip5");
 		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
@@ -1772,10 +1788,16 @@ public class TestPlugins {
 			samples[i] = b.toString();
 		}
 
-		final TextAnalyzer analysis = new TextAnalyzer();
-		String SSNPlugin = "[ { \"qualifier\": \"SSN\", \"type\": \"regexp\", \"locale\": [ \"en-US\" ], \"hotWords\": [ \"SSN\", \"social\" ], " +
-				"\"regExp\": \"\\\\d{3}-\\\\d{2}-\\\\d{4}\", \"threshold\": 98, \"baseType\": \"STRING\" } ]";
-		analysis.getPlugins().registerPlugins(new StringReader(SSNPlugin), "SSN", null);
+		final TextAnalyzer analysis = new TextAnalyzer("Primary SSN");
+		List<PluginDefinition> plugins = new ArrayList<>();
+		plugins.add(new PluginDefinition("SSN", "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" },
+				new String[] { "SSN", "social" }, true, 98, PatternInfo.Type.STRING));
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "SSN", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
 		for (String sample : samples) {
 			analysis.train(sample);
 		}
@@ -1783,18 +1805,17 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), samples.length + 1);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "SSN");
 		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
+		Assert.assertEquals(result.getTypeQualifier(), "SSN");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getSampleCount(), samples.length + 1);
 		final Map<String, Integer> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
 		Assert.assertEquals(outliers.get("032--45-0981"), Integer.valueOf(1));
-
 
 		for (int i = 0; i < samples.length; i++) {
 			Assert.assertTrue(samples[i].matches(result.getRegExp()));
@@ -1842,9 +1863,15 @@ public class TestPlugins {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
-		String shallowCUSIPPlugin = "[ { \"qualifier\": \"CUSIP\", \"type\": \"regexp\", \"locale\": [ ], \"hotWords\": [ \"CUSIP\" ], " +
-				"\"regExp\": \"[\\\\p{IsAlphabetic}\\\\d]{9}\", \"threshold\": 98, \"baseType\": \"STRING\" } ]";
-		analysis.getPlugins().registerPlugins(new StringReader(shallowCUSIPPlugin), "CUSIP", null);
+		List<PluginDefinition> plugins = new ArrayList<>();
+		plugins.add(new PluginDefinition("CUSIP", "[\\p{IsAlphabetic}\\d]{9}", new String[] { },
+				new String[] { "CUSIP" }, true, 98, PatternInfo.Type.STRING));
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
 		for (String sample : samples) {
 			analysis.train(sample);
 		}

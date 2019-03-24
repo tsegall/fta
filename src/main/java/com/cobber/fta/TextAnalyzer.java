@@ -16,7 +16,6 @@
 package com.cobber.fta;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -35,6 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -136,7 +136,37 @@ public class TextAnalyzer {
 	// 0: d{4}-d{2}-d{2} 1: d{+}-d{+}-d{+} 2: d{+}-d{+}-d{+}
 	// 0: d{4} 1: d{+} 2: [-]d{+}
 	// input "hello world" 0: a{5} a{5} 1: a{+} a{+} 2: a{+}
-	private List<StringBuilder>[] levels = new ArrayList[3];
+
+	class Escalation {
+		StringBuilder level[];
+
+
+		@Override
+		public int hashCode() {
+			return level[0].toString().hashCode() + 7 * level[1].toString().hashCode() + 11 * level[2].toString().hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Escalation other = (Escalation) obj;
+			if (!Arrays.equals(level, other.level))
+				return false;
+			return true;
+		}
+
+		Escalation() {
+			level = new StringBuilder[3];
+		}
+	}
+
+	private ArrayList<Escalation> levels;
+	List<Map<String, Integer>> frequencies = new ArrayList<>();
 
 	private long matchCount;
 	private PatternInfo matchPatternInfo;
@@ -779,15 +809,13 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("No support for locales that do not use Arabic numerals");
 
 		raw = new ArrayList<String>(detectWindow);
-		levels[0] = new ArrayList<StringBuilder>(detectWindow);
-		levels[1] = new ArrayList<StringBuilder>(detectWindow);
-		levels[2] = new ArrayList<StringBuilder>(detectWindow);
+		levels = new ArrayList<Escalation>(detectWindow);
 
 		if (enableDefaultLogicalTypes) {
 			// Load the default set of plugins for Logical Type detection
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))){
 				plugins.registerPlugins(reader, dataStreamName, locale);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage());
 			}
 
@@ -937,7 +965,7 @@ public class TextAnalyzer {
 
 	public boolean trainCore(final String rawInput, String trimmed, final int length) {
 
-		trackResult(rawInput);
+		trackResult(rawInput, true);
 
 		// If we have determined a type, no need to further train
 		if (matchPatternInfo != null && matchPatternInfo.type != null)
@@ -1022,9 +1050,16 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (couldBeNumeric && possibleExponentSeen != -1 &&
-			stopLooking - possibleExponentSeen - 1 > 3)
-			couldBeNumeric = false;
+		if (couldBeNumeric && possibleExponentSeen != -1) {
+			int exponentLength = stopLooking - possibleExponentSeen - 1;
+			if (exponentLength >= 5)
+				couldBeNumeric = false;
+			else {
+				int exponentSize = Integer.parseInt(trimmed.substring(possibleExponentSeen + 1, stopLooking));
+				if (Math.abs(exponentSize) > 308)
+					couldBeNumeric = false;
+			}
+		}
 
 		final StringBuilder compressedl0 = new StringBuilder(length);
 		if (alphasSeen != 0 && digitsSeen != 0 && alphasSeen + digitsSeen == length) {
@@ -1058,7 +1093,8 @@ public class TextAnalyzer {
 				}
 			}
 		}
-		levels[0].add(compressedl0);
+		Escalation escalation = new Escalation();
+		escalation.level[0] = compressedl0;
 
 		if (dateTimeParser.determineFormatString(trimmed) != null)
 			possibleDateTime++;
@@ -1066,16 +1102,21 @@ public class TextAnalyzer {
 		// Check to see if this input is one of our registered Infinite Logical Types
 		int c = 0;
 		for (LogicalTypeInfinite logical : infiniteTypes) {
-			if (logical.isCandidate(trimmed, compressedl0, charCounts, lastIndex))
-				candidateCounts[c]++;
+			try {
+				if (logical.isCandidate(trimmed, compressedl0, charCounts, lastIndex))
+					candidateCounts[c]++;
+			}
+			catch (Exception e) {
+				System.err.printf("Plugin: %s, issue: %s\n", logical.getQualifier(), e.getMessage());
+			}
 			c++;
 		}
 
 		// Create the level 1 and 2
 		if (digitsSeen > 0 && couldBeNumeric && numericDecimalSeparators <= 1) {
 			StringBuilder[] result = determineNumericPattern(numericSigned, numericDecimalSeparators, possibleExponentSeen);
-			levels[1].add(result[0]);
-			levels[2].add(result[1]);
+			escalation.level[1] = result[0];
+			escalation.level[2] = result[1];
 		} else {
 			// Fast version of replaceAll("\\{\\d*\\}", "+"), e.g. replace \d{5} with \d+
 			final StringBuilder collapsed = new StringBuilder(compressedl0);
@@ -1092,37 +1133,21 @@ public class TextAnalyzer {
 			// \d+-\d+-\d+
 			final PatternInfo found = knownPatterns.getByRegExp(compressedl0.toString());
 			if (found != null && found.generalPattern != null) {
-				levels[1].add(new StringBuilder(found.generalPattern));
-				levels[2].add(new StringBuilder(collapsed));
+				escalation.level[1] = new StringBuilder(found.generalPattern);
+				escalation.level[2] = new StringBuilder(collapsed);
 			} else {
-				levels[1].add(new StringBuilder(collapsed));
-				levels[2].add(new StringBuilder(KnownPatterns.PATTERN_ANY_VARIABLE));
+				escalation.level[1] = new StringBuilder(collapsed);
+				escalation.level[2] = new StringBuilder(KnownPatterns.PATTERN_ANY_VARIABLE);
 			}
 		}
+
+		levels.add(escalation);
 
 		return matchPatternInfo != null && matchPatternInfo.type != null;
 	}
 
 	private Map.Entry<String, Integer> getBest(final int levelIndex) {
-		final List<StringBuilder> level = levels[levelIndex];
-		if (level.isEmpty())
-			return null;
-
-		Map<String, Integer> frequency = new HashMap<String, Integer>();
-
-		// Calculate the frequency of every element
-		for (final StringBuilder s : level) {
-			final String key = s.toString();
-			final Integer seen = frequency.get(key);
-			if (seen == null) {
-				frequency.put(key, 1);
-			} else {
-				frequency.put(key, seen + 1);
-			}
-		}
-
-		// Sort the results
-		frequency = Utils.sortByValue(frequency);
+		Map<String, Integer> frequency = frequencies.get(levelIndex);
 
 		// Grab the best and the second best based on frequency
 		Map.Entry<String, Integer> best = null;
@@ -1169,6 +1194,52 @@ public class TextAnalyzer {
 		return best;
 	}
 
+	private void collapse() {
+		// Map from Escalation hash to count of occurrences
+		final Map<Integer, Integer> observedFrequency = new HashMap<>();
+		// Map from Escalation hash to Escalation
+		Map<Integer, Escalation> observedSet = new HashMap<>();
+
+		// Calculate the frequency of every element
+		for (final Escalation e : levels) {
+			int hash = e.hashCode();
+			final Integer seen = observedFrequency.get(hash);
+			if (seen == null) {
+				observedFrequency.put(hash, 1);
+				observedSet.put(hash, e);
+			} else {
+				observedFrequency.put(hash, seen + 1);
+			}
+		}
+
+		for (int i = 0; i < 3; i++) {
+			Map<String, Integer> keyFrequency = new HashMap<>();
+			for (Map.Entry<Integer, Integer> entry : observedFrequency.entrySet()) {
+				Escalation escalation = observedSet.get(entry.getKey());
+				String key = escalation.level[i].toString();
+				final Integer seen = keyFrequency.get(key);
+				if (seen == null)
+					keyFrequency.put(key, entry.getValue());
+				else
+					keyFrequency.put(key, seen + entry.getValue());
+			}
+
+			// If it makes sense rewrite our sample data switching numeric matches to alphanumeric matches
+			if (keyFrequency.size() > 1) {
+				final Set<String> keys = new HashSet<>(keyFrequency.keySet());
+				for (String oldKey : keys) {
+					String newKey = oldKey.replace(KnownPatterns.PATTERN_NUMERIC, KnownPatterns.PATTERN_ALPHANUMERIC);
+					if (!newKey.equals(oldKey) && keys.contains(newKey)) {
+						int oldCount = keyFrequency.remove(oldKey);
+						int currentCount = keyFrequency.get(newKey);
+						keyFrequency.put(newKey, currentCount + oldCount);
+					}
+				}
+			}
+			frequencies.add(Utils.sortByValue(keyFrequency));
+		}
+	}
+
 	/**
 	 * This is the core routine for determining the type of the field. It is
 	 * responsible for setting: - matchPattern - matchPatternInfo - matchCount -
@@ -1180,6 +1251,8 @@ public class TextAnalyzer {
 			matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_ANY_VARIABLE);
 			return;
 		}
+
+		collapse();
 
 		int level0value = 0, level1value = 0, level2value = 0;
 		String level0pattern = null, level1pattern = null, level2pattern = null;
@@ -1217,13 +1290,13 @@ public class TextAnalyzer {
 		if (best != null) {
 			matchPatternInfo = level0patternInfo;
 
-			// Take any level 1 with something we recognize or a better count
-			if (level1 != null && (level0patternInfo == null || level1value > level0value)) {
+			// Take any 'reasonable' (80%) level 1 with something we recognize or a better count
+			if (level1 != null && (double)level1value/raw.size() >= 0.8 && (level0patternInfo == null || level1value > level0value)) {
 				best = level1;
 				matchPatternInfo = level1patternInfo;
 			}
 
-			// Take a level 2 if
+			// Take any level 2 if
 			// - we have something we recognize (and we had nothing)
 			// - we have the same key but a better count
 			// - we have different keys but same type (signed vs. not-signed)
@@ -1288,7 +1361,7 @@ public class TextAnalyzer {
 			}
 
 			for (final String sample : raw)
-				trackResult(sample);
+				trackResult(sample, false);
 		}
 	}
 
@@ -1369,7 +1442,7 @@ public class TextAnalyzer {
 		return outliers.size();
 	}
 
-	private boolean conditionalBackoutToPattern(final long realSamples, PatternInfo current, boolean useCompressed) {
+	private boolean conditionalBackoutToPattern(final long realSamples, PatternInfo current) {
 		int alphas = 0;
 		int digits = 0;
 		int spaces = 0;
@@ -1378,10 +1451,9 @@ public class TextAnalyzer {
 		int nonAlphaNumeric = 0;
 		boolean negative = false;
 		boolean exponent = false;
-		Map<String, Integer> outlierMap = useCompressed ? outliersSmashed : outliers;
 
 		// Sweep the current outliers
-		for (final Map.Entry<String, Integer> entry : outlierMap.entrySet()) {
+		for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
 			String key = entry.getKey();
 			Integer value = entry.getValue();
 			if (PatternInfo.Type.LONG.equals(current.type) && isDouble(key)) {
@@ -1422,20 +1494,20 @@ public class TextAnalyzer {
 		int badCharacters = current.isAlphabetic() ? digits : alphas;
 		// If we are currently Alphabetic and the only errors are digits then convert to AlphaNumeric
 		if (badCharacters != 0 && spaces == 0 && other == 0 && current.isAlphabetic()) {
-			if (outlierMap.size() == maxOutliers || digits > .01 * realSamples) {
+			if (outliers.size() == maxOutliers || digits > .01 * realSamples) {
 				backoutToPatternID(realSamples, KnownPatterns.ID.ID_ALPHANUMERIC_VARIABLE);
 				return true;
 			}
 		}
 		// If we are currently Numeric and the only errors are alpha then convert to AlphaNumeric
 		else if (badCharacters != 0 && spaces == 0 && other == 0 && PatternInfo.Type.LONG.equals(current.type)) {
-			if (outlierMap.size() == maxOutliers || alphas > .01 * realSamples) {
+			if (outliers.size() == maxOutliers || alphas > .01 * realSamples) {
 				backoutToPattern(realSamples, KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE);
 				return true;
 			}
 		}
 		// If we are currently Numeric and the only errors are doubles then convert to double
-		else if (outlierMap.size() == doubles && PatternInfo.Type.LONG.equals(current.type)) {
+		else if (outliers.size() == doubles && PatternInfo.Type.LONG.equals(current.type)) {
 			KnownPatterns.ID id;
 			if (exponent)
 				id = negative ? KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT;
@@ -1444,7 +1516,7 @@ public class TextAnalyzer {
 			backoutToPatternID(realSamples, id);
 			return true;
 		}
-		else if ((realSamples > reflectionSamples && outlierMap.size() == maxOutliers)
+		else if ((realSamples > reflectionSamples && outliers.size() == maxOutliers)
 					|| (badCharacters + nonAlphaNumeric) > .01 * realSamples) {
 				backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
 				return true;
@@ -1599,9 +1671,10 @@ public class TextAnalyzer {
 	 * Track the supplied raw input, once we have enough samples attempt to determine the type.
 	 * @param input The raw input string
 	 */
-	private void trackResult(final String input) {
+	private void trackResult(final String input, boolean fromTraining) {
 
-		trackLengthAndShape(input);
+		if (fromTraining)
+			trackLengthAndShape(input);
 
 		// If the cache is full and we have not determined a type compute one
 		if ((matchPatternInfo == null || matchPatternInfo.type == null) && sampleCount - (nullCount + blankCount) > detectWindow)
@@ -1712,10 +1785,10 @@ public class TextAnalyzer {
 		else {
 			outlier(input);
 			if (outliers.size() == maxOutliers) {
-				if (matchPatternInfo.typeQualifier != null) {
+				if (matchPatternInfo.isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
 					LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
-					if (logical != null && logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers) != null)
+					if (logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers) != null)
 						if (PatternInfo.Type.LONG.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
 						else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
@@ -1723,7 +1796,7 @@ public class TextAnalyzer {
 				}
 				else {
 					// Need to evaluate if we got this wrong
-					conditionalBackoutToPattern(realSamples, matchPatternInfo, true);
+					conditionalBackoutToPattern(realSamples, matchPatternInfo);
 				}
 			}
 		}
@@ -1738,13 +1811,9 @@ public class TextAnalyzer {
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		long missCount = 0;				// count of number of misses
 
-		// Check how many outliers we have
-		for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
+		// All the outliers are misses
+		for (final Map.Entry<String, Integer> entry : outliers.entrySet())
 			missCount += entry.getValue();
-			// Break out early if we know we are going to fail
-			if ((double) missCount / realSamples > .05)
-				return false;
-		}
 
 		// Sweep the balance and check they are part of the set
 		long validCount = 0;
@@ -1809,7 +1878,7 @@ public class TextAnalyzer {
 		if (!lengthQualifier)
 			return min > 0 ? "+" : ".";
 
-		return Utils.regExpLength(min, max);
+		return RegExpSplitter.qualify(min, max);
 	}
 
 
@@ -1946,6 +2015,28 @@ public class TextAnalyzer {
 		return ret;
 	}
 
+	private LogicalTypeFinite matchFiniteTypes(Map<String, Integer> cardinalityUpper, int minKeyLength, int maxKeyLength) {
+		if (minKeyLength == maxKeyLength) {
+			// Hunt for a fixed length Logical Type
+			for (LogicalTypeFinite logical : finiteTypes)
+				if (minKeyLength == logical.getMinLength() &&
+						logical.getMinLength() == logical.getMaxLength() &&
+						cardinalityUpper.size() <= logical.getSize() + 2 &&
+						checkUniformLengthSet(logical))
+							return logical;
+		}
+		else {
+			// Hunt for a variable length Logical Type
+			for (LogicalTypeFinite logical : finiteTypes)
+				if (logical.getMinLength() != logical.getMaxLength() &&
+						cardinalityUpper.size() <= logical.getSize() + 1 &&
+						checkVariableLengthSet(cardinalityUpper, logical))
+							return logical;
+		}
+
+		return null;
+	}
+
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
@@ -2043,7 +2134,7 @@ public class TextAnalyzer {
 
 				if (!matchPatternInfo.isLogicalType() && realSamples >= reflectionSamples && confidence < threshold/100.0) {
 					// We thought it was an integer field, but on reflection it does not feel like it
-					conditionalBackoutToPattern(realSamples, matchPatternInfo, false);
+					conditionalBackoutToPattern(realSamples, matchPatternInfo);
 					confidence = (double) matchCount / realSamples;
 				}
 			}
@@ -2082,34 +2173,9 @@ public class TextAnalyzer {
 			// Sort the results so that we consider the most frequent first (we will hopefully fail faster)
 			cardinalityUpper = Utils.sortByValue(cardinalityUpper);
 
-			boolean typeIdentified = false;
-
-			if (minKeyLength == maxKeyLength) {
-				// Hunt for a fixed length Logical Type
-				for (LogicalTypeFinite logical : finiteTypes) {
-					if (minKeyLength == logical.getMinLength() && logical.getMinLength() == logical.getMaxLength())
-						if (!typeIdentified && cardinalityUpper.size() <= logical.getSize() + 2) {
-							typeIdentified = checkUniformLengthSet(logical);
-							if (typeIdentified) {
-								confidence = logical.getConfidence(matchCount, realSamples);
-								break;
-							}
-						}
-				}
-			}
-			else {
-				// Hunt for a variable length Logical Type
-				for (LogicalTypeFinite logical : finiteTypes) {
-					if (logical.getMinLength() != logical.getMaxLength())
-						if (!typeIdentified && cardinalityUpper.size() <= logical.getSize() + 1) {
-							typeIdentified = checkVariableLengthSet(cardinalityUpper, logical);
-							if (typeIdentified) {
-								confidence = logical.getConfidence(matchCount, realSamples);
-								break;
-							}
-						}
-				}
-			}
+			LogicalTypeFinite logical = matchFiniteTypes(cardinalityUpper, minKeyLength, maxKeyLength);
+			if (logical != null)
+				confidence = logical.getConfidence(matchCount, realSamples);
 
 			// Fixup any likely enums
 			if (matchPatternInfo.typeQualifier == null && cardinalityUpper.size() < MAX_ENUM_SIZE && outliers.size() != 0 && outliers.size() < 10) {
@@ -2177,7 +2243,7 @@ public class TextAnalyzer {
 
 			// Need to evaluate if we got the type wrong
 			if (matchPatternInfo.typeQualifier == null && outliers.size() != 0 && matchPatternInfo.isAlphabetic() && realSamples >= reflectionSamples) {
-				conditionalBackoutToPattern(realSamples, matchPatternInfo, false);
+				conditionalBackoutToPattern(realSamples, matchPatternInfo);
 				confidence = (double) matchCount / realSamples;
 
 				// Rebuild the cardinalityUpper Map
@@ -2269,6 +2335,24 @@ public class TextAnalyzer {
 									maxTrimmedLength, null, null);
 							updated = true;
 						}
+						/* TODO
+						if (!updated && realSamples > 1000) {
+							String fixup = null;
+							if (firstShape.getValue() > realSamples * .99)
+								fixup = firstShape.getKey();
+							else if (secondShape.getValue() > realSamples * .99)
+								fixup = secondShape.getKey();
+
+							if (fixup != null) {
+								PatternInfo newPattern = knownPatterns.getByRegExp(RegExpGenerator.smashedAsRegExp(fixup));
+								if (newPattern != null) {
+									System.err.printf("Late breaking fix ... switching to '%s' from '%s'\n", fixup, matchPatternInfo.regexp);
+									matchPatternInfo = knownPatterns.getByRegExp(fixup);
+									updated = true;
+								}
+							}
+						}
+						*/
 /*						for (Map.Entry<String, Integer> shape : shapes.entrySet()) {
 							if (shape.getValue() < realSamples/15)
 								interesting = false;

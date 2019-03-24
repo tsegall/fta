@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	private String qualifier;
@@ -13,7 +12,6 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	private String regexp;
 	private String backout;
 	private Reader reader;
-	protected Random random;
 
 	public LogicalTypeFiniteSimple(String qualifier, String[] hotWords, String regexp, String backout, Reader reader, int threshold) {
 		this.qualifier = qualifier;
@@ -22,7 +20,6 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		this.backout = backout;
 		this.reader = reader;
 		this.threshold = threshold;
-		this.random = new Random(403);
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -75,7 +76,7 @@ class FileProcessor {
 				System.exit(1);
 			}
 			for (int i = 0; i < numFields; i++) {
-				if ((options.col == -1 || options.col == i) && options.verbose)
+				if ((options.col == -1 || options.col == i) && options.verbose != 0)
 					System.out.println(header[i]);
 				analysis[i] = new TextAnalyzer(header[i], options.resolutionMode);
 				if (options.noStatistics)
@@ -91,7 +92,13 @@ class FileProcessor {
 				if (options.debug != -1)
 					analysis[i].setDebug(options.debug);
 				if (options.logicalTypes != null)
-					analysis[i].getPlugins().registerPlugins(new StringReader(options.logicalTypes), header[i], options.locale);
+					try {
+						analysis[i].getPlugins().registerPlugins(new StringReader(options.logicalTypes), header[i], options.locale);
+					} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+							| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						System.err.println("Failed to register plugin: " + e.getMessage());
+						System.exit(1);
+					}
 			}
 
 			long thisRecord = 0;
@@ -106,7 +113,7 @@ class FileProcessor {
 				}
 				for (int i = 0; i < numFields; i++) {
 					if (options.col == -1 || options.col == i) {
-						if (options.verbose)
+						if (options.verbose != 0)
 							System.out.printf("\"%s\"\n", row[i]);
 						if (!options.noAnalysis)
 							analysis[i].train(row[i]);
@@ -161,7 +168,7 @@ class FileProcessor {
 								blanks[i]++;
 							else if (patterns[i].matcher(value).matches())
 								matched[i]++;
-							else if (options.verbose)
+							else if (options.verbose != 0)
 								failures.add(value);
 						}
 					}
@@ -193,7 +200,7 @@ class FileProcessor {
 							logger.printf("\t*** Error: Match Count via RegExp (%d) < LogicalType match analysis (%d) ***\n", matched[i], result.getMatchCount());
 					else
 						logger.printf("\t*** Error: Match Count via RegExp (%d) does not match analysis (%d) ***\n", matched[i], result.getMatchCount());
-					if (options.verbose) {
+					if (options.verbose != 0) {
 						logger.println("Failed to match:");
 						for (String failure : failures)
 							logger.println("\t" + failure);

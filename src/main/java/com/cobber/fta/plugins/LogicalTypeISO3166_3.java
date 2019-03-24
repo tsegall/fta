@@ -18,7 +18,7 @@ public class LogicalTypeISO3166_3 extends LogicalTypeFiniteSimple {
 	private static String[] membersArray = null;
 
 	public LogicalTypeISO3166_3(PluginDefinition plugin) throws FileNotFoundException {
-		super(plugin.qualifier, plugin.hotWords, plugin.regExp != null ? plugin.regExp : REGEXP,
+		super(plugin.qualifier, plugin.hotWords, REGEXP,
 				"\\p{IsAlphabetic}{3}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/ISO-3166-3.csv")), 95);
 	}
 

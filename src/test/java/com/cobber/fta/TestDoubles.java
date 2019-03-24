@@ -242,6 +242,31 @@ public class TestDoubles {
 	}
 
 	@Test
+	public void impossibleExponent() throws IOException {
+		String[] samples = new String[] {
+				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",
+				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E503", "1103E402"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		for (int i = 0; i < samples.length; i++)
+			analysis.train(samples[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{8}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void manyRandomDoubles() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
@@ -289,7 +314,6 @@ public class TestDoubles {
 		Locale locale = Locale.forLanguageTag("de-AT");
 		analysis.setLocale(locale);
 		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
-		char grpSep = formatSymbols.getDecimalSeparator();
 		final Set<String> samples = new HashSet<>();
 
 		for (int i = 0; i < nullIterations; i++) {
