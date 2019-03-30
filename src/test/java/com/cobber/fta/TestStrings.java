@@ -3,7 +3,9 @@ package com.cobber.fta;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -55,7 +57,7 @@ public class TestStrings {
 		analysis.train(";+");
 
 
-		final TextAnalysisResult result = analysis.getResult();
+		TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length * ITERATIONS + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -68,9 +70,26 @@ public class TestStrings {
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 10);
 
-		for (int i = 0; i < inputs.length; i++) {
+		for (int i = 0; i < inputs.length; i++)
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-		}
+
+		Map<String,Long> details = result.getCardinalityDetails();
+		details.putAll(result.getOutlierDetails());
+		final TextAnalyzer analysisBulk = new TextAnalyzer();
+		analysisBulk.trainBulk(details);
+		result = analysisBulk.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length * ITERATIONS + 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "(?i)(A|ASK|CAN|DO|H|HELLO|HELLOWORLD|NOT|WHAT|YOU|Z)");
+		Assert.assertEquals(result.getMatchCount(), inputs.length * ITERATIONS);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getMinValue(), "A");
+		Assert.assertEquals(result.getMaxValue(), "Z");
+		Assert.assertEquals(result.getMinLength(), 1);
+		Assert.assertEquals(result.getMaxLength(), 10);
+
 	}
 
 	@Test
@@ -139,15 +158,30 @@ public class TestStrings {
 				locked = i;
 		}
 
-		final TextAnalysisResult result = analysis.getResult();
+		TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
-		//		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getNullCount(), result.getNullCount());
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		Map<String,Long> details = result.getCardinalityDetails();
+		details.put(null, result.getNullCount());
+		long sum = details.values().stream().collect(Collectors.summingLong(Long::longValue));
+		final TextAnalyzer analysisBulk = new TextAnalyzer();
+		analysisBulk.trainBulk(details);
+		result = analysisBulk.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), sum);
+		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+
 	}
 
 	@Test

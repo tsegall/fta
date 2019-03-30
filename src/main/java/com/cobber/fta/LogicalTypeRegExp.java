@@ -80,7 +80,7 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
-			Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+			Map<String, Long> cardinality, Map<String, Long> outliers) {
 
 		if (hotWordsUpperAndLower.size() != 0) {
 			boolean found = false;

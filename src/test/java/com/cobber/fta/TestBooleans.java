@@ -197,9 +197,9 @@ public class TestBooleans {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getCardinality(), 2);
-		final Map<String, Integer> details = result.getCardinalityDetails();
-		Assert.assertEquals(details.get("0"), Integer.valueOf(13));
-		Assert.assertEquals(details.get("5"), Integer.valueOf(14));
+		final Map<String, Long> details = result.getCardinalityDetails();
+		Assert.assertEquals(details.get("0"), Long.valueOf(13));
+		Assert.assertEquals(details.get("5"), Long.valueOf(14));
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;

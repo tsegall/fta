@@ -101,5 +101,5 @@ public abstract class LogicalType {
 	 * @param outliers Outlier set, up to the maximum maintained
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Integer> cardinality, Map<String, Integer> outliers);
+	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers);
 }

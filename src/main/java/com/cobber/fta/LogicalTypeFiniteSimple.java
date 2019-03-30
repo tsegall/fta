@@ -61,7 +61,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
-			StringFacts stringFacts, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+			StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 		boolean streamNamePositive = false;
 		if (hotWords != null)
 			for (int i = 0; i < hotWords.length; i++)

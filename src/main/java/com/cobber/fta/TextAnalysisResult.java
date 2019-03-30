@@ -49,8 +49,8 @@ public class TextAnalysisResult {
 	private final String sum;
 	private final char decimalSeparator;
 	private final DateResolutionMode resolutionMode;
-	private final Map<String, Integer> cardinality;
-	private final Map<String, Integer> outliers;
+	private final Map<String, Long> cardinality;
+	private final Map<String, Long> outliers;
 	private final boolean key;
 	private final boolean collectStatistics;
 
@@ -84,8 +84,8 @@ public class TextAnalysisResult {
 	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, boolean trailingWhiteSpace,
 			boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
 			final double confidence, final String minValue, final String maxValue, final int minLength, final int maxLength,
-			final String sum, char decimalSeparator, DateResolutionMode resolutionMode, final Map<String, Integer> cardinality,
-			final Map<String, Integer> outliers, final boolean key, boolean collectStatistics) {
+			final String sum, char decimalSeparator, DateResolutionMode resolutionMode, final Map<String, Long> cardinality,
+			final Map<String, Long> outliers, final boolean key, boolean collectStatistics) {
 		this.name = name;
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
@@ -343,7 +343,7 @@ public class TextAnalysisResult {
 	 * of occurrences.
 	 * @return A Map of values and their occurrence frequency of the data stream to date.
 	 */
-	public Map<String, Integer> getCardinalityDetails() {
+	public Map<String, Long> getCardinalityDetails() {
 		return cardinality;
 	}
 
@@ -364,7 +364,7 @@ public class TextAnalysisResult {
 	 * of occurrences.
 	 * @return A Map of values and their occurrence frequency of the data stream to date.
 	 */
-	public Map<String, Integer> getOutlierDetails() {
+	public Map<String, Long> getOutlierDetails() {
 		return outliers;
 	}
 
@@ -452,7 +452,7 @@ public class TextAnalysisResult {
 		if (!cardinality.isEmpty() && (verbose > 1 ||
 				(verbose == 1 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT))) {
 			ArrayNode detail = analysis.putArray("cardinalityDetail");
-			for (final Map.Entry<String,Integer> entry : entriesSortedByValues(cardinality)) {
+			for (final Map.Entry<String,Long> entry : entriesSortedByValues(cardinality)) {
 				ObjectNode elt = mapper.createObjectNode();
 				elt.put("key", entry.getKey());
 				elt.put("count", entry.getValue());
@@ -463,7 +463,7 @@ public class TextAnalysisResult {
 		analysis.put("outliers", outliers.size() < TextAnalyzer.MAX_OUTLIERS_DEFAULT ? String.valueOf(outliers.size()) : "MAX");
  		if (!outliers.isEmpty()  && (verbose > 1 || (verbose == 1 && outliers.size() < .2 * sampleCount))) {
 			ArrayNode detail = analysis.putArray("outlierDetail");
-			for (final Map.Entry<String,Integer> entry : entriesSortedByValues(outliers)) {
+			for (final Map.Entry<String, Long> entry : entriesSortedByValues(outliers)) {
 				ObjectNode elt = mapper.createObjectNode();
 				elt.put("key", entry.getKey());
 				elt.put("count", entry.getValue());

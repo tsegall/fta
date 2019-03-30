@@ -104,7 +104,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 
 		return getConfidence(matchCount, realSamples) >= getThreshold()/100.0 ? null : ".+";
 	}

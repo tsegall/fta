@@ -11,6 +11,7 @@ public class KnownPatterns {
 	public enum ID {
 		ID_BOOLEAN_TRUE_FALSE,
 		ID_BOOLEAN_YES_NO,
+		ID_BOOLEAN_Y_N,
 		ID_BOOLEAN_ONE_ZERO,
 		ID_ANY_VARIABLE,
 		ID_ALPHA_VARIABLE,
@@ -43,6 +44,7 @@ public class KnownPatterns {
 
 	public static final String PATTERN_BOOLEAN_TRUE_FALSE = "(?i)(true|false)";
 	public static final String PATTERN_BOOLEAN_YES_NO = "(?i)(yes|no)";
+	public static final String PATTERN_BOOLEAN_Y_N = "(?i)(y|n)";
 	public static final String PATTERN_BOOLEAN_ONE_ZERO = "[0|1]";
 
 	final String EXPONENT_REGEXP = "(?:[eE]([-+]?\\d+))?";
@@ -156,6 +158,8 @@ public class KnownPatterns {
 				new PatternInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, PatternInfo.Type.BOOLEAN, "TRUE_FALSE", false, 4, 5, null, ""));
 		knownPatterns.put(PATTERN_BOOLEAN_YES_NO,
 				new PatternInfo(ID.ID_BOOLEAN_YES_NO, PATTERN_BOOLEAN_YES_NO, PatternInfo.Type.BOOLEAN, "YES_NO", false, 2, 3, null, ""));
+		knownPatterns.put(PATTERN_BOOLEAN_Y_N,
+				new PatternInfo(ID.ID_BOOLEAN_Y_N, PATTERN_BOOLEAN_Y_N, PatternInfo.Type.BOOLEAN, "Y_N", false, 2, 3, null, ""));
 		knownPatterns.put(PATTERN_BOOLEAN_ONE_ZERO,
 				new PatternInfo(ID.ID_BOOLEAN_ONE_ZERO, PATTERN_BOOLEAN_ONE_ZERO, PatternInfo.Type.BOOLEAN, "ONE_ZERO", false, -1, -1, null, null));
 		knownPatterns.put(PATTERN_ANY_VARIABLE,

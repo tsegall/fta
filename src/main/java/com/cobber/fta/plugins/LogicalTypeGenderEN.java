@@ -59,7 +59,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)
 			return backoutREGEX;

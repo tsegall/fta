@@ -8,8 +8,10 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -729,6 +731,28 @@ public class TestLongs {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\d+");
+	}
+
+	@Test
+	public void justSimple() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		final int iterations = 100_000_000;
+		long start = System.currentTimeMillis();
+
+		Map<String, Long> input = new HashMap<>();
+		for (int i = 0; i < 100; i++)
+			input.put(String.valueOf(i), 1_000_000L);
+		analysis.trainBulk(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		long elapsed = System.currentTimeMillis() - start;
+		System.err.println("Duration: " + elapsed);
+
+		Assert.assertEquals(result.getSampleCount(), iterations);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test

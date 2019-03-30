@@ -46,7 +46,7 @@ public class PluginColor extends LogicalTypeFinite {
 
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
-			Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+			Map<String, Long> cardinality, Map<String, Long> outliers) {
 		if (outliers.size() > 3)
 			return ".+";
 

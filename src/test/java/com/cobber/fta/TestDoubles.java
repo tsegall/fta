@@ -298,9 +298,9 @@ public class TestDoubles {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("Zoomer"), Integer.valueOf(1));
+		Assert.assertEquals(outliers.get("Zoomer"), Long.valueOf(1));
 	}
 
 	@Test

@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
@@ -129,9 +130,9 @@ public class TextAnalyzer {
 	private long sampleCount;
 	private long nullCount;
 	private long blankCount;
-	private Map<String, Integer> cardinality = new HashMap<String, Integer>();
-	private Map<String, Integer> outliers = new HashMap<String, Integer>();
-	private final Map<String, Integer> outliersSmashed = new HashMap<String, Integer>();
+	private Map<String, Long> cardinality = new HashMap<>();
+	private Map<String, Long> outliers = new HashMap<>();
+	private final Map<String, Long> outliersSmashed = new HashMap<>();
 	private List<String> raw; // 0245-11-98
 	// 0: d{4}-d{2}-d{2} 1: d{+}-d{+}-d{+} 2: d{+}-d{+}-d{+}
 	// 0: d{4} 1: d{+} 2: [-]d{+}
@@ -540,6 +541,7 @@ public class TextAnalyzer {
 		// Interpret the String as a long, first attempt uses parseLong which is fast (although not localized), if that fails,
 		// then try using a NumberFormatter which will cope with grouping separators (e.g. 1,000).
 		int digits = input.length();
+
 		try {
 			l = Long.parseLong(input);
 			digits = input.length();
@@ -603,12 +605,12 @@ public class TextAnalyzer {
 		if (isTrue) {
 			if (minBoolean == null)
 				minBoolean = trimmedLower;
-			if (maxBoolean == null || "false".equals(maxBoolean) || "no".equals(maxBoolean))
+			if (maxBoolean == null || "false".equals(maxBoolean) || "no".equals(maxBoolean) || "n".equals(maxBoolean))
 				maxBoolean = trimmedLower;
 		} else if (isFalse) {
 			if (maxBoolean == null)
 				maxBoolean = trimmedLower;
-			if (minBoolean == null || "true".equals(minBoolean) || "yes".equals(maxBoolean))
+			if (minBoolean == null || "true".equals(minBoolean) || "yes".equals(maxBoolean) || "y".equals(maxBoolean))
 				minBoolean = trimmedLower;
 		}
 
@@ -914,8 +916,102 @@ public class TextAnalyzer {
 		return result;
 	}
 
+	class Observation {
+		String observed;
+		long count;
+		long used;
+		double percentage;
+		Observation(String observed, long count, long used) {
+			this.observed = observed;
+			this.count = count;
+			this.used = used;
+		}
+	}
+
 	/**
-	 * Train is the core entry point used to supply input to the Text Analyzer.
+	 * TrainBulk is the core bulk entry point used to supply input to the Text Analyzer.
+	 * This routine is commonly used to support training using the results aggregated from a
+	 * database query.
+	 *
+	 * @param observed
+	 *            A Map containing the observed items and the corresponding count
+	 */
+	public void trainBulk(Map<String, Long> observed) {
+		// Sort so we have the most frequent first
+		observed = Utils.sortByValue(observed);
+		Observation[] facts = new Observation[observed.size()];
+		int i = 0;
+		long total = 0;
+
+		// Setup the array of observations and calculate the total number of observations
+		for (Map.Entry<String, Long> entry : observed.entrySet()) {
+			facts[i++] = new Observation(entry.getKey(), entry.getValue(), 0);
+			total += entry.getValue();
+		}
+
+		// Each element in the array has the probability that an observation is in this location or an earlier one
+		long running = 0;
+		for (int f = 0; f < facts.length; f++) {
+			running += facts[f].count;
+			facts[f].percentage = (double)running/total;
+		}
+
+		Random choose = new Random();
+
+		// First send in a random set of samples until we are trained
+		boolean trained = false;
+		for (int j = 0; j < total && !trained; j++) {
+			double index = choose.nextDouble();
+			for (int f = 0; f < facts.length; f++) {
+				if (index < facts[f].percentage && facts[f].used < facts[f].count) {
+					if (train(facts[f].observed))
+						trained = true;
+					facts[f].used++;
+					break;
+				}
+			}
+		}
+
+		// Now send in the rest of the samples in bulk
+		for (int f = 0; f < facts.length; f++) {
+			long remaining = facts[f].count - facts[f].used;
+			trainBulkCore(facts[f].observed, remaining);
+		}
+	}
+
+	public void trainBulkCore(final String rawInput, long count) {
+		sampleCount += count;
+
+		if (rawInput == null) {
+			nullCount += count;
+			return;
+		}
+
+		final String trimmed = rawInput.trim();
+
+		final int length = trimmed.length();
+
+		if (length == 0) {
+			blankCount++;
+			trackLengthAndShape(rawInput, count);
+			return;
+		}
+
+		// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
+		// if there happens to be an issue then we will lose this training event.
+		try {
+			trainCore(rawInput, trimmed, length, count);
+		}
+		catch (RuntimeException e) {
+			if (debug != 0) {
+				System.err.println("Internal error: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Train is the core streaming entry point used to supply input to the Text Analyzer.
 	 *
 	 * @param rawInput
 	 *            The raw input as a String
@@ -943,7 +1039,7 @@ public class TextAnalyzer {
 
 		if (length == 0) {
 			blankCount++;
-			trackLengthAndShape(rawInput);
+			trackLengthAndShape(rawInput, 1);
 			return matchType != null;
 		}
 
@@ -951,7 +1047,7 @@ public class TextAnalyzer {
 		// if there happens to be an issue then we will lose this training event.
 		boolean result;
 		try {
-			result = trainCore(rawInput, trimmed, length);
+			result = trainCore(rawInput, trimmed, length, 1);
 		}
 		catch (RuntimeException e) {
 			if (debug != 0) {
@@ -963,9 +1059,9 @@ public class TextAnalyzer {
 		return result;
 	}
 
-	public boolean trainCore(final String rawInput, String trimmed, final int length) {
+	public boolean trainCore(final String rawInput, String trimmed, final int length, long count) {
 
-		trackResult(rawInput, true);
+		trackResult(rawInput, true, count);
 
 		// If we have determined a type, no need to further train
 		if (matchPatternInfo != null && matchPatternInfo.type != null)
@@ -1361,17 +1457,17 @@ public class TextAnalyzer {
 			}
 
 			for (final String sample : raw)
-				trackResult(sample, false);
+				trackResult(sample, false, 1);
 		}
 	}
 
-	private void addValid(final String input) {
-		final Integer seen = cardinality.get(input);
+	private void addValid(final String input, long count) {
+		final Long seen = cardinality.get(input);
 		if (seen == null) {
 			if (cardinality.size() < maxCardinality)
-				cardinality.put(input, 1);
+				cardinality.put(input, count);
 		} else
-			cardinality.put(input, seen + 1);
+			cardinality.put(input, seen + count);
 	}
 
 	private String shapeToRegExp(final String shape) {
@@ -1423,10 +1519,10 @@ public class TextAnalyzer {
 			maxOutlierString = cleaned;
 
 		String smashed = RegExpGenerator.smash(input);
-		Integer seen = outliersSmashed.get(smashed);
+		Long seen = outliersSmashed.get(smashed);
 		if (seen == null) {
 			if (outliersSmashed.size() < maxOutliers)
-				outliersSmashed.put(smashed, 1);
+				outliersSmashed.put(smashed, 1L);
 		} else {
 			outliersSmashed.put(smashed, seen + 1);
 		}
@@ -1434,7 +1530,7 @@ public class TextAnalyzer {
 		seen = outliers.get(input);
 		if (seen == null) {
 			if (outliers.size() < maxOutliers)
-				outliers.put(input, 1);
+				outliers.put(input, 1L);
 		} else {
 			outliers.put(input, seen + 1);
 		}
@@ -1453,9 +1549,9 @@ public class TextAnalyzer {
 		boolean exponent = false;
 
 		// Sweep the current outliers
-		for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
+		for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
 			String key = entry.getKey();
-			Integer value = entry.getValue();
+			Long value = entry.getValue();
 			if (PatternInfo.Type.LONG.equals(current.type) && isDouble(key)) {
 				doubles++;
 				if (!negative)
@@ -1563,7 +1659,7 @@ public class TextAnalyzer {
 			minDouble = minLong;
 			maxDouble = maxLong;
 			sumBD = new BigDecimal(sumBI);
-			for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
+			for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
 				for (int i = 0; i < entry.getValue(); i++)
 					trackDouble(entry.getKey(), matchPatternInfo, true);
 			}
@@ -1581,10 +1677,10 @@ public class TextAnalyzer {
 	private void backoutLogicalLongType(LogicalType logical, final long realSamples) {
 		int otherLongs = 0;
 
-		final Map<String, Integer> outliersCopy = new HashMap<String, Integer>(outliers);
+		final Map<String, Long> outliersCopy = new HashMap<>(outliers);
 
 		// Sweep the current outliers and check they are part of the set
-		for (final Map.Entry<String, Integer> entry : outliersCopy.entrySet()) {
+		for (final Map.Entry<String, Long> entry : outliersCopy.entrySet()) {
 			boolean isLong = true;
 			try {
 				Long.parseLong(entry.getKey());
@@ -1608,9 +1704,9 @@ public class TextAnalyzer {
 	}
 
 	private boolean uniformShape = true;
-	private Map<String, Integer> shapes = new HashMap<>();
+	private Map<String, Long> shapes = new HashMap<>();
 	// Track basic facts for the field - called for all input
-	private void trackLengthAndShape(final String input) {
+	private void trackLengthAndShape(final String input, long count) {
 		// We always want to track basic facts for the field
 		final int length = input.length();
 
@@ -1631,14 +1727,14 @@ public class TextAnalyzer {
 				if (inputShape.equals(".+"))
 					uniformShape = false;
 				else {
-					Integer seen = shapes.get(inputShape);
+					Long seen = shapes.get(inputShape);
 					if (seen == null)
 						if (shapes.size() < 4)
-							shapes.put(inputShape, 1);
+							shapes.put(inputShape, count);
 						else
 							uniformShape = false;
 					else
-						shapes.put(inputShape, seen + 1);
+						shapes.put(inputShape, seen + count);
 				}
 			}
 		}
@@ -1671,10 +1767,10 @@ public class TextAnalyzer {
 	 * Track the supplied raw input, once we have enough samples attempt to determine the type.
 	 * @param input The raw input string
 	 */
-	private void trackResult(final String input, boolean fromTraining) {
+	private void trackResult(final String input, boolean fromTraining, long count) {
 
 		if (fromTraining)
-			trackLengthAndShape(input);
+			trackLengthAndShape(input, count);
 
 		// If the cache is full and we have not determined a type compute one
 		if ((matchPatternInfo == null || matchPatternInfo.type == null) && sampleCount - (nullCount + blankCount) > detectWindow)
@@ -1689,32 +1785,32 @@ public class TextAnalyzer {
 		switch (matchPatternInfo.type) {
 		case BOOLEAN:
 			if (trackBoolean(input)) {
-				matchCount++;
-				addValid(input);
+				matchCount += count;
+				addValid(input, count);
 				valid = true;
 			}
 			break;
 
 		case LONG:
 			if (trackLong(input, matchPatternInfo, true)) {
-				matchCount++;
-				addValid(input);
+				matchCount += count;
+				addValid(input, count);
 				valid = true;
 			}
 			break;
 
 		case DOUBLE:
 			if (trackDouble(input, matchPatternInfo, true)) {
-				matchCount++;
-				addValid(input);
+				matchCount += count;
+				addValid(input, count);
 				valid = true;
 			}
 			break;
 
 		case STRING:
 			if (trackString(input, matchPatternInfo, true)) {
-				matchCount++;
-				addValid(input);
+				matchCount += count;
+				addValid(input, count);
 				valid = true;
 			}
 			break;
@@ -1726,8 +1822,8 @@ public class TextAnalyzer {
 		case ZONEDDATETIME:
 			try {
 				trackDateTime(matchPatternInfo.format, input);
-				matchCount++;
-				addValid(input);
+				matchCount += count;
+				addValid(input, count);
 				valid = true;
 			}
 			catch (DateTimeParseException reale) {
@@ -1769,8 +1865,8 @@ public class TextAnalyzer {
 
 				try {
 					trackDateTime(matchPatternInfo.format, input);
-					matchCount++;
-					addValid(input);
+					matchCount += count;
+					addValid(input, count);
 					valid = true;
 				}
 				catch (DateTimeParseException eIgnore) {
@@ -1812,15 +1908,15 @@ public class TextAnalyzer {
 		long missCount = 0;				// count of number of misses
 
 		// All the outliers are misses
-		for (final Map.Entry<String, Integer> entry : outliers.entrySet())
+		for (final Map.Entry<String, Long> entry : outliers.entrySet())
 			missCount += entry.getValue();
 
 		// Sweep the balance and check they are part of the set
 		long validCount = 0;
 		double missThreshold = 1.0 - logical.getThreshold()/100.0;
-		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
+		final Map<String, Long> newOutliers = new HashMap<>();
 		if ((double) missCount / realSamples <= missThreshold) {
-			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+			for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
 				if (logical.isValid(entry.getKey().trim().toUpperCase(locale)))
 					validCount += entry.getValue();
 				else {
@@ -1847,14 +1943,14 @@ public class TextAnalyzer {
 	 * @param logical The Logical type we are testing
 	 * @return True if we believe that this data set is defined by the provided by this Logical Type
 	 */
-	private boolean checkVariableLengthSet(Map<String, Integer> cardinalityUpper, LogicalTypeFinite logical) {
+	private boolean checkVariableLengthSet(Map<String, Long> cardinalityUpper, LogicalTypeFinite logical) {
 		final long realSamples = sampleCount - (nullCount + blankCount);
-		final Map<String, Integer> newOutliers = new HashMap<String, Integer>();
+		final Map<String, Long> newOutliers = new HashMap<>();
 		long validCount = 0;
 		long missCount = 0;				// count of number of misses
 
 		// Sweep the balance and check they are part of the set
-		for (final Map.Entry<String, Integer> entry : cardinalityUpper.entrySet()) {
+		for (final Map.Entry<String, Long> entry : cardinalityUpper.entrySet()) {
 			if (logical.isValid(entry.getKey()))
 				validCount += entry.getValue();
 			else {
@@ -2015,7 +2111,7 @@ public class TextAnalyzer {
 		return ret;
 	}
 
-	private LogicalTypeFinite matchFiniteTypes(Map<String, Integer> cardinalityUpper, int minKeyLength, int maxKeyLength) {
+	private LogicalTypeFinite matchFiniteTypes(Map<String, Long> cardinalityUpper, int minKeyLength, int maxKeyLength) {
 		if (minKeyLength == maxKeyLength) {
 			// Hunt for a fixed length Logical Type
 			for (LogicalTypeFinite logical : finiteTypes)
@@ -2093,7 +2189,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		Map<String, Integer> cardinalityUpper = new HashMap<String, Integer>();
+		Map<String, Long> cardinalityUpper = new HashMap<>();
 
 		if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id || KnownPatterns.ID.ID_SIGNED_LONG == matchPatternInfo.id) {
 			if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id && matchPatternInfo.typeQualifier == null && minLong < 0)
@@ -2157,14 +2253,14 @@ public class TextAnalyzer {
 			// Build Cardinality map ignoring case (and white space)
 			int minKeyLength = Integer.MAX_VALUE;
 			int maxKeyLength = 0;
-			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+			for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
 				String key = entry.getKey().toUpperCase(locale).trim();
 				int keyLength = key.length();
 				if (keyLength < minKeyLength)
 					minKeyLength = keyLength;
 				if (keyLength > maxKeyLength)
 					maxKeyLength = keyLength;
-				final Integer seen = cardinalityUpper.get(key);
+				final Long seen = cardinalityUpper.get(key);
 				if (seen == null) {
 					cardinalityUpper.put(key, entry.getValue());
 				} else
@@ -2187,7 +2283,7 @@ public class TextAnalyzer {
 				outliers = Utils.sortByValue(outliers);
 
 				// Iterate through the outliers adding them to the core cardinality set if we think they are reasonable.
-				for (final Map.Entry<String, Integer> entry : outliers.entrySet()) {
+				for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
 					String key = entry.getKey();
 					String keyUpper = key.toUpperCase(locale).trim();
 					String validChars = " _-";
@@ -2217,7 +2313,7 @@ public class TextAnalyzer {
 						skip = false;
 
 					if (!skip) {
-						Integer value = cardinalityUpper.get(keyUpper);
+						Long value = cardinalityUpper.get(keyUpper);
 						if (value == null)
 							cardinalityUpper.put(keyUpper, entry.getValue());
 						else
@@ -2230,7 +2326,7 @@ public class TextAnalyzer {
 				// If we updated the set then we need to remove the outliers we OK'd and
 				// also update the pattern to reflect the looser definition
 				if (updated) {
-					Map<String, Integer> remainingOutliers = new HashMap<String, Integer>();
+					Map<String, Long> remainingOutliers = new HashMap<>();
 					remainingOutliers.putAll(outliers);
 					for (String elt : killSet)
 						remainingOutliers.remove(elt);
@@ -2248,9 +2344,9 @@ public class TextAnalyzer {
 
 				// Rebuild the cardinalityUpper Map
 				cardinalityUpper.clear();
-				for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+				for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
 					String key = entry.getKey().toUpperCase(locale).trim();
-					final Integer seen = cardinalityUpper.get(key);
+					final Long seen = cardinalityUpper.get(key);
 					if (seen == null) {
 						cardinalityUpper.put(key, entry.getValue());
 					} else
@@ -2274,7 +2370,7 @@ public class TextAnalyzer {
 				int excessiveDigits = 0;
 				for (String elt : cardinalityUpper.keySet()) {
 					int length = elt.length();
-					// Give up if any one of the string is too long
+					// Give up if any one of the strings is too long
 					if (length > 40) {
 						fail = true;
 						break;
@@ -2324,9 +2420,9 @@ public class TextAnalyzer {
 					singleUniformShape = shapes.keySet().iterator().next();
 				else {
 					if (shapes.size() == 2 && realSamples > 100) {
-						Iterator<Map.Entry<String, Integer>> iter = shapes.entrySet().iterator();
-						Map.Entry<String, Integer> firstShape = iter.next();
-						Map.Entry<String, Integer> secondShape = iter.next();
+						Iterator<Map.Entry<String, Long>> iter = shapes.entrySet().iterator();
+						Map.Entry<String, Long> firstShape = iter.next();
+						Map.Entry<String, Long> secondShape = iter.next();
 
 						if (firstShape.getValue() > realSamples * 15/100 && secondShape.getValue() > realSamples * 15/100) {
 							String firstRE = RegExpGenerator.smashedAsRegExp(firstShape.getKey());
@@ -2418,7 +2514,7 @@ public class TextAnalyzer {
 			key = true;
 			// Might be a key but only iff every element in the cardinality
 			// set only has a count of 1
-			for (final Map.Entry<String, Integer> entry : cardinality.entrySet()) {
+			for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
 				if (entry.getValue() != 1) {
 					key = false;
 					break;

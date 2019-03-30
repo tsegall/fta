@@ -52,7 +52,7 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Integer> cardinality, Map<String, Integer> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 		if (outliers.size() > 1)
 			return LocaleInfo.getShortMonthsRegExp(locale);
 

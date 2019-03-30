@@ -81,8 +81,8 @@ public class TestPlugins {
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGenderEN.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
-		final Map<String, Integer> outliers = result.getOutlierDetails();
-		int outlierCount = outliers.get("UNKNOWN");
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		long outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
@@ -142,8 +142,8 @@ public class TestPlugins {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), LogicalTypePhoneNumber.REGEXP);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
-		int outlierCount = outliers.get("(014) 427-4427");
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		long outlierCount = outliers.get("(014) 427-4427");
 		Assert.assertEquals(outlierCount, 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getConfidence(), 1.0 - (double)1/result.getSampleCount());
@@ -174,8 +174,8 @@ public class TestPlugins {
 		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
-		final Map<String, Integer> outliers = result.getOutlierDetails();
-		int outlierCount = outliers.get("UNKNOWN");
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		long outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
@@ -206,8 +206,8 @@ public class TestPlugins {
 		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
-		final Map<String, Integer> outliers = result.getOutlierDetails();
-		int outlierCount = outliers.get("UNKNOWN");
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		long outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)outlierCount/result.getSampleCount());
 
@@ -1115,8 +1115,8 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.get("UK"), Integer.valueOf(1));
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.get("UK"), Long.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 	}
 
@@ -1145,8 +1145,8 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.get("SA"), Integer.valueOf(1));
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.get("SA"), Long.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1495,9 +1495,9 @@ public class TestPlugins {
 		Assert.assertEquals(result.getTypeQualifier(), "MONTH.ABBR_de");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("UNK"), Integer.valueOf(4));
+		Assert.assertEquals(outliers.get("UNK"), Long.valueOf(4));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -1597,9 +1597,9 @@ public class TestPlugins {
 		Assert.assertEquals(result.getTypeQualifier(), "MONTH.ABBR_en-US");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("UNK"), Integer.valueOf(4));
+		Assert.assertEquals(outliers.get("UNK"), Long.valueOf(4));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -1652,9 +1652,9 @@ public class TestPlugins {
 		Assert.assertEquals(result.getTypeQualifier(), "MONTH.ABBR_fr");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("UNK"), Integer.valueOf(4));
+		Assert.assertEquals(outliers.get("UNK"), Long.valueOf(4));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -1692,9 +1692,9 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), inputs.length * iters + UNKNOWN);
 		Assert.assertEquals(result.getCardinality(), 5);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("NA"), Integer.valueOf(UNKNOWN));
+		Assert.assertEquals(outliers.get("NA"), Long.valueOf(UNKNOWN));
 		Assert.assertEquals(result.getMatchCount(), inputs.length * iters);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)UNKNOWN/result.getSampleCount());
@@ -1845,9 +1845,9 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getSampleCount(), samples.length + 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("032--45-0981"), Integer.valueOf(1));
+		Assert.assertEquals(outliers.get("032--45-0981"), Long.valueOf(1));
 
 		for (int i = 0; i < samples.length; i++) {
 			Assert.assertTrue(samples[i].matches(result.getRegExp()));
@@ -1997,9 +1997,9 @@ public class TestPlugins {
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCountryEN.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		int outlierCount = outliers.get("GONDWANALAND");
+		long outlierCount = outliers.get("GONDWANALAND");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), ".+");

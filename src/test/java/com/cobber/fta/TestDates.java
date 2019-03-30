@@ -1630,9 +1630,9 @@ public class TestDates {
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Integer> outliers = result.getOutlierDetails();
+		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("00/00/0000"), Integer.valueOf(zeroes));
+		Assert.assertEquals(outliers.get("00/00/0000"), Long.valueOf(zeroes));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - zeroes);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{4}");
