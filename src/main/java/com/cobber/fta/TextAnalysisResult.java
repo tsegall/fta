@@ -50,7 +50,9 @@ public class TextAnalysisResult {
 	private final char decimalSeparator;
 	private final DateResolutionMode resolutionMode;
 	private final Map<String, Long> cardinality;
+	private final int maxCardinality;
 	private final Map<String, Long> outliers;
+	private final int maxOutliers;
 	private final boolean key;
 	private final boolean collectStatistics;
 
@@ -84,8 +86,9 @@ public class TextAnalysisResult {
 	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, boolean trailingWhiteSpace,
 			boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
 			final double confidence, final String minValue, final String maxValue, final int minLength, final int maxLength,
-			final String sum, char decimalSeparator, DateResolutionMode resolutionMode, final Map<String, Long> cardinality,
-			final Map<String, Long> outliers, final boolean key, boolean collectStatistics) {
+			final String sum, char decimalSeparator, DateResolutionMode resolutionMode,
+			final Map<String, Long> cardinality, int maxCardinality, final Map<String, Long> outliers, int maxOutliers,
+			final boolean key, boolean collectStatistics) {
 		this.name = name;
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
@@ -105,7 +108,9 @@ public class TextAnalysisResult {
 		this.decimalSeparator = decimalSeparator;
 		this.resolutionMode = resolutionMode;
 		this.cardinality = cardinality;
+		this.maxCardinality = maxCardinality;
 		this.outliers = outliers;
+		this.maxOutliers = maxOutliers;
 		this.key = key;
 		this.collectStatistics = collectStatistics;
 	}
@@ -447,7 +452,7 @@ public class TextAnalysisResult {
 		if (patternInfo.isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
-		analysis.put("cardinality", cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT ? String.valueOf(cardinality.size()) : "MAX");
+		analysis.put("cardinality", cardinality.size() < maxCardinality ? String.valueOf(cardinality.size()) : "MAX");
 
 		if (!cardinality.isEmpty() && (verbose > 1 ||
 				(verbose == 1 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT))) {
@@ -460,7 +465,7 @@ public class TextAnalysisResult {
 			}
 		}
 
-		analysis.put("outliers", outliers.size() < TextAnalyzer.MAX_OUTLIERS_DEFAULT ? String.valueOf(outliers.size()) : "MAX");
+		analysis.put("outlierCardinality", outliers.size() < maxOutliers ? String.valueOf(outliers.size()) : "MAX");
  		if (!outliers.isEmpty()  && (verbose > 1 || (verbose == 1 && outliers.size() < .2 * sampleCount))) {
 			ArrayNode detail = analysis.putArray("outlierDetail");
 			for (final Map.Entry<String, Long> entry : entriesSortedByValues(outliers)) {

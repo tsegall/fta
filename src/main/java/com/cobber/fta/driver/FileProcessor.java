@@ -79,18 +79,20 @@ class FileProcessor {
 				if ((options.col == -1 || options.col == i) && options.verbose != 0)
 					System.out.println(header[i]);
 				analysis[i] = new TextAnalyzer(header[i], options.resolutionMode);
-				if (options.noStatistics)
-					analysis[i].setCollectStatistics(false);
-				if (options.noLogicalTypes)
-					analysis[i].setDefaultLogicalTypes(false);
+				if (options.debug != -1)
+					analysis[i].setDebug(options.debug);
 				if (options.detectWindow != -1)
 					analysis[i].setDetectWindow(options.detectWindow);
 				if (options.maxCardinality != -1)
 					analysis[i].setMaxCardinality(options.maxCardinality);
+				if (options.maxOutlierCardinality != -1)
+					analysis[i].setMaxOutliers(options.maxOutlierCardinality);
 				if (options.locale != null)
 					analysis[i].setLocale(options.locale);
-				if (options.debug != -1)
-					analysis[i].setDebug(options.debug);
+				if (options.noStatistics)
+					analysis[i].setCollectStatistics(false);
+				if (options.noLogicalTypes)
+					analysis[i].setDefaultLogicalTypes(false);
 				if (options.logicalTypes != null)
 					try {
 						analysis[i].getPlugins().registerPlugins(new StringReader(options.logicalTypes), header[i], options.locale);
@@ -99,6 +101,8 @@ class FileProcessor {
 						System.err.println("Failed to register plugin: " + e.getMessage());
 						System.exit(1);
 					}
+				if (options.threshold != -1)
+					analysis[i].setThreshold(options.threshold);
 			}
 
 			long thisRecord = 0;

@@ -297,6 +297,7 @@ public class TextAnalyzer {
 	public void setDebug(int debug) {
 		this.debug = debug;
 	}
+
 	/**
 	 * Indicates whether to collect statistics or not.
 	 *
@@ -2524,7 +2525,8 @@ public class TextAnalyzer {
 
 		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,
 				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, facts.minValue,
-				facts.maxValue, minRawLength, maxRawLength, facts.sum, utilizedDecimalSeparator, resolutionMode, cardinality, outliers, key, collectStatistics);
+				facts.maxValue, minRawLength, maxRawLength, facts.sum, utilizedDecimalSeparator, resolutionMode,
+				cardinality, maxCardinality, outliers, maxOutliers, key, collectStatistics);
 
 		return result;
 	}

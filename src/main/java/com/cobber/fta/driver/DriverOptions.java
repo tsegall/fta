@@ -23,6 +23,7 @@ class DriverOptions {
 	int col = -1;
 	int debug = -1;
 	DateResolutionMode resolutionMode = DateResolutionMode.None;
+	int threshold = -1;
 	boolean noAnalysis = false;
 	boolean noLogicalTypes = false;
 	boolean noStatistics = false;
@@ -31,6 +32,7 @@ class DriverOptions {
 	int detectWindow = -1;
 	Locale locale = null;
 	int maxCardinality = -1;
+	int maxOutlierCardinality = -1;
 	int verbose = 0;
 	String charset = "UTF-8";
 	boolean validate = false;

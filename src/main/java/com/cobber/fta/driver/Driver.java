@@ -46,6 +46,8 @@ class Driver {
 				options.col = Integer.valueOf(args[++idx]);
 			else if ("--debug".equals(args[idx]))
 				options.debug = Integer.valueOf(args[++idx]);
+			else if ("--detectWindow".equals(args[idx]))
+				options.detectWindow = Integer.valueOf(args[++idx]);
 			else if ("--help".equals(args[idx])) {
 				logger.println("Usage: [--charset <charset>] [--col <n>] [--help] [--locale <LocaleIdentifier>] [--maxCardinality <n>] [--noAnalysis] [--noLogicalTypes] [--noStatistics] [--pretty] [--records <n>] [--resolutionMode <DayFirst|MonthFirst|Auto|None>] [--samples <n>] [--validate] [--verbose] [--xMaxCharPerColumn <n>] file ...");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
@@ -53,7 +55,8 @@ class Driver {
 				logger.println(" --help - Print this help");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				logger.println(" --logicalType <JSON representation of Logical Type>");
-				logger.println(" --maxCardinality <n> - Set the Maximum Cardinality size");
+				logger.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
+				logger.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
 				logger.println(" --noAnalysis - Do not do analysis");
 				logger.println(" --noLogicalTypes - Do not register any Logical Types");
 				logger.println(" --noStatistics - Do not track statistics");
@@ -61,6 +64,7 @@ class Driver {
 				logger.println(" --records <n> - The number of records to analyze");
 				logger.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
 				logger.println(" --samples <n> - Set the size of the sample window");
+				logger.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
 				logger.println(" --validate - Validate the result of the analysis by reprocessing file against results");
 				logger.println(" --verbose - Output each record as it is processed");
 				logger.println(" --xMaxCharsPerColumn <n> - Set the maximum column width (CSV parsing option)");
@@ -71,6 +75,8 @@ class Driver {
 				options.locale = Locale.forLanguageTag(args[++idx]);
 			else if ("--maxCardinality".equals(args[idx]))
 				options.maxCardinality = Integer.valueOf(args[++idx]);
+			else if ("--maxOutlierCardinality".equals(args[idx]))
+				options.maxOutlierCardinality = Integer.valueOf(args[++idx]);
 			else if ("--noAnalysis".equals(args[idx]))
 				options.noAnalysis = true;
 			else if ("--noLogicalTypes".equals(args[idx]))
@@ -98,8 +104,8 @@ class Driver {
 					System.exit(1);
 				}
 			}
-			else if ("--detectWindow".equals(args[idx]))
-				options.detectWindow = Integer.valueOf(args[++idx]);
+			else if ("--threshold".equals(args[idx]))
+				options.threshold = Integer.valueOf(args[++idx]);
 			else if ("--validate".equals(args[idx]))
 				options.validate = true;
 			else if ("--verbose".equals(args[idx]))
