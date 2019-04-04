@@ -2229,7 +2229,7 @@ public class TextAnalyzer {
 					}
 				}
 
-				if (!matchPatternInfo.isLogicalType() && realSamples >= reflectionSamples && confidence < threshold/100.0) {
+				if (!matchPatternInfo.isLogicalType() && realSamples >= detectWindow && confidence < threshold/100.0) {
 					// We thought it was an integer field, but on reflection it does not feel like it
 					conditionalBackoutToPattern(realSamples, matchPatternInfo);
 					confidence = (double) matchCount / realSamples;

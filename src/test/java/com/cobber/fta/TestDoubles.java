@@ -267,6 +267,33 @@ public class TestDoubles {
 	}
 
 	@Test
+	public void lateDouble() throws IOException {
+		String[] samples = new String[] {
+				"-10000", "-1000", "-340", "-2500", "-1000", "-2062", "-2500", "-1927", "-2500", "-1927",
+				"-1000", "-2062", "-2000", "-8000", "-8000", "-15000", "-2500", "-15000", "-5000", "-1000",
+				"-1393.26"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("CDS Notional:unicode");
+		analysis.setThreshold(96);
+
+		for (int i = 0; i < samples.length; i++)
+			analysis.train(samples[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		Assert.assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void manyRandomDoubles() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);

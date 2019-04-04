@@ -462,15 +462,14 @@ public class TestLongs {
 			if (analysis.train(input) && locked == -1)
 				locked = samples;
 		}
-		while (samples++ < analysis.getReflectionSampleSize() - 1) {
-			analysis.train(String.valueOf(random.nextDouble()));
-			bad++;
-		}
+
+		analysis.train(String.valueOf(random.nextDouble()));
+		bad++;
 
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), samples - 1);
+		Assert.assertEquals(result.getSampleCount(), samples + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		String pattern = "\\d{" + minLength;
