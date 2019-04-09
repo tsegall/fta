@@ -87,6 +87,8 @@ class FileProcessor {
 					analysis[i].setMaxCardinality(options.maxCardinality);
 				if (options.maxOutlierCardinality != -1)
 					analysis[i].setMaxOutliers(options.maxOutlierCardinality);
+				if (options.pluginThreshold != -1)
+					analysis[i].setPluginThreshold(options.pluginThreshold);
 				if (options.locale != null)
 					analysis[i].setLocale(options.locale);
 				if (options.noStatistics)

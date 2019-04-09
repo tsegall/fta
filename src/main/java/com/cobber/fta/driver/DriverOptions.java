@@ -20,22 +20,23 @@ import java.util.Locale;
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 class DriverOptions {
+	String charset = "UTF-8";
 	int col = -1;
 	int debug = -1;
-	DateResolutionMode resolutionMode = DateResolutionMode.None;
-	int threshold = -1;
+	String logicalTypes = null;
 	boolean noAnalysis = false;
 	boolean noLogicalTypes = false;
 	boolean noStatistics = false;
 	long recordsToAnalyze = -1;
-	String logicalTypes = null;
 	int detectWindow = -1;
 	Locale locale = null;
 	int maxCardinality = -1;
 	int maxOutlierCardinality = -1;
-	int verbose = 0;
-	String charset = "UTF-8";
-	boolean validate = false;
+	int pluginThreshold = -1;
 	boolean pretty = false;
+	DateResolutionMode resolutionMode = DateResolutionMode.None;
+	int threshold = -1;
+	boolean validate = false;
+	int verbose = 0;
 	int xMaxCharsPerColumn = -1;
 }
