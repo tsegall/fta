@@ -84,6 +84,8 @@ class Driver {
 				options.noLogicalTypes = true;
 			else if ("--noStatistics".equals(args[idx]))
 				options.noStatistics = true;
+			else if ("--pluginThreshold".equals(args[idx]))
+				options.pluginThreshold = Integer.valueOf(args[++idx]);
 			else if ("--pretty".equals(args[idx]))
 				options.pretty = true;
 			else if ("--records".equals(args[idx]))
