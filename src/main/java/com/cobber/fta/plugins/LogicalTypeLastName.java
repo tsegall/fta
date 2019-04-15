@@ -21,7 +21,7 @@ public class LogicalTypeLastName extends LogicalTypeFiniteSimple {
 	private Dodge[] iterators = null;
 
 	public LogicalTypeLastName(PluginDefinition plugin) throws FileNotFoundException {
-		super(plugin.qualifier, plugin.hotWords, REGEXP, ".*",
+		super(plugin, REGEXP, ".*",
 				new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/lastnames.txt")),
 				95);
 	}

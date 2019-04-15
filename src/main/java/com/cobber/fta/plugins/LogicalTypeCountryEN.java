@@ -21,8 +21,8 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	final static String hotWord = "country";
 
 	public LogicalTypeCountryEN(PluginDefinition plugin) throws FileNotFoundException {
-		super(plugin.qualifier, plugin.hotWords, REGEXP,
-				"\\p{IsAlphabetic}{2}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/countries.csv")), 95);
+		super(plugin, REGEXP,
+				"\\p{IsAlphabetic}{2}", new InputStreamReader(LogicalTypeCountryEN.class.getResourceAsStream("/reference/countries.csv")), 95);
 	}
 
 	@Override

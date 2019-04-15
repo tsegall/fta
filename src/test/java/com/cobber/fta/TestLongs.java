@@ -758,7 +758,7 @@ public class TestLongs {
 	public void manyRandomInts() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
-		final int iterations = 10000;
+		final int iterations = TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
 		final Random random = new Random();
 		int locked = -1;
 

@@ -18,7 +18,7 @@ public class LogicalTypeUSState extends LogicalTypeFiniteSimple {
 	private static String[] membersArray = null;
 
 	public LogicalTypeUSState(PluginDefinition plugin) throws FileNotFoundException {
-		super(plugin.qualifier, plugin.hotWords, REGEXP,
+		super(plugin, REGEXP,
 				"\\p{IsAlphabetic}{2}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/us_states.csv")), 95);
 	}
 

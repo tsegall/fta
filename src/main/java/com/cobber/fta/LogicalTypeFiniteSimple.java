@@ -13,9 +13,10 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	private String backout;
 	private Reader reader;
 
-	public LogicalTypeFiniteSimple(String qualifier, String[] hotWords, String regexp, String backout, Reader reader, int threshold) {
-		this.qualifier = qualifier;
-		this.hotWords = hotWords;
+	public LogicalTypeFiniteSimple(PluginDefinition plugin, String regexp, String backout, Reader reader, int threshold) {
+		super(plugin);
+		this.qualifier = plugin.qualifier;
+		this.hotWords = plugin.hotWords;
 		this.regexp = regexp;
 		this.backout = backout;
 		this.reader = reader;

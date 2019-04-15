@@ -18,7 +18,7 @@ public class LogicalTypeIATA  extends LogicalTypeFiniteSimple {
 	private static String[] membersArray = null;
 
 	public LogicalTypeIATA(PluginDefinition plugin) throws FileNotFoundException {
-		super(plugin.qualifier, plugin.hotWords, REGEXP,
+		super(plugin, REGEXP,
 				"\\p{IsAlphabetic}{3}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/IATA.txt")), 95);
 	}
 

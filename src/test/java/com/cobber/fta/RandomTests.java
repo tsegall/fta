@@ -1563,7 +1563,7 @@ public class RandomTests {
 
 		final Random random = new Random();
 		final int nullIterations = 50;
-		final int iterations = 10000;
+		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
 		int locked = -1;
 
 		for (int i = 0; i < nullIterations; i++) {
@@ -1594,7 +1594,7 @@ public class RandomTests {
 	public void keyFieldLong() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int start = 10000;
-		final int end = 12000;
+		final int end = start + TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
 		int locked = -1;
 
 		for (int i = start; i < end; i++) {
@@ -1617,7 +1617,7 @@ public class RandomTests {
 	public void defaultMaxOutliers() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
 		final int start = 10000;
-		final int end = 12000;
+		final int end = start + TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
 		final int outliers = 15;
 		int locked = -1;
 
@@ -1723,7 +1723,7 @@ public class RandomTests {
 	public void notKeyField() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int start = 10000;
-		final int end = 12000;
+		final int end = start + TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
 
 		int locked = -1;
 

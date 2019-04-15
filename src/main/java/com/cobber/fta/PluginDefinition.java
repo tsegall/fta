@@ -12,6 +12,8 @@ public class PluginDefinition {
 	public String qualifier;
 	/** locales this plugin applies to - empty set, implies all locales.  Can use just language instead of tag, e.g. "en" rather than "en_US". */
 	public String[] validLocales;
+	/** The relative priority of this plugin. */
+	public int priority = 1000;
 
 	/* For plugins of type Infinite/Finite this is the class used to implement. */
 	public String clazz;

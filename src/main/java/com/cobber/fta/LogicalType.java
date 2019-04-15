@@ -3,12 +3,19 @@ package com.cobber.fta;
 import java.util.Locale;
 import java.util.Map;
 
-public abstract class LogicalType {
+public abstract class LogicalType implements Comparable<LogicalType> {
 	protected PluginDefinition defn;
 	protected Locale locale = null;
+	protected int priority;
+
+	@Override
+	public int compareTo(LogicalType other) {
+	  return Integer.compare(priority, other.priority);
+	}
 
 	LogicalType(PluginDefinition plugin) {
 		this.defn = plugin;
+		this.priority = plugin.priority;
 	}
 
 	protected int threshold;

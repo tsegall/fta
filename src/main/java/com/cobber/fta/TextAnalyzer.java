@@ -36,6 +36,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -100,7 +101,7 @@ public class TextAnalyzer {
 	private Locale locale = Locale.getDefault();
 
 	/** The default value for the maximum Cardinality tracked. */
-	public static final int MAX_CARDINALITY_DEFAULT = 500;
+	public static final int MAX_CARDINALITY_DEFAULT = 10000;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
 
 	private static final int MIN_SAMPLES_FOR_KEY = 1000;
@@ -837,6 +838,10 @@ public class TextAnalyzer {
 				if (pluginThreshold != -1)
 					logical.setThreshold(pluginThreshold);
 			}
+
+			Collections.sort(infiniteTypes);
+			Collections.sort(finiteTypes);
+			Collections.sort(regExpTypes);
 		}
 
 		candidateCounts = new int[infiniteTypes.size()];
