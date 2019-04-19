@@ -15,11 +15,13 @@ public class PluginDefinition {
 	/** The relative priority of this plugin. */
 	public int priority = 1000;
 
-	/* For plugins of type Infinite/Finite this is the class used to implement. */
+	/** Infinite/Finite plugins: this is the class used to implement. */
 	public String clazz;
-
-	/** The RegExp to be matched to qualify as this Logical Type. */
+	/** RegExp plugins: the RegExp to be matched to qualify as this Logical Type. */
 	public String regExp;
+	/** Simole finite Plugins: the filename with the set of valid elements. */
+	public String filename;
+
 	/** hotWords An array of Strings that will be compared with the datastream name to boost confidence. */
 	public String[] hotWords;
 	/** Must one of the HotWords be present? */
@@ -41,9 +43,10 @@ public class PluginDefinition {
 		this.clazz = clazz;
 	}
 
-	public PluginDefinition(String qualifier, String regExp, String[] validLocales, String[] hotWords, boolean hotWordMandatory, int threshold, PatternInfo.Type  baseType) {
+	public PluginDefinition(String qualifier, String regExp, String filename, String[] validLocales, String[] hotWords, boolean hotWordMandatory, int threshold, PatternInfo.Type  baseType) {
 		this.qualifier = qualifier;
 		this.regExp = regExp;
+		this.filename = filename;
 		this.validLocales = validLocales;
 		this.hotWords = hotWords;
 		this.hotWordMandatory = hotWordMandatory;

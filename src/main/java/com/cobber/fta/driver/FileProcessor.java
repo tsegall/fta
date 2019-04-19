@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -97,7 +98,10 @@ class FileProcessor {
 					analysis[i].setDefaultLogicalTypes(false);
 				if (options.logicalTypes != null)
 					try {
-						analysis[i].getPlugins().registerPlugins(new StringReader(options.logicalTypes), header[i], options.locale);
+						if (options.logicalTypes.charAt(0) == '[')
+							analysis[i].getPlugins().registerPlugins(new StringReader(options.logicalTypes), header[i], options.locale);
+						else
+							analysis[i].getPlugins().registerPlugins(new FileReader(options.logicalTypes), header[i], options.locale);
 					} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
 							| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						System.err.println("Failed to register plugin: " + e.getMessage());

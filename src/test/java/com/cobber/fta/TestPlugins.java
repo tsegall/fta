@@ -1,6 +1,9 @@
 package com.cobber.fta;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -1822,8 +1825,8 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Primary SSN");
 		List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("SSN", "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" },
-				new String[] { "SSN", "social" }, true, 98, PatternInfo.Type.STRING));
+		plugins.add(new PluginDefinition("SSN", "\\d{3}-\\d{2}-\\d{4}", null,
+				new String[] { "en-US" }, new String[] { "SSN", "social" }, true, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "SSN", null);
@@ -1852,6 +1855,90 @@ public class TestPlugins {
 		for (int i = 0; i < samples.length; i++) {
 			Assert.assertTrue(samples[i].matches(result.getRegExp()));
 		}
+	}
+
+	@Test
+	public void testFinitePlugin() throws IOException {
+		String[] planets = new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" };
+		Path path = Files.createTempFile("planets", ".txt");
+		Files.write(path, String.join("\n", planets).getBytes(), StandardOpenOption.APPEND);
+		final int SAMPLES = 100;
+		final Random random = new Random(314159265);
+
+		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", path.toString(),
+				new String[] { "en" }, new String[] {}, false, 98, PatternInfo.Type.STRING);
+
+		final TextAnalyzer analysis = new TextAnalyzer("Planets");
+		List<PluginDefinition> plugins = new ArrayList<>();
+		plugins.add(pluginDefinition);
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "Planets", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+		for (int i = 0; i < SAMPLES; i++) {
+			analysis.train(planets[random.nextInt(planets.length)]);
+		}
+		analysis.train("032--45-0981");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Files.delete(path);
+
+		Assert.assertEquals(result.getBlankCount(), 11);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}*");
+		Assert.assertEquals(result.getTypeQualifier(), "PLANET");
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - 11));
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getSampleCount(), SAMPLES + 1);
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 1);
+		Assert.assertEquals(outliers.get("032--45-0981"), Long.valueOf(1));
+	}
+
+	@Test
+	public void testFinitePluginBackout() throws IOException {
+		String[] planets = new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" };
+		Path path = Files.createTempFile("planets", ".txt");
+		Files.write(path, String.join("\n", planets).getBytes(), StandardOpenOption.APPEND);
+		final int SAMPLES = 100;
+		final Random random = new Random(314159265);
+
+		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", path.toString(),
+				new String[] { "en" }, new String[] {}, false, 98, PatternInfo.Type.STRING);
+
+		final TextAnalyzer analysis = new TextAnalyzer("Planets");
+		List<PluginDefinition> plugins = new ArrayList<>();
+		plugins.add(pluginDefinition);
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "Planets", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+		analysis.train("io");
+		for (int i = 0; i < SAMPLES; i++) {
+			analysis.train(planets[random.nextInt(planets.length)]);
+		}
+		analysis.train("europa");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Files.delete(path);
+
+		Assert.assertEquals(result.getBlankCount(), 11);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "(?i)(EARTH|EUROPA|IO|JUPITER|MARS|MERCURY|NEPTUNE|PLUTO|SATURN|URANUS|VENUS)");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), SAMPLES + 2);
 	}
 
 	@Test
@@ -1896,8 +1983,8 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("CUSIP", "[\\p{IsAlphabetic}\\d]{9}", new String[] { },
-				new String[] { "CUSIP" }, true, 98, PatternInfo.Type.STRING));
+		plugins.add(new PluginDefinition("CUSIP", "[\\p{IsAlphabetic}\\d]{9}", null,
+				new String[] { }, new String[] { "CUSIP" }, true, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);

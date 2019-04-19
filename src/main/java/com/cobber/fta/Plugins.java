@@ -1,5 +1,6 @@
 package com.cobber.fta;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
@@ -27,7 +28,7 @@ public class Plugins {
 		registerPluginList(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale);
 	}
 
-	public void registerPluginList(List<PluginDefinition> plugins, String dataStreamName, Locale locale) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void registerPluginList(List<PluginDefinition> plugins, String dataStreamName, Locale locale) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, FileNotFoundException {
 		if (locale == null)
 			locale = Locale.getDefault();
 		String languageTag = locale.toLanguageTag();
@@ -72,7 +73,9 @@ public class Plugins {
 			if (register)
 				if (plugin.clazz != null)
 					registerLogicalTypeClass(plugin, locale);
-				else
+				else if (plugin.filename != null)
+					registerLogicalTypeFiniteSet(plugin, locale);
+				else if (plugin.regExp != null)
 					registerLogicalTypeRegExp(plugin, locale);
 		}
 	}
@@ -125,6 +128,17 @@ public class Plugins {
 	 */
 	private void registerLogicalTypeRegExp(PluginDefinition plugin, Locale locale) {
 		registerLogicalType(new LogicalTypeRegExp(plugin), locale);
+	}
+
+	/**
+	 * Register a new Logical Type processor of type LogicalTypeFiniteSimpleExternal. See {@link LogicalTypeFiniteSimpleExternal}
+	 *
+	 * @param plugin The Plugin Definition for a simple file-based Logical Type
+	 * @param locale The current Locale
+	 * @throws FileNotFoundException
+	 */
+	private void registerLogicalTypeFiniteSet(PluginDefinition plugin, Locale locale) throws FileNotFoundException {
+		registerLogicalType(new LogicalTypeFiniteSimpleExternal(plugin), locale);
 	}
 
 	/**

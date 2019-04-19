@@ -54,7 +54,7 @@ class Driver {
 				logger.println(" --col <n> - Only analyze column <n>");
 				logger.println(" --help - Print this help");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
-				logger.println(" --logicalType <JSON representation of Logical Type>");
+				logger.println(" --logicalType <JSON representation of Logical Types> - Can be inline or as a File");
 				logger.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
 				logger.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
 				logger.println(" --noAnalysis - Do not do analysis");

@@ -28,6 +28,8 @@ public class LogicalTypeFirstName extends LogicalTypeFiniteSimple {
 
 	@Override
 	public String nextRandom() {
+		// No easy way to get a random element from a set, could convert to array but that uses lots of memory,
+		// so simulate randomness by having a number of iterators start at different points in the set
 		if (iterators == null) {
 			iterators = new Dodge[ITERS];
 			for (int i = 0; i < iterators.length; i++) {
