@@ -485,7 +485,7 @@ public class TestLongs {
 	public void manyConstantLengthLongs() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
-		final int iterations = 10000;
+		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
 		final Random random = new Random();
 		int locked = -1;
 

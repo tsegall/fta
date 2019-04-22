@@ -298,7 +298,7 @@ public class TestDoubles {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
-		final int iterations = 10000;
+		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;
 		final Random random = new Random();
 		int locked = -1;
 
@@ -335,7 +335,7 @@ public class TestDoubles {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
-		final int iterations = 10000;
+		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
 		final Random random = new Random();
 		int locked = -1;
 		Locale locale = Locale.forLanguageTag("de-AT");
@@ -374,7 +374,7 @@ public class TestDoubles {
 	public void manyConstantLengthDoublesI18N_2() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
-		final int iterations = 10000;
+		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
 		final Random random = new Random();
 		int locked = -1;
 		Locale locale = Locale.forLanguageTag("de-DE");

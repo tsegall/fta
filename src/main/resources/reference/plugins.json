@@ -75,6 +75,23 @@
 		"hotWords": [ "3166", "country" ]
 	},
 	{
+		"qualifier": "AIRPORT_CODE.IATA",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeIATA",
+		"hotWords": [ "code", "airport" ]
+	},
+	{
+		"qualifier": "NAME.FIRST",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
+		"hotWords": [ "first", "given", "name" ],
+		"validLocales": [ "en" ]
+	},
+	{
+		"qualifier": "NAME.LAST",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
+		"hotWords": [ "last", "surname", "name" ],
+		"validLocales": [ "en" ]
+	},
+	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL_SIGNED",
 		"validLocales": [ ],
 		"hotWords": [ "latitude" ],

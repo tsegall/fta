@@ -139,7 +139,7 @@ public class TestStrings {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
-		final int iterations = 10000;
+		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
 		final Random random = new Random();
 		final int length = 12;
 		final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

@@ -1,6 +1,8 @@
 package com.cobber.fta;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -30,6 +32,8 @@ import com.cobber.fta.plugins.LogicalTypePhoneNumber;
 import com.cobber.fta.plugins.LogicalTypeURL;
 import com.cobber.fta.plugins.LogicalTypeUSState;
 import com.cobber.fta.plugins.LogicalTypeUSZip5;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 
 public class TestPlugins {
 	@Test
@@ -1939,6 +1943,35 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getSampleCount(), SAMPLES + 2);
+	}
+
+	@Test
+	public void testNames() throws IOException {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(true);
+		String[] header = null;
+		String[] row;
+		TextAnalyzer[] analysis = null;
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/Names.txt")))) {
+
+			CsvParser parser = new CsvParser(settings);
+			parser.beginParsing(in);
+
+			header = parser.getRecordMetadata().headers();
+			analysis = new TextAnalyzer[header.length];
+			for (int i = 0; i < header.length; i++) {
+				analysis[i] = new TextAnalyzer(header[i]);
+			}
+			while ((row = parser.parseNext()) != null) {
+				for (int i = 0; i < row.length; i++) {
+					analysis[i].train(row[i]);
+				}
+			}
+		}
+
+		Assert.assertEquals(analysis[0].getResult().getTypeQualifier(), "NAME.FIRST");
+		Assert.assertEquals(analysis[1].getResult().getTypeQualifier(), "NAME.LAST");
 	}
 
 	@Test

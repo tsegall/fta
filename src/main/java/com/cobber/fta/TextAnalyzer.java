@@ -101,7 +101,7 @@ public class TextAnalyzer {
 	private Locale locale = Locale.getDefault();
 
 	/** The default value for the maximum Cardinality tracked. */
-	public static final int MAX_CARDINALITY_DEFAULT = 10000;
+	public static final int MAX_CARDINALITY_DEFAULT = 12000;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
 
 	private static final int MIN_SAMPLES_FOR_KEY = 1000;
@@ -2369,7 +2369,7 @@ public class TextAnalyzer {
 			long interestingSamples = sampleCount - (nullCount + blankCount);
 
 			// First try a nice discrete enum
-			if ((interestingSamples > reflectionSamples || interestingSamples / cardinalityUpper.size() >= 3) && cardinalityUpper.size() > 1 && cardinalityUpper.size() <= MAX_ENUM_SIZE) {
+			if (cardinalityUpper.size() > 1 && cardinalityUpper.size() <= MAX_ENUM_SIZE && (interestingSamples > reflectionSamples || interestingSamples / cardinalityUpper.size() >= 3)) {
 				// Rip through the enum doing some basic sanity checks
 				RegExpGenerator gen = new RegExpGenerator(true, MAX_ENUM_SIZE, locale);
 				boolean fail = false;

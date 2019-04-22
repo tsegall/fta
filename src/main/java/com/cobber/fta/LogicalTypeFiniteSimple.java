@@ -7,11 +7,11 @@ import java.util.Locale;
 import java.util.Map;
 
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
-	private String qualifier;
-	private String[] hotWords;
-	private String regexp;
-	private String backout;
-	private Reader reader;
+	protected String qualifier;
+	protected String[] hotWords;
+	protected String regexp;
+	protected String backout;
+	protected Reader reader;
 
 	public LogicalTypeFiniteSimple(PluginDefinition plugin, String regexp, String backout, Reader reader, int threshold) {
 		super(plugin);
