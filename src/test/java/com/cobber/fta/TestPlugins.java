@@ -793,8 +793,11 @@ public class TestPlugins {
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
-		for (int i = 0; i < 100; i++)
-			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		for (int i = 0; i < 100; i++) {
+			String example = logical.nextRandom();
+			Assert.assertTrue(example.matches(logical.getRegExp()));
+			Assert.assertTrue(logical.isValid(example));
+		}
 	}
 
 	@Test
@@ -806,6 +809,47 @@ public class TestPlugins {
 
 		for (int i = 0; i < 100; i++)
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void randomIATA() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("URL", "com.cobber.fta.plugins.LogicalTypeIATA");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++) {
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		}
+	}
+
+	@Test
+	public void testRegister() throws IOException {
+		TextAnalyzer analyzer = new TextAnalyzer();
+
+		analyzer.registerDefaultPlugins("Magic Code", null);
+
+		LogicalType logical = analyzer.getPlugins().getRegistered("URL");
+
+		String valid = "http://www.infogix.com";
+		String invalid = "www infogix.com";
+
+		Assert.assertTrue(logical.isValid(valid));
+		Assert.assertFalse(logical.isValid(invalid));
+
+		logical = analyzer.getPlugins().getRegistered("COUNTRY.TEXT_EN");
+
+		String ChinaUpper = "CHINA";
+		Assert.assertTrue(logical.isValid(ChinaUpper));
+
+		String ChinaWithSpaces = "  CHINA  ";
+		Assert.assertTrue(logical.isValid(ChinaWithSpaces));
+
+		String ChinaCamel = "China";
+		Assert.assertFalse(logical.isValid(ChinaCamel));
+
+		String Lemuria = "Lemuria";
+		Assert.assertFalse(logical.isValid(Lemuria));
 	}
 
 	@Test

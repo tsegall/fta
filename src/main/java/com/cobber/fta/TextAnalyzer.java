@@ -804,6 +804,22 @@ public class TextAnalyzer {
 		return plugins;
 	}
 
+	/**
+	 * Register the default set of plugins for Logical Type detection.
+	 *
+	 * @param dataStreamName The name of the Data Stream being analyzed
+	 * @param locale The Locale used for analysis, the will impact both the set of plugins registered as well as the behavior of the individual plugins
+	 *
+	 * Note: If the locale is null it will default to the Default locale.
+	 */
+	public void registerDefaultPlugins(String dataStreamName, Locale locale) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))){
+			plugins.registerPlugins(reader, dataStreamName, locale);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage());
+		}
+	}
+
 	private void initialize() {
 		Calendar cal = GregorianCalendar.getInstance(locale);
 		if (!(cal instanceof GregorianCalendar))
@@ -817,11 +833,7 @@ public class TextAnalyzer {
 
 		if (enableDefaultLogicalTypes) {
 			// Load the default set of plugins for Logical Type detection
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))){
-				plugins.registerPlugins(reader, dataStreamName, locale);
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage());
-			}
+			registerDefaultPlugins(dataStreamName, locale);
 
 			for (LogicalType logical : plugins.getRegisteredLogicalTypes()) {
 
