@@ -1,95 +1,114 @@
 [
 	{
 		"qualifier": "URL",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeURL"
+		"clazz": "com.cobber.fta.plugins.LogicalTypeURL",
+		"priority": 10
 	},
 	{
 		"qualifier": "IPADDRESS.IPV4",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIPAddress",
-		"hotWords": [ "IP" ]
+		"hotWords": [ "IP" ],
+		"priority": 20
 	},
 	{
 		"qualifier": "EMAIL",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail"
+		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail",
+		"priority": 30
 	},
 	{
 		"qualifier": "PHONENUMBER",
 		"clazz": "com.cobber.fta.plugins.LogicalTypePhoneNumber",
 		"hotWords": [ "phone", "fax", "mobile", "cell" ],
-		"hotWordMandatory": true
+		"hotWordMandatory": true,
+		"priority": 40
 	},
 	{
 		"qualifier": "GUID",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeGUID"
+		"clazz": "com.cobber.fta.plugins.LogicalTypeGUID",
+		"priority": 50
 	},
 	{
 		"qualifier": "POSTAL_CODE.ZIP5_US",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUSZip5",
-		"validLocales": [ "en-US" ,"en-CA" ]
+		"validLocales": [ "en-US" ,"en-CA" ],
+		"priority": 60
 	},
 	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeAddressEN",
-		"validLocales": [ "en" ]
+		"validLocales": [ "en" ],
+		"priority": 70
 	},
 	{
 		"qualifier": "GENDER.TEXT_EN",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGenderEN",
-		"validLocales": [ "en" ]
+		"validLocales": [ "en" ],
+		"priority": 80
 	},
 	{
 		"qualifier": "COUNTRY.TEXT_EN",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCountryEN",
 		"validLocales": [ "en" ],
-		"hotWords": [ "country" ]
+		"hotWords": [ "country" ],
+		"priority": 90
 	},
 	{
 		"qualifier": "MonthAbbr",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthAbbr"
+		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthAbbr",
+		"priority": 100
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCAProvince",
 		"validLocales": [ "en-US" ,"en-CA" ],
-		"hotWords": [ "province" ]
+		"hotWords": [ "province" ],
+		"priority": 110
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_US",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUSState",
 		"validLocales": [ "en-US" ,"en-CA" ],
-		"hotWords": [ "state" ]
+		"hotWords": [ "state" ],
+		"priority": 120
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO4217",
-		"hotWords": [ "4217", "currency" ]
+		"hotWords": [ "4217", "currency" ],
+		"priority": 130
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-3",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_3",
-		"hotWords": [ "3166", "country" ]
+		"hotWords": [ "3166", "country" ],
+		"priority": 140
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-2",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_2",
-		"hotWords": [ "3166", "country" ]
+		"hotWords": [ "3166", "country" ],
+		"priority": 150
 	},
 	{
 		"qualifier": "AIRPORT_CODE.IATA",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIATA",
-		"hotWords": [ "code", "airport" ]
+		"hotWords": [ "iata", "air" ],
+		"hotWordMandatory": true,
+		"priority": 160
 	},
 	{
 		"qualifier": "NAME.FIRST",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
 		"hotWords": [ "first", "given", "name" ],
-		"validLocales": [ "en" ]
+		"validLocales": [ "en" ],
+		"priority": 170
 	},
 	{
 		"qualifier": "NAME.LAST",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
 		"hotWords": [ "last", "surname", "name" ],
-		"validLocales": [ "en" ]
+		"validLocales": [ "en" ],
+		"priority": 180
 	},
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL_SIGNED",
@@ -100,7 +119,8 @@
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "-90.0",
-		"maximum": "90.0"
+		"maximum": "90.0",
+		"priority": 190
 	},
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL_UNSIGNED",
@@ -110,7 +130,8 @@
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "0.0",
-		"maximum": "90.0"
+		"maximum": "90.0",
+		"priority": 200
 	},
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL_SIGNED",
@@ -120,7 +141,8 @@
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "-180.0",
-		"maximum": "180.0"
+		"maximum": "180.0",
+		"priority": 210
 	},
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL_UNSIGNED",
@@ -130,6 +152,7 @@
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "0.0",
-		"maximum": "180.0"
+		"maximum": "180.0",
+		"priority": 220
 	}
 ]

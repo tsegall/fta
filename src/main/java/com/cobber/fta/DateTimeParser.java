@@ -296,24 +296,26 @@ public class DateTimeParser {
 				if (answerResult.dateTimeSeparator == null)
 					answerResult.dateTimeSeparator = result.dateTimeSeparator;
 
-				for (int i = 0; i < result.dateFieldLengths.length; i++) {
-					if (answerResult.dateFieldLengths[i] == -1 && result.dateFieldLengths[i] != -1)
-						answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
-					else if (answerResult.dateFieldLengths[i] != result.dateFieldLengths[i] && (result.dateFieldLengths[i] == 1 || result.dateFieldLengths[i] == 4)) {
-						// Merge two date lengths:
-						//  - d and dd -> d
-						//  - M and MM -> M
-						//  - MMM and MMMM -> MMMM
-						final int start = answerResult.dateFieldOffsets[i];
-						final int len = answerResult.dateFieldLengths[i];
-						final int delta = answerResult.dateFieldLengths[i] - result.dateFieldLengths[i];
-						for (int j = i + 1; j < result.dateFieldLengths.length; j++) {
-							 answerResult.dateFieldOffsets[j] -= delta;
+				// If they result we are looking at has the same format as the current answer then merge lengths
+				if (answerResult.yearOffset == result.yearOffset && answerResult.monthOffset == result.monthOffset)
+					for (int i = 0; i < result.dateFieldLengths.length; i++) {
+						if (answerResult.dateFieldLengths[i] == -1 && result.dateFieldLengths[i] != -1)
+							answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
+						else if (answerResult.dateFieldLengths[i] != result.dateFieldLengths[i] && (result.dateFieldLengths[i] == 1 || result.dateFieldLengths[i] == 4)) {
+							// Merge two date lengths:
+							//  - d and dd -> d
+							//  - M and MM -> M
+							//  - MMM and MMMM -> MMMM
+							final int start = answerResult.dateFieldOffsets[i];
+							final int len = answerResult.dateFieldLengths[i];
+							final int delta = answerResult.dateFieldLengths[i] - result.dateFieldLengths[i];
+							for (int j = i + 1; j < result.dateFieldLengths.length; j++) {
+								 answerResult.dateFieldOffsets[j] -= delta;
+							}
+							answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
+							answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.dateFieldLengths[i]));
 						}
-						answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
-						answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.dateFieldLengths[i]));
 					}
-				}
 			}
 		}
 

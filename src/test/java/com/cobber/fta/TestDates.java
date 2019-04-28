@@ -1349,6 +1349,39 @@ public class TestDates {
 	}
 
 	@Test
+	public void randomFormats() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+		final String[] inputs = new String[] {
+				"2019-01-01",
+				"3/3/2013",
+				"2018-12-31",
+				"7/4/2014",
+				"2017-11-30",
+				"9/15/2012",
+				"2019-01-01",
+				"2016-10-29",
+				"12/25/2011",
+				"2015-09-28" };
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - 4);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}");
+		Assert.assertEquals(result.getConfidence(), 0.6);
+	}
+
+	@Test
 	public void basicDateDMMMYY() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
