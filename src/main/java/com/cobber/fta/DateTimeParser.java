@@ -469,7 +469,7 @@ public class DateTimeParser {
 	}
 
 	/**
-	 * This is core 'intuitive' phase where we hunt in some logical fashion for something that looks like a date/time.
+	 * This is core 'intuitive' pass where we hunt in some logical fashion for something that looks like a date/time.
 	 *
 	 * @param trimmed The input we are scouring for a date/datetime/time
 	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified

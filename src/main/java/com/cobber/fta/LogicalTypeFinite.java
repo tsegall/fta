@@ -28,10 +28,14 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 		return PatternInfo.Type.STRING;
 	}
 
+	/*
+	 * Note: The input String will be both trimmed and converted to upper Case
+	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
+	 */
 	@Override
 	public boolean isValid(String input) {
-		String trimmed = input.trim();
-		return trimmed.length() >= minLength && trimmed.length() <= maxLength && getMembers().contains(trimmed);
+		String trimmedUpper = input.trim().toUpperCase(locale);
+		return trimmedUpper.length() >= minLength && trimmedUpper.length() <= maxLength && getMembers().contains(trimmedUpper);
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import com.cobber.fta.StringFacts;
  * Plugin to detect URLs.
  */
 public class LogicalTypeURL extends LogicalTypeInfinite {
-	public final static String SEMANTIC_TYPE = "URL";
+	public final static String SEMANTIC_TYPE = "URI.URL";
 	public final static String REGEXP_PROTOCOL = "(https?|ftp|file)";
 	public final static String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 	static UrlValidator validator = null;

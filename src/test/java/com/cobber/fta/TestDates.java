@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -14,6 +15,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -95,6 +97,45 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MMM/yy h:mm a");
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+		}
+	}
+
+	@Test
+	public void simpleAMPM() throws IOException {
+		final Locale locale = Locale.forLanguageTag("en-US");
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+		analysis.setLocale(locale);
+		final String dateTimeFormat = "MM/dd/yy h:mm:ss aaa";
+		SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat);
+		final int sampleCount = 100;
+		final Set<String> samples = new HashSet<>();
+		int locked = -1;
+
+		Calendar calendar = Calendar.getInstance();
+		for (int i = 0; i < sampleCount; i++) {
+			String sample = null;
+			sample = sdf.format(calendar.getTime());
+			samples.add(sample);
+			if (analysis.train(sample) && locked == -1)
+				locked = i;
+			calendar.add(Calendar.HOUR, -1000);
+			calendar.add(Calendar.MINUTE, 1);
+			calendar.add(Calendar.SECOND, 1);
+		}
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), sampleCount);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), sampleCount);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{2} \\d{1,2}:\\d{2}:\\d{2} (?i)(AM|PM)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy h:mm:ss a");
 
 		for (String sample : samples) {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
@@ -2466,6 +2507,96 @@ public class TestDates {
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	class SimpleResult {
+		String regExp;
+		String typeQualifier;
+		PatternInfo.Type type;
+
+
+		SimpleResult(String regExp, String typeQualifier, String typeString) {
+			this.regExp = regExp;
+			this.typeQualifier = typeQualifier;
+			this.type = PatternInfo.Type.valueOf(typeString.toUpperCase());
+		}
+	}
+
+	@Test
+	public void dqplus() throws IOException {
+
+		final String[] tests = new String[] {
+			"MM/dd/yyyy", "MMM d yyyy", "M/dd/yyyy", "MM/dd/yy",
+			"dd-MMM-yy", "dd-MMM-yyyy",
+		    "MMMM dd, yyyy", "yyyy-MM-dd", "EEEE, MMMM, dd, yyyy",
+		    "yyyy MMM dd", "yyyy/MM/dd", "dd/MM/yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss",
+		    "MMMM d yyyy hh:mm:ss aaa", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.S",
+		    "yyyy/MM/dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.S", "MM/dd/yy h:mm:ss aaa",
+		    "MM-dd-yy h:mm:ss aaa", "M/dd/yy HH:mm", "M-dd-yy HH:mm", "yyyy-MM-dd'T'HH:mm",
+		    "yyyy-MM-dd'T'HH", "yyyyMMdd'T'HHmmss", "yyyyMMdd'T'HHmm", "yyyyMMdd'T'HH"
+//				"yyyyMMdd'T'HHmmssS",
+//			"M/d", "dd-MMM", "MM-yy", "MMMM-yy",
+		};
+
+		final Map<String, SimpleResult> results = new HashMap<>();
+		results.put("MM/dd/yyyy", new SimpleResult("\\d{2}/\\d{2}/\\d{4}", "MM/dd/yyyy", "LocalDate"));
+		results.put("MMM d yyyy", new SimpleResult("\\p{IsAlphabetic}{3} \\d{1,2} \\d{4}", "MMM d yyyy", "LocalDate"));
+		results.put("M/dd/yyyy", new SimpleResult("\\d{1,2}/\\d{2}/\\d{4}", "M/dd/yyyy", "LocalDate"));
+		results.put("MM/dd/yy", new SimpleResult("\\d{2}/\\d{2}/\\d{2}", "MM/dd/yy", "LocalDate"));
+		results.put("dd-MMM-yy", new SimpleResult("\\d{2}-\\p{IsAlphabetic}{3}-\\d{2}", "dd-MMM-yy", "LocalDate"));
+		results.put("dd-MMM-yyyy", new SimpleResult("\\d{2}-\\p{IsAlphabetic}{3}-\\d{4}", "dd-MMM-yyyy", "LocalDate"));
+		results.put("MMMM dd, yyyy", new SimpleResult("\\p{IsAlphabetic}{3,9} \\d{2}, \\d{4}", "MMMM dd',' yyyy", "LocalDate"));
+		results.put("yyyy-MM-dd", new SimpleResult("\\d{4}-\\d{2}-\\d{2}", "yyyy-MM-dd", "LocalDate"));
+		results.put("EEEE, MMMM, dd, yyyy", new SimpleResult(", \\p{IsAlphabetic}{3,9}, \\d{2}, \\d{4}", "EEEE, MMMM, dd, yyyy", "LocalDate"));
+		results.put("yyyy MMM dd", new SimpleResult("\\d{4} \\p{IsAlphabetic}{3} \\d{2}", "yyyy MMM dd", "LocalDate"));
+		results.put("yyyy/MM/dd", new SimpleResult("\\d{4}/\\d{2}/\\d{2}", "yyyy/MM/dd", "LocalDate"));
+		results.put("dd/MM/yyyy HH:mm:ss", new SimpleResult("\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd/MM/yyyy HH:mm:ss", "LocalDateTime"));
+		results.put("dd-MM-yyyy HH:mm:ss", new SimpleResult("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd-MM-yyyy HH:mm:ss", "LocalDateTime"));
+		results.put("MMMM d yyyy hh:mm:ss aaa", new SimpleResult("\\p{IsAlphabetic}{3,9} \\d{1,2} \\d{4} \\d{2}:\\d{2}:\\d{2} (?i)(AM|PM)", "MMMM d yyyy hh:mm:ss a", "LocalDateTime"));
+		results.put("yyyy-MM-dd'T'HH:mm:ss", new SimpleResult("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm:ss", "LocalDateTime"));
+		results.put("yyyy-MM-dd'T'HH:mm:ss.S", new SimpleResult("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}", "yyyy-MM-dd'T'HH:mm:ss.SSS", "LocalDateTime"));
+		results.put("yyyy/MM/dd HH:mm:ss.S", new SimpleResult("\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}", "yyyy/MM/dd HH:mm:ss.SSS", "LocalDateTime"));
+		results.put("yyyy-MM-dd HH:mm:ss.S", new SimpleResult("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}", "yyyy-MM-dd HH:mm:ss.SSS", "LocalDateTime"));
+		results.put("MM/dd/yy h:mm:ss aaa", new SimpleResult("\\d{2}/\\d{2}/\\d{2} \\d{1,2}:\\d{2}:\\d{2} (?i)(AM|PM)", "MM/dd/yy h:mm:ss a", "LocalDateTime"));
+		results.put("MM-dd-yy h:mm:ss aaa", new SimpleResult("\\d{2}-\\d{2}-\\d{2} \\d{1,2}:\\d{2}:\\d{2} (?i)(AM|PM)", "MM-dd-yy h:mm:ss a", "LocalDateTime"));
+		results.put("M/dd/yy HH:mm", new SimpleResult("\\d{1,2}/\\d{2}/\\d{2} \\d{2}:\\d{2}", "M/dd/yy HH:mm", "LocalDateTime"));
+		results.put("M-dd-yy HH:mm", new SimpleResult("\\d{1,2}-\\d{2}-\\d{2} \\d{2}:\\d{2}", "M-dd-yy HH:mm", "LocalDateTime"));
+		results.put("yyyy-MM-dd'T'HH:mm", new SimpleResult("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm", "LocalDateTime"));
+		results.put("yyyy-MM-dd'T'HH", new SimpleResult("\\d{4}-\\d{2}-\\d{2}T\\d{2}", "yyyy-MM-dd'T'HH", "LocalDateTime"));
+		results.put("yyyyMMdd'T'HHmmss", new SimpleResult("\\d{8}T\\d{6}", "yyyyMMdd'T'HHmmss", "LocalDateTime"));
+		results.put("yyyyMMdd'T'HHmm", new SimpleResult("\\d{8}T\\d{4}", "yyyyMMdd'T'HHmm", "LocalDateTime"));
+		results.put("yyyyMMdd'T'HH", new SimpleResult("\\d{8}T\\d{2}", "yyyyMMdd'T'HH", "LocalDateTime"));
+
+		for (int i = 0; i < tests.length; i++) {
+			TextAnalyzer analysis = new TextAnalyzer();
+			String dateTimeFormat = tests[i];
+			final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat);
+			final int sampleCount = 1000;
+			String[] samples = new String[sampleCount];
+
+			Calendar calendar = Calendar.getInstance();
+			int iters = 0;
+
+			for (iters = 0; iters < samples.length; iters++) {
+				samples[iters] = sdf.format(calendar.getTime());
+				calendar.add(Calendar.HOUR, -1000);
+				calendar.add(Calendar.MINUTE, 1);
+				calendar.add(Calendar.SECOND, 1);
+				analysis.train(samples[iters]);
+			}
+			final TextAnalysisResult result = analysis.getResult();
+
+			if (result.getTypeQualifier() != null) {
+				SimpleResult expected = results.get(dateTimeFormat);
+				Assert.assertEquals(result.getRegExp(), expected.regExp);
+				Assert.assertEquals(result.getConfidence(), 1.0);
+				Assert.assertEquals(result.getType(), expected.type);
+				Assert.assertEquals(result.getTypeQualifier(), expected.typeQualifier);
+				Assert.assertEquals(result.getSampleCount(), samples.length);
+				Assert.assertEquals(result.getMatchCount(), samples.length);
+				Assert.assertEquals(result.getNullCount(), 0);
+			}
 		}
 	}
 

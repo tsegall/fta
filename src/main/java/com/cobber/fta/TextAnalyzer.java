@@ -1935,7 +1935,7 @@ public class TextAnalyzer {
 		final Map<String, Long> newOutliers = new HashMap<>();
 		if ((double) missCount / realSamples <= missThreshold) {
 			for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
-				if (logical.isValid(entry.getKey().trim().toUpperCase(locale)))
+				if (logical.isValid(entry.getKey()))
 					validCount += entry.getValue();
 				else {
 					missCount += entry.getValue();
@@ -2524,20 +2524,23 @@ public class TextAnalyzer {
 
 		// Attempt to identify keys?
 		boolean key = false;
-		if (sampleCount > MIN_SAMPLES_FOR_KEY && maxCardinality >= MIN_SAMPLES_FOR_KEY / 2
-				&& cardinality.size() >= maxCardinality && blankCount == 0 && nullCount == 0
-				&& matchPatternInfo.typeQualifier == null
-				&& ((PatternInfo.Type.STRING.equals(matchPatternInfo.type) && minRawLength == maxRawLength && minRawLength < 32)
+		if (sampleCount > MIN_SAMPLES_FOR_KEY && maxCardinality >= MIN_SAMPLES_FOR_KEY / 2 &&
+				(cardinality.size() == maxCardinality || cardinality.size() == sampleCount) &&
+				blankCount == 0 && nullCount == 0 &&
+				matchPatternInfo.typeQualifier == null &&
+				((PatternInfo.Type.STRING.equals(matchPatternInfo.type) && minRawLength == maxRawLength && minRawLength < 32)
 						|| PatternInfo.Type.LONG.equals(matchPatternInfo.type))) {
 			key = true;
-			// Might be a key but only iff every element in the cardinality
-			// set only has a count of 1
-			for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
-				if (entry.getValue() != 1) {
-					key = false;
-					break;
+
+			if (cardinality.size() == maxCardinality)
+				// Might be a key but only iff every element in the cardinality
+				// set only has a count of 1
+				for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
+					if (entry.getValue() != 1) {
+						key = false;
+						break;
+					}
 				}
-			}
 		}
 
 		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,

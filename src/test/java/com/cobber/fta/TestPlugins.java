@@ -22,6 +22,7 @@ import com.cobber.fta.plugins.LogicalTypeAddressEN;
 import com.cobber.fta.plugins.LogicalTypeCAProvince;
 import com.cobber.fta.plugins.LogicalTypeCountryEN;
 import com.cobber.fta.plugins.LogicalTypeEmail;
+import com.cobber.fta.plugins.LogicalTypeFirstName;
 import com.cobber.fta.plugins.LogicalTypeGUID;
 import com.cobber.fta.plugins.LogicalTypeGenderEN;
 import com.cobber.fta.plugins.LogicalTypeIPAddress;
@@ -93,8 +94,11 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
+		LogicalType logicalGender = analysis.getPlugins().getRegistered(LogicalTypeGenderEN.SEMANTIC_TYPE);
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+			boolean expected = "male".equalsIgnoreCase(inputs[i].trim()) || "female".equalsIgnoreCase(inputs[i].trim());
+			Assert.assertEquals(logicalGender.isValid(inputs[i]), expected);
 		}
 	}
 
@@ -186,8 +190,11 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
+		LogicalType logicalGender = analysis.getPlugins().getRegistered(LogicalTypeGenderEN.SEMANTIC_TYPE);
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].trim().matches(result.getRegExp()), inputs[i]);
+			boolean expected = "male".equalsIgnoreCase(inputs[i].trim()) || "female".equalsIgnoreCase(inputs[i].trim());
+			Assert.assertEquals(logicalGender.isValid(inputs[i]), expected);
 		}
 	}
 
@@ -405,7 +412,7 @@ public class TestPlugins {
 				"BEDFFAF8-9E35-4155-A337-7981BA349E7B",
 				"37285247-D431-4381-AC5F-7C3136E276C2",
 				"6D490537-AA7B-45C5-BEDB-8572EBDEFD15",
-				"51E55FD6-74CA-4B1D-B5FD-D210209E3FC4"
+				"51e55fd6-74ca-4b1d-b5fd-d210209e3fc4"
 		};
 		int locked = -1;
 
@@ -430,21 +437,22 @@ public class TestPlugins {
 		}
 	}
 
+	final String validEmails = "Bachmann@lavastorm.com|Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
+			"coleman@lavastorm.com|Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
+			"Jones@lavastorm.com|Marinelli@lavastorm.com|Nason@lavastorm.com|Parker@lavastorm.com|" +
+			"Pigneri@lavastorm.com|Rasmussen@lavastorm.com|Regan@lavastorm.com|Segall@Lavastorm.com|" +
+			"Pigneri2@lavastorm.com|ahern@lavastorm.com|reginald@lavastorm.com|blumfontaine@Lavastorm.com|" +
+			"Smith@lavastorm.com|Song@lavastorm.com|Tolleson@lavastorm.com|wynn@lavastorm.com|" +
+			"Ahmed@lavastorm.com|Benoit@lavastorm.com|Keane@lavastorm.com|Kilker@lavastorm.com|" +
+			"Waters@lavastorm.com|Meagher@lavastorm.com|Mok@lavastorm.com|Mullin@lavastorm.com|" +
+			"Nason@lavastorm.com|reilly@lavastorm.com|Scoble@lavastorm.com|Comerford@lavastorm.com|" +
+			"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
+			"Tuddenham@lavastorm.com|Williams@lavastorm.com|Wilson@lavastorm.com|";
+
 	@Test
 	public void basicEmail() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input = "Bachmann@lavastorm.com|Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
-				"coleman@lavastorm.com|Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
-				"Jones@lavastorm.com|Marinelli@lavastorm.com|Nason@lavastorm.com|Parker@lavastorm.com|" +
-				"Pigneri@lavastorm.com|Rasmussen@lavastorm.com|Regan@lavastorm.com|Segall@Lavastorm.com|" +
-				"Pigneri2@lavastorm.com|ahern@lavastorm.com|reginald@lavastorm.com|blumfontaine@Lavastorm.com|" +
-				"Smith@lavastorm.com|Song@lavastorm.com|Tolleson@lavastorm.com|wynn@lavastorm.com|" +
-				"Ahmed@lavastorm.com|Benoit@lavastorm.com|Keane@lavastorm.com|Kilker@lavastorm.com|" +
-				"Waters@lavastorm.com|Meagher@lavastorm.com|Mok@lavastorm.com|Mullin@lavastorm.com|" +
-				"Nason@lavastorm.com|reilly@lavastorm.com|Scoble@lavastorm.com|Comerford@lavastorm.com|" +
-				"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
-				"Tuddenham@lavastorm.com|Williams@lavastorm.com|Wilson@lavastorm.com";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = validEmails.split("\\|");
 		int locked = -1;
 
 		analysis.train(null);
@@ -471,6 +479,40 @@ public class TestPlugins {
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 		}
+	}
+
+	@Test
+	public void degenerativeEmail() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String input = validEmails + validEmails + validEmails + validEmails + "ask|not|what|your|country|can|";
+		final String inputs[] = input.split("\\|");
+		final int ERRORS = 6;
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(result.getSampleCount(), inputs.length + result.getNullCount());
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "EMAIL");
+		Assert.assertEquals(result.getMatchCount(), inputs.length - ERRORS);
+		Assert.assertEquals(result.getNullCount(), 2);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeEmail.REGEXP);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)ERRORS/(result.getSampleCount() - result.getNullCount()));
+
+		int matches = 0;
+		for (int i = 0; i < inputs.length; i++)
+			if (inputs[i].matches(result.getRegExp()))
+				matches++;
+
+		Assert.assertEquals(matches, result.getMatchCount());
 	}
 
 	private final static String INPUT_URLS = "http://www.lavastorm.com|ftp://ftp.sun.com|https://www.google.com|" +
@@ -504,7 +546,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getRegExp(), LogicalTypeURL.REGEXP_PROTOCOL + LogicalTypeURL.REGEXP_RESOURCE);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "URL");
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeURL.SEMANTIC_TYPE);
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -533,7 +575,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getRegExp(), LogicalTypeURL.REGEXP_RESOURCE);
 		Assert.assertEquals(result.getConfidence(), 0.95);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "URL");
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeURL.SEMANTIC_TYPE);
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -561,7 +603,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getRegExp(), LogicalTypeURL.REGEXP_PROTOCOL + "?" + LogicalTypeURL.REGEXP_RESOURCE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "URL");
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeURL.SEMANTIC_TYPE);
 
 		for (int i = 0; i < inputs.length; i++)
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -704,8 +746,11 @@ public class TestPlugins {
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
-		for (int i = 0; i < 100; i++)
-			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		for (int i = 0; i < 100; i++) {
+			String example = logical.nextRandom();
+			Assert.assertTrue(example.matches(logical.getRegExp()));
+			Assert.assertTrue(logical.isValid(example.toLowerCase()), example);
+		}
 	}
 
 	@Test
@@ -829,7 +874,7 @@ public class TestPlugins {
 
 		analyzer.registerDefaultPlugins("Magic Code", null);
 
-		LogicalType logical = analyzer.getPlugins().getRegistered("URL");
+		LogicalType logical = analyzer.getPlugins().getRegistered(LogicalTypeURL.SEMANTIC_TYPE);
 
 		String valid = "http://www.infogix.com";
 		String invalid = "www infogix.com";
@@ -837,7 +882,7 @@ public class TestPlugins {
 		Assert.assertTrue(logical.isValid(valid));
 		Assert.assertFalse(logical.isValid(invalid));
 
-		logical = analyzer.getPlugins().getRegistered("COUNTRY.TEXT_EN");
+		logical = analyzer.getPlugins().getRegistered(LogicalTypeCountryEN.SEMANTIC_TYPE);
 
 		String ChinaUpper = "CHINA";
 		Assert.assertTrue(logical.isValid(ChinaUpper));
@@ -846,7 +891,7 @@ public class TestPlugins {
 		Assert.assertTrue(logical.isValid(ChinaWithSpaces));
 
 		String ChinaCamel = "China";
-		Assert.assertFalse(logical.isValid(ChinaCamel));
+		Assert.assertTrue(logical.isValid(ChinaCamel));
 
 		String Lemuria = "Lemuria";
 		Assert.assertFalse(logical.isValid(Lemuria));
@@ -1175,11 +1220,11 @@ public class TestPlugins {
 	public void basicStateSpaces() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
 		final String input = " AL| AK| AZ| KY| KS| LA| ME| MD| MI| MA| MN| MS|MO |NE| MT| SD|TN | TX| UT| VT| WI|" +
-						" VA| WA| WV| HI| ID| IL| IN| IA| KS| KY| LA| ME| MD| MA| MI| MN| MS| MO| MT| NE| NV|" +
+						" VA| WA| WV| HI| ID| IL| IN| IA| KS| ky| LA| ME| MD| MA| MI| MN| MS| MO| MT| NE| NV|" +
 						" NH| NJ| NM| NY| NC| ND| OH| OK| OR| PA| RI| SC| SD| TN| TX| UT| VT| VA| WA|  WV | WI|" +
-						" WY| AL| AK| AZ| AR| CA| CO| CT| DC| DE| FL| GA| HI| ID| IL| IN| IA| KS| KY| LA|SA|" +
+						" WY| AL| AK| AZ| AR| CA| CO| CT| DC| de| FL| GA| HI| ID| IL| IN| IA| KS| KY| LA|SA|" +
 						" MD| MA| MI| MN| MS| MO| MT| NE| NV| NH| NJ| NM| NY| NC| ND| OH| OK| OR| RI| SC| SD|" +
-						" TX| UT| VT| WV| WI| WY| NV| NH| NJ| OR| PA| RI| SC| AR| CA| CO| CT| ID| HI| IL| IN|";
+						" TX| UT| VT| WV| WI| WY| NV| NH| NJ| or| PA| RI| SC| AR| CA| CO| CT| ID| HI| IL| IN|";
 		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
@@ -1200,8 +1245,12 @@ public class TestPlugins {
 		Assert.assertEquals(outliers.get("SA"), Long.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
+		LogicalType logical = analysis.getPlugins().getRegistered(LogicalTypeUSState.SEMANTIC_TYPE);
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].trim().matches(result.getRegExp()), inputs[i]);
+			String trimmed = inputs[i].trim();
+			Assert.assertTrue(trimmed.matches(result.getRegExp()), inputs[i]);
+			boolean expected = !outliers.containsKey(trimmed);
+			Assert.assertEquals(logical.isValid(inputs[i]), expected);
 		}
 	}
 
@@ -2016,6 +2065,9 @@ public class TestPlugins {
 
 		Assert.assertEquals(analysis[0].getResult().getTypeQualifier(), "NAME.FIRST");
 		Assert.assertEquals(analysis[1].getResult().getTypeQualifier(), "NAME.LAST");
+
+		LogicalType logicalFirst = analysis[0].getPlugins().getRegistered(LogicalTypeFirstName.SEMANTIC_TYPE);
+		Assert.assertTrue(logicalFirst.isValid("Harry"));
 	}
 
 	@Test
@@ -2045,6 +2097,7 @@ public class TestPlugins {
 
 		for (int i = 0; i < samples.length; i++) {
 			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+//			Assert.assertTrue(samples[i].matches(result.getRegExp()));
 		}
 	}
 

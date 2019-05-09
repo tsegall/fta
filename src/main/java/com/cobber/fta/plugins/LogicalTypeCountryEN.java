@@ -32,7 +32,7 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
-		if (outliers.size() > Math.sqrt(getMembers().size()))
+		if (matchCount < 50 && outliers.size() > Math.sqrt(getMembers().size()))
 			return REGEXP;
 
 		if (!dataStreamName.toLowerCase(locale).contains(hotWord) && (realSamples < 10 || cardinality.size() == 1))

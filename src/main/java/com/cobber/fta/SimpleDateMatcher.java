@@ -86,8 +86,22 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleFacts("MMMM-d{2}-d{4}", "MMMM-dd-yyyy", PatternInfo.Type.LOCALDATE));
 		matchers.add(new SimpleFacts("MMMM-d-d{4}", "MMMM-d-yyyy", PatternInfo.Type.LOCALDATE));
 
+		matchers.add(new SimpleFacts("MMM d d{4} d{2}:d{2}:d{2} P", "MMM d yyyy hh:mm:ss a", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("MMM d{2} d{4} d{2}:d{2}:d{2} P", "MMM dd yyyy hh:mm:ss a", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("MMMM d d{4} d{2}:d{2}:d{2} P", "MMMM d yyyy hh:mm:ss a", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("MMMM d{2} d{4} d{2}:d{2}:d{2} P", "MMMM dd yyyy hh:mm:ss a", PatternInfo.Type.LOCALDATETIME));
+
+		matchers.add(new SimpleFacts("d{8}Td{2}Z", "yyyyMMdd'T'HH'Z'", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{2}", "yyyyMMdd'T'HH", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{4}-d{2}-d{2}Td{2}", "yyyy-MM-dd'T'HH", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{4}Z", "yyyyMMdd'T'HHmm'Z'", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{4}", "yyyyMMdd'T'HHmm", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{4}-d{2}-d{2}Td{2}:d{2}", "yyyy-MM-dd'T'HH:mm", PatternInfo.Type.LOCALDATETIME));
 		matchers.add(new SimpleFacts("d{8}Td{6}Z", "yyyyMMdd'T'HHmmss'Z'", PatternInfo.Type.LOCALDATETIME));
 		matchers.add(new SimpleFacts("d{8}Td{6}", "yyyyMMdd'T'HHmmss", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{4}-d{2}-d{2}Td{2}:d{2}:d{2}", "yyyy-MM-dd'T'HH:mm:ss", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{7}Z", "yyyyMMdd'T'HHmmssS'Z'", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{7}", "yyyyMMdd'T'HHmmssS", PatternInfo.Type.LOCALDATETIME));
 		matchers.add(new SimpleFacts("d{8}Td{6}+d{4}", "yyyyMMdd'T'HHmmssxx", PatternInfo.Type.OFFSETDATETIME));
 		matchers.add(new SimpleFacts("d{8}Td{6}-d{4}", "yyyyMMdd'T'HHmmssxx", PatternInfo.Type.OFFSETDATETIME));
 		matchers.add(new SimpleFacts("d{8}Td{6}.d{3}+d{4}", "yyyyMMdd'T'HHmmss.SSSxx", PatternInfo.Type.OFFSETDATETIME));
@@ -96,6 +110,8 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleFacts("d{2}/MMM/d{2} d:d{2} P", "dd/MMM/yy h:mm a", PatternInfo.Type.LOCALDATETIME));
 		matchers.add(new SimpleFacts("d{2}/MMM/d{2} d{2}:d{2} P", "dd/MMM/yy hh:mm a", PatternInfo.Type.LOCALDATETIME));
 
+		matchers.add(new SimpleFacts("EEEE, MMM, d{2}, d{4}", "EEEE, MMM, dd, yyyy", PatternInfo.Type.LOCALDATE));
+		matchers.add(new SimpleFacts("EEEE, MMMM, d{2}, d{4}", "EEEE, MMMM, dd, yyyy", PatternInfo.Type.LOCALDATE));
 		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} z d{4}", "EEE MMM dd HH:mm:ss z yyyy", PatternInfo.Type.ZONEDDATETIME));
 
 		HashMap<String, SimpleFacts> localeMatcher = new HashMap<>();
@@ -121,7 +137,10 @@ public class SimpleDateMatcher {
 		return sf.type;
 	}
 
-	private static String replaceString(String input, int len, String target, String replacement, boolean wordBoundary) {
+	/**
+	 * Replace an isolated occurrence of the 'target' string with the 'replacement' string.
+	 */
+	private static String replaceString(String input, int len, String target, String replacement) {
 		int startOffset = 0;
 		int found;
 
@@ -130,12 +149,12 @@ public class SimpleDateMatcher {
 			char ch;
 			if (found != 0) {
 				ch = input.charAt(found - 1);
-				if (Character.isAlphabetic(ch) || (wordBoundary && ch != ' '))
+				if (Character.isAlphabetic(ch))
 					continue;
 			}
 			if (found + target.length() < len) {
 				ch = input.charAt(found + target.length());
-				if (Character.isAlphabetic(ch) || (wordBoundary && ch != ' '))
+				if (Character.isAlphabetic(ch))
 					continue;
 			}
 
@@ -182,7 +201,18 @@ public class SimpleDateMatcher {
 		// to be of the form 'EEE MMM d{2} d{2}:d{2}:d{2} z d{4}'
 		for (String weekday : LocaleInfo.getShortWeekdays(locale)) {
 			if (len >= 22 && input.startsWith(weekday)) {
-				replaced = replaceString(input, len, weekday, "EEE", true);
+				replaced = replaceString(input, len, weekday, "EEE");
+				if (replaced != null) {
+					input = replaced;
+					len = input.length();
+					break;
+				}
+			}
+		}
+
+		for (String weekday : LocaleInfo.getWeekdays(locale)) {
+			if (input.startsWith(weekday)) {
+				replaced = replaceString(input, len, weekday, "EEEE");
 				if (replaced != null) {
 					input = replaced;
 					len = input.length();
@@ -192,7 +222,7 @@ public class SimpleDateMatcher {
 		}
 
 		for (String shortMonth : LocaleInfo.getShortMonths(locale).keySet()) {
-			replaced = replaceString(input, len, shortMonth, "MMM", false);
+			replaced = replaceString(input, len, shortMonth, "MMM");
 			if (replaced != null) {
 				input = replaced;
 				len = input.length();
@@ -202,7 +232,7 @@ public class SimpleDateMatcher {
 
 		if (replaced == null)
 			for (String month : LocaleInfo.getMonths(locale).keySet()) {
-				replaced = replaceString(input, len, month, "MMMM", false);
+				replaced = replaceString(input, len, month, "MMMM");
 				if (replaced != null) {
 					input = replaced;
 					len = input.length();
@@ -213,7 +243,7 @@ public class SimpleDateMatcher {
 		String[] words = input.split(" ");
 		for (int i = 0; i < words.length; i++) {
 			if (DateTimeParser.timeZones.contains(words[i])) {
-				input = replaceString(input, len, words[i], "z", true);
+				input = replaceString(input, len, words[i], "z");
 				len = input.length();
 				break;
 			}
@@ -346,8 +376,17 @@ public class SimpleDateMatcher {
 				break;
 
 			case DAY_OF_WEEK:
-				// Not implemented
-				return false;
+				found = false;
+				for (String weekday : LocaleInfo.getWeekdays(locale)) {
+					if (eating.indexOf(weekday) == 0) {
+						eating.delete(0, weekday.length());
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+					return false;
+				break;
 
 			case DAY_OF_WEEK_ABBR:
 				found = false;

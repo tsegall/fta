@@ -18,6 +18,7 @@ public class LocaleInfo {
 	private static Map<String, Map<String, Integer>> months = new HashMap<>();
 	private static Map<String, Map<String, Integer>> monthsDefault = new HashMap<>();
 	private static Map<String, Map<String, Integer>> shortMonths = new HashMap<>();
+	private static Map<String, Set<String>> weekdays = new HashMap<>();
 	private static Map<String, Set<String>> shortWeekdays = new HashMap<>();
 	private static Map<String, String> monthsRegExp = new HashMap<>();
 	private static Map<String, Boolean> monthsAlphabetic = new HashMap<>();
@@ -26,6 +27,8 @@ public class LocaleInfo {
 	private static Map<String, Set<String>> ampmStrings = new HashMap<>();
 	private static Map<String, String> ampmRegExp = new HashMap<>();
 
+	private static Map<String, String> weekdaysRegExp = new HashMap<>();
+	private static Map<String, Boolean> weekdaysAlphabetic	= new HashMap<>();
 	private static Map<String, String> shortWeekdaysRegExp = new HashMap<>();
 	private static Map<String, Boolean> shortWeekdaysAlphabetic	= new HashMap<>();
 
@@ -100,6 +103,24 @@ public class LocaleInfo {
 		}
 		ampmStrings.put(languageTag, ampmStringsLocale);
 		ampmRegExp.put(languageTag, "(?i)(" + ampmRegExpLocale + ")");
+
+		// Setup the Week Day strings
+		Set<String> weekdaysLocale = new TreeSet<>(localeInfo.new LengthComparator());
+		generator = new RegExpGenerator();
+		isAllAlphabetic = true;
+		for (String week : dfs.getWeekdays()) {
+			if (week.isEmpty())
+				continue;
+			if (isAllAlphabetic && !week.chars().allMatch(Character::isAlphabetic))
+				isAllAlphabetic = false;
+			final String weekUpper = week.toUpperCase(locale);
+			weekdaysLocale.add(weekUpper);
+			generator.train(week);
+			generator.train(weekUpper);
+		}
+		weekdays.put(languageTag, weekdaysLocale);
+		weekdaysRegExp.put(languageTag, generator.getResult());
+		weekdaysAlphabetic.put(languageTag, isAllAlphabetic);
 
 		// Setup the Short Week Day strings
 		Set<String> shortWeekdaysLocale = new TreeSet<>(localeInfo.new LengthComparator());
@@ -277,6 +298,16 @@ public class LocaleInfo {
 	public static int getShortMonthsLength(Locale locale) {
 		cacheLocaleInfo(locale);
 		return shortMonthsLength.get(locale.toLanguageTag());
+	}
+
+	/**
+	 * Retrieve the Set containing the week days for this Locale
+	 * @param locale Locale we are interested in
+	 * @return Set containing week days for this Locale
+	 */
+	public static Set<String> getWeekdays(Locale locale) {
+		cacheLocaleInfo(locale);
+		return weekdays.get(locale.toLanguageTag());
 	}
 
 	/**

@@ -7,6 +7,7 @@ import java.util.Set;
 import com.cobber.fta.PluginDefinition;
 
 public class LogicalTypeFirstName extends LogicalTypePersonName {
+	public final static String SEMANTIC_TYPE = "NAME.FIRST";
 	private static Set<String> members = new HashSet<String>();
 
 	public LogicalTypeFirstName(PluginDefinition plugin) throws FileNotFoundException {

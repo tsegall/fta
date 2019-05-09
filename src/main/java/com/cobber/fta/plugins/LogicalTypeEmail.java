@@ -66,6 +66,10 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(String input) {
+		// This is not strictly correct since RFC 822 does not mandate an '@' but this is what mortals expect
+		if (input.indexOf('@') == -1)
+			return false;
+
 		// Address lists commonly have ;'s as separators as opposed to the
 		// ','
 		if (input.indexOf(';') != -1)

@@ -1,6 +1,6 @@
 [
 	{
-		"qualifier": "URL",
+		"qualifier": "URI.URL",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeURL",
 		"priority": 10
 	},
