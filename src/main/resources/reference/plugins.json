@@ -6,9 +6,15 @@
 	},
 	{
 		"qualifier": "IPADDRESS.IPV4",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeIPAddress",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeIPV4Address",
 		"hotWords": [ "IP" ],
 		"priority": 20
+	},
+	{
+		"qualifier": "IPADDRESS.IPV6",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeIPV6Address",
+		"hotWords": [ "IP" ],
+		"priority": 25
 	},
 	{
 		"qualifier": "EMAIL",

@@ -25,7 +25,7 @@ import com.cobber.fta.plugins.LogicalTypeEmail;
 import com.cobber.fta.plugins.LogicalTypeFirstName;
 import com.cobber.fta.plugins.LogicalTypeGUID;
 import com.cobber.fta.plugins.LogicalTypeGenderEN;
-import com.cobber.fta.plugins.LogicalTypeIPAddress;
+import com.cobber.fta.plugins.LogicalTypeIPV4Address;
 import com.cobber.fta.plugins.LogicalTypeISO3166_2;
 import com.cobber.fta.plugins.LogicalTypeISO3166_3;
 import com.cobber.fta.plugins.LogicalTypeISO4217;
@@ -786,16 +786,30 @@ public class TestPlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-
 	@Test
-	public void randomIPAddress() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV4", "com.cobber.fta.plugins.LogicalTypeIPAddress");
+	public void randomIPV4Address() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV4", "com.cobber.fta.plugins.LogicalTypeIPV4Address");
 		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++)
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
+	public void randomIPV6Address() throws IOException {
+		PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV6", "com.cobber.fta.plugins.LogicalTypeIPV6Address");
+		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+
+		Assert.assertTrue(logical.isValid("::"), "::");
+		Assert.assertTrue(logical.isValid("::1"), "::1");
+		Assert.assertTrue("::".matches(logical.getRegExp()), "::");
+		Assert.assertTrue("::1".matches(logical.getRegExp()), "::1");
+		for (int i = 0; i < 100; i++) {
+			String sample = logical.nextRandom();
+			Assert.assertTrue(sample.matches(logical.getRegExp()), sample);
+		}
 	}
 
 	@Test
@@ -935,13 +949,13 @@ public class TestPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeIPAddress.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeIPV4Address.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeIPAddress.REGEXP);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeIPV4Address.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++)

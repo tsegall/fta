@@ -11,15 +11,15 @@ import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.StringFacts;
 
-public class LogicalTypeIPAddress extends LogicalTypeInfinite {
-	public final static String SEMANTIC_TYPE = "IPADDRESS.IPV4";
-	public final static String REGEXP = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+public class LogicalTypeIPV6Address extends LogicalTypeInfinite {
+	public final static String SEMANTIC_TYPE = "IPADDRESS.IPV6";
+	public final static String REGEXP = "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))";
 	static InetAddressValidator validator = null;
 	static {
 		validator = InetAddressValidator.getInstance();
 	}
 
-	public LogicalTypeIPAddress(PluginDefinition plugin) {
+	public LogicalTypeIPV6Address(PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -34,15 +34,13 @@ public class LogicalTypeIPAddress extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		StringBuffer ret = new StringBuffer(36);
+		StringBuffer ret = new StringBuffer(40);
 
-		ret.append(random.nextInt(256));
-		ret.append('.');
-		ret.append(random.nextInt(256));
-		ret.append('.');
-		ret.append(random.nextInt(256));
-		ret.append('.');
-		ret.append(random.nextInt(256));
+		for (int i = 0; i < 7; i++) {
+			ret.append(String.format("%x", random.nextInt(0xFFFF)));
+			ret.append(':');
+		}
+		ret.append(String.format("%x", random.nextInt(0xFFFF)));
 
 		return ret.toString();
 	}
@@ -69,12 +67,12 @@ public class LogicalTypeIPAddress extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(String input) {
-		return input.length() <= 15 && validator.isValidInet4Address(input);
+		return validator.isValidInet6Address(input);
 	}
 
 	@Override
 	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return trimmed.length() <= 15 && charCounts['.'] == 3;
+		return validator.isValidInet6Address(trimmed);
 	}
 
 	@Override
