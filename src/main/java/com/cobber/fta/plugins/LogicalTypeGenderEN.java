@@ -1,7 +1,9 @@
 package com.cobber.fta.plugins;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -19,10 +21,18 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	private static Set<String> members = new HashSet<String>();
 	private final String backoutREGEX = "\\p{IsAlphabetic}+";
 	private String happyRegex = "\\p{Alpha}+";
+	private static Map<String, String> opposites = new HashMap<>();
 
 	static {
+		members.add("F");
+		members.add("M");
 		members.add("FEMALE");
 		members.add("MALE");
+
+		opposites.put("F", "M");
+		opposites.put("M", "F");
+		opposites.put("FEMALE", "MALE");
+		opposites.put("MALE", "FEMALE");
 	}
 
 	public LogicalTypeGenderEN(PluginDefinition plugin) throws FileNotFoundException {
@@ -60,18 +70,55 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)
 			return backoutREGEX;
 
-		if (!dataStreamName.toLowerCase(locale).contains("gender") && cardinality.size() <= 1)
+		boolean positiveStreamName = dataStreamName.toLowerCase(locale).contains("gender");
+		if (!positiveStreamName && cardinality.size() - outliers.size() <= 1)
 			return backoutREGEX;
 
-		// If we have seen both Male & Female and no more than one outlier then we are feeling pretty good unless we are in Strict mode (e.g. 100%)
+		String outlier = null;
+		if (!outliers.isEmpty()) {
+			outlier = outliers.keySet().iterator().next();
+			cardinality = new HashMap<>(cardinality);
+			cardinality.remove(outlier);
+		}
+
+		int count = cardinality.size();
+		Iterator<String> iter = null;
+		String first = null;
+		if (count != 0) {
+			iter = cardinality.keySet().iterator();
+			first = iter.next();
+		}
+
+		// If we have seen no more than one outlier then we are feeling pretty good unless we are in Strict mode (e.g. 100%)
 		if ((threshold != 100 && outliers.size() <= 1) || (double)matchCount / realSamples >= getThreshold()/100.0) {
-			RegExpGenerator re = new RegExpGenerator(true, 3, locale);
-			for (String element : members)
-				re.train(element);
+			RegExpGenerator re = new RegExpGenerator(true, 5, locale);
+			// There is some complexity here due to the facts that 'Male' & 'Female' are good predictors of Gender.
+			// However a field with only 'M' and 'F' in it is not, so in this case we would like an extra hint.
+			if (count == 1) {
+				if (!positiveStreamName && (first.equals("M") || first.equals("F")))
+					return backoutREGEX;
+				re.train(first);
+				re.train(opposites.get(first));
+			} else if (count == 2) {
+				String second = iter.next();
+				if (!positiveStreamName && (first.equals("M") || first.equals("F")) && (second.equals("M") || second.equals("F")))
+					return backoutREGEX;
+				if (opposites.get(first).equals(second)) {
+					re.train(first);
+					re.train(second);
+				}
+				else
+					for (String element : members)
+						re.train(element);
+			} else {
+				for (String element : members)
+					re.train(element);
+			}
 			if (!outliers.isEmpty())
 				re.train(outliers.keySet().iterator().next());
 			happyRegex = re.getResult();

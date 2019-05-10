@@ -2139,14 +2139,13 @@ public class TextAnalyzer {
 						checkUniformLengthSet(logical))
 							return logical;
 		}
-		else {
-			// Hunt for a variable length Logical Type
-			for (LogicalTypeFinite logical : finiteTypes)
-				if (logical.getMinLength() != logical.getMaxLength() &&
-						cardinalityUpper.size() <= logical.getSize() + 1 &&
-						checkVariableLengthSet(cardinalityUpper, logical))
-							return logical;
-		}
+
+		// Hunt for a variable length Logical Type
+		for (LogicalTypeFinite logical : finiteTypes)
+			if (logical.getMinLength() != logical.getMaxLength() &&
+					cardinalityUpper.size() <= logical.getSize() + 1 &&
+					checkVariableLengthSet(cardinalityUpper, logical))
+						return logical;
 
 		return null;
 	}
