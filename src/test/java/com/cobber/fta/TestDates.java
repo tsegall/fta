@@ -2589,7 +2589,7 @@ public class TestDates {
 
 			if (result.getTypeQualifier() != null) {
 				SimpleResult expected = results.get(dateTimeFormat);
-				Assert.assertEquals(result.getRegExp(), expected.regExp);
+				Assert.assertEquals(result.getRegExp(), expected.regExp, dateTimeFormat + "---" + result.getRegExp());
 				Assert.assertEquals(result.getConfidence(), 1.0);
 				Assert.assertEquals(result.getType(), expected.type);
 				Assert.assertEquals(result.getTypeQualifier(), expected.typeQualifier);

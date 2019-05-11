@@ -47,31 +47,36 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
 			StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
-		boolean streamNamePositive = false;
+		int streamNamePositive = 0;
 		if (hotWords != null)
 			for (int i = 0; i < hotWords.length; i++)
 				if (dataStreamName.toLowerCase(locale).contains(hotWords[i])) {
-					streamNamePositive = true;
-					break;
+					streamNamePositive++;
 				}
 
-		int maxOutliers = getMembers().size() / 10;
+		if (streamNamePositive >= 2 && (double)matchCount / realSamples >= 0.4)
+			return null;
+
 		int minCardinality = 10;
 		int minSamples = 20;
-		if (streamNamePositive) {
-			maxOutliers = getMembers().size() / 20;
+		if (streamNamePositive != 0) {
 			minCardinality = 5;
 			minSamples = 5;
 		}
 
-		if (outliers.size() > maxOutliers)
-			return backout;
 		if (cardinality.size() < minCardinality)
 			return backout;
 		if (realSamples < minSamples)
 			return backout;
 
+		if (streamNamePositive == 1 && (double)matchCount / realSamples >= 0.6)
+			return null;
+
 		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : backout;
 	}
 
+	@Override
+	public boolean isClosed() {
+		return false;
+	}
 }

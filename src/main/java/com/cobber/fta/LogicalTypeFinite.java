@@ -80,4 +80,13 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	public int getMaxLength() {
 		return maxLength;
 	}
+
+	/**
+	 * Does the set of members enumerated reflect the entire set.  For example any of the ISO sets are reference sets and
+	 * hence complete, compared to FirstName and LastName where the set provided is of the common names.
+	 * @return A boolean indicating if the set is closed.
+	 */
+	public boolean isClosed() {
+		return true;
+	}
 }

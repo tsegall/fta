@@ -44,7 +44,7 @@ public class TestStrings {
 	public void variableLengthStringWithOutlier() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "HelloWorld|Hello|H|Z|A|Do|Not|Ask|What|You|Can|Do".split("\\|");
-		final int ITERATIONS = 10;
+		final int ITERATIONS = 100;
 
 		int locked = -1;
 
@@ -81,6 +81,7 @@ public class TestStrings {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length * ITERATIONS + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
+		System.err.println("RegExp: " + result.getRegExp());
 		Assert.assertEquals(result.getRegExp(), "(?i)(A|ASK|CAN|DO|H|HELLO|HELLOWORLD|NOT|WHAT|YOU|Z)");
 		Assert.assertEquals(result.getMatchCount(), inputs.length * ITERATIONS);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());

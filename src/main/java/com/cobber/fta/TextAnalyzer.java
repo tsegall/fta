@@ -1977,7 +1977,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (logical.isValidSet(dataStreamName, realSamples - missCount, realSamples, null, cardinalityUpper, newOutliers) != null)
+		if (logical.isValidSet(dataStreamName, validCount, realSamples, null, cardinalityUpper, newOutliers) != null)
 			return false;
 
 		outliers.putAll(newOutliers);
@@ -2143,7 +2143,7 @@ public class TextAnalyzer {
 		// Hunt for a variable length Logical Type
 		for (LogicalTypeFinite logical : finiteTypes)
 			if (logical.getMinLength() != logical.getMaxLength() &&
-					cardinalityUpper.size() <= logical.getSize() + 1 &&
+					(!logical.isClosed() || cardinalityUpper.size() <= logical.getSize() + 1) &&
 					checkVariableLengthSet(cardinalityUpper, logical))
 						return logical;
 
