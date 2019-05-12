@@ -1764,10 +1764,10 @@ public class TestPlugins {
 
 		TextAnalysisResult result = analysis.getResult();
 
+		Assert.assertEquals(result.getTypeQualifier(), "MONTH.ABBR_en-US");
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "MONTH.ABBR_en-US");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		final Map<String, Long> outliers = result.getOutlierDetails();

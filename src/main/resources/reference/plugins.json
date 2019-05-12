@@ -78,6 +78,13 @@
 		"priority": 120
 	},
 	{
+		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NA",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeNAStateProvince",
+		"validLocales": [ "en-US" ,"en-CA" ],
+		"hotWords": [ "state", "province" ],
+		"priority": 125
+	},
+	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO4217",
 		"hotWords": [ "4217", "currency" ],

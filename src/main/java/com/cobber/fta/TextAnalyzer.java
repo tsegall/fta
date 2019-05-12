@@ -974,7 +974,7 @@ public class TextAnalyzer {
 			facts[f].percentage = (double)running/total;
 		}
 
-		Random choose = new Random();
+		Random choose = new Random(271828);
 
 		// First send in a random set of samples until we are trained
 		boolean trained = false;
@@ -1917,24 +1917,24 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Determine if the current dataset reflects a logical type (of uniform length).
+	 * Determine if the current dataset reflects a logical type.
 	 * @param logical The Logical type we are testing
 	 * @return True if we believe that this data set is defined by the provided set
 	 */
-	private boolean checkUniformLengthSet(LogicalTypeFinite logical) {
+	private boolean checkFiniteSet(Map<String, Long> cardinalityUpper, LogicalTypeFinite logical) {
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		long missCount = 0;				// count of number of misses
 
-		// All the outliers are misses
+		// All the existing outliers are misses
+		final Map<String, Long> newOutliers = new HashMap<>(outliers);
 		for (final Map.Entry<String, Long> entry : outliers.entrySet())
 			missCount += entry.getValue();
 
 		// Sweep the balance and check they are part of the set
 		long validCount = 0;
 		double missThreshold = 1.0 - logical.getThreshold()/100.0;
-		final Map<String, Long> newOutliers = new HashMap<>();
 		if ((double) missCount / realSamples <= missThreshold) {
-			for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
+			for (final Map.Entry<String, Long> entry : cardinalityUpper.entrySet()) {
 				if (logical.isValid(entry.getKey()))
 					validCount += entry.getValue();
 				else {
@@ -1944,47 +1944,15 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (logical.isValidSet(dataStreamName, realSamples - missCount, realSamples, null, cardinality, newOutliers) != null)
-			return false;
-
-		matchCount = validCount;
-		matchPatternInfo = new PatternInfo(null, logical.getRegExp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
-		outliers.putAll(newOutliers);
-		cardinality.keySet().removeAll(newOutliers.keySet());
-
-		return true;
-	}
-
-	/**
-	 * Determine if the current data set reflects a logical type (of variable length).
-	 * @param cardinalityUpper The cardinality set but reduced to ignore case
-	 * @param logical The Logical type we are testing
-	 * @return True if we believe that this data set is defined by the provided by this Logical Type
-	 */
-	private boolean checkVariableLengthSet(Map<String, Long> cardinalityUpper, LogicalTypeFinite logical) {
-		final long realSamples = sampleCount - (nullCount + blankCount);
-		final Map<String, Long> newOutliers = new HashMap<>();
-		long validCount = 0;
-		long missCount = 0;				// count of number of misses
-
-		// Sweep the balance and check they are part of the set
-		for (final Map.Entry<String, Long> entry : cardinalityUpper.entrySet()) {
-			if (logical.isValid(entry.getKey()))
-				validCount += entry.getValue();
-			else {
-				missCount += entry.getValue();
-				newOutliers.put(entry.getKey(), entry.getValue());
-			}
-		}
-
 		if (logical.isValidSet(dataStreamName, validCount, realSamples, null, cardinalityUpper, newOutliers) != null)
 			return false;
 
-		outliers.putAll(newOutliers);
-		cardinalityUpper.keySet().removeAll(newOutliers.keySet());
 		matchCount = validCount;
 		matchPatternInfo = new PatternInfo(null, logical.getRegExp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
+		outliers.putAll(newOutliers);
+		cardinalityUpper.keySet().removeAll(newOutliers.keySet());
 		cardinality = cardinalityUpper;
+
 		return true;
 	}
 
@@ -2130,22 +2098,10 @@ public class TextAnalyzer {
 	}
 
 	private LogicalTypeFinite matchFiniteTypes(Map<String, Long> cardinalityUpper, int minKeyLength, int maxKeyLength) {
-		if (minKeyLength == maxKeyLength) {
-			// Hunt for a fixed length Logical Type
-			for (LogicalTypeFinite logical : finiteTypes)
-				if (minKeyLength == logical.getMinLength() &&
-						logical.getMinLength() == logical.getMaxLength() &&
-						cardinalityUpper.size() <= logical.getSize() + 2 &&
-						checkUniformLengthSet(logical))
-							return logical;
-		}
-
-		// Hunt for a variable length Logical Type
 		for (LogicalTypeFinite logical : finiteTypes)
-			if (logical.getMinLength() != logical.getMaxLength() &&
-					(!logical.isClosed() || cardinalityUpper.size() <= logical.getSize() + 1) &&
-					checkVariableLengthSet(cardinalityUpper, logical))
-						return logical;
+			if ((!logical.isClosed() || cardinalityUpper.size() <= logical.getSize() + 2 + logical.getSize()/20) &&
+					checkFiniteSet(cardinalityUpper, logical))
+				return logical;
 
 		return null;
 	}
