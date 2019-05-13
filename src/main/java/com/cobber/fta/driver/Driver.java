@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.LogicalType;
@@ -124,28 +126,34 @@ class Driver {
 
 		if (helpRequested) {
 			// Create a dummy Analyzer to retrieve the Logical Types
-			TextAnalyzer analysis = new TextAnalyzer("Dummy");
+			TextAnalyzer analysis = new TextAnalyzer("*");
 			if (options.locale != null)
 				analysis.setLocale(options.locale);
 
 			// Need to start training to force registration of Logical Types
 			analysis.train("Hello");
+
+			// Grab the registered plugins and sort by Qualifier (magically will be all - since passed in '*')
 			Collection<LogicalType> registered = analysis.getPlugins().getRegisteredLogicalTypes();
+			Set<String> qualifiers = new TreeSet<>();
+			for (LogicalType logical : registered)
+				qualifiers.add(logical.getQualifier());
 
 			if (registered.size() != 0) {
 				logger.println("\nRegistered Logical Types:");
-				for (LogicalType logical : registered) {
+				for (String qualifier : qualifiers) {
+					LogicalType logical = analysis.getPlugins().getRegistered(qualifier);
 					if (logical instanceof LogicalTypeFinite) {
 						LogicalTypeFinite finite = (LogicalTypeFinite)logical;
-						logger.printf("\t%s (Finite), Cardinality: %d, MaxLength: %d, MinLength: %d\n",
-								logical.getQualifier(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
+						logger.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d\n",
+								logical.getQualifier(), logical.getPriority(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
 					}
 					else if (logical instanceof LogicalTypeInfinite)
-						logger.printf("\t%s (Infinite)\n", logical.getQualifier());
+						logger.printf("\t%s (Infinite): Priority: %d\n", logical.getQualifier(), logical.getPriority());
 					else {
 						LogicalTypeRegExp logicalRegExp = (LogicalTypeRegExp)logical;
-						logger.printf("\t%s (RegExp), RegExp: '%s', HotWords: '%s'\n",
-								logical.getQualifier(), logical.getRegExp(), String.join("|", logicalRegExp.getHotWords()));
+						logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s', HotWords: '%s'\n",
+								logical.getQualifier(), logical.getPriority(), logical.getRegExp(), String.join("|", logicalRegExp.getHotWords()));
 					}
 				}
 			}

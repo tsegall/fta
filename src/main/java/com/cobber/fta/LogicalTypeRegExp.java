@@ -110,7 +110,21 @@ public class LogicalTypeRegExp extends LogicalType {
 		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : defn.regExp;
 	}
 
+	public boolean isMatch(String regExp) {
+		for (String re : defn.regExps) {
+			if (regExp.equals(re))
+				return true;
+		}
+
+		return false;
+	}
+
 	public String[] getHotWords() {
 		return defn.hotWords;
+	}
+
+	@Override
+	public boolean isClosed() {
+		return false;
 	}
 }

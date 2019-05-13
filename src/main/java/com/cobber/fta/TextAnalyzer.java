@@ -2194,7 +2194,7 @@ public class TextAnalyzer {
 				matchPatternInfo.regexp = freezeNumeric(matchPatternInfo.regexp);
 
 				for (LogicalTypeRegExp logical : regExpTypes) {
-					if (PatternInfo.Type.LONG.equals(logical.getBaseType()) && matchPatternInfo.regexp.equals(logical.getRegExp()) &&
+					if (PatternInfo.Type.LONG.equals(logical.getBaseType()) && logical.isMatch(matchPatternInfo.regexp) &&
 							logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples);
@@ -2215,7 +2215,7 @@ public class TextAnalyzer {
 				matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
 
 			for (LogicalTypeRegExp logical : regExpTypes) {
-				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && matchPatternInfo.regexp.equals(logical.getRegExp()) &&
+				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && logical.isMatch(matchPatternInfo.regexp) &&
 						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 					confidence = logical.getConfidence(matchCount, realSamples);

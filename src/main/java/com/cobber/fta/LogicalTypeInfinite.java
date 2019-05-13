@@ -24,4 +24,9 @@ public abstract class LogicalTypeInfinite extends LogicalTypeCode {
 	public boolean isRegExpComplete() {
 		return false;
 	}
+
+	@Override
+	public boolean isClosed() {
+		return false;
+	}
 }

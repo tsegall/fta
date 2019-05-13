@@ -58,7 +58,7 @@ public class Plugins {
 
 			// Check to see if this plugin requires a mandatory hotword (and it is present)
 			if (register) {
-				if (plugin.hotWordMandatory && plugin.hotWords.length != 0) {
+				if (!"*".equals(dataStreamName) && plugin.hotWordMandatory && plugin.hotWords.length != 0) {
 					boolean found = false;
 					for (String hotWord : plugin.hotWords)
 						if (dataStreamName.contains(hotWord) || dataStreamName.toLowerCase(locale).contains(hotWord)) {

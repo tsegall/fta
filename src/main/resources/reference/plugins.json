@@ -22,7 +22,7 @@
 		"priority": 30
 	},
 	{
-		"qualifier": "PHONENUMBER",
+		"qualifier": "TELEPHONE",
 		"clazz": "com.cobber.fta.plugins.LogicalTypePhoneNumber",
 		"hotWords": [ "phone", "fax", "mobile", "cell" ],
 		"hotWordMandatory": true,
@@ -124,10 +124,11 @@
 		"priority": 180
 	},
 	{
-		"qualifier": "COORDINATE.LATITUDE_DECIMAL_SIGNED",
+		"qualifier": "COORDINATE.LATITUDE_DECIMAL",
 		"validLocales": [ ],
 		"hotWords": [ "latitude" ],
 		"hotWordMandatory": true,
+		"regExps": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExp": "[+-]?\\d*\\.?\\d+",
 		"threshold": 98,
 		"baseType": "DOUBLE",
@@ -136,36 +137,15 @@
 		"priority": 190
 	},
 	{
-		"qualifier": "COORDINATE.LATITUDE_DECIMAL_UNSIGNED",
-		"hotWords": [ "latitude" ],
-		"hotWordMandatory": true,
-		"regExp": "\\d*\\.?\\d+",
-		"threshold": 98,
-		"baseType": "DOUBLE",
-		"minimum": "0.0",
-		"maximum": "90.0",
-		"priority": 200
-	},
-	{
-		"qualifier": "COORDINATE.LONGITUDE_DECIMAL_SIGNED",
+		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
 		"hotWords": [ "longitude" ],
 		"hotWordMandatory": true,
+		"regExps": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExp": "[+-]?\\d*\\.?\\d+",
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "-180.0",
 		"maximum": "180.0",
-		"priority": 210
-	},
-	{
-		"qualifier": "COORDINATE.LONGITUDE_DECIMAL_UNSIGNED",
-		"hotWords": [ "longitude" ],
-		"hotWordMandatory": true,
-		"regExp": "\\d*\\.?\\d+",
-		"threshold": 98,
-		"baseType": "DOUBLE",
-		"minimum": "0.0",
-		"maximum": "180.0",
-		"priority": 220
+		"priority": 200
 	}
 ]

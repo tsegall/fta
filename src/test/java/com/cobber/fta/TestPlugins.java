@@ -873,13 +873,16 @@ public class TestPlugins {
 
 	@Test
 	public void randomPhoneNumber() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("PHONENUMBER", "com.cobber.fta.plugins.LogicalTypePhoneNumber");
+		PluginDefinition plugin = new PluginDefinition("TELEPHONE", "com.cobber.fta.plugins.LogicalTypePhoneNumber");
 		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
-		for (int i = 0; i < 100; i++)
-			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		for (int i = 0; i < 100; i++) {
+			String sample = logical.nextRandom();
+			Assert.assertTrue(sample.matches(logical.getRegExp()));
+			Assert.assertTrue(logical.isValid(sample), sample);
+		}
 	}
 
 	@Test
@@ -1996,7 +1999,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("Primary SSN");
 		List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("SSN", "\\d{3}-\\d{2}-\\d{4}", null,
-				new String[] { "en-US" }, new String[] { "SSN", "social" }, true, 98, PatternInfo.Type.STRING));
+				null, new String[] { "en-US" }, new String[] { "SSN", "social" }, true, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "SSN", null);
@@ -2035,8 +2038,8 @@ public class TestPlugins {
 		final int SAMPLES = 100;
 		final Random random = new Random(314159265);
 
-		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", path.toString(),
-				new String[] { "en" }, new String[] {}, false, 98, PatternInfo.Type.STRING);
+		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", null,
+				path.toString(), new String[] { "en" }, new String[] {}, false, 98, PatternInfo.Type.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		List<PluginDefinition> plugins = new ArrayList<>();
@@ -2078,8 +2081,8 @@ public class TestPlugins {
 		final int SAMPLES = 100;
 		final Random random = new Random(314159265);
 
-		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", path.toString(),
-				new String[] { "en" }, new String[] {}, false, 98, PatternInfo.Type.STRING);
+		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", null,
+				path.toString(), new String[] { "en" }, new String[] {}, false, 98, PatternInfo.Type.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		List<PluginDefinition> plugins = new ArrayList<>();
@@ -2144,7 +2147,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testLatitude() throws IOException {
+	public void testLatitudeSigned() throws IOException {
 		String[] samples = new String[] {
 				"51.5", "39.195", "46.18806", "-36.1333333", "33.52056", "39.79", "40.69361", "36.34333", "32.0666667", "48.8833333", "40.71417",
 				"51.45", "29.42389", "43.69556", "40.03222", "53.6772222", "45.4166667", "17.3833333", "51.52721", "40.76083", "53.5", "51.8630556",
@@ -2162,7 +2165,37 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
-		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL_SIGNED");
+		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void testLatitudeUnsigned() throws IOException {
+		String[] samples = new String[] {
+				"51.5", "39.195", "46.18806", "36.1333333", "33.52056", "39.79", "40.69361", "36.34333", "32.0666667", "48.8833333", "40.71417",
+				"51.45", "29.42389", "43.69556", "40.03222", "53.6772222", "45.4166667", "17.3833333", "51.52721", "40.76083", "53.5", "51.8630556",
+				"26.1666667", "32.64", "62.9", "29.61944", "40.71417", "51.52721", "40.61278", "37.22667", "40.71417", "25.77389",
+				"46.2333333", "40.65", "52.3333333", "38.96861", "27.1666667", "33.44833", "29.76306", "43.77222", "43.77222", "34.33806",
+				"56.0333333", "41.54278", "29.76306", "26.46111", "51.4", "55.6666667", "33.92417", "53.4247222", "26.12194", "37.8166667"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("Latitude");
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		Assert.assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
@@ -2187,7 +2220,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", "[\\p{IsAlphabetic}\\d]{9}", null,
-				new String[] { }, new String[] { "CUSIP" }, true, 98, PatternInfo.Type.STRING));
+				null, new String[] { }, new String[] { "CUSIP" }, true, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);

@@ -16,7 +16,7 @@ import com.google.i18n.phonenumbers.Phonenumber;
  * Plugin to detect Phone Numbers.
  */
 public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
-		public final static String SEMANTIC_TYPE = "PHONENUMBER";
+		public final static String SEMANTIC_TYPE = "TELEPHONE";
 		public final static String REGEXP = ".*";
 		private PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 		private static String[] areaCodes = new String[] { "617", "781", "303", "970", "212" };
@@ -27,12 +27,14 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 
 		@Override
 		public String nextRandom() {
-			StringBuffer ret = new StringBuffer(20);
-			ret.append("+1.").append(areaCodes[random.nextInt(areaCodes.length)]).append(".");
-			for (int i = 0; i < 7; i++)
-				ret.append(random.nextInt(10));
-
-			return ret.toString();
+			String base = "+1" + areaCodes[random.nextInt(areaCodes.length)];
+			while (true) {
+				String result = base;
+				for (int i = 0; i < 7; i++)
+					result += (random.nextInt(10));
+				if (isValid(result))
+					return result;
+			}
 		}
 
 		@Override

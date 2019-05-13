@@ -41,6 +41,14 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	public abstract String getQualifier();
 
 	/**
+	 *  The relative priority of this plugin.
+	 *  @return The relative priority of this plugin.
+	 */
+	public int getPriority() {
+		return priority;
+	}
+
+	/**
 	 * The Regular Expression that most closely matches (See {@link #isRegExpComplete()}) this Logical Type.
 	 * Note: All valid matches will match this RE, but the inverse is not necessarily true.
 	 * @return The Java Regular Expression that most closely matches this Logical Type.
@@ -109,4 +117,13 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
 	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers);
+
+	/**
+	 * Does the set of members enumerated reflect the entire set.  For example any of the ISO sets are reference sets and
+	 * hence complete, compared to FirstName and LastName where the set provided is of the common names.
+	 * If isClosed() is true then isValid() false does not imply that the input is not valid just that it is not in the set of
+	 * 'known' members.
+	 * @return A boolean indicating if the set is closed.
+	 */
+	public abstract boolean isClosed();
 }
