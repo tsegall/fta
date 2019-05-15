@@ -561,6 +561,8 @@ public class SimpleDateMatcher {
 				if (eating.length() < token.getCount())
 					return false;
 				eating.delete(0, token.getCount());
+				for (int j = 1; eating.length() != 0 && Character.isDigit(eating.charAt(0)) && j < token.getHigh(); j++)
+					eating.delete(0, 1);
 				break;
 			}
 		}

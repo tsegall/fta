@@ -18,7 +18,6 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	private static Set<String> members = new HashSet<String>();
 	private static String[] membersArray = null;
 	final static String REGEXP = ".+";
-	final static String hotWord = "country";
 
 	public LogicalTypeCountryEN(PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, REGEXP,
@@ -35,7 +34,15 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 		if (matchCount < 50 && outliers.size() > Math.sqrt(getMembers().size()))
 			return REGEXP;
 
-		if (!dataStreamName.toLowerCase(locale).contains(hotWord) && (realSamples < 10 || cardinality.size() == 1))
+		int streamNamePositive = 0;
+
+		if (headerPatterns != null)
+			for (int i = 0; i < headerPatterns.length; i++) {
+				if (headerPatterns[i].matcher(dataStreamName).matches())
+					streamNamePositive += defn.headerRegExpConfidence[i];
+			}
+
+		if (streamNamePositive == 0 && (realSamples < 10 || cardinality.size() == 1))
 			return REGEXP;
 
 		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : REGEXP;

@@ -48,13 +48,14 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
 			StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 		int streamNamePositive = 0;
-		if (hotWords != null)
-			for (int i = 0; i < hotWords.length; i++)
-				if (dataStreamName.toLowerCase(locale).contains(hotWords[i])) {
-					streamNamePositive++;
-				}
 
-		if (streamNamePositive >= 2 && (double)matchCount / realSamples >= 0.4)
+		if (headerPatterns != null)
+			for (int i = 0; i < headerPatterns.length; i++) {
+				if (headerPatterns[i].matcher(dataStreamName).matches())
+					streamNamePositive += defn.headerRegExpConfidence[i];
+			}
+
+		if (streamNamePositive >= 90 && (double)matchCount / realSamples >= 0.4)
 			return null;
 
 		int minCardinality = 10;
@@ -69,7 +70,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 		if (realSamples < minSamples)
 			return backout;
 
-		if (streamNamePositive == 1 && (double)matchCount / realSamples >= 0.6)
+		if (streamNamePositive >= 50 && (double)matchCount / realSamples >= 0.6)
 			return null;
 
 		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : backout;

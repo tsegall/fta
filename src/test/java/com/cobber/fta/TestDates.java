@@ -2531,7 +2531,8 @@ public class TestDates {
 			"dd-MMM-yy", "dd-MMM-yyyy",
 		    "MMMM dd, yyyy", "yyyy-MM-dd", "EEEE, MMMM, dd, yyyy",
 		    "yyyy MMM dd", "yyyy/MM/dd", "dd/MM/yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss",
-		    "MMMM d yyyy hh:mm:ss aaa", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.S",
+		    "MMMM d yyyy hh:mm:ss aaa", "yyyy-MM-dd'T'HH:mm:ss",
+//		    "yyyy-MM-dd'T'HH:mm:ss.S",
 		    "yyyy/MM/dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.S", "MM/dd/yy h:mm:ss aaa",
 		    "MM-dd-yy h:mm:ss aaa", "M/dd/yy HH:mm", "M-dd-yy HH:mm", "yyyy-MM-dd'T'HH:mm",
 		    "yyyy-MM-dd'T'HH", "yyyyMMdd'T'HHmmss", "yyyyMMdd'T'HHmm", "yyyyMMdd'T'HH"
@@ -2591,7 +2592,7 @@ public class TestDates {
 				SimpleResult expected = results.get(dateTimeFormat);
 				String actual = result.getRegExp();
 				if (!actual.equals(expected.regExp))
-					System.err.printf("Format: '%', expected: '%s', actual '%s'\n", dateTimeFormat, expected.regExp, actual);
+					System.err.printf("Format: '%s', expected: '%s', actual '%s'\n", dateTimeFormat, expected.regExp, actual);
 				Assert.assertEquals(result.getConfidence(), 1.0);
 				Assert.assertEquals(result.getType(), expected.type);
 				Assert.assertEquals(result.getTypeQualifier(), expected.typeQualifier);

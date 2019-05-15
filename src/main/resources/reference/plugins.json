@@ -2,18 +2,22 @@
 	{
 		"qualifier": "URI.URL",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeURL",
+		"headerRegExps": [ ".*(?i)(url|web).*" ],
+		"headerRegExpConfidence": [ 90 ],
 		"priority": 10
 	},
 	{
 		"qualifier": "IPADDRESS.IPV4",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIPV4Address",
-		"hotWords": [ "IP" ],
+		"headerRegExps": [ ".*(?i)(ip).*" ],
+		"headerRegExpConfidence": [ 70 ],
 		"priority": 20
 	},
 	{
 		"qualifier": "IPADDRESS.IPV6",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIPV6Address",
-		"hotWords": [ "IP" ],
+		"headerRegExps": [ ".*(?i)(ip).*" ],
+		"headerRegExpConfidence": [ 70 ],
 		"priority": 25
 	},
 	{
@@ -24,8 +28,8 @@
 	{
 		"qualifier": "TELEPHONE",
 		"clazz": "com.cobber.fta.plugins.LogicalTypePhoneNumber",
-		"hotWords": [ "phone", "fax", "mobile", "cell" ],
-		"hotWordMandatory": true,
+		"headerRegExps": [ ".*(?i)(phone|fax|mobile|cell).*" ],
+		"headerRegExpConfidence": [ 100 ],
 		"priority": 40
 	},
 	{
@@ -55,7 +59,8 @@
 		"qualifier": "COUNTRY.TEXT_EN",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCountryEN",
 		"validLocales": [ "en" ],
-		"hotWords": [ "country" ],
+		"headerRegExps": [ ".*(?i)(country).*" ],
+		"headerRegExpConfidence": [ 90 ],
 		"priority": 90
 	},
 	{
@@ -67,67 +72,75 @@
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCAProvince",
 		"validLocales": [ "en-US" ,"en-CA" ],
-		"hotWords": [ "province" ],
+		"headerRegExps": [ ".*(?i)(province).*" ],
+		"headerRegExpConfidence": [ 90 ],
 		"priority": 110
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_US",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUSState",
 		"validLocales": [ "en-US" ,"en-CA" ],
-		"hotWords": [ "state" ],
+		"headerRegExps": [ ".*(?i)(state).*" ],
+		"headerRegExpConfidence": [ 90 ],
 		"priority": 120
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NA",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNAStateProvince",
 		"validLocales": [ "en-US" ,"en-CA" ],
-		"hotWords": [ "state", "province" ],
+		"headerRegExps": [ ".*(?i)(state|province).*" ],
+		"headerRegExpConfidence": [ 90 ],
 		"priority": 125
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO4217",
-		"hotWords": [ "4217", "currency" ],
+		"headerRegExps": [ ".*4217.*", ".*(?i)(currency).*" ],
+		"headerRegExpConfidence": [ 90, 70 ],
 		"priority": 130
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-3",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_3",
-		"hotWords": [ "3166", "country" ],
+		"headerRegExps": [ ".*3166.*", ".*(?i)(country).*" ],
+		"headerRegExpConfidence": [ 90, 70 ],
 		"priority": 140
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-2",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_2",
-		"hotWords": [ "3166", "country" ],
+		"headerRegExps": [ ".*3166.*", ".*(?i)(country).*" ],
+		"headerRegExpConfidence": [ 90, 70 ],
 		"priority": 150
 	},
 	{
 		"qualifier": "AIRPORT_CODE.IATA",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIATA",
-		"hotWords": [ "iata", "air" ],
-		"hotWordMandatory": true,
+		"headerRegExps": [ ".*(?i)(iata|air).*" ],
+		"headerRegExpConfidence": [ 100 ],
 		"priority": 160
 	},
 	{
 		"qualifier": "NAME.FIRST",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
-		"hotWords": [ "first", "given", "name" ],
+		"headerRegExps": [ ".*(?i)(surname|first[ _]name|lastname).*", "(?i)(given|name)" ],
+		"headerRegExpConfidence": [ 90, 60 ],
 		"validLocales": [ "en" ],
 		"priority": 170
 	},
 	{
 		"qualifier": "NAME.LAST",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
-		"hotWords": [ "last", "surname", "name" ],
+		"headerRegExps": [ ".*(?i)(surname|last[ _]name|lastname).*", "(?i)(last|name)" ],
+		"headerRegExpConfidence": [ 90, 60 ],
 		"validLocales": [ "en" ],
 		"priority": 180
 	},
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL",
 		"validLocales": [ ],
-		"hotWords": [ "latitude" ],
-		"hotWordMandatory": true,
+		"headerRegExps": [ ".*(?i)(latitude).*" ],
+		"headerRegExpConfidence": [ 100 ],
 		"regExps": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExp": "[+-]?\\d*\\.?\\d+",
 		"threshold": 98,
@@ -138,8 +151,8 @@
 	},
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
-		"hotWords": [ "longitude" ],
-		"hotWordMandatory": true,
+		"headerRegExps": [ ".*(?i)(longitude).*" ],
+		"headerRegExpConfidence": [ 100 ],
 		"regExps": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExp": "[+-]?\\d*\\.?\\d+",
 		"threshold": 98,
@@ -147,5 +160,13 @@
 		"minimum": "-180.0",
 		"maximum": "180.0",
 		"priority": 200
+	},
+	{
+		"qualifier": "CITY",
+		"headerRegExps": [ "^(?i)(city)$|^.*[ _](?i)(city)$|.*[a-z]City$" ],
+		"headerRegExpConfidence": [ 100 ],
+		"regExp": ".+",
+		"baseType": "STRING",
+		"priority": 210
 	}
 ]

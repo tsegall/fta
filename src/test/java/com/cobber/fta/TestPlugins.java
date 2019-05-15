@@ -343,7 +343,8 @@ public class TestPlugins {
 		analysis.setMaxCardinality(20000);
 		List<PluginDefinition> plugins = new ArrayList<>();
 		PluginDefinition plugin = new PluginDefinition("CUSIP", "com.cobber.fta.PluginCUSIP");
-		plugin.hotWords = new String[] { "CUSIP" };
+		plugin.headerRegExps = new String[] { ".*(?i)(cusip).*" };
+		plugin.headerRegExpConfidence = new int[] { 90 };
 		plugins.add(plugin);
 
 		try {
@@ -1999,7 +2000,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("Primary SSN");
 		List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("SSN", "\\d{3}-\\d{2}-\\d{4}", null,
-				null, new String[] { "en-US" }, new String[] { "SSN", "social" }, true, 98, PatternInfo.Type.STRING));
+				null, new String[] { "en-US" }, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "SSN", null);
@@ -2039,7 +2040,7 @@ public class TestPlugins {
 		final Random random = new Random(314159265);
 
 		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", null,
-				path.toString(), new String[] { "en" }, new String[] {}, false, 98, PatternInfo.Type.STRING);
+				path.toString(), new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		List<PluginDefinition> plugins = new ArrayList<>();
@@ -2082,7 +2083,7 @@ public class TestPlugins {
 		final Random random = new Random(314159265);
 
 		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", null,
-				path.toString(), new String[] { "en" }, new String[] {}, false, 98, PatternInfo.Type.STRING);
+				path.toString(), new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		List<PluginDefinition> plugins = new ArrayList<>();
@@ -2220,7 +2221,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", "[\\p{IsAlphabetic}\\d]{9}", null,
-				null, new String[] { }, new String[] { "CUSIP" }, true, 98, PatternInfo.Type.STRING));
+				null, new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);

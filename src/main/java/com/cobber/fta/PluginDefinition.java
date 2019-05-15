@@ -21,13 +21,13 @@ public class PluginDefinition {
 	public String[] regExps;
 	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
 	public String regExp;
-	/** Simole finite Plugins: the filename with the set of valid elements. */
+	/** Simple finite plugins: the filename with the set of valid elements. */
 	public String filename;
 
-	/** hotWords An array of Strings that will be compared with the datastream name to boost confidence. */
-	public String[] hotWords;
-	/** Must one of the HotWords be present? */
-	public boolean hotWordMandatory;
+	/** hotWords An array of RegExps that will be compared with the datastream name to boost confidence. */
+	public String[] headerRegExps;
+	public int[] headerRegExpConfidence;
+
 	/** The required threshold to be matched (can be adjusted by presence of Hot Words. */
 	public int threshold;
 	/** The underlying base type (e.g. STRING, DOUBLE, LONG, DATE, ... */
@@ -45,14 +45,14 @@ public class PluginDefinition {
 		this.clazz = clazz;
 	}
 
-	public PluginDefinition(String qualifier, String regExp, String[] regExps, String filename, String[] validLocales, String[] hotWords, boolean hotWordMandatory, int threshold, PatternInfo.Type  baseType) {
+	public PluginDefinition(String qualifier, String regExp, String[] regExps, String filename, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, PatternInfo.Type  baseType) {
 		this.qualifier = qualifier;
 		this.regExp = regExp;
 		this.regExps = regExps == null ? new String[] { regExp } : regExps;
 		this.filename = filename;
 		this.validLocales = validLocales;
-		this.hotWords = hotWords;
-		this.hotWordMandatory = hotWordMandatory;
+		this.headerRegExps = headerRegExps;
+		this.headerRegExpConfidence = headerRegExpConfidence;
 		this.threshold = threshold;
 		this.baseType = baseType;
 	}

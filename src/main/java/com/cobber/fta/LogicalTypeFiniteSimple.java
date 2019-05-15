@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected String qualifier;
-	protected String[] hotWords;
+	protected Pattern[] headerPatterns;
 	protected String regexp;
 	protected String backout;
 	protected Reader reader;
@@ -16,7 +17,6 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	public LogicalTypeFiniteSimple(PluginDefinition plugin, String regexp, String backout, Reader reader, int threshold) {
 		super(plugin);
 		this.qualifier = plugin.qualifier;
-		this.hotWords = plugin.hotWords;
 		this.regexp = regexp;
 		this.backout = backout;
 		this.reader = reader;
@@ -43,6 +43,12 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 			}
 		}
 
+		if (defn.headerRegExps != null) {
+			headerPatterns = new Pattern[defn.headerRegExps.length];
+			for (int i = 0; i <  defn.headerRegExps.length; i++)
+				headerPatterns[i] = Pattern.compile(defn.headerRegExps[i]);
+		}
+
 		super.initialize(locale);
 
 		return true;
@@ -63,18 +69,18 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
 			StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
-		boolean streamNamePositive = false;
-		if (hotWords != null)
-			for (int i = 0; i < hotWords.length; i++)
-				if (dataStreamName.toLowerCase(locale).contains(hotWords[i])) {
-					streamNamePositive = true;
-					break;
-				}
+		int streamNamePositive = 0;
+
+		if (headerPatterns != null)
+			for (int i = 0; i < headerPatterns.length; i++) {
+				if (headerPatterns[i].matcher(dataStreamName).matches())
+					streamNamePositive += defn.headerRegExpConfidence[i];
+			}
 
 		int maxOutliers = 1;
 		int minCardinality = 4;
 		int minSamples = 20;
-		if (streamNamePositive) {
+		if (streamNamePositive >= 50) {
 			maxOutliers = 4;
 			minCardinality = 1;
 			minSamples = 4;

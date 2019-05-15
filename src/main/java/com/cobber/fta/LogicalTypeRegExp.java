@@ -1,9 +1,7 @@
 package com.cobber.fta;
 
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.cobber.fta.PatternInfo.Type;
@@ -14,8 +12,6 @@ public class LogicalTypeRegExp extends LogicalType {
 	private Long maxLong;
 	private Double minDouble;
 	private Double maxDouble;
-	Set<String> hotWordsUpperAndLower = new HashSet<>();
-
 	public LogicalTypeRegExp(PluginDefinition plugin) {
 		super(plugin);
 
@@ -36,13 +32,6 @@ public class LogicalTypeRegExp extends LogicalType {
 	@Override
 	public boolean initialize(Locale locale) {
 		super.initialize(locale);
-
-		if (defn.hotWords.length != 0) {
-			for (String elt : defn.hotWords) {
-				hotWordsUpperAndLower.add(elt);
-				hotWordsUpperAndLower.add(elt.toUpperCase(locale));
-			}
-		}
 
 		try {
 			pattern = Pattern.compile(defn.regExp);
@@ -82,15 +71,13 @@ public class LogicalTypeRegExp extends LogicalType {
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
 			Map<String, Long> cardinality, Map<String, Long> outliers) {
 
-		if (hotWordsUpperAndLower.size() != 0) {
+		if (defn.headerRegExps != null) {
 			boolean found = false;
-			for (String hotWord : hotWordsUpperAndLower)
-				if (dataStreamName.contains(hotWord) || dataStreamName.toUpperCase(locale).contains(hotWord)) {
+			for (int i = 0; i < defn.headerRegExps.length && !found; i++) {
+				if (defn.headerRegExpConfidence[i] == 100 && dataStreamName.matches(defn.headerRegExps[i]))
 					found = true;
-					break;
-				}
-
-			if (defn.hotWordMandatory && !found)
+			}
+			if (!found)
 				return defn.regExp;
 		}
 
@@ -120,7 +107,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	public String[] getHotWords() {
-		return defn.hotWords;
+		return defn.headerRegExps;
 	}
 
 	@Override
