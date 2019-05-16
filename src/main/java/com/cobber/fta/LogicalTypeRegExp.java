@@ -72,12 +72,12 @@ public class LogicalTypeRegExp extends LogicalType {
 			Map<String, Long> cardinality, Map<String, Long> outliers) {
 
 		if (defn.headerRegExps != null) {
-			boolean found = false;
-			for (int i = 0; i < defn.headerRegExps.length && !found; i++) {
-				if (defn.headerRegExpConfidence[i] == 100 && dataStreamName.matches(defn.headerRegExps[i]))
-					found = true;
+			boolean requiredHeaderMissing = false;
+			for (int i = 0; i < defn.headerRegExps.length && !requiredHeaderMissing; i++) {
+				if (defn.headerRegExpConfidence[i] == 100 && !dataStreamName.matches(defn.headerRegExps[i]))
+					requiredHeaderMissing = true;
 			}
-			if (!found)
+			if (requiredHeaderMissing)
 				return defn.regExp;
 		}
 
