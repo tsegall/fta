@@ -294,6 +294,97 @@ public class TestStrings {
 		}
 	}
 
+	@Test
+	public void testCompressUSD() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+		final String[] inputs = new String[] {
+				"$411.00", "$420.00", "$407.00", "$80.00", "$453.00", "$401.00", "$490.00", "$430.00", "$4.00", "$40.00",
+				"$830.00", "$411.00", "$420.00", "$407.00", "$80.00", "$453.00", "$401.00", "$490.00", "$430.00", "$4.00"
+		};
+		final int iterations = 10;
+
+		for (int i = 0; i < iterations; i++) {
+			for (String sample : inputs)
+				analysis.train(sample);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\$[+-]?[0-9]+\\.[0-9]+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void testCompressGBP() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Premium");
+		analysis.setCollectStatistics(false);
+		final String[] inputs = new String[] {
+				"£41.99", "£51.99", "£28.56", "£7.82", "£9.78", ""
+		};
+		final int iterations = 1;
+
+		for (int i = 0; i < iterations; i++) {
+			for (String sample : inputs)
+				analysis.train(sample);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 1);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "£[+-]?[0-9]+\\.[0-9]+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (inputs[i].length() != 0)
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), result.getRegExp());
+		}
+	}
+
+	@Test
+	public void testCompressCoordinates() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Centroid");
+		analysis.setCollectStatistics(false);
+		final String[] inputs = new String[] {
+				"-69.97345,12.51678", "66.00845,33.83627", "17.53646,12.29118",
+				"-63.06082,18.22560", "20.05399,41.14258", "20.03715,60.20733"
+		};
+		final int iterations = 1;
+
+		for (int i = 0; i < iterations; i++) {
+			for (String sample : inputs)
+				analysis.train(sample);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "[+-]?[0-9]+\\.[0-9]+,[+-]?[0-9]+\\.[0-9]+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (inputs[i].length() != 0)
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), result.getRegExp());
+		}
+	}
+
 	public void _stringPerf(boolean statisticsOn) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!statisticsOn) {

@@ -66,21 +66,25 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		return regexp;
 	}
 
-	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
-			StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
-		int streamNamePositive = 0;
-
+	protected int getHeaderConfidence(String dataStreamName) {
 		if (headerPatterns != null)
 			for (int i = 0; i < headerPatterns.length; i++) {
 				if (headerPatterns[i].matcher(dataStreamName).matches())
-					streamNamePositive += defn.headerRegExpConfidence[i];
+					return defn.headerRegExpConfidence[i];
 			}
+
+		return 0;
+	}
+
+	@Override
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
+			StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+		int headerConfidence = getHeaderConfidence(dataStreamName);
 
 		int maxOutliers = 1;
 		int minCardinality = 4;
 		int minSamples = 20;
-		if (streamNamePositive >= 50) {
+		if (headerConfidence >= 50) {
 			maxOutliers = 4;
 			minCardinality = 1;
 			minSamples = 4;

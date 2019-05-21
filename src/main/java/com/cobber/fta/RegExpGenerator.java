@@ -148,6 +148,7 @@ public class RegExpGenerator {
 	 *  - Strings of length greater than 30 are replaced with .+
 	 *  - any digit is replaced with '1'
 	 *  - any alpha is replaced with 'a'
+	 *  - any % is sloshed (i.e. replaced with %%)
 	 *
 	 * @param input The input String to be smashed.
 	 * @return A 'smashed' String.
@@ -165,6 +166,9 @@ public class RegExpGenerator {
 				b.append('1');
 			else if (Character.isAlphabetic(ch))
 				b.append('a');
+			else if (ch == '%') {
+				b.append("%%");
+			}
 			else
 				b.append(ch);
 		}
@@ -201,6 +205,14 @@ public class RegExpGenerator {
 					ret.append(segment(alphas, digits));
 				digits = 0;
 				alphas++;
+				break;
+
+			case '%':
+				ch = smashed.charAt(++i);
+				if (ch == '%')
+					ret.append('%');
+				else if (ch == 'f')
+					ret.append("[+-]?[0-9]+\\.[0-9]+");
 				break;
 
 			default:

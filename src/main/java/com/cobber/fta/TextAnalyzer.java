@@ -46,6 +46,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
@@ -257,7 +259,7 @@ public class TextAnalyzer {
 	 * Construct an anonymous Text Analyzer for a data stream.  Note: The resolution mode will be 'None'.
 	 */
 	public TextAnalyzer() {
-		this("anonymous", DateResolutionMode.None);
+		this(null, DateResolutionMode.None);
 	}
 
 	/**
@@ -270,7 +272,7 @@ public class TextAnalyzer {
 	 *   is None then the pattern returned will have '?' in to represent any ambiguity present.
 	 */
 	public TextAnalyzer(final String name, final DateResolutionMode resolutionMode) {
-		this.dataStreamName = name;
+		this.dataStreamName = name == null ? "anonymous" : name;
 		this.resolutionMode = resolutionMode;
 	}
 
@@ -1747,7 +1749,7 @@ public class TextAnalyzer {
 				else {
 					Long seen = shapes.get(inputShape);
 					if (seen == null)
-						if (shapes.size() < 4)
+						if (shapes.size() < 100)
 							shapes.put(inputShape, count);
 						else
 							uniformShape = false;
@@ -1756,6 +1758,36 @@ public class TextAnalyzer {
 				}
 			}
 		}
+	}
+
+	private void compressShapes() {
+		Map<String, Long> updatedShapes = new HashMap<>();
+
+	    Pattern decimalNumberPattern = Pattern.compile("(?:[^-+0-9\\.]|^)([+-]?[0-9]+\\.[0-9]+)(?:[^0-9\\.]|$)");
+
+	    // Shrink the shapes map to collapse multiple instances of a float (no exponent) with one.
+	    // e.g. we might have in the map $111.11, $11.11, and $-1111.11 and we will replace this with '$%f'
+		for (Map.Entry<String, Long> shape : shapes.entrySet()) {
+
+			String original = shape.getKey();
+			Matcher matcher = decimalNumberPattern.matcher(original);
+			StringBuffer updatedSB = new StringBuffer(original.length());
+
+			int offset = 0;
+			while (matcher.find(offset)) {
+				updatedSB.append(original.substring(offset, matcher.start(1))).append("%f");
+				offset = matcher.end(1);
+		    }
+		    String updated = updatedSB.length() == 0 ? original : updatedSB.toString();
+
+		    Long seen = updatedShapes.get(updated);
+			if (seen == null)
+				updatedShapes.put(updated, shape.getValue());
+			else
+				updatedShapes.put(updated, seen + shape.getValue());
+		}
+
+		shapes = updatedShapes;
 	}
 
 	// Track basic facts for the field - called for any Valid input
@@ -2389,8 +2421,14 @@ public class TextAnalyzer {
 
 			String singleUniformShape = null;
 			if (!updated && uniformShape) {
-				if (shapes.size() == 1)
+				if (shapes.size() > 1)
+					compressShapes();
+				if (shapes.size() == 1) {
 					singleUniformShape = shapes.keySet().iterator().next();
+					matchPatternInfo = new PatternInfo(null, RegExpGenerator.smashedAsRegExp(singleUniformShape.trim()), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+							maxTrimmedLength, null, null);
+					updated = true;
+				}
 				else {
 					if (shapes.size() == 2 && realSamples > 100) {
 						Iterator<Map.Entry<String, Long>> iter = shapes.entrySet().iterator();
@@ -2435,12 +2473,6 @@ public class TextAnalyzer {
 						*/
 					}
 				}
-			}
-
-			if (!updated && singleUniformShape != null && interestingSamples > reflectionSamples) {
-				matchPatternInfo = new PatternInfo(null, RegExpGenerator.smashedAsRegExp(singleUniformShape.trim()), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
-						maxTrimmedLength, null, null);
-				updated = true;
 			}
 
 			for (LogicalTypeRegExp logical : regExpTypes) {

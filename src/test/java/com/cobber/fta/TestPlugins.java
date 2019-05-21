@@ -2148,6 +2148,60 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void testNameHeader() throws IOException {
+		String headersGood[] = new String[] {
+				"FirstName", "First Name", "First_Name", "FIRSTNAME", "FNAME", "FIRST.NAME", "FIRST-NAME", "GIVEN NAME"
+		};
+		String headersMaybe[] = new String[] {
+				"NAME"
+		};
+		String headersBad[] = new String[] {
+				null, ""
+		};
+		String[] samples = new String[] {
+				"Swavek", "Jay", "Smitha", "Tim"
+		};
+
+		for (String header : headersMaybe) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.train("Mary");
+			for (String sample : samples) {
+				analysis.train(sample);
+			}
+
+			Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
+		}
+
+		for (String header : headersGood) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			for (String sample : samples) {
+				analysis.train(sample);
+			}
+
+			Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
+		}
+
+		for (String header : headersMaybe) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			for (String sample : samples) {
+				analysis.train(sample);
+			}
+
+			Assert.assertNull(analysis.getResult().getTypeQualifier(), header);
+		}
+
+		for (String header : headersBad) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			for (String sample : samples) {
+				analysis.train(sample);
+			}
+
+			Assert.assertNull(analysis.getResult().getTypeQualifier(), header);
+		}
+
+	}
+
+	@Test
 	public void testLatitudeSigned() throws IOException {
 		String[] samples = new String[] {
 				"51.5", "39.195", "46.18806", "-36.1333333", "33.52056", "39.79", "40.69361", "36.34333", "32.0666667", "48.8833333", "40.71417",

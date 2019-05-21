@@ -34,15 +34,9 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 		if (matchCount < 50 && outliers.size() > Math.sqrt(getMembers().size()))
 			return REGEXP;
 
-		int streamNamePositive = 0;
+		int headerConfidence = getHeaderConfidence(dataStreamName);
 
-		if (headerPatterns != null)
-			for (int i = 0; i < headerPatterns.length; i++) {
-				if (headerPatterns[i].matcher(dataStreamName).matches())
-					streamNamePositive += defn.headerRegExpConfidence[i];
-			}
-
-		if (streamNamePositive == 0 && (realSamples < 10 || cardinality.size() == 1))
+		if (headerConfidence == 0 && (realSamples < 10 || cardinality.size() == 1))
 			return REGEXP;
 
 		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : REGEXP;

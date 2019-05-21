@@ -123,7 +123,7 @@
 	{
 		"qualifier": "NAME.FIRST",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
-		"headerRegExps": [ ".*(?i)(surname|first[ _]name|lastname).*", "(?i)(given|name)" ],
+		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name).*", "(?i)(name)" ],
 		"headerRegExpConfidence": [ 90, 60 ],
 		"validLocales": [ "en" ],
 		"priority": 170
@@ -131,7 +131,7 @@
 	{
 		"qualifier": "NAME.LAST",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
-		"headerRegExps": [ ".*(?i)(surname|last[ _]name|lastname).*", "(?i)(last|name)" ],
+		"headerRegExps": [ ".*(?i)(surname|last.?name|lname).*", "(?i)(name)" ],
 		"headerRegExpConfidence": [ 90, 60 ],
 		"validLocales": [ "en" ],
 		"priority": 180
