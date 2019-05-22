@@ -2476,7 +2476,7 @@ public class TextAnalyzer {
 			}
 
 			for (LogicalTypeRegExp logical : regExpTypes) {
-				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && matchPatternInfo.regexp.equals(logical.getRegExp()) &&
+				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && logical.isMatch(matchPatternInfo.regexp) &&
 						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 					confidence = logical.getConfidence(matchCount, realSamples);

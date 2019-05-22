@@ -142,7 +142,7 @@
 		"headerRegExps": [ ".*(?i)(latitude).*" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExps": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
-		"regExp": "[+-]?\\d*\\.?\\d+",
+		"regExp": "[+-]?\\d+\\.\\d+",
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "-90.0",
@@ -154,12 +154,20 @@
 		"headerRegExps": [ ".*(?i)(longitude).*" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExps": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
-		"regExp": "[+-]?\\d*\\.?\\d+",
+		"regExp": "[+-]?\\d+\\.\\d+",
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "-180.0",
 		"maximum": "180.0",
 		"priority": 200
+	},
+	{
+		"qualifier": "COORDINATE_PAIR.DECIMAL",
+		"regExps": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+" ],
+		"regExp": "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+",
+		"threshold": 98,
+		"baseType": "STRING",
+		"priority": 205
 	},
 	{
 		"qualifier": "CITY",

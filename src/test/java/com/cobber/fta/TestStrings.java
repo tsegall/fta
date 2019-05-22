@@ -316,7 +316,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\$[+-]?[0-9]+\\.[0-9]+");
+		Assert.assertEquals(result.getRegExp(), "\\$[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -345,7 +345,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 1);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "£[+-]?[0-9]+\\.[0-9]+");
+		Assert.assertEquals(result.getRegExp(), "£[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -376,7 +376,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "[+-]?[0-9]+\\.[0-9]+,[+-]?[0-9]+\\.[0-9]+");
+		Assert.assertEquals(result.getRegExp(), "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {

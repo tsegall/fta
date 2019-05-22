@@ -98,6 +98,9 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	public boolean isMatch(String regExp) {
+		if (defn.regExps == null)
+			return true;
+
 		for (String re : defn.regExps) {
 			if (regExp.equals(re))
 				return true;

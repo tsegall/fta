@@ -212,7 +212,7 @@ public class RegExpGenerator {
 				if (ch == '%')
 					ret.append('%');
 				else if (ch == 'f')
-					ret.append("[+-]?[0-9]+\\.[0-9]+");
+					ret.append("[+-]?\\d+\\.\\d+");
 				break;
 
 			default:
