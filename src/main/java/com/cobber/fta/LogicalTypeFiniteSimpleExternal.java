@@ -11,7 +11,7 @@ public class LogicalTypeFiniteSimpleExternal extends LogicalTypeFiniteSimple {
 	private static String[] membersArray = null;
 
 	public LogicalTypeFiniteSimpleExternal(PluginDefinition plugin) throws FileNotFoundException {
-		super(plugin, plugin.regExp,
+		super(plugin, plugin.regExpReturned,
 				"\\p{IsAlphabetic}{2}", new InputStreamReader(new FileInputStream(plugin.filename)), 95);
 	}
 

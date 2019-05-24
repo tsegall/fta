@@ -34,7 +34,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		super.initialize(locale);
 
 		try {
-			pattern = Pattern.compile(defn.regExp);
+			pattern = Pattern.compile(defn.regExpReturned);
 		}
 		catch (Exception e) {
 			return false;
@@ -49,7 +49,7 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	@Override
 	public String getRegExp() {
-		return defn.regExp;
+		return defn.regExpReturned;
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class LogicalTypeRegExp extends LogicalType {
 					requiredHeaderMissing = true;
 			}
 			if (requiredHeaderMissing)
-				return defn.regExp;
+				return defn.regExpReturned;
 		}
 
 		if (stringFacts != null) {
@@ -86,22 +86,22 @@ public class LogicalTypeRegExp extends LogicalType {
 			case LONG:
 				if ((minLong != null && Long.parseLong(stringFacts.minValue) < minLong) ||
 						(maxLong != null && Long.parseLong(stringFacts.maxValue) > maxLong))
-					return defn.regExp;
+					return defn.regExpReturned;
 			case DOUBLE:
 				if ((minDouble != null && Double.parseDouble(stringFacts.minValue) < minDouble) ||
 						(maxDouble != null && Double.parseDouble(stringFacts.maxValue) > maxDouble))
-					return defn.regExp;
+					return defn.regExpReturned;
 			}
 		}
 
-		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : defn.regExp;
+		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : defn.regExpReturned;
 	}
 
 	public boolean isMatch(String regExp) {
-		if (defn.regExps == null)
+		if (defn.regExpsToMatch == null)
 			return true;
 
-		for (String re : defn.regExps) {
+		for (String re : defn.regExpsToMatch) {
 			if (regExp.equals(re))
 				return true;
 		}

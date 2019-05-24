@@ -18,9 +18,9 @@ public class PluginDefinition {
 	/** Infinite/Finite plugins: this is the class used to implement. */
 	public String clazz;
 	/** RegExp plugins: the RegExps to be matched to qualify as this Logical Type. */
-	public String[] regExps;
+	public String[] regExpsToMatch;
 	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
-	public String regExp;
+	public String regExpReturned;
 	/** Simple finite plugins: the filename with the set of valid elements. */
 	public String filename;
 
@@ -45,10 +45,10 @@ public class PluginDefinition {
 		this.clazz = clazz;
 	}
 
-	public PluginDefinition(String qualifier, String regExp, String[] regExps, String filename, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, PatternInfo.Type  baseType) {
+	public PluginDefinition(String qualifier, String regExpReturned, String[] regExpsToMatch, String filename, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, PatternInfo.Type  baseType) {
 		this.qualifier = qualifier;
-		this.regExp = regExp;
-		this.regExps = regExps == null ? new String[] { regExp } : regExps;
+		this.regExpReturned = regExpReturned;
+		this.regExpsToMatch = regExpsToMatch == null ? new String[] { regExpReturned } : regExpsToMatch;
 		this.filename = filename;
 		this.validLocales = validLocales;
 		this.headerRegExps = headerRegExps;

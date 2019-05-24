@@ -141,8 +141,8 @@
 		"validLocales": [ ],
 		"headerRegExps": [ ".*(?i)(latitude).*" ],
 		"headerRegExpConfidence": [ 100 ],
-		"regExps": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
-		"regExp": "[+-]?\\d+\\.\\d+",
+		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
+		"regExpReturned": "[+-]?\\d+\\.\\d+",
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "-90.0",
@@ -153,8 +153,8 @@
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
 		"headerRegExps": [ ".*(?i)(longitude).*" ],
 		"headerRegExpConfidence": [ 100 ],
-		"regExps": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
-		"regExp": "[+-]?\\d+\\.\\d+",
+		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
+		"regExpReturned": "[+-]?\\d+\\.\\d+",
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "-180.0",
@@ -163,8 +163,8 @@
 	},
 	{
 		"qualifier": "COORDINATE_PAIR.DECIMAL",
-		"regExps": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+" ],
-		"regExp": "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+",
+		"regExpsToMatch": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+" ],
+		"regExpReturned": "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+",
 		"threshold": 98,
 		"baseType": "STRING",
 		"priority": 205
@@ -173,7 +173,7 @@
 		"qualifier": "CITY",
 		"headerRegExps": [ "^(?i)(city)$|^.*[ _](?i)(city)$|.*[a-z]City$" ],
 		"headerRegExpConfidence": [ 100 ],
-		"regExp": ".+",
+		"regExpReturned": ".+",
 		"baseType": "STRING",
 		"priority": 210
 	}

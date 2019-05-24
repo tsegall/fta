@@ -71,7 +71,7 @@ public class Plugins {
 					registerLogicalTypeClass(plugin, locale);
 				else if (plugin.filename != null)
 					registerLogicalTypeFiniteSet(plugin, locale);
-				else if (plugin.regExp != null)
+				else if (plugin.regExpReturned != null)
 					registerLogicalTypeRegExp(plugin, locale);
 		}
 	}
