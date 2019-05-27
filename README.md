@@ -8,7 +8,6 @@ Support for non-English date detection is relatively robust, with the following 
 * No support for non-Gregorian calendars
 * No support for non-Arabic numerals and no support for Japanese.
 
-setDefaultLogicalTypes(false);
 Typical usage is:
 ```java
 import com.cobber.fta.TextAnalyzer;
@@ -36,7 +35,7 @@ class Trivial {
 ## Semantic Type detection ##
 
 In addition to detecting a set of Base types (Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
-fta will also when enabled (default on - setDefaultLogicalTypes(false) to disable) infer Semantic type information along with the Base types.
+fta will also, when enabled (default on - setDefaultLogicalTypes(false) to disable) infer Semantic type information along with the Base types.
 
 The following Semantic Types are currently detected:
 
