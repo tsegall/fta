@@ -292,6 +292,75 @@ public class TestDoubles {
 	}
 
 	@Test
+	public void singleDoubleWithWidening() throws IOException {
+		String[] samples = new String[] {
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"-16.71",
+				"0", "", "0", "0", "0", "", "0", "0", "0", ""
+
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("EURO_OUTSTANDING");
+
+		for (int i = 0; i < samples.length; i++)
+			analysis.train(samples[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		Assert.assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+//		for (int i = 0; i < samples.length; i++) {
+//			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+//		}
+	}
+
+	@Test
+	public void simpleIntegerWithWidening() throws IOException {
+		String[] samples = new String[] {
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"0", "", "0", "0", "0", "", "0", "0", "0", "",
+				"Hello",
+				"0", "", "0", "0", "0", "", "0", "0", "0", ""
+
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("EURO_OUTSTANDING");
+
+		for (int i = 0; i < samples.length; i++)
+			analysis.train(samples[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getBlankCount(), 33);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getRegExp(), "\\d{1}");
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
+	}
+
+	@Test
 	public void lateDouble() throws IOException {
 		String[] samples = new String[] {
 				"-10000", "-1000", "-340", "-2500", "-1000", "-2062", "-2500", "-1927", "-2500", "-1927",

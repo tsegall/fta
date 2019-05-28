@@ -100,6 +100,9 @@ public class TextAnalyzer {
 	/** Threshold for detection - by default this is set to 95%. */
 	private int threshold = 95;
 
+	/** Enable Numeric widening - i.e. if we see lots of integers then some doubles call it a double. */
+	private boolean numericWidening = true;
+
 	private Locale locale = Locale.getDefault();
 
 	/** The default value for the maximum Cardinality tracked. */
@@ -382,6 +385,23 @@ public class TextAnalyzer {
 	 */
 	public int getPluginThreshold() {
 		return pluginThreshold;
+	}
+
+	/**
+	 * If true enable Numeric widening - i.e. if we see lots of integers then some doubles call it a double.
+	 * @param numericWidening The new value for numericWidening.
+	 */
+	public void setNumericWidening(boolean numericWidening) {
+		this.numericWidening = numericWidening;
+	}
+
+	/**
+	 * Get the current value for numeric widening.
+	 *
+	 * @return The current value.
+	 */
+	public boolean getNumericWidening() {
+		return numericWidening;
 	}
 
 	/**
@@ -1558,7 +1578,7 @@ public class TextAnalyzer {
 		return outliers.size();
 	}
 
-	private boolean conditionalBackoutToPattern(final long realSamples, PatternInfo current) {
+	class OutlierAnalysis {
 		int alphas = 0;
 		int digits = 0;
 		int spaces = 0;
@@ -1568,72 +1588,78 @@ public class TextAnalyzer {
 		boolean negative = false;
 		boolean exponent = false;
 
-		// Sweep the current outliers
-		for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
-			String key = entry.getKey();
-			Long value = entry.getValue();
-			if (PatternInfo.Type.LONG.equals(current.type) && isDouble(key)) {
-				doubles++;
-				if (!negative)
-					negative = key.charAt(0) == '-';
-				if (!exponent)
-					exponent = key.indexOf('e') != -1 || key.indexOf('E') != -1;
+		OutlierAnalysis(Map<String, Long> outliers,  PatternInfo current) {
+			// Sweep the current outliers
+			for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
+				String key = entry.getKey();
+				Long value = entry.getValue();
+				if (PatternInfo.Type.LONG.equals(current.type) && isDouble(key)) {
+					doubles++;
+					if (!negative)
+						negative = key.charAt(0) == '-';
+					if (!exponent)
+						exponent = key.indexOf('e') != -1 || key.indexOf('E') != -1;
+				}
+				boolean foundAlpha = false;
+				boolean foundDigit = false;
+				boolean foundSpace = false;
+				boolean foundOther = false;
+				int len = key.length();
+				for (int i = 0; i < len; i++) {
+					Character c = key.charAt(i);
+					if (Character.isAlphabetic(c))
+						foundAlpha = true;
+				    else if (Character.isDigit(c))
+						foundDigit = true;
+				    else if (Character.isWhitespace(c))
+						foundSpace = true;
+				    else
+						foundOther = true;
+				}
+				if (foundAlpha)
+					alphas += value;
+				if (foundDigit)
+					digits += value;
+				if (foundSpace)
+					spaces += value;
+				if (foundOther)
+					other += value;
+				if (foundSpace || foundOther)
+					nonAlphaNumeric += value;
 			}
-			boolean foundAlpha = false;
-			boolean foundDigit = false;
-			boolean foundSpace = false;
-			boolean foundOther = false;
-			int len = key.length();
-			for (int i = 0; i < len; i++) {
-				Character c = key.charAt(i);
-			    if (Character.isAlphabetic(c))
-			    	foundAlpha = true;
-			    else if (Character.isDigit(c))
-			    	foundDigit = true;
-			    else if (Character.isWhitespace(c))
-			    	foundSpace = true;
-			    else
-			    	foundOther = true;
-			}
-			if (foundAlpha)
-				alphas += value;
-			if (foundDigit)
-				digits += value;
-			if (foundSpace)
-				spaces += value;
-			if (foundOther)
-				other += value;
-			if (foundSpace || foundOther)
-				nonAlphaNumeric += value;
 		}
+	}
 
-		int badCharacters = current.isAlphabetic() ? digits : alphas;
+	private boolean conditionalBackoutToPattern(final long realSamples, PatternInfo current) {
+		OutlierAnalysis analysis = new OutlierAnalysis(outliers, current);
+
+		int badCharacters = current.isAlphabetic() ? analysis.digits : analysis.alphas;
 		// If we are currently Alphabetic and the only errors are digits then convert to AlphaNumeric
-		if (badCharacters != 0 && spaces == 0 && other == 0 && current.isAlphabetic()) {
-			if (outliers.size() == maxOutliers || digits > .01 * realSamples) {
+		if (badCharacters != 0 && analysis.spaces == 0 && analysis.other == 0 && current.isAlphabetic()) {
+			if (outliers.size() == maxOutliers || analysis.digits > .01 * realSamples) {
 				backoutToPatternID(realSamples, KnownPatterns.ID.ID_ALPHANUMERIC_VARIABLE);
 				return true;
 			}
 		}
 		// If we are currently Numeric and the only errors are alpha then convert to AlphaNumeric
-		else if (badCharacters != 0 && spaces == 0 && other == 0 && PatternInfo.Type.LONG.equals(current.type)) {
-			if (outliers.size() == maxOutliers || alphas > .01 * realSamples) {
+		else if (badCharacters != 0 && analysis.spaces == 0 && analysis.other == 0 && PatternInfo.Type.LONG.equals(current.type)) {
+			if (outliers.size() == maxOutliers || analysis.alphas > .01 * realSamples) {
 				backoutToPattern(realSamples, KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE);
 				return true;
 			}
 		}
 		// If we are currently Numeric and the only errors are doubles then convert to double
-		else if (outliers.size() == doubles && PatternInfo.Type.LONG.equals(current.type)) {
+		else if (outliers.size() == analysis.doubles && PatternInfo.Type.LONG.equals(current.type)) {
 			KnownPatterns.ID id;
-			if (exponent)
-				id = negative ? KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT;
+			if (analysis.exponent)
+				id = analysis.negative ? KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT;
 			else
-				id = negative ? KnownPatterns.ID.ID_SIGNED_DOUBLE : KnownPatterns.ID.ID_DOUBLE;
+				id = analysis.negative ? KnownPatterns.ID.ID_SIGNED_DOUBLE : KnownPatterns.ID.ID_DOUBLE;
 			backoutToPatternID(realSamples, id);
 			return true;
 		}
 		else if ((realSamples > reflectionSamples && outliers.size() == maxOutliers)
-					|| (badCharacters + nonAlphaNumeric) > .01 * realSamples) {
+					|| (badCharacters + analysis.nonAlphaNumeric) > .01 * realSamples) {
 				backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
 				return true;
 		}
@@ -2233,7 +2259,9 @@ public class TextAnalyzer {
 					}
 				}
 
-				if (!matchPatternInfo.isLogicalType() && realSamples >= detectWindow && confidence < threshold/100.0) {
+				if (!matchPatternInfo.isLogicalType() && realSamples >= detectWindow &&
+						(confidence < threshold/100.0 ||
+								(numericWidening && outliers.size() != 0 && (new OutlierAnalysis(outliers, matchPatternInfo)).doubles == outliers.size()))) {
 					// We thought it was an integer field, but on reflection it does not feel like it
 					conditionalBackoutToPattern(realSamples, matchPatternInfo);
 					confidence = (double) matchCount / realSamples;

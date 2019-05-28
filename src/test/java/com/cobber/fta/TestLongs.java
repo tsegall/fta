@@ -445,6 +445,7 @@ public class TestLongs {
 	@Test
 	public void someInts() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setNumericWidening(false);
 		final Random random = new Random();
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
@@ -485,7 +486,7 @@ public class TestLongs {
 	public void manyConstantLengthLongs() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
-		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
+		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;
 		final Random random = new Random();
 		int locked = -1;
 
