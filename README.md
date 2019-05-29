@@ -123,7 +123,7 @@ The optional 'minimum (maximum)' tags are valid for Stream of Base Type Long or 
 
 The mandatory 'filename' tag contains a file with the list of valid elements enumerated.
 
-## Starting ##
+## Getting Starting ##
 
 Fastest way to get started is to review the samples provided.
 
