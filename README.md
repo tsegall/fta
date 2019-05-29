@@ -99,6 +99,29 @@ Note: The Stream Name can be used to bias detection of the incoming data and/or 
 ]
 ```
 
+### All Plugins ###
+
+The mandatory 'qualifier' tag is the name of this Semantic Type.
+
+The mandatory 'threshold' tag is the percentage of valid samples required by this plugin to establish the Stream Data as a a valid instance of this Semantic Type.
+
+The mandatory 'baseType' tag constrains the plugin to streams that are of this Base Type (see discussion above on the valid Base Types)..
+
+The optional 'validLocales' tag is used to constrain the plugin to a set of languages or locales.
+
+The optional 'headerRegExps' tag is an ordered list of Regular Expression used to match against the Stream Name (if present), along with the parallel list 'headerRegExpConfidence' it controls the use of the Stream Name to match the Semantic Type.  For RegExp plugins the headerRegExps are optional but if present must have a confidence of 100% and will be required to match in order for the Stream to be declared a match.
+
+### RegExp plugins ###
+
+The mandatory 'regExpReturned' tag is the validation string that will be returned by this plugin if a successful match is established.
+
+The optional 'regExpsToMatch' tag is an ordered list of Regular Expressions used to match against the Stream Data.  If not set then the regExpReturned is used to match.
+
+The optional 'minimum (maximum)' tags are valid for Stream of Base Type Long or Double and further restrict the data that will be considered valid.
+
+### Finite plugins ###
+
+The mandatory 'filename' tag contains a file with the list of valid elements enumerated.
 
 ## Starting ##
 
