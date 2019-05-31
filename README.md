@@ -32,6 +32,28 @@ class Trivial {
 }
 ```
 
+## Metrics ##
+
+Metrics detected include:
+ * sampleCount
+ * matchCount
+ * nullCount
+ * blankCount
+ * regExp
+ * confidence
+ * type
+ * min
+ * max
+ * minLength
+ * maxLength
+ * cardinality
+ * outlierCardinality
+ * leadingWhiteSpace
+ * trailingWhiteSpace
+ * multiline
+ * logicalType
+ * possibleKey
+
 ## Semantic Type detection ##
 
 In addition to detecting a set of Base types (Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
