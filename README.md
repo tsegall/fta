@@ -35,29 +35,29 @@ class Trivial {
 ## Metrics ##
 
 Metrics detected include:
- * sampleCount
- * matchCount
- * nullCount
- * blankCount
- * regExp
- * confidence
- * type
- * min
- * max
- * minLength
- * maxLength
- * cardinality
- * outlierCardinality
- * leadingWhiteSpace
- * trailingWhiteSpace
- * multiline
- * logicalType
- * possibleKey
+ * sampleCount - number of samples observed
+ * matchCount - number of samples that match the detected Base (or Semantic) type
+ * nullCount - number of null samples
+ * blankCount - number of blank samples
+ * regExp - A Regular Expression (Java) that matches the detected Type
+ * confidence - The confidence in the determination of the Type
+ * type - The Base Type (one of Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
+ * typeQualifier - A modifier wrt. the Base Type (e.g. for Date types it will be a pattern, for Long types it might be SIGNED, for String types it might be COUNTRY.ISO-3166-2)
+ * min - The minimum value observed
+ * max - The maximum value observed
+ * minLength - The minimum length observed
+ * maxLength - The maximum length observed
+ * cardinality - The cardinality of the valid set (or MaxCardinality if the set is larger than MaxCardinality)
+ * outlierCardinality - The cardinality of the invalid set (or MaxOutlierCardinality if the set is larger than MaxOutlierCardinality)
+ * leadingWhiteSpace - Does the observed set have leading white space
+ * trailingWhiteSpace - Does the observed set have trailing white space
+ * multiline - Does the observed set have leading multiline elements
+ * logicalType -Does the oserved set reflect a Semantic Type
+ * possibleKey - Does the observed set appear to be a Key field (i.e. unique)
 
 ## Semantic Type detection ##
 
-In addition to detecting a set of Base types (Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
-fta will also, when enabled (default on - setDefaultLogicalTypes(false) to disable) infer Semantic type information along with the Base types.
+In addition to detecting a set of Base types fta will also, when enabled (default on - setDefaultLogicalTypes(false) to disable) infer Semantic type information along with the Base types.
 
 The following Semantic Types are currently detected:
 
