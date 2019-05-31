@@ -54,6 +54,8 @@ Metrics detected include:
  * multiline - Does the observed set have leading multiline elements
  * logicalType -Does the oserved set reflect a Semantic Type
  * possibleKey - Does the observed set appear to be a Key field (i.e. unique)
+ * cardinalityDetail - Details on the valid set
+ * outlierDetail - Details on the invalid set
 
 ## Semantic Type detection ##
 
