@@ -503,7 +503,7 @@ public class TextAnalysisResult {
 		}
 
 		analysis.put("shapesCardinality", shapes.size() < maxShapes ? String.valueOf(shapes.size()) : "MAX");
-		if (!shapes.isEmpty()) {
+		if (!shapes.isEmpty() && verbose >= 1) {
 			ArrayNode detail = analysis.putArray("shapesDetail");
 			for (final Map.Entry<String, Long> entry : entriesSortedByValues(shapes)) {
 				ObjectNode elt = mapper.createObjectNode();
