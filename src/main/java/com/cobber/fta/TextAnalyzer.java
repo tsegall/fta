@@ -109,11 +109,16 @@ public class TextAnalyzer {
 	public static final int MAX_CARDINALITY_DEFAULT = 12000;
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
 
+	/** We need to see at least this many samples (all unique) before we will claim this is a possible key. */
 	private static final int MIN_SAMPLES_FOR_KEY = 1000;
 
 	/** The default value for the maximum # of outliers tracked. */
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
 	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
+
+	/** The maximum number of shapes tracked. */
+	public static final int MAX_SHAPES_DEFAULT = 100;
+	private int maxShapes = MAX_SHAPES_DEFAULT;
 
 	/** We are prepared to recognize any set of this size as an enum (and give a suitable regular expression). */
 	private final int MAX_ENUM_SIZE = 40;
@@ -1785,7 +1790,7 @@ public class TextAnalyzer {
 				else {
 					Long seen = shapes.get(inputShape);
 					if (seen == null)
-						if (shapes.size() < 100)
+						if (shapes.size() < maxShapes)
 							shapes.put(inputShape, count);
 						else
 							uniformShape = false;
@@ -2571,7 +2576,7 @@ public class TextAnalyzer {
 		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,
 				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, facts.minValue,
 				facts.maxValue, minRawLength, maxRawLength, facts.sum, utilizedDecimalSeparator, resolutionMode,
-				cardinality, maxCardinality, outliers, maxOutliers, key, collectStatistics);
+				cardinality, maxCardinality, outliers, maxOutliers, shapes, maxShapes, key, collectStatistics);
 
 		return result;
 	}

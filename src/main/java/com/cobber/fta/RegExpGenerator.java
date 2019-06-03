@@ -141,13 +141,15 @@ public class RegExpGenerator {
 		return ret;
 	}
 
+	final static char DIGIT = '9';
+	final static char ALPHABETIC = 'X';
 
 	/**
 	 * Fast method to simplify a string so that we can determine if all inputs are of the same form.
 	 * Smashed strings follow the following rules:
 	 *  - Strings of length greater than 30 are replaced with .+
-	 *  - any digit is replaced with '1'
-	 *  - any alpha is replaced with 'a'
+	 *  - any digit is replaced with '9'
+	 *  - any alpha is replaced with 'X'
 	 *  - any % is sloshed (i.e. replaced with %%)
 	 *
 	 * @param input The input String to be smashed.
@@ -163,9 +165,9 @@ public class RegExpGenerator {
 			char ch = input.charAt(i);
 			// Note: we are using 0-9 not isDigit
 			if (ch >= '0' && ch <= '9')
-				b.append('1');
+				b.append(DIGIT);
 			else if (Character.isAlphabetic(ch))
-				b.append('a');
+				b.append(ALPHABETIC);
 			else if (ch == '%') {
 				b.append("%%");
 			}
@@ -193,14 +195,14 @@ public class RegExpGenerator {
 			char ch = smashed.charAt(i);
 
 			switch (ch) {
-			case '1':
+			case DIGIT:
 				if (alphas != 0)
 					ret.append(segment(alphas, digits));
 				alphas = 0;
 				digits++;
 				break;
 
-			case 'a':
+			case ALPHABETIC:
 				if (digits != 0)
 					ret.append(segment(alphas, digits));
 				digits = 0;

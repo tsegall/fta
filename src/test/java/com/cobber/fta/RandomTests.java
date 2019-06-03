@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -722,7 +723,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}" + '|' + KnownPatterns.PATTERN_NUMERIC + "{3}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_NUMERIC + "{3}" + '|' + KnownPatterns.PATTERN_ALPHA + "{3}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
@@ -1321,6 +1322,11 @@ public class RandomTests {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{9,12}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getShapeCount(), 6);
+		final Map<String, Long> shapes = result.getShapeDetails();
+		Assert.assertEquals(shapes.size(), result.getShapeCount());
+		Assert.assertEquals(shapes.get("999999999999"), Long.valueOf(1));
+		Assert.assertEquals(shapes.get("9999XXX99999"), Long.valueOf(2));
 
 		for (int i = 0; i < samples.length; i++) {
 			Assert.assertTrue(samples[i].matches(result.getRegExp()));

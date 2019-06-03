@@ -8,12 +8,12 @@ import org.testng.annotations.Test;
 public class TestRegExpSupport {
 	@Test
 	public void phone() throws IOException {
-		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("+1 111 111 1111"), "\\+\\d \\d{3} \\d{3} \\d{4}");
+		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("+9 999 999 9999"), "\\+\\d \\d{3} \\d{3} \\d{4}");
 	}
 
 	@Test
 	public void onlyAlpha() throws IOException {
-		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("aaaaa"), "\\p{IsAlphabetic}{5}");
+		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("XXXXX"), "\\p{IsAlphabetic}{5}");
 	}
 
 	@Test

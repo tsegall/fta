@@ -54,8 +54,9 @@ Metrics detected include:
  * multiline - Does the observed set have leading multiline elements
  * logicalType -Does the oserved set reflect a Semantic Type
  * possibleKey - Does the observed set appear to be a Key field (i.e. unique)
- * cardinalityDetail - Details on the valid set
- * outlierDetail - Details on the invalid set
+ * cardinalityDetail - Details on the valid set, list of elements and occurence count
+ * outlierDetail - Details on the invalid set, list of elements and occurence count
+ * shapeDetail - Details on the shapes set, list of elements and occurence count. This will collapse all numerics to '9', and all alphabetics to 'X'
 
 ## Semantic Type detection ##
 

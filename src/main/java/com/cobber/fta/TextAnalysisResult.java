@@ -53,6 +53,8 @@ public class TextAnalysisResult {
 	private final int maxCardinality;
 	private final Map<String, Long> outliers;
 	private final int maxOutliers;
+	private final Map<String, Long> shapes;
+	private final int maxShapes;
 	private final boolean key;
 	private final boolean collectStatistics;
 
@@ -80,6 +82,7 @@ public class TextAnalysisResult {
 	 *   is None then the pattern returned will have '?' in to represent any ambiguity present.
 	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
+	 * @param shapes A map of input shapes and the count of occurrences of the these shapes.
 	 * @param key Do we think this field is a key.
 	 * @param collectStatistics Were statistics collected during this analysis.
 	 */
@@ -87,7 +90,9 @@ public class TextAnalysisResult {
 			boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
 			final double confidence, final String minValue, final String maxValue, final int minLength, final int maxLength,
 			final String sum, char decimalSeparator, DateResolutionMode resolutionMode,
-			final Map<String, Long> cardinality, int maxCardinality, final Map<String, Long> outliers, int maxOutliers,
+			final Map<String, Long> cardinality, int maxCardinality,
+			final Map<String, Long> outliers, int maxOutliers,
+			final Map<String, Long> shapes, int maxShapes,
 			final boolean key, boolean collectStatistics) {
 		this.name = name;
 		this.matchCount = matchCount;
@@ -111,6 +116,8 @@ public class TextAnalysisResult {
 		this.maxCardinality = maxCardinality;
 		this.outliers = outliers;
 		this.maxOutliers = maxOutliers;
+		this.shapes = shapes;
+		this.maxShapes = maxShapes;
 		this.key = key;
 		this.collectStatistics = collectStatistics;
 	}
@@ -374,6 +381,25 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * Get the number of distinct shapes for the current data stream.
+	 * Note: This is not a complete shape analysis unless the shape count of the
+	 * data stream is less than the maximum shape count (Default: {@value com.cobber.fta.TextAnalyzer#MAX_SHAPES_DEFAULT}).
+	 * @return Count of the distinct shapes.
+	 */
+	public int getShapeCount() {
+		return shapes.size();
+	}
+
+	/**
+	 * Get the shape details for the current data stream.  This is a Map of Strings and the count
+	 * of occurrences.
+	 * @return A Map of shapes and their occurrence frequency of the data stream to date.
+	 */
+	public Map<String, Long> getShapeDetails() {
+		return shapes;
+	}
+
+	/**
 	 * Is this field a possible key?
 	 * @return True if the field could be a key field.
 	 */
@@ -469,6 +495,17 @@ public class TextAnalysisResult {
  		if (!outliers.isEmpty()  && (verbose > 1 || (verbose == 1 && outliers.size() < .2 * sampleCount))) {
 			ArrayNode detail = analysis.putArray("outlierDetail");
 			for (final Map.Entry<String, Long> entry : entriesSortedByValues(outliers)) {
+				ObjectNode elt = mapper.createObjectNode();
+				elt.put("key", entry.getKey());
+				elt.put("count", entry.getValue());
+				detail.add(elt);
+			}
+		}
+
+		analysis.put("shapesCardinality", shapes.size() < maxShapes ? String.valueOf(shapes.size()) : "MAX");
+		if (!shapes.isEmpty()) {
+			ArrayNode detail = analysis.putArray("shapesDetail");
+			for (final Map.Entry<String, Long> entry : entriesSortedByValues(shapes)) {
 				ObjectNode elt = mapper.createObjectNode();
 				elt.put("key", entry.getKey());
 				elt.put("count", entry.getValue());
