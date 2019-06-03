@@ -122,7 +122,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
-		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		Assert.assertEquals(result.getTypeQualifier(), PatternInfo.TypeQualifier.SIGNED.toString());
 		Assert.assertEquals(result.getMinValue(), "-99.23");
 		Assert.assertEquals(result.getMaxValue(), "43.8");
 

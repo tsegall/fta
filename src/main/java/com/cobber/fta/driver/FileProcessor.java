@@ -25,7 +25,9 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -45,12 +47,41 @@ class FileProcessor {
 		this.options = options;
 	}
 
-	void process() throws IOException {
-		final long start = System.currentTimeMillis();
-		TextAnalyzer[] analysis = null;
-		String[] header = null;
-		int numFields = 0;
+	void setOptions(TextAnalyzer analyzer) throws IOException {
+		if (options.debug != -1)
+			analyzer.setDebug(options.debug);
+		if (options.detectWindow != -1)
+			analyzer.setDetectWindow(options.detectWindow);
+		if (options.maxCardinality != -1)
+			analyzer.setMaxCardinality(options.maxCardinality);
+		if (options.maxOutlierCardinality != -1)
+			analyzer.setMaxOutliers(options.maxOutlierCardinality);
+		if (options.pluginThreshold != -1)
+			analyzer.setPluginThreshold(options.pluginThreshold);
+		if (options.locale != null)
+			analyzer.setLocale(options.locale);
+		if (options.noStatistics)
+			analyzer.setCollectStatistics(false);
+		if (options.noLogicalTypes)
+			analyzer.setDefaultLogicalTypes(false);
 
+		if (options.logicalTypes != null)
+			try {
+				if (options.logicalTypes.charAt(0) == '[')
+					analyzer.getPlugins().registerPlugins(new StringReader(options.logicalTypes),
+							analyzer.getStreamName(), options.locale);
+				else
+					analyzer.getPlugins().registerPlugins(new FileReader(options.logicalTypes), analyzer.getStreamName(), options.locale);
+			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+					| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				System.err.println("Failed to register plugin: " + e.getMessage());
+				System.exit(1);
+			}
+		if (options.threshold != -1)
+			analyzer.setThreshold(options.threshold);
+	}
+
+	void process() throws IOException {
 		CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);
 		settings.detectFormatAutomatically();
@@ -63,6 +94,70 @@ class FileProcessor {
 		if (options.xMaxCharsPerColumn != -1)
 			settings.setMaxCharsPerColumn(options.xMaxCharsPerColumn);
 
+		if (options.bulk)
+			processBulk(settings);
+		else
+			processAllFields(settings);
+	}
+
+	void processBulk(CsvParserSettings settings) throws IOException {
+		String[] header = null;
+		int numFields = 0;
+		TextAnalyzer analyzer = null;
+		TextAnalysisResult result;
+        String previousKey = null;
+        String key = null;
+        String previousName = null;
+        String name = null;
+		Map<String, Long> bulkMap = new HashMap<>();
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
+			CsvParser parser = new CsvParser(settings);
+			parser.beginParsing(in);
+
+			header = parser.getRecordMetadata().headers();
+			numFields = header.length;
+
+			long thisRecord = 0;
+			String[] row;
+			while ((row = parser.parseNext()) != null) {
+				if (row.length != numFields) {
+					logger.printf("Record %d has %d fields, expected %d, skipping\n",
+							thisRecord, row.length, numFields);
+					continue;
+				}
+				key = row[0];
+				name = row[1];
+				String fieldValue = row[2];
+				Long fieldCount = Long.valueOf(row[3]);
+				if (previousKey == null || !key.equals(previousKey)) {
+					if (!bulkMap.isEmpty()) {
+						analyzer = new TextAnalyzer(previousName);
+						analyzer.trainBulk(bulkMap);
+						result = analyzer.getResult();
+						logger.printf("Field '%s' - %s\n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
+					}
+					bulkMap.clear();
+					previousKey = key;
+					previousName = name;
+                }
+                bulkMap.put(fieldValue, fieldCount);
+			}
+
+			if (!bulkMap.isEmpty()) {
+				analyzer = new TextAnalyzer(name);
+				analyzer.trainBulk(bulkMap);
+				result = analyzer.getResult();
+				logger.printf("Field '%s' - %s\n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
+			}
+		}
+	}
+
+	void processAllFields(CsvParserSettings settings) throws IOException {
+		final long start = System.currentTimeMillis();
+		TextAnalyzer[] analysis = null;
+		String[] header = null;
+		int numFields = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
@@ -80,35 +175,7 @@ class FileProcessor {
 				if ((options.col == -1 || options.col == i) && options.verbose != 0)
 					System.out.println(header[i]);
 				analysis[i] = new TextAnalyzer(header[i], options.resolutionMode);
-				if (options.debug != -1)
-					analysis[i].setDebug(options.debug);
-				if (options.detectWindow != -1)
-					analysis[i].setDetectWindow(options.detectWindow);
-				if (options.maxCardinality != -1)
-					analysis[i].setMaxCardinality(options.maxCardinality);
-				if (options.maxOutlierCardinality != -1)
-					analysis[i].setMaxOutliers(options.maxOutlierCardinality);
-				if (options.pluginThreshold != -1)
-					analysis[i].setPluginThreshold(options.pluginThreshold);
-				if (options.locale != null)
-					analysis[i].setLocale(options.locale);
-				if (options.noStatistics)
-					analysis[i].setCollectStatistics(false);
-				if (options.noLogicalTypes)
-					analysis[i].setDefaultLogicalTypes(false);
-				if (options.logicalTypes != null)
-					try {
-						if (options.logicalTypes.charAt(0) == '[')
-							analysis[i].getPlugins().registerPlugins(new StringReader(options.logicalTypes), header[i], options.locale);
-						else
-							analysis[i].getPlugins().registerPlugins(new FileReader(options.logicalTypes), header[i], options.locale);
-					} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-							| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						System.err.println("Failed to register plugin: " + e.getMessage());
-						System.exit(1);
-					}
-				if (options.threshold != -1)
-					analysis[i].setThreshold(options.threshold);
+				setOptions(analysis[i]);
 			}
 
 			long thisRecord = 0;

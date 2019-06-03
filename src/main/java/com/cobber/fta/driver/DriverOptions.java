@@ -21,6 +21,7 @@ import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
 class DriverOptions {
 	String charset = "UTF-8";
+	boolean bulk = false;
 	int col = -1;
 	int debug = -1;
 	String logicalTypes = null;

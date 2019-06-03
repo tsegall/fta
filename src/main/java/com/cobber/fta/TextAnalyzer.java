@@ -280,6 +280,15 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Get the name of the Data Stream.
+	 *
+	 * @return The name of the Data Stream.
+	 */
+	public String getStreamName() {
+		return dataStreamName;
+	}
+
+	/**
 	 * Indicate whether to collect statistics or not.
 	 *
      * @param collectStatistics
@@ -1015,7 +1024,8 @@ public class TextAnalyzer {
 		// Now send in the rest of the samples in bulk
 		for (int f = 0; f < facts.length; f++) {
 			long remaining = facts[f].count - facts[f].used;
-			trainBulkCore(facts[f].observed, remaining);
+			if (remaining != 0)
+				trainBulkCore(facts[f].observed, remaining);
 		}
 	}
 

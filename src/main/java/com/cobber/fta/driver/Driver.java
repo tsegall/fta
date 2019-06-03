@@ -42,7 +42,9 @@ class Driver {
 		options = new DriverOptions();
 		int idx = 0;
 		while (idx < args.length && args[idx].charAt(0) == '-') {
-			if ("--charset".equals(args[idx]))
+			if ("--bulk".equals(args[idx]))
+				options.bulk = true;
+			else if ("--charset".equals(args[idx]))
 				options.charset = args[++idx];
 			else if ("--col".equals(args[idx]))
 				options.col = Integer.valueOf(args[++idx]);

@@ -92,6 +92,21 @@ public class PatternInfo {
 		}
 	}
 
+	public enum TypeQualifier {
+		/* String */
+		BLANK,
+		BLANKORNULL,
+		NULL,
+		/* Numerics */
+		SIGNED,
+		GROUPING,
+		/* Boolean */
+		TRUE_FALSE,
+		YES_NO,
+		Y_N,
+		ONE_ZERO
+	}
+
 	public KnownPatterns.ID id;
 	public String regexp;
 	public String generalPattern;
