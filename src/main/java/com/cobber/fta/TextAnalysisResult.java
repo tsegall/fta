@@ -457,7 +457,7 @@ public class TextAnalysisResult {
 	/**
 	 * A JSON representation of the Analysis.
 	 * @param pretty If set, add minimal whitespace formatting.
-	 * @param verbose If set provides additional details on the core and Outlier sets.
+	 * @param verbose If set provides additional details on the core, Outlier, and Shapes sets.
 	 * @return A JSON representation of the analysis.
 	 */
 	public String asJSON(boolean pretty, int verbose) {
@@ -490,20 +490,20 @@ public class TextAnalysisResult {
 		if (patternInfo.isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
-		analysis.put("cardinality", cardinality.size() < maxCardinality ? String.valueOf(cardinality.size()) : "MAX");
+		analysis.put("cardinality", cardinality.size() < maxCardinality ? cardinality.size() : -1);
 
 		if (!cardinality.isEmpty() && verbose > 0) {
 			ArrayNode detail = analysis.putArray("cardinalityDetail");
 			outputDetails(mapper, detail, cardinality, verbose);
 		}
 
-		analysis.put("outlierCardinality", outliers.size() < maxOutliers ? String.valueOf(outliers.size()) : "MAX");
+		analysis.put("outlierCardinality", outliers.size() < maxOutliers ? outliers.size() : -1);
 		if (!outliers.isEmpty() && verbose > 0) {
 			ArrayNode detail = analysis.putArray("outlierDetail");
 			outputDetails(mapper, detail, outliers, verbose);
 		}
 
-		analysis.put("shapesCardinality", shapes.size() < maxShapes ? String.valueOf(shapes.size()) : "MAX");
+		analysis.put("shapesCardinality", shapes.size() < maxShapes ? shapes.size() : -1);
 		if (!shapes.isEmpty() && verbose > 0) {
 			ArrayNode detail = analysis.putArray("shapesDetail");
 			outputDetails(mapper, detail, shapes, verbose);
