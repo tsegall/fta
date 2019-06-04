@@ -441,6 +441,19 @@ public class TextAnalysisResult {
 		return asJSON(false, 0);
 	}
 
+	void outputDetails(ObjectMapper mapper, ArrayNode detail, Map<String, Long> details, int verbose) {
+		int records = 0;
+		for (final Map.Entry<String,Long> entry : entriesSortedByValues(cardinality)) {
+			records++;
+			if (verbose == 1 && records > 100)
+				break;
+			ObjectNode elt = mapper.createObjectNode();
+			elt.put("key", entry.getKey());
+			elt.put("count", entry.getValue());
+			detail.add(elt);
+		}
+	}
+
 	/**
 	 * A JSON representation of the Analysis.
 	 * @param pretty If set, add minimal whitespace formatting.
@@ -448,7 +461,6 @@ public class TextAnalysisResult {
 	 * @return A JSON representation of the analysis.
 	 */
 	public String asJSON(boolean pretty, int verbose) {
-
 		ObjectMapper mapper = new ObjectMapper();
 
 		ObjectWriter writer = pretty ? mapper.writerWithDefaultPrettyPrinter() : mapper.writer();
@@ -480,37 +492,21 @@ public class TextAnalysisResult {
 
 		analysis.put("cardinality", cardinality.size() < maxCardinality ? String.valueOf(cardinality.size()) : "MAX");
 
-		if (!cardinality.isEmpty() && (verbose > 1 ||
-				(verbose == 1 && cardinality.size() < .2 * sampleCount && cardinality.size() < TextAnalyzer.MAX_CARDINALITY_DEFAULT))) {
+		if (!cardinality.isEmpty() && verbose > 0) {
 			ArrayNode detail = analysis.putArray("cardinalityDetail");
-			for (final Map.Entry<String,Long> entry : entriesSortedByValues(cardinality)) {
-				ObjectNode elt = mapper.createObjectNode();
-				elt.put("key", entry.getKey());
-				elt.put("count", entry.getValue());
-				detail.add(elt);
-			}
+			outputDetails(mapper, detail, cardinality, verbose);
 		}
 
 		analysis.put("outlierCardinality", outliers.size() < maxOutliers ? String.valueOf(outliers.size()) : "MAX");
- 		if (!outliers.isEmpty()  && (verbose > 1 || (verbose == 1 && outliers.size() < .2 * sampleCount))) {
+		if (!outliers.isEmpty() && verbose > 0) {
 			ArrayNode detail = analysis.putArray("outlierDetail");
-			for (final Map.Entry<String, Long> entry : entriesSortedByValues(outliers)) {
-				ObjectNode elt = mapper.createObjectNode();
-				elt.put("key", entry.getKey());
-				elt.put("count", entry.getValue());
-				detail.add(elt);
-			}
+			outputDetails(mapper, detail, outliers, verbose);
 		}
 
 		analysis.put("shapesCardinality", shapes.size() < maxShapes ? String.valueOf(shapes.size()) : "MAX");
-		if (!shapes.isEmpty() && verbose >= 1) {
+		if (!shapes.isEmpty() && verbose > 0) {
 			ArrayNode detail = analysis.putArray("shapesDetail");
-			for (final Map.Entry<String, Long> entry : entriesSortedByValues(shapes)) {
-				ObjectNode elt = mapper.createObjectNode();
-				elt.put("key", entry.getKey());
-				elt.put("count", entry.getValue());
-				detail.add(elt);
-			}
+			outputDetails(mapper, detail, shapes, verbose);
 		}
 
 		analysis.put("leadingWhiteSpace", getLeadingWhiteSpace());
