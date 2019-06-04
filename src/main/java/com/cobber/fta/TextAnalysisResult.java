@@ -443,7 +443,7 @@ public class TextAnalysisResult {
 
 	void outputDetails(ObjectMapper mapper, ArrayNode detail, Map<String, Long> details, int verbose) {
 		int records = 0;
-		for (final Map.Entry<String,Long> entry : entriesSortedByValues(cardinality)) {
+		for (final Map.Entry<String,Long> entry : entriesSortedByValues(details)) {
 			records++;
 			if (verbose == 1 && records > 100)
 				break;
