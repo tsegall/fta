@@ -1764,7 +1764,7 @@ public class TextAnalyzer {
 			backoutToPatternID(realSamples, KnownPatterns.ID.ID_ANY_VARIABLE);
 	}
 
-	private boolean uniformShape = true;
+	private boolean anyShape = false;
 	private Map<String, Long> shapes = new HashMap<>();
 	// Track basic facts for the field - called for all input
 	private void trackLengthAndShape(final String input, long count) {
@@ -1783,20 +1783,24 @@ public class TextAnalyzer {
 			if (length > maxRawNonBlankLength)
 				maxRawNonBlankLength = length;
 
-			if (uniformShape) {
+			if (!anyShape) {
 				String inputShape = RegExpGenerator.smash(trimmed);
 				if (inputShape.equals(".+"))
-					uniformShape = false;
+					anyShape = true;
 				else {
 					Long seen = shapes.get(inputShape);
 					if (seen == null)
 						if (shapes.size() < maxShapes)
 							shapes.put(inputShape, count);
 						else
-							uniformShape = false;
+							anyShape = true;
 					else
 						shapes.put(inputShape, seen + count);
 				}
+
+				// If we overflow or we decide it is not meaningful - then just throw the analysis away
+				if (anyShape)
+					shapes = new HashMap<>();
 			}
 		}
 	}
@@ -2463,7 +2467,7 @@ public class TextAnalyzer {
 			*/
 
 			String singleUniformShape = null;
-			if (!updated && uniformShape) {
+			if (!updated && !anyShape) {
 				if (shapes.size() > 1)
 					compressShapes();
 				if (shapes.size() == 1) {
