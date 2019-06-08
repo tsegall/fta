@@ -49,7 +49,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*((?i)(true|false))\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "((?i)(true|false))" + KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), .9375);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
 		Assert.assertEquals(result.getTypeQualifier(), "TRUE_FALSE");
@@ -87,7 +87,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*((?i)(yes|no))\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "((?i)(yes|no))" + KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), .9375);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
 		Assert.assertEquals(result.getTypeQualifier(), "YES_NO");

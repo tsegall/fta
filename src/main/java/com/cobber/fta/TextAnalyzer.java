@@ -1843,9 +1843,9 @@ public class TextAnalyzer {
 		// Determine if there is leading or trailing White space (if not done previously)
 		if (trimmedLength != 0) {
 			if (!leadingWhiteSpace)
-				leadingWhiteSpace = Character.isSpaceChar(input.charAt(0));
+				leadingWhiteSpace = input.charAt(0) == ' ' || input.charAt(0) == '\t';
 			if (!trailingWhiteSpace)
-				trailingWhiteSpace = Character.isSpaceChar(input.charAt(length - 1));
+				trailingWhiteSpace = input.charAt(length - 1) == ' ' || input.charAt(length - 1) == '\t';
 		}
 
 		if (trimmedLength < minRawLength && trimmedLength < minTrimmedLength)

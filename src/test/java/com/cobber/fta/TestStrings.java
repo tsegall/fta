@@ -61,7 +61,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 3 * iterations + 1);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
@@ -92,7 +92,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), iterations);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
@@ -121,7 +121,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), iterations);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 
@@ -152,7 +152,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 9);
 		Assert.assertEquals(result.getBlankCount(), 20);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {

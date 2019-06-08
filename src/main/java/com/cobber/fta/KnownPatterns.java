@@ -40,7 +40,7 @@ public class KnownPatterns {
 	public static final String PATTERN_ALPHANUMERIC_VARIABLE = PATTERN_ALPHANUMERIC + "+";
 
 	public static final String PATTERN_NULL = "[NULL]";
-	public static final String PATTERN_WHITESPACE = "\\p{javaWhitespace}*";
+	public static final String PATTERN_WHITESPACE = "[ \t]*";
 
 	public static final String PATTERN_BOOLEAN_TRUE_FALSE = "(?i)(true|false)";
 	public static final String PATTERN_BOOLEAN_YES_NO = "(?i)(yes|no)";

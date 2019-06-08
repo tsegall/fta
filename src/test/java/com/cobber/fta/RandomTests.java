@@ -220,7 +220,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 1);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*((?i)(HELLO|HI|WORLD))\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "((?i)(HELLO|HI|WORLD))" + KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
@@ -545,7 +545,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 		Assert.assertEquals(result.getSampleCount(), iters);
@@ -585,7 +585,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*" + KnownPatterns.PATTERN_ALPHA + "{3}\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + KnownPatterns.PATTERN_ALPHA + "{3}" + KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), iters + 1);
@@ -623,7 +623,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*" + KnownPatterns.freezeANY(3, 8, 3, 8, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()) + "\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + KnownPatterns.freezeANY(3, 8, 3, 8, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()) + KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -800,10 +800,10 @@ public class RandomTests {
 		if (result.getMatchCount() != 0 && !result.getRegExp().startsWith("(?i)")) {
 			String re = "";
 			if (result.getLeadingWhiteSpace())
-				re += "\\p{javaWhitespace}*";
+				re += KnownPatterns.PATTERN_WHITESPACE;
 			re += KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline());
 			if (result.getTrailingWhiteSpace())
-				re += "\\p{javaWhitespace}*";
+				re += KnownPatterns.PATTERN_WHITESPACE;
 			Assert.assertEquals(result.getRegExp(), re);
 		}
 	}

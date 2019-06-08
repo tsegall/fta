@@ -776,7 +776,7 @@ public class TestDoubles {
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*" + analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -954,7 +954,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*" + analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "-9999.0");
 		Assert.assertEquals(result.getMaxValue(), "0.69334954");

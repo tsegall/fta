@@ -256,7 +256,7 @@ public class TextAnalysisResult {
 		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
 		String answer = "";
 		if (leadingWhiteSpace)
-			answer = "\\p{javaWhitespace}*";
+			answer = KnownPatterns.PATTERN_WHITESPACE;
 		boolean optional = patternInfo.regexp.indexOf('|') != -1;
 		if (optional)
 			answer += "(";
@@ -264,7 +264,7 @@ public class TextAnalysisResult {
 		if (optional)
 			answer += ")";
 		if (trailingWhiteSpace)
-			answer += "\\p{javaWhitespace}*";
+			answer += KnownPatterns.PATTERN_WHITESPACE;
 
 		return answer;
 	}

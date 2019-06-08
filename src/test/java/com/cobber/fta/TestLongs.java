@@ -539,7 +539,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getMinValue(), "0");
 		Assert.assertEquals(result.getMaxValue(), "29");
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*\\d{1,2}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "\\d{1,2}");
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));

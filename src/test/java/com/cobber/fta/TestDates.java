@@ -782,7 +782,7 @@ public class TestDates {
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getMatchCount(), iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "\\d{2}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy");
@@ -1029,7 +1029,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*\\d{2}/\\d{2}/\\d{2}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "\\d{2}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yy");
 		Assert.assertEquals(result.getSampleCount(), iters);

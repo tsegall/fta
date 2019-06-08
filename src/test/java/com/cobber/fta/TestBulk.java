@@ -48,7 +48,7 @@ public class TestBulk {
 		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 1000000);
-		Assert.assertEquals(result.getRegExp(), "\\p{javaWhitespace}*");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getMatchCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getCardinality(), 0);
