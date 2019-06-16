@@ -196,3 +196,9 @@ Indicative performance on an Intel 2.6Ghz i7.  The slower number is with Statist
 * ~3-3 million strings/sec
 * ~10-15 million longs/sec
 
+## Background Reading ##
+
+* https://arxiv.org/pdf/1905.10688.pdf
+* https://homes.cs.washington.edu/~congy/autotype.pdf
+* http://webdatacommons.org/webtables/goldstandardV2.html
+

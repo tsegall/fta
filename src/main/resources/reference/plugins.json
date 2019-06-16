@@ -171,7 +171,7 @@
 	},
 	{
 		"qualifier": "CITY",
-		"headerRegExps": [ "^(?i)(city)$|^.*[ _](?i)(city)$|.*[a-z]City$" ],
+		"headerRegExps": [ "^(?i)(city|town)$|^.*[ _](?i)(city|town)$|.*[a-z](City|Town)$" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpReturned": ".+",
 		"baseType": "STRING",
