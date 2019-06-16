@@ -9,3 +9,6 @@
 
 ### 2.2.1 ###
  - Add Town as a synonym for City
+
+### 2.2.2 ###
+ - Add support for UK Postal Codes

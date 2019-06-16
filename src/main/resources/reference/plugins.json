@@ -44,6 +44,12 @@
 		"priority": 60
 	},
 	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_UK",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeUKPostalCode",
+		"validLocales": [ "en-GB" ,"en-UK" ],
+		"priority": 61
+	},
+	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeAddressEN",
 		"validLocales": [ "en" ],
