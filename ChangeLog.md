@@ -13,6 +13,10 @@
 ### 2.2.2 ###
  - Add support for UK Postal Codes
 
-### 2.2.2 ###
+### 2.3.0 ###
  - Add support for AU States, and move more aggressively to plugins defintion
+
+### 2.3.1 ###
+ - Add support for Australian & Canadian Postal Codes
+
 

@@ -85,6 +85,8 @@ The following Semantic Types are currently detected:
 |Gender (EN)|GENDER.TEXT_EN|Gender (English language)|
 |Postal Code (US ZIP5)|POSTAL_CODE.ZIP5_US|Postal Code (US)|
 |Postal Code (UK)|POSTAL_CODE.POSTAL_CODE_UK|Postal Code (UK)|
+|Postal Code (CA)|POSTAL_CODE.POSTAL_CODE_CA|Postal Code (CA)|
+|Postal Code (AU)|POSTAL_CODE.POSTAL_CODE_AU|Postal Code (AU)|
 |Currency Code (ISO)|CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|
 |Month (Abbreviation)|MONTH.ABBR|Month Abbreviation (<XX> = Language code, e.g. ES for Spanish)|
 |Coordinates (Latitude)|COORDINATE.LATITUDE_DECIMAL|Latititude (Decimal degrees)|

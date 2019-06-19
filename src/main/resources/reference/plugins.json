@@ -50,6 +50,26 @@
 		"priority": 61
 	},
 	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_CA",
+		"validLocales": [ "en-CA" ],
+		"headerRegExps": [ ".*(?i)(post).*" ],
+		"headerRegExpConfidence": [ 100 ],
+		"regExpReturned": "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d",
+		"threshold": 98,
+		"baseType": "STRING",
+		"priority": 62
+	},
+	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_AU",
+		"validLocales": [ "en-AU" ],
+		"headerRegExps": [ ".*(?i)(post).*" ],
+		"headerRegExpConfidence": [ 100 ],
+		"regExpReturned": "\\d{4}",
+		"threshold": 98,
+		"baseType": "LONG",
+		"priority": 63
+	},
+	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeAddressEN",
 		"validLocales": [ "en" ],
