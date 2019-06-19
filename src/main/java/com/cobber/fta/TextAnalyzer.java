@@ -843,12 +843,11 @@ public class TextAnalyzer {
 	/**
 	 * Register the default set of plugins for Logical Type detection.
 	 *
-	 * @param dataStreamName The name of the Data Stream being analyzed
 	 * @param locale The Locale used for analysis, the will impact both the set of plugins registered as well as the behavior of the individual plugins
 	 *
 	 * Note: If the locale is null it will default to the Default locale.
 	 */
-	public void registerDefaultPlugins(String dataStreamName, Locale locale) {
+	public void registerDefaultPlugins(Locale locale) {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))){
 			plugins.registerPlugins(reader, dataStreamName, locale);
 		} catch (Exception e) {
@@ -869,7 +868,7 @@ public class TextAnalyzer {
 
 		if (enableDefaultLogicalTypes) {
 			// Load the default set of plugins for Logical Type detection
-			registerDefaultPlugins(dataStreamName, locale);
+			registerDefaultPlugins(locale);
 
 			for (LogicalType logical : plugins.getRegisteredLogicalTypes()) {
 

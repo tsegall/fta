@@ -76,18 +76,24 @@
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeCAProvince",
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"headerRegExps": [ ".*(?i)(province).*" ],
 		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "\\p{Alpha}{2}",
+		"content": "/reference/ca_provinces.csv",
+		"contentType": "resource",
+		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 110
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_US",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeUSState",
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"headerRegExps": [ ".*(?i)(state).*" ],
 		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "\\p{Alpha}{2}",
+		"content": "/reference/us_states.csv",
+		"contentType": "resource",
+		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 120
 	},
 	{
@@ -99,31 +105,54 @@
 		"priority": 125
 	},
 	{
+		"qualifier": "STATE_PROVINCE.STATE_AU",
+		"validLocales": [ "en-AU" ],
+		"headerRegExps": [ ".*(?i)(state).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "(?i)(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)",
+		"content": "ACT|NSW|NT|QLD|SA|TAS|VIC|WA",
+		"contentType": "inline",
+		"backout": "\\p{IsAlphabetic}{2,3}",
+		"priority": 126
+	},
+	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeISO4217",
 		"headerRegExps": [ ".*4217.*", ".*(?i)(currency).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
+		"regExpReturned": "\\p{Alpha}{3}",
+		"content": "/reference/ISO-4217.csv",
+		"contentType": "resource",
+		"backout": "\\p{IsAlphabetic}{3}",
 		"priority": 130
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-3",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_3",
 		"headerRegExps": [ ".*3166.*", ".*(?i)(country).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
+		"regExpReturned": "\\p{Alpha}{3}",
+		"content": "/reference/ISO-3166-3.csv",
+		"contentType": "resource",
+		"backout": "\\p{IsAlphabetic}{3}",
 		"priority": 140
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-2",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeISO3166_2",
 		"headerRegExps": [ ".*3166.*", ".*(?i)(country).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
+		"regExpReturned": "\\p{Alpha}{2}",
+		"content": "/reference/ISO-3166-2.csv",
+		"contentType": "resource",
+		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 150
 	},
 	{
 		"qualifier": "AIRPORT_CODE.IATA",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeIATA",
 		"headerRegExps": [ ".*(?i)(iata|air).*" ],
 		"headerRegExpConfidence": [ 100 ],
+		"regExpReturned": "\\p{Alpha}{3}",
+		"content": "/reference/IATA.txt",
+		"contentType": "resource",
+		"backout": "\\p{IsAlphabetic}{3}",
 		"priority": 160
 	},
 	{

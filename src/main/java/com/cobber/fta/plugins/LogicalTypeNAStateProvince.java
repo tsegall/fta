@@ -19,7 +19,8 @@ public class LogicalTypeNAStateProvince extends LogicalTypeFiniteSimple {
 
 	public LogicalTypeNAStateProvince(PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, REGEXP,
-				"\\p{IsAlphabetic}{2}", new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/na_states_provinces.csv")), 95);
+				"\\p{IsAlphabetic}{2}", 95);
+		setReader(new InputStreamReader(LogicalTypeNAStateProvince.class.getResourceAsStream("/reference/na_states_provinces.csv")));
 	}
 
 	@Override

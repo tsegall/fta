@@ -69,7 +69,7 @@ public class Plugins {
 			if (register)
 				if (plugin.clazz != null)
 					registerLogicalTypeClass(plugin, locale);
-				else if (plugin.filename != null)
+				else if (plugin.content != null)
 					registerLogicalTypeFiniteSet(plugin, locale);
 				else if (plugin.regExpReturned != null)
 					registerLogicalTypeRegExp(plugin, locale);

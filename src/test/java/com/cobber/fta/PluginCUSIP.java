@@ -10,8 +10,8 @@ public class PluginCUSIP extends LogicalTypeFiniteSimple {
 	private static String[] membersArray = null;
 
 	public PluginCUSIP(PluginDefinition plugin) {
-		super(plugin, REGEXP, "\\p{Alnum}{9}",
-				new InputStreamReader(PluginCUSIP.class.getResourceAsStream("/CUSIP.txt")), 99);
+		super(plugin, REGEXP, "\\p{Alnum}{9}", 99);
+		setReader(new InputStreamReader(PluginCUSIP.class.getResourceAsStream("/CUSIP.txt")));
 	}
 
 	@Override

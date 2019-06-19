@@ -14,13 +14,16 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected String backout;
 	protected Reader reader;
 
-	public LogicalTypeFiniteSimple(PluginDefinition plugin, String regexp, String backout, Reader reader, int threshold) {
+	public LogicalTypeFiniteSimple(PluginDefinition plugin, String regexp, String backout, int threshold) {
 		super(plugin);
 		this.qualifier = plugin.qualifier;
 		this.regexp = regexp;
 		this.backout = backout;
-		this.reader = reader;
 		this.threshold = threshold;
+	}
+
+	public void setReader(Reader reader) {
+		this.reader = reader;
 	}
 
 	@Override

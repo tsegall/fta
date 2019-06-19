@@ -19,9 +19,8 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	private Dodge[] iterators = null;
 
 	public LogicalTypePersonName(PluginDefinition plugin, String filename) throws FileNotFoundException {
-		super(plugin, REGEXP, ".*",
-				new InputStreamReader(LogicalTypeCAProvince.class.getResourceAsStream("/reference/" + filename)),
-				95);
+		super(plugin, REGEXP, ".*", 95);
+		setReader(new InputStreamReader(LogicalTypePersonName.class.getResourceAsStream("/reference/" + filename)));
 	}
 
 	@Override

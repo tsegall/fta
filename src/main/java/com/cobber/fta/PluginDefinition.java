@@ -21,15 +21,17 @@ public class PluginDefinition {
 	public String[] regExpsToMatch;
 	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
 	public String regExpReturned;
-	/** Simple finite plugins: the filename with the set of valid elements. */
-	public String filename;
+	/** Simple finite plugins: the content with the set of valid elements. */
+	public String content;
+	public String contentType;
+	public String backout;
 
 	/** hotWords An array of RegExps that will be compared with the datastream name to boost confidence. */
 	public String[] headerRegExps;
 	public int[] headerRegExpConfidence;
 
 	/** The required threshold to be matched (can be adjusted by presence of Hot Words. */
-	public int threshold;
+	public int threshold = 95;
 	/** The underlying base type (e.g. STRING, DOUBLE, LONG, DATE, ... */
 	public PatternInfo.Type baseType;
 	/** Minimum value to be considered as a valid instance of this type, e.g. 1 if the Semantic type is Financial Quarter. */
@@ -45,11 +47,13 @@ public class PluginDefinition {
 		this.clazz = clazz;
 	}
 
-	public PluginDefinition(String qualifier, String regExpReturned, String[] regExpsToMatch, String filename, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, PatternInfo.Type  baseType) {
+	public PluginDefinition(String qualifier, String regExpReturned, String[] regExpsToMatch, String content, String contentType, String backout, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, PatternInfo.Type  baseType) {
 		this.qualifier = qualifier;
 		this.regExpReturned = regExpReturned;
 		this.regExpsToMatch = regExpsToMatch == null ? new String[] { regExpReturned } : regExpsToMatch;
-		this.filename = filename;
+		this.content = content;
+		this.contentType = contentType;
+		this.backout = backout;
 		this.validLocales = validLocales;
 		this.headerRegExps = headerRegExps;
 		this.headerRegExpConfidence = headerRegExpConfidence;

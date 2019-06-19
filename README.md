@@ -73,6 +73,7 @@ The following Semantic Types are currently detected:
 |State (US)|STATE_PROVINCE.STATE_US|US State|
 |Province (Canada)|STATE_PROVINCE.PROVINCE_CA|Canadian Province|
 |State/Province (NA)|STATE_PROVINCE.STATE_PROVINCE_NA|NA State/Province|
+|State (AU)|STATE_PROVINCE.STATE_AU|AU State|
 |City|CITY|City|
 |Street Address|STREET_ADDRESS_EN|Street Address (English Language)|
 |URL (Generic)|URI.URL|URL - see RFC 3986|
@@ -83,6 +84,7 @@ The following Semantic Types are currently detected:
 |IP Address (v6)|IPADDRESS.IPV6|IP V6 Address|
 |Gender (EN)|GENDER.TEXT_EN|Gender (English language)|
 |Postal Code (US ZIP5)|POSTAL_CODE.ZIP5_US|Postal Code (US)|
+|Postal Code (UK)|POSTAL_CODE.POSTAL_CODE_UK|Postal Code (UK)|
 |Currency Code (ISO)|CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|
 |Month (Abbreviation)|MONTH.ABBR|Month Abbreviation (<XX> = Language code, e.g. ES for Spanish)|
 |Coordinates (Latitude)|COORDINATE.LATITUDE_DECIMAL|Latititude (Decimal degrees)|

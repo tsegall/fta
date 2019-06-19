@@ -20,8 +20,8 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	final static String REGEXP = ".+";
 
 	public LogicalTypeCountryEN(PluginDefinition plugin) throws FileNotFoundException {
-		super(plugin, REGEXP,
-				"\\p{IsAlphabetic}{2}", new InputStreamReader(LogicalTypeCountryEN.class.getResourceAsStream("/reference/countries.csv")), 95);
+		super(plugin, REGEXP, "\\p{IsAlphabetic}{2}", 95);
+		setReader(new InputStreamReader(LogicalTypeCountryEN.class.getResourceAsStream("/reference/countries.csv")));
 	}
 
 	@Override

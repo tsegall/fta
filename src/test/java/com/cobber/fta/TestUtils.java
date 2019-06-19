@@ -27,6 +27,8 @@ public class TestUtils {
 			"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 			"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|";
 
+	final static String validAUStates = "ACT|NSW|NT|QLD|SA|TAS|VIC|WA";
+
 	// Set of valid months + 4 x "UNK"
 	final static String months = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +

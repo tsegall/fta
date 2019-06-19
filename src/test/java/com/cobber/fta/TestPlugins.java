@@ -3,9 +3,6 @@ package com.cobber.fta;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,19 +16,14 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeAddressEN;
-import com.cobber.fta.plugins.LogicalTypeCAProvince;
 import com.cobber.fta.plugins.LogicalTypeCountryEN;
 import com.cobber.fta.plugins.LogicalTypeEmail;
 import com.cobber.fta.plugins.LogicalTypeFirstName;
 import com.cobber.fta.plugins.LogicalTypeGUID;
 import com.cobber.fta.plugins.LogicalTypeGenderEN;
 import com.cobber.fta.plugins.LogicalTypeIPV4Address;
-import com.cobber.fta.plugins.LogicalTypeISO3166_2;
-import com.cobber.fta.plugins.LogicalTypeISO3166_3;
-import com.cobber.fta.plugins.LogicalTypeISO4217;
 import com.cobber.fta.plugins.LogicalTypePhoneNumber;
 import com.cobber.fta.plugins.LogicalTypeURL;
-import com.cobber.fta.plugins.LogicalTypeUSState;
 import com.cobber.fta.plugins.LogicalTypeUSZip5;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -815,8 +807,9 @@ public class TestPlugins {
 
 	@Test
 	public void random3166_2() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("COUNTRY.ISO-3166-2", "com.cobber.fta.plugins.LogicalTypeISO3166_2");
-		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+		TextAnalyzer analyzer = new TextAnalyzer("country");
+		analyzer.registerDefaultPlugins(null);
+		LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-2");
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -826,8 +819,9 @@ public class TestPlugins {
 
 	@Test
 	public void random3166_3() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("COUNTRY.ISO-3166-3", "com.cobber.fta.plugins.LogicalTypeISO3166_3");
-		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+		TextAnalyzer analyzer = new TextAnalyzer("country");
+		analyzer.registerDefaultPlugins(null);
+		LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-3");
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -837,8 +831,9 @@ public class TestPlugins {
 
 	@Test
 	public void random4217() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("CURRENCY_CODE.ISO-4217", "com.cobber.fta.plugins.LogicalTypeISO4217");
-		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+		TextAnalyzer analyzer = new TextAnalyzer("currency");
+		analyzer.registerDefaultPlugins(null);
+		LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("CURRENCY_CODE.ISO-4217");
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -935,8 +930,9 @@ public class TestPlugins {
 
 	@Test
 	public void randomIATA() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("URL", "com.cobber.fta.plugins.LogicalTypeIATA");
-		LogicalTypeCode logical = LogicalTypeCode.newInstance(plugin, Locale.getDefault());
+		TextAnalyzer analyzer = new TextAnalyzer("IATA");
+		analyzer.registerDefaultPlugins(null);
+		LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("AIRPORT_CODE.IATA");
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -948,8 +944,7 @@ public class TestPlugins {
 	@Test
 	public void testRegister() throws IOException {
 		TextAnalyzer analyzer = new TextAnalyzer();
-
-		analyzer.registerDefaultPlugins("Magic Code", null);
+		analyzer.registerDefaultPlugins(null);
 
 		LogicalType logical = analyzer.getPlugins().getRegistered(LogicalTypeURL.SEMANTIC_TYPE);
 
@@ -1284,10 +1279,10 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSState.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.get("UK"), Long.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
@@ -1314,15 +1309,15 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSState.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.get("SA"), Long.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		LogicalType logical = analysis.getPlugins().getRegistered(LogicalTypeUSState.SEMANTIC_TYPE);
+		LogicalType logical = analysis.getPlugins().getRegistered("STATE_PROVINCE.STATE_US");
 		for (int i = 0; i < inputs.length; i++) {
 			String trimmed = inputs[i].trim();
 			Assert.assertTrue(trimmed.matches(result.getRegExp()), inputs[i]);
@@ -1428,13 +1423,45 @@ public class TestPlugins {
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSState.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 5);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)5/result.getSampleCount());
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void basicStatesBelowThreshold() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		final String inputs[] = TestUtils.validUSStates.split("\\|");
+		int locked = -1;
+		final int BAD = 10;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		for (int i = 0; i < BAD; i++)
+			analysis.train("XX");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), inputs.length + BAD);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length + BAD);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -1463,12 +1490,12 @@ public class TestPlugins {
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSState.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 5);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)5/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1535,12 +1562,12 @@ public class TestPlugins {
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSState.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSState.REGEXP);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1563,12 +1590,41 @@ public class TestPlugins {
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCAProvince.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.PROVINCE_CA");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeCAProvince.REGEXP);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void basicAU() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLocale(Locale.forLanguageTag("en-AU"));
+		final String inputs[] = TestUtils.validAUStates.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length * 10; i++) {
+			if (analysis.train(inputs[i % inputs.length]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_AU");
+		Assert.assertEquals(result.getSampleCount(), inputs.length * 10);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length * 10);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "(?i)(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1865,7 +1921,7 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSState.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		Assert.assertEquals(result.getSampleCount(), inputs.length * iters + UNKNOWN);
 		Assert.assertEquals(result.getCardinality(), 5);
 		Assert.assertEquals(result.getOutlierCount(), 1);
@@ -1898,7 +1954,7 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeISO4217.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), "CURRENCY_CODE.ISO-4217");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getCardinality(), inputs.length);
@@ -1927,9 +1983,9 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), LogicalTypeISO3166_3.REGEXP);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeISO3166_3.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), "COUNTRY.ISO-3166-3");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getCardinality(), inputs.length);
@@ -2000,7 +2056,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("Primary SSN");
 		List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("SSN", "\\d{3}-\\d{2}-\\d{4}", null,
-				null, new String[] { "en-US" }, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
+				null, null, "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" }, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "SSN", null);
@@ -2034,13 +2090,11 @@ public class TestPlugins {
 	@Test
 	public void testFinitePlugin() throws IOException {
 		String[] planets = new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" };
-		Path path = Files.createTempFile("planets", ".txt");
-		Files.write(path, String.join("\n", planets).getBytes(), StandardOpenOption.APPEND);
 		final int SAMPLES = 100;
 		final Random random = new Random(314159265);
 
 		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", null,
-				path.toString(), new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
+				String.join("|", planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		List<PluginDefinition> plugins = new ArrayList<>();
@@ -2059,12 +2113,11 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Files.delete(path);
-
 		Assert.assertEquals(result.getBlankCount(), 11);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}*");
+		String re = result.getRegExp();
+		Assert.assertEquals(re, "\\p{Alpha}*");
 		Assert.assertEquals(result.getTypeQualifier(), "PLANET");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - 11));
 		Assert.assertEquals(result.getOutlierCount(), 1);
@@ -2077,13 +2130,11 @@ public class TestPlugins {
 	@Test
 	public void testFinitePluginBackout() throws IOException {
 		String[] planets = new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" };
-		Path path = Files.createTempFile("planets", ".txt");
-		Files.write(path, String.join("\n", planets).getBytes(), StandardOpenOption.APPEND);
 		final int SAMPLES = 100;
 		final Random random = new Random(314159265);
 
 		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", null,
-				path.toString(), new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
+				String.join("|",  planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		List<PluginDefinition> plugins = new ArrayList<>();
@@ -2102,8 +2153,6 @@ public class TestPlugins {
 		analysis.train("europa");
 
 		final TextAnalysisResult result = analysis.getResult();
-
-		Files.delete(path);
 
 		Assert.assertEquals(result.getBlankCount(), 11);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2214,7 +2263,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", "[\\p{IsAlphabetic}\\d]{9}", null,
-				null, new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
+				null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
@@ -2253,9 +2302,9 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), LogicalTypeISO3166_2.REGEXP);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeISO3166_2.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), "COUNTRY.ISO-3166-2");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getCardinality(), inputs.length);
