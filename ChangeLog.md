@@ -21,3 +21,6 @@
 
 ### 2.3.2 ###
  - Upgrade version of phone number library; improve NAME detection; improve Country detection
+
+### 2.3.2 ###
+ - Add support for NAME.LAST_FIRST (e.g. 'Segall, Tim'); fix NPE with --help

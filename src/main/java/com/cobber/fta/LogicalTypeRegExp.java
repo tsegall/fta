@@ -109,7 +109,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		return false;
 	}
 
-	public String[] getHotWords() {
+	public String[] getHeaderRegExps() {
 		return defn.headerRegExps;
 	}
 

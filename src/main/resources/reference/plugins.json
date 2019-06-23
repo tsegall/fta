@@ -189,7 +189,15 @@
 		"headerRegExps": [ ".*(?i)(surname|last.?name|lname).*", "(?i)(name)" ],
 		"headerRegExpConfidence": [ 90, 60 ],
 		"validLocales": [ "en" ],
-		"priority": 180
+		"priority": 171
+	},
+	{
+		"qualifier": "NAME.LAST_FIRST",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeNameLastFirst",
+		"headerRegExps": [ ".*(?i)(name).*" ],
+		"headerRegExpConfidence": [ 60 ],
+		"validLocales": [ "en" ],
+		"priority": 172
 	},
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL",

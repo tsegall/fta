@@ -154,8 +154,9 @@ class Driver {
 						logger.printf("\t%s (Infinite): Priority: %d\n", logical.getQualifier(), logical.getPriority());
 					else {
 						LogicalTypeRegExp logicalRegExp = (LogicalTypeRegExp)logical;
-						logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s', HotWords: '%s'\n",
-								logical.getQualifier(), logical.getPriority(), logical.getRegExp(), String.join("|", logicalRegExp.getHotWords()));
+						logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s', HeaderRegExps: '%s'\n",
+								logical.getQualifier(), logical.getPriority(), logical.getRegExp(),
+								logicalRegExp.getHeaderRegExps() != null ? String.join("|", logicalRegExp.getHeaderRegExps()) : "None");
 					}
 				}
 			}
