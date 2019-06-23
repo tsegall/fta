@@ -15,6 +15,8 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	}
 
 	public final static String REGEXP = "[- \\p{IsAlphabetic}]*";
+	private final int IDENTIFIED_THRESHOLD = 40;
+	private final int NON_IDENTIFIED_THRESHOLD = 60;
 	private final int ITERS = 5;
 	private Dodge[] iterators = null;
 
@@ -43,13 +45,38 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 		return any.iter.next();
 	}
 
+	/*
+	 * Note: The input String will be both trimmed and converted to upper Case
+	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
+	 */
+	@Override
+	public boolean isValid(String input) {
+		String trimmedUpper = input.trim().toUpperCase(locale);
+		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength)
+			return false;
+		if (getMembers().contains(trimmedUpper))
+			return true;
+
+		// Throw 40% away
+		if (random.nextInt(100) >= IDENTIFIED_THRESHOLD)
+			return false;
+
+		// For the balance of the failures we will say they are valid if it is just a single word
+		for (int i = 0; i < trimmedUpper.length(); i++) {
+			if (!Character.isAlphabetic(trimmedUpper.charAt(i)))
+				return false;
+		}
+
+		return true;
+	}
+
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
 			StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 
 		int headerConfidence = getHeaderConfidence(dataStreamName);
 
-		if (headerConfidence >= 90 && (double)matchCount / realSamples >= 0.4)
+		if (headerConfidence >= 90 && (double)matchCount / realSamples >= (double)IDENTIFIED_THRESHOLD/100)
 			return null;
 
 		int minCardinality = 10;
@@ -64,7 +91,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 		if (realSamples < minSamples)
 			return backout;
 
-		if (headerConfidence >= 50 && (double)matchCount / realSamples >= 0.6)
+		if (headerConfidence >= 50 && (double)matchCount / realSamples >= (double)NON_IDENTIFIED_THRESHOLD/100)
 			return null;
 
 		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : backout;

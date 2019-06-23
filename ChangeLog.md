@@ -19,4 +19,5 @@
 ### 2.3.1 ###
  - Add support for Australian & Canadian Postal Codes
 
-
+### 2.3.2 ###
+ - Upgrade version of phone number library; improve NAME detection; improve Country detection

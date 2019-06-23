@@ -10,7 +10,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "2.3.1"
+version = "2.3.2"
 
 repositories {
     mavenCentral()
@@ -108,7 +108,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
 	// https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-	compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.10.12'
+	compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.10.14'
 }
 
 distributions {
