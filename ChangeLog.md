@@ -30,3 +30,6 @@
 
 ### 2.3.5 ###
  - More countries, improve ISO country code detection, improve city detection, improve long/lat detection
+
+### 2.3.6 ###
+ - Add support for MONTH_FULL (e.g. January), improve Zip detection (short zips), add support for NAME.FIRST_LAST (e.g. 'Tim Segall')

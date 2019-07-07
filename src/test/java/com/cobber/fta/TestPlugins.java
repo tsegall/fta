@@ -754,7 +754,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 32);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_CONSTANT);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -989,7 +989,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), 4);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_CONSTANT);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1041,7 +1041,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), 4);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_CONSTANT);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1257,7 +1257,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), copies);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), copies);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_CONSTANT);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertTrue(sample.matches(result.getRegExp()));
 	}
@@ -1653,7 +1653,7 @@ public class TestPlugins {
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), end + 1 - start);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_CONSTANT);
 		Assert.assertEquals(result.getMatchCount(), end - start);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}

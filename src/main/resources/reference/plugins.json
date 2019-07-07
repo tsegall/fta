@@ -97,6 +97,11 @@
 		"priority": 100
 	},
 	{
+		"qualifier": "MonthFull",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthFull",
+		"priority": 105
+	},
+	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"headerRegExps": [ ".*(?i)(province).*" ],
@@ -188,7 +193,7 @@
 	{
 		"qualifier": "NAME.LAST",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
-		"headerRegExps": [ ".*(?i)(surname|last.?name|lname).*", "(?i)(name)" ],
+		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name).*", "(?i)(name)" ],
 		"headerRegExpConfidence": [ 90, 60 ],
 		"validLocales": [ "en" ],
 		"priority": 171
@@ -200,6 +205,14 @@
 		"headerRegExpConfidence": [ 60 ],
 		"validLocales": [ "en" ],
 		"priority": 172
+	},
+	{
+		"qualifier": "NAME.FIRST_LAST",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeNameFirstLast",
+		"headerRegExps": [ ".*(?i)(name).*" ],
+		"headerRegExpConfidence": [ 60 ],
+		"validLocales": [ "en" ],
+		"priority": 173
 	},
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL",

@@ -83,6 +83,7 @@ The following Semantic Types are currently detected:
 |Name (First)|NAME.FIRST|First Name|
 |Name (Last)|NAME.LAST|Last Name|
 |NAME (Last, First)|NAME.LAST_FIRST|Merged Name (Last, First)|
+|NAME (First Last)|NAME.FIRST_LAST|Merged Name (First Last)|
 |IP Address (v4)|IPADDRESS.IPV4|IP V4 Address|
 |IP Address (v6)|IPADDRESS.IPV6|IP V6 Address|
 |Gender (EN)|GENDER.TEXT_EN|Gender (English language)|
@@ -91,7 +92,8 @@ The following Semantic Types are currently detected:
 |Postal Code (CA)|POSTAL_CODE.POSTAL_CODE_CA|Postal Code (CA)|
 |Postal Code (AU)|POSTAL_CODE.POSTAL_CODE_AU|Postal Code (AU)|
 |Currency Code (ISO)|CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|
-|Month (Abbreviation)|MONTH.ABBR|Month Abbreviation (<XX> = Language code, e.g. ES for Spanish)|
+|Month (Abbreviation)|MONTH.ABBR_<LOCALE>|Month Abbreviation (<LOCALE> = Locale, e.g. en-US for English langauge in US)|
+|Month (FULL)|MONTH.FULL_<LOCALE>|Fulll Month name (<LOCALE> = Locale, e.g. en-US for English langauge in US)|
 |Coordinates (Latitude)|COORDINATE.LATITUDE_DECIMAL|Latititude (Decimal degrees)|
 |Coordinates (Longitude)|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|
 |Coordinates (Lat-Long)|COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|
