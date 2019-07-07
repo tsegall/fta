@@ -132,8 +132,9 @@ class Driver {
 			if (options.locale != null)
 				analysis.setLocale(options.locale);
 
-			// Need to start training to force registration of Logical Types
-			analysis.train("Hello");
+			// Load the default set of plugins for Logical Type detection (normally done by a call to train())
+			analysis.registerDefaultPlugins(options.locale);
+
 
 			// Grab the registered plugins and sort by Qualifier (magically will be all - since passed in '*')
 			Collection<LogicalType> registered = analysis.getPlugins().getRegisteredLogicalTypes();

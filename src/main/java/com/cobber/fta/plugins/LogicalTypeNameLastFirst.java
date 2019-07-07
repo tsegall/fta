@@ -16,6 +16,8 @@ import com.cobber.fta.StringFacts;
 public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "NAME.LAST_FIRST";
 	public final static String REGEXP = "[- \\p{isAlphabetic}]+, ?[- \\\\p{isAlphabetic}]+";
+	private static LogicalTypeCode logicalFirst;
+	private static LogicalTypeCode logicalLast;
 
 	public LogicalTypeNameLastFirst(PluginDefinition plugin) {
 		super(plugin);
@@ -32,10 +34,12 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
-		LogicalTypeCode logicalFirst = LogicalTypeCode.newInstance(pluginFirst, Locale.getDefault());
-		PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
-		LogicalTypeCode logicalLast = LogicalTypeCode.newInstance(pluginLast, Locale.getDefault());
+		if (logicalFirst == null) {
+			PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
+			logicalFirst = LogicalTypeCode.newInstance(pluginFirst, Locale.getDefault());
+			PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
+			logicalLast = LogicalTypeCode.newInstance(pluginLast, Locale.getDefault());
+		}
 
 		return logicalLast.nextRandom() + ", " + logicalFirst.nextRandom();
 	}

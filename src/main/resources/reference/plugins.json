@@ -1,10 +1,17 @@
 [
 	{
+		"qualifier": "EMAIL",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail",
+		"headerRegExps": [ ".*(?i)(email).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"priority": 10
+	},
+	{
 		"qualifier": "URI.URL",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeURL",
 		"headerRegExps": [ ".*(?i)(url|web).*" ],
 		"headerRegExpConfidence": [ 90 ],
-		"priority": 10
+		"priority": 15
 	},
 	{
 		"qualifier": "IPADDRESS.IPV4",
@@ -19,11 +26,6 @@
 		"headerRegExps": [ ".*(?i)(ip).*" ],
 		"headerRegExpConfidence": [ 70 ],
 		"priority": 25
-	},
-	{
-		"qualifier": "EMAIL",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail",
-		"priority": 30
 	},
 	{
 		"qualifier": "TELEPHONE",
@@ -147,7 +149,7 @@
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-3",
-		"headerRegExps": [ ".*3166.*", ".*(?i)(country).*" ],
+		"headerRegExps": [ ".*(?i)(iso|3166).*", ".*(?i)(country).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpReturned": "\\p{Alpha}{3}",
 		"content": "/reference/ISO-3166-3.csv",
@@ -157,7 +159,7 @@
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-2",
-		"headerRegExps": [ ".*3166.*", ".*(?i)(country).*" ],
+		"headerRegExps": [ ".*(?i)(iso|3166).*", ".*(?i)(country).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpReturned": "\\p{Alpha}{2}",
 		"content": "/reference/ISO-3166-2.csv",
@@ -202,7 +204,7 @@
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL",
 		"validLocales": [ ],
-		"headerRegExps": [ ".*(?i)(latitude).*" ],
+		"headerRegExps": [ ".*(?i)(latitude).*|lat" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExpReturned": "[+-]?\\d+\\.\\d+",
@@ -214,7 +216,7 @@
 	},
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
-		"headerRegExps": [ ".*(?i)(longitude).*" ],
+		"headerRegExps": [ ".*(?i)(longitude).*|lng" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExpReturned": "[+-]?\\d+\\.\\d+",
@@ -234,10 +236,20 @@
 	},
 	{
 		"qualifier": "CITY",
-		"headerRegExps": [ "^(?i)(city|town)$|^.*[ _](?i)(city|town)$|.*[a-z](City|Town)$" ],
+		"headerRegExps": [ "^(?i)(city|town)$|^.*[ _](?i)(city|town)$|^(?i)(city|town)[ _].*$|.*[a-z](City|Town)$" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpReturned": ".+",
 		"baseType": "STRING",
 		"priority": 210
+	},
+	{
+		"qualifier": "CREDIT_CARD_TYPE",
+		"headerRegExps": [ ".*(?i)(credit|card).*", ".*(?i)(type).*" ],
+		"headerRegExpConfidence": [ 90, 70 ],
+		"regExpReturned": "[ \\p{Alpha}]+",
+		"content": "/reference/CCType.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{Alpha}]+",
+		"priority": 220
 	}
 ]

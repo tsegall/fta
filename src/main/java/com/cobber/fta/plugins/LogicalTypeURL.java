@@ -106,12 +106,18 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 
-		return getConfidence(matchCount, realSamples) >= getThreshold()/100.0 ? null : ".+";
+		return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : ".+";
 	}
 
 	@Override
-	public double getConfidence(long matchCount, long realSamples) {
-		// If we have only seen items with no protocol then drop our confidence
-		return matchCount == realSamples && protocol[0] == 0 ? 0.95 : (double)matchCount/realSamples;
+	public double getConfidence(long matchCount, long realSamples, String dataStreamName) {
+		double is = (double)matchCount/realSamples;
+		// Boost by up to 5% if we like the header, drop by 5% if we have only seen items with no protocol
+		if (getHeaderConfidence(dataStreamName) != 0)
+			is = Math.min(is + Math.min((1.0 - is)/2, 0.05), 1.0);
+		else if (protocol[0] == 0)
+			is = Math.max(is - 0.05, 0.0);
+
+		return is;
 	}
 }

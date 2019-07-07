@@ -98,8 +98,6 @@ public class TestUtils {
 			"324 North Lancaster Dr."
 	};
 
-
-
 	static String
 	getNegativePrefix(Locale locale) {
 		String negPrefix = "-";
@@ -139,5 +137,4 @@ public class TestUtils {
 		}
 		return false;
 	}
-
 }

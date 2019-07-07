@@ -5,11 +5,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected String qualifier;
-	protected Pattern[] headerPatterns;
 	protected String regexp;
 	protected String backout;
 	protected Reader reader;
@@ -33,6 +31,9 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	@Override
 	public synchronized boolean initialize(Locale locale) {
+		if (this.backout == null)
+			throw new IllegalArgumentException("Internal error: Finite Simple types require backout.");
+
 		// Only set up the Static Data once
 		if (getMembers().isEmpty()) {
 			try (BufferedReader bufferedReader = new BufferedReader(reader)){
@@ -44,12 +45,6 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Internal error: Issues with database for: " + qualifier);
 			}
-		}
-
-		if (defn.headerRegExps != null) {
-			headerPatterns = new Pattern[defn.headerRegExps.length];
-			for (int i = 0; i <  defn.headerRegExps.length; i++)
-				headerPatterns[i] = Pattern.compile(defn.headerRegExps[i]);
 		}
 
 		super.initialize(locale);
@@ -67,16 +62,6 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	@Override
 	public String getRegExp() {
 		return regexp;
-	}
-
-	protected int getHeaderConfidence(String dataStreamName) {
-		if (headerPatterns != null)
-			for (int i = 0; i < headerPatterns.length; i++) {
-				if (headerPatterns[i].matcher(dataStreamName).matches())
-					return defn.headerRegExpConfidence[i];
-			}
-
-		return 0;
 	}
 
 	@Override

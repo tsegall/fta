@@ -193,14 +193,17 @@ public class TextAnalyzer {
 	private double minDouble = Double.MAX_VALUE;
 	private double maxDouble = -Double.MAX_VALUE;
 	private BigDecimal sumBD = BigDecimal.ZERO;
+	private TopBottomK<Double> tbDouble = new TopBottomK<>();
 
 	private long minLong = Long.MAX_VALUE;
 	private long minLongNonZero = Long.MAX_VALUE;
 	private long maxLong = Long.MIN_VALUE;
 	private BigInteger sumBI = BigInteger.ZERO;
+	private TopBottomK<Long> tbLong = new TopBottomK<>();
 
 	private String minString;
 	private String maxString;
+	private TopBottomK<String> tbString = new TopBottomK<>();
 
 	private String minOutlierString;
 	private String maxOutlierString;
@@ -210,18 +213,23 @@ public class TextAnalyzer {
 
 	private LocalTime minLocalTime;
 	private LocalTime maxLocalTime;
+	private TopBottomK<LocalTime> tbLocalTime = new TopBottomK<>();
 
 	private LocalDate minLocalDate;
 	private LocalDate maxLocalDate;
+//	private TopBottomK<LocalDate> tbLocalDate = new TopBottomK<>();
 
 	private LocalDateTime minLocalDateTime;
 	private LocalDateTime maxLocalDateTime;
+//	private TopBottomK<LocalDateTime> tbLocalDateTime = new TopBottomK<>();
 
 	private ZonedDateTime minZonedDateTime;
 	private ZonedDateTime maxZonedDateTime;
+//	private TopBottomK<ZonedDateTime> tbZonedDateTime = new TopBottomK<>();
 
 	private OffsetDateTime minOffsetDateTime;
 	private OffsetDateTime maxOffsetDateTime;
+	private TopBottomK<OffsetDateTime> tbOffsetDateTime = new TopBottomK<>();
 
 	// The minimum length (not trimmed)
 	private int minRawLength = Integer.MAX_VALUE;
@@ -620,8 +628,10 @@ public class TextAnalyzer {
 			if (l > maxLong)
 				maxLong = l;
 
-			if (collectStatistics)
+			if (collectStatistics) {
 				sumBI = sumBI.add(BigInteger.valueOf(l));
+				tbLong.observe(l);
+			}
 		}
 
 		if (patternInfo.isLogicalType()) {
@@ -696,6 +706,9 @@ public class TextAnalyzer {
 		if (len > maxTrimmedLength)
 			maxTrimmedLength = len;
 
+		if (collectStatistics)
+			tbString.observe(cleaned);
+
 		return true;
 	}
 
@@ -741,14 +754,14 @@ public class TextAnalyzer {
 			return true;
 
 		if (register && collectStatistics) {
-			if (d < minDouble) {
+			if (d < minDouble)
 				minDouble = d;
-			}
-			if (d > maxDouble) {
+
+			if (d > maxDouble)
 				maxDouble = d;
-			}
 
 			sumBD = sumBD.add(BigDecimal.valueOf(d));
+			tbDouble.observe(d);
 		}
 
 		return true;
@@ -778,6 +791,7 @@ public class TextAnalyzer {
 					minLocalTime = localTime;
 				if (maxLocalTime == null || localTime.compareTo(maxLocalTime) > 0)
 					maxLocalTime = localTime;
+				tbLocalTime.observe(localTime);
 			}
 			else
 				result.parse(trimmed);
@@ -826,6 +840,7 @@ public class TextAnalyzer {
 					minOffsetDateTime = offsetDateTime;
 				if (maxOffsetDateTime == null || offsetDateTime.compareTo(maxOffsetDateTime) > 0)
 					maxOffsetDateTime = offsetDateTime;
+				tbOffsetDateTime.observe(offsetDateTime);
 			}
 			else
 				result.parse(trimmed);
@@ -1501,7 +1516,7 @@ public class TextAnalyzer {
 					}
 
 					// If a reasonable number look genuine then we are convinced
-					double currentConfidence = logical.getConfidence(count, raw.size());
+					double currentConfidence = logical.getConfidence(count, raw.size(), dataStreamName);
 					if (currentConfidence > bestConfidence && currentConfidence >= logical.getThreshold()/100.0) {
 						matchPatternInfo = candidate;
 						bestConfidence = currentConfidence;
@@ -2087,6 +2102,8 @@ public class TextAnalyzer {
 			ret.minValue = String.valueOf(minLong);
 			ret.maxValue = String.valueOf(maxLong);
 			ret.sum = sumBI.toString();
+			ret.bottomK = tbLong.bottomKasString();
+			ret.topK = tbLong.topKasString();
 			break;
 
 		case DOUBLE:
@@ -2098,6 +2115,8 @@ public class TextAnalyzer {
 			ret.minValue = formatter.format(minDouble);
 			ret.maxValue = formatter.format(maxDouble);
 			ret.sum = sumBD.toString();
+			ret.bottomK = tbDouble.bottomKasString();
+			ret.topK = tbDouble.topKasString();
 			break;
 
 		case STRING:
@@ -2121,6 +2140,8 @@ public class TextAnalyzer {
 			else {
 				ret.minValue = minString;
 				ret.maxValue = maxString;
+				ret.bottomK = tbString.bottomKasString();
+				ret.topK = tbString.topKasString();
 			}
 			break;
 
@@ -2139,6 +2160,8 @@ public class TextAnalyzer {
 
 				ret.minValue = minLocalTime == null ? null : minLocalTime.format(dtf);
 				ret.maxValue = maxLocalTime == null ? null : maxLocalTime.format(dtf);
+				ret.bottomK = tbLocalTime.bottomKasString();
+				ret.topK = tbLocalTime.topKasString();
 			}
 			break;
 
@@ -2166,6 +2189,8 @@ public class TextAnalyzer {
 
 				ret.minValue = minOffsetDateTime.format(dtf);
 				ret.maxValue = maxOffsetDateTime.format(dtf);
+				ret.bottomK = tbOffsetDateTime.bottomKasString();
+				ret.topK = tbOffsetDateTime.topKasString();
 			}
 			break;
 		}
@@ -2223,7 +2248,7 @@ public class TextAnalyzer {
 
 			// Update our Regular Expression - since it may have changed based on all the data observed
 			matchPatternInfo.regexp = logical.getRegExp();
-			confidence = logical.getConfidence(matchCount, realSamples);
+			confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
 
 			String newPattern;
 			if (logical != null && (newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers)) != null) {
@@ -2273,7 +2298,7 @@ public class TextAnalyzer {
 					if (PatternInfo.Type.LONG.equals(logical.getBaseType()) && logical.isMatch(matchPatternInfo.regexp) &&
 							logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
-						confidence = logical.getConfidence(matchCount, realSamples);
+						confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
 					}
 				}
 
@@ -2296,7 +2321,7 @@ public class TextAnalyzer {
 				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && logical.isMatch(matchPatternInfo.regexp) &&
 						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
-					confidence = logical.getConfidence(matchCount, realSamples);
+					confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
 					break;
 				}
 			}
@@ -2322,7 +2347,7 @@ public class TextAnalyzer {
 
 			LogicalTypeFinite logical = matchFiniteTypes(cardinalityUpper, minKeyLength, maxKeyLength);
 			if (logical != null)
-				confidence = logical.getConfidence(matchCount, realSamples);
+				confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
 
 			// Fixup any likely enums
 			if (matchPatternInfo.typeQualifier == null && cardinalityUpper.size() < MAX_ENUM_SIZE && outliers.size() != 0 && outliers.size() < 10) {
@@ -2525,7 +2550,7 @@ public class TextAnalyzer {
 				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && logical.isMatch(matchPatternInfo.regexp) &&
 						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
-					confidence = logical.getConfidence(matchCount, realSamples);
+					confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
 					updated = true;
 					break;
 				}
@@ -2577,8 +2602,8 @@ public class TextAnalyzer {
 		}
 
 		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,
-				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, facts.minValue,
-				facts.maxValue, minRawLength, maxRawLength, facts.sum, utilizedDecimalSeparator, resolutionMode,
+				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, facts,
+				minRawLength, maxRawLength, utilizedDecimalSeparator, resolutionMode,
 				cardinality, maxCardinality, outliers, maxOutliers, shapes, maxShapes, key, collectStatistics);
 
 		return result;

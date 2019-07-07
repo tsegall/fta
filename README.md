@@ -45,6 +45,8 @@ Metrics detected include:
  * typeQualifier - A modifier wrt. the Base Type (e.g. for Date types it will be a pattern, for Long types it might be SIGNED, for String types it might be COUNTRY.ISO-3166-2)
  * min - The minimum value observed
  * max - The maximum value observed
+ * bottomK - lowest 10 values
+ * topK - highest 10 values
  * minLength - The minimum length observed
  * maxLength - The maximum length observed
  * cardinality - The cardinality of the valid set (or MaxCardinality if the set is larger than MaxCardinality)
@@ -69,7 +71,7 @@ The following Semantic Types are currently detected:
 |Email|EMAIL|Email Address|
 |Country (EN)|COUNTRY.TEXT_EN|Country as a string (English language)|
 |Country (2-Letter)|COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2|
-|Country (3-Letter)|COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3 |
+|Country (3-Letter)|COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|
 |State (US)|STATE_PROVINCE.STATE_US|US State|
 |Province (Canada)|STATE_PROVINCE.PROVINCE_CA|Canadian Province|
 |State/Province (NA)|STATE_PROVINCE.STATE_PROVINCE_NA|NA State/Province|
@@ -80,6 +82,7 @@ The following Semantic Types are currently detected:
 |GUID|GUID|GUID, example 123e4567-e89b-12d3-a456-426655440000|
 |Name (First)|NAME.FIRST|First Name|
 |Name (Last)|NAME.LAST|Last Name|
+|NAME (Last, First)|NAME.LAST_FIRST|Merged Name (Last, First)|
 |IP Address (v4)|IPADDRESS.IPV4|IP V4 Address|
 |IP Address (v6)|IPADDRESS.IPV6|IP V6 Address|
 |Gender (EN)|GENDER.TEXT_EN|Gender (English language)|
@@ -94,6 +97,7 @@ The following Semantic Types are currently detected:
 |Coordinates (Lat-Long)|COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|
 |Telephone (Generic)|TELEPHONE|Telephone Number (Generic)|
 |Airport Code (IATA)|AIRPORT_CODE.IATA|IATA Airport Code|
+|Credit Card Type|CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
 * Infinite - captures any infinite type (e.g. Even numbers).  Implemented via a Java Class.

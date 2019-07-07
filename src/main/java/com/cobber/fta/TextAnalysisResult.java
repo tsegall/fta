@@ -44,9 +44,11 @@ public class TextAnalysisResult {
 	private final double confidence;
 	private final String minValue;
 	private final String maxValue;
+	private final String sum;
+	private final SortedSet<String> topK;
+	private final SortedSet<String> bottomK;
 	private final int minLength;
 	private final int maxLength;
-	private final String sum;
 	private final char decimalSeparator;
 	private final DateResolutionMode resolutionMode;
 	private final Map<String, Long> cardinality;
@@ -70,11 +72,9 @@ public class TextAnalysisResult {
 	 * @param blankCount The number of blanks seen in the sample set.
 	 * @param leadingZeroCount The number of leading zeros seen in sample set.  Only relevant for type Long.
 	 * @param confidence The percentage confidence in the analysis.  The matchCount divided by the sampleCount.
-	 * @param minValue A String representation of the minimum value.  Only relevant for Numeric/String types.
-	 * @param maxValue A String representation of the maximum value.  Only relevant for Numeric/String types.
+	 * @param facts A set of string representations of minimum/maximum/sum/topK/bottomK values.  Only relevant for Numeric/String types.
 	 * @param minLength Get the minimum length. Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace.
 	 * @param maxLength Get the maximum length. Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace.
-	 * @param sum A String representation of the sum of all values seen.  Only relevant for numeric types.
 	 * @param decimalSeparator Get the Decimal separator used to interpret this field (only relevant for type double.
 	 * @param resolutionMode Determines what to do when the Date field is ambiguous (i.e. we cannot determine which
 	 *   of the fields is the day or the month.  If resolutionMode is DayFirst, then assume day is first, if resolutionMode is
@@ -88,8 +88,8 @@ public class TextAnalysisResult {
 	 */
 	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, boolean trailingWhiteSpace,
 			boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
-			final double confidence, final String minValue, final String maxValue, final int minLength, final int maxLength,
-			final String sum, char decimalSeparator, DateResolutionMode resolutionMode,
+			final double confidence, final StringFacts facts, final int minLength, final int maxLength,
+			char decimalSeparator, DateResolutionMode resolutionMode,
 			final Map<String, Long> cardinality, int maxCardinality,
 			final Map<String, Long> outliers, int maxOutliers,
 			final Map<String, Long> shapes, int maxShapes,
@@ -105,11 +105,13 @@ public class TextAnalysisResult {
 		this.blankCount = blankCount;
 		this.leadingZeroCount = leadingZeroCount;
 		this.confidence = confidence;
-		this.minValue = minValue;
-		this.maxValue = maxValue;
+		this.minValue = facts.minValue;
+		this.maxValue = facts.maxValue;
+		this.sum = facts.sum;
+		this.topK = facts.topK;
+		this.bottomK = facts.bottomK;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
-		this.sum = sum;
 		this.decimalSeparator = decimalSeparator;
 		this.resolutionMode = resolutionMode;
 		this.cardinality = cardinality;
@@ -240,6 +242,26 @@ public class TextAnalysisResult {
 		if (!collectStatistics)
 			throw new IllegalArgumentException("Statistics not enabled.");
 		return sum;
+	}
+
+	/**
+	 * Get the topK values.
+	 * @return The top K values (default: 10).
+	 */
+	public SortedSet<String> getTopK() {
+		if (!collectStatistics)
+			throw new IllegalArgumentException("Statistics not enabled.");
+		return topK;
+	}
+
+	/**
+	 * Get the bottomK values.
+	 * @return The bottom K values (default: 10).
+	 */
+	public SortedSet<String> getBottomK() {
+		if (!collectStatistics)
+			throw new IllegalArgumentException("Statistics not enabled.");
+		return bottomK;
 	}
 
 	/**
@@ -441,6 +463,12 @@ public class TextAnalysisResult {
 		return asJSON(false, 0);
 	}
 
+	void outputArray(ObjectMapper mapper, ArrayNode detail, SortedSet<String> set) {
+		for (String s : set) {
+			detail.add(s);
+		}
+	}
+
 	void outputDetails(ObjectMapper mapper, ArrayNode detail, Map<String, Long> details, int verbose) {
 		int records = 0;
 		for (final Map.Entry<String,Long> entry : entriesSortedByValues(details)) {
@@ -487,6 +515,14 @@ public class TextAnalysisResult {
 			analysis.put("maxLength", maxLength);
 		if (statisticsEnabled() && sum != null)
 			analysis.put("sum", sum);
+		if (statisticsEnabled() && topK != null && verbose > 0) {
+			ArrayNode detail = analysis.putArray("topK");
+			outputArray(mapper, detail, topK);
+		}
+		if (statisticsEnabled() && bottomK != null && verbose > 0) {
+			ArrayNode detail = analysis.putArray("bottomK");
+			outputArray(mapper, detail, bottomK);
+		}
 		if (patternInfo.isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 

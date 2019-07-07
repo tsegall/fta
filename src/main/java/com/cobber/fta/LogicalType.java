@@ -2,11 +2,13 @@ package com.cobber.fta;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public abstract class LogicalType implements Comparable<LogicalType> {
 	protected PluginDefinition defn;
 	protected Locale locale = null;
 	protected int priority;
+	protected Pattern[] headerPatterns;
 
 	@Override
 	public int compareTo(LogicalType other) {
@@ -31,7 +33,23 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 
 		this.locale = locale;
 
+		if (defn != null && defn.headerRegExps != null) {
+			headerPatterns = new Pattern[defn.headerRegExps.length];
+			for (int i = 0; i <  defn.headerRegExps.length; i++)
+				headerPatterns[i] = Pattern.compile(defn.headerRegExps[i]);
+		}
+
 		return true;
+	}
+
+	protected int getHeaderConfidence(String dataStreamName) {
+		if (headerPatterns != null)
+			for (int i = 0; i < headerPatterns.length; i++) {
+				if (headerPatterns[i].matcher(dataStreamName).matches())
+					return defn.headerRegExpConfidence[i];
+			}
+
+		return 0;
 	}
 
 	/**
@@ -85,9 +103,10 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * Typically this will be the number of matches divided by the number of real samples.
 	 * @param matchCount Number of matches (as determined by isValid())
 	 * @param realSamples Number of samples observed - does not include either nulls or blanks
+	 * @param dataStreamName Name of the Data Stream
 	 * @return Confidence as a percentage.
 	 */
-	public double getConfidence(long matchCount, long realSamples) {
+	public double getConfidence(long matchCount, long realSamples, String dataStreamName) {
 		return (double)matchCount/realSamples;
 	}
 

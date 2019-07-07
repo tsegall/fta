@@ -24,3 +24,9 @@
 
 ### 2.3.2 ###
  - Add support for NAME.LAST_FIRST (e.g. 'Segall, Tim'); fix NPE with --help
+
+### 2.3.4 ###
+ - Improve detection of Emails and URLs; add support for top & bottom k values
+
+### 2.3.5 ###
+ - More countries, improve ISO country code detection, improve city detection, improve long/lat detection
