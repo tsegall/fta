@@ -590,6 +590,9 @@ public class SimpleDateMatcher {
 				}
 			}
 		}
+
+		if (compressed.indexOf("MMM") != -1)
+			return result + 1;
 		return result;
 	}
 

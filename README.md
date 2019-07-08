@@ -92,8 +92,8 @@ The following Semantic Types are currently detected:
 |Postal Code (CA)|POSTAL_CODE.POSTAL_CODE_CA|Postal Code (CA)|
 |Postal Code (AU)|POSTAL_CODE.POSTAL_CODE_AU|Postal Code (AU)|
 |Currency Code (ISO)|CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|
-|Month (Abbreviation)|MONTH.ABBR_<LOCALE>|Month Abbreviation (<LOCALE> = Locale, e.g. en-US for English langauge in US)|
-|Month (FULL)|MONTH.FULL_<LOCALE>|Fulll Month name (<LOCALE> = Locale, e.g. en-US for English langauge in US)|
+|Month (Abbreviation)|MONTH.ABBR_&lt;LOCALE&gt;|Month Abbreviation (&lt;LOCALE&gt; = Locale, e.g. en-US for English langauge in US)|
+|Month (FULL)|MONTH.FULL_&lt;LOCALE&gt;|Fulll Month name (&lt;LOCALE&gt; = Locale, e.g. en-US for English langauge in US)|
 |Coordinates (Latitude)|COORDINATE.LATITUDE_DECIMAL|Latititude (Decimal degrees)|
 |Coordinates (Longitude)|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|
 |Coordinates (Lat-Long)|COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|

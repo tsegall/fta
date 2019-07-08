@@ -33,3 +33,6 @@
 
 ### 2.3.6 ###
  - Add support for MONTH_FULL (e.g. January), improve Zip detection (short zips), add support for NAME.FIRST_LAST (e.g. 'Tim Segall')
+
+### 2.3.7 ###
+ - Add support for MM/yyyy and MM-yyyy (will return a LocalDate)

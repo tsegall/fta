@@ -11,7 +11,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.StringFacts;
 
 /**
- * Plugin to detect 'Last Name, First Name'.
+ * Plugin to detect '&lt;First Name&gt; &lt;Last Name&gt;'.
  */
 public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "NAME.FIRST_LAST";
@@ -72,6 +72,7 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 		boolean processingLast = false;
 		int len = trimmed.length();
 		int dashes = 0;
+		int spaces = 0;
 		int apostrophe = 0;
 		int alphas = 0;
 		for (int i = 0; i < len; i++) {
@@ -100,6 +101,13 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 			}
 			if (ch == '.' && alphas == 1)
 				continue;
+
+			if (ch == ' ') {
+				spaces++;
+				if (spaces == 2)
+					return false;
+				continue;
+			}
 
 			return false;
 		}

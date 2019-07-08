@@ -156,6 +156,11 @@ public class DateTimeParser {
             .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
             .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
             .toFormatter(locale);
+		else if ("MM/yyyy".equals(formatString) || "MM-yyyy".equals(formatString))
+			formatter = new DateTimeFormatterBuilder()
+			.parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+			.append(DateTimeFormatter.ofPattern(formatString))
+			.toFormatter(locale);
 		else
 			formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(formatString).toFormatter(locale);
 
@@ -907,7 +912,7 @@ public class DateTimeParser {
 		String compressed = matcher.getCompressed();
 		int components = matcher.getComponentCount();
 
-		if (components >= 6) {
+		if (components > 6) {
 			if (compressed.indexOf("d{3}") == -1)
 				return null;
 			compressed = Utils.replaceFirst(compressed, "d{3}", "SSS");
@@ -922,7 +927,16 @@ public class DateTimeParser {
 		if (components > 3)
 			return null;
 
-		if (components != 0) {
+		if (components == 2) {
+			// Handle simple Year Month cases
+			if (compressed.equals("d{2}/d{4}"))
+				compressed = "MM/yyyy";
+			else if (compressed.equals("d{2}-d{4}"))
+				compressed = "MM-yyyy";
+			else
+				return null;
+		}
+		else {
 			int alreadyResolved = 0;
 			int yearIndex = compressed.indexOf("d{4}");
 			if (yearIndex != -1) {
@@ -932,8 +946,10 @@ public class DateTimeParser {
 			}
 
 			int monthIndex = compressed.indexOf("MMM");
-			if (monthIndex != -1)
+			if (monthIndex != -1) {
+				components--;
 				alreadyResolved++;
+			}
 
 			// At this point we need at most two unresolved components
 			if (alreadyResolved == 0 || components + alreadyResolved != 3)
