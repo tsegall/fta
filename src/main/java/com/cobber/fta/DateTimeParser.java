@@ -177,7 +177,6 @@ public class DateTimeParser {
 	 * @see #ofPattern(java.lang.String, Locale) for more detail
 	 *
 	 * @param formatString A DateTimeString using DateTimeFormatter patterns
-	 * @param locale Locale the input string is in
 	 * @return The corresponding DateTimeFormatter (note - this will be a case-insensitive parser).
 	 */
 	public static DateTimeFormatter ofPattern(final String formatString) {
