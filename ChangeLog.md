@@ -36,3 +36,6 @@
 
 ### 2.3.7 ###
  - Add support for MM/yyyy and MM-yyyy (will return a LocalDate)
+
+### 2.3.8 ###
+ - Add support for yyyy/MM and yyyy/MM and associated tests, plus some cleaning.

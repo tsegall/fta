@@ -134,13 +134,18 @@ Note: The Stream Name can be used to bias detection of the incoming data and/or 
 ]
 ```
 
+The JSON definition will determine how the plugin is registered.  If a *clazz* field is present then a new Instance of that class will be created.
+If the *content* field is present then a new instance of LogicalTypeFiniteSimpleExternal will be instantiated.
+If neither *clazz* or *content* is present then an instance of LogicalTypeRegExp will be instantiated.
+In all cases the plugin definition and locale are passed as arguments.
+
 ### All Plugins ###
 
 The mandatory 'qualifier' tag is the name of this Semantic Type.
 
 The mandatory 'threshold' tag is the percentage of valid samples required by this plugin to establish the Stream Data as a a valid instance of this Semantic Type.
 
-The mandatory 'baseType' tag constrains the plugin to streams that are of this Base Type (see discussion above on the valid Base Types)..
+The mandatory 'baseType' tag constrains the plugin to streams that are of this Base Type (see discussion above on the valid Base Types).
 
 The optional 'validLocales' tag is used to constrain the plugin to a set of languages or locales.
 

@@ -2228,6 +2228,182 @@ public class TestDates {
 	}
 
 	@Test
+	public void shortDates_MM_slash_yyyy() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("shortDates_MM_yyyy");
+		analysis.setCollectStatistics(false);
+
+		final String inputs[] = new String[] {
+				"08/2014", "05/2018", "08/2013", "08/2043", "08/2043", "08/2013",
+				"08/2043", "08/2003", "08/2043", "08/2013", "08/2043", "08/2003",
+				"05/2043", "05/2013", "05/2003", "05/2043", "05/2043", "05/2013",
+				"05/2003", "05/2043", "05/2013", "05/2003",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "MM/yyyy");
+		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{4}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+
+		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getTypeQualifier());
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty()) {
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+				try {
+					LocalDate.parse(inputs[i], formatter);
+				}
+				catch (DateTimeParseException e) {
+					Assert.fail("Parse failed" + e);
+				}
+			}
+		}
+	}
+
+	@Test
+	public void shortDates_MM_dash_yyyy() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("shortDates_MM_yyyy");
+		analysis.setCollectStatistics(false);
+
+		final String inputs[] = new String[] {
+				"08-2014", "05-2018", "08-2013", "08-2043", "08-2043", "08-2013",
+				"08-2043", "08-2003", "08-2043", "08-2013", "08-2043", "08-2003",
+				"05-2043", "05-2013", "05-2003", "05-2043", "05-2043", "05-2013",
+				"05-2003", "05-2043", "05-2013", "05-2003",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "MM-yyyy");
+		Assert.assertEquals(result.getRegExp(), "\\d{2}-\\d{4}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+
+		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getTypeQualifier());
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty()) {
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+				try {
+					LocalDate.parse(inputs[i], formatter);
+				}
+				catch (DateTimeParseException e) {
+					Assert.fail("Parse failed" + e);
+				}
+			}
+		}
+	}
+
+	@Test
+	public void shortDates_yyyy_slash_MM() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("shortDates_yyyy_MM");
+		analysis.setCollectStatistics(false);
+
+		final String inputs[] = new String[] {
+				"2014/08", "2018/11", "2013/11", "2043/08", "2043/01", "2013/03",
+				"2043/03", "2003/11", "2043/03", "2013/04", "2043/03", "2003/01",
+				"2043/08", "2013/08", "2003/03", "2043/04", "2043/03", "2013/01",
+				"2003/03", "2043/11", "2013/08", "2003/04",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy/MM");
+		Assert.assertEquals(result.getRegExp(), "\\d{4}/\\d{2}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+
+		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getTypeQualifier());
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty()) {
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+				try {
+					LocalDate.parse(inputs[i], formatter);
+				}
+				catch (DateTimeParseException e) {
+					Assert.fail("Parse failed" + e);
+				}
+			}
+		}
+	}
+
+	@Test
+	public void shortDates_yyyy_dash_MM() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("shortDates_yyyy_MM");
+		analysis.setCollectStatistics(false);
+
+		final String inputs[] = new String[] {
+				"2014-08", "2018-05", "2013-07", "2043-09", "2043-11", "2013-09",
+				"2043-09", "2003-01", "2043-09", "2013-11", "2043-11", "2003-02",
+				"2043-01", "2013-02", "2003-02", "2043-05", "2043-02", "2013-11",
+				"2003-02", "2043-01", "2013-02", "2003-09",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM");
+		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+
+		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getTypeQualifier());
+		for (int i = 0; i < inputs.length; i++) {
+			if (!inputs[i].isEmpty()) {
+				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+				try {
+					LocalDate.parse(inputs[i], formatter);
+				}
+				catch (DateTimeParseException e) {
+					Assert.fail("Parse failed" + e);
+				}
+			}
+		}
+	}
+
+	@Test
 	public void doubleStep() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("doubleStep");
 		analysis.setCollectStatistics(false);
