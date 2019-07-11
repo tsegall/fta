@@ -39,3 +39,6 @@
 
 ### 2.3.8 ###
  - Add support for yyyy/MM and yyyy/MM and associated tests, plus some cleaning.
+
+### 2.3.9 ###
+ - Add support for SSN

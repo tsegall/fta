@@ -100,6 +100,7 @@ The following Semantic Types are currently detected:
 |Telephone (Generic)|TELEPHONE|Telephone Number (Generic)|
 |Airport Code (IATA)|AIRPORT_CODE.IATA|IATA Airport Code|
 |Credit Card Type|CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|
+|Social Security Number|SSN|Social Security Number (US)|
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
 * Infinite - captures any infinite type (e.g. Even numbers).  Implemented via a Java Class.

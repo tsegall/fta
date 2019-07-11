@@ -264,5 +264,16 @@
 		"contentType": "resource",
 		"backout": "[ \\p{Alpha}]+",
 		"priority": 220
+	},
+	{
+		"qualifier": "SSN",
+		"headerRegExps": [ ".*(?i)(SSN).*", ".*(?i)(Social).*" ],
+		"headerRegExpConfidence": [ 90, 70 ],
+		"regExpsToMatch": [ "\\d{3}-\\d{2}-\\d{4}" ],
+		"regExpReturned": "\\d{3}-\\d{2}-\\d{4}",
+		"validLocales": [ "en-US" ],
+		"threshold": 98,
+		"baseType": "STRING",
+		"priority": 230
 	}
 ]

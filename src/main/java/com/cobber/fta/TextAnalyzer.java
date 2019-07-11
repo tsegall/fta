@@ -866,6 +866,7 @@ public class TextAnalyzer {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))){
 			plugins.registerPlugins(reader, dataStreamName, locale);
 		} catch (Exception e) {
+
 			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage());
 		}
 	}

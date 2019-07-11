@@ -73,6 +73,8 @@ public class Plugins {
 					registerLogicalTypeFiniteSet(plugin, locale);
 				else if (plugin.regExpReturned != null)
 					registerLogicalTypeRegExp(plugin, locale);
+				else
+					throw new IllegalArgumentException("Logical type: '" + plugin.qualifier + "' unknown type.");
 		}
 	}
 
