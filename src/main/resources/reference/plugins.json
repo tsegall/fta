@@ -229,7 +229,7 @@
 	},
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
-		"headerRegExps": [ ".*(?i)(longitude).*|lng" ],
+		"headerRegExps": [ ".*(?i)(longitude).*|lon|lng" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExpReturned": "[+-]?\\d+\\.\\d+",

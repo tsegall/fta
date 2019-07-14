@@ -127,7 +127,16 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
 			Map<String, Long> cardinality, Map<String, Long> outliers) {
-		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? null : ".+";
+		return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : ".+";
+	}
+
+	@Override
+	public double getConfidence(long matchCount, long realSamples, String dataStreamName) {
+		double is = (double)matchCount/realSamples;
+		if (matchCount != realSamples && getHeaderConfidence(dataStreamName) != 0)
+			return is + (1.0 - is)/2;
+		else
+			return is;
 	}
 }
 

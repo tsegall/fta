@@ -42,3 +42,6 @@
 
 ### 2.3.9 ###
  - Add support for SSN
+
+### 2.3.10 ###
+ - Improve (marginally) merged name detection, accept lon as a synonym for longitude
