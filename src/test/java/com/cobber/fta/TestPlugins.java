@@ -2054,12 +2054,13 @@ public class TestPlugins {
 		}
 
 		final TextAnalyzer analysis = new TextAnalyzer("Primary SSN");
+		analysis.setDefaultLogicalTypes(false);
 		List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("SSN", "\\d{3}-\\d{2}-\\d{4}", null,
+		plugins.add(new PluginDefinition("SSN", "\\d{3}-\\d{2}-\\d{4}", new String[] {"\\d{3}-\\d{2}-\\d{4}"},
 				null, null, "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" }, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "SSN", null);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), null);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}

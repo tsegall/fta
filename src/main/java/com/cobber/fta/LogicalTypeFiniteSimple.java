@@ -72,10 +72,10 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		int maxOutliers = 1;
 		int minCardinality = 4;
 		int minSamples = 20;
-		if (headerConfidence >= 50) {
-			maxOutliers = 4;
+		if (headerConfidence != 0) {
 			minCardinality = 1;
 			minSamples = 4;
+			maxOutliers =  headerConfidence < 90 ? 4 : getSize() / 2;
 		}
 
 		if (outliers.size() > maxOutliers)

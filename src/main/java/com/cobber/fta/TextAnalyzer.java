@@ -882,30 +882,29 @@ public class TextAnalyzer {
 		raw = new ArrayList<String>(detectWindow);
 		levels = new ArrayList<Escalation>(detectWindow);
 
-		if (enableDefaultLogicalTypes) {
-			// Load the default set of plugins for Logical Type detection
+		// If enabled, load the default set of plugins for Logical Type detection
+		if (enableDefaultLogicalTypes)
 			registerDefaultPlugins(locale);
 
-			for (LogicalType logical : plugins.getRegisteredLogicalTypes()) {
+		for (LogicalType logical : plugins.getRegisteredLogicalTypes()) {
 
-				if ((logical instanceof LogicalTypeFinite) && ((LogicalTypeFinite)logical).getSize() + 10 > getMaxCardinality())
-					throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
+			if ((logical instanceof LogicalTypeFinite) && ((LogicalTypeFinite)logical).getSize() + 10 > getMaxCardinality())
+				throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
 
-				if (logical instanceof LogicalTypeInfinite)
-					infiniteTypes.add((LogicalTypeInfinite)logical);
-				else if (logical instanceof LogicalTypeFinite)
-					finiteTypes.add((LogicalTypeFinite)logical);
-				else
-					regExpTypes.add((LogicalTypeRegExp)logical);
+			if (logical instanceof LogicalTypeInfinite)
+				infiniteTypes.add((LogicalTypeInfinite)logical);
+			else if (logical instanceof LogicalTypeFinite)
+				finiteTypes.add((LogicalTypeFinite)logical);
+			else
+				regExpTypes.add((LogicalTypeRegExp)logical);
 
-				if (pluginThreshold != -1)
-					logical.setThreshold(pluginThreshold);
-			}
-
-			Collections.sort(infiniteTypes);
-			Collections.sort(finiteTypes);
-			Collections.sort(regExpTypes);
+			if (pluginThreshold != -1)
+				logical.setThreshold(pluginThreshold);
 		}
+
+		Collections.sort(infiniteTypes);
+		Collections.sort(finiteTypes);
+		Collections.sort(regExpTypes);
 
 		candidateCounts = new int[infiniteTypes.size()];
 
@@ -2011,9 +2010,9 @@ public class TextAnalyzer {
 	/**
 	 * Determine if the current dataset reflects a logical type.
 	 * @param logical The Logical type we are testing
-	 * @return True if we believe that this data set is defined by the provided set
+	 * @return A MatchResult that indicates the quality of the match against the provided data
 	 */
-	private boolean checkFiniteSet(Map<String, Long> cardinalityUpper, LogicalTypeFinite logical) {
+	private FiniteMatchResult checkFiniteSet(Map<String, Long> cardinalityUpper, Map<String, Long> outliers, LogicalTypeFinite logical) {
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		long missCount = 0;				// count of number of misses
 
@@ -2037,15 +2036,9 @@ public class TextAnalyzer {
 		}
 
 		if (logical.isValidSet(dataStreamName, validCount, realSamples, null, cardinalityUpper, newOutliers) != null)
-			return false;
+			return new FiniteMatchResult();
 
-		matchCount = validCount;
-		matchPatternInfo = new PatternInfo(null, logical.getRegExp(), PatternInfo.Type.STRING, logical.getQualifier(), true, -1, -1, null, null);
-		outliers.putAll(newOutliers);
-		cardinalityUpper.keySet().removeAll(newOutliers.keySet());
-		cardinality = cardinalityUpper;
-
-		return true;
+		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, dataStreamName), validCount, newOutliers);
 	}
 
 	private String lengthQualifier(int min, int max) {
@@ -2199,13 +2192,54 @@ public class TextAnalyzer {
 		return ret;
 	}
 
-	private LogicalTypeFinite matchFiniteTypes(Map<String, Long> cardinalityUpper, int minKeyLength, int maxKeyLength) {
-		for (LogicalTypeFinite logical : finiteTypes)
-			if ((!logical.isClosed() || cardinalityUpper.size() <= logical.getSize() + 2 + logical.getSize()/20) &&
-					checkFiniteSet(cardinalityUpper, logical))
-				return logical;
+	private class FiniteMatchResult {
+		LogicalTypeFinite logical;
+		double score;
+		Map<String, Long> newOutliers;
+		long validCount;
+		boolean isMatch;
 
-		return null;
+		boolean matched() {
+			return isMatch;
+		}
+
+		FiniteMatchResult(LogicalTypeFinite logical, double score, long validCount, Map<String, Long> newOutliers) {
+			this.logical = logical;
+			this.score = score;
+			this.validCount = validCount;
+			this.newOutliers = newOutliers;
+			this.isMatch = true;
+		}
+
+		FiniteMatchResult() {
+			score = Double.MIN_VALUE;
+			this.isMatch = false;
+		}
+	}
+
+	private LogicalTypeFinite matchFiniteTypes(Map<String, Long> cardinalityUpper, int minKeyLength, int maxKeyLength) {
+		FiniteMatchResult bestResult = null;
+		double bestScore = -1.0;
+
+		for (LogicalTypeFinite logical : finiteTypes)
+			if ((!logical.isClosed() || cardinalityUpper.size() <= logical.getSize() + 2 + logical.getSize()/20)) {
+				FiniteMatchResult result = checkFiniteSet(cardinalityUpper, outliers, logical);
+				if (result.matched() && result.score > bestScore) {
+					bestResult = result;
+					bestScore = result.score;
+				}
+			}
+
+		if (bestResult == null)
+			return null;
+
+		outliers.putAll(bestResult.newOutliers);
+		cardinalityUpper.keySet().removeAll(bestResult.newOutliers.keySet());
+		cardinality = cardinalityUpper;
+		matchCount = bestResult.validCount;
+		matchPatternInfo = new PatternInfo(null, bestResult.logical.getRegExp(), PatternInfo.Type.STRING, bestResult.logical.getQualifier(), true, -1, -1, null, null);
+
+		return bestResult.logical;
 	}
 
 	/**
@@ -2586,9 +2620,10 @@ public class TextAnalyzer {
 		if (sampleCount > MIN_SAMPLES_FOR_KEY && maxCardinality >= MIN_SAMPLES_FOR_KEY / 2 &&
 				(cardinality.size() == maxCardinality || cardinality.size() == sampleCount) &&
 				blankCount == 0 && nullCount == 0 &&
-				matchPatternInfo.typeQualifier == null &&
+				((matchPatternInfo.typeQualifier != null && matchPatternInfo.typeQualifier.equals("GUID")) ||
+				(matchPatternInfo.typeQualifier == null &&
 				((PatternInfo.Type.STRING.equals(matchPatternInfo.type) && minRawLength == maxRawLength && minRawLength < 32)
-						|| PatternInfo.Type.LONG.equals(matchPatternInfo.type))) {
+						|| PatternInfo.Type.LONG.equals(matchPatternInfo.type))))) {
 			key = true;
 
 			if (cardinality.size() == maxCardinality)

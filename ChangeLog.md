@@ -45,3 +45,10 @@
 
 ### 2.3.10 ###
  - Improve (marginally) merged name detection, accept lon as a synonym for longitude
+
+### 2.3.11 ###
+ - Add support for detecting Language (as Text)
+ - Relax cardinality constraints if the header looks really good
+ - Try all RegExp types and take the best not the first
+ - A GUID is a perfectly good key candidate
+ - Fix issue related to no default Semantic Types preventing registration of any Semantic Types

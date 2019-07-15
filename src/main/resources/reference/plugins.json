@@ -275,5 +275,16 @@
 		"threshold": 98,
 		"baseType": "STRING",
 		"priority": 230
+	},
+	{
+		"qualifier": "LANGUAGE.TEXT_EN",
+		"headerRegExps": [ ".*(?i)(language).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "[\\p{Alpha}]+",
+		"validLocales": [ "en" ],
+		"content": "/reference/language_en.csv",
+		"contentType": "resource",
+		"backout": "[\\p{Alpha}]+",
+		"priority": 240
 	}
 ]
