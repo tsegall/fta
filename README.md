@@ -84,6 +84,8 @@ The following Semantic Types are currently detected:
 |Name (Last)|NAME.LAST|Last Name|
 |NAME (Last, First)|NAME.LAST_FIRST|Merged Name (Last, First)|
 |NAME (First Last)|NAME.FIRST_LAST|Merged Name (First Last)|
+|Language code - ISO 639|LANGUAGE.ISO-639-2|Language code - ISO 639, two character|
+|Language name|LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...|
 |IP Address (v4)|IPADDRESS.IPV4|IP V4 Address|
 |IP Address (v6)|IPADDRESS.IPV6|IP V6 Address|
 |Gender (EN)|GENDER.TEXT_EN|Gender (English language)|

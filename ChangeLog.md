@@ -52,3 +52,6 @@
  - Try all RegExp types and take the best not the first
  - A GUID is a perfectly good key candidate
  - Fix issue related to no default Semantic Types preventing registration of any Semantic Types
+
+### 2.3.12 ###
+ - Add support for LANGUAGE.ISO-639-2, broaden out support for LANGUAGE.TEXT_EN

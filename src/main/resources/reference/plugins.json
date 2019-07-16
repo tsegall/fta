@@ -277,6 +277,16 @@
 		"priority": 230
 	},
 	{
+		"qualifier": "LANGUAGE.ISO-639-2",
+		"headerRegExps": [ ".*(?i)(language).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "\\p{Alpha}{2}",
+		"content": "/reference/ISO-639-2.csv",
+		"contentType": "resource",
+		"backout": "\\p{IsAlphabetic}{2}",
+		"priority": 240
+	},
+	{
 		"qualifier": "LANGUAGE.TEXT_EN",
 		"headerRegExps": [ ".*(?i)(language).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -285,6 +295,6 @@
 		"content": "/reference/language_en.csv",
 		"contentType": "resource",
 		"backout": "[\\p{Alpha}]+",
-		"priority": 240
+		"priority": 250
 	}
 ]
