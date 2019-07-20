@@ -55,3 +55,6 @@
 
 ### 2.3.12 ###
  - Add support for LANGUAGE.ISO-639-2, broaden out support for LANGUAGE.TEXT_EN
+
+### 2.3.13 ###
+ - Support Lang as a weak synonym for Language, bug - also validate outliers when looking at finite sets, do not back out Date types as aggressively

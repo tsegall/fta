@@ -278,8 +278,8 @@
 	},
 	{
 		"qualifier": "LANGUAGE.ISO-639-2",
-		"headerRegExps": [ ".*(?i)(language).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"headerRegExps": [ ".*(?i)(language).*",  ".*(?i)(lang).*" ],
+		"headerRegExpConfidence": [ 90, 60 ],
 		"regExpReturned": "\\p{Alpha}{2}",
 		"content": "/reference/ISO-639-2.csv",
 		"contentType": "resource",

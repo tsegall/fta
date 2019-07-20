@@ -768,7 +768,7 @@ public class TextAnalyzer {
 	}
 
 	/*
-	 * Validate (and track) the date/time/datetime inoput.
+	 * Validate (and track) the date/time/datetime input.
 	 * This routine is called for every date/time/datetime we see in the input, so performance is critical.
 	 */
 	private void trackDateTime(final String dateFormat, final String input) throws DateTimeParseException {
@@ -1989,7 +1989,7 @@ public class TextAnalyzer {
 			trackTrimmedLengthAndWhiteSpace(input);
 		else {
 			outlier(input);
-			if (outliers.size() == maxOutliers) {
+			if (!matchPatternInfo.isDateType() && outliers.size() == maxOutliers) {
 				if (matchPatternInfo.isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
 					LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
@@ -2000,6 +2000,7 @@ public class TextAnalyzer {
 							backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
 				}
 				else {
+
 					// Need to evaluate if we got this wrong
 					conditionalBackoutToPattern(realSamples, matchPatternInfo);
 				}
@@ -2016,29 +2017,46 @@ public class TextAnalyzer {
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		long missCount = 0;				// count of number of misses
 
-		// All the existing outliers are misses
-		final Map<String, Long> newOutliers = new HashMap<>(outliers);
-		for (final Map.Entry<String, Long> entry : outliers.entrySet())
-			missCount += entry.getValue();
+		final Map<String, Long> newOutliers = new HashMap<>();
+		final Map<String, Long> addMatches = new HashMap<>();
+		final Map<String, Long> minusMatches = new HashMap<>();
+		double missThreshold = 1.0 - logical.getThreshold()/100.0;
+		long validCount = 0;
+
+		for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
+			String upper = entry.getKey().toUpperCase(Locale.ENGLISH);
+			if (logical.isValid(upper)) {
+				validCount += entry.getValue();
+				addMatches.put(upper, entry.getValue());
+			}
+			else {
+				missCount += entry.getValue();
+				newOutliers.put(entry.getKey(), entry.getValue());
+			}
+		}
 
 		// Sweep the balance and check they are part of the set
-		long validCount = 0;
-		double missThreshold = 1.0 - logical.getThreshold()/100.0;
 		if ((double) missCount / realSamples <= missThreshold) {
 			for (final Map.Entry<String, Long> entry : cardinalityUpper.entrySet()) {
 				if (logical.isValid(entry.getKey()))
 					validCount += entry.getValue();
 				else {
 					missCount += entry.getValue();
+					minusMatches.put(entry.getKey(), entry.getValue());
 					newOutliers.put(entry.getKey(), entry.getValue());
 				}
 			}
 		}
 
-		if (logical.isValidSet(dataStreamName, validCount, realSamples, null, cardinalityUpper, newOutliers) != null)
+		final Map<String, Long> newCardinality = new HashMap<>(cardinalityUpper);
+		newCardinality.putAll(addMatches);
+		for (final String elt : minusMatches.keySet())
+			newCardinality.remove(elt);
+
+		if (logical.isValidSet(dataStreamName, validCount, realSamples, null, newCardinality, newOutliers) != null)
 			return new FiniteMatchResult();
 
-		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, dataStreamName), validCount, newOutliers);
+		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, dataStreamName), validCount, newOutliers, newCardinality);
 	}
 
 	private String lengthQualifier(int min, int max) {
@@ -2196,6 +2214,7 @@ public class TextAnalyzer {
 		LogicalTypeFinite logical;
 		double score;
 		Map<String, Long> newOutliers;
+		Map<String, Long> newCardinality;
 		long validCount;
 		boolean isMatch;
 
@@ -2203,11 +2222,12 @@ public class TextAnalyzer {
 			return isMatch;
 		}
 
-		FiniteMatchResult(LogicalTypeFinite logical, double score, long validCount, Map<String, Long> newOutliers) {
+		FiniteMatchResult(LogicalTypeFinite logical, double score, long validCount, Map<String, Long> newOutliers, Map<String, Long> newCardinality) {
 			this.logical = logical;
 			this.score = score;
 			this.validCount = validCount;
 			this.newOutliers = newOutliers;
+			this.newCardinality = newCardinality;
 			this.isMatch = true;
 		}
 
@@ -2233,9 +2253,8 @@ public class TextAnalyzer {
 		if (bestResult == null)
 			return null;
 
-		outliers.putAll(bestResult.newOutliers);
-		cardinalityUpper.keySet().removeAll(bestResult.newOutliers.keySet());
-		cardinality = cardinalityUpper;
+		outliers = bestResult.newOutliers;
+		cardinality = bestResult.newCardinality;
 		matchCount = bestResult.validCount;
 		matchPatternInfo = new PatternInfo(null, bestResult.logical.getRegExp(), PatternInfo.Type.STRING, bestResult.logical.getQualifier(), true, -1, -1, null, null);
 

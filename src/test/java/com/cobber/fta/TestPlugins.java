@@ -2209,7 +2209,7 @@ public class TestPlugins {
 				null, ""
 		};
 		String[] samples = new String[] {
-				"Swavek", "Jay", "Smitha", "Tim"
+				"Swavek", "Jay", "Smitha", "Tim", "Roger"
 		};
 
 		for (String header : headersMaybe) {
