@@ -35,7 +35,7 @@ class DriverOptions {
 	int maxOutlierCardinality = -1;
 	int pluginThreshold = -1;
 	boolean pretty = false;
-	DateResolutionMode resolutionMode = DateResolutionMode.None;
+	DateResolutionMode resolutionMode = DateResolutionMode.Auto;
 	int threshold = -1;
 	boolean validate = false;
 	int verbose = 0;

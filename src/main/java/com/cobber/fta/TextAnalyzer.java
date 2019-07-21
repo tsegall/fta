@@ -1936,7 +1936,7 @@ public class TextAnalyzer {
 				valid = true;
 			}
 			catch (DateTimeParseException reale) {
-				// The real parse threw an Exception, this does not give us enough facts to usefully determine if there is any
+				// The real parse threw an Exception, this does not give us enough facts to usefully determine if there are any
 				// improvements to our assumptions we could make to do better, so re-parse and handle our more nuanced exception
 				DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, resolutionMode, locale);
 				boolean success = false;

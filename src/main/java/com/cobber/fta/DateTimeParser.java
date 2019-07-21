@@ -517,7 +517,6 @@ public class DateTimeParser {
 		String timeZone = "";
 		String amPmIndicator = "";
 		boolean iso8601 = false;
-		boolean expectingAlphaTimeZone = false;
 
 		int lastCh = '¶';
 		for (int i = 0; i < len && timeZone.length() == 0; i++) {
@@ -714,8 +713,6 @@ public class DateTimeParser {
 					return null;
 				digits = 0;
 				value = 0;
-				if (timeSeen && dateSeen)
-					expectingAlphaTimeZone = true;
 				break;
 
 			default:
