@@ -30,6 +30,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
@@ -193,17 +196,17 @@ public class TextAnalyzer {
 	private double minDouble = Double.MAX_VALUE;
 	private double maxDouble = -Double.MAX_VALUE;
 	private BigDecimal sumBD = BigDecimal.ZERO;
-	private TopBottomK<Double> tbDouble = new TopBottomK<>();
+	private TopBottomK<Double, Double> tbDouble = new TopBottomK<>();
 
 	private long minLong = Long.MAX_VALUE;
 	private long minLongNonZero = Long.MAX_VALUE;
 	private long maxLong = Long.MIN_VALUE;
 	private BigInteger sumBI = BigInteger.ZERO;
-	private TopBottomK<Long> tbLong = new TopBottomK<>();
+	private TopBottomK<Long, Long> tbLong = new TopBottomK<>();
 
 	private String minString;
 	private String maxString;
-	private TopBottomK<String> tbString = new TopBottomK<>();
+	private TopBottomK<String, String> tbString = new TopBottomK<>();
 
 	private String minOutlierString;
 	private String maxOutlierString;
@@ -213,23 +216,23 @@ public class TextAnalyzer {
 
 	private LocalTime minLocalTime;
 	private LocalTime maxLocalTime;
-	private TopBottomK<LocalTime> tbLocalTime = new TopBottomK<>();
+	private TopBottomK<LocalTime, LocalTime> tbLocalTime = new TopBottomK<>();
 
 	private LocalDate minLocalDate;
 	private LocalDate maxLocalDate;
-//	private TopBottomK<LocalDate> tbLocalDate = new TopBottomK<>();
+	private TopBottomK<LocalDate, ChronoLocalDate> tbLocalDate = new TopBottomK<>();
 
 	private LocalDateTime minLocalDateTime;
 	private LocalDateTime maxLocalDateTime;
-//	private TopBottomK<LocalDateTime> tbLocalDateTime = new TopBottomK<>();
+	private TopBottomK<LocalDateTime, ChronoLocalDateTime<?>> tbLocalDateTime = new TopBottomK<>();
 
 	private ZonedDateTime minZonedDateTime;
 	private ZonedDateTime maxZonedDateTime;
-//	private TopBottomK<ZonedDateTime> tbZonedDateTime = new TopBottomK<>();
+	private TopBottomK<ZonedDateTime, ChronoZonedDateTime<?>> tbZonedDateTime = new TopBottomK<>();
 
 	private OffsetDateTime minOffsetDateTime;
 	private OffsetDateTime maxOffsetDateTime;
-	private TopBottomK<OffsetDateTime> tbOffsetDateTime = new TopBottomK<>();
+	private TopBottomK<OffsetDateTime, OffsetDateTime> tbOffsetDateTime = new TopBottomK<>();
 
 	// The minimum length (not trimmed)
 	private int minRawLength = Integer.MAX_VALUE;
@@ -804,6 +807,7 @@ public class TextAnalyzer {
 					minLocalDate = localDate;
 				if (maxLocalDate == null || localDate.compareTo(maxLocalDate) > 0)
 					maxLocalDate = localDate;
+				tbLocalDate.observe(localDate);
 			}
 			else
 				result.parse(trimmed);
@@ -816,6 +820,7 @@ public class TextAnalyzer {
 					minLocalDateTime = localDateTime;
 				if (maxLocalDateTime == null || localDateTime.compareTo(maxLocalDateTime) > 0)
 					maxLocalDateTime = localDateTime;
+				tbLocalDateTime.observe(localDateTime);
 			}
 			else
 				result.parse(trimmed);
@@ -823,11 +828,12 @@ public class TextAnalyzer {
 
 		case ZONEDDATETIME:
 			if (collectStatistics) {
-				final ZonedDateTime zonedDataTime = ZonedDateTime.parse(trimmed, formatter);
-				if (minZonedDateTime == null || zonedDataTime.compareTo(minZonedDateTime) < 0)
-					minZonedDateTime = zonedDataTime;
-				if (maxZonedDateTime == null || zonedDataTime.compareTo(maxZonedDateTime) > 0)
-					maxZonedDateTime = zonedDataTime;
+				final ZonedDateTime zonedDateTime = ZonedDateTime.parse(trimmed, formatter);
+				if (minZonedDateTime == null || zonedDateTime.compareTo(minZonedDateTime) < 0)
+					minZonedDateTime = zonedDateTime;
+				if (maxZonedDateTime == null || zonedDateTime.compareTo(maxZonedDateTime) > 0)
+					maxZonedDateTime = zonedDateTime;
+				tbZonedDateTime.observe(zonedDateTime);
 			}
 			else
 				result.parse(trimmed);
@@ -2163,6 +2169,8 @@ public class TextAnalyzer {
 
 				ret.minValue = minLocalDate == null ? null : minLocalDate.format(dtf);
 				ret.maxValue = maxLocalDate == null ? null : maxLocalDate.format(dtf);
+				ret.bottomK = tbLocalDate.bottomKasString();
+				ret.topK = tbLocalDate.topKasString();
 			}
 			break;
 
@@ -2183,6 +2191,8 @@ public class TextAnalyzer {
 
 				ret.minValue = minLocalDateTime == null ? null : minLocalDateTime.format(dtf);
 				ret.maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(dtf);
+				ret.bottomK = tbLocalDateTime.bottomKasString();
+				ret.topK = tbLocalDateTime.topKasString();
 			}
 			break;
 
@@ -2192,6 +2202,8 @@ public class TextAnalyzer {
 
 				ret.minValue = minZonedDateTime.format(dtf);
 				ret.maxValue = maxZonedDateTime.format(dtf);
+				ret.bottomK = tbZonedDateTime.bottomKasString();
+				ret.topK = tbZonedDateTime.topKasString();
 			}
 			break;
 

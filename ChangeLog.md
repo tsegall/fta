@@ -59,5 +59,8 @@
 ### 2.3.13 ###
  - Support Lang as a weak synonym for Language, bug - also validate outliers when looking at finite sets, do not back out Date types as aggressively
 
-### 2.3.13 ###
+### 2.3.14 ###
  - Change default DateResolutionMode from None to Auto - if executing from the command line
+
+### 2.3.15 ###
+ - Add support for top K/bottom K on LocalDate, LocalDateTime, ZonedDateTime

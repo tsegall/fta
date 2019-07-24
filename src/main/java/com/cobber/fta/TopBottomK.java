@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @param <T> The type of the object being tracked.
  */
-public class TopBottomK<T extends Comparable<T>> {
+public class TopBottomK<T extends Comparable<C>, C> {
 	private final static int DEFAULT_SIZE = 10;
 	private int size;
 	private TreeSet<T> starter;
@@ -48,13 +48,13 @@ public class TopBottomK<T extends Comparable<T>> {
 			}
 		}
 		else {
-			if (item.compareTo(top.first()) > 0) {
+			if (item.compareTo((C) top.first()) > 0) {
 				if (!top.contains(item)) {
 					top.add(item);
 					top.pollFirst();
 				}
 			}
-			else if (item.compareTo(bottom.last()) < 0) {
+			else if (item.compareTo((C) bottom.last()) < 0) {
 				if (!bottom.contains(item)) {
 					bottom.add(item);
 					bottom.pollLast();
