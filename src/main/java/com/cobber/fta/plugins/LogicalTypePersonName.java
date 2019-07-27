@@ -1,7 +1,6 @@
 package com.cobber.fta.plugins;
 
 import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -22,7 +21,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 
 	public LogicalTypePersonName(PluginDefinition plugin, String filename) throws FileNotFoundException {
 		super(plugin, REGEXP, ".*", 95);
-		setReader(new InputStreamReader(LogicalTypePersonName.class.getResourceAsStream("/reference/" + filename)));
+		setContent("resource", "/reference/" + filename);
 	}
 
 	@Override

@@ -48,7 +48,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public synchronized boolean initialize(Locale locale) {
+	public boolean initialize(Locale locale) {
 		super.initialize(locale);
 
 		threshold = 95;

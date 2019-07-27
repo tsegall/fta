@@ -1,9 +1,5 @@
 package com.cobber.fta.plugins;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -12,8 +8,8 @@ import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.SingletonSet;
 import com.cobber.fta.StringFacts;
-import com.cobber.fta.TextAnalyzer;
 
 /**
  * Plugin to detect valid US Zip codes.
@@ -23,9 +19,9 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_US";
 	public static final String REGEXP_CONSTANT = "\\d{5}";
 	public static final String REGEXP_VARIABLE = "\\d{3,5}";
-	private static Set<String> zips = new HashSet<String>();
-	private static String[] zipArray;
 	private int minLength = 5;
+	private SingletonSet zipsRef = null;
+	private Set<String> zips = null;
 
 	public LogicalTypeUSZip5(PluginDefinition plugin) {
 		super(plugin);
@@ -37,32 +33,20 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public synchronized boolean initialize(Locale locale) {
+	public boolean initialize(Locale locale) {
 		super.initialize(locale);
 
 		threshold = 95;
 
-		// Only set up the Static Data once
-		if (zips.isEmpty()) {
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/us_zips.csv")))){
-				String line = null;
-
-				while ((line = reader.readLine()) != null) {
-					zips.add(line);
-				}
-			} catch (IOException e) {
-				throw new IllegalArgumentException("Internal error: Issues with US Zip database");
-			}
-		}
+		zipsRef = new SingletonSet("resource", "/reference/us_zips.csv");
+		zips = zipsRef.getMembers();
 
 		return true;
 	}
 
 	@Override
 	public String nextRandom() {
-		if (zipArray == null)
-			zipArray = zips.toArray(new String[zips.size()]);
-		return zipArray[random.nextInt(zips.size())];
+		return zipsRef.getMemberArray()[random.nextInt(zips.size())];
 	}
 
 	@Override

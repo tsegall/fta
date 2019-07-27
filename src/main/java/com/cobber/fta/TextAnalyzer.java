@@ -872,8 +872,7 @@ public class TextAnalyzer {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))){
 			plugins.registerPlugins(reader, dataStreamName, locale);
 		} catch (Exception e) {
-
-			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage());
+			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
 		}
 	}
 
@@ -1887,7 +1886,7 @@ public class TextAnalyzer {
 		if (fromTraining)
 			trackLengthAndShape(input, count);
 
-		// If the cache is full and we have not determined a type compute one
+		// If the detect window cache is full and we have not determined a type compute one
 		if ((matchPatternInfo == null || matchPatternInfo.type == null) && sampleCount - (nullCount + blankCount) > detectWindow)
 			determineType();
 

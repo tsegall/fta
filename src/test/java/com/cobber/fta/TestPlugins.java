@@ -818,6 +818,18 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void random3166_2_noHeader() throws IOException {
+		TextAnalyzer analyzer = new TextAnalyzer();
+		analyzer.registerDefaultPlugins(Locale.getDefault());
+		LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-2");
+
+		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+
+		for (int i = 0; i < 100; i++)
+			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+	}
+
+	@Test
 	public void random3166_3() throws IOException {
 		TextAnalyzer analyzer = new TextAnalyzer("country");
 		analyzer.registerDefaultPlugins(null);

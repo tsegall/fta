@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -416,7 +417,7 @@ public class RandomTests {
 				"21122-5702", "21220-1613", "21228", "21102-2059", "21221-3530", "21210-1556", "21040-1054", "21202-3504", "21043-6929", "21224-2141",
 				"21042", "21093-7547", "21001", "21087", "20772-4137", "21111-1120", "21228-5317", "20678-3443", "20639", "20772-8378",
 				"20772", "20735-4560", "21220", "21060-7241", "21220", "21009", "21108", "21201-5097", "22202", "22202", "20036", "20024", "20566",
-				 "21771", "21117", "20005", "21770", "20613", "20009","21229", "21791", "", "22134", "", "", "21225", "20850-3164", "21230", "21236",
+				"21771", "21117", "20005", "21770", "20613", "20009","21229", "21791", "", "22134", "", "", "21225", "20850-3164", "21230", "21236",
 				"20190", "20910", "21225", "21409-6107", "20782-3952", "22201-5798", "21205", "22202", "21250-1000", "20015-2770",
 				"21209-2101", "21227-4817", "21009", "21204-4310", "22205-3163", "20015-1009", "21029", "21228", "20855-1555", "21227-1056",
 				"21157-6530", "21042-3629", "21044-1211", "21794-9604", "20007-4373", "21009", "20903-2019", "20906-5271", "22206", "20769-9161",
@@ -918,15 +919,15 @@ public class RandomTests {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String input =
 				"01000053218|0100BRP90233|0100BRP90237|0180BAA01319|0180BAC30834|0190NSC30194|0190NSC30195|0190NSC30652|0190NSC30653|0190NSC30784|" +
-		"0190NSC30785|0190NSY28569|0190NSZ01245|020035037|02900033|02900033|02900039|02901210|02903036|02903037|" +
-		"030051210001|030051210002|030054160002|030055200003|03700325|03700325|0380F968G059|040000002968|049000000804|049002399361|" +
-		"049002399861|0500CCITY084|0500CCITY248|0500CCITY476|0500FWISH002|0500HHUNT027|0500HSTNS060|0500HSTNS062|0500SHARS006|0500SHARS016|" +
-		"0590PET621|0590PET622|0590PQG571|0600CR087|0600CR290|0610CH19130|0610CH548|0610EP19031|068000000461|068000000462|" +
-		"068000000502|069000024300|0690WNA02867|0690WNA02867|075071047A|075071047B|07605752|077072401A|077072401A|077072572A|" +
-		"077072583A|079073001K|0800COA10071|0800COA10194|0800COA10196|0800COA10196|0800COA10204|0800COA10207|0800COA10267|0800COA10268|" +
-		"0800COA10268|0800COA10268|0800COA10386|0800COA10469|0800COA10470|0800COA10490|0800COB20133|0800COB20134|0800COB20138|0800COB20139|" +
-		"0800COC30257|0800COC30258|0800COC30488|0800COC30504|0800COC30505|0800COC30649|0800COC30815|0800COC30873|0800COC31003|0800COC31004|" +
-		"0800COC31093|0800COC31215|0800COC31216|0800COC31221|0800COC31222|0800COC31229|0800COC31231|0800COC31306|0800COC31307|";
+						"0190NSC30785|0190NSY28569|0190NSZ01245|020035037|02900033|02900033|02900039|02901210|02903036|02903037|" +
+						"030051210001|030051210002|030054160002|030055200003|03700325|03700325|0380F968G059|040000002968|049000000804|049002399361|" +
+						"049002399861|0500CCITY084|0500CCITY248|0500CCITY476|0500FWISH002|0500HHUNT027|0500HSTNS060|0500HSTNS062|0500SHARS006|0500SHARS016|" +
+						"0590PET621|0590PET622|0590PQG571|0600CR087|0600CR290|0610CH19130|0610CH548|0610EP19031|068000000461|068000000462|" +
+						"068000000502|069000024300|0690WNA02867|0690WNA02867|075071047A|075071047B|07605752|077072401A|077072401A|077072572A|" +
+						"077072583A|079073001K|0800COA10071|0800COA10194|0800COA10196|0800COA10196|0800COA10204|0800COA10207|0800COA10267|0800COA10268|" +
+						"0800COA10268|0800COA10268|0800COA10386|0800COA10469|0800COA10470|0800COA10490|0800COB20133|0800COB20134|0800COB20138|0800COB20139|" +
+						"0800COC30257|0800COC30258|0800COC30488|0800COC30504|0800COC30505|0800COC30649|0800COC30815|0800COC30873|0800COC31003|0800COC31004|" +
+						"0800COC31093|0800COC31215|0800COC31216|0800COC31221|0800COC31222|0800COC31229|0800COC31231|0800COC31306|0800COC31307|";
 		final String inputs[] = input.split("\\|");
 		int locked = -1;
 
@@ -1506,7 +1507,7 @@ public class RandomTests {
 		Assert.assertEquals(analysis.getMaxOutliers(), newMaxOutliers);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getSampleCount(), outliers + end - start);
-//BUG		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		//BUG		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1576,53 +1577,53 @@ public class RandomTests {
 		String[] candidatesCAProvinces = TestUtils.validCAProvinces.split("\\|");
 
 		for (int i = 0; i < length; i++)
-		switch (type) {
-		case 0:
-			// Integer
-			result[i] = String.valueOf(random.nextInt());
-			break;
-		case 1:
-			// Boolean
-			result[i] = String.valueOf(random.nextBoolean());
-			break;
-		case 2:
-			// Long
-			result[i] = String.valueOf(random.nextLong());
-			break;
-		case 3:
-			// Double
-			result[i] = String.valueOf(random.nextDouble());
-			break;
-		case 4:
-			// Date
-			Date d = new Date(random.nextLong());
-			result[i] = d.toString();
-			break;
-		case 5:
-			// ISO 3166-3
-			result[i] = candidatesISO3166_3[random.nextInt(candidatesISO3166_3.length)];
-			break;
-		case 6:
-			// ISO 3166-2
-			result[i] = candidatesISO3166_2[random.nextInt(candidatesISO3166_2.length)];
-			break;
-		case 7:
-			// Zip Cpde
-			result[i] = candidatesZips[random.nextInt(candidatesZips.length)];
-			break;
-		case 8:
-			// US State
-			result[i] = candidatesUSStates[random.nextInt(candidatesUSStates.length)];
-			break;
-		case 9:
-			// CA Provinces
-			result[i] = candidatesCAProvinces[random.nextInt(candidatesCAProvinces.length)];
-			break;
-		case 10:
-			// US Street
-			result[i] = TestUtils.validUSStreets[random.nextInt(TestUtils.validUSStreets.length)];
-			break;
-		}
+			switch (type) {
+			case 0:
+				// Integer
+				result[i] = String.valueOf(random.nextInt());
+				break;
+			case 1:
+				// Boolean
+				result[i] = String.valueOf(random.nextBoolean());
+				break;
+			case 2:
+				// Long
+				result[i] = String.valueOf(random.nextLong());
+				break;
+			case 3:
+				// Double
+				result[i] = String.valueOf(random.nextDouble());
+				break;
+			case 4:
+				// Date
+				Date d = new Date(random.nextLong());
+				result[i] = d.toString();
+				break;
+			case 5:
+				// ISO 3166-3
+				result[i] = candidatesISO3166_3[random.nextInt(candidatesISO3166_3.length)];
+				break;
+			case 6:
+				// ISO 3166-2
+				result[i] = candidatesISO3166_2[random.nextInt(candidatesISO3166_2.length)];
+				break;
+			case 7:
+				// Zip Cpde
+				result[i] = candidatesZips[random.nextInt(candidatesZips.length)];
+				break;
+			case 8:
+				// US State
+				result[i] = candidatesUSStates[random.nextInt(candidatesUSStates.length)];
+				break;
+			case 9:
+				// CA Provinces
+				result[i] = candidatesCAProvinces[random.nextInt(candidatesCAProvinces.length)];
+				break;
+			case 10:
+				// US Street
+				result[i] = TestUtils.validUSStreets[random.nextInt(TestUtils.validUSStreets.length)];
+				break;
+			}
 
 		return result;
 	}
@@ -1640,13 +1641,13 @@ public class RandomTests {
 			this.stream = stream;
 			this.answer = answer;
 			analysis = new TextAnalyzer();
-//			System.out.printf("Thread %s: created, Stream: type: %s, length: %d\n",
-//					this.id, decoder[this.streamType], this.stream.length);
+			//			System.out.printf("Thread %s: created, Stream: type: %s, length: %d\n",
+			//					this.id, decoder[this.streamType], this.stream.length);
 		}
 
 		@Override
 		public void run() {
-//			long start = System.currentTimeMillis();
+			//			long start = System.currentTimeMillis();
 			for (int i = 0; i < stream.length; i++)
 				analysis.train(stream[i]);
 
@@ -1661,7 +1662,7 @@ public class RandomTests {
 			Assert.assertEquals(result.getMinValue(), answer.getMinValue());
 			Assert.assertEquals(result.getMaxValue(), answer.getMaxValue());
 
-//			System.out.printf("Thread %s: exiting, duration %d\n", id, System.currentTimeMillis() - start);
+			//			System.out.printf("Thread %s: exiting, duration %d\n", id, System.currentTimeMillis() - start);
 		}
 	}
 
@@ -1682,6 +1683,54 @@ public class RandomTests {
 
 			threads[t] = new Thread(new AnalysisThread(String.valueOf(t), type, stream, analysis.getResult()));
 		}
+
+		for (int t = 0; t < THREADS; t++)
+			threads[t].start();
+
+		for (int t = 0; t < THREADS; t++)
+			if (threads[t].isAlive())
+				threads[t].join();
+	}
+
+	class GetPlugin {
+		// one instance of plugins per thread
+		private ThreadLocal<TextAnalyzer> textAnalyzer = new ThreadLocal<>();
+
+		public Plugins getPlugins() {
+			TextAnalyzer textAnalyzer = this.textAnalyzer.get();
+			if (textAnalyzer == null) {
+				// initialize textAnalyzer
+				textAnalyzer = new TextAnalyzer();
+				textAnalyzer.registerDefaultPlugins(Locale.getDefault());
+				this.textAnalyzer.set(textAnalyzer);
+			}
+			return textAnalyzer.getPlugins();
+		}
+	}
+
+	class PluginThread implements Runnable {
+		private String id;
+
+		PluginThread(String id) throws IOException {
+			this.id = id;
+		}
+
+		@Override
+		public void run() {
+			GetPlugin pluginGetter = new GetPlugin();
+
+			for (int i = 0; i < 1000; i++)
+				pluginGetter.getPlugins();
+		}
+	}
+
+	@Test
+	public void testThreadingIssue() throws IOException, InterruptedException {
+		final int THREADS = 1000;
+		Thread[] threads = new Thread[THREADS];
+
+		for (int t = 0; t < THREADS; t++)
+			threads[t] = new Thread(new PluginThread(String.valueOf(t)));
 
 		for (int t = 0; t < THREADS; t++)
 			threads[t].start();

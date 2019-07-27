@@ -14,26 +14,30 @@ import com.cobber.fta.StringFacts;
  * Plugin to detect full Month Names.
  */
 public class LogicalTypeMonthFull extends LogicalTypeFinite {
-	private static String[] months = null;
+	private Set<String> months = null;
+	private String[] monthsArray = null;
 
 	public LogicalTypeMonthFull(PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin);
 	}
 
 	@Override
-	public  synchronized boolean initialize(Locale locale) {
+	public boolean initialize(Locale locale) {
 		super.initialize(locale);
 
 		threshold = 95;
 
-		months = getMembers().toArray(new String[getMembers().size()]);
+		months = LocaleInfo.getMonths(locale).keySet();
 
 		return true;
 	}
 
 	@Override
 	public String nextRandom() {
-		return months[random.nextInt(getMembers().size())];
+		if (monthsArray == null)
+			monthsArray = months.toArray(new String[months.size()]);
+
+		return monthsArray[random.nextInt(months.size())];
 	}
 
 	@Override

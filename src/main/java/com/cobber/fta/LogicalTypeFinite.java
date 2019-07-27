@@ -49,6 +49,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 			if (len > maxLength)
 				maxLength = len;
 		}
+
 		return true;
 	}
 

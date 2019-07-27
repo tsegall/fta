@@ -1,9 +1,5 @@
 package com.cobber.fta.plugins;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -12,8 +8,8 @@ import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.SingletonSet;
 import com.cobber.fta.StringFacts;
-import com.cobber.fta.TextAnalyzer;
 
 /**
  * Plugin to detect Addresses. (English-language only).
@@ -21,8 +17,8 @@ import com.cobber.fta.TextAnalyzer;
 public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "STREET_ADDRESS_EN";
 	private boolean multiline = false;
-	private static Set<String> addressMarkers = new HashSet<String>();
-	private static String[] addressMarkersArray = null;
+	private SingletonSet addressMarkersRef = null;
+	private Set<String> addressMarkers = null;
 
 	public LogicalTypeAddressEN(PluginDefinition plugin) {
 		super(plugin);
@@ -36,10 +32,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 				"PEACH", "OLIVE", "LEMON", "LILAC", "BEIGE", "AMBER", "BURGUNDY"
 		};
 
-		if (addressMarkersArray == null)
-			addressMarkersArray = addressMarkers.toArray(new String[addressMarkers.size()]);
-
-		return String.valueOf(random.nextInt(1024)) + ' ' + streets[random.nextInt(streets.length)] + ' ' + addressMarkersArray[random.nextInt(addressMarkers.size())];
+		return String.valueOf(random.nextInt(1024)) + ' ' + streets[random.nextInt(streets.length)] + ' ' + addressMarkersRef.getMemberArray()[random.nextInt(addressMarkers.size())];
 	}
 
 	@Override
@@ -48,15 +41,8 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 		threshold = 90;
 
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/address_markers.csv")))){
-			String line = null;
-
-			while ((line = reader.readLine()) != null) {
-				addressMarkers.add(line);
-			}
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Internal error: Issues with Address database");
-		}
+		addressMarkersRef = new SingletonSet("resource", "/reference/address_markers.csv");
+		addressMarkers = addressMarkersRef.getMembers();
 
 		return true;
 	}

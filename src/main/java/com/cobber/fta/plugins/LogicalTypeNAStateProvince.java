@@ -1,9 +1,6 @@
 package com.cobber.fta.plugins;
 
 import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginDefinition;
@@ -14,24 +11,10 @@ import com.cobber.fta.PluginDefinition;
 public class LogicalTypeNAStateProvince extends LogicalTypeFiniteSimple {
 	public final static String SEMANTIC_TYPE = "STATE_PROVINCE.STATE_PROVINCE_NA";
 	public final static String REGEXP = "\\p{Alpha}{2}";
-	private static Set<String> members = new HashSet<String>();
-	private static String[] membersArray = null;
 
 	public LogicalTypeNAStateProvince(PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, REGEXP,
 				"\\p{IsAlphabetic}{2}", 95);
-		setReader(new InputStreamReader(LogicalTypeNAStateProvince.class.getResourceAsStream("/reference/na_states_provinces.csv")));
-	}
-
-	@Override
-	public Set<String> getMembers() {
-		return members;
-	}
-
-	@Override
-	public String[] getMemberArray() {
-		if (membersArray == null)
-			membersArray = members.toArray(new String[members.size()]);
-		return membersArray;
+		setContent("resource", "/reference/na_states_provinces.csv");
 	}
 }

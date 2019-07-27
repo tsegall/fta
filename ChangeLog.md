@@ -64,3 +64,6 @@
 
 ### 2.3.15 ###
  - Add support for top K/bottom K on LocalDate, LocalDateTime, ZonedDateTime
+
+### 2.3.16 ###
+ - Fix multi-threading issue

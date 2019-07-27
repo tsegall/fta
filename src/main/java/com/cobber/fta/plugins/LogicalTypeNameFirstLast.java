@@ -16,8 +16,8 @@ import com.cobber.fta.StringFacts;
 public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "NAME.FIRST_LAST";
 	public final static String REGEXP = "[- \\p{isAlphabetic}]+ [- \\\\p{isAlphabetic}]+";
-	private static LogicalTypeCode logicalFirst;
-	private static LogicalTypeCode logicalLast;
+	private LogicalTypeCode logicalFirst;
+	private LogicalTypeCode logicalLast;
 
 	public LogicalTypeNameFirstLast(PluginDefinition plugin) {
 		super(plugin);

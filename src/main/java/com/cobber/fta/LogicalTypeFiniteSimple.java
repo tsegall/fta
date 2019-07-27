@@ -1,16 +1,17 @@
 package com.cobber.fta;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.Reader;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected String qualifier;
 	protected String regexp;
 	protected String backout;
 	protected Reader reader;
+	protected SingletonSet memberSet;
 
 	public LogicalTypeFiniteSimple(PluginDefinition plugin, String regexp, String backout, int threshold) {
 		super(plugin);
@@ -20,8 +21,17 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		this.threshold = threshold;
 	}
 
-	public void setReader(Reader reader) {
-		this.reader = reader;
+	public void setContent(String contentType, String content) throws FileNotFoundException {
+		this.memberSet = new SingletonSet(contentType, content);
+	}
+
+	@Override
+	public Set<String> getMembers() {
+		return memberSet.getMembers();
+	}
+
+	public String[] getMemberArray() {
+		return memberSet.getMemberArray();
 	}
 
 	@Override
@@ -30,29 +40,14 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public synchronized boolean initialize(Locale locale) {
+	public boolean initialize(Locale locale) {
 		if (this.backout == null)
 			throw new IllegalArgumentException("Internal error: Finite Simple types require backout.");
-
-		// Only set up the Static Data once
-		if (getMembers().isEmpty()) {
-			try (BufferedReader bufferedReader = new BufferedReader(reader)){
-				String line = null;
-
-				while ((line = bufferedReader.readLine()) != null) {
-					getMembers().add(line);
-				}
-			} catch (IOException e) {
-				throw new IllegalArgumentException("Internal error: Issues with database for: " + qualifier);
-			}
-		}
 
 		super.initialize(locale);
 
 		return true;
 	}
-
-	public abstract String[] getMemberArray();
 
 	@Override
 	public String getQualifier() {

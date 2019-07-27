@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
  * Class used to track the top and bottom K values.
  *
  * @param <T> The type of the object being tracked.
+ * @param <C> The Class of a comparator used to compare objects of this type.
  */
 public class TopBottomK<T extends Comparable<C>, C> {
 	private final static int DEFAULT_SIZE = 10;
