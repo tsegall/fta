@@ -82,14 +82,14 @@ public class TestRegExpPlugins {
 				"Franklin", "Gainesville", "Galveston", "Gatineau", "Georgetown", "Glen Mills", "Glenview", "Grand Junction", "Grand Rapids", "Greensboro",
 				"Greenwich", "Hanover", "Harrisburg", "Hartford", "Hartsville", "Hazelwood", "Helsinki", "Hickory", "Hoboken", "Hoffman Estates",
 				"Houston", "Indianapolis", "Irvine", "Irving", "Isleworth", "Issaquah", "Itasca", "Jackson", "Jacksonville", "Juno Beach",
-				"Kansas City", "Keene", "Kenilworth", "Kingsport", "Knoxville", "Kohler", "Lake Forest", "Lake Zurich,", "Lansing", "Lexington",
-				"Libertyville", "Lisle", "Livonia", "London", "Long Beach", "Los Angeles", "Los Gatos", "Louisville", "MADRID", "MALM�",
+				"Kansas City", "Keene", "Kenilworth", "Kingsport", "Knoxville", "Kohler", "Lake Forest", "Lake Zurich", "Lansing", "Lexington",
+				"Libertyville", "Lisle", "Livonia", "London", "Long Beach", "Los Angeles", "Los Gatos", "Louisville", "MADRID", "Malmö",
 				"MEMPHIS", "Madison", "Mansfield", "Marlborough", "McLean", "Medina", "Memphis", "Miami", "Middleton", "Midland",
 				"Milpitas", "Milwaukee", "Minneapolis", "Minnetonka", "Mississauga", "Modesto", "Moline", "Monroe", "Monterrey", "Montgomery",
-				"Montreal", "Morganton", "Morris Plains", "Morristown", "Mount Waverley", "Mountlake Terrace", "M�nchen", "NY", "NYC", "Naperville",
+				"Montreal", "Morganton", "Morris Plains", "Morristown", "Mount Waverley", "Mountlake Terrace", "München", "NY", "NYC", "Naperville",
 				"Naples", "Nashville", "Natick", "Naucalpan de Juarez", "New Albany", "New Brunswick", "New York", "Newport Beach", "Newport News", "Newton Square",
 				"North Canton", "North Chicago", "Norwalk", "Oak Brook", "Oakland", "Oklahoma City", "Oklahoma city", "Olympia", "Omaha", "Orlando",
-				"Oroville", "Oshkosh", "Owatonna", "Owings Mills", "PARIS CEDEX 09", "Palatine", "Palm Coast", "Parsippany", "Peoria", "Pewaukee",
+				"Oroville", "Oshkosh", "Owatonna", "Owings Mills", "PARIS CEDEX", "Palatine", "Palm Coast", "Parsippany", "Peoria", "Pewaukee",
 				"Philadelphia", "Phoenix", "Piscataway", "Pittsburgh", "Pleasanton", "Portage", "Portland", "Providence", "Purchase", "Raleigh",
 				"Rancho Cordova", "Redmond", "Redwood City", "Renville", "Reston", "Richardson", "Richfield", "Richmond", "Richomond", "Riverwoods",
 				"Roanoke", "Rochester", "Rockford", "Rolling Meadows", "Rosemont", "Round Rock", "Royal Oak", "Saint Louis", "Saint Paul", "Saint Petersburg",
@@ -111,14 +111,14 @@ public class TestRegExpPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getTypeQualifier(), "CITY");
-		Assert.assertEquals(result.getRegExp(), ".+");
+		Assert.assertEquals(result.getRegExp(), "[ \\.\\p{IsAlphabetic}]+");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
-			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+			Assert.assertTrue(samples[i].matches(result.getRegExp()), samples[i]);
 		}
 	}
 }

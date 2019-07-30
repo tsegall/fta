@@ -1,6 +1,5 @@
 package com.cobber.fta;
 
-import java.io.FileNotFoundException;
 import java.io.Reader;
 import java.util.Locale;
 import java.util.Map;
@@ -21,7 +20,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		this.threshold = threshold;
 	}
 
-	public void setContent(String contentType, String content) throws FileNotFoundException {
+	public void setContent(String contentType, String content) {
 		this.memberSet = new SingletonSet(contentType, content);
 	}
 

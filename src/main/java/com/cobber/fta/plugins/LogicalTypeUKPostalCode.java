@@ -59,6 +59,8 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		String format = validPostalCodes[random.nextInt(validPostalCodes.length)];
+		String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		String restrictedAlphabet = "ABCDEFGHKLMNOPQRSTUVWXY";
 		String result = "";
 		for (int i = 0; i < format.length(); i++) {
 			switch (format.charAt(i)) {
@@ -66,7 +68,10 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 				result += ' ';
 				break;
 			case 'X':
-				result += (char)('A' + random.nextInt(26));
+				if (i == 1)
+					result += restrictedAlphabet.charAt(random.nextInt(23));
+				else
+					result += alphabet.charAt(random.nextInt(26));
 				break;
 			case '9':
 				result += (char)('0' + random.nextInt(10));

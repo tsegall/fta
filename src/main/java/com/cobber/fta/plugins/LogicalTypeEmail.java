@@ -7,6 +7,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import com.cobber.fta.LogicalTypeCode;
+import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
@@ -33,8 +34,8 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		if (logicalFirst == null) {
-			logicalFirst = LogicalTypeCode.newInstance(new PluginDefinition("FIRST_NAME", "com.cobber.fta.plugins.LogicalTypeFirstName"), Locale.getDefault());
-			logicalLast = LogicalTypeCode.newInstance(new PluginDefinition("LAST_NAME", "com.cobber.fta.plugins.LogicalTypeLastName"), Locale.getDefault());
+			logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(new PluginDefinition("FIRST_NAME", "com.cobber.fta.plugins.LogicalTypeFirstName"), Locale.getDefault());
+			logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(new PluginDefinition("LAST_NAME", "com.cobber.fta.plugins.LogicalTypeLastName"), Locale.getDefault());
 		}
 		return logicalFirst.nextRandom().toLowerCase() + "." + logicalLast.nextRandom().toLowerCase() + "@" + mailDomains[random.nextInt(mailDomains.length)];
 	}

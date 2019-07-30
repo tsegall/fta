@@ -198,8 +198,8 @@ Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and f
 
 ## Java code ##
 
-To include the Java code in your application, or download the latest jars from the [Maven
-repository](http://repo1.maven.org/maven2/com/cobber/fta/fta/).
+Download the latest jars from the [Maven
+repository](https://mvnrepository.com/artifact/com.cobber.fta/fta).
 
 ## Javadoc ##
 

@@ -15,7 +15,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	public LogicalTypeRegExp(PluginDefinition plugin) {
 		super(plugin);
 
-		if (defn.minimum != null)
+		if (defn.minimum != null || defn.maximum != null)
 			switch (defn.baseType) {
 			case LONG:
 				minLong = defn.minimum != null ? Long.parseLong(defn.minimum) : null;
@@ -64,7 +64,29 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	@Override
 	public boolean isValid(String input) {
-		return pattern.matcher(input).matches();
+		if (!pattern.matcher(input).matches())
+			return false;
+
+		if (defn.minimum != null || defn.maximum != null)
+			switch (defn.baseType) {
+			case LONG:
+				long inputLong = Long.parseLong(input);
+				if (minLong != null && inputLong < minLong)
+					return false;
+				if (maxLong != null && inputLong > maxLong)
+					return false;
+				break;
+
+			case DOUBLE:
+				double inputDouble = Double.parseDouble(input);
+				if (minDouble != null && inputDouble < minDouble)
+					return false;
+				if (maxDouble != null && inputDouble > maxDouble)
+					return false;
+				break;
+			}
+
+		return true;
 	}
 
 	@Override

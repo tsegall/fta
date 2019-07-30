@@ -10,7 +10,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "2.3.16"
+version = "2.3.17"
 
 repositories {
     mavenCentral()
@@ -68,7 +68,7 @@ uploadArchives {
         name 'Fast Text Analyzer'
         packaging 'jar'
         // optionally artifactId can be defined here 
-        description 'Analyze Text data to determine type information and other key metrics associated with a text stream.'
+        description 'Analyze Text data to determine simple type and Semantic type information as well as other key metrics associated with a text stream.'
         url 'https://github.com/tsegall/fta'
 
         scm {

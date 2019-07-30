@@ -298,7 +298,7 @@ public class TestTopBottomK {
 				"ZOE", "ZOFIA", "ZOILA", "ZOLA", "ZONA", "ZORA", "ZORAIDA", "ZULA", "ZULEMA", "ZULMA" } ));
 
 		PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
-		LogicalTypeCode logicalFirst = LogicalTypeCode.newInstance(pluginFirst, Locale.getDefault());
+		LogicalTypeCode logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
 
 		for (int i = 0; i < 100000; i++)
 			t.observe(logicalFirst.nextRandom());

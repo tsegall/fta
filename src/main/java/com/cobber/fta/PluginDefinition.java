@@ -1,5 +1,12 @@
 package com.cobber.fta;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.List;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Definition of a Plugin.
  * There are three distinct types of plugins supported:
@@ -8,6 +15,8 @@ package com.cobber.fta;
  *  - RegExp - implementation is based on the detection of the supplied RegExp with a provided set of constraints.
  */
 public class PluginDefinition {
+	private static List<PluginDefinition> builtinPlugins = null;
+
 	/** Semantic Type of Plugin (Qualifier). */
 	public String qualifier;
 	/** locales this plugin applies to - empty set, implies all locales.  Can use just language instead of tag, e.g. "en" rather than "en_US". */
@@ -59,5 +68,23 @@ public class PluginDefinition {
 		this.headerRegExpConfidence = headerRegExpConfidence;
 		this.threshold = threshold;
 		this.baseType = baseType;
+	}
+
+	static PluginDefinition findByQualifier(String qualifier) {
+		synchronized (PluginDefinition.class) {
+			if (builtinPlugins == null) {
+				try (BufferedReader JSON = new BufferedReader(new InputStreamReader(PluginDefinition.class.getResourceAsStream("/reference/plugins.json")))) {
+					builtinPlugins = (new ObjectMapper()).readValue(JSON, new TypeReference<List<PluginDefinition>>(){});
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
+				}
+			}
+		}
+
+		for (PluginDefinition pluginDefinition : builtinPlugins)
+			if (pluginDefinition.qualifier.equals(qualifier))
+				return pluginDefinition;
+
+		return null;
 	}
 }

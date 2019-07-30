@@ -53,9 +53,10 @@
 	},
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_CA",
-		"validLocales": [ "en-CA" ],
+		"validLocales": [ "en-US", "en-CA" ],
 		"headerRegExps": [ ".*(?i)(post).*" ],
 		"headerRegExpConfidence": [ 100 ],
+		"regExpsToMatch": [ "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d" ],
 		"regExpReturned": "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d",
 		"threshold": 98,
 		"baseType": "STRING",
@@ -92,12 +93,12 @@
 		"priority": 90
 	},
 	{
-		"qualifier": "MonthAbbr",
+		"qualifier": "MONTH.ABBR_<LOCALE>",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthAbbr",
 		"priority": 100
 	},
 	{
-		"qualifier": "MonthFull",
+		"qualifier": "MONTH.FULL_<LOCALE>",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthFull",
 		"priority": 105
 	},
@@ -251,7 +252,7 @@
 		"qualifier": "CITY",
 		"headerRegExps": [ "^(?i)(city|town)$|^.*[ _](?i)(city|town)$|^(?i)(city|town)[ _].*$|.*[a-z](City|Town)$" ],
 		"headerRegExpConfidence": [ 100 ],
-		"regExpReturned": ".+",
+		"regExpReturned": "[ \\.\\p{IsAlphabetic}]+",
 		"baseType": "STRING",
 		"priority": 210
 	},
@@ -290,7 +291,7 @@
 		"qualifier": "LANGUAGE.TEXT_EN",
 		"headerRegExps": [ ".*(?i)(language).*" ],
 		"headerRegExpConfidence": [ 90 ],
-		"regExpReturned": "[\\p{Alpha}]+",
+		"regExpReturned": "[-' \\p{IsAlphabetic}]+",
 		"validLocales": [ "en" ],
 		"content": "/reference/language_en.csv",
 		"contentType": "resource",

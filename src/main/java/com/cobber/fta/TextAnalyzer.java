@@ -869,7 +869,7 @@ public class TextAnalyzer {
 	 * Note: If the locale is null it will default to the Default locale.
 	 */
 	public void registerDefaultPlugins(Locale locale) {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))){
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))) {
 			plugins.registerPlugins(reader, dataStreamName, locale);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);

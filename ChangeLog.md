@@ -66,4 +66,12 @@
  - Add support for top K/bottom K on LocalDate, LocalDateTime, ZonedDateTime
 
 ### 2.3.16 ###
- - Fix multi-threading issue
+ - Fix multi-threading issue (and improve exception reporting)
+
+### 2.3.17 ###
+ - Support CA Postal Codes in the US locale
+ - Bad regexp for FIRST_LAST and LAST_FIRST and LANGUAGE.TEXT_EN
+ - Add LogicalTypeFactory to return a LogicalType from a PluginDefinition
+ - Fixed bug in UK Postal Code random generation
+ - isValid on RegExp's not honoring min & max values
+ - CA Post Codes missing validation expression in plugins
