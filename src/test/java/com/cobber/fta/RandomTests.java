@@ -1740,6 +1740,41 @@ public class RandomTests {
 				threads[t].join();
 	}
 
+//	String[] plugins = new String[] { "NAME.FIRST", "NAME.LAST", "NAME.LAST_FIRST", "NAME.FIRST_LAST" };
+	String[] plugins = new String[] { "STATE_PROVINCE.PROVINCE_CA", "STATE_PROVINCE.STATE_US", "STATE_PROVINCE.STATE_PROVINCE_NA", "STATE_PROVINCE.STATE_AU",
+	"CURRENCY_CODE.ISO-4217", "COUNTRY.ISO-3166-3", "COUNTRY.ISO-3166-2" };
+	class LogicalTypeThread implements Runnable {
+		private String id;
+
+		LogicalTypeThread(String id) throws IOException {
+			this.id = id;
+		}
+
+		@Override
+		public void run() {
+			LogicalTypeCode logicalTypeCode = (LogicalTypeCode)LogicalTypeFactory.newInstance(plugins[new Random().nextInt(plugins.length)]);
+
+			for (int i = 0; i < 1000; i++)
+				Assert.assertTrue(logicalTypeCode.isValid(logicalTypeCode.nextRandom()));
+		}
+	}
+
+	@Test
+	public void testLogicalTypeThreading() throws IOException, InterruptedException {
+		final int THREADS = 1000;
+		Thread[] threads = new Thread[THREADS];
+
+		for (int t = 0; t < THREADS; t++)
+			threads[t] = new Thread(new LogicalTypeThread(String.valueOf(t)));
+
+		for (int t = 0; t < THREADS; t++)
+			threads[t].start();
+
+		for (int t = 0; t < THREADS; t++)
+			if (threads[t].isAlive())
+				threads[t].join();
+	}
+
 	//@Test
 	public void fuzzInt() throws IOException {
 		final Random random = new Random(3141562);

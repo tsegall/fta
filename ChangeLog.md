@@ -75,3 +75,6 @@
  - Fixed bug in UK Postal Code random generation
  - isValid on RegExp's not honoring min & max values
  - CA Post Codes missing validation expression in plugins
+
+### 2.3.18 ###
+ - Just cleaning
