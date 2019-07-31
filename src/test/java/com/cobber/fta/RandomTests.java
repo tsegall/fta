@@ -1740,9 +1740,9 @@ public class RandomTests {
 				threads[t].join();
 	}
 
-//	String[] plugins = new String[] { "NAME.FIRST", "NAME.LAST", "NAME.LAST_FIRST", "NAME.FIRST_LAST" };
-	String[] plugins = new String[] { "STATE_PROVINCE.PROVINCE_CA", "STATE_PROVINCE.STATE_US", "STATE_PROVINCE.STATE_PROVINCE_NA", "STATE_PROVINCE.STATE_AU",
-	"CURRENCY_CODE.ISO-4217", "COUNTRY.ISO-3166-3", "COUNTRY.ISO-3166-2" };
+	String[] plugins = new String[] { "NAME.FIRST", "NAME.LAST", "NAME.LAST_FIRST", "NAME.FIRST_LAST" };
+//	String[] plugins = new String[] { "STATE_PROVINCE.PROVINCE_CA", "STATE_PROVINCE.STATE_US", "STATE_PROVINCE.STATE_PROVINCE_NA", "STATE_PROVINCE.STATE_AU",
+//	"CURRENCY_CODE.ISO-4217", "COUNTRY.ISO-3166-3", "COUNTRY.ISO-3166-2" };
 	class LogicalTypeThread implements Runnable {
 		private String id;
 

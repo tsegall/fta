@@ -78,3 +78,6 @@
 
 ### 2.3.18 ###
  - Just cleaning
+
+### 2.3.18 ###
+ - Cities should allow -'s and apostrophes (e.g. "Martha's Vineyard")

@@ -249,13 +249,14 @@ public class TestStandalonePlugins {
 		String[] validSamples = new String[] {
 				"Milton Keynes", "Tokyo", "Delhi", "Shanghai", "Sao Paulo", "Mexico City", "Cairo", "Dhaka",
 				"Mumbai", "Beijing","Osaka", "Karachi", "Chongqing", "Buenos Aires", "Istanbul", "Kolkata",
-				"Lagos", "Manila", "Tianjin","Rio De Janeiro", "Malmö", "St. Louis"
+				"Lagos", "Manila", "Tianjin","Rio De Janeiro", "Malmö", "St. Louis", "Saint-Georges", "Saint-Jean-sur-Richelieu",
+				"MARTHA'S VINEYARD", "CLARK'S MOUNTAIN", "Fort McMurray", "Montréal"
 		};
 
 		for (String sample : validSamples)
 			Assert.assertTrue(logical.isValid(sample), sample);
 
-		String[] invalidSamples = new String[] { "2001Olypics", "Milton-Keynes" };
+		String[] invalidSamples = new String[] { "2001Olypics" };
 
 		for (String sample : invalidSamples)
 			Assert.assertFalse(logical.isValid(sample), sample);
