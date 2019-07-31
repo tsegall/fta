@@ -79,5 +79,8 @@
 ### 2.3.18 ###
  - Just cleaning
 
-### 2.3.18 ###
+### 2.3.19 ###
  - Cities should allow -'s and apostrophes (e.g. "Martha's Vineyard")
+
+### 2.3.20 ###
+ - RegExp matching should be based on the most frequent pattern and not rely on there being only one

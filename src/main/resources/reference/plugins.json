@@ -58,7 +58,7 @@
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d" ],
 		"regExpReturned": "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d",
-		"threshold": 98,
+		"threshold": 95,
 		"baseType": "STRING",
 		"priority": 62
 	},
