@@ -21,8 +21,8 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	public final static String SEMANTIC_TYPE = "EMAIL";
 //	public final static String EMAIL_REGEXP = "[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?";
 	public final static String REGEXP = "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}";
-	private LogicalTypeCode logicalFirst = null;
-	private LogicalTypeCode logicalLast = null;
+	private LogicalTypeCode logicalFirst;
+	private LogicalTypeCode logicalLast;
 	private static String[] mailDomains = new String[] {
 			"gmail.com", "hotmail.com", "yahoo.com"
 	};
@@ -33,16 +33,17 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		if (logicalFirst == null) {
-			logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(new PluginDefinition("FIRST_NAME", "com.cobber.fta.plugins.LogicalTypeFirstName"), Locale.getDefault());
-			logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(new PluginDefinition("LAST_NAME", "com.cobber.fta.plugins.LogicalTypeLastName"), Locale.getDefault());
-		}
 		return logicalFirst.nextRandom().toLowerCase() + "." + logicalLast.nextRandom().toLowerCase() + "@" + mailDomains[random.nextInt(mailDomains.length)];
 	}
 
 	@Override
 	public boolean initialize(Locale locale) {
 		super.initialize(locale);
+
+		PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
+		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
+		PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
+		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, Locale.getDefault());
 
 		threshold = 95;
 

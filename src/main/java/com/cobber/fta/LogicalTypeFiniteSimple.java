@@ -29,13 +29,9 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		return memberSet.getMembers();
 	}
 
-	public String[] getMemberArray() {
-		return memberSet.getMemberArray();
-	}
-
 	@Override
 	public String nextRandom() {
-		return getMemberArray()[random.nextInt(getMembers().size())];
+		return memberSet.getAt(random.nextInt(getMembers().size()));
 	}
 
 	@Override

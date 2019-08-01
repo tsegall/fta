@@ -32,7 +32,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 				"PEACH", "OLIVE", "LEMON", "LILAC", "BEIGE", "AMBER", "BURGUNDY"
 		};
 
-		return String.valueOf(random.nextInt(1024)) + ' ' + streets[random.nextInt(streets.length)] + ' ' + addressMarkersRef.getMemberArray()[random.nextInt(addressMarkers.size())];
+		return String.valueOf(random.nextInt(1024)) + ' ' + streets[random.nextInt(streets.length)] + ' ' + addressMarkersRef.getAt(random.nextInt(addressMarkers.size()));
 	}
 
 	@Override

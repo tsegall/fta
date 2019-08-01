@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -19,7 +18,7 @@ public class SingletonSet {
 	String content;
 	String key;
 
-	static HashMap<String, Set<String>> memberCache = new HashMap<>();
+	static HashMap<String, RandomSet<String>> memberCache = new HashMap<>();
 	static HashMap<String, String[]> memberArrayCache = new HashMap<>();
 
 	public SingletonSet(String contentType, String content) {
@@ -46,7 +45,7 @@ public class SingletonSet {
 			else if (contentType.equals("resource"))
 				reader = new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content));
 
-			Set<String> members = new HashSet<>();
+			RandomSet<String> members = new RandomSet<>();
 
 			try (BufferedReader bufferedReader = new BufferedReader(reader)){
 				String line = null;
@@ -63,17 +62,7 @@ public class SingletonSet {
 		}
 	}
 
-	public String[] getMemberArray() {
-		synchronized(memberArrayCache) {
-			String[] result = memberArrayCache.get(key);
-
-			if (result != null)
-				return result;
-
-			result = memberCache.get(key).toArray(new String[memberCache.get(key).size()]);
-			memberArrayCache.put(key, result);
-
-			return result;
-		}
+	public String getAt(int i) {
+		return memberCache.get(key).get(i);
 	}
 }

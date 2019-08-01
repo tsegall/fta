@@ -2557,9 +2557,6 @@ public class TextAnalyzer {
 
 			String singleUniformShape = null;
 			if (!updated && !anyShape) {
-				// Sort so most frequent is first
-				shapes = Utils.sortByValue(shapes);
-
 				if (shapes.size() > 1)
 					compressShapes();
 				if (shapes.size() == 1) {
@@ -2626,6 +2623,9 @@ public class TextAnalyzer {
 
 			// Check to see whether the most common shape matches our regExp and test to see if this valid
 			if (!updated && shapes.size() > 1) {
+				// Sort so most frequent shape is first
+				shapes = Utils.sortByValue(shapes);
+
 				Map.Entry<String, Long> firstShape = shapes.entrySet().iterator().next();
 				String regExp = RegExpGenerator.smashedAsRegExp(firstShape.getKey().trim());
 				for (LogicalTypeRegExp logical : regExpTypes) {

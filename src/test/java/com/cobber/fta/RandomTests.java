@@ -724,7 +724,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}" + '|' + KnownPatterns.PATTERN_NUMERIC + "{3}");
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_NUMERIC + "{3}" + '|' + KnownPatterns.PATTERN_ALPHA + "{3}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
@@ -1740,10 +1740,8 @@ public class RandomTests {
 				threads[t].join();
 	}
 
-//	String[] plugins = new String[] { "NAME.FIRST", "NAME.LAST", "NAME.LAST_FIRST", "NAME.FIRST_LAST" };
-	String[] plugins = new String[] { "STATE_PROVINCE.PROVINCE_CA", "STATE_PROVINCE.STATE_US", "STATE_PROVINCE.STATE_PROVINCE_NA", "STATE_PROVINCE.STATE_AU",
-	"CURRENCY_CODE.ISO-4217", "COUNTRY.ISO-3166-3", "COUNTRY.ISO-3166-2" };
 	class LogicalTypeThread implements Runnable {
+		Random any = new Random();
 		private String id;
 
 		LogicalTypeThread(String id) throws IOException {
@@ -1752,7 +1750,14 @@ public class RandomTests {
 
 		@Override
 		public void run() {
-			LogicalTypeCode logicalTypeCode = (LogicalTypeCode)LogicalTypeFactory.newInstance(plugins[new Random().nextInt(plugins.length)]);
+			LogicalType logicalType = null;
+			do {
+				String semanticType = TestStandalonePlugins.allSemanticTypes[any.nextInt(TestStandalonePlugins.allSemanticTypes.length)];
+				PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
+				logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+			} while (!LTRandom.class.isAssignableFrom(logicalType.getClass()));
+
+			LogicalTypeCode logicalTypeCode = (LogicalTypeCode)logicalType;
 
 			for (int i = 0; i < 1000; i++)
 				Assert.assertTrue(logicalTypeCode.isValid(logicalTypeCode.nextRandom()));

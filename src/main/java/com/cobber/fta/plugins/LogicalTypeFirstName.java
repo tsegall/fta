@@ -10,9 +10,4 @@ public class LogicalTypeFirstName extends LogicalTypePersonName {
 	public LogicalTypeFirstName(PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, "firstnames.txt");
 	}
-
-	@Override
-	public String[] getMemberArray() {
-		return null;
-	}
 }

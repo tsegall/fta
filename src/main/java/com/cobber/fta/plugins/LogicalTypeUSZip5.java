@@ -46,7 +46,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return zipsRef.getMemberArray()[random.nextInt(zips.size())];
+		return zipsRef.getAt(random.nextInt(zips.size()));
 	}
 
 	@Override

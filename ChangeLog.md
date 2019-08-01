@@ -84,3 +84,6 @@
 
 ### 2.3.20 ###
  - RegExp matching should be based on the most frequent pattern and not rely on there being only one
+
+### 2.3.21 ###
+ - Use new class RandomSet to enable to access member randomly without a separate parallel array.

@@ -141,7 +141,7 @@ public class TestStandalonePlugins {
 		}
 	}
 
-	String supportsRandom[] = new String[] {
+	public static String allSemanticTypes[] = new String[] {
 			"EMAIL", "URI.URL", "IPADDRESS.IPV4", "IPADDRESS.IPV6", "TELEPHONE", "GUID",
 			"POSTAL_CODE.ZIP5_US", "POSTAL_CODE.POSTAL_CODE_UK", "POSTAL_CODE.POSTAL_CODE_CA", "POSTAL_CODE.POSTAL_CODE_AU",
 			"STREET_ADDRESS_EN", "GENDER.TEXT_EN", "COUNTRY.TEXT_EN",
@@ -155,11 +155,12 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomSupport() throws IOException {
-		for (String qualifier : supportsRandom) {
+		for (String qualifier : allSemanticTypes) {
 			PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
 			LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
-			if (!(logicalType instanceof LogicalTypeCode))
+			// Does it support the nextRandom() interface
+			if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
 				continue;
 
 			LogicalTypeCode logical = (LogicalTypeCode)logicalType;
@@ -174,11 +175,12 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomSupportIntuitLocale() throws IOException {
-		for (String qualifier : supportsRandom) {
+		for (String qualifier : allSemanticTypes) {
 			PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
 			LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition);
 
-			if (!(logicalType instanceof LogicalTypeCode))
+			// Does it support the nextRandom() interface
+			if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
 				continue;
 
 			LogicalTypeCode logical = (LogicalTypeCode)logicalType;
@@ -193,10 +195,11 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomSupportByQualifier() throws IOException {
-		for (String qualifier : supportsRandom) {
+		for (String qualifier : allSemanticTypes) {
 			LogicalType logicalType = LogicalTypeFactory.newInstance(qualifier);
 
-			if (!(logicalType instanceof LogicalTypeCode))
+			// Does it support the nextRandom() interface
+			if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
 				continue;
 
 			LogicalTypeCode logical = (LogicalTypeCode)logicalType;
