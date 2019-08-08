@@ -87,3 +87,6 @@
 
 ### 2.3.21 ###
  - Use new class RandomSet to enable to access member randomly without a separate parallel array.
+
+### 2.3.22 ###
+ - Add support for checking dependencies, upgrade version of google phonenumber, support longs with trailing minus signs, fix copyright

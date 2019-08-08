@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Tim Segall
+ * Copyright 2017-2019 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -592,11 +592,22 @@ public class TextAnalyzer {
 		int digits = input.length();
 
 		try {
-			l = Long.parseLong(input);
-			digits = input.length();
-			char ch = input.charAt(0);
-			if (ch == '-' || ch == '+')
-				digits--;
+			if (patternInfo.id == KnownPatterns.ID.ID_SIGNED_LONG_TRAILING) {
+				digits = input.length();
+				if (digits >= 2 && input.charAt(digits - 1) == '-') {
+					l = -Long.parseLong(input.substring(0, digits - 1));
+					digits--;
+				}
+				else
+					l = Long.parseLong(input);
+			}
+			else {
+				l = Long.parseLong(input);
+				digits = input.length();
+				char ch = input.charAt(0);
+				if (ch == '-' || ch == '+')
+					digits--;
+			}
 		} catch (NumberFormatException e) {
 			ParsePosition pos = new ParsePosition(0);
 			Number n = longFormatter.parse(input, pos);
@@ -962,8 +973,15 @@ public class TextAnalyzer {
 	}
 
 	StringBuilder[]
-	determineNumericPattern(boolean numericSigned, int numericDecimalSeparators, int possibleExponentSeen) {
+	determineNumericPattern(SignStatus signStatus, int numericDecimalSeparators, int possibleExponentSeen) {
 		StringBuilder[] result = new StringBuilder[2];
+
+		if (signStatus == SignStatus.TRAILING_MINUS) {
+			result[0] = result[1] = new StringBuilder(knownPatterns.PATTERN_SIGNED_LONG_TRAILING);
+			return result;
+		}
+
+		boolean numericSigned = signStatus == SignStatus.LOCALE_STANDARD || signStatus == SignStatus.LEADING_SIGN;
 
 		if (numericDecimalSeparators == 1) {
 			if (possibleExponentSeen == -1) {
@@ -1133,6 +1151,13 @@ public class TextAnalyzer {
 		return result;
 	}
 
+	enum SignStatus {
+		NONE,
+		LOCALE_STANDARD,
+		LEADING_SIGN,
+		TRAILING_MINUS
+	}
+
 	public boolean trainCore(final String rawInput, String trimmed, final int length, long count) {
 
 		trackResult(rawInput, true, count);
@@ -1146,7 +1171,7 @@ public class TextAnalyzer {
 		final StringBuilder l0 = new StringBuilder(length);
 
 		// Walk the string
-		boolean numericSigned = false;
+		SignStatus numericSigned = SignStatus.NONE;
 		int numericDecimalSeparators = 0;
 		int numericGroupingSeparators = 0;
 		boolean couldBeNumeric = true;
@@ -1175,7 +1200,7 @@ public class TextAnalyzer {
 			}
 		}
 		if (matches == matchesRequired && matches > 0)
-			numericSigned = true;
+			numericSigned = SignStatus.LOCALE_STANDARD;
 
 		for (int i = startLooking; i < stopLooking; i++) {
 			char ch = trimmed.charAt(i);
@@ -1186,8 +1211,10 @@ public class TextAnalyzer {
 				lastIndex[ch] = i;
 			}
 
-			if ((ch == minusSign || ch == '+') && i == 0) {
-				numericSigned = true;
+			if ((ch == minusSign || ch == '+') && i == 0)
+				numericSigned = SignStatus.LEADING_SIGN;
+			else if (!hasNegativeSuffix && numericSigned == SignStatus.NONE && ch == '-' && i == stopLooking - 1) {
+				numericSigned = SignStatus.TRAILING_MINUS;
 			} else if (Character.isDigit(ch)) {
 				l0.append('d');
 				digitsSeen++;

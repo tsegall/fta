@@ -5,12 +5,23 @@ apply plugin: 'java-library-distribution'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'jacoco'
+apply plugin: "com.github.ben-manes.versions"
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+
+  dependencies {
+    classpath "com.github.ben-manes:gradle-versions-plugin:0.21.0"
+  }
+}
 
 mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "2.3.21"
+version = "2.3.22"
 
 repositories {
     mavenCentral()
@@ -108,7 +119,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
 	// https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-	compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.10.14'
+	compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.10.16'
 }
 
 distributions {

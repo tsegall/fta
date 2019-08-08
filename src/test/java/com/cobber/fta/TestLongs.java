@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017-2019 Tim Segall
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cobber.fta;
 
 import java.io.BufferedWriter;
@@ -125,6 +140,33 @@ public class TestLongs {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getMinValue(), "116789");
 		Assert.assertEquals(result.getMaxValue(), "456789");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void trailingMinus() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "458-|123|901|404|209-|12|0|0|676|1894-|2903-|111-|5234".split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked != -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, -1);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d+-?");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getMinValue(), "-2903");
+		Assert.assertEquals(result.getMaxValue(), "5234");
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -351,8 +393,7 @@ public class TestLongs {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("mk-MK") };
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-JO") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-AE") };
 
 		for (Locale locale : locales) {
 			long min = Long.MAX_VALUE;
@@ -412,11 +453,11 @@ public class TestLongs {
 
 			final TextAnalysisResult result = analysis.getResult();
 
-//			System.err.printf("Locale '%s', re: '%s', grouping: %s, negPrefix: %s, negSuffix: %s, min: %s, max: %s, absMax:%s.\n",
-//					locale, result.getRegExp(), grp, negPrefix, negSuffix, String.valueOf(min), String.valueOf(max), absMinValue);
+//			System.err.printf("Locale '%s', re: '%s', negPrefix: %s, negSuffix: %s, min: %s, max: %s, absMax:%s.\n",
+//					locale, result.getRegExp(), negPrefix, negSuffix, String.valueOf(min), String.valueOf(max), absMinValue);
 
 			Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
-			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toString());
 			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			Assert.assertEquals(result.getNullCount(), 0);

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017-2019 Tim Segall
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cobber.fta;
 
 import java.text.DecimalFormat;
@@ -19,6 +34,7 @@ public class KnownPatterns {
 		ID_LONG,
 		ID_LONG_GROUPING,
 		ID_SIGNED_LONG,
+		ID_SIGNED_LONG_TRAILING,
 		ID_SIGNED_LONG_GROUPING,
 		ID_DOUBLE,
 		ID_DOUBLE_GROUPING,
@@ -52,6 +68,7 @@ public class KnownPatterns {
 	public String PATTERN_LONG;
 	public String PATTERN_LONG_GROUPING;
 	public String PATTERN_SIGNED_LONG;
+	public String PATTERN_SIGNED_LONG_TRAILING;
 	public String PATTERN_SIGNED_LONG_GROUPING;
 	public String PATTERN_DOUBLE;
 	public String PATTERN_DOUBLE_GROUPING;
@@ -90,6 +107,8 @@ public class KnownPatterns {
 			return PATTERN_LONG_GROUPING;
 		case ID_SIGNED_LONG:
 			return PATTERN_SIGNED_LONG;
+		case ID_SIGNED_LONG_TRAILING:
+			return PATTERN_SIGNED_LONG_TRAILING;
 		case ID_SIGNED_LONG_GROUPING:
 			return PATTERN_SIGNED_LONG_GROUPING;
 		case ID_DOUBLE:
@@ -142,6 +161,7 @@ public class KnownPatterns {
 
 		PATTERN_LONG = "\\d+";
 		PATTERN_SIGNED_LONG = optionalSignPrefix + "\\d+" + optionalSignSuffix;
+		PATTERN_SIGNED_LONG_TRAILING = "\\d+" + "-?";
 		PATTERN_DOUBLE = "\\d*" + RegExpGenerator.slosh(decimalSeparator) + "?" + "\\d+";
 		PATTERN_SIGNED_DOUBLE = optionalSignPrefix + PATTERN_DOUBLE + optionalSignSuffix;
 
@@ -172,6 +192,8 @@ public class KnownPatterns {
 				new PatternInfo(ID.ID_LONG, PATTERN_LONG, PatternInfo.Type.LONG, null, false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_LONG,
 				new PatternInfo(ID.ID_SIGNED_LONG, PATTERN_SIGNED_LONG, PatternInfo.Type.LONG, "SIGNED", false, 1, -1, null, ""));
+		knownPatterns.put(PATTERN_SIGNED_LONG_TRAILING,
+				new PatternInfo(ID.ID_SIGNED_LONG_TRAILING, PATTERN_SIGNED_LONG_TRAILING, PatternInfo.Type.LONG, "SIGNED_TRAILING", false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_DOUBLE,
 				new PatternInfo(ID.ID_DOUBLE, PATTERN_DOUBLE, PatternInfo.Type.DOUBLE, null, false, -1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_DOUBLE,
@@ -204,10 +226,13 @@ public class KnownPatterns {
 		}
 
 		addBinary(promotion, PATTERN_LONG, PATTERN_SIGNED_LONG, PATTERN_SIGNED_LONG);
+		addBinary(promotion, PATTERN_LONG, PATTERN_SIGNED_LONG_TRAILING, PATTERN_SIGNED_LONG_TRAILING);
 		addBinary(promotion, PATTERN_LONG, PATTERN_DOUBLE, PATTERN_DOUBLE);
 		addBinary(promotion, PATTERN_LONG, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE);
 		addBinary(promotion, PATTERN_LONG, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT);
 		addBinary(promotion, PATTERN_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+
+		addBinary(promotion, PATTERN_SIGNED_LONG_TRAILING, PATTERN_LONG, PATTERN_SIGNED_LONG_TRAILING);
 
 		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_LONG, PATTERN_SIGNED_LONG);
 		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE);

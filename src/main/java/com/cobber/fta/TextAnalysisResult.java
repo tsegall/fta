@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Tim Segall
+ * Copyright 2017-2019 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ public class TextAnalysisResult {
 	 * <ul>
 	 *  <li>Type: BOOLEAN - "TRUE_FALSE", "YES_NO", "ONE_ZERO"</li>
 	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "NULL"</li>
-	 *  <li>Type: LONG - "GROUPING", "SIGNED".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
+	 *  <li>Type: LONG - "GROUPING", "SIGNED", "SIGNED_TRAILING".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
 	 * 	<li>Type: DOUBLE - "GROUPING", "SIGNED".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
 	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The qualifier is the detailed date format string</li>
 	 * </ul>

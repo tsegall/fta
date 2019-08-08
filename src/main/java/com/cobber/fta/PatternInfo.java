@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Tim Segall
+ * Copyright 2017-2019 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,6 +99,7 @@ public class PatternInfo {
 		NULL,
 		/* Numerics */
 		SIGNED,
+		SIGNED_TRAILING,
 		GROUPING,
 		/* Boolean */
 		TRUE_FALSE,
