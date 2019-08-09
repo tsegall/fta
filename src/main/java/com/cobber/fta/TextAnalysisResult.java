@@ -156,7 +156,7 @@ public class TextAnalysisResult {
 	 *  <li>Type: BOOLEAN - "TRUE_FALSE", "YES_NO", "ONE_ZERO"</li>
 	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "NULL"</li>
 	 *  <li>Type: LONG - "GROUPING", "SIGNED", "SIGNED_TRAILING".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
-	 * 	<li>Type: DOUBLE - "GROUPING", "SIGNED".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
+	 * 	<li>Type: DOUBLE - "GROUPING", "SIGNED", "SIGNED_TRAILING".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
 	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The qualifier is the detailed date format string</li>
 	 * </ul>
 	 *

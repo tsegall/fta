@@ -743,7 +743,15 @@ public class TextAnalyzer {
 		double d;
 
 		try {
-			d = Double.parseDouble(input);
+			if (patternInfo.id == KnownPatterns.ID.ID_SIGNED_DOUBLE_TRAILING) {
+				int digits = input.length();
+				if (digits >= 2 && input.charAt(digits - 1) == '-')
+					d = -Double.parseDouble(input.substring(0, digits - 1));
+				else
+					d = Double.parseDouble(input);
+			}
+			else
+				d = Double.parseDouble(input);
 		} catch (NumberFormatException e) {
 			ParsePosition pos = new ParsePosition(0);
 			Number n = doubleFormatter.parse(input, pos);
@@ -977,7 +985,7 @@ public class TextAnalyzer {
 		StringBuilder[] result = new StringBuilder[2];
 
 		if (signStatus == SignStatus.TRAILING_MINUS) {
-			result[0] = result[1] = new StringBuilder(knownPatterns.PATTERN_SIGNED_LONG_TRAILING);
+			result[0] = result[1] = new StringBuilder(numericDecimalSeparators == 1 ? knownPatterns.PATTERN_SIGNED_DOUBLE_TRAILING : knownPatterns.PATTERN_SIGNED_LONG_TRAILING);
 			return result;
 		}
 
@@ -1368,7 +1376,10 @@ public class TextAnalyzer {
 				if (levelIndex != 0 && bestPattern != null && secondBestPattern != null &&
 						bestPattern.isNumeric() && secondBestPattern.isNumeric()) {
 					newKey = knownPatterns.numericPromotion(bestPattern.regexp, secondBestPattern.regexp);
-					best = new AbstractMap.SimpleEntry<String, Integer>(newKey, best.getValue() + secondBest.getValue());
+					if (newKey != null) {
+						best = new AbstractMap.SimpleEntry<String, Integer>(newKey, best.getValue() + secondBest.getValue());
+						bestPattern = knownPatterns.getByRegExp(best.getKey());
+					}
 				}
 			}
 			else if (thirdBest == null) {
@@ -1377,7 +1388,10 @@ public class TextAnalyzer {
 				if (levelIndex != 0 && bestPattern != null && thirdBestPattern != null &&
 						bestPattern.isNumeric() && thirdBestPattern.isNumeric()) {
 					newKey = knownPatterns.numericPromotion(newKey != null ? newKey : bestPattern.regexp, thirdBestPattern.regexp);
-					best = new AbstractMap.SimpleEntry<String, Integer>(newKey, best.getValue() + thirdBest.getValue());
+					if (newKey != null) {
+						best = new AbstractMap.SimpleEntry<String, Integer>(newKey, best.getValue() + thirdBest.getValue());
+						bestPattern = knownPatterns.getByRegExp(best.getKey());
+					}
 				}
 			}
 		}

@@ -90,3 +90,6 @@
 
 ### 2.3.22 ###
  - Add support for checking dependencies, upgrade version of google phonenumber, support longs with trailing minus signs, fix copyright
+
+### 2.3.23 ###
+ - Support doubles with trailing minus signs

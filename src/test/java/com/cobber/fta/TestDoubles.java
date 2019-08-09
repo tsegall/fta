@@ -180,6 +180,34 @@ public class TestDoubles {
 	}
 
 	@Test
+	public void trailingMinus() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = "458.00-|123.00|901.21|404.064|209.01-|12.0|0.0|0|676.00|1894.80-|2903.22-|111.14-|5234.00".split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked != -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, -1);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d*\\.?\\d+-?");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getMinValue(), "-2903.22");
+		Assert.assertEquals(result.getMaxValue(), "5234.0");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+
+	@Test
 	public void floatBug() throws IOException {
 		String[] samples = new String[] {
 				"352115", "277303", "324576", "818328", "698915", "438223", "104583", "355898", "387829", "130771",

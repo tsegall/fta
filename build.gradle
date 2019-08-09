@@ -13,7 +13,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.github.ben-manes:gradle-versions-plugin:0.21.0"
+    classpath "com.github.ben-manes:gradle-versions-plugin:0.22.0"
   }
 }
 
@@ -21,41 +21,41 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "2.3.22"
+version = "2.3.23"
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 test {
-    // enable TestNG support (default is JUnit)
-    useTestNG()
-    dependsOn cleanTest
-    testLogging.showStandardStreams = true
+  // enable TestNG support (default is JUnit)
+  useTestNG()
+  dependsOn cleanTest
+  testLogging.showStandardStreams = true
 }
 
 tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
+  options.encoding = 'UTF-8'
 }
 
 tasks.withType(Test) {
-	systemProperty "file.encoding", "UTF-8"
+  systemProperty "file.encoding", "UTF-8"
 }
 
 javadoc.options.encoding = 'UTF-8'
 
 task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
+  classifier = 'javadoc'
+  from javadoc
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+  classifier = 'sources'
+  from sourceSets.main.allSource
 }
 
 artifacts {
-    archives javadocJar, sourcesJar
+  archives javadocJar, sourcesJar
 }
 
 signing {
@@ -108,18 +108,18 @@ uploadArchives {
 }
 
 dependencies {
-	// https://mvnrepository.com/artifact/com.univocity/univocity-parsers
-	compile group: 'com.univocity', name: 'univocity-parsers', version: '2.8.2'
-	// https://mvnrepository.com/artifact/org.testng/testng
-	compile group: 'org.testng', name: 'testng', version: '6.14.3'
-	// https://mvnrepository.com/artifact/javax.mail/javax.mail-api
-	compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
-	// https://mvnrepository.com/artifact/commons-validator/commons-validator
-	compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
-	// https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-	compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.10.16'
+  // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
+  compile group: 'com.univocity', name: 'univocity-parsers', version: '2.8.3'
+  // https://mvnrepository.com/artifact/org.testng/testng
+  compile group: 'org.testng', name: 'testng', version: '6.14.3'
+  // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
+  compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+  // https://mvnrepository.com/artifact/commons-validator/commons-validator
+  compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
+  // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
+  // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
+  compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.10.16'
 }
 
 distributions {
