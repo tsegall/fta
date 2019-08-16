@@ -93,3 +93,6 @@
 
 ### 2.3.23 ###
  - Support doubles with trailing minus signs
+
+### 2.3.24 ###
+ - Update libraries to resolve security vulnerabilities

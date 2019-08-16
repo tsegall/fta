@@ -172,7 +172,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 5.5.1`
+`$ gradle wrapper --gradle-version 5.6`
 
 `$ ./gradlew installDist`
 
@@ -181,6 +181,9 @@ Fastest way to get started is to review the samples provided.
 
 ## Generate JavaDoc ##
 `$ ./gradlew javadoc`
+
+## Check Dependencies ##
+`$ ./gradlew dependencyUpdates`
 
 ## Everything ...
 `$ ./gradlew clean installDist test jacocoTestReport javadoc`
