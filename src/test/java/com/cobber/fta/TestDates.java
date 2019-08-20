@@ -455,6 +455,37 @@ public class TestDates {
 	}
 
 	@Test
+	public void twentyRecords() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("FROM_DATE", DateResolutionMode.MonthFirst);
+		analysis.setCollectStatistics(false);
+		final String input = "1/3/11|1/3/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|9/17/08|1-15-2011|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getTypeQualifier(), "M/d/yy");
+		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{2}");
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+
+		int matches = 0;
+		for (int i = 0; i < inputs.length; i++) {
+			if (inputs[i].matches(result.getRegExp()))
+				matches++;
+		}
+		Assert.assertEquals(matches, result.getMatchCount());
+	}
+
+	@Test
 	public void dMyy() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.DayFirst);
 		analysis.setCollectStatistics(false);

@@ -15,6 +15,10 @@
  */
 package com.cobber.fta;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.SortedSet;
@@ -482,14 +486,19 @@ public class TextAnalysisResult {
 		}
 	}
 
+	private String jsonError(String message) {
+		return "{ \"Error\": \"" + message + "\" }";
+	}
+
 	/**
 	 * A JSON representation of the Analysis.
 	 * @param pretty If set, add minimal whitespace formatting.
-	 * @param verbose If set provides additional details on the core, Outlier, and Shapes sets.
+	 * @param verbose If &gt; 0 provides additional details on the core, Outlier, and Shapes sets.
 	 * @return A JSON representation of the analysis.
 	 */
 	public String asJSON(boolean pretty, int verbose) {
 		ObjectMapper mapper = new ObjectMapper();
+		String structureSignature = null;
 
 		ObjectWriter writer = pretty ? mapper.writerWithDefaultPrettyPrinter() : mapper.writer();
 
@@ -526,6 +535,8 @@ public class TextAnalysisResult {
 		if (patternInfo.isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
+		structureSignature = patternInfo.type.toString() + getRegExp();
+
 		analysis.put("cardinality", cardinality.size() < maxCardinality ? cardinality.size() : -1);
 
 		if (!cardinality.isEmpty() && verbose > 0) {
@@ -540,9 +551,13 @@ public class TextAnalysisResult {
 		}
 
 		analysis.put("shapesCardinality", shapes.size() < maxShapes ? shapes.size() : -1);
-		if (!shapes.isEmpty() && verbose > 0) {
-			ArrayNode detail = analysis.putArray("shapesDetail");
-			outputDetails(mapper, detail, shapes, verbose);
+		if (!shapes.isEmpty()) {
+			if (!isLogicalType())
+				structureSignature += shapes.keySet().toString();
+			if (verbose > 0) {
+				ArrayNode detail = analysis.putArray("shapesDetail");
+				outputDetails(mapper, detail, outliers, verbose);
+			}
 		}
 
 		analysis.put("leadingWhiteSpace", getLeadingWhiteSpace());
@@ -554,10 +569,19 @@ public class TextAnalysisResult {
 		analysis.put("logicalType", isLogicalType());
 		analysis.put("possibleKey", key);
 
+		byte[] signature = structureSignature.getBytes(StandardCharsets.UTF_8);
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("SHA-1");
+		} catch (NoSuchAlgorithmException e) {
+			return jsonError(e.getMessage());
+		}
+		analysis.put("structureSignature", Base64.getEncoder().encodeToString((md.digest(signature))));
+
 		try {
 			return writer.writeValueAsString(analysis);
 		} catch (JsonProcessingException e) {
-			return "Internal Error";
+			return jsonError(e.getMessage());
 		}
 	}
 }

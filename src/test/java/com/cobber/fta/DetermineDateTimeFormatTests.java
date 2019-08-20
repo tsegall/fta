@@ -260,6 +260,22 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void twentyRecords() throws IOException {
+		final String input = "1/3/11|1/3/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|9/17/08|1-15-2011|";
+		final String inputs[] = input.split("\\|");
+		final DateTimeParser det = new DateTimeParser(DateResolutionMode.MonthFirst);
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		final DateTimeParserResult result = det.getResult();
+		final String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "M/dd/yy");
+	}
+
+	@Test
 	public void intuit8601DDDDDD() {
 		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 

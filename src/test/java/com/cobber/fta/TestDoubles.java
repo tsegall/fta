@@ -141,6 +141,8 @@ public class TestDoubles {
 		Assert.assertEquals(result.getMinValue(), "-99.23");
 		Assert.assertEquals(result.getMaxValue(), "43.8");
 
+		Assert.assertTrue("0".matches(result.getRegExp()));
+
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
 		}
@@ -195,7 +197,7 @@ public class TestDoubles {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d*\\.?\\d+-?");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE) + "-?");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getMinValue(), "-2903.22");
@@ -422,7 +424,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
-		Assert.assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {

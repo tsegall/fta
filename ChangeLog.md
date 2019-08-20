@@ -96,3 +96,7 @@
 
 ### 2.3.24 ###
  - Update libraries to resolve security vulnerabilities
+
+### 2.3.25 ###
+ - Add support for Structural Signature
+ - Address issue related to incorrectly merging YY and YYYY

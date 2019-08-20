@@ -320,7 +320,7 @@ public class DateTimeParser {
 					for (int i = 0; i < result.dateFieldLengths.length; i++) {
 						if (answerResult.dateFieldLengths[i] == -1 && result.dateFieldLengths[i] != -1)
 							answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
-						else if (answerResult.dateFieldLengths[i] != result.dateFieldLengths[i] && (result.dateFieldLengths[i] == 1 || result.dateFieldLengths[i] == 4)) {
+						else if (i != answerResult.yearOffset && answerResult.dateFieldLengths[i] != result.dateFieldLengths[i] && (result.dateFieldLengths[i] == 1 || result.dateFieldLengths[i] == 4)) {
 							// Merge two date lengths:
 							//  - d and dd -> d
 							//  - M and MM -> M
