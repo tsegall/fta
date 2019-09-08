@@ -332,7 +332,7 @@ public class TestDates {
 				final TextAnalysisResult result = analysis.getResult();
 
 				Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
-				Assert.assertEquals(result.getTypeQualifier(), "HH:mm dd/M/yy");
+				Assert.assertEquals(result.getTypeQualifier(), "HH:mm dd/M/yy", resolutionMode.toString() + "+" + locale);
 				Assert.assertEquals(result.getSampleCount(), inputs.length);
 				Assert.assertEquals(result.getMatchCount(), inputs.length);
 				Assert.assertEquals(result.getNullCount(), 0);
@@ -655,6 +655,65 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "14/06/17 11:49");
 		Assert.assertEquals(result.getMaxValue(), "23/08/17 03:49");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void mixed_yyyyddMM() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("yyyyddMM", DateResolutionMode.DayFirst);
+		final String input = "1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|2011/31/02|2017/31/12|2016/20/10|1999/15/07|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy/dd/MM");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{4}/\\d{2}/\\d{2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMinValue(), "1970/05/05");
+		Assert.assertEquals(result.getMaxValue(), "2017/31/12");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void mixed_ddMMyyyy() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("ddMMyyyy", DateResolutionMode.DayFirst);
+		final String input = 	"06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|31/02/2011|31/12/2017|20/10/2016|15/07/1999|";
+
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMinValue(), "05/05/1970");
+		Assert.assertEquals(result.getMaxValue(), "31/12/2017");
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -1173,7 +1232,7 @@ public class TestDates {
 
 	@Test
 	public void dateTimeYYYYMMDDTHHMMSSNNNN() throws IOException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("ISODate", DateResolutionMode.Auto);
 		analysis.setCollectStatistics(false);
 
 		analysis.train("2004-01-01T00:00:00-05:00");

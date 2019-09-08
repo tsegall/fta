@@ -23,7 +23,32 @@ import org.testng.annotations.Test;
 public class TestRegExpSupport {
 	@Test
 	public void phone() throws IOException {
-		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("+9 999 999 9999"), "\\+\\d \\d{3} \\d{3} \\d{4}");
+		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("+9 999 999 9999")
+				, "\\+\\d \\d{3} \\d{3} \\d{4}");
+	}
+
+	@Test
+	public void simple() throws IOException {
+		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("xxx"),
+				"\\p{IsAlphabetic}{3}");
+	}
+
+	@Test
+	public void mixedAlpha() throws IOException {
+		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("xxXX"),
+				"\\p{IsAlphabetic}{4}");
+	}
+
+	@Test
+	public void mac() throws IOException {
+		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("HH:HH:HH:HH:HH:HH"),
+				"\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
+	}
+
+	@Test
+	public void mix() throws IOException {
+		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("99XXXX:99X"),
+				"\\d{2}\\p{IsAlphabetic}{4}:\\d{2}\\p{IsAlphabetic}");
 	}
 
 	@Test

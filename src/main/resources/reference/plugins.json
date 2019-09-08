@@ -297,5 +297,15 @@
 		"contentType": "resource",
 		"backout": "[\\p{Alpha}]+",
 		"priority": 250
+	},
+	{
+		"qualifier": "MACADDRESS",
+		"headerRegExps": [ ".*(?i)(MAC).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpsToMatch": [ "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}" ],
+		"regExpReturned": "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}",
+		"threshold": 98,
+		"baseType": "STRING",
+		"priority": 260
 	}
 ]

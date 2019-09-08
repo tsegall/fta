@@ -19,12 +19,12 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.RegExpGenerator;
 import com.cobber.fta.StringFacts;
 
 /**
@@ -37,6 +37,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 	public final static String REGEXP = "([A-Za-z][A-Ha-hK-Yk-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})";
 	private static String[] validPostalCodes = { "XX9X 9XX", "X9X 9XX", "X9 9XX", "X99 9XX", "XX9 9XX", "XX99 9XX" };
 	private static Set<String> validShapes = new HashSet<String>();
+	Pattern validator = Pattern.compile(REGEXP);
 
 	static {
 		for (String s : validPostalCodes)
@@ -114,8 +115,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(String input) {
-		String shape = RegExpGenerator.smash(input);
-		return validShapes.contains(shape);
+	    return validator.matcher(input).matches();
 	}
 
 	@Override

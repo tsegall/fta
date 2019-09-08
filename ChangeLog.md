@@ -100,3 +100,10 @@
 ### 2.3.25 ###
  - Add support for Structural Signature
  - Address issue related to incorrectly merging YY and YYYY
+
+### 2.3.26 ###
+ - Add support for detecting Hex numbers - use to support new Semantic Type - MAC Address
+ - Add support for yyyy/dd/mm dates - really silly but they exist
+ - Upgrade dependent libraries
+ - Fix bug with with a mix of one and two digit percentages (e.g. 4%, 12%)
+

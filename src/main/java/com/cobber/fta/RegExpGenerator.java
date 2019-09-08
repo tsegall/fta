@@ -138,26 +138,33 @@ public class RegExpGenerator {
 		return specials == 1 ? ret.toString() : Pattern.quote(input);
 	}
 
-	private static StringBuilder segment(int alphas, int digits) {
+	private static StringBuilder segment(char toRepeat, int count) {
 		StringBuilder ret = new StringBuilder();
-
-		if (alphas != 0) {
-			ret.append("\\p{IsAlphabetic}");
-			if (alphas > 1)
-				ret.append('{').append(alphas).append('}');
+		String repeater = null;
+		switch (toRepeat) {
+			case HEX:
+				repeater = "\\p{XDigit}";
+				break;
+			case DIGIT:
+				repeater = "\\d";
+				break;
+			case LOW_ALPHABETIC:
+			case HIGH_ALPHABETIC:
+				repeater = "\\p{IsAlphabetic}";
+				break;
 		}
 
-		if (digits != 0) {
-			ret.append("\\d");
-			if (digits > 1)
-				ret.append('{').append(digits).append('}');
-		}
+		ret.append(repeater);
+		if (count > 1)
+			ret.append('{').append(count).append('}');
 
 		return ret;
 	}
 
 	final static char DIGIT = '9';
-	final static char ALPHABETIC = 'X';
+	final static char LOW_ALPHABETIC = 'x';
+	final static char HIGH_ALPHABETIC = 'X';
+	final static char HEX = 'H';
 
 	/**
 	 * Fast method to simplify a string so that we can determine if all inputs are of the same form.
@@ -182,7 +189,7 @@ public class RegExpGenerator {
 			if (ch >= '0' && ch <= '9')
 				b.append(DIGIT);
 			else if (Character.isAlphabetic(ch))
-				b.append(ALPHABETIC);
+				b.append((ch >= 'a' && ch <= 'f' || ch >= 'A' && ch <= 'F') ? LOW_ALPHABETIC : HIGH_ALPHABETIC);
 			else if (ch == '%') {
 				b.append("%%");
 			}
@@ -203,28 +210,32 @@ public class RegExpGenerator {
 			return smashed;
 
 		StringBuilder ret = new StringBuilder();
-		int digits = 0;
-		int alphas = 0;
+		char last = '¶';
+		char ch = '¶';
+		char count = 0;
 
 		for (int i = 0; i < smashed.length(); i++) {
-			char ch = smashed.charAt(i);
+			ch = smashed.charAt(i);
+			if (ch == LOW_ALPHABETIC)
+				ch = HIGH_ALPHABETIC;
 
 			switch (ch) {
 			case DIGIT:
-				if (alphas != 0)
-					ret.append(segment(alphas, digits));
-				alphas = 0;
-				digits++;
-				break;
-
-			case ALPHABETIC:
-				if (digits != 0)
-					ret.append(segment(alphas, digits));
-				digits = 0;
-				alphas++;
+			case HEX:
+			case LOW_ALPHABETIC:
+			case HIGH_ALPHABETIC:
+				if (count != 0 && ch != last) {
+					ret.append(segment(last, count));
+					count = 0;
+				}
+				count++;
 				break;
 
 			case '%':
+				if (count != 0 && ch != last) {
+					ret.append(segment(last, count));
+					count = 0;
+				}
 				ch = smashed.charAt(++i);
 				if (ch == '%')
 					ret.append('%');
@@ -233,16 +244,18 @@ public class RegExpGenerator {
 				break;
 
 			default:
-				if (alphas != 0 || digits != 0)
-					ret.append(segment(alphas, digits));
-				alphas = digits = 0;
+				if (count != 0 && ch != last) {
+					ret.append(segment(last, count));
+					count = 0;
+				}
 				ret.append(slosh(ch));
 				break;
 			}
+			last = ch;
 		}
 
-		if (alphas != 0 || digits != 0)
-			ret.append(segment(alphas, digits));
+		if (count != 0)
+			ret.append(segment(ch, count));
 
 		return ret.toString();
 	}

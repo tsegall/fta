@@ -550,13 +550,13 @@ public class TextAnalysisResult {
 			outputDetails(mapper, detail, outliers, verbose);
 		}
 
-		analysis.put("shapesCardinality", shapes.size() < maxShapes ? shapes.size() : -1);
+		analysis.put("shapesCardinality", (shapes.size() != 0 && shapes.size() < maxShapes) ? shapes.size() : -1);
 		if (!shapes.isEmpty()) {
 			if (!isLogicalType())
 				structureSignature += shapes.keySet().toString();
 			if (verbose > 0) {
 				ArrayNode detail = analysis.putArray("shapesDetail");
-				outputDetails(mapper, detail, outliers, verbose);
+				outputDetails(mapper, detail, shapes, verbose);
 			}
 		}
 

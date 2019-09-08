@@ -47,7 +47,7 @@ public class DateTimeParserResult {
 	public int[] timeFieldOffsets = new int[] {-1, -1, -1, -1};
 	public String timeZone = "";
 	public Character dateSeparator;
-	public String formatString;
+	private String formatString;
 	public Boolean amPmIndicator;
 	public ArrayList<FormatterToken> tokenized;
 
@@ -99,6 +99,21 @@ public class DateTimeParserResult {
 		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DAY_OF_WEEK, DAY_OF_WEEK_ABBR, DIGITS_1_OR_2, MONTHS_1_OR_2,
 		MONTHS_2, HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, SECS_2, FRACTION,
 		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET, TIMEZONE_OFFSET_Z, AMPM
+	}
+
+	boolean isDateUnbound() {
+		// If there is not a date then it is cannot be unbound
+		if (dateElements == -1)
+			return false;
+
+		int bound = 0;
+		if (dayOffset != -1)
+			bound++;
+		if (monthOffset != -1)
+			bound++;
+		if (yearOffset != -1)
+			bound++;
+		return bound < dateElements;
 	}
 
 	/*
@@ -157,7 +172,7 @@ public class DateTimeParserResult {
 	 * @param locale Locale the input string is in
 	 * @return The corresponding DateTimeParserResult
 	 */
-	public static DateTimeParserResult asResult(final String formatString, final DateResolutionMode resolutionMode, Locale locale) {
+	public static DateTimeParserResult asResult(String formatString, final DateResolutionMode resolutionMode, Locale locale) {
 		final String key = resolutionMode.name() + '#' + locale + '#' + formatString;
 		DateTimeParserResult ret = dtpCache.get(key);
 		if (ret != null)

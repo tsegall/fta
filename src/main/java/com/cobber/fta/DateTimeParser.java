@@ -235,111 +235,119 @@ public class DateTimeParser {
 		if (sampleCount == nullCount + blankCount + invalidCount)
 			return null;
 
-		// If there is only one result then it must be correct :-)
-		if (results.size() == 1)
-			return DateTimeParserResult.asResult(results.keySet().iterator().next(), resolutionMode, locale);
-
 		DateTimeParserResult answerResult = null;
-
-		// Sort the results of our training by value so that we consider the most frequent first
-		final HashMap<String, Integer> byValue = sortByValue(results);
-
-		// Iterate through all the results of our training, merging them to produce our best guess
 		StringBuffer answerBuffer = null;
-		for (final Map.Entry<String, Integer> entry : byValue.entrySet()) {
-			final String key = entry.getKey();
-			final DateTimeParserResult result = DateTimeParserResult.asResult(key, resolutionMode, locale);
 
-			// First entry
-			if (answerBuffer == null) {
-				answerBuffer = new StringBuffer(key);
-				answerResult = DateTimeParserResult.newInstance(result);
-				continue;
-			}
+		// If there is only one result then it must be correct :-)
+		if (results.size() == 1) {
+			answerResult = DateTimeParserResult.asResult(results.keySet().iterator().next(), resolutionMode, locale);
+			// If we are fully bound then we are done!
+			if (!answerResult.isDateUnbound() || resolutionMode == DateResolutionMode.None)
+				return answerResult;
+			answerResult = DateTimeParserResult.newInstance(answerResult);
+			answerBuffer = new StringBuffer(answerResult.getFormatString());
+		}
+		else {
 
-			// Process any time-related information
-			if (result.timeElements != -1) {
-				if (answerResult.timeElements == -1)
-					answerResult.timeElements = result.timeElements;
-				if (answerResult.timeFirst == null)
-					answerResult.timeFirst = result.timeFirst;
-				if (answerResult.timeZone == null)
-					answerResult.timeZone = result.timeZone;
-				if (answerResult.amPmIndicator == null)
-					answerResult.amPmIndicator = result.amPmIndicator;
+			// Sort the results of our training by value so that we consider the most frequent first
+			final HashMap<String, Integer> byValue = sortByValue(results);
 
-				if (result.timeFieldLengths != null) {
-					// Adjust the Hours, Minutes, or Seconds fields if the length is shorter (but not the fractions of Seconds)
-					for (int i = 0; i < result.timeFieldLengths.length - 1; i++) {
-						if (answerResult.timeFieldLengths[i] == -1)
-							answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
-						else
-							if (result.timeFieldLengths[i] < answerResult.timeFieldLengths[i]) {
-								final int start = answerResult.timeFieldOffsets[i];
-								final int len = answerResult.timeFieldLengths[i];
+			// Iterate through all the results of our training, merging them to produce our best guess
+			for (final Map.Entry<String, Integer> entry : byValue.entrySet()) {
+				final String key = entry.getKey();
+				final DateTimeParserResult result = DateTimeParserResult.asResult(key, resolutionMode, locale);
+
+				// First entry
+				if (answerBuffer == null) {
+					answerBuffer = new StringBuffer(key);
+					answerResult = DateTimeParserResult.newInstance(result);
+					continue;
+				}
+
+				// Process any time-related information
+				if (result.timeElements != -1) {
+					if (answerResult.timeElements == -1)
+						answerResult.timeElements = result.timeElements;
+					if (answerResult.timeFirst == null)
+						answerResult.timeFirst = result.timeFirst;
+					if (answerResult.timeZone == null)
+						answerResult.timeZone = result.timeZone;
+					if (answerResult.amPmIndicator == null)
+						answerResult.amPmIndicator = result.amPmIndicator;
+
+					if (result.timeFieldLengths != null) {
+						// Adjust the Hours, Minutes, or Seconds fields if the length is shorter (but not the fractions of Seconds)
+						for (int i = 0; i < result.timeFieldLengths.length - 1; i++) {
+							if (answerResult.timeFieldLengths[i] == -1)
 								answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
-								answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.timeFieldLengths[i]));
-							}
-					}
-				}
-			}
-
-			// Process any date-related information
-			if (result.dateElements != -1) {
-				if (answerResult.dayOffset == -1 && result.dayOffset != -1) {
-					// We did not know where the day was and now do
-					answerResult.dayOffset = result.dayOffset;
-					final int start = answerResult.dateFieldOffsets[answerResult.dayOffset];
-					final int len = answerResult.dateFieldLengths[answerResult.dayOffset];
-					answerBuffer.replace(start, start + len, longString('d').substring(0, len));
-				}
-				if (answerResult.monthOffset == -1 && result.monthOffset != -1) {
-					// We did not know where the month was and now do
-					answerResult.monthOffset = result.monthOffset;
-					final int start = answerResult.dateFieldOffsets[answerResult.monthOffset];
-					final int len = answerResult.dateFieldLengths[answerResult.monthOffset];
-					answerBuffer.replace(start, start + len, longString('M').substring(0, len));
-				}
-				if (answerResult.yearOffset == -1 && result.yearOffset != -1) {
-					// We did not know where the year was and now do
-					answerResult.yearOffset = result.yearOffset;
-					final int start = answerResult.dateFieldOffsets[answerResult.yearOffset];
-					final int len = answerResult.dateFieldLengths[answerResult.yearOffset];
-					answerBuffer.replace(start, start + len, longString('y').substring(0, len));
-				}
-
-				if (answerResult.dateElements == -1)
-					answerResult.dateElements = result.dateElements;
-				if (answerResult.dateSeparator == null)
-					answerResult.dateSeparator = result.dateSeparator;
-				if (answerResult.dateTimeSeparator == null)
-					answerResult.dateTimeSeparator = result.dateTimeSeparator;
-
-				// If they result we are looking at has the same format as the current answer then merge lengths
-				if (answerResult.yearOffset == result.yearOffset && answerResult.monthOffset == result.monthOffset)
-					for (int i = 0; i < result.dateFieldLengths.length; i++) {
-						if (answerResult.dateFieldLengths[i] == -1 && result.dateFieldLengths[i] != -1)
-							answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
-						else if (i != answerResult.yearOffset && answerResult.dateFieldLengths[i] != result.dateFieldLengths[i] && (result.dateFieldLengths[i] == 1 || result.dateFieldLengths[i] == 4)) {
-							// Merge two date lengths:
-							//  - d and dd -> d
-							//  - M and MM -> M
-							//  - MMM and MMMM -> MMMM
-							final int start = answerResult.dateFieldOffsets[i];
-							final int len = answerResult.dateFieldLengths[i];
-							final int delta = answerResult.dateFieldLengths[i] - result.dateFieldLengths[i];
-							for (int j = i + 1; j < result.dateFieldLengths.length; j++) {
-								 answerResult.dateFieldOffsets[j] -= delta;
-							}
-							answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
-							answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.dateFieldLengths[i]));
+							else
+								if (result.timeFieldLengths[i] < answerResult.timeFieldLengths[i]) {
+									final int start = answerResult.timeFieldOffsets[i];
+									final int len = answerResult.timeFieldLengths[i];
+									answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
+									answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.timeFieldLengths[i]));
+								}
 						}
 					}
+				}
+
+				// Process any date-related information
+				if (result.dateElements != -1) {
+					if (answerResult.dayOffset == -1 && result.dayOffset != -1) {
+						// We did not know where the day was and now do
+						answerResult.dayOffset = result.dayOffset;
+						final int start = answerResult.dateFieldOffsets[answerResult.dayOffset];
+						final int len = answerResult.dateFieldLengths[answerResult.dayOffset];
+						answerBuffer.replace(start, start + len, longString('d').substring(0, len));
+					}
+					if (answerResult.monthOffset == -1 && result.monthOffset != -1) {
+						// We did not know where the month was and now do
+						answerResult.monthOffset = result.monthOffset;
+						final int start = answerResult.dateFieldOffsets[answerResult.monthOffset];
+						final int len = answerResult.dateFieldLengths[answerResult.monthOffset];
+						answerBuffer.replace(start, start + len, longString('M').substring(0, len));
+					}
+					if (answerResult.yearOffset == -1 && result.yearOffset != -1) {
+						// We did not know where the year was and now do
+						answerResult.yearOffset = result.yearOffset;
+						final int start = answerResult.dateFieldOffsets[answerResult.yearOffset];
+						final int len = answerResult.dateFieldLengths[answerResult.yearOffset];
+						answerBuffer.replace(start, start + len, longString('y').substring(0, len));
+					}
+
+					if (answerResult.dateElements == -1)
+						answerResult.dateElements = result.dateElements;
+					if (answerResult.dateSeparator == null)
+						answerResult.dateSeparator = result.dateSeparator;
+					if (answerResult.dateTimeSeparator == null)
+						answerResult.dateTimeSeparator = result.dateTimeSeparator;
+
+					// If they result we are looking at has the same format as the current answer then merge lengths
+					if (answerResult.yearOffset == result.yearOffset && answerResult.monthOffset == result.monthOffset)
+						for (int i = 0; i < result.dateFieldLengths.length; i++) {
+							if (answerResult.dateFieldLengths[i] == -1 && result.dateFieldLengths[i] != -1)
+								answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
+							else if (i != answerResult.yearOffset && answerResult.dateFieldLengths[i] != result.dateFieldLengths[i] && (result.dateFieldLengths[i] == 1 || result.dateFieldLengths[i] == 4)) {
+								// Merge two date lengths:
+								//  - d and dd -> d
+								//  - M and MM -> M
+								//  - MMM and MMMM -> MMMM
+								final int start = answerResult.dateFieldOffsets[i];
+								final int len = answerResult.dateFieldLengths[i];
+								final int delta = answerResult.dateFieldLengths[i] - result.dateFieldLengths[i];
+								for (int j = i + 1; j < result.dateFieldLengths.length; j++) {
+									 answerResult.dateFieldOffsets[j] -= delta;
+								}
+								answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
+								answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.dateFieldLengths[i]));
+							}
+						}
+				}
 			}
 		}
 
 		// If we are supposed to be fully bound and still have some ambiguities then fix them based on the mode
-		if (answerResult.dateElements != -1 && resolutionMode != DateResolutionMode.None && (answerResult.dayOffset == -1 || answerResult.monthOffset == -1 || answerResult.yearOffset == -1)) {
+		if (answerResult.isDateUnbound() && resolutionMode != DateResolutionMode.None)
 			if (answerResult.monthOffset != -1) {
 				int start = answerResult.dateFieldOffsets[0];
 				answerBuffer.replace(start, start + answerResult.dateFieldLengths[0], longString('d').substring(0, answerResult.dateFieldLengths[0]));
@@ -349,12 +357,12 @@ public class DateTimeParser {
 			else {
 					final char firstField = resolutionMode == DateResolutionMode.DayFirst ? 'd' : 'M';
 					final char secondField = resolutionMode == DateResolutionMode.DayFirst ? 'M' : 'd';
-					int start = answerResult.dateFieldOffsets[0];
-					answerBuffer.replace(start, start + answerResult.dateFieldLengths[0], longString(firstField).substring(0, answerResult.dateFieldLengths[0]));
-					start = answerResult.dateFieldOffsets[1];
-					answerBuffer.replace(start, start + answerResult.dateFieldLengths[1], longString(secondField).substring(0, answerResult.dateFieldLengths[1]));
+					int idx = answerResult.yearOffset == 0 ? 1 : 0;
+					int start = answerResult.dateFieldOffsets[idx];
+					answerBuffer.replace(start, start + answerResult.dateFieldLengths[idx], longString(firstField).substring(0, answerResult.dateFieldLengths[idx]));
+					start = answerResult.dateFieldOffsets[idx + 1];
+					answerBuffer.replace(start, start + answerResult.dateFieldLengths[idx + 1], longString(secondField).substring(0, answerResult.dateFieldLengths[idx + 1]));
 			}
-		}
 
 		if (answerResult.timeZone == null)
 			answerResult.timeZone = "";
@@ -390,15 +398,25 @@ public class DateTimeParser {
 		return true;
 	}
 
-	private static String dateFormat(final int[] dateDigits, final char dateSeparator, final DateResolutionMode resolutionMode, final boolean yearKnown) {
-		switch (resolutionMode) {
-		case None:
-			return retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + retDigits(dateDigits[2], yearKnown ? 'y' : '?');
-		case DayFirst:
-			return retDigits(dateDigits[0], 'd') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'y');
-		case MonthFirst:
-			return retDigits(dateDigits[0], 'M') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'y');
-		}
+	private static String dateFormat(final int[] dateDigits, final char dateSeparator, final DateResolutionMode resolutionMode, final boolean yearKnown, boolean yearFirst) {
+		if (yearFirst)
+			switch (resolutionMode) {
+			case None:
+				return retDigits(dateDigits[0], yearKnown ? 'y' : '?')  + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + retDigits(dateDigits[2], '?');
+			case DayFirst:
+				return  retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'M');
+			case MonthFirst:
+				return retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
+			}
+		else
+			switch (resolutionMode) {
+			case None:
+				return retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + retDigits(dateDigits[2], yearKnown ? 'y' : '?');
+			case DayFirst:
+				return retDigits(dateDigits[0], 'd') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'y');
+			case MonthFirst:
+				return retDigits(dateDigits[0], 'M') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'y');
+			}
 
 		return null;
 	}
@@ -837,9 +855,18 @@ public class DateTimeParser {
 			if ((!freePass && dateValue[1] == 0) || dateValue[1] > 31)
 				return null;
 			if (yearInDateFirst) {
-				if (!plausibleDate(dateValue, dateDigits, new int[] {2,1,0}))
-					return null;
-				dateAnswer = retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
+				if (iso8601 || dateValue[2] > 12) {
+					if (!plausibleDate(dateValue, dateDigits, new int[] {2,1,0}))
+						return null;
+					dateAnswer = retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
+				}
+				else if (dateValue[1] > 12) {
+					if (!plausibleDate(dateValue, dateDigits, new int[] {1,2,0}))
+						return null;
+					dateAnswer = retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'M');
+				}
+				else
+					dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, true);
 			}
 			else {
 				if (fourDigitYear) {
@@ -855,7 +882,7 @@ public class DateTimeParser {
 						dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yyyy";
 					}
 					else
-						dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true);
+						dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, false);
 				} else {
 					// If the first group of digits is of length 1, then it is either d/MM/yy or M/dd/yy
 					if (dateDigits[0] == 1) {
@@ -867,7 +894,7 @@ public class DateTimeParser {
 							dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
 						}
 						else
-							dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true);
+							dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, false);
 					}
 					// If year is the first field - then assume yy/MM/dd
 					else if (dateValue[0] > 31)
@@ -885,7 +912,7 @@ public class DateTimeParser {
 							dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
 						}
 						else
-							dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true);
+							dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, false);
 					} else if (dateValue[1] > 12) {
 						if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
 							return null;
@@ -893,7 +920,7 @@ public class DateTimeParser {
 					} else if (dateValue[0] > 12 && dateValue[2] > 12) {
 						dateAnswer = "??" + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + "??";
 					} else
-						dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, false);
+						dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, false, false);
 				}
 			}
 			if (timeComponent == 0)

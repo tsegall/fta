@@ -88,6 +88,7 @@ The following Semantic Types are currently detected:
 |Language name|LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...|
 |IP Address (v4)|IPADDRESS.IPV4|IP V4 Address|
 |IP Address (v6)|IPADDRESS.IPV6|IP V6 Address|
+|MAC Address|MACADDRESS|MAC Address|
 |Gender (EN)|GENDER.TEXT_EN|Gender (English language)|
 |Postal Code (US ZIP5)|POSTAL_CODE.ZIP5_US|Postal Code (US)|
 |Postal Code (UK)|POSTAL_CODE.POSTAL_CODE_UK|Postal Code (UK)|
@@ -172,7 +173,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 5.6`
+`$ gradle wrapper --gradle-version 5.6.2`
 
 `$ ./gradlew installDist`
 

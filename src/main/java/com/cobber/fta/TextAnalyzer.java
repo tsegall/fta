@@ -43,14 +43,11 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
@@ -120,7 +117,7 @@ public class TextAnalyzer {
 	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
 
 	/** The maximum number of shapes tracked. */
-	public static final int MAX_SHAPES_DEFAULT = 100;
+	public static final int MAX_SHAPES_DEFAULT = 400;
 	private int maxShapes = MAX_SHAPES_DEFAULT;
 
 	/** We are prepared to recognize any set of this size as an enum (and give a suitable regular expression). */
@@ -151,6 +148,8 @@ public class TextAnalyzer {
 	// 0: d{4}-d{2}-d{2} 1: d{+}-d{+}-d{+} 2: d{+}-d{+}-d{+}
 	// 0: d{4} 1: d{+} 2: [-]d{+}
 	// input "hello world" 0: a{5} a{5} 1: a{+} a{+} 2: a{+}
+
+	private Shapes shapes = new Shapes(MAX_SHAPES_DEFAULT);
 
 	class Escalation {
 		StringBuilder level[];
@@ -573,6 +572,27 @@ public class TextAnalyzer {
 
 	String getRegExp(KnownPatterns.ID id) {
 		return knownPatterns.getRegExp(id);
+	}
+
+	// Track basic facts for the field - called for all input
+	void trackLengthAndShape(final String input, long count) {
+		// We always want to track basic facts for the field
+		final int length = input.length();
+
+		if (length != 0 && length < minRawLength)
+			minRawLength = length;
+		if (length > maxRawLength)
+			maxRawLength = length;
+
+		String trimmed = input.trim();
+		if (trimmed.length() != 0) {
+			if (length != 0 && length < minRawNonBlankLength)
+				minRawNonBlankLength = length;
+			if (length > maxRawNonBlankLength)
+				maxRawNonBlankLength = length;
+
+			shapes.track(trimmed, count);
+		}
 	}
 
 	private boolean trackLong(final String rawInput, PatternInfo patternInfo, final boolean register) {
@@ -1585,39 +1605,6 @@ public class TextAnalyzer {
 			cardinality.put(input, seen + count);
 	}
 
-	private String shapeToRegExp(final String shape) {
-
-		if (shape.equals(".+"))
-			return null;
-
-		StringBuilder result = new StringBuilder();
-		final String shapeWithSentinel = shape.toString() + "|";
-		char last = shapeWithSentinel.charAt(0);
-		int repetitions = 1;
-		for (int i = 1; i < shapeWithSentinel.length(); i++) {
-			final char ch = shapeWithSentinel.charAt(i);
-			if (ch == last) {
-				repetitions++;
-			} else {
-				if (last == '1' || last == 'a') {
-					result.append(last == '1' ? "\\d" : KnownPatterns.PATTERN_ALPHA);
-					result.append('{').append(String.valueOf(repetitions)).append('}');
-				} else {
-					for (int j = 0; j < repetitions; j++) {
-						if (last == '+' || last == '.' || last == '*' || last == '(' || last == ')' ||
-								last == '{' || last == '}' || last == '[' || last == ']' || last == '^' || last == '$')
-							result.append('\\');
-						result.append(last);
-					}
-				}
-				last = ch;
-				repetitions = 1;
-			}
-		}
-
-		return result.toString();
-	}
-
 	private int outlier(final String input) {
 		final String cleaned = input.trim();
 		final int trimmedLength = cleaned.length();
@@ -1822,77 +1809,6 @@ public class TextAnalyzer {
 			matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_LONG);
 		else
 			backoutToPatternID(realSamples, KnownPatterns.ID.ID_ANY_VARIABLE);
-	}
-
-	private boolean anyShape = false;
-	private Map<String, Long> shapes = new HashMap<>();
-	// Track basic facts for the field - called for all input
-	private void trackLengthAndShape(final String input, long count) {
-		// We always want to track basic facts for the field
-		final int length = input.length();
-
-		if (length != 0 && length < minRawLength)
-			minRawLength = length;
-		if (length > maxRawLength)
-			maxRawLength = length;
-
-		String trimmed = input.trim();
-		if (trimmed.length() != 0) {
-			if (length != 0 && length < minRawNonBlankLength)
-				minRawNonBlankLength = length;
-			if (length > maxRawNonBlankLength)
-				maxRawNonBlankLength = length;
-
-			if (!anyShape) {
-				String inputShape = RegExpGenerator.smash(trimmed);
-				if (inputShape.equals(".+"))
-					anyShape = true;
-				else {
-					Long seen = shapes.get(inputShape);
-					if (seen == null)
-						if (shapes.size() < maxShapes)
-							shapes.put(inputShape, count);
-						else
-							anyShape = true;
-					else
-						shapes.put(inputShape, seen + count);
-				}
-
-				// If we overflow or we decide it is not meaningful - then just throw the analysis away
-				if (anyShape)
-					shapes = new HashMap<>();
-			}
-		}
-	}
-
-	private void compressShapes() {
-		Map<String, Long> updatedShapes = new HashMap<>();
-
-	    Pattern decimalNumberPattern = Pattern.compile("(?:[^-+0-9\\.]|^)([+-]?[0-9]+\\.[0-9]+)(?:[^0-9\\.]|$)");
-
-	    // Shrink the shapes map to collapse multiple instances of a float (no exponent) with one.
-	    // e.g. we might have in the map $111.11, $11.11, and $-1111.11 and we will replace this with '$%f'
-		for (Map.Entry<String, Long> shape : shapes.entrySet()) {
-
-			String original = shape.getKey();
-			Matcher matcher = decimalNumberPattern.matcher(original);
-			StringBuffer updatedSB = new StringBuffer(original.length());
-
-			int offset = 0;
-			while (matcher.find(offset)) {
-				updatedSB.append(original.substring(offset, matcher.start(1))).append("%f");
-				offset = matcher.end(1);
-		    }
-		    String updated = updatedSB.length() == 0 ? original : updatedSB.toString();
-
-		    Long seen = updatedShapes.get(updated);
-			if (seen == null)
-				updatedShapes.put(updated, shape.getValue());
-			else
-				updatedShapes.put(updated, seen + shape.getValue());
-		}
-
-		shapes = updatedShapes;
 	}
 
 	// Track basic facts for the field - called for any Valid input
@@ -2596,59 +2512,12 @@ public class TextAnalyzer {
 			}
 			*/
 
-			String singleUniformShape = null;
-			if (!updated && !anyShape) {
-				if (shapes.size() > 1)
-					compressShapes();
-				if (shapes.size() == 1) {
-					singleUniformShape = shapes.keySet().iterator().next();
-					matchPatternInfo = new PatternInfo(null, RegExpGenerator.smashedAsRegExp(singleUniformShape.trim()), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+			if (!updated) {
+				String newRegExp = shapes.getRegExp(realSamples);
+				if (newRegExp != null) {
+					matchPatternInfo = new PatternInfo(null, newRegExp, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 							maxTrimmedLength, null, null);
 					updated = true;
-				}
-				else {
-					if (shapes.size() == 2 && realSamples > 100) {
-						Iterator<Map.Entry<String, Long>> iter = shapes.entrySet().iterator();
-						Map.Entry<String, Long> firstShape = iter.next();
-						Map.Entry<String, Long> secondShape = iter.next();
-
-						if (firstShape.getValue() > realSamples * 15/100 && secondShape.getValue() > realSamples * 15/100) {
-							String firstRE = RegExpGenerator.smashedAsRegExp(firstShape.getKey());
-							String secondRE = RegExpGenerator.smashedAsRegExp(secondShape.getKey());
-							matchPatternInfo = new PatternInfo(null, RegExpGenerator.merge(firstRE, secondRE), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
-									maxTrimmedLength, null, null);
-							updated = true;
-						}
-						/* TODO
-						if (!updated && realSamples > 1000) {
-							String fixup = null;
-							if (firstShape.getValue() > realSamples * .99)
-								fixup = firstShape.getKey();
-							else if (secondShape.getValue() > realSamples * .99)
-								fixup = secondShape.getKey();
-
-							if (fixup != null) {
-								PatternInfo newPattern = knownPatterns.getByRegExp(RegExpGenerator.smashedAsRegExp(fixup));
-								if (newPattern != null) {
-									System.err.printf("Late breaking fix ... switching to '%s' from '%s'\n", fixup, matchPatternInfo.regexp);
-									matchPatternInfo = knownPatterns.getByRegExp(fixup);
-									updated = true;
-								}
-							}
-						}
-						*/
-/*						for (Map.Entry<String, Integer> shape : shapes.entrySet()) {
-							if (shape.getValue() < realSamples/15)
-								interesting = false;
-						}
-						if (interesting) {
-							System.err.println("Multishape: ");
-							for (Map.Entry<String, Integer> shape : shapes.entrySet()) {
-								System.err.printf("%s: %d\n", shape.getKey(), shape.getValue());
-							}
-						}
-						*/
-					}
 				}
 			}
 
@@ -2664,16 +2533,14 @@ public class TextAnalyzer {
 
 			// Check to see whether the most common shape matches our regExp and test to see if this valid
 			if (!updated && shapes.size() > 1) {
-				// Sort so most frequent shape is first
-				shapes = Utils.sortByValue(shapes);
+				Map.Entry<String, Long> bestShape = shapes.getBest();
 
-				Map.Entry<String, Long> firstShape = shapes.entrySet().iterator().next();
-				String regExp = RegExpGenerator.smashedAsRegExp(firstShape.getKey().trim());
+				String regExp = RegExpGenerator.smashedAsRegExp(bestShape.getKey().trim());
 				for (LogicalTypeRegExp logical : regExpTypes) {
 					if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && logical.isMatch(regExp) &&
-							logical.isValidSet(dataStreamName, firstShape.getValue(), realSamples, calculateFacts(), cardinality, outliers) == null) {
+							logical.isValidSet(dataStreamName, bestShape.getValue(), realSamples, calculateFacts(), cardinality, outliers) == null) {
 						matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
-						matchCount = firstShape.getValue();
+						matchCount = bestShape.getValue();
 						confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
 						updated = true;
 						break;
@@ -2693,8 +2560,8 @@ public class TextAnalyzer {
 			// Qualify random string with a min and max length
 			if (!updated && KnownPatterns.PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
 				String newPattern = null;
-				if (singleUniformShape != null && cardinality.size() > 1)
-					newPattern = shapeToRegExp(singleUniformShape);
+				if (shapes.size() == 1 && cardinality.size() > 1)
+					newPattern = shapes.getRegExp(realSamples);
 				if (newPattern == null)
 					newPattern = KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minRawNonBlankLength, maxRawNonBlankLength, leadingWhiteSpace, trailingWhiteSpace, multiline);
 				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minRawLength,
@@ -2730,7 +2597,7 @@ public class TextAnalyzer {
 		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,
 				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, facts,
 				minRawLength, maxRawLength, utilizedDecimalSeparator, resolutionMode,
-				cardinality, maxCardinality, outliers, maxOutliers, shapes, maxShapes, key, collectStatistics);
+				cardinality, maxCardinality, outliers, maxOutliers, shapes.getShapes(), maxShapes, key, collectStatistics);
 
 		return result;
 	}
