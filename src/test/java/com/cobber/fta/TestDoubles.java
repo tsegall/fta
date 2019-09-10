@@ -833,6 +833,71 @@ public class TestDoubles {
 	}
 
 	@Test
+	public void latitude() throws IOException {
+		final TextAnalyzer analysis1 = new TextAnalyzer("LATITUDE");
+		final TextAnalyzer analysis2 = new TextAnalyzer("LATITUDE");
+		final TextAnalyzer analysis3 = new TextAnalyzer("LATITUDE");
+		analysis1.setCollectStatistics(false);
+		analysis2.setCollectStatistics(false);
+		analysis3.setCollectStatistics(false);
+		final String inputs1[] = new String[] {
+				"-89.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
+				"-69.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
+				"-49.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
+				"-29.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
+				"9.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
+		};
+		final String inputs2[] = new String[] {
+				"29.00", "-88.80", "-87.96", "-86.43", "-85.40", "24.03", "-83.03", "-82.60", "-81.87", "-80.60",
+				"49.00", "-88.80", "-87.96", "-86.43", "-85.40", "44.03", "-83.03", "-82.60", "-81.87", "-80.60",
+				"69.00", "-88.80", "-87.96", "-86.43", "-85.40", "64.03", "-83.03", "-82.60", "-81.87", "-80.60",
+				"89.00", "88.80", "87.96", "86.43", "85.40", "4.03", "83.03", "82.60", "81.87", "80.60",
+		};
+		// Same as inputs1 but sorted - should have same dataSignature
+		final String inputs3[] = new String[] {
+				"-89.00", "-88.80", "-88.80", "-88.80", "-88.80", "-88.80", "-87.96", "-87.96", "-87.96", "-87.96",
+				"-87.96", "-86.43", "-86.43", "-86.43", "-86.43", "-86.43", "-85.40", "-85.40", "-85.40", "-85.40",
+				"-85.40", "-83.03", "-83.03", "-83.03", "-83.03", "-83.03", "-82.60", "-82.60", "-82.60", "-82.60",
+				"-82.60", "-81.87", "-81.87", "-81.87", "-81.87", "-81.87", "-80.60", "-80.60", "-80.60", "-80.60",
+				"-80.60", "-69.00", "-49.00", "-29.00", "9.00", "84.03", "84.03", "84.03", "84.03", "84.03",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs1.length; i++) {
+			if (analysis1.train(inputs1[i]) && locked == -1)
+				locked = i;
+		}
+		final TextAnalysisResult result1 = analysis1.getResult();
+
+		for (int i = 0; i < inputs2.length; i++) {
+			if (analysis2.train(inputs2[i]) && locked == -1)
+				locked = i;
+		}
+		final TextAnalysisResult result2 = analysis2.getResult();
+
+		for (int i = 0; i < inputs3.length; i++) {
+			if (analysis3.train(inputs3[i]) && locked == -1)
+				locked = i;
+		}
+		final TextAnalysisResult result3 = analysis3.getResult();
+
+		Assert.assertEquals(result1.getTypeQualifier(), result2.getTypeQualifier());
+		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
+		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
+		Assert.assertEquals(result1.getDataSignature(), result3.getDataSignature());
+		Assert.assertEquals(result1.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		Assert.assertEquals(result1.getRegExp(), "[+-]?\\d+\\.\\d+");
+		Assert.assertEquals(result1.getNullCount(), 0);
+		Assert.assertEquals(result1.getSampleCount(), inputs1.length);
+		Assert.assertEquals(result1.getConfidence(), 1.0);
+		Assert.assertEquals(result1.getMatchCount(), inputs1.length);
+
+		for (int i = 0; i < inputs1.length; i++) {
+			Assert.assertTrue(inputs1[i].matches(result1.getRegExp()), inputs1[i]);
+		}
+	}
+
+	@Test
 	public void decimalSeparatorTest_Locale() throws IOException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;

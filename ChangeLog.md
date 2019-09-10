@@ -107,3 +107,5 @@
  - Upgrade dependent libraries
  - Fix bug with with a mix of one and two digit percentages (e.g. 4%, 12%)
 
+### 2.3.27 ###
+ - Add support for dataSignature; add getters for dataSignature and structureSignature; add tests

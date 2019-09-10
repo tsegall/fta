@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017-2019 Tim Segall
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cobber.fta;
 
 import java.util.Collections;
@@ -8,6 +23,9 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Class used to manage Shapes.
+ */
 public class Shapes {
 	private Map<String, Long> shapes = new HashMap<>();
 	private Map<String, Long> compressed = new TreeMap<>();
@@ -19,6 +37,12 @@ public class Shapes {
 		this.maxShapes = maxShapes;
 	}
 
+	/**
+	 * Get the 'best' Regular Expression we can based on the set of shapes.
+	 * Note: this will commonly return null, unless we can do something clever.
+	 *
+	 * @param realSamples The number of real samples that we have observed.
+	 */
 	String getRegExp(long realSamples) {
 		compressShapes();
 
@@ -96,6 +120,12 @@ public class Shapes {
 		return null;
 	}
 
+	/**
+	 * Track the supplied shape.
+	 *
+	 * @param trimmed Track the supplied shape.
+	 * @param count The count of the supplied shape.
+	 */
 	void track(final String trimmed, long count) {
 		if (!anyShape) {
 			String inputShape = RegExpGenerator.smash(trimmed);
@@ -119,16 +149,28 @@ public class Shapes {
 		}
 	}
 
+	/**
+	 * Get the 'best' shape - where 'best' is the one with the highest count.
+	 * @return The 'best' shape entry (shape and count).
+	 */
 	Map.Entry<String, Long> getBest() {
 		compressShapes();
 		return Collections.max(compressed.entrySet(), Map.Entry.comparingByValue());
 	}
 
+	/**
+	 * Get the Map of shapes.
+	 * @return The ordered (by shape) Map of all shapes.
+	 */
 	Map<String, Long> getShapes() {
 		compressShapes();
 		return compressed;
 	}
 
+	/**
+	 * Get the size of the Map.
+	 * @return The Map size.
+	 */
 	int size() {
 		compressShapes();
 		return compressed.size();

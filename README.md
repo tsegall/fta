@@ -59,6 +59,8 @@ Metrics detected include:
  * cardinalityDetail - Details on the valid set, list of elements and occurence count
  * outlierDetail - Details on the invalid set, list of elements and occurence count
  * shapeDetail - Details on the shapes set, list of elements and occurence count. This will collapse all numerics to '9', and all alphabetics to 'X'
+ * structureSignature - A SHA-1 hash that reflects the data stream structure
+ * dataSignature - A SHA-1 hash that reflects the data stream contents
 
 ## Semantic Type detection ##
 

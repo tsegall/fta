@@ -586,8 +586,6 @@ public class TestStrings {
 		}
 	}
 
-
-
 	@Test
 	public void testTwoContainedStrings() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("ZipCode");
@@ -618,6 +616,54 @@ public class TestStrings {
 			if (inputs[i].length() != 0)
 				Assert.assertTrue(inputs[i].matches(result.getRegExp()), result.getRegExp());
 		}
+	}
+
+	@Test
+	public void testNonLogicalStructureSignatures() throws IOException {
+		final TextAnalyzer analysis1 = new TextAnalyzer("Disposition");
+		final TextAnalyzer analysis2 = new TextAnalyzer("Interaction");
+		final String input1 = "HANDLED|HANDLED|HANDLED|HANDLED|INVALID_PRODUCT|HANDLED|HANDLED|HANDLED|DEFERRED|DEFERRED|HANDLED|DEFERRED|HANDLED_WITH_ISSUES|DEFERRED|INVALID_PRODUCT|HANDLED_WITH_ISSUES|HANDLED|HANDLED_WITH_ISSUES|HANDLED_WITH_ISSUES|FOLLOW_UP_REQUIRED|ESCALATED|HANDLED|HANDLED|HANDLED|HANDLED|HANDLED|DEFERRED|HANDLED|HANDLED|HANDLED|DEFERRED|HANDLED|DEFERRED|HANDLED|DEFERRED|INVALID_PRODUCT|HANDLED|HANDLED|INVALID_PRODUCT|ESCALATED|";
+		final String input2 = "HANDLED|INVALID_PRODUCT|ESCALATED|HANDLED|HANDLED|HANDLED|HANDLED|ESCALATED|ESCALATED|ESCALATED|HANDLED|HANDLED|DEFERRED|HANDLED|HANDLED|HANDLED_WITH_ISSUES|DEFERRED|INVALID_PRODUCT|HANDLED_WITH_ISSUES|HANDLED|HANDLED_WITH_ISSUES|FOLLOW_UP_REQUIRED|ESCALATED|HANDLED|HANDLED|HANDLED|HANDLED|ESCALATED|HANDLED|DEFERRED|HANDLED|HANDLED|ESCALATED|ESCALATED|HANDLED|DEFERRED|HANDLED|DEFERRED|HANDLED|DEFERRED|INVALID_PRODUCT|HANDLED|HANDLED|INVALID_PRODUCT|HANDLED_WITH_ISSUES|";
+
+		final String inputs1[] = input1.split("\\|");
+		final String inputs2[] = input2.split("\\|");
+		for (String sample : inputs1)
+			analysis1.train(sample);
+
+		for (String sample : inputs2)
+			analysis2.train(sample);
+
+		TextAnalysisResult result1 = analysis1.getResult();
+		TextAnalysisResult result2 = analysis2.getResult();
+		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
+		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
+		Assert.assertEquals(result1.getRegExp(), result2.getRegExp());
+		Assert.assertEquals(result1.getRegExp(), "(?i)(DEFERRED|ESCALATED|FOLLOW_UP_REQUIRED|HANDLED|HANDLED_WITH_ISSUES|INVALID_PRODUCT)");
+	}
+
+	@Test
+	public void testLogicalStructureSignatures() throws IOException {
+		final TextAnalyzer analysis1 = new TextAnalyzer("Disposition");
+		final TextAnalyzer analysis2 = new TextAnalyzer("Interaction");
+		final String input1 = "England|Australia|New Zealand|India|Pakistan|China|Brazil|France|Germany|Israel|Jordan|Lebanon|Malawi|";
+		final String input2 = "Belgium|UK|Ireland|Canada|France|Germany|Austria|Hungary|Poland|Russia|Ukraine|Croatia|Norway|Sweden|";
+
+		final String inputs1[] = input1.split("\\|");
+		final String inputs2[] = input2.split("\\|");
+		for (String sample : inputs1)
+			analysis1.train(sample);
+
+		for (String sample : inputs2)
+			analysis2.train(sample);
+
+		TextAnalysisResult result1 = analysis1.getResult();
+		TextAnalysisResult result2 = analysis2.getResult();
+
+		Assert.assertEquals(result1.getStructureSignature(), "gqjohE+ftCDuPOKIzmrBtsTcL7g=");
+		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
+		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
+		Assert.assertEquals(result1.getTypeQualifier(), result2.getTypeQualifier());
+		Assert.assertEquals(result1.getTypeQualifier(), "COUNTRY.TEXT_EN");
 	}
 
 	@Test
