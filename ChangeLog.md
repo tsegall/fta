@@ -109,3 +109,6 @@
 
 ### 2.3.27 ###
  - Add support for dataSignature; add getters for dataSignature and structureSignature; add tests
+
+### 2.3.28 ###
+ - Improve test coverage

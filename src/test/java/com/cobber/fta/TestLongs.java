@@ -486,7 +486,9 @@ public class TestLongs {
 	@Test
 	public void someInts() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
+		Assert.assertTrue(analysis.getNumericWidening());
 		analysis.setNumericWidening(false);
+		Assert.assertFalse(analysis.getNumericWidening());
 		final Random random = new Random();
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;

@@ -49,6 +49,40 @@ public class TestBulk {
 	}
 
 	@Test
+	public void basicBulkSignature() throws IOException {
+		final TextAnalyzer analysisBulk = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final long ITERATIONS = 10000;
+
+		HashMap<String, Long> basic = new HashMap<>();
+		basic.put("Male", 2 *  ITERATIONS);
+		basic.put("Female", ITERATIONS);
+		analysisBulk.trainBulk(basic);
+		final TextAnalysisResult resultBulk = analysisBulk.getResult();
+
+		for (int i = 0; i < ITERATIONS; i++) {
+			analysis.train("Male");
+			analysis.train("Male");
+			analysis.train("Female");
+		}
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(resultBulk.getSampleCount(), 3 * ITERATIONS);
+		Assert.assertEquals(resultBulk.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(resultBulk.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(resultBulk.getNullCount(), 0);
+		Assert.assertEquals(resultBulk.getRegExp(), "(?i)(FEMALE|MALE)");
+		Assert.assertEquals(resultBulk.getMatchCount(), 3 * ITERATIONS);
+		Assert.assertEquals(resultBulk.getConfidence(), 1.0);
+		final Map<String, Long> details = resultBulk.getCardinalityDetails();
+		Assert.assertEquals(details.get("MALE"), Long.valueOf(2 * ITERATIONS));
+		Assert.assertEquals(details.get("FEMALE"), Long.valueOf(ITERATIONS));
+
+		Assert.assertEquals(resultBulk.getStructureSignature(), result.getStructureSignature());
+		Assert.assertEquals(resultBulk.getDataSignature(), result.getDataSignature());
+	}
+
+	@Test
 	public void justBlanks() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 

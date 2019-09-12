@@ -1435,6 +1435,149 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void thresholdTooLow() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		try {
+			analysis.setThreshold(0);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Threshold must be between 0 and 100");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void thresholdTooHigh() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		try {
+			analysis.setThreshold(101);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Threshold must be between 0 and 100");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void thresholdPostStart() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		analysis.setThreshold(100);
+
+		final String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
+				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|XX|" +
+				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|XX|" +
+				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|XX|" +
+				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|XX|" +
+				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|XX|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		try {
+			analysis.setThreshold(80);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Cannot adjust Threshold once training has started");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void pluginThresholdTooLow() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		try {
+			analysis.setPluginThreshold(0);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Plugin Threshold must be between 0 and 100");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void pluginThresholdTooHigh() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		try {
+			analysis.setPluginThreshold(101);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Plugin Threshold must be between 0 and 100");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void pluginThresholdPostStart() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		analysis.setPluginThreshold(100);
+
+		final String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
+				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|XX|" +
+				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|XX|" +
+				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|XX|" +
+				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|XX|" +
+				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|XX|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		try {
+			analysis.setPluginThreshold(80);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Cannot adjust Plugin Threshold once training has started");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void collectStatisticsPostStart() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		final String input = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
+				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|XX|" +
+				"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|XX|" +
+				"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|XX|" +
+				"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|XX|" +
+				"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|XX|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		try {
+			analysis.setCollectStatistics(false);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Cannot adjust statistics collection once training has started");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
 	public void basicStatesLower() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String input = "al|ak|az|ky|ks|la|me|md|mi|ma|mn|ms|mo|ne|mt|sd|tn|tx|ut|vt|wi|" +

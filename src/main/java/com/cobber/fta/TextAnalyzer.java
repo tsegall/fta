@@ -97,8 +97,9 @@ public class TextAnalyzer {
 	/** Plugin Threshold for detection - by default this is unset and sensible defaults are used. */
 	private int pluginThreshold = -1;
 
-	/** Threshold for detection - by default this is set to 95%. */
-	private int threshold = 95;
+	/** The default value for the detection threshold. */
+	public static final int DETECTION_THRESHOLD_DEFAULT = 95;
+	private int threshold = DETECTION_THRESHOLD_DEFAULT;
 
 	/** Enable Numeric widening - i.e. if we see lots of integers then some doubles call it a double. */
 	private boolean numericWidening = true;
@@ -371,8 +372,8 @@ public class TextAnalyzer {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot adjust Threshold once training has started");
 
-		if (threshold < 0 || threshold > 100)
-			throw new IllegalArgumentException("Threshold must be between 0 and 100ƒ");
+		if (threshold <= 0 || threshold > 100)
+			throw new IllegalArgumentException("Threshold must be between 0 and 100");
 
 		this.threshold = threshold;
 	}
@@ -395,8 +396,8 @@ public class TextAnalyzer {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot adjust Plugin Threshold once training has started");
 
-		if (threshold < 0 || threshold > 100)
-			throw new IllegalArgumentException("Plugin Threshold must be between 0 and 100ƒ");
+		if (threshold <= 0 || threshold > 100)
+			throw new IllegalArgumentException("Plugin Threshold must be between 0 and 100");
 
 		this.pluginThreshold = threshold;
 	}
@@ -478,7 +479,7 @@ public class TextAnalyzer {
 	 * Get the number of Samples required before we will 'reflect' on the analysis and
 	 * potentially change determination.
 	 *
-	 * @return The current size of the sample window.
+	 * @return The current size of the reflection window.
 	 */
 	public int getReflectionSampleSize() {
 		return reflectionSamples;
@@ -1099,7 +1100,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	public void trainBulkCore(final String rawInput, long count) {
+	private void trainBulkCore(final String rawInput, long count) {
 		sampleCount += count;
 
 		if (rawInput == null) {
@@ -1186,7 +1187,7 @@ public class TextAnalyzer {
 		TRAILING_MINUS
 	}
 
-	public boolean trainCore(final String rawInput, String trimmed, final int length, long count) {
+	private boolean trainCore(final String rawInput, String trimmed, final int length, long count) {
 
 		trackResult(rawInput, true, count);
 

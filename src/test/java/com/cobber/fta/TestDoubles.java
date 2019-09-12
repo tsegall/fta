@@ -413,7 +413,9 @@ public class TestDoubles {
 				"-1393.26"
 		};
 		final TextAnalyzer analysis = new TextAnalyzer("CDS Notional:unicode");
+		Assert.assertEquals(analysis.getThreshold(), TextAnalyzer.DETECTION_THRESHOLD_DEFAULT);
 		analysis.setThreshold(96);
+		Assert.assertEquals(analysis.getThreshold(), 96);
 
 		for (int i = 0; i < samples.length; i++)
 			analysis.train(samples[i]);

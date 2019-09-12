@@ -325,7 +325,9 @@ public class RandomTests {
 		final TextAnalyzer analysis = new TextAnalyzer("Alpha");
 		final Random random = new Random(21456);
 		final int STRING_LENGTH = 5;
+		Assert.assertTrue(analysis.getLengthQualifier());
 		analysis.setLengthQualifier(false);
+		Assert.assertFalse(analysis.getLengthQualifier());
 		String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 		final int start = 10000;
@@ -1105,6 +1107,30 @@ public class RandomTests {
 	}
 
 	@Test
+	public void setLocaleTooLate() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final Locale locale = Locale.forLanguageTag("en-US");
+		final Random random = new Random();
+		int locked = -1;
+		int i = 0;
+
+		for (; i <= TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+				locked = i;
+		}
+
+		try {
+			analysis.setLocale(locale);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Cannot adjust Locale once training has started");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+
+	@Test
 	public void getMaxCardinality() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
@@ -1789,6 +1815,7 @@ public class RandomTests {
 		for (int iter = 0; iter < 100; iter++) {
 			final TextAnalyzer analysis = new TextAnalyzer();
 			analysis.setThreshold(100 - errorRate);
+			Assert.assertEquals(analysis.getThreshold(), 100 - errorRate);
 			int length = random.nextInt(9);
 			long low = (long)Math.pow(10, length);
 			long lowest = low;
