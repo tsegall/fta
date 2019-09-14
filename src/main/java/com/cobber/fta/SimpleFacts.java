@@ -18,7 +18,7 @@ package com.cobber.fta;
 public class SimpleFacts {
 	private final String matcher;
 	private final String format;
-	public PatternInfo.Type type;
+	private final PatternInfo.Type type;
 
 	SimpleFacts(final String matcher, String format, PatternInfo.Type type) {
 		this.matcher = matcher;
@@ -32,5 +32,9 @@ public class SimpleFacts {
 
 	String getFormat() {
 		return format;
+	}
+
+	PatternInfo.Type getType() {
+		return type;
 	}
 }

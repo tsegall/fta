@@ -17,6 +17,8 @@ package com.cobber.fta;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -45,6 +47,7 @@ public class PluginDefinition {
 	public String[] regExpsToMatch;
 	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
 	public String regExpReturned;
+	public HashSet<String> blackList;
 	/** Simple finite plugins: the content with the set of valid elements. */
 	public String content;
 	public String contentType;
@@ -71,10 +74,11 @@ public class PluginDefinition {
 		this.clazz = clazz;
 	}
 
-	public PluginDefinition(String qualifier, String regExpReturned, String[] regExpsToMatch, String content, String contentType, String backout, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, PatternInfo.Type  baseType) {
+	public PluginDefinition(String qualifier, String regExpReturned, String[] regExpsToMatch, String[] blackList, String content, String contentType, String backout, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, PatternInfo.Type  baseType) {
 		this.qualifier = qualifier;
 		this.regExpReturned = regExpReturned;
 		this.regExpsToMatch = regExpsToMatch == null ? new String[] { regExpReturned } : regExpsToMatch;
+		this.blackList = blackList == null ? null : new HashSet<>(Arrays.asList(blackList));
 		this.content = content;
 		this.contentType = contentType;
 		this.backout = backout;

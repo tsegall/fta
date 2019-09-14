@@ -134,7 +134,7 @@ public class SimpleDateMatcher {
 		if (sf == null)
 			return null;
 
-		return sf.type;
+		return sf.getType();
 	}
 
 	/**
@@ -306,7 +306,7 @@ public class SimpleDateMatcher {
 	private int yearLength = -1;
 
 	public PatternInfo.Type getType() {
-		return simpleFacts.type;
+		return simpleFacts.getType();
 	}
 
 	public String getFormat() {

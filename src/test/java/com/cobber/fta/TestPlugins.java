@@ -2043,13 +2043,14 @@ public class TestPlugins {
 		String[] samples = new String[1000];
 
 		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < samples.length; i++) {
+		samples[0] = "000-00-0000";
+		for (int i = 1; i < samples.length; i++) {
 			b.setLength(0);
-			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append(String.format("%03d", random.nextInt(999) + 1));
 			b.append('-');
-			b.append(String.format("%02d", random.nextInt(100)));
+			b.append(String.format("%02d", random.nextInt(99) + 1));
 			b.append('-');
-			b.append(String.format("%04d", random.nextInt(10000)));
+			b.append(String.format("%04d", random.nextInt(9999) + 1));
 			samples[i] = b.toString();
 		}
 
@@ -2066,7 +2067,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getConfidence(), 0.999);
 
 		for (int i = 0; i < samples.length; i++) {
 			Assert.assertTrue(samples[i].matches(result.getRegExp()));
@@ -2093,7 +2094,7 @@ public class TestPlugins {
 		analysis.setDefaultLogicalTypes(false);
 		List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("SSN", "\\d{3}-\\d{2}-\\d{4}", new String[] {"\\d{3}-\\d{2}-\\d{4}"},
-				null, null, "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" }, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
+				null, null, null, "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" }, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), null);
@@ -2131,7 +2132,7 @@ public class TestPlugins {
 		final Random random = new Random(314159265);
 
 		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", null,
-				String.join("|", planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
+				null, String.join("|", planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		List<PluginDefinition> plugins = new ArrayList<>();
@@ -2171,7 +2172,7 @@ public class TestPlugins {
 		final Random random = new Random(314159265);
 
 		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", null,
-				String.join("|",  planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
+				null, String.join("|",  planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		List<PluginDefinition> plugins = new ArrayList<>();
@@ -2300,7 +2301,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", "[\\p{IsAlphabetic}\\d]{9}", null,
-				null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
+				null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);

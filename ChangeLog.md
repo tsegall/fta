@@ -112,3 +112,6 @@
 
 ### 2.3.28 ###
  - Improve test coverage
+
+### 2.3.29 ###
+ - Add support for BlackList (list of invalid values), improve test coverage

@@ -101,6 +101,9 @@ public class LogicalTypeRegExp extends LogicalType {
 				break;
 			}
 
+		if (defn.blackList != null && defn.blackList.contains(input))
+			return false;
+
 		return true;
 	}
 

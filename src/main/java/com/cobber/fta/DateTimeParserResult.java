@@ -983,9 +983,6 @@ public class DateTimeParserResult {
 			hours += hours;
 		String timeAnswer = null;
 		switch (timeElements) {
-		case 0:
-			timeAnswer = "";
-			break;
 		case 1:
 			timeAnswer = hours;
 			break;
