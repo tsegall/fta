@@ -1386,6 +1386,34 @@ public class TestDates {
 	}
 
 	@Test
+	public void HH_mm_ss_S() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+		final String input = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|24:01:29.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss.S{1,2}");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void Hmmss() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);

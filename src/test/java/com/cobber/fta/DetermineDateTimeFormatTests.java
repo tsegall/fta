@@ -837,7 +837,7 @@ public class DetermineDateTimeFormatTests {
 			result.parse("2018/01/22 05:59 pm");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Expecting end of input, extraneous input found");
+			Assert.assertEquals(e.getMessage(), "Expecting end of input, extraneous input found, last token (MINS_2)");
 			Assert.assertEquals(e.getErrorIndex(), 16);
 		}
 

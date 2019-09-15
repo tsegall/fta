@@ -564,8 +564,9 @@ public class DateTimeParserResult {
 		if (tokenized == null)
 			tokenized = tokenize(formatString);
 
+		Token nextToken = null;
 		for (final FormatterToken token : tokenized) {
-			final Token nextToken = token.getType();
+			nextToken = token.getType();
 
 			char inputChar;
 			int value = 0;
@@ -778,7 +779,7 @@ public class DateTimeParserResult {
 		}
 
 		if (upto != inputLength)
-			throw new DateTimeParseException("Expecting end of input, extraneous input found", input, upto);
+			throw new DateTimeParseException("Expecting end of input, extraneous input found, last token (" + nextToken + ")", input, upto);
 	}
 
 	/**

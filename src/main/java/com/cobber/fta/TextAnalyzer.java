@@ -1917,21 +1917,35 @@ public class TextAnalyzer {
 						if (find != -1)
 							ditch = e.getMessage().charAt(insufficient.length());
 
-						if (ditch == '?')
-							break;
+						if (ditch != '?') {
+							String newFormatString;
+							int offset = matchPatternInfo.format.indexOf(ditch);
 
-						int offset = matchPatternInfo.format.indexOf(ditch);
-						String newFormatString;
+							// S is s special case (unlike H, H, M, d) and is *NOT* handled by the default DateTimeFormatter.ofPattern
+							if (ditch == 'S')
+								newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, result.timeFieldLengths[3],
+										"S{1," + result.timeFieldLengths[3] + "}");
+							else
+								newFormatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(offset).toString();
 
-						// S is s special case (unlike H, H, M, d) and is *NOT* handled by the default DateTimeFormatter.ofPattern
-						if (ditch == 'S')
-							newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, result.timeFieldLengths[3],
-									"S{1," + result.timeFieldLengths[3] + "}");
-						else
-							newFormatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(offset).toString();
+							result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
+							matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, newFormatString, false, -1, -1, null, newFormatString);
+						}
+						else {
+							String newFormatString;
 
-						result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
-						matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, newFormatString, false, -1, -1, null, newFormatString);
+							if (e.getMessage().equals("Expecting end of input, extraneous input found, last token (FRACTION)")) {
+								int offset = matchPatternInfo.format.indexOf('S');
+								int oldLength = result.timeFieldLengths[3];
+								result.timeFieldLengths[3] = oldLength + 1;
+								newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, oldLength,
+										"S{1," + result.timeFieldLengths[3] + "}");
+								result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
+								matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, newFormatString, false, -1, -1, null, newFormatString);
+							}
+							else
+								break;
+						}
 					}
 				} while (!success);
 

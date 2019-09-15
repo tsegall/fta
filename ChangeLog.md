@@ -115,3 +115,6 @@
 
 ### 2.3.29 ###
  - Add support for BlackList (list of invalid values), improve test coverage
+
+### 2.3.30 ###
+ - Impeove support for variable number digits in the fractional seconds
