@@ -96,7 +96,7 @@ public class DateTimeParserResult {
 	}
 
 	enum Token {
-		CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DAY_OF_WEEK, DAY_OF_WEEK_ABBR, DIGITS_1_OR_2, MONTHS_1_OR_2,
+		CLOCK24_1_OR_2, CLOCK24_2, CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DAY_OF_WEEK, DAY_OF_WEEK_ABBR, DIGITS_1_OR_2, MONTHS_1_OR_2,
 		MONTHS_2, HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, SECS_2, FRACTION,
 		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET, TIMEZONE_OFFSET_Z, AMPM
 	}
@@ -267,6 +267,7 @@ public class DateTimeParserResult {
 				}
 				break;
 
+			case 'k':
 			case 'h':
 			case 'H':
 				timeFieldOffsets[timeElements] = i;
@@ -441,6 +442,15 @@ public class DateTimeParserResult {
 					ret.add(new FormatterToken(Token.HOURS24_1_OR_2));
 				break;
 
+			case 'k':
+				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
+					i++;
+					ret.add(new FormatterToken(Token.CLOCK24_2));
+				}
+				else
+					ret.add(new FormatterToken(Token.CLOCK24_1_OR_2));
+				break;
+
 			case '?':
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 					i++;
@@ -527,13 +537,23 @@ public class DateTimeParserResult {
 	@SuppressWarnings("incomplete-switch")
 	void validateTokenValue(final Token token, final int value, final String input, final int upto) {
 		switch (token) {
+		case CLOCK24_1_OR_2:
+		case CLOCK24_2:
+			if (value == 0 || value > 24)
+				throw new DateTimeParseException("Invalid value for hours (expected 1-24)", input, upto);
+			break;
+
+		case HOURS12_1_OR_2:
 		case HOURS12_2:
 			if (value == 0 || value > 12)
 				throw new DateTimeParseException("Invalid value for hours (expected 1-12)", input, upto);
 			break;
 
+		case HOURS24_1_OR_2:
 		case HOURS24_2:
-			if (value > 24)
+			if (value == 24)
+				throw new DateTimeParseException("Invalid value for hours: 24 (expected 0-23)", input, upto);
+			else if (value > 24)
 				throw new DateTimeParseException("Invalid value for hours (expected 0-23)", input, upto);
 			break;
 
@@ -598,16 +618,23 @@ public class DateTimeParserResult {
 				upto += monthAbbrOffset;
 				break;
 
+			case CLOCK24_1_OR_2:
 			case HOURS12_1_OR_2:
 			case HOURS24_1_OR_2:
 			case DIGITS_1_OR_2:
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
-				if (!Character.isDigit(input.charAt(upto)))
+				inputChar = input.charAt(upto);
+				if (!Character.isDigit(inputChar))
 					throw new DateTimeParseException("Expecting digit", input, upto);
+				value = inputChar - '0';
 				upto++;
-				if (upto != inputLength && Character.isDigit(input.charAt(upto)))
+				if (upto != inputLength && Character.isDigit(input.charAt(upto))) {
+					value = 10 * value + (input.charAt(upto) - '0');
 					upto++;
+					if (nextToken != Token.DIGITS_1_OR_2)
+						validateTokenValue(nextToken, value, input, upto - 2);
+				}
 				break;
 
 			case DAYS_2:
@@ -659,6 +686,7 @@ public class DateTimeParserResult {
 				}
 				break;
 
+			case CLOCK24_2:
 			case HOURS12_2:
 			case HOURS24_2:
 			case MINS_2:
@@ -931,6 +959,7 @@ public class DateTimeParserResult {
 			}
 			else {
 				switch (token.getType()) {
+				case CLOCK24_1_OR_2:
 				case DAYS_1_OR_2:
 				case DIGITS_1_OR_2:
 				case MONTHS_1_OR_2:
@@ -940,6 +969,7 @@ public class DateTimeParserResult {
 					digitsMax += 2;
 					break;
 
+				case CLOCK24_2:
 				case DAYS_2:
 				case MONTHS_2:
 				case YEARS_2:

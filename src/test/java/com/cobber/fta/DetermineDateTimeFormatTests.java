@@ -1242,11 +1242,11 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void testDTPResult_Unknown() {
-		String[] tests = new String[] { "W", "V", "G", "u", "L", "Q", "e", "c", "K", "k", "n", "N", "O" };
+		String[] tests = new String[] { "W", "V", "G", "u", "L", "Q", "e", "c", "K", "n", "N", "O" };
 
 		for (String test : tests) {
 			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
-			Assert.assertEquals(det.getType(), PatternInfo.Type.LOCALDATE);
+			Assert.assertEquals(det.getType(), PatternInfo.Type.LOCALDATE, test);
 		}
 	}
 

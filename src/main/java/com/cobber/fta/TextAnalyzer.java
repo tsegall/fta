@@ -1909,6 +1909,8 @@ public class TextAnalyzer {
 						success = true;
 					}
 					catch (DateTimeParseException e) {
+						boolean updated = false;
+
 						// If the parse exception is of the form 'Insufficient digits in input (M)' or similar
 						// then worth updating our pattern and retrying.
 						final String insufficient = "Insufficient digits in input (";
@@ -1917,8 +1919,8 @@ public class TextAnalyzer {
 						if (find != -1)
 							ditch = e.getMessage().charAt(insufficient.length());
 
+						String newFormatString = null;
 						if (ditch != '?') {
-							String newFormatString;
 							int offset = matchPatternInfo.format.indexOf(ditch);
 
 							// S is s special case (unlike H, H, M, d) and is *NOT* handled by the default DateTimeFormatter.ofPattern
@@ -1928,24 +1930,28 @@ public class TextAnalyzer {
 							else
 								newFormatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(offset).toString();
 
-							result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
-							matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, newFormatString, false, -1, -1, null, newFormatString);
+							updated = true;
 						}
-						else {
-							String newFormatString;
+						else if (e.getMessage().equals("Expecting end of input, extraneous input found, last token (FRACTION)")) {
+							int offset = matchPatternInfo.format.indexOf('S');
+							int oldLength = result.timeFieldLengths[3];
+							result.timeFieldLengths[3] = oldLength + 1;
+							newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, oldLength,
+									"S{1," + result.timeFieldLengths[3] + "}");
+							updated = true;
+						}
+						else if (e.getMessage().equals("Invalid value for hours: 24 (expected 0-23)")) {
+							int offset = matchPatternInfo.format.indexOf('H');
+							newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, result.timeFieldLengths[0],
+									result.timeFieldLengths[0] == 1 ? "k" : "kk");
+							updated = true;
+						}
 
-							if (e.getMessage().equals("Expecting end of input, extraneous input found, last token (FRACTION)")) {
-								int offset = matchPatternInfo.format.indexOf('S');
-								int oldLength = result.timeFieldLengths[3];
-								result.timeFieldLengths[3] = oldLength + 1;
-								newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, oldLength,
-										"S{1," + result.timeFieldLengths[3] + "}");
-								result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
-								matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, newFormatString, false, -1, -1, null, newFormatString);
-							}
-							else
-								break;
-						}
+						if (!updated)
+							break;
+
+						result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
+						matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.type, newFormatString, false, -1, -1, null, newFormatString);
 					}
 				} while (!success);
 

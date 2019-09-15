@@ -117,4 +117,7 @@
  - Add support for BlackList (list of invalid values), improve test coverage
 
 ### 2.3.30 ###
- - Impeove support for variable number digits in the fractional seconds
+ - Improve support for variable number digits in the fractional seconds
+
+### 2.3.31 ###
+ - Add support for 'k'
