@@ -146,18 +146,25 @@ class Driver {
 				logger.println("\nRegistered Logical Types:");
 				for (String qualifier : qualifiers) {
 					LogicalType logical = analysis.getPlugins().getRegistered(qualifier);
-					if (logical instanceof LogicalTypeFinite) {
-						LogicalTypeFinite finite = (LogicalTypeFinite)logical;
-						logger.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d\n",
-								logical.getQualifier(), logical.getPriority(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
+					if (options.verbose == 0) {
+						if (logical instanceof LogicalTypeFinite) {
+							LogicalTypeFinite finite = (LogicalTypeFinite)logical;
+							logger.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d\n",
+									logical.getQualifier(), logical.getPriority(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
+						}
+						else if (logical instanceof LogicalTypeInfinite)
+							logger.printf("\t%s (Infinite): Priority: %d\n", logical.getQualifier(), logical.getPriority());
+						else {
+							LogicalTypeRegExp logicalRegExp = (LogicalTypeRegExp)logical;
+							logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s', HeaderRegExps: '%s'\n",
+									logical.getQualifier(), logical.getPriority(), logical.getRegExp(),
+									logicalRegExp.getHeaderRegExps() != null ? String.join("|", logicalRegExp.getHeaderRegExps()) : "None");
+						}
+						logger.printf("\t\t" + logical.getDescription() + "\n");
 					}
-					else if (logical instanceof LogicalTypeInfinite)
-						logger.printf("\t%s (Infinite): Priority: %d\n", logical.getQualifier(), logical.getPriority());
 					else {
-						LogicalTypeRegExp logicalRegExp = (LogicalTypeRegExp)logical;
-						logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s', HeaderRegExps: '%s'\n",
-								logical.getQualifier(), logical.getPriority(), logical.getRegExp(),
-								logicalRegExp.getHeaderRegExps() != null ? String.join("|", logicalRegExp.getHeaderRegExps()) : "None");
+						// Used to generate the documentation
+						logger.printf("%s|%s\n", logical.getQualifier(), logical.getDescription());
 					}
 				}
 			}

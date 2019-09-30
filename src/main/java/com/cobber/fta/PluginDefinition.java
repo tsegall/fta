@@ -36,6 +36,8 @@ public class PluginDefinition {
 
 	/** Semantic Type of Plugin (Qualifier). */
 	public String qualifier;
+	/** English language description of the Semantic Type. */
+	public String description;
 	/** locales this plugin applies to - empty set, implies all locales.  Can use just language instead of tag, e.g. "en" rather than "en_US". */
 	public String[] validLocales;
 	/** The relative priority of this plugin. */
@@ -74,8 +76,9 @@ public class PluginDefinition {
 		this.clazz = clazz;
 	}
 
-	public PluginDefinition(String qualifier, String regExpReturned, String[] regExpsToMatch, String[] blackList, String content, String contentType, String backout, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, PatternInfo.Type  baseType) {
+	public PluginDefinition(String qualifier, String description, String regExpReturned, String[] regExpsToMatch, String[] blackList, String content, String contentType, String backout, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, PatternInfo.Type  baseType) {
 		this.qualifier = qualifier;
+		this.description = description;
 		this.regExpReturned = regExpReturned;
 		this.regExpsToMatch = regExpsToMatch == null ? new String[] { regExpReturned } : regExpsToMatch;
 		this.blackList = blackList == null ? null : new HashSet<>(Arrays.asList(blackList));
@@ -89,6 +92,12 @@ public class PluginDefinition {
 		this.baseType = baseType;
 	}
 
+	/**
+	 * Retrieve the Plugin Definition associated with this Qualifier.
+	 *
+	 * @param qualifier The Qualifier for this Logical Type
+	 * @return The Plugin Definition associated with the supplied Qualifier.
+	 */
 	static PluginDefinition findByQualifier(String qualifier) {
 		synchronized (PluginDefinition.class) {
 			if (builtinPlugins == null) {

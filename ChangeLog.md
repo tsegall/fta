@@ -120,4 +120,8 @@
  - Improve support for variable number digits in the fractional seconds
 
 ### 2.3.31 ###
- - Add support for 'k'
+ - Add support for detecting 'k' (Date format)
+
+### 2.3.32 ###
+ - Document 'blacklist', upgrade jackson, improve code documentation, add description for Logical Types
+ - Switch Content for inline to a JSON document, add first/last as synonyms for FIRST and LAST NAME

@@ -21,9 +21,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Class used to cache the large sets across multiple threads.
@@ -48,27 +51,35 @@ public class SingletonSet {
 			if (result != null)
 				return result;
 
-			Reader reader = null;
-			if (contentType.equals("inline"))
-				reader = new StringReader(content.replace('|', '\n'));
-			else if (contentType.equals("file"))
-				try {
-					reader = new InputStreamReader(new FileInputStream(content));
-				} catch (FileNotFoundException e) {
-					throw new IllegalArgumentException("Internal error: Issues with database for: " + content, e);
-				}
-			else if (contentType.equals("resource"))
-				reader = new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content));
-
 			RandomSet<String> members = new RandomSet<>();
+			if (contentType.equals("inline")) {
+				InlineContent inline;
+				try {
+					inline = (new ObjectMapper()).readValue(content, new TypeReference<InlineContent>(){});
+				} catch (IOException e) {
+					throw new IllegalArgumentException("Internal error: Issues with 'inline' content: " + content, e);
+				}
+				members.addAll(Arrays.asList(inline.members));
+			}
+			else {
+				Reader reader = null;
+				if (contentType.equals("file"))
+					try {
+						reader = new InputStreamReader(new FileInputStream(content));
+					} catch (FileNotFoundException e) {
+						throw new IllegalArgumentException("Internal error: Issues with 'file' content: " + content, e);
+					}
+				else if (contentType.equals("resource"))
+					reader = new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content));
 
-			try (BufferedReader bufferedReader = new BufferedReader(reader)){
-				String line = null;
+				try (BufferedReader bufferedReader = new BufferedReader(reader)){
+					String line = null;
 
-				while ((line = bufferedReader.readLine()) != null)
-					members.add(line);
-			} catch (IOException e) {
-				throw new IllegalArgumentException("Internal error: Issues with database for: " + content, e);
+					while ((line = bufferedReader.readLine()) != null)
+						members.add(line);
+				} catch (IOException e) {
+					throw new IllegalArgumentException("Internal error: Issues with 'file/resource' content: " + content, e);
+				}
 			}
 
 			memberCache.put(key, members);

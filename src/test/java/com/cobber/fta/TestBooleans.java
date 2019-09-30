@@ -34,7 +34,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), 1);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "(?i)(true|false)");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_TRUE_FALSE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
 		Assert.assertEquals(result.getMinLength(), 4);
@@ -64,7 +64,9 @@ public class TestBooleans {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "((?i)(true|false))" + KnownPatterns.PATTERN_WHITESPACE);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
+				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_TRUE_FALSE) + ")" +
+				KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), .9375);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
 		Assert.assertEquals(result.getTypeQualifier(), "TRUE_FALSE");
@@ -102,7 +104,9 @@ public class TestBooleans {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "((?i)(yes|no))" + KnownPatterns.PATTERN_WHITESPACE);
+		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
+				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO) + ")" +
+				KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), .9375);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
 		Assert.assertEquals(result.getTypeQualifier(), "YES_NO");
@@ -140,7 +144,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "[0|1]");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
 		Assert.assertEquals(result.getMinLength(), 1);

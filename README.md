@@ -68,44 +68,41 @@ In addition to detecting a set of Base types fta will also, when enabled (defaul
 
 The following Semantic Types are currently detected:
 
-|Simple Name|Semantic Type|Description|
-|-----|---------|-------------|
-|Email|EMAIL|Email Address|
-|Country (EN)|COUNTRY.TEXT_EN|Country as a string (English language)|
-|Country (2-Letter)|COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2|
-|Country (3-Letter)|COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|
-|State (US)|STATE_PROVINCE.STATE_US|US State|
-|Province (Canada)|STATE_PROVINCE.PROVINCE_CA|Canadian Province|
-|State/Province (NA)|STATE_PROVINCE.STATE_PROVINCE_NA|NA State/Province|
-|State (AU)|STATE_PROVINCE.STATE_AU|AU State|
-|City|CITY|City|
-|Street Address|STREET_ADDRESS_EN|Street Address (English Language)|
-|URL (Generic)|URI.URL|URL - see RFC 3986|
-|GUID|GUID|GUID, example 123e4567-e89b-12d3-a456-426655440000|
-|Name (First)|NAME.FIRST|First Name|
-|Name (Last)|NAME.LAST|Last Name|
-|NAME (Last, First)|NAME.LAST_FIRST|Merged Name (Last, First)|
-|NAME (First Last)|NAME.FIRST_LAST|Merged Name (First Last)|
-|Language code - ISO 639|LANGUAGE.ISO-639-2|Language code - ISO 639, two character|
-|Language name|LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...|
-|IP Address (v4)|IPADDRESS.IPV4|IP V4 Address|
-|IP Address (v6)|IPADDRESS.IPV6|IP V6 Address|
-|MAC Address|MACADDRESS|MAC Address|
-|Gender (EN)|GENDER.TEXT_EN|Gender (English language)|
-|Postal Code (US ZIP5)|POSTAL_CODE.ZIP5_US|Postal Code (US)|
-|Postal Code (UK)|POSTAL_CODE.POSTAL_CODE_UK|Postal Code (UK)|
-|Postal Code (CA)|POSTAL_CODE.POSTAL_CODE_CA|Postal Code (CA)|
-|Postal Code (AU)|POSTAL_CODE.POSTAL_CODE_AU|Postal Code (AU)|
-|Currency Code (ISO)|CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|
-|Month (Abbreviation)|MONTH.ABBR_&lt;LOCALE&gt;|Month Abbreviation (&lt;LOCALE&gt; = Locale, e.g. en-US for English langauge in US)|
-|Month (FULL)|MONTH.FULL_&lt;LOCALE&gt;|Fulll Month name (&lt;LOCALE&gt; = Locale, e.g. en-US for English langauge in US)|
-|Coordinates (Latitude)|COORDINATE.LATITUDE_DECIMAL|Latititude (Decimal degrees)|
-|Coordinates (Longitude)|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|
-|Coordinates (Lat-Long)|COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|
-|Telephone (Generic)|TELEPHONE|Telephone Number (Generic)|
-|Airport Code (IATA)|AIRPORT_CODE.IATA|IATA Airport Code|
-|Credit Card Type|CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|
-|Social Security Number|SSN|Social Security Number (US)|
+Semantic Type|Description|
+---------|-------------|
+AIRPORT_CODE.IATA|IATA Airport Code
+CITY|City/Town
+COORDINATE.LATITUDE_DECIMAL|Latititude (Decimal degrees)
+COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)
+COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)
+COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2
+COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3
+COUNTRY.TEXT_EN|Country as a string (English language)
+CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...
+CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217
+EMAIL|Email Address
+GENDER.TEXT_EN|Gender (English Language)
+GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67
+IPADDRESS.IPV4|IP V4 Address
+IPADDRESS.IPV6|IP V6 Address
+LANGUAGE.ISO-639-2|Language code - ISO 639, two character
+LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...
+MACADDRESS|MAC Address
+MONTH.ABBR_en-US|Month Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)
+MONTH.FULL_en-US|Fulll Month name <LOCALE> = Locale, e.g. en-US for English langauge in US)
+NAME.FIRST|First Name
+NAME.FIRST_LAST|Merged Name (First Last)
+NAME.LAST|Last Name
+NAME.LAST_FIRST|Merged Name (Last, First)
+POSTAL_CODE.POSTAL_CODE_CA|Postal Code (CA)
+POSTAL_CODE.ZIP5_US|Postal Code (US)
+SSN|Social Security Number (US)
+STATE_PROVINCE.PROVINCE_CA|Canadian Province
+STATE_PROVINCE.STATE_PROVINCE_NA|US State/Canadian Province
+STATE_PROVINCE.STATE_US|US State
+STREET_ADDRESS_EN|Street Address (English Language)
+TELEPHONE|Telephone Number (Generic)
+URI.URL|URL - see RFC 3986
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
 * Infinite - captures any infinite type (e.g. Even numbers).  Implemented via a Java Class.
@@ -164,6 +161,8 @@ The mandatory 'regExpReturned' tag is the validation string that will be returne
 The optional 'regExpsToMatch' tag is an ordered list of Regular Expressions used to match against the Stream Data.  If not set then the regExpReturned is used to match.
 
 The optional 'minimum (maximum)' tags are valid for Stream of Base Type Long or Double and further restrict the data that will be considered valid.
+
+The optional 'blackList' tag is a list of invalid values for this Semantic Type, for example '[ "000-00-0000" ]' indicates that this is an invalid SSN despite the fact that it matches the SSN regular expression.
 
 ### Finite plugins ###
 

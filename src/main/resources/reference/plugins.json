@@ -1,6 +1,7 @@
 [
 	{
 		"qualifier": "EMAIL",
+		"description": "Email Address",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail",
 		"headerRegExps": [ ".*(?i)(email).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -8,6 +9,7 @@
 	},
 	{
 		"qualifier": "URI.URL",
+		"description": "URL - see RFC 3986",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeURL",
 		"headerRegExps": [ ".*(?i)(url|web).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -15,6 +17,7 @@
 	},
 	{
 		"qualifier": "IPADDRESS.IPV4",
+		"description": "IP V4 Address",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIPV4Address",
 		"headerRegExps": [ ".*(?i)(ip).*" ],
 		"headerRegExpConfidence": [ 70 ],
@@ -22,6 +25,7 @@
 	},
 	{
 		"qualifier": "IPADDRESS.IPV6",
+		"description": "IP V6 Address",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIPV6Address",
 		"headerRegExps": [ ".*(?i)(ip).*" ],
 		"headerRegExpConfidence": [ 70 ],
@@ -29,6 +33,7 @@
 	},
 	{
 		"qualifier": "TELEPHONE",
+		"description": "Telephone Number (Generic)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypePhoneNumber",
 		"headerRegExps": [ ".*(?i)(phone|fax|mobile|cell).*" ],
 		"headerRegExpConfidence": [ 100 ],
@@ -36,23 +41,27 @@
 	},
 	{
 		"qualifier": "GUID",
+		"description": "Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGUID",
 		"priority": 50
 	},
 	{
 		"qualifier": "POSTAL_CODE.ZIP5_US",
+		"description": "Postal Code (US)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUSZip5",
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"priority": 60
 	},
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_UK",
+		"description": "Postal Code (UK)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUKPostalCode",
 		"validLocales": [ "en-GB" ,"en-UK" ],
 		"priority": 61
 	},
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_CA",
+		"description": "Postal Code (CA)",
 		"validLocales": [ "en-US", "en-CA" ],
 		"headerRegExps": [ ".*(?i)(post).*" ],
 		"headerRegExpConfidence": [ 100 ],
@@ -64,6 +73,7 @@
 	},
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_AU",
+		"description": "Postal Code (AU)",
 		"validLocales": [ "en-AU" ],
 		"headerRegExps": [ ".*(?i)(post).*" ],
 		"headerRegExpConfidence": [ 100 ],
@@ -74,18 +84,21 @@
 	},
 	{
 		"qualifier": "STREET_ADDRESS_EN",
+		"description": "Street Address (English Language)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeAddressEN",
 		"validLocales": [ "en" ],
 		"priority": 70
 	},
 	{
 		"qualifier": "GENDER.TEXT_EN",
+		"description": "Gender (English Language)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGenderEN",
 		"validLocales": [ "en" ],
 		"priority": 80
 	},
 	{
 		"qualifier": "COUNTRY.TEXT_EN",
+		"description": "Country as a string (English language)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCountryEN",
 		"validLocales": [ "en" ],
 		"headerRegExps": [ ".*(?i)(country).*" ],
@@ -94,16 +107,19 @@
 	},
 	{
 		"qualifier": "MONTH.ABBR_<LOCALE>",
+		"description": "Month Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthAbbr",
 		"priority": 100
 	},
 	{
 		"qualifier": "MONTH.FULL_<LOCALE>",
+		"description": "Fulll Month name <LOCALE> = Locale, e.g. en-US for English langauge in US)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthFull",
 		"priority": 105
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
+		"description": "Canadian Province",
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"headerRegExps": [ ".*(?i)(province).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -115,6 +131,7 @@
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_US",
+		"description": "US State",
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"headerRegExps": [ ".*(?i)(state).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -126,6 +143,7 @@
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NA",
+		"description": "US State/Canadian Province",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNAStateProvince",
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"headerRegExps": [ ".*(?i)(state|province).*" ],
@@ -134,17 +152,19 @@
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_AU",
+		"description": "Australian State",
 		"validLocales": [ "en-AU" ],
 		"headerRegExps": [ ".*(?i)(state).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"regExpReturned": "(?i)(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)",
-		"content": "ACT|NSW|NT|QLD|SA|TAS|VIC|WA",
+		"content": "{ \"members\": [ \"ACT\", \"NSW\", \"NT\", \"QLD\", \"SA\", \"TAS\", \"VIC\", \"WA\" ] }",
 		"contentType": "inline",
 		"backout": "\\p{IsAlphabetic}{2,3}",
 		"priority": 126
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
+		"description": "Currency as defined by ISO 4217",
 		"headerRegExps": [ ".*4217.*", ".*(?i)(currency).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpReturned": "\\p{Alpha}{3}",
@@ -155,6 +175,7 @@
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-3",
+		"description": "Country as defined by ISO 3166 - Alpha 3",
 		"headerRegExps": [ ".*(?i)(iso|3166).*", ".*(?i)(country).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpReturned": "\\p{Alpha}{3}",
@@ -165,6 +186,7 @@
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-2",
+		"description": "Country as defined by ISO 3166 - Alpha 2",
 		"headerRegExps": [ ".*(?i)(iso|3166).*", ".*(?i)(country).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpReturned": "\\p{Alpha}{2}",
@@ -175,6 +197,7 @@
 	},
 	{
 		"qualifier": "AIRPORT_CODE.IATA",
+		"description": "IATA Airport Code",
 		"headerRegExps": [ ".*(?i)(iata|air).*" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpReturned": "\\p{Alpha}{3}",
@@ -185,22 +208,25 @@
 	},
 	{
 		"qualifier": "NAME.FIRST",
+		"description": "First Name",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
-		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name).*", "(?i)(name)" ],
-		"headerRegExpConfidence": [ 90, 60 ],
+		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name).*", "(?i)(first)", "(?i)(name)" ],
+		"headerRegExpConfidence": [ 90, 90, 60 ],
 		"validLocales": [ "en" ],
 		"priority": 170
 	},
 	{
 		"qualifier": "NAME.LAST",
+		"description": "Last Name",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
-		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name).*", "(?i)(name)" ],
-		"headerRegExpConfidence": [ 90, 60 ],
+		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name).*", "(?i)(last)", "(?i)(name)" ],
+		"headerRegExpConfidence": [ 90, 90, 60 ],
 		"validLocales": [ "en" ],
 		"priority": 171
 	},
 	{
 		"qualifier": "NAME.LAST_FIRST",
+		"description": "Merged Name (Last, First)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameLastFirst",
 		"headerRegExps": [ ".*(?i)(name).*" ],
 		"headerRegExpConfidence": [ 60 ],
@@ -209,6 +235,7 @@
 	},
 	{
 		"qualifier": "NAME.FIRST_LAST",
+		"description": "Merged Name (First Last)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameFirstLast",
 		"headerRegExps": [ ".*(?i)(name).*" ],
 		"headerRegExpConfidence": [ 60 ],
@@ -217,6 +244,7 @@
 	},
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL",
+		"description": "Latititude (Decimal degrees)",
 		"validLocales": [ ],
 		"headerRegExps": [ ".*(?i)(latitude).*|lat" ],
 		"headerRegExpConfidence": [ 100 ],
@@ -230,6 +258,7 @@
 	},
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
+		"description": "Longitude (Decimal degrees)",
 		"headerRegExps": [ ".*(?i)(longitude).*|lon|lng" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
@@ -242,6 +271,7 @@
 	},
 	{
 		"qualifier": "COORDINATE_PAIR.DECIMAL",
+		"description": "Coordinate Pair (Decimal degrees)",
 		"regExpsToMatch": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+" ],
 		"regExpReturned": "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+",
 		"threshold": 98,
@@ -250,6 +280,7 @@
 	},
 	{
 		"qualifier": "CITY",
+		"description": "City/Town",
 		"headerRegExps": [ "^(?i)(city|town)$|^.*[ _](?i)(city|town)$|^(?i)(city|town)[ _].*$|.*[a-z](City|Town)$" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpReturned": "[-' \\.\\p{IsAlphabetic}]+",
@@ -258,6 +289,7 @@
 	},
 	{
 		"qualifier": "CREDIT_CARD_TYPE",
+		"description": "Type of Credit CARD - e.g. AMEX, VISA, ...",
 		"headerRegExps": [ ".*(?i)(credit|card).*", ".*(?i)(type).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpReturned": "[ \\p{Alpha}]+",
@@ -268,6 +300,7 @@
 	},
 	{
 		"qualifier": "SSN",
+		"description": "Social Security Number (US)",
 		"headerRegExps": [ ".*(?i)(SSN).*", ".*(?i)(Social).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpsToMatch": [ "\\d{3}-\\d{2}-\\d{4}" ],
@@ -280,6 +313,7 @@
 	},
 	{
 		"qualifier": "LANGUAGE.ISO-639-2",
+		"description": "Language code - ISO 639, two character",
 		"headerRegExps": [ ".*(?i)(language).*",  ".*(?i)(lang).*" ],
 		"headerRegExpConfidence": [ 90, 60 ],
 		"regExpReturned": "\\p{Alpha}{2}",
@@ -290,6 +324,7 @@
 	},
 	{
 		"qualifier": "LANGUAGE.TEXT_EN",
+		"description": "Language name, e.g. English, French, ...",
 		"headerRegExps": [ ".*(?i)(language).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"regExpReturned": "[-' \\p{IsAlphabetic}]+",
@@ -301,6 +336,7 @@
 	},
 	{
 		"qualifier": "MACADDRESS",
+		"description": "MAC Address",
 		"headerRegExps": [ ".*(?i)(MAC).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"regExpsToMatch": [ "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}" ],

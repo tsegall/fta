@@ -57,6 +57,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 		return true;
 	}
 
+
 	protected int getHeaderConfidence(String dataStreamName) {
 		if (headerPatterns != null)
 			for (int i = 0; i < headerPatterns.length; i++) {
@@ -72,6 +73,14 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 *  @return The user-friendly name of the type-qualifier.
 	 */
 	public abstract String getQualifier();
+
+	/**
+	 *  The user-friendly description of the Qualifier.  For example, 'Australian State' for the qualifier "STATE_PROVINCE.STATE_AU".
+	 *  @return The user-friendly description of the type-qualifier.
+	 */
+	public String getDescription() {
+		return defn.description;
+	}
 
 	/**
 	 *  The relative priority of this plugin.

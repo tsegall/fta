@@ -127,6 +127,18 @@ public class KnownPatterns {
 			return PATTERN_DOUBLE_WITH_EXPONENT;
 		case ID_SIGNED_DOUBLE_WITH_EXPONENT:
 			return PATTERN_SIGNED_DOUBLE_WITH_EXPONENT;
+		case ID_BLANK:
+			return PATTERN_WHITESPACE;
+		case ID_BOOLEAN_ONE_ZERO:
+			return PATTERN_BOOLEAN_ONE_ZERO;
+		case ID_BOOLEAN_TRUE_FALSE:
+			return PATTERN_BOOLEAN_TRUE_FALSE;
+		case ID_BOOLEAN_YES_NO:
+			return PATTERN_BOOLEAN_YES_NO;
+		case ID_NULL:
+			return PATTERN_NULL;
+		default:
+			break;
 		}
 
 		return null;

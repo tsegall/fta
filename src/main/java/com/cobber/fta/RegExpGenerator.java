@@ -79,10 +79,18 @@ public class RegExpGenerator {
 
 	}
 
+	/*
+	 * Return a sloshed single character - protects any characters that is special in a Regular Expression.
+	 * @return A String representation of the input character protected.
+	 */
 	public static String slosh(char ch) {
 		return isSpecial(ch) ? "\\" + ch : String.valueOf(ch);
 	}
 
+	/*
+	 * Given two Regular Expressions return a single Regular Expression that captures the sum of the two supplied expressions.
+	 * @return The merged expression.
+	 */
 	public static String merge(String firstRE, String secondRE) {
 		if (!firstRE.contains(secondRE) && !secondRE.contains(firstRE))
 			return firstRE + '|' + secondRE;
@@ -106,7 +114,7 @@ public class RegExpGenerator {
 	/**
 	 * Return an escaped String (similar to Pattern.quote but not unconditional).
 	 * @param input The String to be protected.
-	 * @return An escaped String/
+	 * @return An escaped String.
 	 */
 	public static String slosh(String input) {
 		int len = input.length();
@@ -353,5 +361,13 @@ public class RegExpGenerator {
 		}
 
 		return result.append(RegExpSplitter.qualify(shortest, longest)).toString();
+	}
+
+	/**
+	 * Get the set of Strings (in upper case) used to train the Generator.
+	 * @return The set of Strings (in upper case).
+	 */
+	public Set<String> getValues() {
+		return memory;
 	}
 }

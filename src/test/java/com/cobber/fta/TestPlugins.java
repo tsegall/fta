@@ -40,6 +40,7 @@ import com.cobber.fta.plugins.LogicalTypeIPV4Address;
 import com.cobber.fta.plugins.LogicalTypePhoneNumber;
 import com.cobber.fta.plugins.LogicalTypeURL;
 import com.cobber.fta.plugins.LogicalTypeUSZip5;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
@@ -2093,8 +2094,8 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("Primary SSN");
 		analysis.setDefaultLogicalTypes(false);
 		List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("SSN", "\\d{3}-\\d{2}-\\d{4}", new String[] {"\\d{3}-\\d{2}-\\d{4}"},
-				null, null, null, "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" }, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
+		plugins.add(new PluginDefinition("SSN", "Social Security Number", "\\d{3}-\\d{2}-\\d{4}",
+				new String[] {"\\d{3}-\\d{2}-\\d{4}"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" }, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), null);
@@ -2127,12 +2128,12 @@ public class TestPlugins {
 
 	@Test
 	public void testFinitePlugin() throws IOException {
-		String[] planets = new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" };
+		InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
 		final Random random = new Random(314159265);
 
-		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", null,
-				null, String.join("|", planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
+		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
+				null, null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		List<PluginDefinition> plugins = new ArrayList<>();
@@ -2145,7 +2146,7 @@ public class TestPlugins {
 		}
 
 		for (int i = 0; i < SAMPLES; i++) {
-			analysis.train(planets[random.nextInt(planets.length)]);
+			analysis.train(planets.members[random.nextInt(planets.members.length)]);
 		}
 		analysis.train("032--45-0981");
 
@@ -2171,8 +2172,8 @@ public class TestPlugins {
 		final int SAMPLES = 100;
 		final Random random = new Random(314159265);
 
-		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "\\p{Alpha}*", null,
-				null, String.join("|",  planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
+		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
+				null, null, String.join("|",  planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, PatternInfo.Type.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		List<PluginDefinition> plugins = new ArrayList<>();
@@ -2300,8 +2301,8 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("CUSIP", "[\\p{IsAlphabetic}\\d]{9}", null,
-				null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
+		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
+				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);

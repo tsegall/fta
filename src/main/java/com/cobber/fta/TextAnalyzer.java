@@ -155,7 +155,6 @@ public class TextAnalyzer {
 	class Escalation {
 		StringBuilder level[];
 
-
 		@Override
 		public int hashCode() {
 			return level[0].toString().hashCode() + 7 * level[1].toString().hashCode() + 11 * level[2].toString().hashCode();
