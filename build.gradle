@@ -13,7 +13,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.github.ben-manes:gradle-versions-plugin:0.25.0"
+    classpath "com.github.ben-manes:gradle-versions-plugin:0.26.0"
   }
 }
 
@@ -21,7 +21,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "2.3.32"
+version = "2.3.33"
 
 repositories {
   mavenCentral()
@@ -119,7 +119,7 @@ dependencies {
   // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
   // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-  compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.10.19'
+  compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.10.20'
 }
 
 distributions {

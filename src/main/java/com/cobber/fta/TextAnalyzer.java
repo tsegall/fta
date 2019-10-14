@@ -813,7 +813,9 @@ public class TextAnalyzer {
 	 * Validate (and track) the date/time/datetime input.
 	 * This routine is called for every date/time/datetime we see in the input, so performance is critical.
 	 */
-	private void trackDateTime(final String dateFormat, final String input) throws DateTimeParseException {
+	private boolean trackDateTime(final String input, PatternInfo patternInfo, final boolean register) throws DateTimeParseException {
+		String dateFormat = patternInfo.format;
+
 		// Retrieve the (likely cached) DateTimeParserResult for the supplied dateFormat
 		final DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, resolutionMode, locale);
 		if (result == null)
@@ -827,7 +829,7 @@ public class TextAnalyzer {
 		// significantly faster than the parse on LocalTime/LocalDate/LocalDateTime/...
 		switch (result.getType()) {
 		case LOCALTIME:
-			if (collectStatistics) {
+			if (register && collectStatistics) {
 				final LocalTime localTime = LocalTime.parse(trimmed, formatter);
 				if (minLocalTime == null || localTime.compareTo(minLocalTime) < 0)
 					minLocalTime = localTime;
@@ -840,7 +842,7 @@ public class TextAnalyzer {
 			break;
 
 		case LOCALDATE:
-			if (collectStatistics) {
+			if (register && collectStatistics) {
 				final LocalDate localDate = LocalDate.parse(trimmed, formatter);
 				if (minLocalDate == null || localDate.compareTo(minLocalDate) < 0)
 					minLocalDate = localDate;
@@ -853,7 +855,7 @@ public class TextAnalyzer {
 			break;
 
 		case LOCALDATETIME:
-			if (collectStatistics) {
+			if (register && collectStatistics) {
 				final LocalDateTime localDateTime = LocalDateTime.parse(trimmed, formatter);
 				if (minLocalDateTime == null || localDateTime.compareTo(minLocalDateTime) < 0)
 					minLocalDateTime = localDateTime;
@@ -866,7 +868,7 @@ public class TextAnalyzer {
 			break;
 
 		case ZONEDDATETIME:
-			if (collectStatistics) {
+			if (register && collectStatistics) {
 				final ZonedDateTime zonedDateTime = ZonedDateTime.parse(trimmed, formatter);
 				if (minZonedDateTime == null || zonedDateTime.compareTo(minZonedDateTime) < 0)
 					minZonedDateTime = zonedDateTime;
@@ -879,7 +881,7 @@ public class TextAnalyzer {
 			break;
 
 		case OFFSETDATETIME:
-			if (collectStatistics) {
+			if (register && collectStatistics) {
 				final OffsetDateTime offsetDateTime = OffsetDateTime.parse(trimmed, formatter);
 				if (minOffsetDateTime == null || offsetDateTime.compareTo(minOffsetDateTime) < 0)
 					minOffsetDateTime = offsetDateTime;
@@ -894,6 +896,8 @@ public class TextAnalyzer {
 		default:
 			throw new InternalErrorException("Expected Date/Time type.");
 		}
+
+		return true;
 	}
 
 	public Plugins getPlugins() {
@@ -1578,6 +1582,9 @@ public class TextAnalyzer {
 						else if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType())) {
 							if (trackDouble(sample, candidate, false))
 								count++;
+						} if (candidate.isDateType()) {
+							if (trackDateTime(sample, candidate, false))
+								count++;
 						}
 					}
 
@@ -1892,7 +1899,7 @@ public class TextAnalyzer {
 		case OFFSETDATETIME:
 		case ZONEDDATETIME:
 			try {
-				trackDateTime(matchPatternInfo.format, input);
+				trackDateTime(input, matchPatternInfo, true);
 				matchCount += count;
 				addValid(input, count);
 				valid = true;
@@ -1955,7 +1962,7 @@ public class TextAnalyzer {
 				} while (!success);
 
 				try {
-					trackDateTime(matchPatternInfo.format, input);
+					trackDateTime(input, matchPatternInfo, true);
 					matchCount += count;
 					addValid(input, count);
 					valid = true;

@@ -18,6 +18,8 @@ package com.cobber.fta;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -2201,6 +2203,87 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getSampleCount(), SAMPLES + 2);
+	}
+
+	@Test
+	public void testInfiniteDoublePlugin() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("PERCENTAGES");
+		final int COUNT = 1000;
+		List<PluginDefinition> plugins = new ArrayList<>();
+		PluginDefinition plugin = new PluginDefinition("PERCENT", "com.cobber.fta.PluginPercent");
+		plugin.headerRegExps = new String[] { ".*(?i)(percent).*" };
+		plugin.headerRegExpConfidence = new int[] { 90 };
+		plugins.add(plugin);
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "Percentages", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+		Random r = new Random(173);
+		for (int i = 0; i < COUNT; i++)
+			analysis.train(String.valueOf(r.nextDouble()));
+
+		analysis.train("A");
+		analysis.train("BBBBBBBBBBBBBBBBBBBBBBBBB");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getRegExp(), PluginPercent.REGEXP);
+		Assert.assertEquals(result.getTypeQualifier(), "PERCENT");
+		Assert.assertEquals(result.getSampleCount(), COUNT + 2);
+		Assert.assertEquals(result.getMatchCount(), COUNT);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getMinLength(), 1);
+		Assert.assertEquals(result.getMaxLength(), 25);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)2/result.getSampleCount());
+	}
+
+	/*@Test - TODO dates do not support Semantic Types :-( */
+	public void testInfiniteDateTimePlugin() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("DOB");
+		final int COUNT = 1000;
+
+		List<PluginDefinition> plugins = new ArrayList<>();
+		PluginDefinition plugin = new PluginDefinition("BIRTHDATE", "com.cobber.fta.PluginBirthDate");
+		plugin.headerRegExps = new String[] { ".*(?i)(DOB).*" };
+		plugin.headerRegExpConfidence = new int[] { 90 };
+		plugins.add(plugin);
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "BirthDate", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+		LocalDate localDate = LocalDate.now();
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+		for (int i = 0; i < COUNT; i++) {
+			String sample = localDate.format(formatter);
+			analysis.train(sample);
+			localDate = localDate.minusDays(10);
+		}
+
+		analysis.train("A");
+		analysis.train("BBBBBBBBBBBBBBBBBBBBBBBBB");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getRegExp(), PluginBirthDate.REGEXP);
+		Assert.assertEquals(result.getTypeQualifier(), "PERCENT");
+		Assert.assertEquals(result.getSampleCount(), COUNT + 2);
+		Assert.assertEquals(result.getMatchCount(), COUNT);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getMinLength(), 1);
+		Assert.assertEquals(result.getMaxLength(), 25);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)2/result.getSampleCount());
 	}
 
 	@Test
