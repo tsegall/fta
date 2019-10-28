@@ -27,6 +27,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	private Long maxLong;
 	private Double minDouble;
 	private Double maxDouble;
+
 	public LogicalTypeRegExp(PluginDefinition plugin) {
 		super(plugin);
 
@@ -111,6 +112,14 @@ public class LogicalTypeRegExp extends LogicalType {
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
 			Map<String, Long> cardinality, Map<String, Long> outliers) {
 
+		// If this plugin insists on a minimum number of samples (validate it)
+		if (realSamples < getMinSamples())
+			return defn.regExpReturned;
+
+		// Plugins can insist that the maximum and minimum values be present in the observed set.
+		if (getMinMaxPresent() && (cardinality.get(defn.minimum) == null || cardinality.get(defn.maximum) == null))
+			return defn.regExpReturned;
+
 		if (defn.headerRegExps != null) {
 			boolean requiredHeaderMissing = false;
 			for (int i = 0; i < defn.headerRegExps.length && !requiredHeaderMissing; i++) {
@@ -151,6 +160,14 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	public String[] getHeaderRegExps() {
 		return defn.headerRegExps;
+	}
+
+	public int getMinSamples() {
+		return defn.minSamples;
+	}
+
+	public boolean getMinMaxPresent() {
+		return defn.minMaxPresent;
 	}
 
 	@Override

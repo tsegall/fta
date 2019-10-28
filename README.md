@@ -80,6 +80,7 @@ COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3
 COUNTRY.TEXT_EN|Country as a string (English language)
 CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...
 CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217
+DAY.DIGITS|Day represented as a number (1-31)
 EMAIL|Email Address
 GENDER.TEXT_EN|Gender (English Language)
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67
@@ -89,7 +90,8 @@ LANGUAGE.ISO-639-2|Language code - ISO 639, two character
 LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...
 MACADDRESS|MAC Address
 MONTH.ABBR_en-US|Month Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)
-MONTH.FULL_en-US|Fulll Month name <LOCALE> = Locale, e.g. en-US for English langauge in US)
+MONTH.DIGITS|Month represented as a number (1-12)
+MONTH.FULL_en-US|Full Month name <LOCALE> = Locale, e.g. en-US for English langauge in US)
 NAME.FIRST|First Name
 NAME.FIRST_LAST|Merged Name (First Last)
 NAME.LAST|Last Name
@@ -162,6 +164,10 @@ The optional 'regExpsToMatch' tag is an ordered list of Regular Expressions used
 
 The optional 'minimum (maximum)' tags are valid for Stream of Base Type Long or Double and further restrict the data that will be considered valid.
 
+The optional 'minMaxPresent' tag indicates that both the minimum and maxixum value must be present in order for the Semantic Type to be recognized.
+
+The optional 'minSamples' tag indicates that in order for this Semantic Type to be detected there must be at least this many samples.
+
 The optional 'blackList' tag is a list of invalid values for this Semantic Type, for example '[ "000-00-0000" ]' indicates that this is an invalid SSN despite the fact that it matches the SSN regular expression.
 
 ### Finite plugins ###
@@ -174,7 +180,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 5.6.2`
+`$ gradle wrapper --gradle-version 5.6.3`
 
 `$ ./gradlew installDist`
 

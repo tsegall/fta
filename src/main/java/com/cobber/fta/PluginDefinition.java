@@ -67,6 +67,10 @@ public class PluginDefinition {
 	public String minimum;
 	/** Maximum value to be considered as a valid instance of this type, e.g. 4 if the Semantic type is Financial Quarter. */
 	public String maximum;
+	/** Minimum number of samples required to declare success. */
+	public int minSamples = -1;
+	/** Need to see both the minimum and maximum values to declare success. */
+	public boolean minMaxPresent = false;
 
 	public PluginDefinition() {
 	}

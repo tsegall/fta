@@ -325,18 +325,42 @@ public class RegExpGenerator {
 	public String getResult() {
 		StringBuilder result = new StringBuilder();
 
-		if (asSet && memory.size() <= maxSetSize) {
-			if (isAlphabetic)
-				result.append("(?i)");
-			if (memory.size() != 1)
-				result.append("(");
-			for (String element : memory) {
-				result.append(RegExpGenerator.slosh(element)).append("|");
+		if (asSet) {
+			// Generate a Character class if possible - we would rather see [A-G] than A|B|C|D|E|F|G
+			if (memory.size() >= 3 && shortest == 1 && shortest == longest) {
+				char first = 0;
+				char last = 0;
+				char current = 0;
+				boolean collapsible = true;
+				for (String element : memory) {
+					current = element.charAt(0);
+					if (first == 0)
+						first = current;
+					else
+						if (current != last + 1) {
+							collapsible = false;
+							break;
+					}
+					last = current;
+				}
+				if (collapsible) {
+					result.append("[").append(first).append('-').append(last).append(']');
+					return result.toString();
+				}
 			}
-			result.deleteCharAt(result.length() - 1);
-			if (memory.size() != 1)
-				result.append(")");
-			return result.toString();
+			if (memory.size() <= maxSetSize) {
+				if (isAlphabetic)
+					result.append("(?i)");
+				if (memory.size() != 1)
+					result.append("(");
+				for (String element : memory) {
+					result.append(RegExpGenerator.slosh(element)).append("|");
+				}
+				result.deleteCharAt(result.length() - 1);
+				if (memory.size() != 1)
+					result.append(")");
+				return result.toString();
+			}
 		}
 
 		if (isOther)

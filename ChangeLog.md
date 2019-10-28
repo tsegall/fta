@@ -22,7 +22,7 @@
 ### 2.3.2 ###
  - Upgrade version of phone number library; improve NAME detection; improve Country detection
 
-### 2.3.2 ###
+### 2.3.3 ###
  - Add support for NAME.LAST_FIRST (e.g. 'Segall, Tim'); fix NPE with --help
 
 ### 2.3.4 ###
@@ -125,3 +125,13 @@
 ### 2.3.32 ###
  - Document 'blacklist', upgrade jackson, improve code documentation, add description for Logical Types
  - Switch Content for inline to a JSON document, add first/last as synonyms for FIRST and LAST NAME
+
+### 2.3.33 ###
+ - Cleanup DateTime tracking and add a double semantic test
+
+### 2.3.34 ###
+ - Add support for new Semantic Types - DAY.DIGITS and MONTH.DIGITS
+ - Add support for minSamples and minMaxPresent on RegExp matchers
+ - Add support for Boolean (y/n)
+ - Improve regExp generated in the case of character classes e.g. we would rather see [A-G] than A|B|C|D|E|F|G
+ - Fix issues with some missing topK and bottomK

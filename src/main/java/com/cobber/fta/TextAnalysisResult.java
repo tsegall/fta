@@ -568,11 +568,11 @@ public class TextAnalysisResult {
 			analysis.put("maxLength", maxLength);
 		if (statisticsEnabled() && sum != null)
 			analysis.put("sum", sum);
-		if (statisticsEnabled() && topK != null && verbose > 0) {
+		if (statisticsEnabled() && topK != null) {
 			ArrayNode detail = analysis.putArray("topK");
 			outputArray(mapper, detail, topK);
 		}
-		if (statisticsEnabled() && bottomK != null && verbose > 0) {
+		if (statisticsEnabled() && bottomK != null) {
 			ArrayNode detail = analysis.putArray("bottomK");
 			outputArray(mapper, detail, bottomK);
 		}

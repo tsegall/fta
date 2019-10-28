@@ -681,8 +681,8 @@ public class TextAnalyzer {
 	private boolean trackBoolean(final String input) {
 		final String trimmedLower = input.trim().toLowerCase(locale);
 
-		final boolean isTrue = "true".equals(trimmedLower) || "yes".equals(trimmedLower);
-		final boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower));
+		final boolean isTrue = "true".equals(trimmedLower) || "yes".equals(trimmedLower) || "y".equals(trimmedLower);
+		final boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower) || "n".equals(trimmedLower));
 
 		if (isTrue) {
 			if (minBoolean == null)
@@ -1297,6 +1297,8 @@ public class TextAnalyzer {
 			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_TRUE_FALSE);
 		} else if ("yes".equalsIgnoreCase(trimmed) || "no".equalsIgnoreCase(trimmed)) {
 			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_YES_NO);
+		} else if ("y".equalsIgnoreCase(trimmed) || "n".equalsIgnoreCase(trimmed)) {
+			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_Y_N);
 		} else {
 			String l0withSentinel = l0.toString() + "|";
 			// Walk the new level0 to create the new level1
@@ -1750,6 +1752,33 @@ public class TextAnalyzer {
 		backoutToPatternInfo(realSamples, knownPatterns.getByID(patternID));
 	}
 
+	private void backoutToString(final long realSamples) {
+		matchCount = realSamples;
+
+		// All outliers are now part of the cardinality set and there are now no outliers
+		cardinality.putAll(outliers);
+
+		RegExpGenerator gen = new RegExpGenerator(true, MAX_ENUM_SIZE, locale);
+		for (String s : cardinality.keySet())
+			gen.train(s);
+
+		String newPattern = gen.getResult();
+		PatternInfo newPatternInfo = knownPatterns.getByRegExp(newPattern);
+
+		// If it is not one of our known types then construct a suitable PatternInfo
+		if (newPatternInfo == null)
+			newPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, null, false, -1, -1, null, null);
+
+		matchCount = realSamples;
+		matchPatternInfo = newPatternInfo;
+
+		for (String s : cardinality.keySet())
+			trackString(s, newPatternInfo, false);
+
+		outliers.clear();
+		outliersSmashed.clear();
+	}
+
 	private void backoutToPatternInfo(final long realSamples, PatternInfo newPatternInfo) {
 		matchCount = realSamples;
 		matchPatternInfo = newPatternInfo;
@@ -1759,16 +1788,8 @@ public class TextAnalyzer {
 
 		// Need to update stats to reflect any outliers we previously ignored
 		if (matchPatternInfo.type.equals(PatternInfo.Type.STRING)) {
-			if (minString == null || (minOutlierString != null && minString.compareTo(minOutlierString) > 0))
-				minString = minOutlierString;
-
-			if (maxString == null || (maxOutlierString != null && maxString.compareTo(maxOutlierString) < 0))
-				maxString = maxOutlierString;
-
-			if (minTrimmedLength > minTrimmedOutlierLength)
-				minTrimmedLength = minTrimmedOutlierLength;
-			if (maxTrimmedOutlierLength > maxTrimmedLength)
-				maxTrimmedLength = maxTrimmedOutlierLength;
+			for (String s : cardinality.keySet())
+				trackString(s, newPatternInfo, false);
 		}
 		else if (matchPatternInfo.type.equals(PatternInfo.Type.DOUBLE)) {
 			minDouble = minLong;
@@ -2326,11 +2347,23 @@ public class TextAnalyzer {
 				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 				minLocalDate = LocalDate.parse(String.valueOf(minLongNonZero), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
+
+				// If we are collecting statistics - we need to generate the topK and bottomK
+				if (collectStatistics)
+					for (String s : cardinality.keySet())
+						if (!"0".equals(s))
+							trackDateTime(s, matchPatternInfo, true);
 			} else if (groupingSeparators == 0 && minLongNonZero > 1800 && maxLong < 2041 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("year") || dataStreamName.toLowerCase(locale).contains("date"))) {
 				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{4}" : "0|\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLongNonZero, 1, 1);
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
+
+				// If we are collecting statistics - we need to generate the topK and bottomK
+				if (collectStatistics)
+					for (String s : cardinality.keySet())
+						if (!"0".equals(s))
+							trackDateTime(s, matchPatternInfo, true);
 			} else if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
 				// boolean by any other name
 				minBoolean = "0";
@@ -2344,7 +2377,8 @@ public class TextAnalyzer {
 				matchPatternInfo.regexp = freezeNumeric(matchPatternInfo.regexp);
 
 				for (LogicalTypeRegExp logical : regExpTypes) {
-					if (PatternInfo.Type.LONG.equals(logical.getBaseType()) && logical.isMatch(matchPatternInfo.regexp) &&
+					if (PatternInfo.Type.LONG.equals(logical.getBaseType()) &&
+							logical.isMatch(matchPatternInfo.regexp) &&
 							logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
@@ -2359,6 +2393,9 @@ public class TextAnalyzer {
 					confidence = (double) matchCount / realSamples;
 				}
 			}
+		} else if (PatternInfo.Type.BOOLEAN.equals(matchPatternInfo.type) && matchPatternInfo.id == KnownPatterns.ID.ID_BOOLEAN_Y_N && cardinality.size() == 1) {
+			backoutToString(realSamples);
+			confidence = (double) matchCount / realSamples;
 		} else if (PatternInfo.Type.DOUBLE.equals(matchPatternInfo.type) && !matchPatternInfo.isLogicalType()) {
 			if (minDouble < 0.0)
 				matchPatternInfo = knownPatterns.negation(matchPatternInfo.regexp);
@@ -2367,7 +2404,8 @@ public class TextAnalyzer {
 				matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
 
 			for (LogicalTypeRegExp logical : regExpTypes) {
-				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && logical.isMatch(matchPatternInfo.regexp) &&
+				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) &&
+						logical.isMatch(matchPatternInfo.regexp) &&
 						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 					confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
@@ -2549,7 +2587,8 @@ public class TextAnalyzer {
 			}
 
 			for (LogicalTypeRegExp logical : regExpTypes) {
-				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && logical.isMatch(matchPatternInfo.regexp) &&
+				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) &&
+						logical.isMatch(matchPatternInfo.regexp) &&
 						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 					confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
@@ -2564,7 +2603,8 @@ public class TextAnalyzer {
 
 				String regExp = RegExpGenerator.smashedAsRegExp(bestShape.getKey().trim());
 				for (LogicalTypeRegExp logical : regExpTypes) {
-					if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && logical.isMatch(regExp) &&
+					if (PatternInfo.Type.STRING.equals(logical.getBaseType()) &&
+							logical.isMatch(regExp) &&
 							logical.isValidSet(dataStreamName, bestShape.getValue(), realSamples, calculateFacts(), cardinality, outliers) == null) {
 						matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 						matchCount = bestShape.getValue();

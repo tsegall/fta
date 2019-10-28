@@ -59,9 +59,9 @@ public class KnownPatterns {
 	public static final String PATTERN_NULL = "[NULL]";
 	public static final String PATTERN_WHITESPACE = "[ \t]*";
 
-	public static final String PATTERN_BOOLEAN_TRUE_FALSE = "(?i)(true|false)";
-	public static final String PATTERN_BOOLEAN_YES_NO = "(?i)(yes|no)";
-	public static final String PATTERN_BOOLEAN_Y_N = "(?i)(y|n)";
+	public static final String PATTERN_BOOLEAN_TRUE_FALSE = "(?i)(FALSE|TRUE)";
+	public static final String PATTERN_BOOLEAN_YES_NO = "(?i)(NO|YES)";
+	public static final String PATTERN_BOOLEAN_Y_N = "(?i)(N|Y)";
 	public static final String PATTERN_BOOLEAN_ONE_ZERO = "[0|1]";
 
 	final String EXPONENT_REGEXP = "(?:[eE]([-+]?\\d+))?";
@@ -135,6 +135,8 @@ public class KnownPatterns {
 			return PATTERN_BOOLEAN_TRUE_FALSE;
 		case ID_BOOLEAN_YES_NO:
 			return PATTERN_BOOLEAN_YES_NO;
+		case ID_BOOLEAN_Y_N:
+			return PATTERN_BOOLEAN_Y_N;
 		case ID_NULL:
 			return PATTERN_NULL;
 		default:

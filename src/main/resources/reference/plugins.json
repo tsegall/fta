@@ -344,5 +344,31 @@
 		"threshold": 98,
 		"baseType": "STRING",
 		"priority": 260
+	},
+	{
+		"qualifier": "MONTH.DIGITS",
+		"description": "Numeric Month",
+		"headerRegExps": [ ".*(?i)(month)|(i?)(month).*" ],
+		"headerRegExpConfidence": [ 100 ],
+		"regExpsToMatch": [ "\\d{1,2}" ],
+		"regExpReturned": "\\d|0\\d|1[012]",
+		"threshold": 98,
+		"baseType": "LONG",
+		"minimum": "1",
+		"maximum": "12",
+		"priority": 270
+	},
+	{
+		"qualifier": "DAY.DIGITS",
+		"description": "Numeric Day of Month",
+		"regExpsToMatch": [ "\\d{1,2}" ],
+		"regExpReturned": "\\d|[012]\\d|3[01]",
+		"threshold": 98,
+		"baseType": "LONG",
+		"minimum": "1",
+		"maximum": "31",
+		"minSamples": 1000,
+		"minMaxPresent": true,
+		"priority": 280
 	}
 ]

@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -65,5 +66,37 @@ public class TestRegExpSupport {
 		gen.train("1-1-11-1");
 		gen.train("1-1-1-1");
 		Assert.assertEquals(gen.getResult(), "[\\p{IsDigit}\\-]{7,9}");
+	}
+
+	@Test
+	public void rangeTestAlpha() throws IOException {
+		RegExpGenerator gen = new RegExpGenerator(true, 30, Locale.getDefault());
+
+		gen.train("A");
+		gen.train("B");
+		gen.train("C");
+		gen.train("D");
+		Assert.assertEquals(gen.getResult(), "[A-D]");
+	}
+
+	@Test
+	public void rangeTestNumbers() throws IOException {
+		RegExpGenerator gen = new RegExpGenerator(true, 30, Locale.getDefault());
+
+		gen.train("0");
+		gen.train("1");
+		gen.train("2");
+		gen.train("3");
+		gen.train("4");
+		gen.train("5");
+		gen.train("6");
+		gen.train("7");
+		gen.train("8");
+		gen.train("9");
+		gen.train("2");
+		gen.train("3");
+		gen.train("4");
+		gen.train("5");
+		Assert.assertEquals(gen.getResult(), "[0-9]");
 	}
 }
