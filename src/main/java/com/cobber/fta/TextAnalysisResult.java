@@ -473,11 +473,12 @@ public class TextAnalysisResult {
 	 * @return A String SHA-1 hash that reflects the structure of the data stream.
 	 */
 	public String getStructureSignature() {
-		String structureSignature = null;
-		structureSignature = patternInfo.type.toString() + getRegExp();
+		String structureSignature = patternInfo.type.toString() + ":";
 
-		if (!shapes.isEmpty() && !isLogicalType())
-			structureSignature += shapes.keySet().toString();
+		if (isLogicalType())
+			structureSignature += getTypeQualifier();
+		else if (!shapes.isEmpty())
+			structureSignature += getRegExp() + shapes.keySet().toString();
 
 		byte[] signature = structureSignature.getBytes(StandardCharsets.UTF_8);
 		MessageDigest md;

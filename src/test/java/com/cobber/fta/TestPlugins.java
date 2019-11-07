@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +48,29 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
 public class TestPlugins {
+	static Map<String, String> signatures = new HashMap<>();
+
+	static {
+		signatures.put("NAME.FIRST", "slggsAEDZ26rz9dqs15eNF23j2w=");
+		signatures.put("NAME.LAST", "+h9v4tygGZxbEPbJLp5MDezGgME=");
+		signatures.put("COUNTRY.ISO-3166-2", "2ySMIn/48aoAVrw/OwOCKdYI4OE=");
+		signatures.put("COUNTRY.ISO-3166-3", "WyaPkc1jgevOXlDl5bt1Za4j8ko=");
+		signatures.put("CURRENCY_CODE.ISO-4217", "HElKonWFB+FY+MspBKm3eCwwrVo=");
+		signatures.put("STATE_PROVINCE.STATE_AU", "khHytrFa0Oj4KP/37i2mRhJmliU=");
+		signatures.put("STATE_PROVINCE.PROVINCE_CA", "jwzKHMfuq3AO4lEKEm0e/ZmOIRA=");
+		signatures.put("STATE_PROVINCE.STATE_US", "JD5jeXHLzGctpqicY44B9iJzyXU=");
+		signatures.put("GUID", "AtovlR1okrAJUeTCpYUUTXow4yM=");
+		signatures.put(LogicalTypeCountryEN.SEMANTIC_TYPE, "T4UZNFT895GsC99J7dOz/ENNYvM=");
+		signatures.put(LogicalTypeAddressEN.SEMANTIC_TYPE, "5P7tWzPdbjVvyHhLklpTf00Zxl8=");
+		signatures.put(LogicalTypeEmail.SEMANTIC_TYPE, "+A0AMjgeFlGRlPKsX/iXYmoWpfY=");
+		signatures.put(LogicalTypeGenderEN.SEMANTIC_TYPE, "Jy3n2yHSDBuLhpoKY8FoMrmI4NE=");
+		signatures.put(LogicalTypeUSZip5.SEMANTIC_TYPE, "VvLLosjm/N/z7zpF2IDSgpeT02c=");
+		signatures.put(LogicalTypeIPV4Address.SEMANTIC_TYPE, "tjKmv3C98nzoxPHtvYb1sp+UQEY=");
+		signatures.put(LogicalTypePhoneNumber.SEMANTIC_TYPE, "YOwAVZnoqmDtMa0wUtlF+Mda69U=");
+		signatures.put(LogicalTypeURL.SEMANTIC_TYPE, "r+muJMmeRDtmg9qyVbWCOAMusc8=");
+
+	}
+
 	@Test
 	public void basicGenderTwoValues() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
@@ -66,7 +90,8 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE)");
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -98,6 +123,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(F|M)");
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -126,6 +152,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(F|FEMALE|M|MALE|U)");
 		Assert.assertEquals(result.getOutlierCount(), 1);
@@ -156,6 +183,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Long> outliers = result.getOutlierDetails();
@@ -218,7 +246,8 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypePhoneNumber.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypePhoneNumber.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypePhoneNumber.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), LogicalTypePhoneNumber.REGEXP);
 		Assert.assertEquals(result.getOutlierCount(), 1);
@@ -251,7 +280,8 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Long> outliers = result.getOutlierDetails();
@@ -286,7 +316,8 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Long> outliers = result.getOutlierDetails();
@@ -497,6 +528,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "GUID");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("GUID"));
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getRegExp(), LogicalTypeGUID.REGEXP);
@@ -540,6 +572,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 2 + result.getNullCount());
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "EMAIL");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("EMAIL"));
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 2);
@@ -572,6 +605,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), inputs.length + result.getNullCount());
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "EMAIL");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("EMAIL"));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - ERRORS);
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getRegExp(), LogicalTypeEmail.REGEXP);
@@ -617,6 +651,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeURL.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeURL.SEMANTIC_TYPE));
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -646,6 +681,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 0.95);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeURL.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeURL.SEMANTIC_TYPE));
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -674,6 +710,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeURL.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeURL.SEMANTIC_TYPE));
 
 		for (int i = 0; i < inputs.length; i++)
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -767,6 +804,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeUSZip5.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -880,6 +918,7 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeUSZip5.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), 4);
@@ -904,6 +943,7 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeIPV4Address.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeIPV4Address.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1148,6 +1188,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeUSZip5.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), copies);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), copies);
@@ -1176,6 +1217,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("STATE_PROVINCE.STATE_US"));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
@@ -1206,6 +1248,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("STATE_PROVINCE.STATE_US"));
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
@@ -1248,6 +1291,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeEmail.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeEmail.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1290,6 +1334,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeEmail.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeEmail.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
@@ -1320,6 +1365,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("STATE_PROVINCE.STATE_US"));
 		Assert.assertEquals(result.getSampleCount(), inputs.length + 5);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1387,6 +1433,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("STATE_PROVINCE.STATE_US"));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 5);
@@ -1602,6 +1649,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("STATE_PROVINCE.STATE_US"));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1630,6 +1678,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.PROVINCE_CA");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("STATE_PROVINCE.PROVINCE_CA"));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1659,6 +1708,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_AU");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("STATE_PROVINCE.STATE_AU"));
 		Assert.assertEquals(result.getSampleCount(), inputs.length * 10);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length * 10);
@@ -1994,6 +2044,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "CURRENCY_CODE.ISO-4217");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("CURRENCY_CODE.ISO-4217"));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getCardinality(), inputs.length);
@@ -2025,6 +2076,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "COUNTRY.ISO-3166-3");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("COUNTRY.ISO-3166-3"));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getCardinality(), inputs.length);
@@ -2311,8 +2363,13 @@ public class TestPlugins {
 			}
 		}
 
-		Assert.assertEquals(analysis[0].getResult().getTypeQualifier(), "NAME.FIRST");
-		Assert.assertEquals(analysis[1].getResult().getTypeQualifier(), "NAME.LAST");
+		TextAnalysisResult first = analysis[0].getResult();
+		Assert.assertEquals(first.getTypeQualifier(), "NAME.FIRST");
+		Assert.assertEquals(first.getStructureSignature(), signatures.get("NAME.FIRST"));
+
+		TextAnalysisResult last = analysis[1].getResult();
+		Assert.assertEquals(last.getTypeQualifier(), "NAME.LAST");
+		Assert.assertEquals(last.getStructureSignature(), signatures.get("NAME.LAST"));
 
 		LogicalType logicalFirst = analysis[0].getPlugins().getRegistered(LogicalTypeFirstName.SEMANTIC_TYPE);
 		Assert.assertTrue(logicalFirst.isValid("Harry"));
@@ -2341,6 +2398,7 @@ public class TestPlugins {
 			}
 
 			Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
+			Assert.assertEquals(analysis.getResult().getStructureSignature(), signatures.get("NAME.FIRST"));
 		}
 
 		for (String header : headersGood) {
@@ -2350,6 +2408,7 @@ public class TestPlugins {
 			}
 
 			Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
+			Assert.assertEquals(analysis.getResult().getStructureSignature(), signatures.get("NAME.FIRST"));
 		}
 
 		for (String header : headersMaybe) {
@@ -2427,6 +2486,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{2}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "COUNTRY.ISO-3166-2");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("COUNTRY.ISO-3166-2"));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getCardinality(), inputs.length);
@@ -2483,6 +2543,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCountryEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeCountryEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		final Map<String, Long> outliers = result.getOutlierDetails();
@@ -2514,6 +2575,7 @@ public class TestPlugins {
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCountryEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeCountryEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2543,6 +2605,7 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeAddressEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeAddressEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -2566,6 +2629,7 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCountryEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeCountryEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), 4);
@@ -2677,6 +2741,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeAddressEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeAddressEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getRegExp(), ".+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
@@ -2698,6 +2763,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeAddressEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeAddressEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getRegExp(), ".+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}

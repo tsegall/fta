@@ -135,3 +135,6 @@
  - Add support for Boolean (y/n)
  - Improve regExp generated in the case of character classes e.g. we would rather see [A-G] than A|B|C|D|E|F|G
  - Fix issues with some missing topK and bottomK
+
+### 2.3.35 ###
+ - Fix StructureSignature generation and associated tests

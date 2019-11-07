@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.plugins.LogicalTypeCountryEN;
+
 public class TestStrings {
 	@Test
 	public void manyNulls() throws IOException {
@@ -661,11 +663,11 @@ public class TestStrings {
 		TextAnalysisResult result1 = analysis1.getResult();
 		TextAnalysisResult result2 = analysis2.getResult();
 
-		Assert.assertEquals(result1.getStructureSignature(), "gqjohE+ftCDuPOKIzmrBtsTcL7g=");
+		Assert.assertEquals(result1.getStructureSignature(), TestPlugins.signatures.get(LogicalTypeCountryEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 		Assert.assertEquals(result1.getTypeQualifier(), result2.getTypeQualifier());
-		Assert.assertEquals(result1.getTypeQualifier(), "COUNTRY.TEXT_EN");
+		Assert.assertEquals(result1.getTypeQualifier(), LogicalTypeCountryEN.SEMANTIC_TYPE);
 	}
 
 	@Test
