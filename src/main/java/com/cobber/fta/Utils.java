@@ -19,7 +19,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.text.similarity.LevenshteinDistance;
 
 public class Utils {
 
@@ -62,5 +65,20 @@ public class Utils {
 		catch (NumberFormatException e) {
 			return -1;
 		}
+	}
+
+	public static int distanceLevenshtein(String source, Set<String> universe) {
+		LevenshteinDistance distance = new LevenshteinDistance();
+
+		Integer best = Integer.MAX_VALUE;
+		for (String test : universe) {
+			if (test.equals(source))
+				continue;
+			Integer current = distance.apply(source, test);
+			if (current < best)
+				best = current;
+		}
+
+		return best;
 	}
 }

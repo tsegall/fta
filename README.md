@@ -180,7 +180,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 5.6.3`
+`$ gradle wrapper --gradle-version 6.0.1`
 
 `$ ./gradlew installDist`
 

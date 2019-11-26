@@ -21,7 +21,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "2.3.35"
+version = "2.3.36"
 
 repositories {
   mavenCentral()
@@ -44,14 +44,9 @@ tasks.withType(Test) {
 
 javadoc.options.encoding = 'UTF-8'
 
-task javadocJar(type: Jar) {
-  classifier = 'javadoc'
-  from javadoc
-}
-
-task sourcesJar(type: Jar) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 artifacts {
@@ -117,9 +112,11 @@ dependencies {
   // https://mvnrepository.com/artifact/commons-validator/commons-validator
   compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
   // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.1'
   // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-  compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.10.22'
+  compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.10.23'
+  // https://mvnrepository.com/artifact/org.apache.commons/commons-text
+  compile group: 'org.apache.commons', name: 'commons-text', version: '1.8'
 }
 
 distributions {

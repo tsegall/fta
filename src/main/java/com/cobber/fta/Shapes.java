@@ -50,7 +50,7 @@ public class Shapes {
 			return null;
 
 		if (compressed.size() == 1)
-			return RegExpGenerator.smashedAsRegExp(compressed.keySet().iterator().next().trim());
+			return Smashed.smashedAsRegExp(compressed.keySet().iterator().next().trim());
 
 		if (compressed.size() == 2 && realSamples > 100) {
 			Iterator<Map.Entry<String, Long>> iter = compressed.entrySet().iterator();
@@ -58,8 +58,8 @@ public class Shapes {
 			Map.Entry<String, Long> secondShape = iter.next();
 
 			if (firstShape.getValue() > realSamples * 15/100 && secondShape.getValue() > realSamples * 15/100) {
-				String firstRE = RegExpGenerator.smashedAsRegExp(firstShape.getKey());
-				String secondRE = RegExpGenerator.smashedAsRegExp(secondShape.getKey());
+				String firstRE = Smashed.smashedAsRegExp(firstShape.getKey());
+				String secondRE = Smashed.smashedAsRegExp(secondShape.getKey());
 				return RegExpGenerator.merge(firstRE, secondRE);
 			}
 		}
@@ -92,7 +92,7 @@ public class Shapes {
 				break;
 		}
 		if (updatedShapes.size() == 1)
-			return RegExpGenerator.smashedAsRegExp(updatedShapes.entrySet().iterator().next().getKey());
+			return Smashed.smashedAsRegExp(updatedShapes.entrySet().iterator().next().getKey());
 
 		updatedShapes = new HashMap<>();
 		boolean isHex = true;
@@ -114,7 +114,7 @@ public class Shapes {
 				break;
 		}
 		if (isHex && updatedShapes.size() == 1)
-			return RegExpGenerator.smashedAsRegExp(updatedShapes.entrySet().iterator().next().getKey());
+			return Smashed.smashedAsRegExp(updatedShapes.entrySet().iterator().next().getKey());
 
 
 		return null;
@@ -128,7 +128,7 @@ public class Shapes {
 	 */
 	void track(final String trimmed, long count) {
 		if (!anyShape) {
-			String inputShape = RegExpGenerator.smash(trimmed);
+			String inputShape = Smashed.smash(trimmed);
 			if (inputShape.equals(".+"))
 				anyShape = true;
 			else {

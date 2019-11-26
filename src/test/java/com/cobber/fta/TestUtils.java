@@ -15,9 +15,17 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
+
+import org.testng.annotations.Test;
 
 public class TestUtils {
 	final static String validZips = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
@@ -151,5 +159,41 @@ public class TestUtils {
 		    }
 		}
 		return false;
+	}
+
+	@Test
+	public void testDistanceClose() throws IOException {
+		Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
+		assertEquals(Utils.distanceLevenshtein("Secondory", universe), 1);
+	}
+
+	@Test
+	public void testDistanceFar() throws IOException {
+		Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
+		assertEquals(Utils.distanceLevenshtein("Sec", universe), 6);
+	}
+
+	@Test
+	public void testDistanceHuge() throws IOException {
+		Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
+		assertEquals(Utils.distanceLevenshtein("S", universe), 7);
+	}
+
+	@Test
+	public void testDistanceTelco() throws IOException {
+		Set<String> universe = new HashSet<>(Arrays.asList(new String[] {
+				"DISCONNECT", "DISCONNECT FRACTIONAL", "DISCONNECT OTHE", "DISCONNECT STILL BILLING",
+				"INSTALL FRACTIONAL", "INSTALL FRACTIONAL RERATE", "INSTALL OTHER", "RE-RATES", "RUN RATE"
+				}));
+		assertEquals(Utils.distanceLevenshtein("INSTALL FRACTIONAL", universe), 7);
+	}
+
+	@Test
+	public void testDistanceMedia() throws IOException {
+		Set<String> universe = new HashSet<>(Arrays.asList(new String[] {
+			"AUDIO DISC ; VOLUME", "OMPUTER DISC", "ONLINE RESOURCE", "\\QONLINE RESOURCE (EBOOK)\\E",
+			"\\QONLINE RESOURCE (EPUB EBOOK)\\E", "\\QONLINE RESOURCE (PDF EBOOK ; EPUB EBOOK)\\E", "SHEET", "VOLUME"
+		}));
+		assertEquals(Utils.distanceLevenshtein("\\QONLINE RESOURCE (EBOOK)\\E", universe), 5);
 	}
 }

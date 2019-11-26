@@ -958,7 +958,7 @@ public class RandomTests {
 	@Test
 	public void basicText() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final int iterations = 1000;
+		final int iterations = 10000;
 		int locked = -1;
 
 		for (int i = 0; i < iterations; i++) {
@@ -979,10 +979,12 @@ public class RandomTests {
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT/4);
 		Assert.assertEquals(result.getSampleCount(), 5 * iterations + 1);
+		Assert.assertEquals(result.getMatchCount(), 4 * iterations);
 		Assert.assertEquals(result.getNullCount(), iterations);
 		Assert.assertEquals(result.getCardinality(), 5);
-		Assert.assertEquals(result.getRegExp(), "(?i)(FICTIONAL|PRIMARY|SECONDARY|SECONDORY|TERTIARY)");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getRegExp(), "(?i)(FICTIONAL|PRIMARY|SECONDARY|TERTIARY)");
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getMatchCount() + 1));
+		Assert.assertEquals(result.getOutlierCount(), 1);
 	}
 
 	@Test

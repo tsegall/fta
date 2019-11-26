@@ -1629,7 +1629,7 @@ public class TextAnalyzer {
 		if (maxOutlierString == null || maxOutlierString.compareTo(cleaned) < 0)
 			maxOutlierString = cleaned;
 
-		String smashed = RegExpGenerator.smash(input);
+		String smashed = Smashed.smash(input);
 		Long seen = outliersSmashed.get(smashed);
 		if (seen == null) {
 			if (outliersSmashed.size() < maxOutliers)
@@ -2519,9 +2519,7 @@ public class TextAnalyzer {
 		}
 
 		if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier == null) {
-
 			// We would really like to say something better than it is a String!
-
 			boolean updated = false;
 			long interestingSamples = sampleCount - (nullCount + blankCount);
 
@@ -2531,6 +2529,7 @@ public class TextAnalyzer {
 				RegExpGenerator gen = new RegExpGenerator(true, MAX_ENUM_SIZE, locale);
 				boolean fail = false;
 				int excessiveDigits = 0;
+
 				for (String elt : cardinalityUpper.keySet()) {
 					int length = elt.length();
 					// Give up if any one of the strings is too long
@@ -2563,6 +2562,24 @@ public class TextAnalyzer {
 
 				// If we did not find any reason to reject, output it as an enum
 				if (excessiveDigits != cardinalityUpper.size() && !fail) {
+					// If we have a significant # of samples and a small number of non-numerics with distinct values attempt to remove outliers
+					if (interestingSamples > 1000 && cardinalityUpper.size() < 20 && !gen.isDigit()) {
+						Map<String, Long> sorted = Utils.sortByValue(cardinalityUpper);
+						for (Map.Entry<String, Long> elt : sorted.entrySet()) {
+							if (elt.getValue() < 3 && elt.getKey().length() > 3 && Utils.distanceLevenshtein(elt.getKey(), cardinalityUpper.keySet()) <= 1) {
+								cardinalityUpper.remove(elt.getKey());
+								outliers.put(elt.getKey(), elt.getValue());
+								matchCount -= elt.getValue();
+								confidence = (double) matchCount / realSamples;
+							}
+						}
+
+						// Regenerate the enum without the outliers removed
+						gen = new RegExpGenerator(true, MAX_ENUM_SIZE, locale);
+						for (String elt : cardinalityUpper.keySet())
+							gen.train(elt);
+					}
+
 					matchPatternInfo = new PatternInfo(null, gen.getResult(), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 							maxTrimmedLength, null, null);
 					updated = true;
@@ -2601,7 +2618,7 @@ public class TextAnalyzer {
 			if (!updated && shapes.size() > 1) {
 				Map.Entry<String, Long> bestShape = shapes.getBest();
 
-				String regExp = RegExpGenerator.smashedAsRegExp(bestShape.getKey().trim());
+				String regExp = Smashed.smashedAsRegExp(bestShape.getKey().trim());
 				for (LogicalTypeRegExp logical : regExpTypes) {
 					if (PatternInfo.Type.STRING.equals(logical.getBaseType()) &&
 							logical.isMatch(regExp) &&

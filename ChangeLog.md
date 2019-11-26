@@ -138,3 +138,6 @@
 
 ### 2.3.35 ###
  - Fix StructureSignature generation and associated tests
+
+### 2.3.36 ###
+ - Improve outlier detection on enums

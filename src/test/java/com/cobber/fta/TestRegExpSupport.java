@@ -24,37 +24,37 @@ import org.testng.annotations.Test;
 public class TestRegExpSupport {
 	@Test
 	public void phone() throws IOException {
-		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("+9 999 999 9999")
+		Assert.assertEquals(Smashed.smashedAsRegExp("+9 999 999 9999")
 				, "\\+\\d \\d{3} \\d{3} \\d{4}");
 	}
 
 	@Test
 	public void simple() throws IOException {
-		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("xxx"),
+		Assert.assertEquals(Smashed.smashedAsRegExp("xxx"),
 				"\\p{IsAlphabetic}{3}");
 	}
 
 	@Test
 	public void mixedAlpha() throws IOException {
-		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("xxXX"),
+		Assert.assertEquals(Smashed.smashedAsRegExp("xxXX"),
 				"\\p{IsAlphabetic}{4}");
 	}
 
 	@Test
 	public void mac() throws IOException {
-		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("HH:HH:HH:HH:HH:HH"),
+		Assert.assertEquals(Smashed.smashedAsRegExp("HH:HH:HH:HH:HH:HH"),
 				"\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
 	}
 
 	@Test
 	public void mix() throws IOException {
-		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("99XXXX:99X"),
+		Assert.assertEquals(Smashed.smashedAsRegExp("99XXXX:99X"),
 				"\\d{2}\\p{IsAlphabetic}{4}:\\d{2}\\p{IsAlphabetic}");
 	}
 
 	@Test
 	public void onlyAlpha() throws IOException {
-		Assert.assertEquals(RegExpGenerator.smashedAsRegExp("XXXXX"), "\\p{IsAlphabetic}{5}");
+		Assert.assertEquals(Smashed.smashedAsRegExp("XXXXX"), "\\p{IsAlphabetic}{5}");
 	}
 
 	@Test
