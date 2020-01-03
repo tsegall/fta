@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Tim Segall
+ * Copyright 2017-2020 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ public class LogicalTypeRegExp extends LogicalType {
 	private Long maxLong;
 	private Double minDouble;
 	private Double maxDouble;
+	private String minString;
+	private String maxString;
 
 	public LogicalTypeRegExp(PluginDefinition plugin) {
 		super(plugin);
@@ -40,8 +42,16 @@ public class LogicalTypeRegExp extends LogicalType {
 
 			case DOUBLE:
 				minDouble = defn.minimum != null ? Double.parseDouble(defn.minimum) : null;
-				maxDouble = defn.minimum != null ? Double.parseDouble(defn.maximum) : null;
+				maxDouble = defn.maximum != null ? Double.parseDouble(defn.maximum) : null;
 				break;
+
+			case STRING:
+				minString = defn.minimum;
+				maxString = defn.minimum;
+				break;
+
+			default:
+				throw new InternalErrorException("Internal error: LogicalTypeRegExp baseType must be LONG or DOUBLE, not " + defn.baseType);
 			}
 	}
 
@@ -100,6 +110,16 @@ public class LogicalTypeRegExp extends LogicalType {
 				if (maxDouble != null && inputDouble > maxDouble)
 					return false;
 				break;
+
+			case STRING:
+				if (minString != null && input.compareTo(minString) < 0)
+					return false;
+				if (maxString != null && input.compareTo(maxString) > 0)
+					return false;
+				break;
+
+			default:
+				throw new InternalErrorException("Internal error: LogicalTypeRegExp baseType must be LONG or DOUBLE, not " + defn.baseType);
 			}
 
 		if (defn.blackList != null && defn.blackList.contains(input))
@@ -136,10 +156,22 @@ public class LogicalTypeRegExp extends LogicalType {
 				if ((minLong != null && Long.parseLong(stringFacts.minValue) < minLong) ||
 						(maxLong != null && Long.parseLong(stringFacts.maxValue) > maxLong))
 					return defn.regExpReturned;
+				break;
+
 			case DOUBLE:
 				if ((minDouble != null && Double.parseDouble(stringFacts.minValue) < minDouble) ||
 						(maxDouble != null && Double.parseDouble(stringFacts.maxValue) > maxDouble))
 					return defn.regExpReturned;
+				break;
+
+			case STRING:
+				if ((minString != null && stringFacts.minValue.compareTo(minString) < 0) ||
+						(maxString != null && stringFacts.maxValue.compareTo(maxString) > 0))
+					return defn.regExpReturned;
+				break;
+
+			default:
+				throw new InternalErrorException("Internal error: LogicalTypeRegExp baseType must be LONG or DOUBLE, not " + defn.baseType);
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Tim Segall
+ * Copyright 2017-2020 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ public class TextAnalyzer {
 	/** We are prepared to recognize any set of this size as an enum (and give a suitable regular expression). */
 	private final int MAX_ENUM_SIZE = 40;
 
-	private static final int REFLECTION_SAMPLES = 30;
+	protected static final int REFLECTION_SAMPLES = 30;
 	private int reflectionSamples = REFLECTION_SAMPLES;
 
 	private String dataStreamName;
@@ -2289,7 +2289,7 @@ public class TextAnalyzer {
 			initialize();
 
 		// If we have not already determined the type, now we need to
-		if (matchPatternInfo == null || matchPatternInfo.type == null)
+		if (matchPatternInfo == null)
 			determineType();
 
 		// Compute our confidence
@@ -2382,6 +2382,7 @@ public class TextAnalyzer {
 							logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+						break;
 					}
 				}
 
@@ -2586,14 +2587,7 @@ public class TextAnalyzer {
 				}
 			}
 
-			/*
-			if (!updated && cardinality.size() == 1 && interestingSamples > reflectionSamples) {
-				matchPatternInfo = new PatternInfo(null, RegExpGenerator.slosh(cardinality.keySet().iterator().next().trim()), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
-						maxTrimmedLength, null, null);
-				updated = true;
-			}
-			*/
-
+			// Flip to a Regular Expression based on Shape analysis if possible
 			if (!updated) {
 				String newRegExp = shapes.getRegExp(realSamples);
 				if (newRegExp != null) {
@@ -2643,11 +2637,7 @@ public class TextAnalyzer {
 
 			// Qualify random string with a min and max length
 			if (!updated && KnownPatterns.PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
-				String newPattern = null;
-				if (shapes.size() == 1 && cardinality.size() > 1)
-					newPattern = shapes.getRegExp(realSamples);
-				if (newPattern == null)
-					newPattern = KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minRawNonBlankLength, maxRawNonBlankLength, leadingWhiteSpace, trailingWhiteSpace, multiline);
+				String newPattern = KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minRawNonBlankLength, maxRawNonBlankLength, leadingWhiteSpace, trailingWhiteSpace, multiline);
 				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minRawLength,
 						maxRawLength, null, null);
 				updated = true;

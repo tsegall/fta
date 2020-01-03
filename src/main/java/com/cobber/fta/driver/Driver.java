@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Tim Segall
+ * Copyright 2017-2020 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,8 @@ class Driver {
 			else if ("--detectWindow".equals(args[idx]))
 				options.detectWindow = Integer.valueOf(args[++idx]);
 			else if ("--help".equals(args[idx])) {
-				logger.println("Usage: [--charset <charset>] [--col <n>] [--help] [--locale <LocaleIdentifier>] [--maxCardinality <n>] [--noAnalysis] [--noLogicalTypes] [--noStatistics] [--pretty] [--records <n>] [--resolutionMode <DayFirst|MonthFirst|Auto|None>] [--samples <n>] [--validate] [--verbose] [--xMaxCharPerColumn <n>] file ...");
+				logger.println("Usage: fta [OPTIONS] file ...");
+				logger.println("Valid OPTIONS are:");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
 				logger.println(" --help - Print this help");

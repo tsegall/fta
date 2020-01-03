@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Tim Segall
+ * Copyright 2017-2020 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1925,6 +1925,36 @@ public class DetermineDateTimeFormatTests {
 
 		final DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "H:mm:ss");
+
+		final String regExp = result.getRegExp();
+		Assert.assertEquals(regExp, "\\d{1,2}:\\d{2}:\\d{2}");
+		Assert.assertTrue(sample.trim().matches(regExp));
+
+		Assert.assertTrue(result.isValid("12:57:03"));
+		Assert.assertTrue(result.isValid("8:03:59"));
+		Assert.assertFalse(result.isValid("8:03:599"));
+		Assert.assertFalse(result.isValid("118:03:59"));
+		Assert.assertFalse(result.isValid("118:3:59"));
+		Assert.assertFalse(result.isValid("118:333:59"));
+
+		Assert.assertTrue(result.isValid8("12:57:03"));
+		Assert.assertTrue(result.isValid8("8:03:59"));
+		Assert.assertFalse(result.isValid8("8:03:599"));
+		Assert.assertFalse(result.isValid8("118:03:59"));
+		Assert.assertFalse(result.isValid8("118:3:59"));
+		Assert.assertFalse(result.isValid8("118:333:59"));
+	}
+
+	@Test
+	public void intuitKKMMSSTrain() {
+		final DateTimeParser det = new DateTimeParser();
+		final String sample = "24:57:03";
+		det.train(sample);
+		det.train("13:45:00");
+		det.train("8:03:59");
+
+		final DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "k:mm:ss", result.getFormatString());
 
 		final String regExp = result.getRegExp();
 		Assert.assertEquals(regExp, "\\d{1,2}:\\d{2}:\\d{2}");

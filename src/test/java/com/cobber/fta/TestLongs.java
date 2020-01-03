@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Tim Segall
+ * Copyright 2017-2020 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -823,6 +823,25 @@ public class TestLongs {
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
+
+	@Test
+    public void longToSigned() throws IOException {
+            final TextAnalyzer analysis = new TextAnalyzer("LongToSigned");
+            final int SAMPLE_SIZE = 100;
+
+            for (int i = 0; i < 100; i++)
+                    analysis.train(String.valueOf(i));
+            analysis.train("-1");
+
+            final TextAnalysisResult result = analysis.getResult();
+
+            Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+            Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+            Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE + 1);
+            Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE + 1);
+            Assert.assertEquals(result.getNullCount(), 0);
+            Assert.assertEquals(result.getLeadingZeroCount(), 0);
+    }
 
 	@Test
 	public void noStatistics() throws IOException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Tim Segall
+ * Copyright 2017-2020 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,104 @@
 package com.cobber.fta;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class TestRegExpPlugins {
+	@Test
+	public void testRegExpLogicalType_MAC() throws IOException {
+		String[] samples = new String[] {
+				"00:0a:95:9d:68:16", "00:0a:94:77:68:16", "00:0a:95:9d:68:16", "00:0a:90:9d:68:16",
+				"00:0a:95:9d:68:16", "00:0a:93:8a:68:16", "00:0a:95:9d:60:16", "00:0e:95:9d:68:16",
+				"00:0a:95:9d:68:16", "00:0a:95:9d:68:16", "00:0a:95:9d:61:16", "00:0e:92:9d:68:16",
+				"00:0b:95:9d:68:16", "00:0a:91:9b:68:16", "00:0a:95:9d:62:16", "00:0e:99:9d:68:16",
+				"00:0c:95:9d:68:16", "00:0a:95:9e:68:16", "00:0a:95:9d:64:16", "00:0e:91:9d:68:16",
+				"00:0d:95:9d:68:16", "00:0a:90:9d:68:16", "00:0a:95:9d:66:16", "00:0e:94:9d:68:16"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("MAC");
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getRegExp(), "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
+		Assert.assertEquals(result.getTypeQualifier(), "MACADDRESS");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	//@Test
+	public void testRegExpLogicalType_MAC_plus_outlier() throws IOException {
+		final int SAMPLE_COUNT = 100;
+		Set<String> samples = new HashSet<String>();
+		final TextAnalyzer analysis = new TextAnalyzer("MAC");
+		final Random random = new Random(401);
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			String sample = String.format("00:%02x:%02x:%02x:%02x:%02x",
+					(byte)random.nextInt(256),  (byte)random.nextInt(256), (byte)random.nextInt(256),
+					(byte)random.nextInt(256), (byte)random.nextInt(256));
+			samples.add(sample);
+			analysis.train(sample);
+		}
+		samples.add("Unknown");
+		analysis.train("Unknown");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
+		Assert.assertEquals(result.getRegExp(), "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
+		Assert.assertEquals(result.getTypeQualifier(), "MACADDRESS");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void testRegExpLogicalType_Month() throws IOException {
+		String[] samples = new String[] {
+				"1", "3", "4", "7", "11", "4", "5", "6", "7", "12", "2",
+				"3", "5", "6", "10", "11", "10", "3", "5", "2", "1", "12",
+				"10", "9", "8", "4", "7" ,"6"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("Month");
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getRegExp(), "\\d|0\\d|1[012]");
+		Assert.assertEquals(result.getTypeQualifier(), "MONTH.DIGITS");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
 	@Test
 	public void testLatitudeSigned() throws IOException {
 		String[] samples = new String[] {

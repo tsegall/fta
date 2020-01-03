@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Tim Segall
+ * Copyright 2017-2020 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,13 @@ import org.testng.annotations.Test;
 import com.cobber.fta.plugins.LogicalTypeUSZip5;
 
 public class RandomTests {
+	@Test
+	public void getReflectionSampleSize() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		Assert.assertEquals(analysis.getReflectionSampleSize(), TextAnalyzer.REFLECTION_SAMPLES);
+	}
+
 	@Test
 	public void inadequateData() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();

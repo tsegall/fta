@@ -141,3 +141,12 @@
 
 ### 2.3.36 ###
  - Improve outlier detection on enums
+
+### 2.3.37 ###
+ - Add support for min/max on String RegExp types
+ - Add some missing TimeZones (short display names)
+ - Support merging H and k if we detect a 24 time
+ - Remove a few warnings
+ - Improve test coverage
+ - Fix Usage message
+ - Update libraries

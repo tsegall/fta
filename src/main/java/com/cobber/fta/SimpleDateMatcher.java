@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Tim Segall
+ * Copyright 2017-2020 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -536,6 +536,7 @@ public class SimpleDateMatcher {
 				eating.delete(0, 2);
 				break;
 
+			case CLOCK24_1_OR_2:
 			case DIGITS_1_OR_2:
 			case HOURS12_1_OR_2:
 			case HOURS24_1_OR_2:
@@ -547,11 +548,12 @@ public class SimpleDateMatcher {
 					eating.delete(0, 2);
 				break;
 
+			case CLOCK24_2:
+			case DIGITS_2:
 			case HOURS12_2:
 			case HOURS24_2:
 			case MINS_2:
 			case SECS_2:
-			case DIGITS_2:
 				if (eating.length() < 2)
 					return false;
 				eating.delete(0, 2);

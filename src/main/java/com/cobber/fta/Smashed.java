@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017-2020 Tim Segall
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cobber.fta;
 
 public class Smashed {
@@ -11,7 +26,8 @@ public class Smashed {
 	 * Smashed strings follow the following rules:
 	 *  - Strings of length greater than 30 are replaced with .+
 	 *  - any digit is replaced with '9'
-	 *  - any alpha is replaced with 'X'
+	 *  - any low alpha (a-f, A-F) is replaced with 'x'
+	 *  - any high alpha (g-z, G-Z) is replaced with 'X'
 	 *  - any % is sloshed (i.e. replaced with %%)
 	 *
 	 * @param input The input String to be smashed.

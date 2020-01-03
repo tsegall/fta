@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Tim Segall
+ * Copyright 2017-2020 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,28 +76,28 @@ public class DateTimeParser {
 		Collections.addAll(timeZones, TimeZone.getAvailableIDs());
 		// Add the non-real Time Zones (that people use)
 		timeZones.addAll(Arrays.asList(new String[] {
-				"ACDT", "ACST", "ACT", "ACWST", "ADS", "ADST", "ADT", "AEDT", "AEST", "AET", "AFT", "AKDT",
-				"AKST", "ALMT", "AMDT", "AMST", "AMT", "ANAST", "ANAT", "AQTT", "ART", "AST", "AT", "AWDT",
-				"AWST", "AZODT", "AZOST", "AZOT", "AZST", "AZT", "BDST", "BDT", "BNT", "BOT", "BRST", "BST",
-				"BT", "BTT", "CAST", "CAT", "CCT", "CDST", "CDT", "CEDT", "CEST", "CET", "CHADT", "CHAST",
-				"CHODST", "CHODT", "CHOST", "CHOT", "CHUT", "CIDST", "CIST", "CIT", "CKT", "CLDT", "CLST", "CLT",
-				"COT", "CST", "CT", "CVT", "CXT", "ChST", "DAVT", "DDUT", "EADT", "EASST", "EAST", "EAT",
-				"ECST", "ECT", "EDST", "EDT", "EEDT", "EEST", "EET", "EFATE", "EGST", "EGT", "EST", "ET",
-				"FET", "FJDT", "FJST", "FJT", "FKDT", "FKST", "FKT", "FNT", "GALT", "GAMT", "GET", "GFT",
-				"GILT", "GMT", "GST", "GT", "GYT", "HAA", "HAC", "HADT", "HAE", "HAP", "HAR", "HAST",
-				"HAT", "HDT", "HKT", "HLV", "HNA", "HNC", "HNE", "HNP", "HNR", "HNT", "HOVDST", "HOVDT",
-				"HOVST", "HOVT", "HST", "ICT", "IDT", "IOT", "IRDT", "IRKST", "IRKT", "IRST", "IST", "IT",
-				"JST", "KGT", "KIT", "KOST", "KRAST", "KRAT", "KST", "KT", "KUYT", "LHDT", "LHST", "LINT",
-				"MAGST", "MAGT", "MART", "MAWT", "MCK", "MDST", "MDT", "MESZ", "MEZ", "MHT", "MMT", "MSD",
-				"MSK", "MST", "MT", "MUT", "MVT", "MYT", "NACDT", "NACST", "NAEDT", "NAEST", "NAMDT", "NAMST",
-				"NAPDT", "NAPST", "NCT", "NDT", "NFT", "NOVST", "NOVT", "NPT", "NRT", "NST", "NUT", "NZDT",
-				"NZST", "OESZ", "OEZ", "OMSST", "OMST", "ORAT", "PDST", "PDT", "PET", "PETST", "PETT", "PGT",
-				"PHOT", "PHT", "PKT", "PMDT", "PMST", "PONT", "PST", "PT", "PWT", "PYST", "PYT", "Pacific",
-				"QYZT", "RET", "ROTT", "SAKT", "SAMST", "SAMT", "SAST", "SBT", "SCT", "SGT", "SRET", "SRT",
-				"SST", "ST", "SYOT", "TAHT", "TFT", "TJT", "TKT", "TLT", "TMT", "TOST", "TOT", "TRT",
-				"TVT", "ULAST", "ULAT", "UYST", "UYT", "UZT", "VET", "VLAST", "VLAT", "VOST", "VUT", "WAKT",
-				"WARST", "WAST", "WAT", "WDT", "WEDT", "WEST", "WESZ", "WET", "WEZ", "WFT", "WGST", "WGT",
-				"WIB", "WIT", "WITA", "WST", "WT", "YAKST", "YAKT", "YAPT", "YEKST", "YEKT" }));
+				"ACDT", "ACST", "ACT", "ACWDT", "ACWST", "ADS", "ADST", "ADT", "AEDT", "AEST", "AET", "AFST", "AFT", "AKDT", "AKST", "ALMST",
+				"ALMT", "AMDT", "AMST", "AMT", "ANAST", "ANAT", "AQTST", "AQTT", "ARST", "ART", "AST", "AT", "AWDT", "AWST", "AZODT", "AZOST",
+				"AZOT", "AZST", "AZT", "BDST", "BDT", "BNST", "BNT", "BOST", "BOT", "BRST", "BST", "BT", "BTST", "BTT", "CAST", "CAT", "CCST",
+				"CCT", "CDST", "CDT", "CEDT", "CEST", "CET", "CHADT", "CHAST", "CHODST", "CHODT", "CHOST", "CHOT", "CHUST", "CHUT", "CIDST",
+				"CIST", "CIT", "CKHST", "CKT", "CLDT", "CLST", "CLT", "COST", "COT", "CST", "CT", "CVST", "CVT", "CXST", "CXT", "ChDT", "ChST",
+				"DAVST", "DAVT", "DDUST", "DDUT", "EADT", "EASST", "EAST", "EAT", "ECST", "ECT", "EDST", "EDT", "EEDT", "EEST", "EET", "EFATE",
+				"EGST", "EGT", "EIST", "EST", "ET", "FET", "FJDT", "FJST", "FJT", "FKDT", "FKST", "FKT", "FNST", "FNT", "GALST", "GALT", "GAMST",
+				"GAMT", "GDT", "GEST", "GET", "GFST", "GFT", "GHST", "GILST", "GILT", "GMT", "GST", "GT", "GYST", "GYT", "HAA", "HAC", "HADT",
+				"HAE", "HAP", "HAR", "HAST", "HAT", "HDT", "HKST", "HKT", "HLV", "HNA", "HNC", "HNE", "HNP", "HNR", "HNT", "HOVDST", "HOVDT",
+				"HOVST", "HOVT", "HST", "ICST", "ICT", "IDT", "IOST", "IOT", "IRDT", "IRKST", "IRKT", "IRST", "IST", "IT", "JDT", "JST", "KDT",
+				"KGST", "KGT", "KIT", "KOSST", "KOST", "KRAST", "KRAT", "KST", "KT", "KUYT", "LHDT", "LHST", "LINST", "LINT", "MAGST", "MAGT",
+				"MARST", "MART", "MAWST", "MAWT", "MCK", "MDST", "MDT", "MEST", "MESZ", "MEZ", "MHST", "MHT", "MIDT", "MMST", "MMT", "MSD", "MSK",
+				"MST", "MT", "MUST", "MUT", "MVST", "MVT", "MYST", "MYT", "NACDT", "NACST", "NAEDT", "NAEST", "NAMDT", "NAMST", "NAPDT", "NAPST",
+				"NCST", "NCT", "NDT", "NFST", "NFT", "NOVST", "NOVT", "NPST", "NPT", "NRST", "NRT", "NST", "NUST", "NUT", "NZDT", "NZST", "OESZ",
+				"OEZ", "OMSST", "OMST", "ORAST", "ORAT", "PDST", "PDT", "PEST", "PET", "PETST", "PETT", "PGST", "PGT", "PHOST", "PHOT", "PHST",
+				"PHT", "PKST", "PKT", "PMDT", "PMST", "PONST", "PONT", "PST", "PT", "PWST", "PWT", "PYST", "PYT", "Pacific", "QYZST", "QYZT",
+				"REST", "RET", "ROTST", "ROTT", "SAKST", "SAKT", "SAMST", "SAMT", "SAST", "SBST", "SBT", "SCST", "SCT", "SDT", "SGST", "SGT",
+				"SREDT", "SRET", "SRST", "SRT", "SST", "ST", "SYOST", "SYOT", "TAHST", "TAHT", "TFST", "TFT", "TJST", "TJT", "TKST", "TKT", "TLST",
+				"TLT", "TMST", "TMT", "TOST", "TOT", "TRT", "TVST", "TVT", "ULAST", "ULAT", "UTC", "UYST", "UYT", "UZST", "UZT", "VEST", "VET",
+				"VLAST", "VLAT", "VOSST", "VOST", "VUST", "VUT", "WAKST", "WAKT", "WARST", "WAST", "WAT", "WDT", "WEDT", "WEST", "WESZ", "WET",
+				"WEZ", "WFST", "WFT", "WGST", "WGT", "WIB", "WIST", "WIT", "WITA", "WSDT", "WST", "WT", "XJDT", "YAKST", "YAKT", "YAPT", "YEKST",
+				"YEKT" }));
 	}
 
 	private final Map<String, Integer> results = new HashMap<String, Integer>();
@@ -275,6 +275,15 @@ public class DateTimeParser {
 					if (answerResult.amPmIndicator == null)
 						answerResult.amPmIndicator = result.amPmIndicator;
 
+					// If we were H (0-23) and we have a k (1-24) then assume k
+					char was = answerBuffer.charAt(answerResult.timeFieldOffsets[0]);
+					char is = result.getFormatString().charAt(result.timeFieldOffsets[0]);
+					if (was == 'H' && is == 'k') {
+						final int start = answerResult.timeFieldOffsets[0];
+						final int len = answerResult.timeFieldLengths[0];
+						answerBuffer.replace(start, start + len, longString('k').substring(0, len));
+					}
+
 					if (result.timeFieldLengths != null) {
 						// Adjust the Hours, Minutes, or Seconds fields if the length is shorter (but not the fractions of Seconds)
 						for (int i = 0; i < result.timeFieldLengths.length - 1; i++) {
@@ -407,6 +416,8 @@ public class DateTimeParser {
 				return  retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'M');
 			case MonthFirst:
 				return retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
+			default:
+				throw new InternalErrorException("Internal error: unexpected resolutionMode: " + resolutionMode);
 			}
 		else
 			switch (resolutionMode) {
@@ -416,9 +427,9 @@ public class DateTimeParser {
 				return retDigits(dateDigits[0], 'd') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'y');
 			case MonthFirst:
 				return retDigits(dateDigits[0], 'M') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'y');
+			default:
+				throw new InternalErrorException("Internal error: unexpected resolutionMode: " + resolutionMode);
 			}
-
-		return null;
 	}
 
 	/**
@@ -483,8 +494,10 @@ public class DateTimeParser {
 	}
 
 	/**
-	 * @param matcher The previously computer matcher which provides both the compressed form of the input as well as a component count
-	 * @return
+	 * This is the first simple pass where we test against a set of predefined simple options.
+	 *
+	 * @param matcher The previously computed matcher which provides both the compressed form of the input as well as a component count
+	 * @return a DateTimeFormatter pattern.
 	 */
 	String passOne(SimpleDateMatcher matcher) {
 		if (!matcher.isKnown())
@@ -831,9 +844,12 @@ public class DateTimeParser {
 				hours = hourLength == 1 ? "h" : "hh";
 			}
 			else {
-				if (timeValue[0] > 23)
+				if (timeValue[0] > 24)
 					return null;
-				hours = hourLength == 1 ? "H" : "HH";
+				if (timeValue[0] == 24)
+					hours = hourLength == 1 ? "k" : "kk";
+				else
+					hours = hourLength == 1 ? "H" : "HH";
 			}
 			timeAnswer = hours + ":mm";
 			if (timeComponent >= 2)
