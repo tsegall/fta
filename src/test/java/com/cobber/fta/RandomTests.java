@@ -993,6 +993,35 @@ public class RandomTests {
 	}
 
 	@Test
+	public void belowDetectWindow() throws IOException {
+		final String BAD = "hello";
+		String[] samples = new String[] {
+				"1234567", "403901",  "6200243690", "6200243691", "6200243692", "6200243693", "6200243694", "5", "8", "9",
+				BAD, "020035031", "6200243635", "6200243635", "6200206290", "6200206290",
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,10}");
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		Assert.assertEquals(result.getShapeCount(), 6);
+
+		for (int i = 0; i < samples.length; i++) {
+			if (!BAD.contentEquals(samples[i]))
+				Assert.assertTrue(samples[i].matches(result.getRegExp()), samples[i]);
+		}
+	}
+
+	@Test
 	public void basicText() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int iterations = 10000;

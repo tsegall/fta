@@ -738,37 +738,6 @@ public class TestStrings {
 		}
 	}
 
-	@Test
-	public void dangerousString() throws IOException {
-		final int SAMPLE_COUNT = 100;
-		Set<String> samples = new HashSet<String>();
-		final TextAnalyzer analysis = new TextAnalyzer("Simple");
-		analysis.setDefaultLogicalTypes(false);
-
-		final Random random = new Random(401);
-		for (int i = 0; i < SAMPLE_COUNT; i++) {
-			String sample = String.format("%04d.0e+%d",
-					random.nextInt(10000), random.nextInt(10));
-			samples.add(sample);
-			analysis.train(sample);
-		}
-		analysis.train("1010e:");
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		Assert.assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
-		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{4}");
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
-
-		for (String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()));
-		}
-	}
-
 	public void _stringPerf(boolean statisticsOn) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!statisticsOn) {

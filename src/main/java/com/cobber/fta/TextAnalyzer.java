@@ -1116,7 +1116,7 @@ public class TextAnalyzer {
 		final int length = trimmed.length();
 
 		if (length == 0) {
-			blankCount++;
+			blankCount += count;
 			trackLengthAndShape(rawInput, count);
 			return;
 		}

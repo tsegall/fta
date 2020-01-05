@@ -21,7 +21,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "2.3.38"
+version = "2.3.39"
 
 repositories {
   mavenCentral()
@@ -104,24 +104,24 @@ uploadArchives {
 
 dependencies {
   // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
-  compile group: 'com.univocity', name: 'univocity-parsers', version: '2.8.4'
-  // https://mvnrepository.com/artifact/org.testng/testng
-  testCompile group: 'org.testng', name: 'testng', version: '7.1.0'
+  implementation group: 'com.univocity', name: 'univocity-parsers', version: '2.8.4'
   // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
-  compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+  implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
   // https://mvnrepository.com/artifact/commons-validator/commons-validator
-  compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
+  implementation group: 'commons-validator', name: 'commons-validator', version: '1.6'
   // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.1'
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.2'
   // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-  compile group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.11.1'
+  implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.11.1'
   // https://mvnrepository.com/artifact/org.apache.commons/commons-text
-  compile group: 'org.apache.commons', name: 'commons-text', version: '1.8'
+  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
+  // https://mvnrepository.com/artifact/org.testng/testng
+  testImplementation group: 'org.testng', name: 'testng', version: '7.1.0'
 }
 
 distributions {
     main {
-        baseName = 'fta'
+        distributionBaseName = 'fta'
     }
 }
 

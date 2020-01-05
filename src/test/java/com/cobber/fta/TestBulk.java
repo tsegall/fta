@@ -32,14 +32,16 @@ public class TestBulk {
 		HashMap<String, Long> basic = new HashMap<>();
 		basic.put("Male", 2000000L);
 		basic.put("Female", 1000000L);
+		basic.put("", 1000000L);
 		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 3000000);
+		Assert.assertEquals(result.getSampleCount(), 4000000);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 1000000L);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE)");
 		Assert.assertEquals(result.getMatchCount(), 3000000);
 		Assert.assertEquals(result.getConfidence(), 1.0);

@@ -154,3 +154,7 @@
 ### 2.3.38 ###
  - Update Copyright to 2020
  - Improve test coverage
+
+### 2.3.39 ###
+ - Improve test coverage (and fix bug in trainBulk as a consequence :-) )
+ - Fixup build.gradle warnings to prepare for gradle 7.0

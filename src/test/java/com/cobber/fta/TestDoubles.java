@@ -510,6 +510,37 @@ public class TestDoubles {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
+	@Test
+	public void dangerousDouble() throws IOException {
+		final int SAMPLE_COUNT = 100;
+		Set<String> samples = new HashSet<String>();
+		final TextAnalyzer analysis = new TextAnalyzer("Simple");
+		analysis.setDefaultLogicalTypes(false);
+
+		analysis.train("1010e:");
+		final Random random = new Random(401);
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			String sample = String.format("%04d.0e+%d",
+					random.nextInt(10000), random.nextInt(10));
+			samples.add(sample);
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
+		}
+	}
+
 	// BUG - In general, even if the locale suggests otherwise we should still cope with 1234.56 as a valid double
 	//@Test
 	public void manyConstantLengthDoublesI18N_2() throws IOException {
