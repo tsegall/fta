@@ -37,6 +37,36 @@ public class RandomTests {
 	}
 
 	@Test
+	public void getDefaultLogicalTypesDefault() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		Assert.assertTrue(analysis.getDefaultLogicalTypes());
+	}
+
+	@Test
+	public void setDefaultLogicalTypesTooLate() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		analysis.train("Hello, World");
+
+		try {
+			analysis.setDefaultLogicalTypes(false);
+		}
+		catch (IllegalArgumentException e) {
+			Assert.assertEquals(e.getMessage(), "Cannot adjust Logical Type detection once training has started");
+			return;
+		}
+		Assert.fail("Exception should have been thrown");
+	}
+
+	@Test
+	public void setDefaultLogicalTypes() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setDefaultLogicalTypes(false);
+		Assert.assertFalse(analysis.getDefaultLogicalTypes());
+	}
+
+	@Test
 	public void inadequateData() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "47|89|90|91".split("\\|");

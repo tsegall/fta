@@ -150,3 +150,7 @@
  - Improve test coverage
  - Fix Usage message
  - Update libraries
+
+### 2.3.38 ###
+ - Update Copyright to 2020
+ - Improve test coverage

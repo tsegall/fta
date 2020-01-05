@@ -55,27 +55,55 @@ public class TestRegExpPlugins {
 		}
 	}
 
-	//@Test
-	public void testRegExpLogicalType_MAC_plus_outlier() throws IOException {
+	@Test
+	public void testRegExpLogicalType_SSN_plus_outlier() throws IOException {
 		final int SAMPLE_COUNT = 100;
 		Set<String> samples = new HashSet<String>();
-		final TextAnalyzer analysis = new TextAnalyzer("MAC");
+		final TextAnalyzer analysis = new TextAnalyzer("SSN");
+
+		analysis.train("Unknown");
+
 		final Random random = new Random(401);
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
-			String sample = String.format("00:%02x:%02x:%02x:%02x:%02x",
-					(byte)random.nextInt(256),  (byte)random.nextInt(256), (byte)random.nextInt(256),
-					(byte)random.nextInt(256), (byte)random.nextInt(256));
+			String sample = String.format("%03d-%02d-%04d",
+					random.nextInt(1000),  random.nextInt(100), random.nextInt(10000));
 			samples.add(sample);
 			analysis.train(sample);
 		}
-		samples.add("Unknown");
-		analysis.train("Unknown");
-
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
-		Assert.assertEquals(result.getRegExp(), "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
-		Assert.assertEquals(result.getTypeQualifier(), "MACADDRESS");
+		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}", result.getRegExp());
+		Assert.assertEquals(result.getTypeQualifier(), "SSN");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void testRegExpLogicalType_SSN_noPlugin() throws IOException {
+		final int SAMPLE_COUNT = 100;
+		Set<String> samples = new HashSet<String>();
+		final TextAnalyzer analysis = new TextAnalyzer("SSN");
+		analysis.setDefaultLogicalTypes(false);
+
+		final Random random = new Random(401);
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			String sample = String.format("%03d-%02d-%04d",
+					random.nextInt(1000),  random.nextInt(100), random.nextInt(10000));
+			samples.add(sample);
+			analysis.train(sample);
+		}
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_COUNT);
+		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}", result.getRegExp());
+		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);

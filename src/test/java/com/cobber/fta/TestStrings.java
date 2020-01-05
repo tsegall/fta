@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Tim Segall
+ * Copyright 2017-2020 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ package com.cobber.fta;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.testng.Assert;
@@ -698,6 +700,72 @@ public class TestStrings {
 		for (int i = 0; i < inputs.length; i++) {
 			if (inputs[i].length() != 0)
 				Assert.assertTrue(inputs[i].matches(result.getRegExp()), result.getRegExp());
+		}
+	}
+
+	@Test
+	public void testAlphaNumeric() throws IOException {
+		final int SAMPLE_COUNT = 100;
+		Set<String> samples = new HashSet<String>();
+		final TextAnalyzer analysis = new TextAnalyzer("SSN");
+		analysis.setDefaultLogicalTypes(false);
+
+		final Random random = new Random(401);
+		for (int i = 0; i < SAMPLE_COUNT/2; i++) {
+			String sample = String.format("%c%02d%c",
+					'a' + random.nextInt(26), random.nextInt(100), 'a' + random.nextInt(26));
+			samples.add(sample);
+			analysis.train(sample);
+			sample = String.format("%02d%c%c",
+					random.nextInt(100), 'a' + random.nextInt(26), 'a' + random.nextInt(26));
+			samples.add(sample);
+			analysis.train(sample);
+		}
+
+		analysis.train("N/A");
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
+		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{4}");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void dangerousString() throws IOException {
+		final int SAMPLE_COUNT = 100;
+		Set<String> samples = new HashSet<String>();
+		final TextAnalyzer analysis = new TextAnalyzer("Simple");
+		analysis.setDefaultLogicalTypes(false);
+
+		final Random random = new Random(401);
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			String sample = String.format("%04d.0e+%d",
+					random.nextInt(10000), random.nextInt(10));
+			samples.add(sample);
+			analysis.train(sample);
+		}
+		analysis.train("1010e:");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
+		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{4}");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+
+		for (String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
