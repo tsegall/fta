@@ -780,8 +780,6 @@ public class DateTimeParser {
 				else {
 					if (ch == 'T') {
 						// ISO 8601
-						if (timeSeen)
-							return null;
 						if (!dateSeen || dateClosed || digits != 2 || dateSeparator != '-' || !fourDigitYear || !yearInDateFirst)
 							return null;
 						iso8601 = true;

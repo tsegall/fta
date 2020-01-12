@@ -2321,7 +2321,7 @@ public class TextAnalyzer {
 			confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
 
 			String newPattern;
-			if (logical != null && (newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers)) != null) {
+			if ((newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers)) != null) {
 				if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
 					backoutToPattern(realSamples, newPattern);
 					confidence = (double) matchCount / realSamples;

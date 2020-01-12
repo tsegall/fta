@@ -704,6 +704,38 @@ public class TestStrings {
 	}
 
 	@Test
+	public void testTrimmedLength() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TrimTest");
+		analysis.setCollectStatistics(false);
+		final String[] inputs = new String[] {
+				"abc", "abcd ", "abcde  ",
+				"abcdef   ", "abcdefg    ", "abcdefgh     ",
+				"mno", "mnop ", "mnopq  ",
+				"abcdef   ", "abcdefg    ", "abcdeifgh     ",
+				"rst", "rstu ", "tstuv  ",
+				"aaaaaaaaaa   ", "bbbbbbbbbbb    ", "ccccccccccccccccc     ",
+		};
+
+		for (String sample : inputs)
+			analysis.train(sample);
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3,17}[ 	]*");
+		Assert.assertEquals(result.getMinLength(), 3);
+		Assert.assertEquals(result.getMaxLength(), 22);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (String sample : inputs)
+			Assert.assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
+	}
+
+	@Test
 	public void testAlphaNumeric() throws IOException {
 		final int SAMPLE_COUNT = 100;
 		Set<String> samples = new HashSet<String>();

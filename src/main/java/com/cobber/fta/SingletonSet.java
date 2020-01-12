@@ -71,6 +71,8 @@ public class SingletonSet {
 					}
 				else if (contentType.equals("resource"))
 					reader = new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content));
+				else
+					throw new IllegalArgumentException("Internal error: contentType must be 'file' or 'resource'");
 
 				try (BufferedReader bufferedReader = new BufferedReader(reader)){
 					String line = null;

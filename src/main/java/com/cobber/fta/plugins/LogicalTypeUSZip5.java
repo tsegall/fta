@@ -97,8 +97,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 		String upperDataStreamName = dataStreamName.toUpperCase();
-		boolean zipName = dataStreamName != null &&
-				(upperDataStreamName.contains("ZIP") || upperDataStreamName.contains("POSTALCODE") || upperDataStreamName.contains("POSTCODE"));
+		boolean zipName = (upperDataStreamName.contains("ZIP") || upperDataStreamName.contains("POSTALCODE") || upperDataStreamName.contains("POSTCODE"));
 		return (cardinality.size() < 5 && !zipName) || (double)matchCount/realSamples < getThreshold()/100.0 ? getRegExp() : null;
 	}
 }

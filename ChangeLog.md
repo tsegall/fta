@@ -158,3 +158,7 @@
 ### 2.3.39 ###
  - Improve test coverage (and fix bug in trainBulk as a consequence :-) )
  - Fixup build.gradle warnings to prepare for gradle 7.0
+
+### 2.3.40 ###
+ - Address a set of findbugs issues
+ - Improve test coverage
