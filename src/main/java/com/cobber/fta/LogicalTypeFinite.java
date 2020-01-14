@@ -34,10 +34,6 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 		super(plugin);
 	}
 
-	public LogicalTypeFinite() {
-		super(null);
-	}
-
 	@Override
 	public Type getBaseType() {
 		return PatternInfo.Type.STRING;

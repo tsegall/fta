@@ -22,6 +22,7 @@ import java.util.Random;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFinite;
+import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.StringFacts;
 
 public class PluginColor extends LogicalTypeFinite {
@@ -36,6 +37,10 @@ public class PluginColor extends LogicalTypeFinite {
 
 	static {
 		members.addAll(Arrays.asList(colors));
+	}
+
+	public PluginColor(PluginDefinition plugin) {
+		super(plugin);
 	}
 
 	@Override

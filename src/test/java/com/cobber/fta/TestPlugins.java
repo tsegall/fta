@@ -695,7 +695,7 @@ public class TestPlugins {
 
 		analysis.train(null);
 		for (int i = 0; i < inputs.length; i++) {
-			if (i % 2 == 1)
+			if (Math.abs(i % 2) == 1)
 				analysis.train(inputs[i]);
 			else analysis.train(inputs[i].substring(inputs[i].indexOf("://") + 3));
 		}

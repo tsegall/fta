@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.Map;
@@ -442,20 +443,23 @@ public class TextAnalysisResult {
 	}
 
 	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
-	    final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
-	        new Comparator<Map.Entry<K,V>>() {
-	            @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
-	                int res = e2.getValue().compareTo(e1.getValue());
-	                if (e1.getKey().equals(e2.getKey())) {
-	                    return res;
-	                } else {
-	                    return res != 0 ? res : 1;
-	                }
-	            }
-	        }
-	    );
-	    sortedEntries.addAll(map.entrySet());
-	    return sortedEntries;
+		final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+				new Comparator<Map.Entry<K,V>>() {
+					@Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+						int res = e2.getValue().compareTo(e1.getValue());
+						if (e1.getKey().equals(e2.getKey())) {
+							return res;
+						} else {
+							return res != 0 ? res : 1;
+						}
+					}
+				}
+				);
+
+		for (Map.Entry<K, V> entry : map.entrySet())
+			sortedEntries.add(new AbstractMap.SimpleImmutableEntry<K, V>(entry.getKey(), entry.getValue()));
+
+		return sortedEntries;
 	}
 
 	/**
@@ -561,22 +565,30 @@ public class TextAnalysisResult {
 			analysis.put("typeQualifier", patternInfo.typeQualifier);
 		if (PatternInfo.Type.DOUBLE == patternInfo.type)
 			analysis.put("decimalSeparator", String.valueOf(decimalSeparator));
-		if (statisticsEnabled() && minValue != null)
-			analysis.put("min", minValue);
-		if (statisticsEnabled() && maxValue != null)
-			analysis.put("max", maxValue);
-			analysis.put("minLength", minLength);
-			analysis.put("maxLength", maxLength);
-		if (statisticsEnabled() && sum != null)
-			analysis.put("sum", sum);
-		if (statisticsEnabled() && topK != null) {
-			ArrayNode detail = analysis.putArray("topK");
-			outputArray(mapper, detail, topK);
+
+		if (statisticsEnabled()) {
+			if (minValue != null)
+				analysis.put("min", minValue);
+			if (maxValue != null)
+				analysis.put("max", maxValue);
 		}
-		if (statisticsEnabled() && bottomK != null) {
-			ArrayNode detail = analysis.putArray("bottomK");
-			outputArray(mapper, detail, bottomK);
+
+		analysis.put("minLength", minLength);
+		analysis.put("maxLength", maxLength);
+
+		if (statisticsEnabled()) {
+			if (sum != null)
+				analysis.put("sum", sum);
+			if (topK != null) {
+				ArrayNode detail = analysis.putArray("topK");
+				outputArray(mapper, detail, topK);
+			}
+			if (bottomK != null) {
+				ArrayNode detail = analysis.putArray("bottomK");
+				outputArray(mapper, detail, bottomK);
+			}
 		}
+
 		if (patternInfo.isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 

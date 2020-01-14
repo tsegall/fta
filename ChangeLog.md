@@ -162,3 +162,6 @@
 ### 2.3.40 ###
  - Address a set of findbugs issues
  - Improve test coverage
+
+### 2.3.41 ###
+ - Address remaining findbugs issues
