@@ -56,7 +56,7 @@ public class DateTimeParserResult {
 	private Locale locale;
 	private int hourLength = -1;
 
-	static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<String, DateTimeParserResult>();
+	static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<>();
 
 	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, Locale locale, final int timeElements,
 			final int[] timeFieldLengths, final int[] timeFieldOffsets, final int hourLength, final int dateElements, final int[] dateFieldLengths,
@@ -196,7 +196,7 @@ public class DateTimeParserResult {
 		Boolean timeFirst = null;
 		Character dateSeparator = null;
 		Character dateTimeSeparator = ' ';
-		Boolean fullyBound = true;
+		boolean fullyBound = true;
 		Boolean amPmIndicator = null;
 
 		final int formatLength = formatString.length();

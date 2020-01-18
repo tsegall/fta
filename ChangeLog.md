@@ -169,3 +169,6 @@
 ### 2.3.42 ###
  - Sonar Lint cleanup
  - Upgrade gradle & libraries
+
+### 2.3.42 ###
+ - More Sonar Lint cleanup

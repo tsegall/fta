@@ -34,7 +34,6 @@ import com.cobber.fta.StringFacts;
  */
 public class LogicalTypeEmail extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "EMAIL";
-//	public final static String EMAIL_REGEXP = "[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?";
 	public static final String REGEXP = "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}";
 	private LogicalTypeCode logicalFirst;
 	private LogicalTypeCode logicalLast;

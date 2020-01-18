@@ -18,12 +18,13 @@ package com.cobber.fta;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class KnownPatterns {
-	private final static String OPTIONAL_SIGN = "[+-]?";
+	private static final String OPTIONAL_SIGN = "[+-]?";
 
 	public enum ID {
 		ID_BOOLEAN_TRUE_FALSE,
@@ -82,7 +83,7 @@ public class KnownPatterns {
 	public String PATTERN_SIGNED_DOUBLE_WITH_EXPONENT;
 
 	Map<String, PatternInfo> knownPatterns = new HashMap<>();
-	Map<ID, PatternInfo> knownIDs = new HashMap<>();
+	Map<ID, PatternInfo> knownIDs = new EnumMap<>(ID.class);
 	Map<String, PatternInfo> promotion = new HashMap<>();
 	Map<String, PatternInfo> negation = new HashMap<>();
 	Map<String, PatternInfo> grouping = new HashMap<>();

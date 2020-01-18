@@ -20,7 +20,7 @@ import com.cobber.fta.TextAnalyzer;
 
 public class Trivial {
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Age");
 

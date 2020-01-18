@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +50,7 @@ public class PluginDefinition {
 	public String[] regExpsToMatch;
 	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
 	public String regExpReturned;
-	public HashSet<String> blackList;
+	public Set<String> blackList;
 	/** Simple finite plugins: the content with the set of valid elements. */
 	public String content;
 	public String contentType;

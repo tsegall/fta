@@ -15,6 +15,7 @@
  */
 package com.cobber.fta.plugins;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -40,8 +41,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 	Pattern validator = Pattern.compile(REGEXP);
 
 	static {
-		for (String s : validPostalCodes)
-			validShapes.add(s);
+		Collections.addAll(validShapes, validPostalCodes);
 	}
 
 	public LogicalTypeUKPostalCode(PluginDefinition plugin) {

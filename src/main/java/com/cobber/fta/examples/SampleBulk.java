@@ -21,7 +21,7 @@ import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 
 public class SampleBulk {
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		HashMap<String, Long> basic = new HashMap<>();

@@ -70,14 +70,14 @@ public class DateTimeParser {
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 	private Locale locale;
 
-	public static Set<String> timeZones = new HashSet<>();
-	private static final int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	protected static final Set<String> timeZones = new HashSet<>();
+	private static final int[] monthDays = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 	static {
 		// Cache the set of available Time Zones
 		Collections.addAll(timeZones, TimeZone.getAvailableIDs());
 		// Add the non-real Time Zones (that people use)
-		timeZones.addAll(Arrays.asList(new String[] {
+		timeZones.addAll(Arrays.asList(
 				"ACDT", "ACST", "ACT", "ACWDT", "ACWST", "ADS", "ADST", "ADT", "AEDT", "AEST", "AET", "AFST", "AFT", "AKDT", "AKST", "ALMST",
 				"ALMT", "AMDT", "AMST", "AMT", "ANAST", "ANAT", "AQTST", "AQTT", "ARST", "ART", "AST", "AT", "AWDT", "AWST", "AZODT", "AZOST",
 				"AZOT", "AZST", "AZT", "BDST", "BDT", "BNST", "BNT", "BOST", "BOT", "BRST", "BST", "BT", "BTST", "BTT", "CAST", "CAT", "CCST",
@@ -99,10 +99,10 @@ public class DateTimeParser {
 				"TLT", "TMST", "TMT", "TOST", "TOT", "TRT", "TVST", "TVT", "ULAST", "ULAT", "UTC", "UYST", "UYT", "UZST", "UZT", "VEST", "VET",
 				"VLAST", "VLAT", "VOSST", "VOST", "VUST", "VUT", "WAKST", "WAKT", "WARST", "WAST", "WAT", "WDT", "WEDT", "WEST", "WESZ", "WET",
 				"WEZ", "WFST", "WFT", "WGST", "WGT", "WIB", "WIST", "WIT", "WITA", "WSDT", "WST", "WT", "XJDT", "YAKST", "YAKT", "YAPT", "YEKST",
-				"YEKT" }));
+				"YEKT" ));
 	}
 
-	private final Map<String, Integer> results = new HashMap<String, Integer>();
+	private final Map<String, Integer> results = new HashMap<>();
 	private int sampleCount;
 	private int nullCount;
 	private int blankCount;

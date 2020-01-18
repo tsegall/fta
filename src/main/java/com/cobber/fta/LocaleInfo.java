@@ -67,7 +67,7 @@ public class LocaleInfo {
 		if (months.get(languageTag) != null)
 			return;
 
-		final GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance(locale);
+		final GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(locale);
 		final int actualMonths = cal.getActualMaximum(Calendar.MONTH);
 
 		DateFormatSymbols dfs = new DateFormatSymbols(locale);

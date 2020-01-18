@@ -568,7 +568,7 @@ public class SimpleDateMatcher {
 			}
 		}
 
-		return eating.length() == 0 ? true : false;
+		return eating.length() == 0;
 	}
 
 	private int countComponents(String compressed) {

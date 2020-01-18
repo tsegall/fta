@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins;
 
-import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -34,7 +33,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	private static final int ITERS = 5;
 	private Dodge[] iterators = null;
 
-	public LogicalTypePersonName(PluginDefinition plugin, String filename) throws FileNotFoundException {
+	public LogicalTypePersonName(PluginDefinition plugin, String filename) {
 		super(plugin, REGEXP, ".*", 95);
 		setContent("resource", "/reference/" + filename);
 	}

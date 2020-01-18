@@ -153,7 +153,7 @@ public class TextAnalyzer {
 	private Shapes shapes = new Shapes(MAX_SHAPES_DEFAULT);
 
 	class Escalation {
-		StringBuilder level[];
+		StringBuilder[] level;
 
 		@Override
 		public int hashCode() {
@@ -801,7 +801,7 @@ public class TextAnalyzer {
 	 * Validate (and track) the date/time/datetime input.
 	 * This routine is called for every date/time/datetime we see in the input, so performance is critical.
 	 */
-	private boolean trackDateTime(final String input, PatternInfo patternInfo, final boolean register) throws DateTimeParseException {
+	private boolean trackDateTime(final String input, PatternInfo patternInfo, final boolean register) {
 		String dateFormat = patternInfo.format;
 
 		// Retrieve the (likely cached) DateTimeParserResult for the supplied dateFormat
@@ -908,7 +908,7 @@ public class TextAnalyzer {
 	}
 
 	private void initialize() {
-		Calendar cal = GregorianCalendar.getInstance(locale);
+		Calendar cal = Calendar.getInstance(locale);
 		if (!(cal instanceof GregorianCalendar))
 			throw new IllegalArgumentException("No support for locales that do not use the Gregorian Calendar");
 
@@ -1479,9 +1479,15 @@ public class TextAnalyzer {
 
 		collapse();
 
-		int level0value = 0, level1value = 0, level2value = 0;
-		String level0pattern = null, level1pattern = null, level2pattern = null;
-		PatternInfo level0patternInfo = null, level1patternInfo = null, level2patternInfo = null;
+		int level0value = 0;
+		int level1value = 0;
+		int level2value = 0;
+		String level0pattern = null;
+		String level1pattern = null;
+		String level2pattern = null;
+		PatternInfo level0patternInfo = null;
+		PatternInfo level1patternInfo = null;
+		PatternInfo level2patternInfo = null;
 		final Map.Entry<String, Integer> level0 = getBest(0);
 		final Map.Entry<String, Integer> level1 = getBest(1);
 		final Map.Entry<String, Integer> level2 = getBest(2);
@@ -2152,7 +2158,7 @@ public class TextAnalyzer {
 				final StringBuilder s = new StringBuilder(maxRawLength);
 				for (int i = 0; i < maxRawLength; i++) {
 					if (i == minRawLength)
-						ret.minValue = new String(s.toString());
+						ret.minValue = s.toString();
 					s.append(' ');
 				}
 				ret.maxValue = s.toString();

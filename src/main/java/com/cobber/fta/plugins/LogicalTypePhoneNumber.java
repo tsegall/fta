@@ -44,11 +44,12 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		public String nextRandom() {
 			String base = "+1" + areaCodes[random.nextInt(areaCodes.length)];
 			while (true) {
-				String result = base;
+				StringBuilder result = new StringBuilder(base);
 				for (int i = 0; i < 7; i++)
-					result += (random.nextInt(10));
-				if (isValid(result))
-					return result;
+					result.append(random.nextInt(10));
+				String attempt = result.toString();
+				if (isValid(attempt))
+					return attempt;
 			}
 		}
 

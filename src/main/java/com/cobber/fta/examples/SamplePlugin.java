@@ -23,8 +23,8 @@ import com.cobber.fta.TextAnalyzer;
 
 public class SamplePlugin {
 
-	public static void main(String args[]) throws IOException {
-		final String inputs[] = new String[] {
+	public static void main(String[] args) throws IOException {
+		final String[] inputs = new String[] {
 				"red",  "red", "blue", "pink", "black", "white", "orange", "purple",
 				"grey", "green", "red", "mauve", "red", "brown", "silver", "gold",
 				"peach", "olive", "lemon", "lilac", "beige", "red", "burgundy", "aquamarine",

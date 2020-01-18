@@ -15,7 +15,12 @@
  */
 package com.cobber.fta;
 
-public class Smashed {
+public final class Smashed {
+
+	private Smashed() {
+		// Never called
+	}
+
 	static final char DIGIT = '9';
 	static final char LOW_ALPHABETIC = 'x';
 	static final char HIGH_ALPHABETIC = 'X';
