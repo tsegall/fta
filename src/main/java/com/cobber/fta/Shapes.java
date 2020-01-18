@@ -74,7 +74,7 @@ public class Shapes {
 
 			String original = shape.getKey();
 			Matcher matcher = decimalNumberPattern.matcher(original);
-			StringBuffer updatedSB = new StringBuffer(original.length());
+			StringBuilder updatedSB = new StringBuilder(original.length());
 
 			int offset = 0;
 			while (matcher.find(offset)) {

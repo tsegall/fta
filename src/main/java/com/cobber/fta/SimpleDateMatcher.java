@@ -256,7 +256,7 @@ public class SimpleDateMatcher {
 					count++;
 				else {
 					if (count != 0) {
-						result.append("{" + String.valueOf(count + 1) + "}");
+						result.append('{').append(count + 1).append('}');
 						count = 0;
 					}
 					result.append('d');
@@ -266,7 +266,7 @@ public class SimpleDateMatcher {
 			else if (Character.isAlphabetic(ch)) {
 				if (!Character.isAlphabetic(lastCh)) {
 					if (count != 0) {
-						result.append("{" + String.valueOf(count + 1) + "}");
+						result.append('{').append(count + 1).append('}');
 						count = 0;
 					}
 					lastCh = ch;
@@ -275,17 +275,16 @@ public class SimpleDateMatcher {
 			}
 			else {
 				if (count != 0) {
-					result.append("{" + String.valueOf(count + 1) + "}");
+					result.append('{').append(count + 1).append('}');
 					count = 0;
 				}
 				result.append(ch);
 				lastCh = ch;
 			}
 		}
-		if (count != 0) {
-			result.append("{" + String.valueOf(count + 1) + "}");
-			count = 0;
-		}
+
+		if (count != 0)
+			result.append('{').append(count + 1).append('}');
 
 		if (amIndicator)
 			result.append('P');

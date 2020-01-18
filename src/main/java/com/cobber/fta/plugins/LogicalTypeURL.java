@@ -29,9 +29,9 @@ import com.cobber.fta.StringFacts;
  * Plugin to detect URLs.
  */
 public class LogicalTypeURL extends LogicalTypeInfinite {
-	public final static String SEMANTIC_TYPE = "URI.URL";
-	public final static String REGEXP_PROTOCOL = "(https?|ftp|file)";
-	public final static String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+	public static final String SEMANTIC_TYPE = "URI.URL";
+	public static final String REGEXP_PROTOCOL = "(https?|ftp|file)";
+	public static final String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 	static UrlValidator validator = null;
 	private static String[] sitesList = new String[] {
 			"www.jnj.com", "http://www.medifast1.com/index.jsp", "graybar.com", "johnsoncontrols.com", "commscope.com", "www.energizer.com", "ashland.com", "hersheys.com", "www.flowserve.com", "www.exxonmobil.com",

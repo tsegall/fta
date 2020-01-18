@@ -31,7 +31,7 @@ import com.cobber.fta.StringFacts;
  * Note: we used an Infinite :-) Logical Type since the domains is so large.
  */
 public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
-	public final static String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_US";
+	public static final String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_US";
 	public static final String REGEXP_CONSTANT = "\\d{5}";
 	public static final String REGEXP_VARIABLE = "\\d{3,5}";
 	private int minLength = 5;
@@ -44,7 +44,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return compressed.length() == 5 && compressed.toString().equals("\\d{5}");
+		return compressed.length() == 5 && compressed.toString().equals(REGEXP_CONSTANT);
 	}
 
 	@Override

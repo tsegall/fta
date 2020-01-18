@@ -87,7 +87,7 @@ public class LogicalTypeFactory {
 		else if (plugin.regExpReturned != null)
 			logical = new LogicalTypeRegExp(plugin);
 
-		if (logical == null || !(logical instanceof LogicalType))
+		if (!(logical instanceof LogicalType))
 			throw new IllegalArgumentException("Failed to instantiate a new Logical Type.");
 
 		logical.initialize(locale);

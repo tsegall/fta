@@ -31,7 +31,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Plugins {
-	private Map<String, LogicalType> registered = new HashMap<String, LogicalType>();
+	private Map<String, LogicalType> registered = new HashMap<>();
 
 	public void registerPlugins(Reader JSON, String dataStreamName, Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		ObjectMapper mapper = new ObjectMapper();
@@ -118,7 +118,7 @@ public class Plugins {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	private void registerLogicalTypeClass(PluginDefinition plugin, Locale locale) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private void registerLogicalTypeClass(PluginDefinition plugin, Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		Class<?> newLogicalType;
 		Constructor<?> ctor;
 		LogicalType logical;
@@ -150,7 +150,7 @@ public class Plugins {
 	 * @param locale The current Locale
 	 * @throws FileNotFoundException
 	 */
-	private void registerLogicalTypeFiniteSet(PluginDefinition plugin, Locale locale) throws FileNotFoundException {
+	private void registerLogicalTypeFiniteSet(PluginDefinition plugin, Locale locale) {
 		registerLogicalType(new LogicalTypeFiniteSimpleExternal(plugin), locale);
 	}
 
@@ -159,7 +159,7 @@ public class Plugins {
 	 * @return A Collection of the currently registered Logical Types.
 	 */
 	public Collection<LogicalType> getRegisteredLogicalTypes() {
-		return new HashSet<LogicalType>(registered.values());
+		return new HashSet<>(registered.values());
 	}
 
 	/**

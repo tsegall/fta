@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,7 +50,7 @@ public class DateTimeParserResult {
 	public Character dateSeparator;
 	private String formatString;
 	public Boolean amPmIndicator;
-	public ArrayList<FormatterToken> tokenized;
+	public List<FormatterToken> tokenized;
 
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 	private Locale locale;
@@ -60,7 +61,7 @@ public class DateTimeParserResult {
 	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, Locale locale, final int timeElements,
 			final int[] timeFieldLengths, final int[] timeFieldOffsets, final int hourLength, final int dateElements, final int[] dateFieldLengths,
 			final int[] dateFieldOffsets, final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset,
-			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final ArrayList<FormatterToken> tokenized) {
+			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final List<FormatterToken> tokenized) {
 		this.formatString = formatString;
 		this.resolutionMode = resolutionMode;
 		this.locale = locale;
@@ -372,8 +373,8 @@ public class DateTimeParserResult {
 		return newInstance(ret);
 	}
 
-	public static ArrayList<FormatterToken> tokenize(String formatString) {
-		final ArrayList<FormatterToken> ret = new ArrayList<FormatterToken>();
+	public static List<FormatterToken> tokenize(String formatString) {
+		final ArrayList<FormatterToken> ret = new ArrayList<>();
 		int upto = 0;
 
 		final int formatLength = formatString.length();
@@ -574,7 +575,7 @@ public class DateTimeParserResult {
 	 * @param input The string to validate (stripped of whitespace).
 	 * if non-zero then this is the offset where the parse failed
 	 */
-	public void parse(final String input) throws DateTimeParseException {
+	public void parse(final String input) {
 		final int inputLength = input.length();
 		int upto = 0;
 

@@ -122,7 +122,7 @@ class FileProcessor {
 			String[] row;
 			while ((row = parser.parseNext()) != null) {
 				if (row.length != numFields) {
-					logger.printf("Record %d has %d fields, expected %d, skipping\n",
+					logger.printf("Record %d has %d fields, expected %d, skipping%n",
 							thisRecord, row.length, numFields);
 					continue;
 				}
@@ -135,7 +135,7 @@ class FileProcessor {
 						analyzer = new TextAnalyzer(previousName);
 						analyzer.trainBulk(bulkMap);
 						result = analyzer.getResult();
-						logger.printf("Field '%s' - %s\n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
+						logger.printf("Field '%s' - %s%n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
 					}
 					bulkMap.clear();
 					previousKey = key;
@@ -148,7 +148,7 @@ class FileProcessor {
 				analyzer = new TextAnalyzer(name);
 				analyzer.trainBulk(bulkMap);
 				result = analyzer.getResult();
-				logger.printf("Field '%s' - %s\n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
+				logger.printf("Field '%s' - %s%n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
 			}
 		}
 	}
@@ -168,7 +168,7 @@ class FileProcessor {
 			numFields = header.length;
 			analysis = new TextAnalyzer[numFields];
 			if (options.col > numFields) {
-				logger.printf("Column %d does not exist.  Only %d field(s) in input.\n", options.col, numFields);
+				logger.printf("Column %d does not exist.  Only %d field(s) in input.%n", options.col, numFields);
 				System.exit(1);
 			}
 			for (int i = 0; i < numFields; i++) {
@@ -184,14 +184,14 @@ class FileProcessor {
 			while ((row = parser.parseNext()) != null) {
 				thisRecord++;
 				if (row.length != numFields) {
-					logger.printf("Record %d has %d fields, expected %d, skipping\n",
+					logger.printf("Record %d has %d fields, expected %d, skipping%n",
 							thisRecord, row.length, numFields);
 					continue;
 				}
 				for (int i = 0; i < numFields; i++) {
 					if (options.col == -1 || options.col == i) {
 						if (options.verbose != 0)
-							System.out.printf("\"%s\"\n", row[i]);
+							System.out.printf("\"%s\"%n", row[i]);
 						if (!options.noAnalysis)
 							analysis[i].train(row[i]);
 					}
@@ -203,7 +203,7 @@ class FileProcessor {
 			}
 		}
 		catch (FileNotFoundException e) {
-			logger.printf("Filename '%s' not found.\n", filename);
+			logger.printf("Filename '%s' not found.%n", filename);
 			System.exit(1);
 		}
 
@@ -264,7 +264,7 @@ class FileProcessor {
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
 				result = analysis[i].getResult();
-				logger.printf("Field '%s' (%d) - %s\n", header[i], i, result.asJSON(options.pretty, options.verbose));
+				logger.printf("Field '%s' (%d) - %s%n", header[i], i, result.asJSON(options.pretty, options.verbose));
 				if (result.getType() != null)
 					typesDetected++;
 				matchCount += result.getMatchCount();
@@ -272,11 +272,11 @@ class FileProcessor {
 				if (options.validate && matched[i] != result.getMatchCount()) {
 					if (result.isLogicalType())
 						if (matched[i] > result.getMatchCount())
-							logger.printf("\t*** Warning: Match Count via RegExp (%d) > LogicalType match analysis (%d) ***\n", matched[i], result.getMatchCount());
+							logger.printf("\t*** Warning: Match Count via RegExp (%d) > LogicalType match analysis (%d) ***%n", matched[i], result.getMatchCount());
 						else
-							logger.printf("\t*** Error: Match Count via RegExp (%d) < LogicalType match analysis (%d) ***\n", matched[i], result.getMatchCount());
+							logger.printf("\t*** Error: Match Count via RegExp (%d) < LogicalType match analysis (%d) ***%n", matched[i], result.getMatchCount());
 					else
-						logger.printf("\t*** Error: Match Count via RegExp (%d) does not match analysis (%d) ***\n", matched[i], result.getMatchCount());
+						logger.printf("\t*** Error: Match Count via RegExp (%d) does not match analysis (%d) ***%n", matched[i], result.getMatchCount());
 					if (options.verbose != 0) {
 						logger.println("Failed to match:");
 						for (String failure : failures)
@@ -289,15 +289,15 @@ class FileProcessor {
 		final long duration = System.currentTimeMillis() - start;
 		if (options.col == -1) {
 			final double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;
-			logger.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d.\n",
+			logger.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d.%n",
 					filename, typesDetected, numFields, percentage, matchCount, sampleCount);
 		}
 		else {
 			final double confidence = result == null ? 0 : result.getConfidence();
-			logger.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%).\n",
+			logger.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%).%n",
 					(typesDetected == 1 ? "yes" : "no"), matchCount,
 					sampleCount, confidence*100);
 		}
-		logger.printf("Execution time: %dms\n", duration);
+		logger.printf("Execution time: %dms%n", duration);
 	}
 }

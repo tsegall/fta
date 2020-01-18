@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import com.cobber.fta.PatternInfo.Type;
 
 public class LogicalTypeRegExp extends LogicalType {
+	private static final String WRONG_TYPE = "Internal error: LogicalTypeRegExp baseType must be LONG or DOUBLE, not ";
 	private Pattern pattern;
 	private Long minLong;
 	private Long maxLong;
@@ -51,7 +52,7 @@ public class LogicalTypeRegExp extends LogicalType {
 				break;
 
 			default:
-				throw new InternalErrorException("Internal error: LogicalTypeRegExp baseType must be LONG or DOUBLE, not " + defn.baseType);
+				throw new InternalErrorException(WRONG_TYPE + defn.baseType);
 			}
 	}
 
@@ -119,13 +120,10 @@ public class LogicalTypeRegExp extends LogicalType {
 				break;
 
 			default:
-				throw new InternalErrorException("Internal error: LogicalTypeRegExp baseType must be LONG or DOUBLE, not " + defn.baseType);
+				throw new InternalErrorException(WRONG_TYPE + defn.baseType);
 			}
 
-		if (defn.blackList != null && defn.blackList.contains(input))
-			return false;
-
-		return true;
+		return defn.blackList == null || !defn.blackList.contains(input);
 	}
 
 	@Override
@@ -171,7 +169,7 @@ public class LogicalTypeRegExp extends LogicalType {
 				break;
 
 			default:
-				throw new InternalErrorException("Internal error: LogicalTypeRegExp baseType must be LONG or DOUBLE, not " + defn.baseType);
+				throw new InternalErrorException(WRONG_TYPE + defn.baseType);
 			}
 		}
 

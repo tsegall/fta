@@ -36,6 +36,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * TextAnalysisResult is the result of a {@link TextAnalyzer} analysis of a data stream.
  */
 public class TextAnalysisResult {
+	private static final String NOT_ENABLED = "Statistics not enabled.";
+
 	private final String name;
 	private final long matchCount;
 	private final long sampleCount;
@@ -190,7 +192,7 @@ public class TextAnalysisResult {
 	 */
 	public String getMinValue() {
 		if (!collectStatistics)
-			throw new IllegalArgumentException("Statistics not enabled.");
+			throw new IllegalArgumentException(NOT_ENABLED);
 		return minValue;
 	}
 
@@ -200,7 +202,7 @@ public class TextAnalysisResult {
 	 */
 	public String getMaxValue() {
 		if (!collectStatistics)
-			throw new IllegalArgumentException("Statistics not enabled.");
+			throw new IllegalArgumentException(NOT_ENABLED);
 		return maxValue;
 	}
 
@@ -245,7 +247,7 @@ public class TextAnalysisResult {
 	 */
 	public String getSum() {
 		if (!collectStatistics)
-			throw new IllegalArgumentException("Statistics not enabled.");
+			throw new IllegalArgumentException(NOT_ENABLED);
 		return sum;
 	}
 
@@ -255,7 +257,7 @@ public class TextAnalysisResult {
 	 */
 	public SortedSet<String> getTopK() {
 		if (!collectStatistics)
-			throw new IllegalArgumentException("Statistics not enabled.");
+			throw new IllegalArgumentException(NOT_ENABLED);
 		return topK;
 	}
 
@@ -265,7 +267,7 @@ public class TextAnalysisResult {
 	 */
 	public SortedSet<String> getBottomK() {
 		if (!collectStatistics)
-			throw new IllegalArgumentException("Statistics not enabled.");
+			throw new IllegalArgumentException(NOT_ENABLED);
 		return bottomK;
 	}
 
@@ -443,7 +445,7 @@ public class TextAnalysisResult {
 	}
 
 	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
-		final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+		final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<>(
 				new Comparator<Map.Entry<K,V>>() {
 					@Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
 						int res = e2.getValue().compareTo(e1.getValue());
@@ -513,7 +515,7 @@ public class TextAnalysisResult {
 		return Base64.getEncoder().encodeToString(md.digest(signature));
 	}
 
-	private void outputArray(ObjectMapper mapper, ArrayNode detail, SortedSet<String> set) {
+	private void outputArray(ArrayNode detail, SortedSet<String> set) {
 		for (String s : set) {
 			detail.add(s);
 		}
@@ -581,11 +583,11 @@ public class TextAnalysisResult {
 				analysis.put("sum", sum);
 			if (topK != null) {
 				ArrayNode detail = analysis.putArray("topK");
-				outputArray(mapper, detail, topK);
+				outputArray(detail, topK);
 			}
 			if (bottomK != null) {
 				ArrayNode detail = analysis.putArray("bottomK");
-				outputArray(mapper, detail, bottomK);
+				outputArray(detail, bottomK);
 			}
 		}
 

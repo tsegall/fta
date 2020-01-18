@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import java.text.DateFormatSymbols;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -67,7 +68,7 @@ public class LocaleInfo {
 			return;
 
 		final GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance(locale);
-		final int actualMonths = cal.getActualMaximum(GregorianCalendar.MONTH);
+		final int actualMonths = cal.getActualMaximum(Calendar.MONTH);
 
 		DateFormatSymbols dfs = new DateFormatSymbols(locale);
 

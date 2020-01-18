@@ -16,10 +16,10 @@
 package com.cobber.fta;
 
 public class Smashed {
-	final static char DIGIT = '9';
-	final static char LOW_ALPHABETIC = 'x';
-	final static char HIGH_ALPHABETIC = 'X';
-	final static char HEX = 'H';
+	static final char DIGIT = '9';
+	static final char LOW_ALPHABETIC = 'x';
+	static final char HIGH_ALPHABETIC = 'X';
+	static final char HEX = 'H';
 
 	/**
 	 * Fast method to simplify a string so that we can determine if all inputs are of the same form.

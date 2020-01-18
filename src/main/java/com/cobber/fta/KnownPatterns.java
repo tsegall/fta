@@ -23,6 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 
 public class KnownPatterns {
+	private final static String OPTIONAL_SIGN = "[+-]?";
+
 	public enum ID {
 		ID_BOOLEAN_TRUE_FALSE,
 		ID_BOOLEAN_YES_NO,
@@ -64,7 +66,7 @@ public class KnownPatterns {
 	public static final String PATTERN_BOOLEAN_Y_N = "(?i)(N|Y)";
 	public static final String PATTERN_BOOLEAN_ONE_ZERO = "[0|1]";
 
-	final String EXPONENT_REGEXP = "(?:[eE]([-+]?\\d+))?";
+	private static final String EXPONENT_REGEXP = "(?:[eE]([-+]?\\d+))?";
 
 	public String PATTERN_LONG;
 	public String PATTERN_LONG_GROUPING;
@@ -161,19 +163,19 @@ public class KnownPatterns {
 
 			if (!negPrefix.isEmpty()) {
 				if (negPrefix.charAt(0) == minusSign)
-					optionalSignPrefix = "[+-]?";
+					optionalSignPrefix = OPTIONAL_SIGN;
 				else
 					optionalSignPrefix = RegExpGenerator.slosh(negPrefix) + "?";
 			}
 			if (!negSuffix.isEmpty()) {
 				if (negSuffix.charAt(0) == minusSign)
-					optionalSignSuffix = "[+-]?";
+					optionalSignSuffix = OPTIONAL_SIGN;
 				else
 					optionalSignSuffix = RegExpGenerator.slosh(negSuffix) + "?";
 			}
 		}
 		else {
-			optionalSignPrefix = "[+-]?";
+			optionalSignPrefix = OPTIONAL_SIGN;
 			optionalSignSuffix = "";
 		}
 
@@ -191,7 +193,7 @@ public class KnownPatterns {
 
 		PATTERN_DOUBLE_WITH_EXPONENT = PATTERN_DOUBLE + EXPONENT_REGEXP;
 		// Not quite what you would expect, always use +- if you have an exponent (locale ar_AE for
-		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = "[+-]?" + PATTERN_DOUBLE + EXPONENT_REGEXP;
+		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = OPTIONAL_SIGN + PATTERN_DOUBLE + EXPONENT_REGEXP;
 
 		knownPatterns.put(PATTERN_BOOLEAN_TRUE_FALSE,
 				new PatternInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, PatternInfo.Type.BOOLEAN, "TRUE_FALSE", false, 4, 5, null, ""));
@@ -341,7 +343,7 @@ public class KnownPatterns {
 	}
 
 	void addUnary(Map<String, PatternInfo> transformation, String input, String result) {
-		transformation.put(input.toString(), knownPatterns.get(result));
+		transformation.put(input, knownPatterns.get(result));
 	}
 
 	void addBinary(Map<String, PatternInfo> transformation, String left, String right, String result) {

@@ -26,8 +26,8 @@ import com.cobber.fta.StringFacts;
  * Plugin to detect Country names. (English-language only).
  */
 public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
-	public final static String SEMANTIC_TYPE = "COUNTRY.TEXT_EN";
-	final static String REGEXP = ".+";
+	public static final String SEMANTIC_TYPE = "COUNTRY.TEXT_EN";
+	static final String REGEXP = ".+";
 
 	public LogicalTypeCountryEN(PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, REGEXP, "\\p{IsAlphabetic}{2}", 95);

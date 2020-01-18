@@ -122,7 +122,7 @@ public class TextAnalyzer {
 	private int maxShapes = MAX_SHAPES_DEFAULT;
 
 	/** We are prepared to recognize any set of this size as an enum (and give a suitable regular expression). */
-	private final int MAX_ENUM_SIZE = 40;
+	private static final int MAX_ENUM_SIZE = 40;
 
 	protected static final int REFLECTION_SAMPLES = 30;
 	private int reflectionSamples = REFLECTION_SAMPLES;
@@ -253,9 +253,9 @@ public class TextAnalyzer {
 	private long totalLeadingZeros;
 	private long groupingSeparators;
 
-	private ArrayList<LogicalTypeInfinite> infiniteTypes = new ArrayList<LogicalTypeInfinite>();
-	private ArrayList<LogicalTypeFinite> finiteTypes = new ArrayList<LogicalTypeFinite>();
-	private ArrayList<LogicalTypeRegExp> regExpTypes = new ArrayList<LogicalTypeRegExp>();
+	private ArrayList<LogicalTypeInfinite> infiniteTypes = new ArrayList<>();
+	private ArrayList<LogicalTypeFinite> finiteTypes = new ArrayList<>();
+	private ArrayList<LogicalTypeRegExp> regExpTypes = new ArrayList<>();
 	private int[] candidateCounts;
 
 	private KnownPatterns knownPatterns = new KnownPatterns();
@@ -746,18 +746,6 @@ public class TextAnalyzer {
 		return true;
 	}
 
-	private boolean isDouble(final String input) {
-		try {
-			Double.parseDouble(input.trim());
-		} catch (NumberFormatException e) {
-			ParsePosition pos = new ParsePosition(0);
-			Number n = doubleFormatter.parse(input, pos);
-			if (n == null || input.length() != pos.getIndex())
-				return false;
-		}
-		return true;
-	}
-
 	private boolean trackDouble(final String rawInput, PatternInfo patternInfo, final boolean register) {
 		final String input = rawInput.trim();
 		double d;
@@ -927,8 +915,8 @@ public class TextAnalyzer {
 		if (!NumberFormat.getNumberInstance(locale).format(0).matches("\\d"))
 			throw new IllegalArgumentException("No support for locales that do not use Arabic numerals");
 
-		raw = new ArrayList<String>(detectWindow);
-		levels = new ArrayList<Escalation>(detectWindow);
+		raw = new ArrayList<>(detectWindow);
+		levels = new ArrayList<>(detectWindow);
 
 		// If enabled, load the default set of plugins for Logical Type detection
 		if (enableDefaultLogicalTypes)
@@ -1338,7 +1326,7 @@ public class TextAnalyzer {
 					candidateCounts[c]++;
 			}
 			catch (Exception e) {
-				System.err.printf("Plugin: %s, issue: %s\n", logical.getQualifier(), e.getMessage());
+				System.err.printf("Plugin: %s, issue: %s%n", logical.getQualifier(), e.getMessage());
 			}
 			c++;
 		}
@@ -1403,7 +1391,7 @@ public class TextAnalyzer {
 						bestPattern.isNumeric() && secondBestPattern.isNumeric()) {
 					newKey = knownPatterns.numericPromotion(bestPattern.regexp, secondBestPattern.regexp);
 					if (newKey != null) {
-						best = new AbstractMap.SimpleEntry<String, Integer>(newKey, best.getValue() + secondBest.getValue());
+						best = new AbstractMap.SimpleEntry<>(newKey, best.getValue() + secondBest.getValue());
 						bestPattern = knownPatterns.getByRegExp(best.getKey());
 					}
 				}
@@ -1415,7 +1403,7 @@ public class TextAnalyzer {
 						bestPattern.isNumeric() && thirdBestPattern.isNumeric()) {
 					newKey = knownPatterns.numericPromotion(newKey != null ? newKey : bestPattern.regexp, thirdBestPattern.regexp);
 					if (newKey != null) {
-						best = new AbstractMap.SimpleEntry<String, Integer>(newKey, best.getValue() + thirdBest.getValue());
+						best = new AbstractMap.SimpleEntry<>(newKey, best.getValue() + thirdBest.getValue());
 						bestPattern = knownPatterns.getByRegExp(best.getKey());
 					}
 				}
@@ -1424,7 +1412,7 @@ public class TextAnalyzer {
 
 		if (bestPattern != null && secondBestPattern != null && PatternInfo.Type.STRING.equals(bestPattern.type)) {
 			// Promote anything to STRING
-			best = new AbstractMap.SimpleEntry<String, Integer>(best.getKey(),
+			best = new AbstractMap.SimpleEntry<>(best.getKey(),
 					best.getValue() + secondBest.getValue());
 		}
 
@@ -1551,7 +1539,6 @@ public class TextAnalyzer {
 							&& (double)level2.getValue() >= 1.05 * best.getValue())
 					|| (!best.getKey().equals(level2pattern)
 							&& (double)level2.getValue() >= 1.10 * best.getValue()))) {
-				best = level2;
 				matchPatternInfo = level2patternInfo;
 			}
 
@@ -1610,7 +1597,8 @@ public class TextAnalyzer {
 		if (seen == null) {
 			if (cardinality.size() < maxCardinality)
 				cardinality.put(input, count);
-		} else
+		}
+		else
 			cardinality.put(input, seen + count);
 	}
 
@@ -1658,6 +1646,18 @@ public class TextAnalyzer {
 		int nonAlphaNumeric = 0;
 		boolean negative = false;
 		boolean exponent = false;
+
+		private boolean isDouble(final String input) {
+			try {
+				Double.parseDouble(input.trim());
+			} catch (NumberFormatException e) {
+				ParsePosition pos = new ParsePosition(0);
+				Number n = doubleFormatter.parse(input, pos);
+				if (n == null || input.length() != pos.getIndex())
+					return false;
+			}
+			return true;
+		}
 
 		OutlierAnalysis(Map<String, Long> outliers,  PatternInfo current) {
 			// Sweep the current outliers
@@ -1769,7 +1769,6 @@ public class TextAnalyzer {
 		if (newPatternInfo == null)
 			newPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, null, false, -1, -1, null, null);
 
-		matchCount = realSamples;
 		matchPatternInfo = newPatternInfo;
 
 		for (String s : cardinality.keySet())
@@ -2094,7 +2093,8 @@ public class TextAnalyzer {
 				ch = result.charAt(++idx);
 				if (ch == 'd')
 					numericStarted = true;
-			} else if (ch == '[')
+			}
+			else if (ch == '[')
 				characterClass = true;
 			else if (ch == ']')
 				characterClass = false;
@@ -2668,12 +2668,10 @@ public class TextAnalyzer {
 				}
 		}
 
-		TextAnalysisResult result = new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,
+		return new TextAnalysisResult(dataStreamName, matchCount, matchPatternInfo, leadingWhiteSpace,
 				trailingWhiteSpace, multiline, sampleCount, nullCount, blankCount, totalLeadingZeros, confidence, facts,
 				minRawLength, maxRawLength, utilizedDecimalSeparator, resolutionMode,
 				cardinality, maxCardinality, outliers, maxOutliers, shapes.getShapes(), maxShapes, key, collectStatistics);
-
-		return result;
 	}
 
 	/**

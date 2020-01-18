@@ -53,6 +53,8 @@ import java.util.stream.Collectors;
  * </pre>
  */
 public class DateTimeParser {
+	private static final String TIME_ONLY = "d{2}:d{2}:d{2}";
+
 	/** When we have ambiguity - should we prefer to conclude day first, month first or unspecified. */
 	public enum DateResolutionMode {
 		/** Result returned may have unbound elements, for example ??/??/yyyy. */
@@ -68,7 +70,7 @@ public class DateTimeParser {
 	private DateResolutionMode resolutionMode = DateResolutionMode.None;
 	private Locale locale;
 
-	public static Set<String> timeZones = new HashSet<String>();
+	public static Set<String> timeZones = new HashSet<>();
 	private static final int monthDays[] = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 	static {
@@ -216,7 +218,7 @@ public class DateTimeParser {
 		return ret;
 	}
 
-	public static <K, V extends Comparable<? super V>> HashMap<K, V> sortByValue(final Map<K, V> map) {
+	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(final Map<K, V> map) {
 		return map.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
@@ -236,7 +238,7 @@ public class DateTimeParser {
 			return null;
 
 		DateTimeParserResult answerResult = null;
-		StringBuffer answerBuffer = null;
+		StringBuilder answerBuffer = null;
 
 		// If there is only one result then it must be correct :-)
 		if (results.size() == 1) {
@@ -245,12 +247,12 @@ public class DateTimeParser {
 			if (!answerResult.isDateUnbound() || resolutionMode == DateResolutionMode.None)
 				return answerResult;
 			answerResult = DateTimeParserResult.newInstance(answerResult);
-			answerBuffer = new StringBuffer(answerResult.getFormatString());
+			answerBuffer = new StringBuilder(answerResult.getFormatString());
 		}
 		else {
 
 			// Sort the results of our training by value so that we consider the most frequent first
-			final HashMap<String, Integer> byValue = sortByValue(results);
+			final Map<String, Integer> byValue = sortByValue(results);
 
 			// Iterate through all the results of our training, merging them to produce our best guess
 			for (final Map.Entry<String, Integer> entry : byValue.entrySet()) {
@@ -259,7 +261,7 @@ public class DateTimeParser {
 
 				// First entry
 				if (answerBuffer == null) {
-					answerBuffer = new StringBuffer(key);
+					answerBuffer = new StringBuilder(key);
 					answerResult = DateTimeParserResult.newInstance(result);
 					continue;
 				}
@@ -611,7 +613,7 @@ public class DateTimeParser {
 					final String offset = SimpleDateMatcher.compress(trimmed.substring(i, len), locale);
 
 					// Expecting DD:DD:DD or DDDDDD or DD:DD or DDDD or DD
-					if (i + 8 <= len && "d{2}:d{2}:d{2}".equals(offset)) {
+					if (i + 8 <= len && TIME_ONLY.equals(offset)) {
 						timeZone = "xxxxx";
 						minutesOffset = 3;
 						secondsOffset = 6;
@@ -732,7 +734,7 @@ public class DateTimeParser {
 				else if (dateSeen && !dateClosed) {
 					if (dateComponent != 2)
 						return null;
-					if (!(digits == 2 || (yearInDateFirst == false && digits == 4)))
+					if (!(digits == 2 || (!yearInDateFirst && digits == 4)))
 						return null;
 					if (!fourDigitYear)
 						fourDigitYear = digits == 4;
@@ -971,8 +973,8 @@ public class DateTimeParser {
 			components--;
 		}
 
-		if (components >= 3 && compressed.indexOf("d{2}:d{2}:d{2}") != -1) {
-			compressed = Utils.replaceFirst(compressed, "d{2}:d{2}:d{2}", "HH:mm:ss");
+		if (components >= 3 && compressed.indexOf(TIME_ONLY) != -1) {
+			compressed = Utils.replaceFirst(compressed, TIME_ONLY, "HH:mm:ss");
 			components -= 3;
 		}
 

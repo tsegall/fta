@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * @param <C> The Class of a comparator used to compare objects of this type.
  */
 public class TopBottomK<T extends Comparable<C>, C> {
-	private final static int DEFAULT_SIZE = 10;
+	private static final int DEFAULT_SIZE = 10;
 	private int size;
 	private TreeSet<T> starter;
 	private TreeSet<T> top;
@@ -135,6 +135,6 @@ public class TopBottomK<T extends Comparable<C>, C> {
 	 * @return The bottom K values as Strings.
 	 */
 	public SortedSet<String> bottomKasString() {
-		return new TreeSet<String>(bottomK().stream().map(x->x.toString()).collect(Collectors.toSet()));
+		return new TreeSet<>(bottomK().stream().map(x->x.toString()).collect(Collectors.toSet()));
 	}
 }

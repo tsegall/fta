@@ -108,7 +108,7 @@ class Driver {
 				else if (mode.equals("None"))
 					options.resolutionMode = DateResolutionMode.None;
 				else {
-					logger.printf("Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None\n", mode);
+					logger.printf("Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None%n", mode);
 					System.exit(1);
 				}
 			}
@@ -121,7 +121,7 @@ class Driver {
 			else if ("--xMaxCharsPerColumn".equals(args[idx]))
 				options.xMaxCharsPerColumn = Integer.valueOf(args[++idx]);
 			else {
-				logger.printf("Unrecognized option: '%s', use --help\n", args[idx]);
+				logger.printf("Unrecognized option: '%s', use --help%n", args[idx]);
 				System.exit(1);
 			}
 			idx++;
@@ -143,29 +143,29 @@ class Driver {
 			for (LogicalType logical : registered)
 				qualifiers.add(logical.getQualifier());
 
-			if (registered.size() != 0) {
+			if (!registered.isEmpty()) {
 				logger.println("\nRegistered Logical Types:");
 				for (String qualifier : qualifiers) {
 					LogicalType logical = analysis.getPlugins().getRegistered(qualifier);
 					if (options.verbose == 0) {
 						if (logical instanceof LogicalTypeFinite) {
 							LogicalTypeFinite finite = (LogicalTypeFinite)logical;
-							logger.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d\n",
+							logger.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d%n",
 									logical.getQualifier(), logical.getPriority(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
 						}
 						else if (logical instanceof LogicalTypeInfinite)
-							logger.printf("\t%s (Infinite): Priority: %d\n", logical.getQualifier(), logical.getPriority());
+							logger.printf("\t%s (Infinite): Priority: %d%n", logical.getQualifier(), logical.getPriority());
 						else {
 							LogicalTypeRegExp logicalRegExp = (LogicalTypeRegExp)logical;
-							logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s', HeaderRegExps: '%s'\n",
+							logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s', HeaderRegExps: '%s'%n",
 									logical.getQualifier(), logical.getPriority(), logical.getRegExp(),
 									logicalRegExp.getHeaderRegExps() != null ? String.join("|", logicalRegExp.getHeaderRegExps()) : "None");
 						}
-						logger.printf("\t\t" + logical.getDescription() + "\n");
+						logger.printf("\t\t%s%n", logical.getDescription());
 					}
 					else {
 						// Used to generate the documentation
-						logger.printf("%s|%s\n", logical.getQualifier(), logical.getDescription());
+						logger.printf("%s|%s%n", logical.getQualifier(), logical.getDescription());
 					}
 				}
 			}
@@ -173,7 +173,7 @@ class Driver {
 		}
 
 		if (idx == args.length) {
-			logger.printf("No file to process supplied, use --help\n");
+			logger.printf("No file to process supplied, use --help%n");
 			System.exit(1);
 		}
 

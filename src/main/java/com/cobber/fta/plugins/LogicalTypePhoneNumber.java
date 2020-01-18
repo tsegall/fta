@@ -31,8 +31,8 @@ import com.google.i18n.phonenumbers.Phonenumber;
  * Plugin to detect Phone Numbers.
  */
 public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
-		public final static String SEMANTIC_TYPE = "TELEPHONE";
-		public final static String REGEXP = ".*";
+		public static final String SEMANTIC_TYPE = "TELEPHONE";
+		public static final String REGEXP = ".*";
 		private PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 		private static String[] areaCodes = new String[] { "617", "781", "303", "970", "212" };
 

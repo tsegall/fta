@@ -32,9 +32,9 @@ import com.cobber.fta.StringFacts;
  * Plugin to detect Gender. (English-language only).
  */
 public class LogicalTypeGenderEN extends LogicalTypeFinite {
-	public final static String SEMANTIC_TYPE = "GENDER.TEXT_EN";
-	private static Set<String> members = new HashSet<String>();
-	private final String backoutREGEX = "\\p{IsAlphabetic}+";
+	public static final String SEMANTIC_TYPE = "GENDER.TEXT_EN";
+	private static Set<String> members = new HashSet<>();
+	private static final String BACKOUT_REGEX = "\\p{IsAlphabetic}+";
 	private String happyRegex = "\\p{Alpha}+";
 	private static Map<String, String> opposites = new HashMap<>();
 
@@ -88,11 +88,11 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)
-			return backoutREGEX;
+			return BACKOUT_REGEX;
 
 		boolean positiveStreamName = dataStreamName.toLowerCase(locale).contains("gender");
 		if (!positiveStreamName && cardinality.size() - outliers.size() <= 1)
-			return backoutREGEX;
+			return BACKOUT_REGEX;
 
 		String outlier = null;
 		if (!outliers.isEmpty()) {
@@ -116,13 +116,13 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 			// However a field with only 'M' and 'F' in it is not, so in this case we would like an extra hint.
 			if (count == 1) {
 				if (!positiveStreamName && (first.equals("M") || first.equals("F")))
-					return backoutREGEX;
+					return BACKOUT_REGEX;
 				re.train(first);
 				re.train(opposites.get(first));
 			} else if (count == 2) {
 				String second = iter.next();
 				if (!positiveStreamName && (first.equals("M") || first.equals("F")) && (second.equals("M") || second.equals("F")))
-					return backoutREGEX;
+					return BACKOUT_REGEX;
 				if (opposites.get(first).equals(second)) {
 					re.train(first);
 					re.train(second);
@@ -140,6 +140,6 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 			return null;
 		}
 
-		return backoutREGEX;
+		return BACKOUT_REGEX;
 	}
 }

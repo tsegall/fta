@@ -165,3 +165,7 @@
 
 ### 2.3.41 ###
  - Address remaining findbugs issues
+
+### 2.3.42 ###
+ - Sonar Lint cleanup
+ - Upgrade gradle & libraries

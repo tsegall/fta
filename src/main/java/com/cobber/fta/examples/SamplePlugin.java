@@ -49,7 +49,7 @@ public class SamplePlugin {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		System.err.printf("Result: %s, Regular Expression: %s, Max: %s, Min: %s.\n", result.getType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
+		System.err.printf("Result: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
 
 		System.err.println("Detail: " + result.asJSON(true, 1));
 	}

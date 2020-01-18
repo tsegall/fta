@@ -30,7 +30,7 @@ import com.cobber.fta.StringFacts;
  * Plugin to detect Addresses. (English-language only).
  */
 public class LogicalTypeAddressEN extends LogicalTypeInfinite {
-	public final static String SEMANTIC_TYPE = "STREET_ADDRESS_EN";
+	public static final String SEMANTIC_TYPE = "STREET_ADDRESS_EN";
 	private boolean multiline = false;
 	private SingletonSet addressMarkersRef = null;
 	private Set<String> addressMarkers = null;

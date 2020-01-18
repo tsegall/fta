@@ -30,8 +30,8 @@ import com.cobber.fta.StringFacts;
  * Plugin to detect '&lt;Last Name&gt;, &lt;First Name&gt;'.
  */
 public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
-	public final static String SEMANTIC_TYPE = "NAME.LAST_FIRST";
-	public final static String REGEXP = "[- \\p{IsAlphabetic}]+, ?[- \\p{IsAlphabetic}]+";
+	public static final String SEMANTIC_TYPE = "NAME.LAST_FIRST";
+	public static final String REGEXP = "[- \\p{IsAlphabetic}]+, ?[- \\p{IsAlphabetic}]+";
 	private LogicalTypeCode logicalFirst;
 	private LogicalTypeCode logicalLast;
 

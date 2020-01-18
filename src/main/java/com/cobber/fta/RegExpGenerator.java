@@ -62,7 +62,7 @@ public class RegExpGenerator {
 	}
 
 	public RegExpGenerator(boolean asSet, int maxSetSize, Locale locale) {
-		this.asSet = true;
+		this.asSet = asSet;
 		this.maxSetSize = maxSetSize;
 		this.locale = locale;
 	}

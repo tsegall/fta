@@ -28,10 +28,10 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 		Iterator<String> iter;
 	}
 
-	public final static String REGEXP = "[- \\p{IsAlphabetic}]*";
-	private final int IDENTIFIED_THRESHOLD = 40;
-	private final int NON_IDENTIFIED_THRESHOLD = 60;
-	private final int ITERS = 5;
+	public static final String REGEXP = "[- \\p{IsAlphabetic}]*";
+	private static final int IDENTIFIED_THRESHOLD = 40;
+	private static final int NON_IDENTIFIED_THRESHOLD = 60;
+	private static final int ITERS = 5;
 	private Dodge[] iterators = null;
 
 	public LogicalTypePersonName(PluginDefinition plugin, String filename) throws FileNotFoundException {

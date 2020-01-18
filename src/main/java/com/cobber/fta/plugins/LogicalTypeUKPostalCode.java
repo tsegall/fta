@@ -33,10 +33,10 @@ import com.cobber.fta.StringFacts;
  * Note: we used an Infinite :-) Logical Type since the domain is so large.
  */
 public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
-	public final static String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_UK";
-	public final static String REGEXP = "([A-Za-z][A-Ha-hK-Yk-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})";
+	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_UK";
+	public static final String REGEXP = "([A-Za-z][A-Ha-hK-Yk-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})";
 	private static String[] validPostalCodes = { "XX9X 9XX", "X9X 9XX", "X9 9XX", "X99 9XX", "XX9 9XX", "XX99 9XX" };
-	private static Set<String> validShapes = new HashSet<String>();
+	private static Set<String> validShapes = new HashSet<>();
 	Pattern validator = Pattern.compile(REGEXP);
 
 	static {
@@ -77,25 +77,25 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 		String format = validPostalCodes[random.nextInt(validPostalCodes.length)];
 		String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		String restrictedAlphabet = "ABCDEFGHKLMNOPQRSTUVWXY";
-		String result = "";
+		StringBuilder result = new StringBuilder("");
 		for (int i = 0; i < format.length(); i++) {
 			switch (format.charAt(i)) {
 			case ' ':
-				result += ' ';
+				result.append(' ');
 				break;
 			case 'X':
 				if (i == 1)
-					result += restrictedAlphabet.charAt(random.nextInt(23));
+					result.append(restrictedAlphabet.charAt(random.nextInt(23)));
 				else
-					result += alphabet.charAt(random.nextInt(26));
+					result.append(alphabet.charAt(random.nextInt(26)));
 				break;
 			case '9':
-				result += (char)('0' + random.nextInt(10));
+				result.append((char)('0' + random.nextInt(10)));
 				break;
 			}
 		}
 
-		return result;
+		return result.toString();
 	}
 
 	@Override

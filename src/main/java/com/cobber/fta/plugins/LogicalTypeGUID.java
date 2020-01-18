@@ -28,9 +28,9 @@ import com.cobber.fta.StringFacts;
  * Plugin to detect GUIDs.
  */
 public class LogicalTypeGUID extends LogicalTypeInfinite {
-	public final static String SEMANTIC_TYPE = "GUID";
-	public final static String REGEXP = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
-	private final static char[] HEX = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	public static final String SEMANTIC_TYPE = "GUID";
+	public static final String REGEXP = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
+	private static final char[] HEX = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
 	public LogicalTypeGUID(PluginDefinition plugin) {
 		super(plugin);
@@ -47,7 +47,7 @@ public class LogicalTypeGUID extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		StringBuffer ret = new StringBuffer(36);
+		StringBuilder ret = new StringBuilder(36);
 
 		for (int i = 0; i < 32; i++) {
 			if (i == 8 || i == 12 || i == 16 || i == 20)
