@@ -170,5 +170,8 @@
  - Sonar Lint cleanup
  - Upgrade gradle & libraries
 
-### 2.3.42 ###
+### 2.3.43 ###
  - More Sonar Lint cleanup
+
+### 2.3.44 ###
+ - Fix bug with YYYYMMDD dates which have 00000000 as null value

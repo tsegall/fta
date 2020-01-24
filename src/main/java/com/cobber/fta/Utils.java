@@ -84,4 +84,15 @@ public final class Utils {
 
 		return best;
 	}
+
+	public static boolean allZeroes(String input) {
+		if (input == null)
+			return false;
+
+		for (int i = 0; i < input.length(); i++)
+			if (input.charAt(i) != '0')
+				return false;
+
+		return true;
+	}
 }

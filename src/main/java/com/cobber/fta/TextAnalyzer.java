@@ -2357,7 +2357,7 @@ public class TextAnalyzer {
 				// If we are collecting statistics - we need to generate the topK and bottomK
 				if (collectStatistics)
 					for (String s : cardinality.keySet())
-						if (!"0".equals(s))
+						if (!Utils.allZeroes(s))
 							trackDateTime(s, matchPatternInfo, true);
 			} else if (groupingSeparators == 0 && minLongNonZero > 1800 && maxLong < 2041 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("year") || dataStreamName.toLowerCase(locale).contains("date"))) {
