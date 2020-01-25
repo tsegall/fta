@@ -2345,11 +2345,12 @@ public class TextAnalyzer {
 			if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id && matchPatternInfo.typeQualifier == null && minLong < 0)
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG);
 
+			// Sometimes a Long is not a Long but it is really a date
 			if (groupingSeparators == 0 && minLongNonZero > 19000101 && maxLong < 20410101 &&
 					DateTimeParser.plausibleDateCore(false, (int)minLongNonZero%100, ((int)minLongNonZero/100)%100, (int)minLongNonZero/10000, 4)  &&
 					DateTimeParser.plausibleDateCore(false, (int)maxLong%100, ((int)maxLong/100)%100, (int)maxLong/10000, 4)  &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("date"))) {
-				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{8}" : "0|\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
+				matchPatternInfo = new PatternInfo(null, (minLongNonZero == minLong || shapes.size() == 1) ? "\\d{8}" : "0|\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
 				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 				minLocalDate = LocalDate.parse(String.valueOf(minLongNonZero), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
