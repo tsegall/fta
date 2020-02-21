@@ -567,6 +567,7 @@ public class DetermineDateTimeFormatTests {
 		final String inputs[] = input.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
+		det.train("");
 		for (int i = 0; i < inputs.length; i++) {
 			det.train(inputs[i]);
 		}

@@ -283,6 +283,7 @@
 		"description": "City/Town",
 		"headerRegExps": [ "^(?i)(city|town)$|^.*[ _](?i)(city|town)$|^(?i)(city|town)[ _].*$|.*[a-z](City|Town)$" ],
 		"headerRegExpConfidence": [ 100 ],
+		"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 		"regExpReturned": "[-' \\.\\p{IsAlphabetic}]+",
 		"baseType": "STRING",
 		"priority": 210

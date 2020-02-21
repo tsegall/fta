@@ -501,6 +501,69 @@ public class TestStrings {
 	}
 
 	@Test
+	public void nastyEnum() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+		final String[] inputs = new String[] {
+				"Skipping locale 'hi_IN' as it does not use Arabic numerals.",
+				"Skipping locale 'th_TH_TH_#u-nu-thai' as it does not use Arabic numerals.",
+				"Skipping locale 'ja_JP_JP_#u-ca-japanese' as it does not use the Gregorian calendar.",
+				"Skipping locale 'mk_MK' as it has trailing neg suffix." };
+		final int iterations = 10;
+
+		for (int i = 0; i < iterations; i++) {
+			for (String sample : inputs)
+				analysis.train(sample);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), ".{54,84}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void nastyEnumsTwo() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+		final String[] inputs = new String[] {
+				"Fighter",
+				"Not a Fighter",
+				"Would like to be a Fighter",
+				"Hates Fighting",
+				"Fighter; WANNABE"};
+		final int iterations = 10;
+
+		for (int i = 0; i < iterations; i++) {
+			for (String sample : inputs)
+				analysis.train(sample);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getRegExp(), "(?i)(FIGHTER|FIGHTER; WANNABE|HATES FIGHTING|NOT A FIGHTER|WOULD LIKE TO BE A FIGHTER)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void testCompressUSD() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);

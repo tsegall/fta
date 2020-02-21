@@ -175,3 +175,7 @@
 
 ### 2.3.44 ###
  - Fix bug with YYYYMMDD dates which have 00000000 as null value
+
+### 2.3.46 ###
+ - Address issue when no RegExpsToMatch were supplied
+ - Improve test coverage

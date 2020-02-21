@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -2460,6 +2461,49 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getRegExp(), CUSIP_REGEXP);
 		Assert.assertEquals(result.getTypeQualifier(), "CUSIP");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void testRegExpLogicalType_Bug() {
+		final String EXPECTED_REGEXP = "\\p{IsAlphabetic}\\d{10}";
+		String[] samples = new String[] {
+				"a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890",
+				"a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890",
+				"a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890",
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("NotMuch");
+		String pluginDefinitions =
+				"[ {" +
+				"  \"qualifier\": \"BUG\"," +
+				"  \"regExpReturned\": \"\\\\d{11}\"," +
+				"  \"threshold\": 98," +
+				"  \"baseType\": \"STRING\"" +
+				"  } ]";
+
+		try {
+			analysis.getPlugins().registerPlugins(new StringReader(pluginDefinitions),
+					analysis.getStreamName(), Locale.getDefault());
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getRegExp(), EXPECTED_REGEXP);
+		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);

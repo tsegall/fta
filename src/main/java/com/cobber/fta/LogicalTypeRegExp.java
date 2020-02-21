@@ -177,8 +177,10 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	public boolean isMatch(String regExp) {
+		// The optional 'regExpsToMatch' tag is an ordered list of Regular Expressions used to match against the Stream Data.
+		// If not set then the regExpReturned is used to match.
 		if (defn.regExpsToMatch == null)
-			return true;
+			return regExp.equals(defn.regExpReturned);
 
 		for (String re : defn.regExpsToMatch) {
 			if (regExp.equals(re))

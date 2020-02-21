@@ -2527,12 +2527,31 @@ public class TextAnalyzer {
 		}
 
 		if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier == null) {
-			// We would really like to say something better than it is a String!
 			boolean updated = false;
+			// We would really like to say something better than it is a String!
+
+			// Flip to a Regular Expression based on Shape analysis if possible
+			String newRegExp = shapes.getRegExp(realSamples);
+			if (newRegExp != null) {
+				matchPatternInfo = new PatternInfo(null, newRegExp, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+						maxTrimmedLength, null, null);
+			}
+
+			for (LogicalTypeRegExp logical : regExpTypes) {
+				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) &&
+						logical.isMatch(matchPatternInfo.regexp) &&
+						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
+					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
+					confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+					updated = true;
+					break;
+				}
+			}
+
 			long interestingSamples = sampleCount - (nullCount + blankCount);
 
-			// First try a nice discrete enum
-			if (cardinalityUpper.size() > 1 && cardinalityUpper.size() <= MAX_ENUM_SIZE && (interestingSamples > reflectionSamples || interestingSamples / cardinalityUpper.size() >= 3)) {
+			// Try a nice discrete enum
+			if (!updated && cardinalityUpper.size() > 1 && cardinalityUpper.size() <= MAX_ENUM_SIZE && (interestingSamples > reflectionSamples || interestingSamples / cardinalityUpper.size() >= 3)) {
 				// Rip through the enum doing some basic sanity checks
 				RegExpGenerator gen = new RegExpGenerator(true, MAX_ENUM_SIZE, locale);
 				boolean fail = false;
@@ -2591,27 +2610,6 @@ public class TextAnalyzer {
 					matchPatternInfo = new PatternInfo(null, gen.getResult(), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 							maxTrimmedLength, null, null);
 					updated = true;
-				}
-			}
-
-			// Flip to a Regular Expression based on Shape analysis if possible
-			if (!updated) {
-				String newRegExp = shapes.getRegExp(realSamples);
-				if (newRegExp != null) {
-					matchPatternInfo = new PatternInfo(null, newRegExp, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
-							maxTrimmedLength, null, null);
-					updated = true;
-				}
-			}
-
-			for (LogicalTypeRegExp logical : regExpTypes) {
-				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) &&
-						logical.isMatch(matchPatternInfo.regexp) &&
-						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
-					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
-					confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
-					updated = true;
-					break;
 				}
 			}
 
