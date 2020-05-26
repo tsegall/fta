@@ -152,6 +152,15 @@ public class TextAnalyzer {
 
 	private Shapes shapes = new Shapes(MAX_SHAPES_DEFAULT);
 
+	/**
+	 * An Escalation contains three regExps in order of increasing genericity.  So for example the following 3 regExps:
+	 *
+	 * - [\p{IsAlphabetic}\d]{10}
+	 * - [\p{IsAlphabetic}\d]+
+	 * - .+
+	 *
+	 * would all describe "A43BCHK12L".
+	 */
 	class Escalation {
 		StringBuilder[] level;
 
@@ -169,9 +178,8 @@ public class TextAnalyzer {
 			if (getClass() != obj.getClass())
 				return false;
 			Escalation other = (Escalation) obj;
-			if (!Arrays.equals(level, other.level))
-				return false;
-			return true;
+
+			return Arrays.equals(level, other.level);
 		}
 
 		Escalation() {
@@ -179,7 +187,10 @@ public class TextAnalyzer {
 		}
 	}
 
-	private ArrayList<Escalation> levels;
+	// Maintain a list of the Escalations for the first Detect Window samples
+	private ArrayList<Escalation> detectWindowEscalations;
+
+	// Maintain a list (corresponding to the levels) of the keys and their frequencies
 	List<Map<String, Integer>> frequencies = new ArrayList<>();
 
 	private long matchCount;
@@ -916,7 +927,7 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("No support for locales that do not use Arabic numerals");
 
 		raw = new ArrayList<>(detectWindow);
-		levels = new ArrayList<>(detectWindow);
+		detectWindowEscalations = new ArrayList<>(detectWindow);
 
 		// If enabled, load the default set of plugins for Logical Type detection
 		if (enableDefaultLogicalTypes)
@@ -1360,7 +1371,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		levels.add(escalation);
+		detectWindowEscalations.add(escalation);
 
 		return matchPatternInfo != null && matchPatternInfo.type != null;
 	}
@@ -1419,6 +1430,13 @@ public class TextAnalyzer {
 		return best;
 	}
 
+	/*
+	 * collapse() will attempt to coalesce samples to be more generic so we stay at a lower level rather than
+	 * ending up with '.+' which is not very informative.  So for example, with the following pair:
+	 * [\p{IsAlphabetic}{10}, \p{IsAlphabetic}+, .+]
+	 * [[\p{IsAlphabetic}\d]{10}, [\p{IsAlphabetic}\d]+, .+]
+	 * The first element will be 'promoted' to the second.
+	 */
 	private void collapse() {
 		// Map from Escalation hash to count of occurrences
 		final Map<Integer, Integer> observedFrequency = new HashMap<>();
@@ -1426,7 +1444,7 @@ public class TextAnalyzer {
 		Map<Integer, Escalation> observedSet = new HashMap<>();
 
 		// Calculate the frequency of every element
-		for (final Escalation e : levels) {
+		for (final Escalation e : detectWindowEscalations) {
 			int hash = e.hashCode();
 			final Integer seen = observedFrequency.get(hash);
 			if (seen == null) {
@@ -1449,7 +1467,7 @@ public class TextAnalyzer {
 					keyFrequency.put(key, seen + entry.getValue());
 			}
 
-			// If it makes sense rewrite our sample data switching numeric matches to alphanumeric matches
+			// If it makes sense rewrite our sample data switching numeric/alpha matches to alphanumeric matches
 			if (keyFrequency.size() > 1) {
 				final Set<String> keys = new HashSet<>(keyFrequency.keySet());
 				for (String oldKey : keys) {
@@ -1458,6 +1476,13 @@ public class TextAnalyzer {
 						int oldCount = keyFrequency.remove(oldKey);
 						int currentCount = keyFrequency.get(newKey);
 						keyFrequency.put(newKey, currentCount + oldCount);
+					} else {
+						newKey = oldKey.replace(KnownPatterns.PATTERN_ALPHA, KnownPatterns.PATTERN_ALPHANUMERIC);
+						if (!newKey.equals(oldKey) && keys.contains(newKey)) {
+							int oldCount = keyFrequency.remove(oldKey);
+							int currentCount = keyFrequency.get(newKey);
+							keyFrequency.put(newKey, currentCount + oldCount);
+						}
 					}
 				}
 			}

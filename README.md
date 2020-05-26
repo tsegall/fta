@@ -66,7 +66,7 @@ Metrics detected include:
 
 In addition to detecting a set of Base types fta will also, when enabled (default on - setDefaultLogicalTypes(false) to disable) infer Semantic type information along with the Base types.
 
-The following Semantic Types are currently detected:
+The Semantic Types detected are based on the current locale, the list below is the detected set if the language is set to en_US:
 
 Semantic Type|Description|
 ---------|-------------|
@@ -180,7 +180,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 6.2`
+`$ gradle wrapper --gradle-version 6.4`
 
 `$ ./gradlew installDist`
 

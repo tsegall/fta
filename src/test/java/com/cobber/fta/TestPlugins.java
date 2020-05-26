@@ -2472,6 +2472,52 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void testRegExpLogicalType_FUND() throws IOException {
+		final String FUND_REGEXP = "[\\p{IsAlphabetic}\\d]{10}";
+		String[] samples = new String[] {
+				"BFLGXF682X", "BFLGXF682W", "PNUJWNGCFQ", "SVAXRA5JCJ", "Y7OBPIXWM9", "G8K8TRB34J", "Y3EB59C7IS", "SJBDBG2P2M", "4XC8B8ZE2Y", "JN7BXG4Z6B",
+				"VMTM4FS09S", "INX2TS29XH", "HCUBHG6SL8", "KTCZJMS3C2", "YOUOL9IN2K", "NK8YM32JKG", "J8608B2931", "YFJBB0HOUS", "HKPS0A7DGO", "6USXWQTEK1",
+				"4BTJHZ1I2V", "PDGWWLKDY9", "OQ1KEBQD85", "HS8JYUVVCO", "WZYULQRKW2", "SDLJVXYOUW", "2DBSKJEJMK", "J0DN2PR11M", "DDIKS9IUVJ", "WRUDP8V53N",
+				"TTP0QM9LBB", "YOBTOPQ7SS", "FEIQJXA9QS", "YFX7A29YP7", "SHMP1HGGJP", "3SSITU608H", "UPGYH13E22", "LD7QN90UL9", "2RHOBF94OY", "QM8EUAU5Y8",
+				"WX9A0C9BX2", "GYAVONF05B", "3EMMIG52FC", "389OCJM16S", "ELKZOOXWQQ", "G1QQO07DVX", "B9KAVG2XIO", "Z7PMK6HZIT", "30997SFT8G", "445X9OVQ8I",
+				"7DJLANTCAM", "3LUZTHNKYQ", "Y75AWAD2J7", "43BWNCE0IO", "WETOQEXVMK", "I9QJC1Y362", "BZPIBC32J8", "QUGEIX28PQ", "803ZIHG8TB", "M27W6A2OWF",
+				"FMQ9O6NXTP", "X15CFBQCEN", "7G2FOQTA9G", "3SSZJ0HFAI", "I7ONRG4LL9", "QIRLXTQ67R", "ULBT4MG4I4", "2NYTJ3SU91", "6U3CFJCLRB", "IRODHFP3WZ",
+				"RBXXUTBHE9", "3XEZPGG3HY", "AX4ZKUSXIN", "SO6NPS35C8", "09SPAMYVBM", "9UEPW1GV3B", "QKONJM4PL7", "S7QY4O08GH", "4372MH2Q6H", "6UJROS7NZI",
+				"HV95MAJQH5", "D0VQHHJZTG", "9Y4HY3JG6F", "OTYHGPG5AL", "ND1CE5NHI1", "J3U18BFLEQ", "BCZA5IYEU2", "SN9WQMMFYH", "HMRLQUSGYG", "PHMEA59YCI",
+				"X5Q7VGKBSA", "BG5G1NPDV0", "83C87F75FN", "L76A3ARGHL", "89VOPGUFK0", "8TJCZGI05B", "VLEPQIKH22", "0FB3TX3VLX", "CFDVZLQZVM", "1CDYRDTTV3",
+				"7M5ABGF3V8"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("FUND_ID");
+		List<PluginDefinition> plugins = new ArrayList<>();
+		plugins.add(new PluginDefinition("FUND_ID", null, FUND_REGEXP,
+				null, null, null, null, FUND_REGEXP, new String[] { }, null, null, 98, PatternInfo.Type.STRING));
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "FUND_ID", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getRegExp(), FUND_REGEXP);
+		Assert.assertEquals(result.getTypeQualifier(), "FUND_ID");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void testRegExpLogicalType_Bug() {
 		final String EXPECTED_REGEXP = "\\p{IsAlphabetic}\\d{10}";
 		String[] samples = new String[] {

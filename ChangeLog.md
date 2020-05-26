@@ -179,3 +179,8 @@
 ### 2.3.46 ###
  - Address issue when no RegExpsToMatch were supplied
  - Improve test coverage
+
+### 2.3.47 ###
+ - Update dependencies
+ - Improve test coverage
+ - Fix bug where alpha string was not being promoted to alphanumeric string and hence not matching customer supplied logical type

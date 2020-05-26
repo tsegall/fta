@@ -663,7 +663,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + KnownPatterns.freezeANY(3, 8, 3, 8, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()) + KnownPatterns.PATTERN_WHITESPACE);
+		Assert.assertEquals(result.getRegExp(), "[ 	]*[\\p{IsAlphabetic}\\d]{3,8}[ 	]*");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);

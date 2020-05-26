@@ -85,6 +85,32 @@ public class TestBulk {
 	}
 
 	@Test
+	public void basicDistance() throws IOException {
+		final TextAnalyzer analysisBulk = new TextAnalyzer();
+		final long SAMPLES = 3622;
+
+		HashMap<String, Long> basic = new HashMap<>();
+		basic.put("Disconnect Fractional", 100L);
+		basic.put("Disconnect Other", 137L);
+		basic.put("Disconnect Still Billing", 172L);
+		basic.put("Disconnect", 217L);
+		basic.put("Install Fractional Rerate", 33L);
+		basic.put("Install Fractional", 1L);
+		basic.put("Re-rates", 223L);
+		basic.put("Run Rate", 2739L);
+		analysisBulk.trainBulk(basic);
+		final TextAnalysisResult resultBulk = analysisBulk.getResult();
+
+		Assert.assertEquals(resultBulk.getSampleCount(), SAMPLES);
+		Assert.assertEquals(resultBulk.getType(), PatternInfo.Type.STRING);
+		Assert.assertNull(resultBulk.getTypeQualifier());
+		Assert.assertEquals(resultBulk.getNullCount(), 0);
+		Assert.assertEquals(resultBulk.getRegExp(), "(?i)(DISCONNECT|DISCONNECT FRACTIONAL|DISCONNECT OTHER|DISCONNECT STILL BILLING|INSTALL FRACTIONAL|INSTALL FRACTIONAL RERATE|RE-RATES|RUN RATE)");
+		Assert.assertEquals(resultBulk.getMatchCount(), SAMPLES);
+		Assert.assertEquals(resultBulk.getConfidence(), 1.0);
+	}
+
+	@Test
 	public void justBlanks() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 

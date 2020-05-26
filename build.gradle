@@ -13,7 +13,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.github.ben-manes:gradle-versions-plugin:0.27.0"
+    classpath "com.github.ben-manes:gradle-versions-plugin:0.28.0"
   }
 }
 
@@ -21,7 +21,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "2.3.46"
+version = "2.3.47"
 
 repositories {
   mavenCentral()
@@ -110,9 +110,9 @@ dependencies {
   // https://mvnrepository.com/artifact/commons-validator/commons-validator
   implementation group: 'commons-validator', name: 'commons-validator', version: '1.6'
   // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.2'
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.0'
   // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-  implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.11.4'
+  implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.12.4'
   // https://mvnrepository.com/artifact/org.apache.commons/commons-text
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
   // https://mvnrepository.com/artifact/org.testng/testng
