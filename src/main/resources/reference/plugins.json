@@ -103,6 +103,7 @@
 		"validLocales": [ "en" ],
 		"headerRegExps": [ ".*(?i)(country).*" ],
 		"headerRegExpConfidence": [ 90 ],
+		"threshold": 85,
 		"priority": 90
 	},
 	{

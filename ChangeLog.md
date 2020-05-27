@@ -184,3 +184,6 @@
  - Update dependencies
  - Improve test coverage
  - Fix bug where alpha string was not being promoted to alphanumeric string and hence not matching customer supplied logical type
+
+### 2.3.48 ###
+ - More Countries added to the list we recognize (also dropped the threshold to 85%)
