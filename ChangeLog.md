@@ -187,3 +187,6 @@
 
 ### 2.3.48 ###
  - More Countries added to the list we recognize (also dropped the threshold to 85%)
+
+### 2.3.49 ###
+ - Externalize dependencies for easier management
