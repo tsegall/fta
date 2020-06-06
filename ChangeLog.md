@@ -190,3 +190,6 @@
 
 ### 2.3.49 ###
  - Externalize dependencies for easier management
+
+### 2.3.50 ###
+ - Bump versions
