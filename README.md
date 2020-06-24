@@ -168,11 +168,20 @@ The optional 'minMaxPresent' tag indicates that both the minimum and maxixum val
 
 The optional 'minSamples' tag indicates that in order for this Semantic Type to be detected there must be at least this many samples.
 
-The optional 'blackList' tag is a list of invalid values for this Semantic Type, for example '[ "000-00-0000" ]' indicates that this is an invalid SSN despite the fact that it matches the SSN regular expression.
+The optional 'invalidList' tag is a list of invalid values for this Semantic Type, for example '[ "000-00-0000" ]' indicates that this is an invalid SSN, despite the fact that it matches the SSN regular expression.
 
 ### Finite plugins ###
 
 The mandatory 'filename' tag contains a file with the list of valid elements enumerated.
+
+## Outliers ##
+
+An outlier is a data point that differs significantly from other member of the data set.  There are a set of algorithms used to detect outliers:
+- For Finite plugins, the set of valid values is predefined and hence outlier detection is simply those elements not in the set.
+- For RegExp plugins, the set of valid patterns is predefined and hence outlier detection is simply any element which does not match the pattern.
+- For any fields detected as a known Semantic Type then the outliers are based on the particular Semantic Type, for example if the Semantic Type is
+detected as a US Phone Number then numbers with invalid area codes or invalid area code exchange pairs will be flagged as outliers.
+- For infinite plugins, outliers may be detected based on a statistical analysis, for example if there are 100 valid integers and one 'O' (letter O) then the 'O' would be identified as an outlier.  In other cases, where a enumerated type is detected, for example 100 instances of RED, 100 instances of BLUE, 100 instances of PINK, and one instance of 'P1NK' then the instance of 'P1NK' woud be identified as an outllier based on its Levenstein distance from one of the other elements in the set.
 
 ## Getting Starting ##
 

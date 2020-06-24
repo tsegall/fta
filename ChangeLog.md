@@ -193,3 +193,6 @@
 
 ### 2.3.50 ###
  - Bump versions
+
+### 2.3.51 ###
+ - Bump versions, blackList -> invalidList, outlier documentation.

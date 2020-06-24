@@ -307,7 +307,7 @@
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpsToMatch": [ "\\d{3}-\\d{2}-\\d{4}" ],
 		"regExpReturned": "\\d{3}-\\d{2}-\\d{4}",
-		"blackList": [ "000-00-0000" ],
+		"invalidList": [ "000-00-0000" ],
 		"validLocales": [ "en-US" ],
 		"threshold": 98,
 		"baseType": "STRING",

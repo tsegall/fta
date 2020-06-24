@@ -123,7 +123,7 @@ public class LogicalTypeRegExp extends LogicalType {
 				throw new InternalErrorException(WRONG_TYPE + defn.baseType);
 			}
 
-		return defn.blackList == null || !defn.blackList.contains(input);
+		return defn.invalidList == null || !defn.invalidList.contains(input);
 	}
 
 	@Override
