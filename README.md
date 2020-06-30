@@ -218,8 +218,8 @@ Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and f
 
 ## Java code ##
 
-Download the latest jars from the [Maven
-repository](https://mvnrepository.com/artifact/com.cobber.fta/fta).
+Download the latest jars from the [MVN
+Repository](https://mvnrepository.com/artifact/com.cobber.fta/fta) or [Maven.org](https://search.maven.org/artifact/com.cobber.fta/fta).
 
 ## Javadoc ##
 
