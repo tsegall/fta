@@ -1853,8 +1853,12 @@ public class RandomTests {
 
 			LogicalTypeCode logicalTypeCode = (LogicalTypeCode)logicalType;
 
-			for (int i = 0; i < 1000; i++)
-				Assert.assertTrue(logicalTypeCode.isValid(logicalTypeCode.nextRandom()));
+			for (int i = 0; i < 1000; i++) {
+				String value = logicalTypeCode.nextRandom();
+				if (!logicalTypeCode.isValid(value))
+					System.err.println("Issue with LogicalType'" + logicalTypeCode.getDescription() + "', value: " + value + "\n");
+				Assert.assertTrue(logicalTypeCode.isValid(value), value);
+			}
 		}
 	}
 

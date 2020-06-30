@@ -28,8 +28,10 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	}
 
 	public static final String REGEXP = "[- \\p{IsAlphabetic}]*";
-	private static final int IDENTIFIED_THRESHOLD = 40;
-	private static final int NON_IDENTIFIED_THRESHOLD = 60;
+	// The threshold we use if we have a strong signal from the header
+	private static final int IDENTIFIED_LOW_THRESHOLD = 40;
+	// The threshold we use if we have a moderate signal from the header
+	private static final int IDENTIFIED_HIGH_THRESHOLD = 60;
 	private static final int ITERS = 5;
 	private Dodge[] iterators = null;
 
@@ -70,17 +72,15 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 		if (getMembers().contains(trimmedUpper))
 			return true;
 
-		// Throw 40% away
-		if (random.nextInt(100) >= IDENTIFIED_THRESHOLD)
-			return false;
-
-		// For the balance of the failures we will say they are valid if it is just a single word
+		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
 		for (int i = 0; i < trimmedUpper.length(); i++) {
 			if (!Character.isAlphabetic(trimmedUpper.charAt(i)))
 				return false;
 		}
 
-		return true;
+		// Assume 40% of the remaining are good - hopefully this will not bias the determination excessively.
+		// Use hashCode as opposed to random() to ensure that a given data set gives the same results from one run to another.
+		return input.hashCode() % 10 < 4;
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 
 		int headerConfidence = getHeaderConfidence(dataStreamName);
 
-		if (headerConfidence >= 90 && (double)matchCount / realSamples >= (double)IDENTIFIED_THRESHOLD/100)
+		if (headerConfidence >= 90 && (double)matchCount / realSamples >= (double)IDENTIFIED_LOW_THRESHOLD/100)
 			return null;
 
 		int minCardinality = 10;
@@ -101,10 +101,11 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 
 		if (cardinality.size() < minCardinality)
 			return backout;
+
 		if (realSamples < minSamples)
 			return backout;
 
-		if (headerConfidence >= 50 && (double)matchCount / realSamples >= (double)NON_IDENTIFIED_THRESHOLD/100)
+		if (headerConfidence >= 50 && (double)matchCount / realSamples >= (double)IDENTIFIED_HIGH_THRESHOLD/100)
 			return null;
 
 		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : backout;

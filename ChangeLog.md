@@ -196,3 +196,11 @@
 
 ### 2.3.51 ###
  - Bump versions, blackList -> invalidList, outlier documentation.
+
+### 3.0.0 ###
+ - Switch to using SecureRandom instead of Random
+ - Zip refs file had bogus entry in it
+ - If finite sets have same score make sure to select the one with the highest priority
+ - Change DataSignature to have less dependency on Structure facts
+ - Fix issue with FirstName/LastName not returning consistent results from one run to next with secureRandom
+ - Bump versions

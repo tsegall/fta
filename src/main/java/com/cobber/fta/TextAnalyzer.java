@@ -2291,7 +2291,10 @@ public class TextAnalyzer {
 		for (LogicalTypeFinite logical : finiteTypes)
 			if ((!logical.isClosed() || cardinalityUpper.size() <= logical.getSize() + 2 + logical.getSize()/20)) {
 				FiniteMatchResult result = checkFiniteSet(cardinalityUpper, outliers, logical);
-				if (result.matched() && result.score > bestScore) {
+
+				// Choose the best score, if two scores the same then prefer the logical with the highest priority
+				if (result.matched() && ((result.score > bestScore) ||
+						(bestResult != null && result.score == bestScore && logical.getPriority() < bestResult.logical.getPriority()))) {
 					bestResult = result;
 					bestScore = result.score;
 				}

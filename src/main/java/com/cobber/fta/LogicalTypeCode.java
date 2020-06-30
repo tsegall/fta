@@ -15,11 +15,11 @@
  */
 package com.cobber.fta;
 
+import java.security.SecureRandom;
 import java.util.Locale;
-import java.util.Random;
 
 public abstract class LogicalTypeCode extends LogicalType implements LTRandom {
-	protected Random random = null;
+	protected SecureRandom random = null;
 
 	LogicalTypeCode(PluginDefinition plugin) {
 		super(plugin);
@@ -29,13 +29,14 @@ public abstract class LogicalTypeCode extends LogicalType implements LTRandom {
 	public boolean initialize(Locale locale) {
 		super.initialize(locale);
 
-		random = new Random(3141592);
+		random = new SecureRandom(new byte[] { 3, 1, 4, 1, 5, 9, 2 });
 
 		return true;
 	}
 
 	@Override
-	public void seed(long seed) {
-		random = new Random(seed);
+	public void seed(byte[] seed) {
+
+		random = new SecureRandom(seed);
 	}
 }

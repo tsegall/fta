@@ -2387,49 +2387,63 @@ public class TestPlugins {
 		String headersBad[] = new String[] {
 				null, ""
 		};
-		String[] samples = new String[] {
-				"Swavek", "Jay", "Smitha", "Tim", "Roger"
+		String[] samplesGoodFirstOnly = new String[] {
+				"Elizabeth", "Sarah", "Tim", "Paula", "Bethany", "Reginald", "Amanda", "Nancy", "Margaret", "Leila"
+		};
+		String[] samplesUnknown = new String[] {
+				"Mary Beth", "Mary Joe"
 		};
 
-		for (String header : headersMaybe) {
-			final TextAnalyzer analysis = new TextAnalyzer(header);
-			analysis.train("Mary");
-			for (String sample : samples) {
-				analysis.train(sample);
-			}
+		// So you need 40% or better success rate if you have 'good' headers
+		for (int i = 0; i < 100; i++) {
+			for (String header : headersGood) {
+				final TextAnalyzer analysis = new TextAnalyzer(header);
+				for (int s = 0; s < 2; s++)
+					analysis.train(samplesGoodFirstOnly[s]);
 
-			Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
-			Assert.assertEquals(analysis.getResult().getStructureSignature(), signatures.get("NAME.FIRST"));
+				for (String sample : samplesUnknown)
+					analysis.train(sample);
+
+				Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
+				Assert.assertEquals(analysis.getResult().getStructureSignature(), signatures.get("NAME.FIRST"));
+			}
 		}
 
-		for (String header : headersGood) {
-			final TextAnalyzer analysis = new TextAnalyzer(header);
-			for (String sample : samples) {
-				analysis.train(sample);
-			}
+		// So you need 60% or better success rate if you have 'maybe' headers
+		for (int i = 0; i < 100; i++) {
+			for (String header : headersMaybe) {
+				final TextAnalyzer analysis = new TextAnalyzer(header);
+				for (int s = 0; s < 5; s++)
+					analysis.train(samplesGoodFirstOnly[s]);
 
-			Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
-			Assert.assertEquals(analysis.getResult().getStructureSignature(), signatures.get("NAME.FIRST"));
+				for (String sample : samplesUnknown)
+					analysis.train(sample);
+
+				Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
+				Assert.assertEquals(analysis.getResult().getStructureSignature(), signatures.get("NAME.FIRST"));
+			}
 		}
 
-		for (String header : headersMaybe) {
-			final TextAnalyzer analysis = new TextAnalyzer(header);
-			for (String sample : samples) {
-				analysis.train(sample);
-			}
-
-			Assert.assertNull(analysis.getResult().getTypeQualifier(), header);
-		}
-
+		// With 'bad' headers you really need good data, and more of it!
 		for (String header : headersBad) {
 			final TextAnalyzer analysis = new TextAnalyzer(header);
-			for (String sample : samples) {
+			for (int i = 0; i < 4; i++)
+				for (String sample : samplesGoodFirstOnly)
+					analysis.train(sample);
+
+			Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
+			Assert.assertEquals(analysis.getResult().getStructureSignature(), signatures.get("NAME.FIRST"));
+		}
+
+		// With 'bad' headers you really need good data - this is an example of not enough data!
+		for (String header : headersBad) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			for (String sample : samplesGoodFirstOnly) {
 				analysis.train(sample);
 			}
 
 			Assert.assertNull(analysis.getResult().getTypeQualifier(), header);
 		}
-
 	}
 
 	@Test

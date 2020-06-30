@@ -32,6 +32,7 @@ import com.cobber.fta.StringFacts;
 public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "NAME.FIRST_LAST";
 	public static final String REGEXP = "[- \\p{IsAlphabetic}]+ [- \\p{IsAlphabetic}]+";
+	private static final String BACKOUT = ".+";
 	private LogicalTypeCode logicalFirst;
 	private LogicalTypeCode logicalLast;
 
@@ -139,7 +140,21 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
 			Map<String, Long> cardinality, Map<String, Long> outliers) {
-		return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : ".+";
+
+		int minCardinality = 10;
+		int minSamples = 20;
+		if (getHeaderConfidence(dataStreamName) != 0) {
+			minCardinality = 5;
+			minSamples = 5;
+		}
+
+		if (cardinality.size() < minCardinality)
+			return BACKOUT;
+
+		if (realSamples < minSamples)
+			return BACKOUT;
+
+		return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : BACKOUT;
 	}
 
 	@Override

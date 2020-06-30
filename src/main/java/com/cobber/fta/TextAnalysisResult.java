@@ -503,8 +503,8 @@ public class TextAnalysisResult {
 	 * @return A String SHA-1 hash that reflects the data stream contents.
 	 */
 	public String getDataSignature() {
-		// Grab a JSON representation if the analysis without the Data Signature and use this to generate the Data Signature
-		String dataSignature = internalAsJSON(false, 1, false);
+		// Grab a JSON representation of the analysis without the Data Signature and type information and use this to generate the Data Signature
+		String dataSignature = internalAsJSON(false, 1, true);
 		byte[] signature = dataSignature.getBytes(StandardCharsets.UTF_8);
 		MessageDigest md;
 		try {
@@ -545,10 +545,10 @@ public class TextAnalysisResult {
 	 * @return A JSON representation of the analysis.
 	 */
 	public String asJSON(boolean pretty, int verbose) {
-		return internalAsJSON(pretty,verbose, true);
+		return internalAsJSON(pretty,verbose, false);
 	}
 
-	private String internalAsJSON(boolean pretty, int verbose, boolean withDataSignature) {
+	private String internalAsJSON(boolean pretty, int verbose, boolean forDataSignature) {
 		ObjectMapper mapper = new ObjectMapper();
 
 		ObjectWriter writer = pretty ? mapper.writerWithDefaultPrettyPrinter() : mapper.writer();
@@ -559,12 +559,15 @@ public class TextAnalysisResult {
 		analysis.put("matchCount", matchCount);
 		analysis.put("nullCount", nullCount);
 		analysis.put("blankCount", blankCount);
-		analysis.put("regExp", getRegExp());
-		analysis.put("confidence", confidence);
-		analysis.put("type", patternInfo.type.toString());
+		if (!forDataSignature) {
+			analysis.put("regExp", getRegExp());
+			analysis.put("confidence", confidence);
+			analysis.put("type", patternInfo.type.toString());
 
-		if (patternInfo.typeQualifier != null)
-			analysis.put("typeQualifier", patternInfo.typeQualifier);
+			if (patternInfo.typeQualifier != null)
+				analysis.put("typeQualifier", patternInfo.typeQualifier);
+		}
+
 		if (PatternInfo.Type.DOUBLE == patternInfo.type)
 			analysis.put("decimalSeparator", String.valueOf(decimalSeparator));
 
@@ -626,7 +629,7 @@ public class TextAnalysisResult {
 		if (signature != null)
 			analysis.put("structureSignature", signature);
 
-		if (withDataSignature) {
+		if (!forDataSignature) {
 			signature = getDataSignature();
 			if (signature != null)
 				analysis.put("dataSignature", signature);
