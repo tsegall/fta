@@ -2457,6 +2457,7 @@ public class TestPlugins {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
+
 		List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
 				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
@@ -2483,6 +2484,73 @@ public class TestPlugins {
 		for (int i = 0; i < samples.length; i++) {
 			Assert.assertTrue(samples[i].matches(result.getRegExp()));
 		}
+	}
+
+	@Test
+	public void testSignatures() throws IOException {
+		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
+		String[] samples = new String[] {
+				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
+				"G0084W951", "G0129K104", "G0129K904", "G0129K954", "G0132V105", "G0176J109", "G0176J909", "G0176J959", "G01767105", "G01767905",
+				"G01767955", "G0177J108", "G0177J908", "G0177J958", "G02602103", "G02602903", "G02602953", "G0335L102", "G0335L902", "G0335L952"
+
+		};
+
+		final TextAnalyzer preAnalysis = new TextAnalyzer("CUSIP");
+
+		for (String sample : samples)
+			preAnalysis.train(sample);
+
+		final TextAnalysisResult preResult = preAnalysis.getResult();
+
+		Assert.assertEquals(preResult.getSampleCount(), samples.length);
+		Assert.assertEquals(preResult.getRegExp(), CUSIP_REGEXP);
+		Assert.assertNull(preResult.getTypeQualifier());
+		Assert.assertEquals(preResult.getBlankCount(), 0);
+		Assert.assertEquals(preResult.getNullCount(), 0);
+		Assert.assertEquals(preResult.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(preResult.getConfidence(), 1.0);
+
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(preResult.getRegExp()));
+		}
+
+		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
+
+		List<PluginDefinition> plugins = new ArrayList<>();
+		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
+				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getRegExp(), CUSIP_REGEXP);
+		Assert.assertEquals(result.getTypeQualifier(), "CUSIP");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+
+		// Data Signature is independent of Structure
+		Assert.assertEquals(preResult.getDataSignature(), result.getDataSignature());
+		Assert.assertEquals(preResult.getDataSignature(), "lvwt3zbbED9wC43lG1paPVzWQuI=");
+
+		Assert.assertEquals(preResult.getStructureSignature(), "yW7lIrjlrjF/WZwIInoH/TrmhCw=");
+		Assert.assertEquals(result.getStructureSignature(), "Frd1mNXRneO3yWDzQa4eEdRgtJs=");
 	}
 
 	@Test

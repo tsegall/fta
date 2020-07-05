@@ -198,9 +198,14 @@
  - Bump versions, blackList -> invalidList, outlier documentation.
 
 ### 3.0.0 ###
+ - *** Signatures for 3.X are not the same as 2.X ***
  - Switch to using SecureRandom instead of Random
  - Zip refs file had bogus entry in it
  - If finite sets have same score make sure to select the one with the highest priority
  - Change DataSignature to have less dependency on Structure facts
  - Fix issue with FirstName/LastName not returning consistent results from one run to next with secureRandom
  - Bump versions
+
+### 3.0.1
+ - DataSignature is now independent of Structure
+ - Support Unix date command which implies padding, e.g. 'Thu Jul  7 09:23:56 PDT 2020' and 'Thu Jul 23 09:56:23 PDT 2020'

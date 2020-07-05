@@ -1700,6 +1700,39 @@ public class TestDates {
 	}
 
 	@Test
+	public void basicUnixDateCommand() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+		final String input =
+				"Thu Jul  2 09:48:00 PDT 2020|Thu Jul  1 10:00:56 PDT 2020|Thu Jul  2 04:56:56 PDT 2020|Thu Jul  2 09:48:56 PDT 2020|" +
+				"Thu Jul  2 09:56:14 PDT 2020|Thu Jul  4 04:00:48 PDT 2020|Thu Jul  2 09:56:48 PDT 2020|Thu Jul 23 04:48:48 PDT 2020|" +
+				"Thu Jul  2 09:00:56 PDT 2020|Thu Jul  2 03:00:56 PDT 2020|Thu Jul  9 09:14:00 PDT 2020|Thu Jul  2 09:56:56 PDT 2020|" +
+				"Thu Jul  4 08:14:56 PDT 2020|Thu Jul  2 09:14:56 PDT 2020|Thu Jul 12 09:23:56 PDT 2020|Thu Jul 23 09:56:23 PDT 2020|" +
+				"Thu Jul  2 09:56:56 PDT 2020|Thu Jul 23 08:56:56 PDT 2020|Thu Jul  2 09:56:23 PDT 2020|Thu Jul  5 03:14:56 PDT 2020|";
+		final String[] inputs = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), PatternInfo.Type.ZONEDDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "EEE MMM ppd HH:mm:ss z yyyy");
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} \\p{IsAlphabetic}{3} [ \\d]\\d \\d{2}:\\d{2}:\\d{2} .* \\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void basicMMMM_d_yyyy() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);

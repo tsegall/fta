@@ -51,6 +51,9 @@ public class RegExpSplitter {
 	}
 
 	public static String qualify(int min, int max) {
+		if (max == 1 && max == min)
+			return "";
+
 		String ret = "{" + min;
 		if (min != max)
 			ret += "," + max;

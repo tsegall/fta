@@ -622,14 +622,15 @@ public class TextAnalysisResult {
 
 		if (patternInfo.isDateType())
 			analysis.put("dateResolutionMode", getDateResolutionMode().toString());
-		analysis.put("logicalType", isLogicalType());
-		analysis.put("possibleKey", key);
-
-		String signature = getStructureSignature();
-		if (signature != null)
-			analysis.put("structureSignature", signature);
 
 		if (!forDataSignature) {
+			analysis.put("logicalType", isLogicalType());
+			analysis.put("possibleKey", key);
+
+			String signature = getStructureSignature();
+			if (signature != null)
+				analysis.put("structureSignature", signature);
+
 			signature = getDataSignature();
 			if (signature != null)
 				analysis.put("dataSignature", signature);

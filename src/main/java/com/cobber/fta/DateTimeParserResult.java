@@ -98,7 +98,7 @@ public class DateTimeParserResult {
 
 	enum Token {
 		CLOCK24_1_OR_2, CLOCK24_2, CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DAY_OF_WEEK, DAY_OF_WEEK_ABBR, DIGITS_1_OR_2, MONTHS_1_OR_2,
-		MONTHS_2, HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, SECS_2, FRACTION,
+		MONTHS_2, HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, PAD_2, SECS_2, FRACTION,
 		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET, TIMEZONE_OFFSET_Z, AMPM
 	}
 
@@ -467,6 +467,13 @@ public class DateTimeParserResult {
 				i++;
 				break;
 
+			case 'p':
+				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
+					i++;
+					ret.add(new FormatterToken(Token.PAD_2));
+				}
+				break;
+
 			case 'y':
 				i++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'y') {
@@ -573,11 +580,15 @@ public class DateTimeParserResult {
 	/**
 	 * Determine whether a string input matches this DateTimeParserResult.
 	 * @param input The string to validate (stripped of whitespace).
-	 * if non-zero then this is the offset where the parse failed
+	 * @throws DateTimeParseException If the input does not match the DateTimeParserResult
+	 *
+	 * Note: This routine is akin to the parse() methods on LocalDateTime/ZonedDateTime etc. but runs faster
+	 * and does not return an instance of the LocalDateTime/ZonedDateTime etc.
 	 */
 	public void parse(final String input) {
 		final int inputLength = input.length();
 		int upto = 0;
+		int padding = 0;
 
 		if (formatString == null)
 			formatString = getFormatString();
@@ -645,6 +656,10 @@ public class DateTimeParserResult {
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				inputChar = input.charAt(upto);
+				if (padding == 1 && inputChar == ' ' && upto < inputLength) {
+					padding--;
+					inputChar = input.charAt(++upto);
+				}
 				if (!Character.isDigit(inputChar))
 					throw new DateTimeParseException("Expecting digit", input, upto);
 				value = inputChar - '0';
@@ -725,6 +740,10 @@ public class DateTimeParserResult {
 						throw new DateTimeParseException("Expecting digit", input, upto);
 					upto++;
 				}
+				break;
+
+			case PAD_2:
+				padding = 1;
 				break;
 
 			case CONSTANT_CHAR:
@@ -848,6 +867,18 @@ public class DateTimeParserResult {
 		return ret.toString();
 	}
 
+	private void addDigits(StringBuilder b, int digitsMin, int digitsMax, int padding) {
+		if (padding != 0) {
+			digitsMax -= 1;
+			padding = 0;
+			b.append("[ \\d]\\d");
+		}
+		else
+			b.append("\\d");
+
+		b.append(RegExpSplitter.qualify(digitsMin, digitsMax));
+	}
+
 	/**
 	 * Return the Regular Expression that matches this Date/Time object. All valid inputs should match this
 	 * Regular Expression, however, not all inputs that match this RE are necessarily valid.  For example,
@@ -859,6 +890,7 @@ public class DateTimeParserResult {
 		final StringBuilder ret = new StringBuilder(40);
 		int digitsMin = 0;
 		int digitsMax = 0;
+		int padding = 0;
 		final String x = "[-+][0-9]{2}([0-9]{2})?";
 		final String xx = "[-+][0-9]{4}";
 		final String xxx = "[-+][0-9]{2}:[0-9]{2}";
@@ -869,17 +901,21 @@ public class DateTimeParserResult {
 			formatString = getFormatString();
 
 		for (final FormatterToken token : tokenize(formatString)) {
-			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.MONTH ||
+			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.PAD_2 || token.getType() == Token.MONTH ||
 					token.getType() == Token.MONTH_ABBR || token.getType() == Token.DAY_OF_WEEK_ABBR ||
 					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE ||
 					token.getType() == Token.TIMEZONE_OFFSET || token.getType() == Token.TIMEZONE_OFFSET_Z) {
 				if (digitsMin != 0) {
-					ret.append("\\d").append(RegExpSplitter.qualify(digitsMin, digitsMax));
-					digitsMin = digitsMax = 0;
+					addDigits(ret, digitsMin, digitsMax, padding);
+					digitsMin = digitsMax = padding = 0;
 				}
 				switch (token.getType()) {
 				case CONSTANT_CHAR:
 					ret.append(RegExpGenerator.slosh(token.getValue()));
+					break;
+
+				case PAD_2:
+					padding = 1;
 					break;
 
 				case MONTH:
@@ -997,7 +1033,7 @@ public class DateTimeParserResult {
 		}
 
 		if (digitsMin != 0)
-			ret.append("\\d").append(RegExpSplitter.qualify(digitsMin, digitsMax));
+			addDigits(ret, digitsMin, digitsMax, padding);
 
 		return ret.toString();
 	}

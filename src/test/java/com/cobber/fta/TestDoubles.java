@@ -401,7 +401,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getRegExp(), "\\d{1}");
+		Assert.assertEquals(result.getRegExp(), "\\d");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 	}
 

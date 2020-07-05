@@ -319,7 +319,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "\\d{1}");
+		Assert.assertEquals(result.getRegExp(), "\\d");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getMinLength(), 1);
@@ -353,7 +353,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "\\d{1}");
+		Assert.assertEquals(result.getRegExp(), "\\d");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
 		Assert.assertEquals(result.getCardinality(), 2);

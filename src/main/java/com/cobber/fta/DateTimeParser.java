@@ -333,7 +333,7 @@ public class DateTimeParser {
 					if (answerResult.dateTimeSeparator == null)
 						answerResult.dateTimeSeparator = result.dateTimeSeparator;
 
-					// If they result we are looking at has the same format as the current answer then merge lengths
+					// If the result we are looking at has the same format as the current answer then merge lengths
 					if (answerResult.yearOffset == result.yearOffset && answerResult.monthOffset == result.monthOffset)
 						for (int i = 0; i < result.dateFieldLengths.length; i++) {
 							if (answerResult.dateFieldLengths[i] == -1 && result.dateFieldLengths[i] != -1)

@@ -396,6 +396,33 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void unixDateCommand(){
+		final String input = "Thu Jul  2 09:48:00 PDT 2020|Wed Jul  1 10:00:56 PDT 2020|Thu Jul  2 04:56:56 PDT 2020|Wed Jul 22 09:48:56 PDT 2020|";
+		final String inputs[] = input.split("\\|");
+
+		final DateTimeParser det = new DateTimeParser(DateResolutionMode.DayFirst);
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		final DateTimeParserResult result = det.getResult();
+
+		final String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "EEE MMM ppd HH:mm:ss z yyyy");
+
+		DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getFormatString(), Locale.getDefault());
+
+		final String regExp = result.getRegExp();
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(regExp));
+			ZonedDateTime.parse(inputs[i], formatter);
+		}
+	}
+
+	@Test
 	public void basicHMM() {
 		final String input = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
 		"17:16|0:16|7:16|14:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|3:16|10:16|17:16|0:16|7:16|14:16|" +
@@ -1177,7 +1204,7 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ss.S");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1}");
+		Assert.assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d");
 		Assert.assertTrue(sample.trim().matches(regExp));
 
 		Assert.assertTrue(result.isValid("2000-06-10 02:00:00.0"));
@@ -1413,7 +1440,7 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParserResult result = det.getResult();
 		Assert.assertEquals(result.getFormatString(), "yyyy/MM/dd HH:mm:ss.S");
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1}");
+		Assert.assertEquals(regExp, "\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d");
 		Assert.assertTrue(sample.matches(regExp));
 
 		Assert.assertTrue(result.isValid(sample));

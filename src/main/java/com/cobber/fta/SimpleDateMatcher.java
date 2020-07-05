@@ -113,6 +113,7 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleFacts("EEEE, MMM, d{2}, d{4}", "EEEE, MMM, dd, yyyy", PatternInfo.Type.LOCALDATE));
 		matchers.add(new SimpleFacts("EEEE, MMMM, d{2}, d{4}", "EEEE, MMMM, dd, yyyy", PatternInfo.Type.LOCALDATE));
 		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} z d{4}", "EEE MMM dd HH:mm:ss z yyyy", PatternInfo.Type.ZONEDDATETIME));
+		matchers.add(new SimpleFacts("EEE MMM {2}d d{2}:d{2}:d{2} z d{4}", "EEE MMM ppd HH:mm:ss z yyyy", PatternInfo.Type.ZONEDDATETIME));
 
 		HashMap<String, SimpleFacts> localeMatcher = new HashMap<>();
 		for (SimpleFacts sdm : matchers) {
@@ -272,6 +273,18 @@ public class SimpleDateMatcher {
 					lastCh = ch;
 				}
 				result.append(ch);
+			}
+			else  if (ch == ' ') {
+				if (lastCh == ' ')
+					count++;
+				else {
+					if (count != 0) {
+						result.append('{').append(count + 1).append('}');
+						count = 0;
+					}
+					result.append(' ');
+					lastCh = ch;
+				}
 			}
 			else {
 				if (count != 0) {
