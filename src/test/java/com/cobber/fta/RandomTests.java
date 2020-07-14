@@ -190,6 +190,7 @@ public class RandomTests {
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMean(), Double.valueOf((double)sum/COUNT));
+		Assert.assertEquals(result.getStandardDeviation(), Double.valueOf(28.86607004772212));
 	}
 
 	@Test

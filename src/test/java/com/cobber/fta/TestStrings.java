@@ -468,6 +468,8 @@ public class TestStrings {
 		Assert.assertEquals(result.getMaxLength(), 9);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertNull(result.getMean());
+		Assert.assertNull(result.getStandardDeviation());
 
 		for (int i = 0; i < inputs.length; i++)
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));

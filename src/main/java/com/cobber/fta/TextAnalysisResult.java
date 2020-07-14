@@ -250,7 +250,9 @@ public class TextAnalysisResult {
 	public Double getStandardDeviation() {
 		if (!collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
-		return Math.sqrt(facts.variance);
+
+
+		return facts.variance == null ? null : Math.sqrt(facts.variance);
 	}
 
 	/**

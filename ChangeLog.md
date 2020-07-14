@@ -217,4 +217,7 @@
  - Added a couple of tests & fixed a couple of tests
 
 ### 3.0.3
- - getMean() and getStandarDeviation() should return boxed types
+ - getMean() and getStandardDeviation() should return boxed types
+
+### 3.0.4
+ - getStandardDeviation() needs to guard against null variance
