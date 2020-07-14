@@ -49,6 +49,7 @@ Metrics detected include:
  * topK - highest 10 values
  * minLength - The minimum length observed
  * maxLength - The maximum length observed
+ * mean/standardDeviation (Numeric types only) - The mean and standard deviation (Uses Welford's algorithm)
  * cardinality - The cardinality of the valid set (or MaxCardinality if the set is larger than MaxCardinality)
  * outlierCardinality - The cardinality of the invalid set (or MaxOutlierCardinality if the set is larger than MaxOutlierCardinality)
  * leadingWhiteSpace - Does the observed set have leading white space
