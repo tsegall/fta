@@ -136,13 +136,43 @@ public class RandomTests {
 	}
 
 	@Test
-	public void sum50() throws IOException {
+	public void zip50() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		int locked = -1;
 		final int COUNT = 50;
-		int sum = 0;
+		final int INVALID = 2;
 
 		for (int i = 10000; i < 10000 + COUNT; i++) {
+			if (analysis.train(String.valueOf(i)) && locked != -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, -1);
+		Assert.assertEquals(result.getSampleCount(), COUNT);
+		Assert.assertEquals(result.getMatchCount(), COUNT - INVALID);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{5}");
+		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getMinValue(), "10000");
+		Assert.assertEquals(result.getMaxValue(), "10049");
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getConfidence(), 0.96);
+
+		for (int i = 10000; i < 10000 + COUNT; i++) {
+			Assert.assertTrue(String.valueOf(i).matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void mean100() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		int locked = -1;
+		final int COUNT = 100;
+		int sum = 0;
+
+		for (int i = 0; i < COUNT; i++) {
 			sum += i;
 			if (analysis.train(String.valueOf(i)) && locked != -1)
 				locked = i;
@@ -153,17 +183,13 @@ public class RandomTests {
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), COUNT);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{5}");
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}");
 		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
-		Assert.assertEquals(result.getMinValue(), "10000");
-		Assert.assertEquals(result.getMaxValue(), "10049");
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getConfidence(), 0.96);
-		Assert.assertEquals(result.getSum(), String.valueOf(sum));
-
-		for (int i = 10000; i < 10000 + COUNT; i++) {
-			Assert.assertTrue(String.valueOf(i).matches(result.getRegExp()));
-		}
+		Assert.assertEquals(result.getMinValue(), "0");
+		Assert.assertEquals(result.getMaxValue(), "99");
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMean(), (double)sum/COUNT);
 	}
 
 	@Test

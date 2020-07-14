@@ -287,6 +287,32 @@ public class TestDoubles {
 	}
 
 	@Test
+	public void mixedInput() throws IOException {
+		String[] samples = new String[] {
+				"8", "172.67", "22.73", "150", "30.26", "54.55", "45.45", "433.22", "172.73", "7.73",
+				"218.18", "47.27", "31.81", "22.73", "21.43", "7.27", "26.25", "7.27", "45.45" };
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		for (int i = 0; i < samples.length; i++)
+			analysis.train(samples[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getMean(), 80.26315789473685);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void impossibleExponent() throws IOException {
 		String[] samples = new String[] {
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",

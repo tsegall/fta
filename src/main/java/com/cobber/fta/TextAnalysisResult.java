@@ -49,11 +49,7 @@ public class TextAnalysisResult {
 	private final boolean trailingWhiteSpace;
 	private final boolean multiline;
 	private final double confidence;
-	private final String minValue;
-	private final String maxValue;
-	private final String sum;
-	private final SortedSet<String> topK;
-	private final SortedSet<String> bottomK;
+	private final TypeFacts facts;
 	private final int minLength;
 	private final int maxLength;
 	private final char decimalSeparator;
@@ -95,7 +91,7 @@ public class TextAnalysisResult {
 	 */
 	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, boolean trailingWhiteSpace,
 			boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
-			final double confidence, final StringFacts facts, final int minLength, final int maxLength,
+			final double confidence, final TypeFacts facts, final int minLength, final int maxLength,
 			char decimalSeparator, DateResolutionMode resolutionMode,
 			final Map<String, Long> cardinality, int maxCardinality,
 			final Map<String, Long> outliers, int maxOutliers,
@@ -112,11 +108,7 @@ public class TextAnalysisResult {
 		this.blankCount = blankCount;
 		this.leadingZeroCount = leadingZeroCount;
 		this.confidence = confidence;
-		this.minValue = facts.minValue;
-		this.maxValue = facts.maxValue;
-		this.sum = facts.sum;
-		this.topK = facts.topK;
-		this.bottomK = facts.bottomK;
+		this.facts = facts;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 		this.decimalSeparator = decimalSeparator;
@@ -193,7 +185,7 @@ public class TextAnalysisResult {
 	public String getMinValue() {
 		if (!collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
-		return minValue;
+		return facts.minValue;
 	}
 
 	/**
@@ -203,7 +195,7 @@ public class TextAnalysisResult {
 	public String getMaxValue() {
 		if (!collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
-		return maxValue;
+		return facts.maxValue;
 	}
 
 	/**
@@ -242,13 +234,23 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the sum for Numeric types (Long, Double).
-	 * @return The sum.
+	 * Get the mean for Numeric types (Long, Double).
+	 * @return The mean.
 	 */
-	public String getSum() {
+	public double getMean() {
 		if (!collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
-		return sum;
+		return facts.mean;
+	}
+
+	/**
+	 * Get the Standard Deviation for Numeric types (Long, Double).
+	 * @return The Standard Deviation.
+	 */
+	public double getStandardDeviation() {
+		if (!collectStatistics)
+			throw new IllegalArgumentException(NOT_ENABLED);
+		return Math.sqrt(facts.variance);
 	}
 
 	/**
@@ -258,7 +260,7 @@ public class TextAnalysisResult {
 	public SortedSet<String> getTopK() {
 		if (!collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
-		return topK;
+		return facts.topK;
 	}
 
 	/**
@@ -268,7 +270,7 @@ public class TextAnalysisResult {
 	public SortedSet<String> getBottomK() {
 		if (!collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
-		return bottomK;
+		return facts.bottomK;
 	}
 
 	/**
@@ -539,6 +541,52 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * A plugin definition to use to match this type.
+	 * @return A JSON representation of the analysis.
+	 */
+	public String asPlugin() {
+		// Already a logical type or date type - so nothing interesting to report as a Plugin
+		if (isLogicalType() || patternInfo.isDateType())
+			return null;
+
+		// Check to see if the Regular Expression is too boring to report - e.g. '.*' or '.{3,31}'
+		String regExp = getRegExp();
+		if (regExp.charAt(0) == '.' && (regExp.length() == 2 || (regExp.length() > 1 && regExp.charAt(1) == '{')))
+			return null;
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+		ObjectNode plugin = mapper.createObjectNode();
+		plugin.put("qualifier", name);
+		ArrayNode arrayNode = mapper.createArrayNode();
+		arrayNode.add(".*(?i)" + name);
+		plugin.set("headerRegExps", arrayNode);
+		arrayNode = mapper.createArrayNode();
+		arrayNode.add(70);
+		plugin.set("headerRegExpConfidence", arrayNode);
+		arrayNode = mapper.createArrayNode();
+		arrayNode.add(getRegExp());
+		plugin.set("regExpsToMatch", arrayNode);
+		plugin.put("regExpReturned", regExp);
+
+		if (statisticsEnabled() && matchCount > 100 && (cardinality.size()*100)/matchCount < 20 && !regExp.startsWith("(?i)(")) {
+			if (facts.minValue != null)
+				plugin.put("minimum", facts.minValue);
+			if (facts.maxValue != null)
+				plugin.put("maximum", facts.maxValue);
+		}
+
+		plugin.put("baseType", patternInfo.type.toString());
+
+		try {
+			return writer.writeValueAsString(plugin);
+		} catch (JsonProcessingException e) {
+			return jsonError(e.getMessage());
+		}
+	}
+
+	/**
 	 * A JSON representation of the Analysis.
 	 * @param pretty If set, add minimal whitespace formatting.
 	 * @param verbose If &gt; 0 provides additional details on the core, Outlier, and Shapes sets.
@@ -572,25 +620,27 @@ public class TextAnalysisResult {
 			analysis.put("decimalSeparator", String.valueOf(decimalSeparator));
 
 		if (statisticsEnabled()) {
-			if (minValue != null)
-				analysis.put("min", minValue);
-			if (maxValue != null)
-				analysis.put("max", maxValue);
+			if (facts.minValue != null)
+				analysis.put("min", facts.minValue);
+			if (facts.maxValue != null)
+				analysis.put("max", facts.maxValue);
 		}
 
 		analysis.put("minLength", minLength);
 		analysis.put("maxLength", maxLength);
 
 		if (statisticsEnabled()) {
-			if (sum != null)
-				analysis.put("sum", sum);
-			if (topK != null) {
+			if (facts.mean != null)
+				analysis.put("mean", facts.mean);
+			if (facts.variance != null)
+				analysis.put("standardDeviation", getStandardDeviation());
+			if (facts.topK != null) {
 				ArrayNode detail = analysis.putArray("topK");
-				outputArray(detail, topK);
+				outputArray(detail, facts.topK);
 			}
-			if (bottomK != null) {
+			if (facts.bottomK != null) {
 				ArrayNode detail = analysis.putArray("bottomK");
-				outputArray(detail, bottomK);
+				outputArray(detail, facts.bottomK);
 			}
 		}
 

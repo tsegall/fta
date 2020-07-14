@@ -17,8 +17,6 @@ package com.cobber.fta;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -205,13 +203,14 @@ public class TextAnalyzer {
 
 	private double minDouble = Double.MAX_VALUE;
 	private double maxDouble = -Double.MAX_VALUE;
-	private BigDecimal sumBD = BigDecimal.ZERO;
 	private TopBottomK<Double, Double> tbDouble = new TopBottomK<>();
+
+	double currentM2 = 0.0;
+	double currentMean = 0.0;
 
 	private long minLong = Long.MAX_VALUE;
 	private long minLongNonZero = Long.MAX_VALUE;
 	private long maxLong = Long.MIN_VALUE;
-	private BigInteger sumBI = BigInteger.ZERO;
 	private TopBottomK<Long, Long> tbLong = new TopBottomK<>();
 
 	private String minString;
@@ -674,7 +673,12 @@ public class TextAnalyzer {
 				maxLong = l;
 
 			if (collectStatistics) {
-				sumBI = sumBI.add(BigInteger.valueOf(l));
+				// Calculate the mean & standard deviation using Welford's algorithm
+				double delta = l - currentMean;
+				// matchCount is one low - because we do not 'count' the record until we return from this routine indicating valid
+				currentMean += delta / (matchCount + 1);
+				currentM2 += delta * (l - currentMean);
+
 				tbLong.observe(l);
 			}
 		}
@@ -801,7 +805,12 @@ public class TextAnalyzer {
 			if (d > maxDouble)
 				maxDouble = d;
 
-			sumBD = sumBD.add(BigDecimal.valueOf(d));
+			// Calculate the mean & standard deviation using Welford's algorithm
+			double delta = d - currentMean;
+			// matchCount is one low - because we do not 'count' the record until we return from this routine indicating valid
+			currentMean += delta / (matchCount + 1);
+			currentM2 += delta * (d - currentMean);
+
 			tbDouble.observe(d);
 		}
 
@@ -1824,7 +1833,6 @@ public class TextAnalyzer {
 		else if (matchPatternInfo.type.equals(PatternInfo.Type.DOUBLE)) {
 			minDouble = minLong;
 			maxDouble = maxLong;
-			sumBD = new BigDecimal(sumBI);
 			for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
 				for (int i = 0; i < entry.getValue(); i++)
 					trackDouble(entry.getKey(), matchPatternInfo, true);
@@ -2141,8 +2149,8 @@ public class TextAnalyzer {
 			result.replace(idx, idx + 1, lengthQualifier(minTrimmedLength, maxTrimmedLength)).toString();
 	}
 
-	private StringFacts calculateFacts() {
-		StringFacts ret = new StringFacts();
+	private TypeFacts calculateFacts() {
+		TypeFacts ret = new TypeFacts();
 
 		// We know the type - so calculate a minimum and maximum value
 		switch (matchPatternInfo.type) {
@@ -2154,7 +2162,8 @@ public class TextAnalyzer {
 		case LONG:
 			ret.minValue = String.valueOf(minLong);
 			ret.maxValue = String.valueOf(maxLong);
-			ret.sum = sumBI.toString();
+			ret.mean = currentMean;
+			ret.variance = currentM2/matchCount;
 			ret.bottomK = tbLong.bottomKasString();
 			ret.topK = tbLong.topKasString();
 			break;
@@ -2167,7 +2176,8 @@ public class TextAnalyzer {
 
 			ret.minValue = formatter.format(minDouble);
 			ret.maxValue = formatter.format(maxDouble);
-			ret.sum = sumBD.toString();
+			ret.mean = currentMean;
+			ret.variance = currentM2/matchCount;
 			ret.bottomK = tbDouble.bottomKasString();
 			ret.topK = tbDouble.topKasString();
 			break;
@@ -2677,7 +2687,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		StringFacts facts = calculateFacts();
+		TypeFacts facts = calculateFacts();
 
 		// Attempt to identify keys?
 		boolean key = false;

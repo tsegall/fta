@@ -23,7 +23,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.StringFacts;
+import com.cobber.fta.TypeFacts;
 
 /**
  * Plugin to detect URLs.
@@ -47,6 +47,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	static {
 		validator = UrlValidator.getInstance();
 	}
+	// Count of items with protocol specified (e.g. http://) at index 0 and no protocol index 1
 	int[] protocol = new int[2];
 
 	public LogicalTypeURL(PluginDefinition plugin) {
@@ -74,6 +75,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
+		// Check to see if any of the matches had a protocol specified?
 		if (protocol[0] != 0)
 			return protocol[1] != 0 ? REGEXP_PROTOCOL + "?" + REGEXP_RESOURCE : REGEXP_PROTOCOL + REGEXP_RESOURCE;
 
@@ -119,7 +121,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 
 		return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : ".+";
 	}

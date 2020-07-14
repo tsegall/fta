@@ -26,7 +26,7 @@ import java.util.Set;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.RegExpGenerator;
-import com.cobber.fta.StringFacts;
+import com.cobber.fta.TypeFacts;
 
 /**
  * Plugin to detect Gender. (English-language only).
@@ -84,7 +84,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)

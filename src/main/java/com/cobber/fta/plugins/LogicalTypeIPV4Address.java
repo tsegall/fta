@@ -24,7 +24,7 @@ import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.StringFacts;
+import com.cobber.fta.TypeFacts;
 
 public class LogicalTypeIPV4Address extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "IPADDRESS.IPV4";
@@ -93,7 +93,7 @@ public class LogicalTypeIPV4Address extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts,
 			Map<String, Long> cardinality, Map<String, Long> outliers) {
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? null : ".+";
 	}

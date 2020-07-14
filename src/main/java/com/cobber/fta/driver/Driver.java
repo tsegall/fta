@@ -65,6 +65,7 @@ class Driver {
 				logger.println(" --noAnalysis - Do not do analysis");
 				logger.println(" --noLogicalTypes - Do not register any Logical Types");
 				logger.println(" --noStatistics - Do not track statistics");
+				logger.println(" --pluginDefinition - Output the plugin definitions from the training data set");
 				logger.println(" --pluginThreshold <n> - Set the plugin threshold percentage (0-100) for detection");
 				logger.println(" --pretty - Pretty print analysis");
 				logger.println(" --records <n> - The number of records to analyze");
@@ -89,6 +90,8 @@ class Driver {
 				options.noLogicalTypes = true;
 			else if ("--noStatistics".equals(args[idx]))
 				options.noStatistics = true;
+			else if ("--pluginDefinition".equals(args[idx]))
+				options.pluginDefinition = true;
 			else if ("--pluginThreshold".equals(args[idx]))
 				options.pluginThreshold = Integer.valueOf(args[++idx]);
 			else if ("--pretty".equals(args[idx]))

@@ -265,6 +265,11 @@ class FileProcessor {
 			if (options.col == -1 || options.col == i) {
 				result = analysis[i].getResult();
 				logger.printf("Field '%s' (%d) - %s%n", header[i], i, result.asJSON(options.pretty, options.verbose));
+				if (options.pluginDefinition) {
+					String pluginDefinition = result.asPlugin();
+					if (pluginDefinition != null)
+						logger.printf("Plugin Definition - %s%n", pluginDefinition);
+				}
 				if (result.getType() != null)
 					typesDetected++;
 				matchCount += result.getMatchCount();

@@ -17,10 +17,11 @@ package com.cobber.fta;
 
 import java.util.SortedSet;
 
-public class StringFacts {
+public class TypeFacts {
 	String minValue;
 	String maxValue;
-	String sum;
+	Double mean;
+	Double variance;
 	SortedSet<String> topK;
 	SortedSet<String> bottomK;
 }

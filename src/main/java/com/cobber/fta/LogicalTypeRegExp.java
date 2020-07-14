@@ -127,7 +127,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts,
 			Map<String, Long> cardinality, Map<String, Long> outliers) {
 
 		// If this plugin insists on a minimum number of samples (validate it)
@@ -148,23 +148,23 @@ public class LogicalTypeRegExp extends LogicalType {
 				return defn.regExpReturned;
 		}
 
-		if (stringFacts != null) {
+		if (facts != null) {
 			switch (defn.baseType) {
 			case LONG:
-				if ((minLong != null && Long.parseLong(stringFacts.minValue) < minLong) ||
-						(maxLong != null && Long.parseLong(stringFacts.maxValue) > maxLong))
+				if ((minLong != null && Long.parseLong(facts.minValue) < minLong) ||
+						(maxLong != null && Long.parseLong(facts.maxValue) > maxLong))
 					return defn.regExpReturned;
 				break;
 
 			case DOUBLE:
-				if ((minDouble != null && Double.parseDouble(stringFacts.minValue) < minDouble) ||
-						(maxDouble != null && Double.parseDouble(stringFacts.maxValue) > maxDouble))
+				if ((minDouble != null && Double.parseDouble(facts.minValue) < minDouble) ||
+						(maxDouble != null && Double.parseDouble(facts.maxValue) > maxDouble))
 					return defn.regExpReturned;
 				break;
 
 			case STRING:
-				if ((minString != null && stringFacts.minValue.compareTo(minString) < 0) ||
-						(maxString != null && stringFacts.maxValue.compareTo(maxString) > 0))
+				if ((minString != null && facts.minValue.compareTo(minString) < 0) ||
+						(maxString != null && facts.maxValue.compareTo(maxString) > 0))
 					return defn.regExpReturned;
 				break;
 

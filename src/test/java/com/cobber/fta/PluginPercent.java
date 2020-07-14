@@ -78,7 +78,7 @@ public class PluginPercent extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
-			StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+			TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

@@ -22,6 +22,7 @@ import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeGenderEN;
 
 public class TestBulk {
@@ -107,6 +108,25 @@ public class TestBulk {
 		Assert.assertEquals(resultBulk.getNullCount(), 0);
 		Assert.assertEquals(resultBulk.getRegExp(), "(?i)(DISCONNECT|DISCONNECT FRACTIONAL|DISCONNECT OTHER|DISCONNECT STILL BILLING|INSTALL FRACTIONAL|INSTALL FRACTIONAL RERATE|RE-RATES|RUN RATE)");
 		Assert.assertEquals(resultBulk.getMatchCount(), SAMPLES);
+		Assert.assertEquals(resultBulk.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void basicDate() throws IOException {
+		final TextAnalyzer analysisBulk = new TextAnalyzer("ModifiedDate", DateResolutionMode.Auto);
+
+		HashMap<String, Long> basic = new HashMap<>();
+		basic.put("2002-06-01 00:00:00", 10L);
+		basic.put("2008-03-11 10:17:21", 99L);
+		analysisBulk.trainBulk(basic);
+		final TextAnalysisResult resultBulk = analysisBulk.getResult();
+
+		Assert.assertEquals(resultBulk.getSampleCount(), 109);
+		Assert.assertEquals(resultBulk.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(resultBulk.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss");
+		Assert.assertEquals(resultBulk.getNullCount(), 0);
+		Assert.assertEquals(resultBulk.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
+		Assert.assertEquals(resultBulk.getMatchCount(), 109);
 		Assert.assertEquals(resultBulk.getConfidence(), 1.0);
 	}
 

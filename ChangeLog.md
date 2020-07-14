@@ -209,3 +209,9 @@
 ### 3.0.1
  - DataSignature is now independent of Structure
  - Support Unix date command which implies padding, e.g. 'Thu Jul  7 09:23:56 PDT 2020' and 'Thu Jul 23 09:56:23 PDT 2020'
+
+### 3.0.2
+ - Replace sum column for numerics (long, double) with mean and stadard deviation (using Welford's algorithm)
+ - Add detection for a set of superceded ISO-4217 codes to aid with detection
+ - Add option for retrieving plugin based on a training set
+ - Added a couple of tests & fixed a couple of tests

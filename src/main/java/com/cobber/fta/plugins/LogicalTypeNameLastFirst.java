@@ -24,7 +24,7 @@ import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.StringFacts;
+import com.cobber.fta.TypeFacts;
 
 /**
  * Plugin to detect '&lt;Last Name&gt;, &lt;First Name&gt;'.
@@ -140,7 +140,7 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts,
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts,
 			Map<String, Long> cardinality, Map<String, Long> outliers) {
 
 		int minCardinality = 8;

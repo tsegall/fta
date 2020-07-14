@@ -23,7 +23,7 @@ import java.util.Set;
 import com.cobber.fta.LocaleInfo;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.StringFacts;
+import com.cobber.fta.TypeFacts;
 
 /**
  * Plugin to detect full Month Names.
@@ -71,7 +71,7 @@ public class LogicalTypeMonthFull extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, StringFacts stringFacts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
 		if (outliers.size() > 1)
 			return LocaleInfo.getMonthsRegExp(locale);
 

@@ -170,59 +170,77 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomSupport() throws IOException {
-		for (String qualifier : allSemanticTypes) {
-			PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
-			LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+		final int SAMPLE_SIZE = 100;
 
-			// Does it support the nextRandom() interface
-			if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
-				continue;
+		for (int iters = 0; iters < 100; iters++) {
+			for (String qualifier : allSemanticTypes) {
+				PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
+				LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
-			LogicalTypeCode logical = (LogicalTypeCode)logicalType;
+				// Does it support the nextRandom() interface
+				if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
+					continue;
 
-			for (int i = 0; i < 100; i++) {
-				String random = logical.nextRandom();
-				Assert.assertTrue(random.matches(logical.getRegExp()), qualifier + ":" + random);
-				Assert.assertTrue(logical.isValid(random), qualifier + ":" + random);
+				LogicalTypeCode logical = (LogicalTypeCode)logicalType;
+
+				String[] testCases = new String[SAMPLE_SIZE];
+				for (int i = 0; i < SAMPLE_SIZE; i++) {
+					testCases[i] = logical.nextRandom();
+					Assert.assertTrue(logical.isValid(testCases[i]), qualifier + ":" + testCases[i]);
+				}
+				for (int i = 0; i < SAMPLE_SIZE; i++)
+					Assert.assertTrue(testCases[i].matches(logical.getRegExp()), qualifier + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
 			}
 		}
 	}
 
 	@Test
 	public void randomSupportIntuitLocale() throws IOException {
-		for (String qualifier : allSemanticTypes) {
-			PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
-			LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition);
+		final int SAMPLE_SIZE = 100;
 
-			// Does it support the nextRandom() interface
-			if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
-				continue;
+		for (int iters = 0; iters < 100; iters++) {
+			for (String qualifier : allSemanticTypes) {
+				PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
+				LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition);
 
-			LogicalTypeCode logical = (LogicalTypeCode)logicalType;
+				// Does it support the nextRandom() interface
+				if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
+					continue;
 
-			for (int i = 0; i < 100; i++) {
-				String random = logical.nextRandom();
-				Assert.assertTrue(random.matches(logical.getRegExp()), qualifier + ":" + random);
-				Assert.assertTrue(logical.isValid(random), qualifier + ":" + random);
+				LogicalTypeCode logical = (LogicalTypeCode)logicalType;
+
+				String[] testCases = new String[SAMPLE_SIZE];
+				for (int i = 0; i < SAMPLE_SIZE; i++) {
+					testCases[i] = logical.nextRandom();
+					Assert.assertTrue(logical.isValid(testCases[i]), qualifier + ":" + testCases[i]);
+				}
+				for (int i = 0; i < SAMPLE_SIZE; i++)
+					Assert.assertTrue(testCases[i].matches(logical.getRegExp()), qualifier + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
 			}
 		}
 	}
 
 	@Test
 	public void randomSupportByQualifier() throws IOException {
-		for (String qualifier : allSemanticTypes) {
-			LogicalType logicalType = LogicalTypeFactory.newInstance(qualifier);
+		final int SAMPLE_SIZE = 100;
 
-			// Does it support the nextRandom() interface
-			if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
-				continue;
+		for (int iters = 0; iters < 100; iters++) {
+			for (String qualifier : allSemanticTypes) {
+				LogicalType logicalType = LogicalTypeFactory.newInstance(qualifier);
 
-			LogicalTypeCode logical = (LogicalTypeCode)logicalType;
+				// Does it support the nextRandom() interface
+				if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
+					continue;
 
-			for (int i = 0; i < 100; i++) {
-				String random = logical.nextRandom();
-				Assert.assertTrue(random.matches(logical.getRegExp()), qualifier + ":" + random);
-				Assert.assertTrue(logical.isValid(random), qualifier + ":" + random);
+				LogicalTypeCode logical = (LogicalTypeCode)logicalType;
+
+				String[] testCases = new String[SAMPLE_SIZE];
+				for (int i = 0; i < SAMPLE_SIZE; i++) {
+					testCases[i] = logical.nextRandom();
+					Assert.assertTrue(logical.isValid(testCases[i]), qualifier + ":" + testCases[i]);
+				}
+				for (int i = 0; i < SAMPLE_SIZE; i++)
+					Assert.assertTrue(testCases[i].matches(logical.getRegExp()), qualifier + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
 			}
 		}
 	}
