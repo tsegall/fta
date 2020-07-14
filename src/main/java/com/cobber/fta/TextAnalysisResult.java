@@ -237,7 +237,7 @@ public class TextAnalysisResult {
 	 * Get the mean for Numeric types (Long, Double).
 	 * @return The mean.
 	 */
-	public double getMean() {
+	public Double getMean() {
 		if (!collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.mean;
@@ -247,7 +247,7 @@ public class TextAnalysisResult {
 	 * Get the Standard Deviation for Numeric types (Long, Double).
 	 * @return The Standard Deviation.
 	 */
-	public double getStandardDeviation() {
+	public Double getStandardDeviation() {
 		if (!collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return Math.sqrt(facts.variance);

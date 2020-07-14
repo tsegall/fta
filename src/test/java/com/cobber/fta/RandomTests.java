@@ -189,7 +189,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getMaxValue(), "99");
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getMean(), (double)sum/COUNT);
+		Assert.assertEquals(result.getMean(), Double.valueOf((double)sum/COUNT));
 	}
 
 	@Test

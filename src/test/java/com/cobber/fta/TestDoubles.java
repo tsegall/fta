@@ -305,7 +305,7 @@ public class TestDoubles {
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getMean(), 80.26315789473685);
+		Assert.assertEquals(result.getMean(), Double.valueOf(80.26315789473685));
 
 		for (int i = 0; i < samples.length; i++) {
 			Assert.assertTrue(samples[i].matches(result.getRegExp()));

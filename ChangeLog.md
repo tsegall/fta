@@ -215,3 +215,6 @@
  - Add detection for a set of superceded ISO-4217 codes to aid with detection
  - Add option for retrieving plugin based on a training set
  - Added a couple of tests & fixed a couple of tests
+
+### 3.0.3
+ - getMean() and getStandarDeviation() should return boxed types
