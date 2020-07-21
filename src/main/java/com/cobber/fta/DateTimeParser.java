@@ -111,15 +111,15 @@ public class DateTimeParser {
 	// lenient allows dates of the form 00/00/00 etc to be viewed as valid for the purpose of Format detection
 	private boolean lenient = true;
 
-	DateTimeParser(final DateResolutionMode resolutionMode) {
+	public DateTimeParser(final DateResolutionMode resolutionMode) {
 		this(resolutionMode, Locale.getDefault());
 	}
 
-	DateTimeParser() {
+	public DateTimeParser() {
 		this(DateResolutionMode.None, Locale.getDefault());
 	}
 
-	DateTimeParser(final DateResolutionMode resolutionMode, Locale locale) {
+	public DateTimeParser(final DateResolutionMode resolutionMode, Locale locale) {
 		this.resolutionMode = resolutionMode;
 		this.locale = locale;
 	}

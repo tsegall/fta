@@ -224,3 +224,6 @@
 
 ### 3.0.5
  - DataSignature should not vary based on name of column! + bump versions
+
+### 3.0.6
+ - Add support for standalone date parsing

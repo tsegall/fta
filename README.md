@@ -10,9 +10,9 @@ Support for non-English date detection is relatively robust, with the following 
 
 Typical usage is:
 ```java
+import java.util.Locale;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.TextAnalysisResult;
-import java.util.Locale;
 
 class Trivial {
 
@@ -29,6 +29,27 @@ class Trivial {
 
                 System.err.printf("Result: %s, Regular Expression: %s, Max: %s, Min: %s.\n", result.getType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
         }
+}
+```
+
+## Date Parsing ##
+
+If you are only interested in parsing dates, then the following example is a good starting point:
+
+```java
+import java.util.Locale;
+import com.cobber.fta.DateTimeParser;
+import com.cobber.fta.DateTimeParser.DateResolutionMode;
+
+public class DetermineDateFormat {
+
+	public static void main(String[] args) {
+		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.MonthFirst, Locale.ENGLISH);
+
+		System.err.println(dtp.determineFormatString("16 July 2012"));
+		System.err.println(dtp.determineFormatString("March 20 2012"));
+		System.err.println(dtp.determineFormatString("2012 March 20"));
+	}
 }
 ```
 
