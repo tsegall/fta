@@ -36,6 +36,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * TextAnalysisResult is the result of a {@link TextAnalyzer} analysis of a data stream.
  */
 public class TextAnalysisResult {
+	private enum SignatureTarget {
+	    DATA_SIGNATURE,
+	    STRUCTURE_SIGNATURE,
+	    CONSUMER
+	}
+
 	private static final String NOT_ENABLED = "Statistics not enabled.";
 
 	private final String name;
@@ -507,8 +513,8 @@ public class TextAnalysisResult {
 	 * @return A String SHA-1 hash that reflects the data stream contents.
 	 */
 	public String getDataSignature() {
-		// Grab a JSON representation of the analysis without the Data Signature and type information and use this to generate the Data Signature
-		String dataSignature = internalAsJSON(false, 1, true);
+		// Grab a JSON representation of the information required for the Data Signature
+		String dataSignature = internalAsJSON(false, 1, SignatureTarget.DATA_SIGNATURE);
 		byte[] signature = dataSignature.getBytes(StandardCharsets.UTF_8);
 		MessageDigest md;
 		try {
@@ -595,21 +601,22 @@ public class TextAnalysisResult {
 	 * @return A JSON representation of the analysis.
 	 */
 	public String asJSON(boolean pretty, int verbose) {
-		return internalAsJSON(pretty,verbose, false);
+		return internalAsJSON(pretty,verbose, SignatureTarget.CONSUMER);
 	}
 
-	private String internalAsJSON(boolean pretty, int verbose, boolean forDataSignature) {
+	private String internalAsJSON(boolean pretty, int verbose, SignatureTarget target) {
 		ObjectMapper mapper = new ObjectMapper();
 
 		ObjectWriter writer = pretty ? mapper.writerWithDefaultPrettyPrinter() : mapper.writer();
 
 		ObjectNode analysis = mapper.createObjectNode();
-		analysis.put("fieldName", name);
+		if (target == SignatureTarget.CONSUMER)
+			analysis.put("fieldName", name);
 		analysis.put("sampleCount", sampleCount);
 		analysis.put("matchCount", matchCount);
 		analysis.put("nullCount", nullCount);
 		analysis.put("blankCount", blankCount);
-		if (!forDataSignature) {
+		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("regExp", getRegExp());
 			analysis.put("confidence", confidence);
 			analysis.put("type", patternInfo.type.toString());
@@ -675,7 +682,7 @@ public class TextAnalysisResult {
 		if (patternInfo.isDateType())
 			analysis.put("dateResolutionMode", getDateResolutionMode().toString());
 
-		if (!forDataSignature) {
+		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("logicalType", isLogicalType());
 			analysis.put("possibleKey", key);
 

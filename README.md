@@ -184,6 +184,19 @@ An outlier is a data point that differs significantly from other member of the d
 detected as a US Phone Number then numbers with invalid area codes or invalid area code exchange pairs will be flagged as outliers.
 - For infinite plugins, outliers may be detected based on a statistical analysis, for example if there are 100 valid integers and one 'O' (letter O) then the 'O' would be identified as an outlier.  In other cases, where a enumerated type is detected, for example 100 instances of RED, 100 instances of BLUE, 100 instances of PINK, and one instance of 'P1NK' then the instance of 'P1NK' woud be identified as an outllier based on its Levenstein distance from one of the other elements in the set.
 
+## Signatures ##
+
+Given the following three data sets:
+- ColumnName: BirthCountry
+- Data: France, Germany, Italy, Spain, USA, Belgium, Australia, Italy, New Zealand, China, USA, Poland, Mozambique, Ghana, India, China, Pakistan,
+- ColumnName: AccountLocation
+- Data: Sweden, Sweden, South Africa, Russia, Poland, Norway, Norway, Norway, Norway, Korea, Korea, Hungary, Hungary, Germany, Chile, Canada, Brazil, Austria, Austria
+- ColumnName: PrimaryCountry
+- Data: Austria, Austria, Brazil, Canada, Chile, Germany, Hungary, Hungary, Korea, Korea, Norway, Norway, Norway, Norway, Poland, Russia, South Africa, Sweden, Sweden
+
+The StructureSignature for all three will be identical as the field will be detected as 'COUNTRY.TEXT_EN', i.e. a Country Name in the Englilsh language.  Note this is despite the fact that there is no overlapping data values in the BirthCountry dataset compared to the other data sets.
+The DataSignature will be identical for AccountLocation and PrimaryCountry as the dataset is identical and will differ from the DataSignature for the BirthCountry.
+
 ## Getting Starting ##
 
 Fastest way to get started is to review the samples provided.

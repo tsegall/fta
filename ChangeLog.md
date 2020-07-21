@@ -221,3 +221,6 @@
 
 ### 3.0.4
  - getStandardDeviation() needs to guard against null variance
+
+### 3.0.5
+ - DataSignature should not vary based on name of column! + bump versions
