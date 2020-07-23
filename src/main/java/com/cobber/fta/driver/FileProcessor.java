@@ -133,6 +133,7 @@ class FileProcessor {
 				if (previousKey == null || !key.equals(previousKey)) {
 					if (!bulkMap.isEmpty()) {
 						analyzer = new TextAnalyzer(previousName);
+						setOptions(analyzer);
 						analyzer.trainBulk(bulkMap);
 						result = analyzer.getResult();
 						logger.printf("Field '%s' - %s%n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
@@ -146,6 +147,7 @@ class FileProcessor {
 
 			if (!bulkMap.isEmpty()) {
 				analyzer = new TextAnalyzer(name);
+				setOptions(analyzer);
 				analyzer.trainBulk(bulkMap);
 				result = analyzer.getResult();
 				logger.printf("Field '%s' - %s%n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));

@@ -1505,7 +1505,6 @@ public class TextAnalyzer {
 	 * type
 	 */
 	private void determineType() {
-		// If we have fewer than 6 samples do not even pretend
 		if (sampleCount == 0) {
 			matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_ANY_VARIABLE);
 			return;

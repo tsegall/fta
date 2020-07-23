@@ -55,8 +55,10 @@ class Driver {
 			else if ("--help".equals(args[idx])) {
 				logger.println("Usage: fta [OPTIONS] file ...");
 				logger.println("Valid OPTIONS are:");
+				logger.println(" --bulk - Enable bulk mode");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
+				logger.println(" --detectWindow <n> - Set the size of the detect window to <n>");
 				logger.println(" --help - Print this help");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				logger.println(" --logicalType <JSON representation of Logical Types> - Can be inline or as a File");
@@ -80,6 +82,8 @@ class Driver {
 			}
 			else if ("--locale".equals(args[idx]))
 				options.locale = Locale.forLanguageTag(args[++idx]);
+			else if ("--logicalType".equals(args[idx]))
+				options.logicalTypes = args[++idx];
 			else if ("--maxCardinality".equals(args[idx]))
 				options.maxCardinality = Integer.valueOf(args[++idx]);
 			else if ("--maxOutlierCardinality".equals(args[idx]))
@@ -98,8 +102,6 @@ class Driver {
 				options.pretty = true;
 			else if ("--records".equals(args[idx]))
 				options.recordsToAnalyze = Long.valueOf(args[++idx]);
-			else if ("--logicalType".equals(args[idx]))
-				options.logicalTypes = args[++idx];
 			else if ("--resolutionMode".equals(args[idx])) {
 				String mode = args[++idx];
 				if (mode.equals("DayFirst"))

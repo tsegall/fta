@@ -2487,6 +2487,49 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void testRegExpLogicalType_CUSIP_bulk() throws IOException {
+		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
+		String[] samples = new String[] {
+				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
+				"G0084W951", "G0129K104", "G0129K904", "G0129K954", "G0132V105", "G0176J109", "G0176J909", "G0176J959", "G01767105", "G01767905",
+				"G01767955", "G0177J108", "G0177J908", "G0177J958", "G02602103", "G02602903", "G02602953", "G0335L102", "G0335L902", "G0335L952"
+
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
+
+		List<PluginDefinition> plugins = new ArrayList<>();
+		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
+				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, PatternInfo.Type.STRING));
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+		Map<String, Long> observed = new HashMap<>();
+		for (int i = 0; i < samples.length; i++) {
+			observed.put(samples[i], Long.valueOf(i + 1));
+		}
+		analysis.trainBulk(observed);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), (samples.length * (samples.length + 1)) / 2);
+		Assert.assertEquals(result.getRegExp(), CUSIP_REGEXP);
+		Assert.assertEquals(result.getTypeQualifier(), "CUSIP");
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void testSignatures() throws IOException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 		String[] samples = new String[] {

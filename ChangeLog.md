@@ -227,3 +227,6 @@
 
 ### 3.0.6
  - Add support for standalone date parsing
+
+### 3.0.7
+ - Bulk mode from command line was not honoring options
