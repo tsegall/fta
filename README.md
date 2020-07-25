@@ -32,9 +32,9 @@ class Trivial {
 }
 ```
 
-## Date Parsing ##
+## Date Format determination ##
 
-If you are only interested in parsing dates, then the following example is a good starting point:
+If you are solely interested in determining the format of a date, then the following example is a good starting point:
 
 ```java
 import java.util.Locale;
