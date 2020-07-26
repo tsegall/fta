@@ -21,10 +21,9 @@ import java.util.Map;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
-import com.cobber.fta.PatternInfo;
-import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.TypeFacts;
+import com.cobber.fta.core.FTAType;
 
 /**
  * Plugin to detect '&lt;Last Name&gt;, &lt;First Name&gt;'.
@@ -65,8 +64,8 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public Type getBaseType() {
-		return PatternInfo.Type.STRING;
+	public FTAType getBaseType() {
+		return FTAType.STRING;
 	}
 
 	@Override

@@ -20,10 +20,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import com.cobber.fta.LocaleInfo;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.TypeFacts;
+import com.cobber.fta.dates.LocaleInfo;
 
 /**
  * Plugin to detect full Month Names.

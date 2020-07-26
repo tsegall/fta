@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta;
+package com.cobber.fta.dates;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 
 /**
  * Helper class to manage several of the fixed length date inputs.
@@ -46,74 +49,74 @@ public class SimpleDateMatcher {
 
 		Set<SimpleFacts> matchers = new HashSet<>();
 
-		matchers.add(new SimpleFacts("d{4} d{2} d{2}", "yyyy MM dd", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d{4} d d{2}", "yyyy M dd", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d{4} d{2} d", "yyyy MM d", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d{4} d d", "yyyy M d", PatternInfo.Type.LOCALDATE));
+		matchers.add(new SimpleFacts("d{4} d{2} d{2}", "yyyy MM dd", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d{4} d d{2}", "yyyy M dd", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d{4} d{2} d", "yyyy MM d", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d{4} d d", "yyyy M d", FTAType.LOCALDATE));
 
-		matchers.add(new SimpleFacts("d{2} MMM d{4}", "dd MMM yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d MMM d{4}", "d MMM yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d{2}-MMM-d{4}", "dd-MMM-yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d-MMM-d{4}", "d-MMM-yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d{2}/MMM/d{4}", "dd/MMM/yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d/MMM/d{4}", "d/MMM/yyyy", PatternInfo.Type.LOCALDATE));
+		matchers.add(new SimpleFacts("d{2} MMM d{4}", "dd MMM yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d MMM d{4}", "d MMM yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d{2}-MMM-d{4}", "dd-MMM-yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d-MMM-d{4}", "d-MMM-yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d{2}/MMM/d{4}", "dd/MMM/yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d/MMM/d{4}", "d/MMM/yyyy", FTAType.LOCALDATE));
 
-		matchers.add(new SimpleFacts("d{2} MMMM d{4}", "dd MMMM yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d MMMM d{4}", "d MMMM yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d{2}-MMMM-d{4}", "dd-MMMM-yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d-MMMM-d{4}", "d-MMMM-yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d{2}/MMMM/d{4}", "dd/MMMM/yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d/MMMM/d{4}", "d/MMMM/yyyy", PatternInfo.Type.LOCALDATE));
+		matchers.add(new SimpleFacts("d{2} MMMM d{4}", "dd MMMM yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d MMMM d{4}", "d MMMM yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d{2}-MMMM-d{4}", "dd-MMMM-yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d-MMMM-d{4}", "d-MMMM-yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d{2}/MMMM/d{4}", "dd/MMMM/yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d/MMMM/d{4}", "d/MMMM/yyyy", FTAType.LOCALDATE));
 
-		matchers.add(new SimpleFacts("d{2} MMM d{2}", "dd MMM yy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d MMM d{2}", "d MMM yy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d{2}-MMM-d{2}", "dd-MMM-yy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d-MMM-d{2}", "d-MMM-yy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d{2}/MMM/d{2}", "dd/MMM/yy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("d/MMM/d{2}", "d/MMM/yy", PatternInfo.Type.LOCALDATE));
+		matchers.add(new SimpleFacts("d{2} MMM d{2}", "dd MMM yy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d MMM d{2}", "d MMM yy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d{2}-MMM-d{2}", "dd-MMM-yy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d-MMM-d{2}", "d-MMM-yy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d{2}/MMM/d{2}", "dd/MMM/yy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("d/MMM/d{2}", "d/MMM/yy", FTAType.LOCALDATE));
 
-		matchers.add(new SimpleFacts("MMM d{2}, d{4}", "MMM dd',' yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("MMM d, d{4}", "MMM d',' yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("MMM d{2} d{4}", "MMM dd yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("MMM d d{4}", "MMM d yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("MMM-d{2}-d{4}", "MMM-dd-yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("MMM-d-d{4}", "MMM-d-yyyy", PatternInfo.Type.LOCALDATE));
+		matchers.add(new SimpleFacts("MMM d{2}, d{4}", "MMM dd',' yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMM d, d{4}", "MMM d',' yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMM d{2} d{4}", "MMM dd yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMM d d{4}", "MMM d yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMM-d{2}-d{4}", "MMM-dd-yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMM-d-d{4}", "MMM-d-yyyy", FTAType.LOCALDATE));
 
-		matchers.add(new SimpleFacts("MMMM d{2}, d{4}", "MMMM dd',' yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("MMMM d, d{4}", "MMMM d',' yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("MMMM d{2} d{4}", "MMMM dd yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("MMMM d d{4}", "MMMM d yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("MMMM-d{2}-d{4}", "MMMM-dd-yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("MMMM-d-d{4}", "MMMM-d-yyyy", PatternInfo.Type.LOCALDATE));
+		matchers.add(new SimpleFacts("MMMM d{2}, d{4}", "MMMM dd',' yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMMM d, d{4}", "MMMM d',' yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMMM d{2} d{4}", "MMMM dd yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMMM d d{4}", "MMMM d yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMMM-d{2}-d{4}", "MMMM-dd-yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMMM-d-d{4}", "MMMM-d-yyyy", FTAType.LOCALDATE));
 
-		matchers.add(new SimpleFacts("MMM d d{4} d{2}:d{2}:d{2} P", "MMM d yyyy hh:mm:ss a", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("MMM d{2} d{4} d{2}:d{2}:d{2} P", "MMM dd yyyy hh:mm:ss a", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("MMMM d d{4} d{2}:d{2}:d{2} P", "MMMM d yyyy hh:mm:ss a", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("MMMM d{2} d{4} d{2}:d{2}:d{2} P", "MMMM dd yyyy hh:mm:ss a", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("MMM d d{4} d{2}:d{2}:d{2} P", "MMM d yyyy hh:mm:ss a", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("MMM d{2} d{4} d{2}:d{2}:d{2} P", "MMM dd yyyy hh:mm:ss a", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("MMMM d d{4} d{2}:d{2}:d{2} P", "MMMM d yyyy hh:mm:ss a", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("MMMM d{2} d{4} d{2}:d{2}:d{2} P", "MMMM dd yyyy hh:mm:ss a", FTAType.LOCALDATETIME));
 
-		matchers.add(new SimpleFacts("d{8}Td{2}Z", "yyyyMMdd'T'HH'Z'", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{2}", "yyyyMMdd'T'HH", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{4}-d{2}-d{2}Td{2}", "yyyy-MM-dd'T'HH", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{4}Z", "yyyyMMdd'T'HHmm'Z'", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{4}", "yyyyMMdd'T'HHmm", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{4}-d{2}-d{2}Td{2}:d{2}", "yyyy-MM-dd'T'HH:mm", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{6}Z", "yyyyMMdd'T'HHmmss'Z'", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{6}", "yyyyMMdd'T'HHmmss", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{4}-d{2}-d{2}Td{2}:d{2}:d{2}", "yyyy-MM-dd'T'HH:mm:ss", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{7}Z", "yyyyMMdd'T'HHmmssS'Z'", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{7}", "yyyyMMdd'T'HHmmssS", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{6}+d{4}", "yyyyMMdd'T'HHmmssxx", PatternInfo.Type.OFFSETDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{6}-d{4}", "yyyyMMdd'T'HHmmssxx", PatternInfo.Type.OFFSETDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{6}.d{3}+d{4}", "yyyyMMdd'T'HHmmss.SSSxx", PatternInfo.Type.OFFSETDATETIME));
-		matchers.add(new SimpleFacts("d{8}Td{6}.d{3}-d{4}", "yyyyMMdd'T'HHmmss.SSSxx", PatternInfo.Type.OFFSETDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{2}Z", "yyyyMMdd'T'HH'Z'", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{2}", "yyyyMMdd'T'HH", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{4}-d{2}-d{2}Td{2}", "yyyy-MM-dd'T'HH", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{4}Z", "yyyyMMdd'T'HHmm'Z'", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{4}", "yyyyMMdd'T'HHmm", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{4}-d{2}-d{2}Td{2}:d{2}", "yyyy-MM-dd'T'HH:mm", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{6}Z", "yyyyMMdd'T'HHmmss'Z'", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{6}", "yyyyMMdd'T'HHmmss", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{4}-d{2}-d{2}Td{2}:d{2}:d{2}", "yyyy-MM-dd'T'HH:mm:ss", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{7}Z", "yyyyMMdd'T'HHmmssS'Z'", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{7}", "yyyyMMdd'T'HHmmssS", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{6}+d{4}", "yyyyMMdd'T'HHmmssxx", FTAType.OFFSETDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{6}-d{4}", "yyyyMMdd'T'HHmmssxx", FTAType.OFFSETDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{6}.d{3}+d{4}", "yyyyMMdd'T'HHmmss.SSSxx", FTAType.OFFSETDATETIME));
+		matchers.add(new SimpleFacts("d{8}Td{6}.d{3}-d{4}", "yyyyMMdd'T'HHmmss.SSSxx", FTAType.OFFSETDATETIME));
 
-		matchers.add(new SimpleFacts("d{2}/MMM/d{2} d:d{2} P", "dd/MMM/yy h:mm a", PatternInfo.Type.LOCALDATETIME));
-		matchers.add(new SimpleFacts("d{2}/MMM/d{2} d{2}:d{2} P", "dd/MMM/yy hh:mm a", PatternInfo.Type.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{2}/MMM/d{2} d:d{2} P", "dd/MMM/yy h:mm a", FTAType.LOCALDATETIME));
+		matchers.add(new SimpleFacts("d{2}/MMM/d{2} d{2}:d{2} P", "dd/MMM/yy hh:mm a", FTAType.LOCALDATETIME));
 
-		matchers.add(new SimpleFacts("EEEE, MMM, d{2}, d{4}", "EEEE, MMM, dd, yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("EEEE, MMMM, d{2}, d{4}", "EEEE, MMMM, dd, yyyy", PatternInfo.Type.LOCALDATE));
-		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} z d{4}", "EEE MMM dd HH:mm:ss z yyyy", PatternInfo.Type.ZONEDDATETIME));
-		matchers.add(new SimpleFacts("EEE MMM {2}d d{2}:d{2}:d{2} z d{4}", "EEE MMM ppd HH:mm:ss z yyyy", PatternInfo.Type.ZONEDDATETIME));
+		matchers.add(new SimpleFacts("EEEE, MMM, d{2}, d{4}", "EEEE, MMM, dd, yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("EEEE, MMMM, d{2}, d{4}", "EEEE, MMMM, dd, yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} z d{4}", "EEE MMM dd HH:mm:ss z yyyy", FTAType.ZONEDDATETIME));
+		matchers.add(new SimpleFacts("EEE MMM {2}d d{2}:d{2}:d{2} z d{4}", "EEE MMM ppd HH:mm:ss z yyyy", FTAType.ZONEDDATETIME));
 
 		HashMap<String, SimpleFacts> localeMatcher = new HashMap<>();
 		for (SimpleFacts sdm : matchers) {
@@ -126,7 +129,7 @@ public class SimpleDateMatcher {
 		return localeMatcher;
 	}
 
-	public static PatternInfo.Type getType(String pattern, Locale locale) {
+	public static FTAType getType(String pattern, Locale locale) {
 		Map<String, SimpleFacts> sfMap = getSimpleDataFacts(locale);
 		if (sfMap == null)
 			return null;
@@ -317,7 +320,7 @@ public class SimpleDateMatcher {
 	private int year = -1;
 	private int yearLength = -1;
 
-	public PatternInfo.Type getType() {
+	public FTAType getType() {
 		return simpleFacts.getType();
 	}
 

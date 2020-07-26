@@ -2,8 +2,8 @@ package com.cobber.fta.examples;
 
 import java.util.Locale;
 
-import com.cobber.fta.DateTimeParser;
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.dates.DateTimeParser;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 public class DetermineDateFormat {
 

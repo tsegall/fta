@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta;
+package com.cobber.fta.dates;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +29,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.core.RegExpSplitter;
+import com.cobber.fta.core.Utils;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 /**
  * DateTimeParserResult is the result of a {@link DateTimeParser} analysis.
@@ -134,13 +138,13 @@ public class DateTimeParserResult {
 		DateTimeFormatter dtf = DateTimeParser.ofPattern(getFormatString(), locale);
 
 		try {
-			if (PatternInfo.Type.LOCALTIME.equals(getType()))
+			if (FTAType.LOCALTIME.equals(getType()))
 				LocalTime.parse(input, dtf);
-			else if (PatternInfo.Type.LOCALDATE.equals(getType()))
+			else if (FTAType.LOCALDATE.equals(getType()))
 				LocalDate.parse(input, dtf);
-			else if (PatternInfo.Type.LOCALDATETIME.equals(getType()))
+			else if (FTAType.LOCALDATETIME.equals(getType()))
 				LocalDateTime.parse(input, dtf);
-			else if (PatternInfo.Type.ZONEDDATETIME.equals(getType()))
+			else if (FTAType.ZONEDDATETIME.equals(getType()))
 				ZonedDateTime.parse(input, dtf);
 			else
 				OffsetDateTime.parse(input, dtf);
@@ -308,8 +312,8 @@ public class DateTimeParserResult {
 						RegExpSplitter facts = RegExpSplitter.newInstance(formatString.substring(i + 1));
 						if (facts == null)
 							return null;
-						i += facts.length;
-						fractions = facts.min;
+						i += facts.getLength();
+						fractions = facts.getMin();
 					}
 				}
 				timeFieldLengths[timeElements] = fractions;
@@ -499,9 +503,9 @@ public class DateTimeParserResult {
 						RegExpSplitter facts = RegExpSplitter.newInstance(formatString.substring(i + 1));
 						if (facts == null)
 							return null;
-						i += facts.length;
-						count = facts.min;
-						high = facts.max;
+						i += facts.getLength();
+						count = facts.getMin();
+						high = facts.getMax();
 					}
 				}
 				ret.add(new FormatterToken(Token.FRACTION, count, high));
@@ -835,23 +839,23 @@ public class DateTimeParserResult {
 	 * @return The detected type of this input, will be either "Date", "Time",
 	 *  "DateTime", "ZonedDateTime" or "OffsetDateTime".
 	 */
-	public PatternInfo.Type getType() {
+	public FTAType getType() {
 		if (timeElements == -1)
-			return PatternInfo.Type.LOCALDATE;
+			return FTAType.LOCALDATE;
 		if (dateElements == -1)
-			return PatternInfo.Type.LOCALTIME;
+			return FTAType.LOCALTIME;
 
 		if (tokenized == null)
 			tokenized =  DateTimeParserResult.tokenize(formatString);
 
 		for (FormatterToken t : tokenized) {
 			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_Z))
-				return PatternInfo.Type.OFFSETDATETIME;
+				return FTAType.OFFSETDATETIME;
 			if (t.getType().equals(Token.TIMEZONE))
-				return PatternInfo.Type.ZONEDDATETIME;
+				return FTAType.ZONEDDATETIME;
 		}
 
-		return PatternInfo.Type.LOCALDATETIME;
+		return FTAType.LOCALDATETIME;
 	}
 
 	private String asDate(final char[] fieldChars) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta;
+package com.cobber.fta.dates;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import com.cobber.fta.core.RegExpGenerator;
 
 /*
  * Helper class used to cache Month information across multiple languages.

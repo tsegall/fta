@@ -21,6 +21,8 @@ import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAType;
+
 public class TestBooleans {
 	@Test
 	public void onlyTrue() throws IOException {
@@ -36,7 +38,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_TRUE_FALSE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
+		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
 		Assert.assertEquals(result.getMinLength(), 4);
 		Assert.assertEquals(result.getMaxLength(), 4);
 		Assert.assertEquals(result.getMinValue(), "true");
@@ -69,7 +71,7 @@ public class TestBooleans {
 				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_TRUE_FALSE) + ")" +
 				KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - NULL_COUNT));
-		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
+		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
 		Assert.assertEquals(result.getTypeQualifier(), "TRUE_FALSE");
 		Assert.assertEquals(result.getMinLength(), 4);
 		Assert.assertEquals(result.getMaxLength(), 12);
@@ -109,7 +111,7 @@ public class TestBooleans {
 				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO) + ")" +
 				KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), .9375);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
+		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
 		Assert.assertEquals(result.getTypeQualifier(), "YES_NO");
 		Assert.assertEquals(result.getMinLength(), 2);
 		Assert.assertEquals(result.getMaxLength(), 9);
@@ -150,7 +152,7 @@ public class TestBooleans {
 				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO) + ")" +
 				KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - NULL_COUNT));
-		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
+		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
 		Assert.assertEquals(result.getTypeQualifier(), "YES_NO");
 		Assert.assertEquals(result.getMinLength(), 2);
 		Assert.assertEquals(result.getMaxLength(), 9);
@@ -197,7 +199,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_Y_N));
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
+		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
 		Assert.assertEquals(result.getTypeQualifier(), "Y_N");
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 1);
@@ -231,7 +233,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getMatchCount(), countN + countC);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 1);
@@ -256,7 +258,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA);
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 1);
@@ -287,7 +289,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO));
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.BOOLEAN);
+		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 1);
 		Assert.assertEquals(result.getMinValue(), "0");
@@ -321,7 +323,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getRegExp(), "\\d");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 1);
 		Assert.assertEquals(result.getMinValue(), "1");
@@ -355,7 +357,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getNullCount(), 2);
 		Assert.assertEquals(result.getRegExp(), "\\d");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getCardinality(), 2);
 		final Map<String, Long> details = result.getCardinalityDetails();
 		Assert.assertEquals(details.get("0"), Long.valueOf(13));

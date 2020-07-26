@@ -21,6 +21,8 @@ import java.util.Locale;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.RegExpGenerator;
+
 public class TestRegExpSupport {
 	@Test
 	public void phone() throws IOException {

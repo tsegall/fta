@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.validator.routines.CreditCardValidator;
 
-import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.core.FTAType;
 
 public class PluginCreditCard extends LogicalTypeInfinite {
 	public final static String REGEXP = "(?:\\d[ -]*?){13,16}";
@@ -61,8 +61,8 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public Type getBaseType() {
-		return PatternInfo.Type.STRING;
+	public FTAType getBaseType() {
+		return FTAType.STRING;
 	}
 
 	@Override

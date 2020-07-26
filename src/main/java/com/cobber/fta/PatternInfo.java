@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import com.cobber.fta.KnownPatterns.ID;
+import com.cobber.fta.core.FTAType;
 
 /**
  * The PatternInfo class maintains a set of information about a simple pattern.
@@ -25,72 +26,6 @@ import com.cobber.fta.KnownPatterns.ID;
  * ("BOOLEAN").
  */
 public class PatternInfo {
-
-	public enum Type {
-		/** A Boolean type - for example, True/False, Yes/No, 1/0. */
-		BOOLEAN {
-			@Override
-			public String toString() {
-				return "Boolean";
-			}
-		},
-		/** Any Floating point type - refer to min/max to determine range. */
-		DOUBLE {
-			@Override
-			public String toString() {
-				return "Double";
-			}
-		},
-		/** A simple Date value - a calendar value with no time or no time-zone. */
-		LOCALDATE {
-			@Override
-			public String toString() {
-				return "LocalDate";
-			}
-		},
-		/** A date and time - both a calendar and a wall clock. */
-		LOCALDATETIME {
-			@Override
-			public String toString() {
-				return "LocalDateTime";
-			}
-		},
-		/** Any Time value - a wall Time. */
-		LOCALTIME {
-			@Override
-			public String toString() {
-				return "LocalTime";
-			}
-		},
-		/** Any Integral type - refer to min/max to determine range. */
-		LONG {
-			@Override
-			public String toString() {
-				return "Long";
-			}
-		},
-		/** A date-time with an offset from UTC. */
-		OFFSETDATETIME {
-			@Override
-			public String toString() {
-				return "OffsetDateTime";
-			}
-		},
-		/** Any String value. */
-		STRING {
-			@Override
-			public String toString() {
-				return "String";
-			}
-		},
-		/** A date-time with a time-zone. */
-		ZONEDDATETIME {
-			@Override
-			public String toString() {
-				return "ZonedDateTime";
-			}
-		}
-	}
 
 	public enum TypeQualifier {
 		/* String */
@@ -114,7 +49,7 @@ public class PatternInfo {
 	public int minLength;
 	public int maxLength;
 	public String format;
-	public Type type;
+	public FTAType type;
 	public String typeQualifier;
 	public boolean isLogicalType;
 
@@ -139,7 +74,7 @@ public class PatternInfo {
 	 * @param format
 	 *            The Java format specified for a date pattern (optional).
 	 */
-	public PatternInfo(ID id, final String regexp, final Type type, final String typeQualifier,
+	public PatternInfo(ID id, final String regexp, final FTAType type, final String typeQualifier,
 			boolean isLogicalType, final int minLength, final int maxLength, final String generalPattern, final String format) {
 		this.id = id;
 		this.regexp = regexp;
@@ -170,7 +105,7 @@ public class PatternInfo {
 	 * @return A boolean indicating if the Type for this pattern is numeric.
 	 */
 	public boolean isNumeric() {
-		return PatternInfo.Type.LONG.equals(this.type) || PatternInfo.Type.DOUBLE.equals(this.type);
+		return FTAType.LONG.equals(this.type) || FTAType.DOUBLE.equals(this.type);
 	}
 
 	/**
@@ -179,8 +114,8 @@ public class PatternInfo {
 	 * @return A boolean indicating if the Type for this pattern includes a Date.
 	 */
 	public boolean isDateType() {
-		return PatternInfo.Type.LOCALDATE.equals(this.type) || PatternInfo.Type.LOCALDATETIME.equals(this.type) ||
-				PatternInfo.Type.OFFSETDATETIME.equals(this.type) || PatternInfo.Type.ZONEDDATETIME.equals(this.type);
+		return FTAType.LOCALDATE.equals(this.type) || FTAType.LOCALDATETIME.equals(this.type) ||
+				FTAType.OFFSETDATETIME.equals(this.type) || FTAType.ZONEDDATETIME.equals(this.type);
 	}
 
 	/**

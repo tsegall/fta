@@ -230,3 +230,6 @@
 
 ### 3.0.7
  - Bulk mode from command line was not honoring options
+
+### 3.0.8
+ - Restructure code to separate out date functionality (and improve interfaces)

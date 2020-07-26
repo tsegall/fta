@@ -18,7 +18,7 @@ package com.cobber.fta;
 import java.util.Locale;
 import java.util.Set;
 
-import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.core.FTAType;
 
 /**
  * All Logical Types that consist of a constrained domain, e.g. a finite (small) number of elements should
@@ -35,8 +35,8 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	}
 
 	@Override
-	public Type getBaseType() {
-		return PatternInfo.Type.STRING;
+	public FTAType getBaseType() {
+		return FTAType.STRING;
 	}
 
 	/*

@@ -24,12 +24,12 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.LogicalTypeRegExp;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 class Driver {
 

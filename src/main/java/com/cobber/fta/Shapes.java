@@ -23,6 +23,8 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.cobber.fta.core.RegExpGenerator;
+
 /**
  * Class used to manage Shapes.
  */

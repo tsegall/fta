@@ -47,7 +47,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import org.apache.commons.text.similarity.LevenshteinDistance;
+
+import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.InternalErrorException;
+import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.core.RegExpSplitter;
+import com.cobber.fta.core.Utils;
+import com.cobber.fta.dates.DateTimeParser;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.dates.DateTimeParserResult;
 
 /**
  * Analyze Text data to determine type information and other key metrics
@@ -686,7 +695,7 @@ public class TextAnalyzer {
 		if (patternInfo.isLogicalType()) {
 			// If it is a registered Infinite Logical Type then validate it
 			LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
-			if (PatternInfo.Type.LONG.equals(logical.getBaseType()))
+			if (FTAType.LONG.equals(logical.getBaseType()))
 				return logical.isValid(input);
 		}
 
@@ -729,7 +738,7 @@ public class TextAnalyzer {
 		else if (patternInfo.isLogicalType) {
 			// If it is a registered Infinite Logical Type then validate it
 			LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
-			if (PatternInfo.Type.STRING.equals(logical.getBaseType()) && !logical.isValid(rawInput))
+			if (FTAType.STRING.equals(logical.getBaseType()) && !logical.isValid(rawInput))
 				return false;
 		}
 
@@ -790,7 +799,7 @@ public class TextAnalyzer {
 		if (patternInfo.isLogicalType()) {
 			// If it is a registered Infinite Logical Type then validate it
 			LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
-			if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) && !logical.isValid(input))
+			if (FTAType.DOUBLE.equals(logical.getBaseType()) && !logical.isValid(input))
 				return false;
 		}
 
@@ -1158,7 +1167,7 @@ public class TextAnalyzer {
 
 		sampleCount++;
 
-		PatternInfo.Type matchType = matchPatternInfo != null ? matchPatternInfo.type : null;
+		FTAType matchType = matchPatternInfo != null ? matchPatternInfo.type : null;
 
 		if (rawInput == null) {
 			nullCount++;
@@ -1430,7 +1439,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (bestPattern != null && secondBestPattern != null && PatternInfo.Type.STRING.equals(bestPattern.type)) {
+		if (bestPattern != null && secondBestPattern != null && FTAType.STRING.equals(bestPattern.type)) {
 			// Promote anything to STRING
 			best = new AbstractMap.SimpleEntry<>(best.getKey(),
 					best.getValue() + secondBest.getValue());
@@ -1599,15 +1608,15 @@ public class TextAnalyzer {
 					int count = 0;
 					PatternInfo candidate = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 					for (final String sample : raw) {
-						if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
+						if (FTAType.STRING.equals(logical.getBaseType())) {
 							if (trackString(sample, candidate, false))
 								count++;
 						}
-						else if (PatternInfo.Type.LONG.equals(logical.getBaseType())) {
+						else if (FTAType.LONG.equals(logical.getBaseType())) {
 							if (trackLong(sample, candidate, false))
 								count++;
 						}
-						else if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType())) {
+						else if (FTAType.DOUBLE.equals(logical.getBaseType())) {
 							if (trackDouble(sample, candidate, false))
 								count++;
 						} if (candidate.isDateType()) {
@@ -1703,7 +1712,7 @@ public class TextAnalyzer {
 			for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
 				String key = entry.getKey();
 				Long value = entry.getValue();
-				if (PatternInfo.Type.LONG.equals(current.type) && isDouble(key)) {
+				if (FTAType.LONG.equals(current.type) && isDouble(key)) {
 					doubles++;
 					if (!negative)
 						negative = key.charAt(0) == '-';
@@ -1752,14 +1761,14 @@ public class TextAnalyzer {
 			}
 		}
 		// If we are currently Numeric and the only errors are alpha then convert to AlphaNumeric
-		else if (badCharacters != 0 && analysis.spaces == 0 && analysis.other == 0 && PatternInfo.Type.LONG.equals(current.type)) {
+		else if (badCharacters != 0 && analysis.spaces == 0 && analysis.other == 0 && FTAType.LONG.equals(current.type)) {
 			if (outliers.size() == maxOutliers || analysis.alphas > .01 * realSamples) {
 				backoutToPattern(realSamples, KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE);
 				return true;
 			}
 		}
 		// If we are currently Numeric and the only errors are doubles then convert to double
-		else if (outliers.size() == analysis.doubles && PatternInfo.Type.LONG.equals(current.type)) {
+		else if (outliers.size() == analysis.doubles && FTAType.LONG.equals(current.type)) {
 			KnownPatterns.ID id;
 			if (analysis.exponent)
 				id = analysis.negative ? KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT;
@@ -1782,7 +1791,7 @@ public class TextAnalyzer {
 
 		// If it is not one of our known types then construct a suitable PatternInfo
 		if (newPatternInfo == null)
-			newPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, null, false, -1, -1, null, null);
+			newPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, null, false, -1, -1, null, null);
 
 		backoutToPatternInfo(realSamples, newPatternInfo);
 	}
@@ -1806,7 +1815,7 @@ public class TextAnalyzer {
 
 		// If it is not one of our known types then construct a suitable PatternInfo
 		if (newPatternInfo == null)
-			newPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, null, false, -1, -1, null, null);
+			newPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, null, false, -1, -1, null, null);
 
 		matchPatternInfo = newPatternInfo;
 
@@ -1825,11 +1834,11 @@ public class TextAnalyzer {
 		cardinality.putAll(outliers);
 
 		// Need to update stats to reflect any outliers we previously ignored
-		if (matchPatternInfo.type.equals(PatternInfo.Type.STRING)) {
+		if (matchPatternInfo.type.equals(FTAType.STRING)) {
 			for (String s : cardinality.keySet())
 				trackString(s, newPatternInfo, false);
 		}
-		else if (matchPatternInfo.type.equals(PatternInfo.Type.DOUBLE)) {
+		else if (matchPatternInfo.type.equals(FTAType.DOUBLE)) {
 			minDouble = minLong;
 			maxDouble = maxLong;
 			for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
@@ -2041,9 +2050,9 @@ public class TextAnalyzer {
 					// Do we need to back out from any of our Infinite type determinations
 					LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
 					if (logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers) != null)
-						if (PatternInfo.Type.LONG.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
+						if (FTAType.LONG.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
-						else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
+						else if (FTAType.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
 				}
 				else {
@@ -2315,9 +2324,24 @@ public class TextAnalyzer {
 		outliers = bestResult.newOutliers;
 		cardinality = bestResult.newCardinality;
 		matchCount = bestResult.validCount;
-		matchPatternInfo = new PatternInfo(null, bestResult.logical.getRegExp(), PatternInfo.Type.STRING, bestResult.logical.getQualifier(), true, -1, -1, null, null);
+		matchPatternInfo = new PatternInfo(null, bestResult.logical.getRegExp(), FTAType.STRING, bestResult.logical.getQualifier(), true, -1, -1, null, null);
 
 		return bestResult.logical;
+	}
+
+	public static int distanceLevenshtein(String source, Set<String> universe) {
+		LevenshteinDistance distance = new LevenshteinDistance();
+
+		Integer best = Integer.MAX_VALUE;
+		for (String test : universe) {
+			if (test.equals(source))
+				continue;
+			Integer current = distance.apply(source, test);
+			if (current < best)
+				best = current;
+		}
+
+		return best;
 	}
 
 	/**
@@ -2365,11 +2389,11 @@ public class TextAnalyzer {
 
 			String newPattern;
 			if ((newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers)) != null) {
-				if (PatternInfo.Type.STRING.equals(logical.getBaseType())) {
+				if (FTAType.STRING.equals(logical.getBaseType())) {
 					backoutToPattern(realSamples, newPattern);
 					confidence = (double) matchCount / realSamples;
 				}
-				else if (PatternInfo.Type.LONG.equals(logical.getBaseType())) {
+				else if (FTAType.LONG.equals(logical.getBaseType())) {
 					backoutLogicalLongType(logical, realSamples);
 					confidence = (double) matchCount / realSamples;
 				}
@@ -2387,7 +2411,7 @@ public class TextAnalyzer {
 					DateTimeParser.plausibleDateCore(false, (int)minLongNonZero%100, ((int)minLongNonZero/100)%100, (int)minLongNonZero/10000, 4)  &&
 					DateTimeParser.plausibleDateCore(false, (int)maxLong%100, ((int)maxLong/100)%100, (int)maxLong/10000, 4)  &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("date"))) {
-				matchPatternInfo = new PatternInfo(null, (minLongNonZero == minLong || shapes.size() == 1) ? "\\d{8}" : "0|\\d{8}", PatternInfo.Type.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
+				matchPatternInfo = new PatternInfo(null, (minLongNonZero == minLong || shapes.size() == 1) ? "\\d{8}" : "0|\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
 				DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 				minLocalDate = LocalDate.parse(String.valueOf(minLongNonZero), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
@@ -2399,7 +2423,7 @@ public class TextAnalyzer {
 							trackDateTime(s, matchPatternInfo, true);
 			} else if (groupingSeparators == 0 && minLongNonZero > 1800 && maxLong < 2041 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("year") || dataStreamName.toLowerCase(locale).contains("date"))) {
-				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{4}" : "0|\\d{4}", PatternInfo.Type.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
+				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{4}" : "0|\\d{4}", FTAType.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLongNonZero, 1, 1);
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
 
@@ -2421,7 +2445,7 @@ public class TextAnalyzer {
 				matchPatternInfo.regexp = freezeNumeric(matchPatternInfo.regexp);
 
 				for (LogicalTypeRegExp logical : regExpTypes) {
-					if (PatternInfo.Type.LONG.equals(logical.getBaseType()) &&
+					if (FTAType.LONG.equals(logical.getBaseType()) &&
 							logical.isMatch(matchPatternInfo.regexp) &&
 							logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
@@ -2438,10 +2462,10 @@ public class TextAnalyzer {
 					confidence = (double) matchCount / realSamples;
 				}
 			}
-		} else if (PatternInfo.Type.BOOLEAN.equals(matchPatternInfo.type) && matchPatternInfo.id == KnownPatterns.ID.ID_BOOLEAN_Y_N && cardinality.size() == 1) {
+		} else if (FTAType.BOOLEAN.equals(matchPatternInfo.type) && matchPatternInfo.id == KnownPatterns.ID.ID_BOOLEAN_Y_N && cardinality.size() == 1) {
 			backoutToString(realSamples);
 			confidence = (double) matchCount / realSamples;
-		} else if (PatternInfo.Type.DOUBLE.equals(matchPatternInfo.type) && !matchPatternInfo.isLogicalType()) {
+		} else if (FTAType.DOUBLE.equals(matchPatternInfo.type) && !matchPatternInfo.isLogicalType()) {
 			if (minDouble < 0.0)
 				matchPatternInfo = knownPatterns.negation(matchPatternInfo.regexp);
 
@@ -2449,7 +2473,7 @@ public class TextAnalyzer {
 				matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
 
 			for (LogicalTypeRegExp logical : regExpTypes) {
-				if (PatternInfo.Type.DOUBLE.equals(logical.getBaseType()) &&
+				if (FTAType.DOUBLE.equals(logical.getBaseType()) &&
 						logical.isMatch(matchPatternInfo.regexp) &&
 						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
@@ -2457,7 +2481,7 @@ public class TextAnalyzer {
 					break;
 				}
 			}
-		} else if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && !matchPatternInfo.isLogicalType()) {
+		} else if (FTAType.STRING.equals(matchPatternInfo.type) && !matchPatternInfo.isLogicalType()) {
 			// Build Cardinality map ignoring case (and white space)
 			int minKeyLength = Integer.MAX_VALUE;
 			int maxKeyLength = 0;
@@ -2563,19 +2587,19 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (PatternInfo.Type.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier == null) {
+		if (FTAType.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier == null) {
 			boolean updated = false;
 			// We would really like to say something better than it is a String!
 
 			// Flip to a Regular Expression based on Shape analysis if possible
 			String newRegExp = shapes.getRegExp(realSamples);
 			if (newRegExp != null) {
-				matchPatternInfo = new PatternInfo(null, newRegExp, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+				matchPatternInfo = new PatternInfo(null, newRegExp, FTAType.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 						maxTrimmedLength, null, null);
 			}
 
 			for (LogicalTypeRegExp logical : regExpTypes) {
-				if (PatternInfo.Type.STRING.equals(logical.getBaseType()) &&
+				if (FTAType.STRING.equals(logical.getBaseType()) &&
 						logical.isMatch(matchPatternInfo.regexp) &&
 						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
@@ -2630,7 +2654,7 @@ public class TextAnalyzer {
 					if (interestingSamples > 1000 && cardinalityUpper.size() < 20 && !gen.isDigit()) {
 						Map<String, Long> sorted = Utils.sortByValue(cardinalityUpper);
 						for (Map.Entry<String, Long> elt : sorted.entrySet()) {
-							if (elt.getValue() < 3 && elt.getKey().length() > 3 && Utils.distanceLevenshtein(elt.getKey(), cardinalityUpper.keySet()) <= 1) {
+							if (elt.getValue() < 3 && elt.getKey().length() > 3 && distanceLevenshtein(elt.getKey(), cardinalityUpper.keySet()) <= 1) {
 								cardinalityUpper.remove(elt.getKey());
 								outliers.put(elt.getKey(), elt.getValue());
 								matchCount -= elt.getValue();
@@ -2644,7 +2668,7 @@ public class TextAnalyzer {
 							gen.train(elt);
 					}
 
-					matchPatternInfo = new PatternInfo(null, gen.getResult(), PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+					matchPatternInfo = new PatternInfo(null, gen.getResult(), FTAType.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 							maxTrimmedLength, null, null);
 					updated = true;
 				}
@@ -2656,7 +2680,7 @@ public class TextAnalyzer {
 
 				String regExp = Smashed.smashedAsRegExp(bestShape.getKey().trim());
 				for (LogicalTypeRegExp logical : regExpTypes) {
-					if (PatternInfo.Type.STRING.equals(logical.getBaseType()) &&
+					if (FTAType.STRING.equals(logical.getBaseType()) &&
 							logical.isMatch(regExp) &&
 							logical.isValidSet(dataStreamName, bestShape.getValue(), realSamples, calculateFacts(), cardinality, outliers) == null) {
 						matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
@@ -2672,7 +2696,7 @@ public class TextAnalyzer {
 			if (!updated && (KnownPatterns.PATTERN_ALPHA_VARIABLE.equals(matchPatternInfo.regexp) || KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE.equals(matchPatternInfo.regexp))) {
 				String newPattern = matchPatternInfo.regexp;
 				newPattern = newPattern.substring(0, newPattern.length() - 1) + lengthQualifier(minTrimmedLength, maxTrimmedLength);
-				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
+				matchPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 						maxTrimmedLength, null, null);
 				updated = true;
 			}
@@ -2680,7 +2704,7 @@ public class TextAnalyzer {
 			// Qualify random string with a min and max length
 			if (!updated && KnownPatterns.PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
 				String newPattern = KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minRawNonBlankLength, maxRawNonBlankLength, leadingWhiteSpace, trailingWhiteSpace, multiline);
-				matchPatternInfo = new PatternInfo(null, newPattern, PatternInfo.Type.STRING, matchPatternInfo.typeQualifier, false, minRawLength,
+				matchPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, matchPatternInfo.typeQualifier, false, minRawLength,
 						maxRawLength, null, null);
 				updated = true;
 			}
@@ -2695,8 +2719,8 @@ public class TextAnalyzer {
 				blankCount == 0 && nullCount == 0 &&
 				((matchPatternInfo.typeQualifier != null && matchPatternInfo.typeQualifier.equals("GUID")) ||
 				(matchPatternInfo.typeQualifier == null &&
-				((PatternInfo.Type.STRING.equals(matchPatternInfo.type) && minRawLength == maxRawLength && minRawLength < 32)
-						|| PatternInfo.Type.LONG.equals(matchPatternInfo.type))))) {
+				((FTAType.STRING.equals(matchPatternInfo.type) && minRawLength == maxRawLength && minRawLength < 32)
+						|| FTAType.LONG.equals(matchPatternInfo.type))))) {
 			key = true;
 
 			if (cardinality.size() == maxCardinality)

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta;
+package com.cobber.fta.core;
 
 /**
  * InternalErrorException is thrown when we get into an 'impossible' state.  This represents a bug!

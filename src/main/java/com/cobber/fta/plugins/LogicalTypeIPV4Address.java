@@ -21,10 +21,9 @@ import java.util.Map;
 import org.apache.commons.validator.routines.InetAddressValidator;
 
 import com.cobber.fta.LogicalTypeInfinite;
-import com.cobber.fta.PatternInfo;
-import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.TypeFacts;
+import com.cobber.fta.core.FTAType;
 
 public class LogicalTypeIPV4Address extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "IPADDRESS.IPV4";
@@ -68,8 +67,8 @@ public class LogicalTypeIPV4Address extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public Type getBaseType() {
-		return PatternInfo.Type.STRING;
+	public FTAType getBaseType() {
+		return FTAType.STRING;
 	}
 
 	@Override

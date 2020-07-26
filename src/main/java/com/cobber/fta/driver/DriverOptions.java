@@ -17,7 +17,7 @@ package com.cobber.fta.driver;
 
 import java.util.Locale;
 
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 class DriverOptions {
 	String charset = "UTF-8";

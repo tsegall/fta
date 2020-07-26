@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta;
+package com.cobber.fta.dates;
+
+import com.cobber.fta.core.FTAType;
 
 public class SimpleFacts {
 	private final String matcher;
 	private final String format;
-	private final PatternInfo.Type type;
+	private final FTAType type;
 
-	SimpleFacts(final String matcher, String format, PatternInfo.Type type) {
+	SimpleFacts(final String matcher, String format, FTAType type) {
 		this.matcher = matcher;
 		this.format = format;
 		this.type = type;
@@ -34,7 +36,7 @@ public class SimpleFacts {
 		return format;
 	}
 
-	PatternInfo.Type getType() {
+	FTAType getType() {
 		return type;
 	}
 }

@@ -20,8 +20,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
 
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
-import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.core.FTAType;
+import com.cobber.fta.dates.DateTimeParser;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 public class PluginBirthDate extends LogicalTypeInfinite {
 	public final static String REGEXP = "\\d{4}/\\d{2}/\\d{2}";
@@ -65,8 +66,8 @@ public class PluginBirthDate extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public Type getBaseType() {
-		return PatternInfo.Type.LOCALDATE;
+	public FTAType getBaseType() {
+		return FTAType.LOCALDATE;
 	}
 
 	@Override

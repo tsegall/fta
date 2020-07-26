@@ -15,6 +15,8 @@
  */
 package com.cobber.fta;
 
+import com.cobber.fta.core.RegExpGenerator;
+
 public final class Smashed {
 
 	private Smashed() {

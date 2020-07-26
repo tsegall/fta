@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta;
+package com.cobber.fta.dates;
 
-import com.cobber.fta.DateTimeParserResult.Token;
+import com.cobber.fta.dates.DateTimeParserResult.Token;
 
 class FormatterToken {
 	private final Token type;

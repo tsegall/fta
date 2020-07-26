@@ -19,9 +19,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import com.cobber.fta.DateTimeParser;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.dates.DateTimeParser;
 
 public class SampleDate {
 

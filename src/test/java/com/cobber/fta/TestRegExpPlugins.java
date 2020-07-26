@@ -23,6 +23,8 @@ import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAType;
+
 public class TestRegExpPlugins {
 	@Test
 	public void testRegExpLogicalType_MAC() throws IOException {
@@ -47,7 +49,7 @@ public class TestRegExpPlugins {
 		Assert.assertEquals(result.getTypeQualifier(), "MACADDRESS");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -77,7 +79,7 @@ public class TestRegExpPlugins {
 		Assert.assertEquals(result.getTypeQualifier(), "SSN");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		for (String sample : samples) {
@@ -106,7 +108,7 @@ public class TestRegExpPlugins {
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (String sample : samples) {
@@ -134,7 +136,7 @@ public class TestRegExpPlugins {
 		Assert.assertEquals(result.getTypeQualifier(), "MONTH.DIGITS");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -164,7 +166,7 @@ public class TestRegExpPlugins {
 		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -194,7 +196,7 @@ public class TestRegExpPlugins {
 		Assert.assertEquals(result.getRegExp(), "[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {
@@ -250,7 +252,7 @@ public class TestRegExpPlugins {
 		Assert.assertEquals(result.getRegExp(), "[-' \\.\\p{IsAlphabetic}]+");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (int i = 0; i < samples.length; i++) {

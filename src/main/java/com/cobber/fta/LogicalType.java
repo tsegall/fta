@@ -19,6 +19,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.cobber.fta.core.FTAType;
+
 public abstract class LogicalType implements Comparable<LogicalType> {
 	protected PluginDefinition defn;
 	protected Locale locale = null;
@@ -138,7 +140,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * The underlying type we are qualifying.
 	 * @return The underlying type - e.g. STRING, INT, etc.
 	 */
-	public abstract PatternInfo.Type getBaseType();
+	public abstract FTAType getBaseType();
 
 	/**
 	 * Is the supplied String an instance of this logical type?

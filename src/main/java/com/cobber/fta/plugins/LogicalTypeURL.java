@@ -21,9 +21,9 @@ import java.util.Map;
 import org.apache.commons.validator.routines.UrlValidator;
 
 import com.cobber.fta.LogicalTypeInfinite;
-import com.cobber.fta.PatternInfo;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.TypeFacts;
+import com.cobber.fta.core.FTAType;
 
 /**
  * Plugin to detect URLs.
@@ -88,8 +88,8 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public PatternInfo.Type getBaseType() {
-		return PatternInfo.Type.STRING;
+	public FTAType getBaseType() {
+		return FTAType.STRING;
 	}
 
 	@Override

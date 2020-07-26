@@ -20,11 +20,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.LogicalTypeInfinite;
-import com.cobber.fta.PatternInfo;
-import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.TypeFacts;
+import com.cobber.fta.core.FTAType;
 
 /**
  * Plugin to detect Addresses. (English-language only).
@@ -73,8 +72,8 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public Type getBaseType() {
-		return PatternInfo.Type.STRING;
+	public FTAType getBaseType() {
+		return FTAType.STRING;
 	}
 
 	@Override

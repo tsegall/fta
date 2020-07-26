@@ -26,6 +26,7 @@ import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAType;
 import com.cobber.fta.plugins.LogicalTypeUSZip5;
 
 public class RandomTests {
@@ -84,7 +85,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getMinValue(), "47");
 		Assert.assertEquals(result.getMaxValue(), "91");
 
@@ -102,7 +103,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_NULL));
 		Assert.assertEquals(result.getConfidence(), 0.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "NULL");
 	}
 
@@ -124,7 +125,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(1, 12, 1, 12, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getMinValue(), "+++++");
 		Assert.assertEquals(result.getMaxValue(), "hello,world");
 		Assert.assertEquals(result.getMinLength(), 1);
@@ -154,7 +155,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getMatchCount(), COUNT - INVALID);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getMinValue(), "10000");
 		Assert.assertEquals(result.getMaxValue(), "10049");
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
@@ -184,7 +185,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), COUNT);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getMinValue(), "0");
 		Assert.assertEquals(result.getMaxValue(), "99");
 		Assert.assertNull(result.getTypeQualifier());
@@ -215,7 +216,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -240,7 +241,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - 1);
@@ -287,7 +288,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 1);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "((?i)(HELLO|HI|WORLD))" + KnownPatterns.PATTERN_WHITESPACE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -312,7 +313,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.DETECT_WINDOW_DEFAULT + 26);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -364,7 +365,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -455,7 +456,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -503,7 +504,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -542,7 +543,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -578,7 +579,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -613,7 +614,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 		Assert.assertEquals(result.getSampleCount(), iters);
 		Assert.assertEquals(result.getBlankCount(), iters);
@@ -653,7 +654,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + KnownPatterns.PATTERN_ALPHA + "{3}" + KnownPatterns.PATTERN_WHITESPACE);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), iters + 1);
 		Assert.assertEquals(result.getBlankCount(), iters);
@@ -691,7 +692,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "[ 	]*[\\p{IsAlphabetic}\\d]{3,8}[ 	]*");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
@@ -735,7 +736,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{4}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length * 2);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -764,7 +765,7 @@ public class RandomTests {
 
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_NUMERIC + "{3}" + '|' + KnownPatterns.PATTERN_ALPHA + "{3}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -792,7 +793,7 @@ public class RandomTests {
 
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_NUMERIC + "{3}" + '|' + KnownPatterns.PATTERN_ALPHA + "{3}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -845,7 +846,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, realSamples >= TextAnalyzer.DETECT_WINDOW_DEFAULT ? TextAnalyzer.DETECT_WINDOW_DEFAULT : -1);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		if (inputs.length == empty)
 			Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 		else
@@ -1005,7 +1006,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -1037,7 +1038,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,10}");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getShapeCount(), 6);
@@ -1124,7 +1125,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
@@ -1153,7 +1154,7 @@ public class RandomTests {
 		Assert.assertEquals(locked, 2 * TextAnalyzer.DETECT_WINDOW_DEFAULT + 1);
 		Assert.assertEquals(result.getSampleCount(), 2 * (TextAnalyzer.DETECT_WINDOW_DEFAULT + 1));
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.DOUBLE);
+		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
@@ -1339,7 +1340,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), "\\+\\d \\d{3} \\d{3} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -1376,7 +1377,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), "\\d\\.\\d{3}\\.\\d{3}\\.\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -1413,7 +1414,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), "\\(\\d{3}\\) \\d{3} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -1441,7 +1442,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{9,12}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getShapeCount(), 6);
@@ -1483,7 +1484,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), "\\[\\d{3}\\)\\{\\[\\d-\\d\\] \\^\\d{3}\\$\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -1522,7 +1523,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
 		Assert.assertEquals(result.getCardinality(), 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getRegExp(), "\\d{10}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
@@ -1545,7 +1546,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), end - start);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertTrue(result.isKey());
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
@@ -1581,7 +1582,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getOutlierCount(), outliers);
 		Assert.assertEquals(result.getSampleCount(), outliers + end - start);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
@@ -1624,7 +1625,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{1,5}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(analysis.getMaxOutliers(), newMaxOutliers);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getSampleCount(), outliers + end - start);
@@ -1651,7 +1652,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), end - start);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d{6}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertTrue(result.isKey());
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
@@ -1677,7 +1678,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), 1 + end - start);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LONG);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertFalse(result.isKey());
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
@@ -1986,13 +1987,13 @@ public class RandomTests {
 					analysis.train(String.valueOf(i));
 			}
 
-			PatternInfo.Type answer;
+			FTAType answer;
 			String re = "";
 			String min;
 			String max;
 			if (firstFloat != -1 && firstFloat < analysis.getDetectWindow() || floats >= (errorRate * SAMPLES)/100) {
 				misses -= floats;
-				answer = PatternInfo.Type.DOUBLE;
+				answer = FTAType.DOUBLE;
 				min = String.valueOf((double)Math.min(lowest, lowestFloat));
 				max = String.valueOf((double)high);
 				re += min.charAt(0) == '-' ? "-?\\d+|-?(\\d+)?\\.\\d+" : "\\d+|(\\d+)?\\.\\d+";
@@ -2004,7 +2005,7 @@ public class RandomTests {
 				if (lowLength != highLength)
 					re += "," + highLength;
 				re += "}";
-				answer = PatternInfo.Type.LONG;
+				answer = FTAType.LONG;
 				min = String.valueOf(lowest);
 				max = String.valueOf(high);
 			}

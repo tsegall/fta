@@ -39,7 +39,11 @@ import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.core.FTAType;
+import com.cobber.fta.dates.DateTimeParser;
+import com.cobber.fta.dates.LocaleInfo;
+import com.cobber.fta.dates.SimpleDateMatcher;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 public class TestDates {
 	@Test
@@ -71,7 +75,7 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getOutlierCount(), 1);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy");
 		Assert.assertEquals(result.getMinValue(), "02/22/02");
 		Assert.assertEquals(result.getMaxValue(), "02/02/99");
@@ -110,7 +114,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/[\\p{IsAlphabetic}\\p{IsDigit} ]{5,6}/\\d{2} \\d{1,2}:\\d{2} (?i)(SA|CH)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MMM/yy h:mm a");
 
 		for (String sample : samples) {
@@ -149,7 +153,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{2} \\d{1,2}:\\d{2}:\\d{2} (?i)(AM|PM)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy h:mm:ss a");
 
 		for (String sample : samples) {
@@ -186,7 +190,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\p{IsAlphabetic}{3}/\\d{2} \\d{1,2}:\\d{2} (?i)(AM|PM)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MMM/yy h:mm a");
 
 		for (String sample : samples) {
@@ -221,7 +225,7 @@ public class TestDates {
 
 			Assert.assertEquals(result.getSampleCount(), sampleCount);
 			Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2} (?i)(AM|PM) \\d{2}/\\d{2}/\\d{2}");
-			Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+			Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 			Assert.assertEquals(result.getTypeQualifier(), "h:mm a dd/MM/yy");
 			Assert.assertEquals(result.getMatchCount(), sampleCount);
 			Assert.assertEquals(result.getOutlierCount(), 0);
@@ -259,7 +263,7 @@ public class TestDates {
 
 		Assert.assertEquals(result.getSampleCount(), sampleCount);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2} (?i)(SA|CH) \\d{2}/\\d{2}/\\d{2}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "h:mm a dd/MM/yy");
 		Assert.assertEquals(result.getMatchCount(), sampleCount);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -300,7 +304,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(6, 7, 6, 7, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 
 		for (String sample : samples) {
@@ -331,7 +335,7 @@ public class TestDates {
 
 				final TextAnalysisResult result = analysis.getResult();
 
-				Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+				Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 				Assert.assertEquals(result.getTypeQualifier(), "HH:mm dd/M/yy", resolutionMode.toString() + "+" + locale);
 				Assert.assertEquals(result.getSampleCount(), inputs.length);
 				Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -368,7 +372,7 @@ public class TestDates {
 
 				final TextAnalysisResult result = analysis.getResult();
 
-				Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+				Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 				String expected = "";
 				if (resolutionMode == DateResolutionMode.DayFirst)
 					expected = "d/M/yy";
@@ -411,7 +415,7 @@ public class TestDates {
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2} \\d{2}/\\d{1,2}/\\d{2}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "HH:mm ??/M/??");
 
 		// Since we do not have a valid Type Qualifier - we cannot assert anything about types matches or confidence
@@ -447,7 +451,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2} \\d{2}/\\d{1,2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
@@ -475,7 +479,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 
 		int matches = 0;
 		for (int i = 0; i < inputs.length; i++) {
@@ -509,7 +513,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "d/M/yy H:mm");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -559,7 +563,7 @@ public class TestDates {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "M/d/yy H:mm");
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -605,7 +609,7 @@ public class TestDates {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyyMMdd");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -646,7 +650,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yy HH:mm");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -675,7 +679,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy/dd/MM");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -705,7 +709,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -736,7 +740,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -770,7 +774,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "M/dd/yy H:mm");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -799,7 +803,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "M/d/yy H:mm");
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getMatchCount(), iterations);
@@ -829,7 +833,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd MMM yyyy");
 		Assert.assertEquals(result.getMinValue(), "11 Dec 1916");
 		Assert.assertEquals(result.getMaxValue(), "12 Mar 2019");
@@ -861,7 +865,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yy");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -889,7 +893,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "\\d{2}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy");
 
 		Assert.assertTrue(input.matches(result.getRegExp()));
@@ -914,7 +918,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "HH:mm:ss");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -941,7 +945,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "HH:mm");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -975,7 +979,7 @@ public class TestDates {
 
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} [\\p{IsAlphabetic}\\.]{3,5} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), samples.size());
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -1018,7 +1022,7 @@ public class TestDates {
 
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} \\p{IsAlphabetic}{1,4} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), samples.size());
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -1061,7 +1065,7 @@ public class TestDates {
 
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} .{5,8} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), samples.size());
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -1104,7 +1108,7 @@ public class TestDates {
 
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} \\p{IsAlphabetic}{3} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), samples.size());
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -1135,7 +1139,7 @@ public class TestDates {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "\\d{2}/\\d{2}/\\d{2}");
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yy");
 		Assert.assertEquals(result.getSampleCount(), iters);
 		Assert.assertEquals(result.getBlankCount(), 0);
@@ -1182,7 +1186,7 @@ public class TestDates {
 
 		Assert.assertEquals(result.getSampleCount(), 20);
 		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss");
@@ -1217,7 +1221,7 @@ public class TestDates {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.OFFSETDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.OFFSETDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss.SSSX");
 		Assert.assertEquals(result.getSampleCount(), 20);
 		Assert.assertEquals(result.getNullCount(), 2);
@@ -1257,7 +1261,7 @@ public class TestDates {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.OFFSETDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.OFFSETDATETIME);
 		Assert.assertEquals(result.getSampleCount(), 20);
 		Assert.assertEquals(result.getMatchCount(), 18);
 		Assert.assertEquals(result.getNullCount(), 2);
@@ -1286,7 +1290,7 @@ public class TestDates {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.ZONEDDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 		Assert.assertEquals(result.getSampleCount(), 6);
 		Assert.assertEquals(result.getMatchCount(), 6);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -1312,7 +1316,7 @@ public class TestDates {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.ZONEDDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 		Assert.assertEquals(result.getSampleCount(), 6);
 		Assert.assertEquals(result.getMatchCount(), 6);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -1348,7 +1352,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "M/d/yy");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1377,7 +1381,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{1,2}-\\d{2} \\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-M-dd HH:mm");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1405,7 +1409,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss.S{1,2}");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1433,7 +1437,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss.S{1,2}");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1460,7 +1464,7 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "k:mm:ss.S{1,2}");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1487,7 +1491,7 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "k:mm:ss.S{1,2}");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1516,7 +1520,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss");
 		Assert.assertEquals(analysis.getTrainingSet(), Arrays.asList(Arrays.copyOfRange(inputs, 0, analysis.getDetectWindow())));
 
@@ -1546,7 +1550,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2} .*");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.ZONEDDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm z");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1573,7 +1577,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1603,7 +1607,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1624,7 +1628,7 @@ public class TestDates {
 		Assert.assertEquals(result2.getNullCount(), 0);
 		Assert.assertEquals(result2.getRegExp(), "\\d{4}");
 		Assert.assertEquals(result2.getConfidence(), 1.0);
-		Assert.assertEquals(result2.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result2.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result2.getTypeQualifier(), "yyyy");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1657,7 +1661,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 4);
@@ -1686,7 +1690,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d-MMM-yy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1719,7 +1723,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.ZONEDDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "EEE MMM ppd HH:mm:ss z yyyy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1750,7 +1754,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MMMM-d-yyyy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1786,7 +1790,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1822,7 +1826,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -1860,7 +1864,7 @@ public class TestDates {
 		Assert.assertEquals(result1.getNullCount(), 0);
 		Assert.assertEquals(result1.getRegExp(), "\\d{4}/\\d{2}/\\d{2}");
 		Assert.assertEquals(result1.getConfidence(), 1.0);
-		Assert.assertEquals(result1.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result1.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result1.getTypeQualifier(), "yyyy/MM/dd");
 		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
@@ -1889,7 +1893,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}-\\d{2}-\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd-MM-yyyy");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1916,7 +1920,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}-\\d{1,2}-\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d-M-yyyy");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1947,7 +1951,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1985,7 +1989,7 @@ public class TestDates {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 1);
@@ -2024,7 +2028,7 @@ public class TestDates {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss.S{1,2}");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -2109,44 +2113,44 @@ public class TestDates {
 				analysis.setLocale(locale);
 
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(testCase, locale);
-				PatternInfo.Type type = SimpleDateMatcher.getType(testCase, locale);
+				FTAType type = SimpleDateMatcher.getType(testCase, locale);
 
-				if (type.equals(PatternInfo.Type.LOCALDATE))
+				if (type.equals(FTAType.LOCALDATE))
 					localDate = LocalDate.now();
-				else if (type.equals(PatternInfo.Type.LOCALDATETIME))
+				else if (type.equals(FTAType.LOCALDATETIME))
 					localDateTime = LocalDateTime.now();
-				else if (type.equals(PatternInfo.Type.OFFSETDATETIME))
+				else if (type.equals(FTAType.OFFSETDATETIME))
 					offsetDateTime = OffsetDateTime.now();
-				else if (type.equals(PatternInfo.Type.ZONEDDATETIME))
+				else if (type.equals(FTAType.ZONEDDATETIME))
 					zonedDateTime = ZonedDateTime.now();
 
 				String sample = null;
 				int locked = -1;
 
 				for (int i = 0; i < 100; i++) {
-					if (type.equals(PatternInfo.Type.LOCALDATE))
+					if (type.equals(FTAType.LOCALDATE))
 						sample = localDate.format(formatter);
-					else if (type.equals(PatternInfo.Type.LOCALDATETIME))
+					else if (type.equals(FTAType.LOCALDATETIME))
 						sample = localDateTime.format(formatter);
-					else if (type.equals(PatternInfo.Type.OFFSETDATETIME))
+					else if (type.equals(FTAType.OFFSETDATETIME))
 						sample = offsetDateTime.format(formatter);
-					else if (type.equals(PatternInfo.Type.ZONEDDATETIME))
+					else if (type.equals(FTAType.ZONEDDATETIME))
 						sample = zonedDateTime.format(formatter);
 
 					samples.add(sample);
 					if (analysis.train(sample) && locked == -1)
 						locked = i;
 
-					if (type.equals(PatternInfo.Type.LOCALDATE)) {
+					if (type.equals(FTAType.LOCALDATE)) {
 						localDate = localDate.minusDays(100);
 					}
-					else if (type.equals(PatternInfo.Type.LOCALDATETIME)) {
+					else if (type.equals(FTAType.LOCALDATETIME)) {
 						localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
 					}
-					else if (type.equals(PatternInfo.Type.OFFSETDATETIME)) {
+					else if (type.equals(FTAType.OFFSETDATETIME)) {
 						offsetDateTime = offsetDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
 					}
-					else if (type.equals(PatternInfo.Type.ZONEDDATETIME)) {
+					else if (type.equals(FTAType.ZONEDDATETIME)) {
 						zonedDateTime = zonedDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
 					}
 				}
@@ -2233,7 +2237,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "ddMMMyyyy:HH:mm:ss");
 		Assert.assertEquals(result.getRegExp(), "\\d{2}\\p{IsAlphabetic}{3}\\d{4}:\\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2267,7 +2271,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "ddMMMyyyy");
 		Assert.assertEquals(result.getRegExp(), "\\d{2}\\p{IsAlphabetic}{3}\\d{4}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2299,7 +2303,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "HH:mm:ss");
 		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2333,7 +2337,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALTIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss");
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2362,7 +2366,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.OFFSETDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.OFFSETDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy HH:mm:ssxx");
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}[-+][0-9]{4}");
 		Assert.assertEquals(result.getBlankCount(), 1);
@@ -2392,7 +2396,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyyMMdd");
 		Assert.assertEquals(result.getRegExp(), "0|\\d{8}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2428,7 +2432,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "M.d.yyyy");
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}\\.\\d{1,2}\\.\\d{4}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2464,7 +2468,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd:MM:yyyy");
 		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2}:\\d{4}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2499,7 +2503,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MM:dd:yyyy");
 		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2}:\\d{4}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2534,7 +2538,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MM/yyyy");
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{4}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2578,7 +2582,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MM-yyyy");
 		Assert.assertEquals(result.getRegExp(), "\\d{2}-\\d{4}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2622,7 +2626,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy/MM");
 		Assert.assertEquals(result.getRegExp(), "\\d{4}/\\d{2}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2666,7 +2670,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM");
 		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2709,7 +2713,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d.M.yyyy");
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}\\.\\d{1,2}\\.\\d{4}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2745,7 +2749,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "d.M.yyyy H:mm:ss.S{1,3}");
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}\\.\\d{1,2}\\.\\d{4} \\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,3}");
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -2807,7 +2811,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
 		Assert.assertEquals(result.getSampleCount(), 39);
 		Assert.assertEquals(result.getMatchCount(), 39);
@@ -2841,7 +2845,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss,SSS");
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 1);
@@ -2889,7 +2893,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
@@ -2931,7 +2935,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} (?i)(AM|PM)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "M/dd/yyyy h:mm:ss a");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2965,7 +2969,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATE);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "M/d/yyyy");
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2976,13 +2980,13 @@ public class TestDates {
 	class SimpleResult {
 		String regExp;
 		String typeQualifier;
-		PatternInfo.Type type;
+		FTAType type;
 
 
 		SimpleResult(String regExp, String typeQualifier, String typeString) {
 			this.regExp = regExp;
 			this.typeQualifier = typeQualifier;
-			this.type = PatternInfo.Type.valueOf(typeString.toUpperCase());
+			this.type = FTAType.valueOf(typeString.toUpperCase());
 		}
 	}
 
@@ -3112,7 +3116,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss");
 		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 

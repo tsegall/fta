@@ -23,6 +23,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.core.RegExpSplitter;
+
 public class KnownPatterns {
 	private static final String OPTIONAL_SIGN = "[+-]?";
 
@@ -197,52 +201,52 @@ public class KnownPatterns {
 		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = OPTIONAL_SIGN + PATTERN_DOUBLE + EXPONENT_REGEXP;
 
 		knownPatterns.put(PATTERN_BOOLEAN_TRUE_FALSE,
-				new PatternInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, PatternInfo.Type.BOOLEAN, "TRUE_FALSE", false, 4, 5, null, ""));
+				new PatternInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, FTAType.BOOLEAN, "TRUE_FALSE", false, 4, 5, null, ""));
 		knownPatterns.put(PATTERN_BOOLEAN_YES_NO,
-				new PatternInfo(ID.ID_BOOLEAN_YES_NO, PATTERN_BOOLEAN_YES_NO, PatternInfo.Type.BOOLEAN, "YES_NO", false, 2, 3, null, ""));
+				new PatternInfo(ID.ID_BOOLEAN_YES_NO, PATTERN_BOOLEAN_YES_NO, FTAType.BOOLEAN, "YES_NO", false, 2, 3, null, ""));
 		knownPatterns.put(PATTERN_BOOLEAN_Y_N,
-				new PatternInfo(ID.ID_BOOLEAN_Y_N, PATTERN_BOOLEAN_Y_N, PatternInfo.Type.BOOLEAN, "Y_N", false, 2, 3, null, ""));
+				new PatternInfo(ID.ID_BOOLEAN_Y_N, PATTERN_BOOLEAN_Y_N, FTAType.BOOLEAN, "Y_N", false, 2, 3, null, ""));
 		knownPatterns.put(PATTERN_BOOLEAN_ONE_ZERO,
-				new PatternInfo(ID.ID_BOOLEAN_ONE_ZERO, PATTERN_BOOLEAN_ONE_ZERO, PatternInfo.Type.BOOLEAN, "ONE_ZERO", false, -1, -1, null, null));
+				new PatternInfo(ID.ID_BOOLEAN_ONE_ZERO, PATTERN_BOOLEAN_ONE_ZERO, FTAType.BOOLEAN, "ONE_ZERO", false, -1, -1, null, null));
 		knownPatterns.put(PATTERN_ANY_VARIABLE,
-				new PatternInfo(ID.ID_ANY_VARIABLE, PATTERN_ANY_VARIABLE, PatternInfo.Type.STRING, null, false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_ANY_VARIABLE, PATTERN_ANY_VARIABLE, FTAType.STRING, null, false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_ALPHA_VARIABLE,
-				new PatternInfo(ID.ID_ALPHA_VARIABLE, PATTERN_ALPHA_VARIABLE, PatternInfo.Type.STRING, null, false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_ALPHA_VARIABLE, PATTERN_ALPHA_VARIABLE, FTAType.STRING, null, false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_ALPHANUMERIC_VARIABLE,
-				new PatternInfo(ID.ID_ALPHANUMERIC_VARIABLE, PATTERN_ALPHANUMERIC_VARIABLE, PatternInfo.Type.STRING, null, false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_ALPHANUMERIC_VARIABLE, PATTERN_ALPHANUMERIC_VARIABLE, FTAType.STRING, null, false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_LONG,
-				new PatternInfo(ID.ID_LONG, PATTERN_LONG, PatternInfo.Type.LONG, null, false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_LONG, PATTERN_LONG, FTAType.LONG, null, false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_LONG,
-				new PatternInfo(ID.ID_SIGNED_LONG, PATTERN_SIGNED_LONG, PatternInfo.Type.LONG, "SIGNED", false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_SIGNED_LONG, PATTERN_SIGNED_LONG, FTAType.LONG, "SIGNED", false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_LONG_TRAILING,
-				new PatternInfo(ID.ID_SIGNED_LONG_TRAILING, PATTERN_SIGNED_LONG_TRAILING, PatternInfo.Type.LONG, "SIGNED_TRAILING", false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_SIGNED_LONG_TRAILING, PATTERN_SIGNED_LONG_TRAILING, FTAType.LONG, "SIGNED_TRAILING", false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_DOUBLE,
-				new PatternInfo(ID.ID_DOUBLE, PATTERN_DOUBLE, PatternInfo.Type.DOUBLE, null, false, -1, -1, null, ""));
+				new PatternInfo(ID.ID_DOUBLE, PATTERN_DOUBLE, FTAType.DOUBLE, null, false, -1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_DOUBLE,
-				new PatternInfo(ID.ID_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE, PatternInfo.Type.DOUBLE, "SIGNED", false, -1, -1, null, ""));
+				new PatternInfo(ID.ID_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE, FTAType.DOUBLE, "SIGNED", false, -1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_DOUBLE_TRAILING,
-				new PatternInfo(ID.ID_SIGNED_DOUBLE_TRAILING, PATTERN_SIGNED_DOUBLE_TRAILING, PatternInfo.Type.DOUBLE, "SIGNED_TRAILING", false, -1, -1, null, ""));
+				new PatternInfo(ID.ID_SIGNED_DOUBLE_TRAILING, PATTERN_SIGNED_DOUBLE_TRAILING, FTAType.DOUBLE, "SIGNED_TRAILING", false, -1, -1, null, ""));
 		knownPatterns.put(PATTERN_DOUBLE_WITH_EXPONENT,
-				new PatternInfo(ID.ID_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT, PatternInfo.Type.DOUBLE, null, false, -1, -1, null, ""));
+				new PatternInfo(ID.ID_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT, FTAType.DOUBLE, null, false, -1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT,
-				new PatternInfo(ID.ID_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PatternInfo.Type.DOUBLE, "SIGNED", false, -1, -1, null, ""));
+				new PatternInfo(ID.ID_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, FTAType.DOUBLE, "SIGNED", false, -1, -1, null, ""));
 
 		knownPatterns.put(PATTERN_LONG_GROUPING,
-				new PatternInfo(ID.ID_LONG_GROUPING, PATTERN_LONG_GROUPING, PatternInfo.Type.LONG, "GROUPING", false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_LONG_GROUPING, PATTERN_LONG_GROUPING, FTAType.LONG, "GROUPING", false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_LONG_GROUPING,
-				new PatternInfo(ID.ID_SIGNED_LONG_GROUPING, PATTERN_SIGNED_LONG_GROUPING, PatternInfo.Type.LONG, "SIGNED,GROUPING", false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_SIGNED_LONG_GROUPING, PATTERN_SIGNED_LONG_GROUPING, FTAType.LONG, "SIGNED,GROUPING", false, 1, -1, null, ""));
 
 		knownPatterns.put(PATTERN_DOUBLE_GROUPING,
-				new PatternInfo(ID.ID_DOUBLE_GROUPING, PATTERN_DOUBLE_GROUPING, PatternInfo.Type.DOUBLE, "GROUPING", false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_DOUBLE_GROUPING, PATTERN_DOUBLE_GROUPING, FTAType.DOUBLE, "GROUPING", false, 1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_DOUBLE_GROUPING,
-				new PatternInfo(ID.ID_SIGNED_DOUBLE_GROUPING, PATTERN_SIGNED_DOUBLE_GROUPING, PatternInfo.Type.DOUBLE, "SIGNED,GROUPING", false, 1, -1, null, ""));
+				new PatternInfo(ID.ID_SIGNED_DOUBLE_GROUPING, PATTERN_SIGNED_DOUBLE_GROUPING, FTAType.DOUBLE, "SIGNED,GROUPING", false, 1, -1, null, ""));
 
 		knownPatterns.put(PATTERN_NULL,
-				new PatternInfo(ID.ID_NULL, PATTERN_NULL, PatternInfo.Type.STRING, "NULL", false, -1, -1, null, ""));
+				new PatternInfo(ID.ID_NULL, PATTERN_NULL, FTAType.STRING, "NULL", false, -1, -1, null, ""));
 		knownPatterns.put(PATTERN_WHITESPACE + "BLANKORNULL",
-				new PatternInfo(ID.ID_BLANKORNULL, PATTERN_WHITESPACE, PatternInfo.Type.STRING, "BLANKORNULL", false, -1, -1, null, ""));
+				new PatternInfo(ID.ID_BLANKORNULL, PATTERN_WHITESPACE, FTAType.STRING, "BLANKORNULL", false, -1, -1, null, ""));
 		knownPatterns.put(PATTERN_WHITESPACE + "BLANK",
-				new PatternInfo(ID.ID_BLANK, PATTERN_WHITESPACE, PatternInfo.Type.STRING, "BLANK", false, -1, -1, null, ""));
+				new PatternInfo(ID.ID_BLANK, PATTERN_WHITESPACE, FTAType.STRING, "BLANK", false, -1, -1, null, ""));
 
 		// Build the mapping from ID to PatternInfo
 		for (PatternInfo patternInfo : knownPatterns.values()) {

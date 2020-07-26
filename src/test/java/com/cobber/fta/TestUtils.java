@@ -27,6 +27,8 @@ import java.util.Set;
 
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.RegExpGenerator;
+
 public class TestUtils {
 	final static String validZips = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
 			"06045|06233|06431|06704|06910|07101|07510|07764|08006|08205|08534|08829|10044|10260|10549|10965|11239|11501|11743|11976|" +
@@ -164,19 +166,19 @@ public class TestUtils {
 	@Test
 	public void testDistanceClose() throws IOException {
 		Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
-		assertEquals(Utils.distanceLevenshtein("Secondory", universe), 1);
+		assertEquals(TextAnalyzer.distanceLevenshtein("Secondory", universe), 1);
 	}
 
 	@Test
 	public void testDistanceFar() throws IOException {
 		Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
-		assertEquals(Utils.distanceLevenshtein("Sec", universe), 6);
+		assertEquals(TextAnalyzer.distanceLevenshtein("Sec", universe), 6);
 	}
 
 	@Test
 	public void testDistanceHuge() throws IOException {
 		Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
-		assertEquals(Utils.distanceLevenshtein("S", universe), 7);
+		assertEquals(TextAnalyzer.distanceLevenshtein("S", universe), 7);
 	}
 
 	@Test
@@ -185,7 +187,7 @@ public class TestUtils {
 				"DISCONNECT", "DISCONNECT FRACTIONAL", "DISCONNECT OTHE", "DISCONNECT STILL BILLING",
 				"INSTALL FRACTIONAL", "INSTALL FRACTIONAL RERATE", "INSTALL OTHER", "RE-RATES", "RUN RATE"
 				}));
-		assertEquals(Utils.distanceLevenshtein("INSTALL FRACTIONAL", universe), 7);
+		assertEquals(TextAnalyzer.distanceLevenshtein("INSTALL FRACTIONAL", universe), 7);
 	}
 
 	@Test
@@ -194,6 +196,6 @@ public class TestUtils {
 			"AUDIO DISC ; VOLUME", "OMPUTER DISC", "ONLINE RESOURCE", "\\QONLINE RESOURCE (EBOOK)\\E",
 			"\\QONLINE RESOURCE (EPUB EBOOK)\\E", "\\QONLINE RESOURCE (PDF EBOOK ; EPUB EBOOK)\\E", "SHEET", "VOLUME"
 		}));
-		assertEquals(Utils.distanceLevenshtein("\\QONLINE RESOURCE (EBOOK)\\E", universe), 5);
+		assertEquals(TextAnalyzer.distanceLevenshtein("\\QONLINE RESOURCE (EBOOK)\\E", universe), 5);
 	}
 }

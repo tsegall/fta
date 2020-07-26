@@ -18,7 +18,7 @@ package com.cobber.fta;
 import java.util.Locale;
 import java.util.Map;
 
-import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.core.FTAType;
 
 public class PluginPercent extends LogicalTypeInfinite {
 	public final static String REGEXP = "\\d*\\.?\\d+";
@@ -61,8 +61,8 @@ public class PluginPercent extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public Type getBaseType() {
-		return PatternInfo.Type.DOUBLE;
+	public FTAType getBaseType() {
+		return FTAType.DOUBLE;
 	}
 
 	@Override

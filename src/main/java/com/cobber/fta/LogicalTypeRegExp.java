@@ -19,7 +19,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.cobber.fta.PatternInfo.Type;
+import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.InternalErrorException;
 
 public class LogicalTypeRegExp extends LogicalType {
 	private static final String WRONG_TYPE = "Internal error: LogicalTypeRegExp baseType must be LONG or DOUBLE, not ";
@@ -85,7 +86,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public Type getBaseType() {
+	public FTAType getBaseType() {
 		return defn.baseType;
 	}
 

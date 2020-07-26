@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.cobber.fta.core.FTAType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -64,7 +65,7 @@ public class PluginDefinition {
 	/** The required threshold to be matched (can be adjusted by presence of Hot Words. */
 	public int threshold = 95;
 	/** The underlying base type (e.g. STRING, DOUBLE, LONG, DATE, ... */
-	public PatternInfo.Type baseType;
+	public FTAType baseType;
 	/** Minimum value to be considered as a valid instance of this type, e.g. 1 if the Semantic type is Financial Quarter. */
 	public String minimum;
 	/** Maximum value to be considered as a valid instance of this type, e.g. 4 if the Semantic type is Financial Quarter. */
@@ -82,7 +83,7 @@ public class PluginDefinition {
 		this.clazz = clazz;
 	}
 
-	public PluginDefinition(String qualifier, String description, String regExpReturned, String[] regExpsToMatch, String[] invalidList, String content, String contentType, String backout, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, PatternInfo.Type  baseType) {
+	public PluginDefinition(String qualifier, String description, String regExpReturned, String[] regExpsToMatch, String[] invalidList, String content, String contentType, String backout, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, FTAType  baseType) {
 		this.qualifier = qualifier;
 		this.description = description;
 		this.regExpReturned = regExpReturned;

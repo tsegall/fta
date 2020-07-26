@@ -25,7 +25,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.core.FTAType;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -151,7 +152,7 @@ public class TextAnalysisResult {
 	 * Get 'Type' as determined by training to date.
 	 * @return The Type of the data stream.
 	 */
-	public PatternInfo.Type getType() {
+	public FTAType getType() {
 		return patternInfo.type;
 	}
 
@@ -625,7 +626,7 @@ public class TextAnalysisResult {
 				analysis.put("typeQualifier", patternInfo.typeQualifier);
 		}
 
-		if (PatternInfo.Type.DOUBLE == patternInfo.type)
+		if (FTAType.DOUBLE == patternInfo.type)
 			analysis.put("decimalSeparator", String.valueOf(decimalSeparator));
 
 		if (statisticsEnabled()) {

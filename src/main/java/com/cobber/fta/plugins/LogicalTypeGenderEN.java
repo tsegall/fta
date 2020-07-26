@@ -25,8 +25,8 @@ import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.RegExpGenerator;
 import com.cobber.fta.TypeFacts;
+import com.cobber.fta.core.RegExpGenerator;
 
 /**
  * Plugin to detect Gender. (English-language only).

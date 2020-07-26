@@ -19,10 +19,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.LogicalTypeInfinite;
-import com.cobber.fta.PatternInfo;
-import com.cobber.fta.PatternInfo.Type;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.TypeFacts;
+import com.cobber.fta.core.FTAType;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
@@ -68,8 +67,8 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		}
 
 		@Override
-		public Type getBaseType() {
-			return PatternInfo.Type.STRING;
+		public FTAType getBaseType() {
+			return FTAType.STRING;
 		}
 
 		@Override

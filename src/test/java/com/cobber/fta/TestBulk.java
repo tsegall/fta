@@ -22,7 +22,8 @@ import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.core.FTAType;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeGenderEN;
 
 public class TestBulk {
@@ -39,7 +40,7 @@ public class TestBulk {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), 4000000);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 1000000L);
@@ -71,7 +72,7 @@ public class TestBulk {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(resultBulk.getSampleCount(), 3 * ITERATIONS);
-		Assert.assertEquals(resultBulk.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(resultBulk.getType(), FTAType.STRING);
 		Assert.assertEquals(resultBulk.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
 		Assert.assertEquals(resultBulk.getNullCount(), 0);
 		Assert.assertEquals(resultBulk.getRegExp(), "(?i)(FEMALE|MALE)");
@@ -103,7 +104,7 @@ public class TestBulk {
 		final TextAnalysisResult resultBulk = analysisBulk.getResult();
 
 		Assert.assertEquals(resultBulk.getSampleCount(), SAMPLES);
-		Assert.assertEquals(resultBulk.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(resultBulk.getType(), FTAType.STRING);
 		Assert.assertNull(resultBulk.getTypeQualifier());
 		Assert.assertEquals(resultBulk.getNullCount(), 0);
 		Assert.assertEquals(resultBulk.getRegExp(), "(?i)(DISCONNECT|DISCONNECT FRACTIONAL|DISCONNECT OTHER|DISCONNECT STILL BILLING|INSTALL FRACTIONAL|INSTALL FRACTIONAL RERATE|RE-RATES|RUN RATE)");
@@ -122,7 +123,7 @@ public class TestBulk {
 		final TextAnalysisResult resultBulk = analysisBulk.getResult();
 
 		Assert.assertEquals(resultBulk.getSampleCount(), 109);
-		Assert.assertEquals(resultBulk.getType(), PatternInfo.Type.LOCALDATETIME);
+		Assert.assertEquals(resultBulk.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(resultBulk.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss");
 		Assert.assertEquals(resultBulk.getNullCount(), 0);
 		Assert.assertEquals(resultBulk.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
@@ -141,7 +142,7 @@ public class TestBulk {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), 1000000);
-		Assert.assertEquals(result.getType(), PatternInfo.Type.STRING);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 1000000);

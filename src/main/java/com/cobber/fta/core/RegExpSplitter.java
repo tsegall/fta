@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta;
+package com.cobber.fta.core;
 
 public class RegExpSplitter {
-	int min;
-	int max;
-	int length;
-	String regExp;
+	private int min;
+	private int max;
+	private int length;
+	private String regExp;
 
 	RegExpSplitter(int min, int max) {
 		this.min = min;
@@ -60,5 +60,17 @@ public class RegExpSplitter {
 		ret += "}";
 
 		return ret;
+	}
+
+	public int getMin() {
+		return min;
+	}
+
+	public int getMax() {
+		return max;
+	}
+
+	public int getLength() {
+		return length;
 	}
 }
