@@ -58,7 +58,7 @@ public class PluginDefinition {
 	public String contentType;
 	public String backout;
 
-	/** headerRegExps An array of RegExps that will be compared with the datastream name to boost confidence. */
+	/** headerRegExps An optional array of RegExps that will be compared with the datastream name to boost confidence. */
 	public String[] headerRegExps;
 	public int[] headerRegExpConfidence;
 

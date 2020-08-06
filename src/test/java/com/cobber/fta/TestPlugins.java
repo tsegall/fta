@@ -2183,6 +2183,46 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void testGenderPT() throws IOException {
+		final Random random = new Random(314159265);
+		String[] samples = new String[1000];
+
+		for (int i = 0; i < samples.length; i++) {
+			samples[i] = random.nextInt(2) == 1 ? "femenino" : "masculino";
+		}
+
+		final TextAnalyzer analysis = new TextAnalyzer("genero");
+		analysis.setDefaultLogicalTypes(false);
+		List<PluginDefinition> plugins = new ArrayList<>();
+		plugins.add(new PluginDefinition("GENDER_PT", "Gender (Portuguese Language)", "(?i)(FEMENINO|MASCULINO)",
+				new String[] {"(?i)(FEMENINO|MASCULINO)"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}", null, null, null, 98, FTAType.STRING));
+
+		try {
+			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), null);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+		for (String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getRegExp(), "(?i)(FEMENINO|MASCULINO)");
+		Assert.assertEquals(result.getTypeQualifier(), "GENDER_PT");
+		Assert.assertEquals(result.getConfidence(), 1);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+
+		for (int i = 0; i < samples.length; i++) {
+			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void testFinitePlugin() throws IOException {
 		InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;

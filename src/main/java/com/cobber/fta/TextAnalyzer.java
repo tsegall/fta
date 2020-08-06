@@ -2671,6 +2671,17 @@ public class TextAnalyzer {
 					matchPatternInfo = new PatternInfo(null, gen.getResult(), FTAType.STRING, matchPatternInfo.typeQualifier, false, minTrimmedLength,
 							maxTrimmedLength, null, null);
 					updated = true;
+
+					// Now we have mapped to an enum we need to check again if this should be matched to a logical type
+					for (LogicalTypeRegExp logical : regExpTypes) {
+						if (FTAType.STRING.equals(logical.getBaseType()) &&
+								logical.isMatch(matchPatternInfo.regexp) &&
+								logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers) == null) {
+							matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
+							confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+							break;
+						}
+					}
 				}
 			}
 
