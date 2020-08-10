@@ -236,3 +236,6 @@
 
 ### 3.0.9
  - After generating an enum we need to check again to see if this matches a logical type & update dependencies
+
+### 3.0.10
+ - Bump dependencies
