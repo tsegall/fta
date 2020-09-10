@@ -239,3 +239,6 @@
 
 ### 3.0.10
  - Bump dependencies
+
+### 3.0.11
+ - Upgrade dependencies, improve support for padded fields - both days and hours

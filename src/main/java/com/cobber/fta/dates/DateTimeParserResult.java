@@ -48,8 +48,10 @@ public class DateTimeParserResult {
 	public int dayOffset = -1;
 	public int[] dateFieldLengths = new int[] {-1, -1, -1};
 	public int[] dateFieldOffsets = new int[] {-1, -1, -1};
+	public int[] dateFieldPad = new int[] {0, 0, 0};
 	public int[] timeFieldLengths = new int[] {-1, -1, -1, -1};
 	public int[] timeFieldOffsets = new int[] {-1, -1, -1, -1};
+	public int[] timeFieldPad = new int[] {0, 0, 0, 0};
 	public String timeZone = "";
 	public Character dateSeparator;
 	private String formatString;
@@ -63,8 +65,8 @@ public class DateTimeParserResult {
 	static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<>();
 
 	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, Locale locale, final int timeElements,
-			final int[] timeFieldLengths, final int[] timeFieldOffsets, final int hourLength, final int dateElements, final int[] dateFieldLengths,
-			final int[] dateFieldOffsets, final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset,
+			final int[] timeFieldLengths, final int[] timeFieldOffsets, final int[] timeFieldPad, final int hourLength, final int dateElements, final int[] dateFieldLengths,
+			final int[] dateFieldOffsets, final int[] dateFieldPad, final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset,
 			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final List<FormatterToken> tokenized) {
 		this.formatString = formatString;
 		this.resolutionMode = resolutionMode;
@@ -72,10 +74,12 @@ public class DateTimeParserResult {
 		this.timeElements = timeElements;
 		this.timeFieldLengths = timeFieldLengths;
 		this.timeFieldOffsets = timeFieldOffsets;
+		this.timeFieldPad = timeFieldPad;
 		this.hourLength = hourLength;
 		this.dateElements = dateElements;
 		this.dateFieldLengths = dateFieldLengths;
 		this.dateFieldOffsets = dateFieldOffsets;
+		this.dateFieldPad = dateFieldPad;
 		this.timeFirst = timeFirst;
 		this.dateTimeSeparator = dateTimeSeparator;
 		this.dayOffset = dayOffset;
@@ -91,12 +95,14 @@ public class DateTimeParserResult {
 		return new DateTimeParserResult(r.formatString, r.resolutionMode, r.locale,
 				r.timeElements,
 				r.timeFieldLengths != null ? Arrays.copyOf(r.timeFieldLengths, r.timeFieldLengths.length) : null,
-				r.timeFieldOffsets != null ? Arrays.copyOf(r.timeFieldOffsets, r.timeFieldOffsets.length) : null, r.hourLength,
-				r.dateElements,
+				r.timeFieldOffsets != null ? Arrays.copyOf(r.timeFieldOffsets, r.timeFieldOffsets.length) : null,
+				r.timeFieldPad != null ? Arrays.copyOf(r.timeFieldPad, r.timeFieldPad.length) : null,
+				r.hourLength, r.dateElements,
 				r.dateFieldLengths != null ? Arrays.copyOf(r.dateFieldLengths, r.dateFieldLengths.length) : null,
 				r.dateFieldOffsets != null ? Arrays.copyOf(r.dateFieldOffsets, r.dateFieldOffsets.length) : null,
-				r.timeFirst, r.dateTimeSeparator, r.yearOffset, r.monthOffset, r.dayOffset, r.dateSeparator, r.timeZone, r.amPmIndicator,
-				r.tokenized != null ? r.tokenized : null);
+				r.dateFieldPad != null ? Arrays.copyOf(r.dateFieldPad, r.dateFieldPad.length) : null,
+				r.timeFirst, r.dateTimeSeparator, r.yearOffset, r.monthOffset, r.dayOffset, r.dateSeparator, r.timeZone,
+				r.amPmIndicator, r.tokenized != null ? r.tokenized : null);
 
 	}
 
@@ -194,14 +200,17 @@ public class DateTimeParserResult {
 		int timeElements = 0;
 		int[] dateFieldLengths = new int[] {-1, -1, -1};
 		int[] dateFieldOffsets = new int[] {-1, -1, -1};
+		int[] dateFieldPad = new int[] {0, 0, 0};
 		int[] timeFieldLengths = new int[] {-1, -1, -1, -1};
 		int[] timeFieldOffsets = new int[] {-1, -1, -1, -1};
+		int[] timeFieldPad = new int[] {0, 0, 0, 0};
 		String timeZone = "";
 		Boolean timeFirst = null;
 		Character dateSeparator = null;
 		Character dateTimeSeparator = ' ';
 		boolean fullyBound = true;
 		Boolean amPmIndicator = null;
+		int padLength = 0;
 
 		final int formatLength = formatString.length();
 
@@ -210,6 +219,8 @@ public class DateTimeParserResult {
 			switch (ch) {
 			case '?':
 				dateFieldOffsets[dateElements] = i;
+				dateFieldPad[dateElements] = padLength;
+				padLength = 0;
 				++dateElements;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == '?') {
 					i++;
@@ -229,6 +240,8 @@ public class DateTimeParserResult {
 
 			case 'M':
 				dateFieldOffsets[dateElements] = i;
+				dateFieldPad[dateElements] = padLength;
+				padLength = 0;
 				monthOffset = dateElements++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'M') {
 					i++;
@@ -256,6 +269,8 @@ public class DateTimeParserResult {
 
 			case 'd':
 				dateFieldOffsets[dateElements] = i;
+				dateFieldPad[dateElements] = padLength;
+				padLength = 0;
 				dayOffset = dateElements++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'd') {
 					i++;
@@ -276,21 +291,25 @@ public class DateTimeParserResult {
 			case 'h':
 			case 'H':
 				timeFieldOffsets[timeElements] = i;
+				timeFieldPad[timeElements] = padLength;
+				padLength = 0;
 				timeFirst = dateElements == 0;
-				timeElements++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 					i++;
 					hourLength = 2;
 				}
 				else
 					hourLength = 1;
-				timeFieldLengths[timeElements - 1] = hourLength;
+				timeFieldLengths[timeElements] = hourLength;
+				timeElements++;
 				break;
 
 			case 'm':
 			case 's':
 				timeFieldOffsets[timeElements] = i;
 				timeFieldLengths[timeElements] = 2;
+				timeFieldPad[timeElements] = padLength;
+				padLength = 0;
 				timeElements++;
 				if (i + 1 >= formatLength || formatString.charAt(i + 1) != ch)
 					return null;
@@ -299,6 +318,8 @@ public class DateTimeParserResult {
 
 			case 'S':
 				timeFieldOffsets[timeElements] = i;
+				timeFieldPad[timeElements] = padLength;
+				padLength = 0;
 				int fractions = 1;
 				if (i + 1 < formatLength) {
 					char next = formatString.charAt(i + 1);
@@ -322,6 +343,8 @@ public class DateTimeParserResult {
 
 			case 'y':
 				dateFieldOffsets[dateElements] = i;
+				dateFieldPad[dateElements] = padLength;
+				padLength = 0;
 				yearOffset = dateElements++;
 				i++;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'y') {
@@ -358,6 +381,14 @@ public class DateTimeParserResult {
 				amPmIndicator = true;
 				break;
 
+			case 'p':
+				padLength = 1;
+				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'p') {
+					i++;
+					padLength++;
+				}
+				break;
+
 			default:
 				// FIX ME
 			}
@@ -369,8 +400,8 @@ public class DateTimeParserResult {
 			timeElements = -1;
 
 		// Add to cache
-		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, locale, timeElements, timeFieldLengths, timeFieldOffsets,
-				hourLength, dateElements, dateFieldLengths, dateFieldOffsets, timeFirst, dateTimeSeparator,
+		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, locale, timeElements, timeFieldLengths, timeFieldOffsets, timeFieldPad,
+				hourLength, dateElements, dateFieldLengths, dateFieldOffsets, dateFieldPad, timeFirst, dateTimeSeparator,
 				yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator, fullyBound ? tokenize(formatString) : null);
 		dtpCache.put(key, ret);
 
@@ -641,6 +672,10 @@ public class DateTimeParserResult {
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				inputChar = input.charAt(upto);
+				if (padding == 1 && inputChar == ' ' && upto < inputLength) {
+					padding--;
+					inputChar = input.charAt(++upto);
+				}
 				if (!Character.isDigit(inputChar))
 					throw new DateTimeParseException("Expecting digit", input, upto);
 				value = inputChar - '0';
@@ -1065,7 +1100,7 @@ public class DateTimeParserResult {
 			timeAnswer = hours + ":mm:ss" ;
 			break;
 		case 4:
-			timeAnswer = hours + ":mm:ss" + ".S";
+			timeAnswer = hours + ":mm:ss." + Utils.repeat('S', timeFieldLengths[3]);
 			break;
 		}
 		if (amPmIndicator != null && amPmIndicator)

@@ -56,7 +56,10 @@ import com.cobber.fta.core.Utils;
  * </pre>
  */
 public class DateTimeParser {
-	private static final String TIME_ONLY = "d{2}:d{2}:d{2}";
+	private static final String TIME_ONLY_HHMMSS = "d{2}:d{2}:d{2}";
+	private static final String TIME_ONLY_HHMM = "d{2}:d{2}";
+	private static final String TIME_ONLY_HMM = "d:d{2}";
+	private static final String TIME_ONLY_PPHMM = " {2}d:d{2}";
 
 	/** When we have ambiguity - should we prefer to conclude day first, month first or unspecified. */
 	public enum DateResolutionMode {
@@ -226,10 +229,6 @@ public class DateTimeParser {
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 
-	private static String longString(final char c) {
-		return "" + c + c + c + c;
-	}
-
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
@@ -286,7 +285,7 @@ public class DateTimeParser {
 					if (was == 'H' && is == 'k') {
 						final int start = answerResult.timeFieldOffsets[0];
 						final int len = answerResult.timeFieldLengths[0];
-						answerBuffer.replace(start, start + len, longString('k').substring(0, len));
+						answerBuffer.replace(start, start + len, Utils.repeat('k', len));
 					}
 
 					if (result.timeFieldLengths != null) {
@@ -299,7 +298,7 @@ public class DateTimeParser {
 									final int start = answerResult.timeFieldOffsets[i];
 									final int len = answerResult.timeFieldLengths[i];
 									answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
-									answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.timeFieldLengths[i]));
+									answerBuffer.replace(start, start + len, Utils.repeat(answerBuffer.charAt(start), result.timeFieldLengths[i]));
 								}
 						}
 					}
@@ -312,21 +311,21 @@ public class DateTimeParser {
 						answerResult.dayOffset = result.dayOffset;
 						final int start = answerResult.dateFieldOffsets[answerResult.dayOffset];
 						final int len = answerResult.dateFieldLengths[answerResult.dayOffset];
-						answerBuffer.replace(start, start + len, longString('d').substring(0, len));
+						answerBuffer.replace(start, start + len, Utils.repeat('d', len));
 					}
 					if (answerResult.monthOffset == -1 && result.monthOffset != -1) {
 						// We did not know where the month was and now do
 						answerResult.monthOffset = result.monthOffset;
 						final int start = answerResult.dateFieldOffsets[answerResult.monthOffset];
 						final int len = answerResult.dateFieldLengths[answerResult.monthOffset];
-						answerBuffer.replace(start, start + len, longString('M').substring(0, len));
+						answerBuffer.replace(start, start + len, Utils.repeat('M', len));
 					}
 					if (answerResult.yearOffset == -1 && result.yearOffset != -1) {
 						// We did not know where the year was and now do
 						answerResult.yearOffset = result.yearOffset;
 						final int start = answerResult.dateFieldOffsets[answerResult.yearOffset];
 						final int len = answerResult.dateFieldLengths[answerResult.yearOffset];
-						answerBuffer.replace(start, start + len, longString('y').substring(0, len));
+						answerBuffer.replace(start, start + len, Utils.repeat('y', len));
 					}
 
 					if (answerResult.dateElements == -1)
@@ -341,19 +340,32 @@ public class DateTimeParser {
 						for (int i = 0; i < result.dateFieldLengths.length; i++) {
 							if (answerResult.dateFieldLengths[i] == -1 && result.dateFieldLengths[i] != -1)
 								answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
-							else if (i != answerResult.yearOffset && answerResult.dateFieldLengths[i] != result.dateFieldLengths[i] && (result.dateFieldLengths[i] == 1 || result.dateFieldLengths[i] == 4)) {
+							else if (i != answerResult.yearOffset && answerResult.dateFieldLengths[i] != result.dateFieldLengths[i]) {
 								// Merge two date lengths:
-								//  - d and dd -> d
-								//  - M and MM -> M
-								//  - MMM and MMMM -> MMMM
+								//  - dd (and d) -> d
+								//  - dd (and ppd) -> ppd
+								//  - HH (and ppH) -> ppH
+								//  - MM (and M) -> M
+								//  - ?? (and ?) -> ?
+								//  - MMM (and MMMM) -> MMMM
 								final int start = answerResult.dateFieldOffsets[i];
 								final int len = answerResult.dateFieldLengths[i];
-								final int delta = answerResult.dateFieldLengths[i] - result.dateFieldLengths[i];
-								for (int j = i + 1; j < result.dateFieldLengths.length; j++) {
-									 answerResult.dateFieldOffsets[j] -= delta;
+								String was = answerBuffer.substring(start, start + len);
+								String replacement = null;
+								if ("MMM".equals(was))
+									replacement = "MMMM";
+								else if ("??".equals(was) || "HH".equals(was) || "hh".equals(was) || "dd".equals(was)) {
+									replacement = result.dateFieldPad[i] != 0 ? "pp" : "";
+									replacement += was.charAt(0);
 								}
+								else
+									continue;
+
+								final int delta = was.length() - replacement.length();
+								for (int j = i + 1; j < result.dateFieldLengths.length; j++)
+									 answerResult.dateFieldOffsets[j] -= delta;
 								answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
-								answerBuffer.replace(start, start + len, longString(answerBuffer.charAt(start)).substring(0, result.dateFieldLengths[i]));
+								answerBuffer.replace(start, start + len, replacement);
 							}
 						}
 				}
@@ -364,18 +376,18 @@ public class DateTimeParser {
 		if (answerResult.isDateUnbound() && resolutionMode != DateResolutionMode.None)
 			if (answerResult.monthOffset != -1) {
 				int start = answerResult.dateFieldOffsets[0];
-				answerBuffer.replace(start, start + answerResult.dateFieldLengths[0], longString('d').substring(0, answerResult.dateFieldLengths[0]));
+				answerBuffer.replace(start, start + answerResult.dateFieldLengths[0], Utils.repeat('d', answerResult.dateFieldLengths[0]));
 				start = answerResult.dateFieldOffsets[2];
-				answerBuffer.replace(start, start + answerResult.dateFieldLengths[2], longString('y').substring(0, answerResult.dateFieldLengths[2]));
+				answerBuffer.replace(start, start + answerResult.dateFieldLengths[2], Utils.repeat('y', answerResult.dateFieldLengths[2]));
 			}
 			else {
 					final char firstField = resolutionMode == DateResolutionMode.DayFirst ? 'd' : 'M';
 					final char secondField = resolutionMode == DateResolutionMode.DayFirst ? 'M' : 'd';
 					int idx = answerResult.yearOffset == 0 ? 1 : 0;
 					int start = answerResult.dateFieldOffsets[idx];
-					answerBuffer.replace(start, start + answerResult.dateFieldLengths[idx], longString(firstField).substring(0, answerResult.dateFieldLengths[idx]));
+					answerBuffer.replace(start, start + answerResult.dateFieldLengths[idx], Utils.repeat(firstField, answerResult.dateFieldLengths[idx]));
 					start = answerResult.dateFieldOffsets[idx + 1];
-					answerBuffer.replace(start, start + answerResult.dateFieldLengths[idx + 1], longString(secondField).substring(0, answerResult.dateFieldLengths[idx + 1]));
+					answerBuffer.replace(start, start + answerResult.dateFieldLengths[idx + 1], Utils.repeat(secondField, answerResult.dateFieldLengths[idx + 1]));
 			}
 
 		if (answerResult.timeZone == null)
@@ -485,7 +497,7 @@ public class DateTimeParser {
 			return matcher.getFormat();
 
 		// Fail fast if we can
-		if (matcher.getComponentCount() < 2 || !Character.isDigit(trimmed.charAt(0)))
+		if (matcher.getComponentCount() < 2 || !Character.isLetterOrDigit(trimmed.charAt(0)))
 			return null;
 
 		// Second pass is an attempt to 'parse' the provided input string and derive a format
@@ -537,8 +549,10 @@ public class DateTimeParser {
 		int value = 0;
 		int[] dateValue = new int[3];
 		int[] dateDigits = new int[3];
+		int[] datePad = new int[3];
 		int[] timeValue = new int[4];
 		int[] timeDigits = new int[4];
+		int[] timePad = new int[4];
 		char dateSeparator = '_';
 		int dateComponent = 0;
 		int timeComponent = 0;
@@ -553,14 +567,17 @@ public class DateTimeParser {
 		String timeZone = "";
 		String amPmIndicator = "";
 		boolean iso8601 = false;
+		int padding = 0;
 
 		int lastCh = '¶';
 		for (int i = 0; i < len && timeZone.length() == 0; i++) {
 			final char ch = trimmed.charAt(i);
 
-			// Two spaces in a row is always bad news
-			if (lastCh == ' ' && ch == ' ')
-				return null;
+			// Two spaces in a row implies padding
+			if (lastCh == ' ' && ch == ' ') {
+				padding++;
+				continue;
+			}
 			lastCh = ch;
 
 			switch (ch) {
@@ -588,6 +605,7 @@ public class DateTimeParser {
 				timeSeen = true;
 				timeValue[timeComponent] = value;
 				timeDigits[timeComponent] = digits;
+				timePad[timeComponent] = padding;
 
 				if (timeComponent == 0) {
 					if (digits != 1 && digits != 2)
@@ -601,6 +619,7 @@ public class DateTimeParser {
 				timeComponent++;
 				digits = 0;
 				value = 0;
+				padding = 0;
 				break;
 
 			case '+':
@@ -616,7 +635,7 @@ public class DateTimeParser {
 					final String offset = SimpleDateMatcher.compress(trimmed.substring(i, len), locale);
 
 					// Expecting DD:DD:DD or DDDDDD or DD:DD or DDDD or DD
-					if (i + 8 <= len && TIME_ONLY.equals(offset)) {
+					if (i + 8 <= len && TIME_ONLY_HHMMSS.equals(offset)) {
 						timeZone = "xxxxx";
 						minutesOffset = 3;
 						secondsOffset = 6;
@@ -670,6 +689,8 @@ public class DateTimeParser {
 				dateSeen = true;
 				dateValue[dateComponent] = value;
 				dateDigits[dateComponent] = digits;
+				datePad[dateComponent] = padding;
+
 				if (dateComponent == 0) {
 					dateSeparator = ch;
 					fourDigitYear = digits == 4;
@@ -686,6 +707,7 @@ public class DateTimeParser {
 				dateComponent++;
 				digits = 0;
 				value = 0;
+				padding = 0;
 				break;
 
 			case '.':
@@ -698,6 +720,7 @@ public class DateTimeParser {
 					dateSeen = true;
 					dateValue[dateComponent] = value;
 					dateDigits[dateComponent] = digits;
+					datePad[dateComponent] = padding;
 					if (dateComponent == 0) {
 						dateSeparator = ch;
 						fourDigitYear = digits == 4;
@@ -718,10 +741,12 @@ public class DateTimeParser {
 						return null;
 					timeValue[timeComponent] = value;
 					timeDigits[timeComponent] = digits;
+					timePad[timeComponent] = padding;
 					timeComponent++;
 				}
 				digits = 0;
 				value = 0;
+				padding = 0;
 				break;
 
 			case ' ':
@@ -732,6 +757,7 @@ public class DateTimeParser {
 						return null;
 					timeValue[timeComponent] = value;
 					timeDigits[timeComponent] = digits;
+					timePad[timeComponent] = padding;
 					timeClosed = true;
 				}
 				else if (dateSeen && !dateClosed) {
@@ -743,12 +769,14 @@ public class DateTimeParser {
 						fourDigitYear = digits == 4;
 					dateValue[dateComponent] = value;
 					dateDigits[dateComponent] = digits;
+					datePad[dateComponent] = padding;
 					dateClosed = true;
 				}
 				else
 					return null;
 				digits = 0;
 				value = 0;
+				padding = 0;
 				break;
 
 			default:
@@ -790,9 +818,11 @@ public class DateTimeParser {
 						iso8601 = true;
 						dateValue[dateComponent] = value;
 						dateDigits[dateComponent] = digits;
+						datePad[dateComponent] = padding;
 						dateClosed = true;
 						digits = 0;
 						value = 0;
+						padding = 0;
 					}
 					else
 						return null;
@@ -819,7 +849,9 @@ public class DateTimeParser {
 				return null;
 			dateValue[dateComponent] = value;
 			dateDigits[dateComponent] = digits;
+			datePad[dateComponent] = padding;
 			digits = 0;
+			padding = 0;
 		}
 		if (timeSeen && !timeClosed) {
 			// Need to close out the time
@@ -827,7 +859,9 @@ public class DateTimeParser {
 				return null;
 			timeValue[timeComponent] = value;
 			timeDigits[timeComponent] = digits;
+			timePad[timeComponent] = padding;
 			digits = 0;
+			padding = 0;
 		}
 
 		if (digits != 0)
@@ -840,17 +874,17 @@ public class DateTimeParser {
 		if (timeComponent != 0) {
 			if (timeValue[1] > 59 || (timeComponent >= 2 && timeValue[2] > 59))
 				return null;
-			String hours;
+			String hours = timePad[0] != 0 ? "pp" : "";
 			if (amPmIndicator.length() != 0) {
 				if (timeValue[0] > 12)
 					return null;
-				hours = hourLength == 1 ? "h" : "hh";
+				hours += hourLength == 1 ? "h" : "hh";
 			}
 			else {
 				if (timeValue[0] > 24)
 					return null;
 				if (timeValue[0] == 24)
-					hours = hourLength == 1 ? "k" : "kk";
+					hours += hourLength == 1 ? "k" : "kk";
 				else
 					hours = hourLength == 1 ? "H" : "HH";
 			}
@@ -968,6 +1002,11 @@ public class DateTimeParser {
 	String passThree(String trimmed, SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
 		String compressed = matcher.getCompressed();
 		int components = matcher.getComponentCount();
+		boolean ampm = compressed.endsWith("P");
+
+		// If there is an AM/PM indicator - then make it so.
+		if (ampm)
+			compressed = compressed.substring(0, compressed.length() - 1) + 'a';
 
 		if (components > 6) {
 			if (compressed.indexOf("d{3}") == -1)
@@ -976,9 +1015,24 @@ public class DateTimeParser {
 			components--;
 		}
 
-		if (components >= 3 && compressed.indexOf(TIME_ONLY) != -1) {
-			compressed = Utils.replaceFirst(compressed, TIME_ONLY, "HH:mm:ss");
+		if (components >= 3 && compressed.indexOf(TIME_ONLY_HHMMSS) != -1) {
+			compressed = Utils.replaceFirst(compressed, TIME_ONLY_HHMMSS, ampm ? "hh:mm:ss" : "HH:mm:ss");
 			components -= 3;
+		}
+
+		if (components >= 2 && matchAtEnd(compressed, TIME_ONLY_HHMM)) {
+			compressed = Utils.replaceFirst(compressed, TIME_ONLY_HHMM, ampm ? "hh:mm" : "HH:mm");
+			components -= 2;
+		}
+
+		if (components >= 2 && matchAtEnd(compressed, TIME_ONLY_PPHMM)) {
+			compressed = Utils.replaceFirst(compressed, TIME_ONLY_PPHMM, ampm ? " pph:mm" : " ppH:mm");
+			components -= 2;
+		}
+
+		if (components >= 2 && matchAtEnd(compressed, TIME_ONLY_HMM)) {
+			compressed = Utils.replaceFirst(compressed, TIME_ONLY_HMM, ampm ? "h:mm" : "H:mm");
+			components -= 2;
 		}
 
 		if (components > 3)
@@ -1026,9 +1080,14 @@ public class DateTimeParser {
 				return null;
 
 			if (components == 1) {
-				if (compressed.indexOf("d{2}") == -1)
+				if (compressed.indexOf("d{2}") != -1)
+					compressed = Utils.replaceFirst(compressed, "d{2}", "dd");
+				else if (compressed.indexOf(" {2}d") != -1)
+					compressed = Utils.replaceFirst(compressed, " {2}d", " ppd");
+				else if (compressed.indexOf("d") != -1)
+					;
+				else
 					return null;
-				compressed = Utils.replaceFirst(compressed, "d{2}", "dd");
 			}
 			else {
 				int first = compressed.indexOf("d{2}");
@@ -1061,9 +1120,13 @@ public class DateTimeParser {
 		}
 
 		// So we think we have nailed it - but it only counts if it happily passes a validity check
-
 		DateTimeParserResult dtp = DateTimeParserResult.asResult(compressed, resolutionMode, locale);
 
 		return dtp.isValid(trimmed) ? compressed : null;
 	}
+
+	private boolean matchAtEnd(String input, String toMatch) {
+		return input.endsWith(toMatch) || input.endsWith(toMatch + 'a') || input.endsWith(toMatch + " a");
+	}
 }
+

@@ -41,9 +41,9 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.dates.LocaleInfo;
 import com.cobber.fta.dates.SimpleDateMatcher;
-import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 public class TestDates {
 	@Test
@@ -450,6 +450,206 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2} \\d{2}/\\d{1,2}/\\d{2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void fixedWidthDay() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
+		analysis.setCollectStatistics(false);
+		final String input = "Oct  1 2019 12:14AM|Jan  5 2020 12:31AM|Feb  2 2020 11:20AM|Mar  8 2020 10:20AM|Mar 15 2020 10:20AM|Mar 22 2020 10:20AM|Mar 29 2020 10:20AM|Jan 12 2020 12:12AM|Jan 19 2020 12:12AM|Jan 26 2020 12:12AM|Jun  1 2020 11:11AM|Jun  8 2020 11:11AM|Jun 15 2020 11:11AM|Jun 22 2020 11:11AM|Jun 29 2020 11:11AM|Oct  1 2019 12:14AM|Jan  5 2020 12:31AM|Feb  2 2020 11:20AM|Mar  8 2020 10:20AM|Mar 15 2020 10:20AM|Mar 22 2020 10:20AM|Mar 29 2020 10:20AM|Jan 12 2020 12:12AM|Jan 19 2020 12:12AM|Jan 26 2020 12:12AM|Jun  1 2020 11:11AM|Jun  8 2020 11:11AM|Jun 15 2020 11:11AM|Jun 22 2020 11:11AM|Jun 29 2020 11:11AM|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getTypeQualifier(), "MMM ppd yyyy hh:mma");
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} [ \\d]\\d \\d{4} \\d{2}:\\d{2}(?i)(AM|PM)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
+
+		DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+			validator.parse(inputs[i]);
+		}
+	}
+
+	@Test
+	public void withComma() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
+		analysis.setCollectStatistics(false);
+		final String input = "Jul 21, 2020 9:00 AM|Jul 21, 2020 9:00 AM|Jul 23, 2020 5:00 PM|Jun 03, 2020 3:00 PM|Jun 09, 2020 10:30 AM|Jun 17, 2020 4:00 PM|Jun 23, 2020 3:00 PM|Jun 25, 2020 2:00 PM|Jun 30, 2020 2:30 PM|Jun 30, 2020 8:00 AM|May 19, 2020 9:00 AM|May 19, 2020 9:00 AM|May 28, 2020 2:00 PM|Jul 23, 2020 5:00 PM|Jun 03, 2020 3:00 PM|Jun 09, 2020 10:30 AM|Jun 17, 2020 4:00 PM|Jun 23, 2020 3:00 PM|Jun 25, 2020 2:00 PM|Jun 30, 2020 2:30 PM|Jun 30, 2020 8:00 AM|May 19, 2020 9:00 AM|May 19, 2020 9:00 AM|May 28, 2020 2:00 PM|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getTypeQualifier(), "MMM dd, yyyy h:mm a");
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} \\d{2}, \\d{4} \\d{1,2}:\\d{2} (?i)(AM|PM)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
+
+		DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+			validator.parse(inputs[i]);
+		}
+	}
+
+
+	@Test
+	public void fixedWidthHour() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
+		analysis.setCollectStatistics(false);
+		final String input =
+		"Oct 1 2019  2:14AM|Oct 1 2019 10:08AM|Oct 9 2019 12:49PM|Oct 9 2019  2:52PM|Oct 9 2019  6:10PM|" +
+		"Oct 1 2019 12:53PM|Oct 1 2019  1:53PM|Oct 1 2019  6:00PM|Oct 1 2019  6:56PM|Oct 2 2019  9:02PM|" +
+		"Oct 2 2019 12:13AM|Oct 2 2019 12:45PM|Oct 2 2019  4:23PM|Oct 2 2019  4:51PM|Oct 2 2019  5:11PM|" +
+		"Oct 1 2019  2:14AM|Oct 1 2019 10:08AM|Oct 9 2019 12:49PM|Oct 9 2019  2:52PM|Oct 9 2019  6:10PM|" +
+		"Oct 19 2019  6:16PM|Oct 10 2019  4:40AM|Oct 10 2019  9:35AM|Oct 10 2019 11:08AM|Oct 10 2019 12:24PM|" +
+		"Oct 10 2019  1:45PM|Oct 11 2019  9:57AM|Oct 11 2019 12:42PM|Oct 14 2019 10:41AM|Oct 14 2019  1:43PM|" +
+		"Oct 24 2019 10:47AM|Oct 24 2019 10:59AM|Oct 31 2019  6:02PM|Oct 1 2019 10:10AM|Oct 11 2019 11:02AM|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getTypeQualifier(), "MMM d yyyy pph:mma");
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} \\d{1,2} \\d{4} [ \\d]\\d:\\d{2}(?i)(AM|PM)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
+
+		DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+			validator.parse(inputs[i]);
+		}
+	}
+
+	@Test
+	public void fixedWidthDayHour() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
+		analysis.setCollectStatistics(false);
+		final String input =
+				"Oct  1 2019  2:14AM|Oct  1 2019 10:08AM|Oct  9 2019 12:49PM|Oct  9 2019  2:52PM|Oct  9 2019  6:10PM|" +
+				"Oct  1 2019 12:53PM|Oct  1 2019  1:53PM|Oct  1 2019  6:00PM|Oct  1 2019  6:56PM|Oct  2 2019  9:02PM|" +
+				"Oct  2 2019 12:13AM|Oct  2 2019 12:45PM|Oct  2 2019  4:23PM|Oct  2 2019  4:51PM|Oct  2 2019  5:11PM|" +
+				"Oct  1 2019  2:14AM|Oct  1 2019 10:08AM|Oct  9 2019 12:49PM|Oct  9 2019  2:52PM|Oct  9 2019  6:10PM|" +
+				"Oct 19 2019  6:16PM|Oct 10 2019  4:40AM|Oct 10 2019  9:35AM|Oct 10 2019 11:08AM|Oct 10 2019 12:24PM|" +
+				"Oct 10 2019  1:45PM|Oct 11 2019  9:57AM|Oct 11 2019 12:42PM|Oct 14 2019 10:41AM|Oct 14 2019  1:43PM|" +
+				"Oct 24 2019 10:47AM|Oct 24 2019 10:59AM|Oct 31 2019  6:02PM|Oct  1 2019 10:10AM|Oct 11 2019 11:02AM|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getTypeQualifier(), "MMM ppd yyyy pph:mma");
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} [ \\d]\\d \\d{4} [ \\d]\\d:\\d{2}(?i)(AM|PM)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
+
+		DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+			validator.parse(inputs[i]);
+		}
+	}
+
+	@Test
+	public void variableHour() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
+		analysis.setCollectStatistics(false);
+		final String input =
+				"Oct 1 2019 2:14AM|Oct 1 2019 10:08AM|Oct 9 2019 12:49PM|Oct 9 2019 2:52PM|Oct 9 2019 6:10PM|" +
+				"Oct 1 2019 12:53PM|Oct 1 2019 1:53PM|Oct 1 2019 6:00PM|Oct 1 2019 6:56PM|Oct 2 2019 9:02PM|" +
+				"Oct 2 2019 12:13AM|Oct 2 2019 12:45PM|Oct 2 2019 4:23PM|Oct 2 2019 4:51PM|Oct 2 2019 5:11PM|" +
+				"Oct 1 2019 2:14AM|Oct 1 2019 10:08AM|Oct 9 2019 12:49PM|Oct 9 2019 2:52PM|Oct 9 2019 6:10PM|" +
+				"Oct 19 2019 6:16PM|Oct 10 2019 4:40AM|Oct 10 2019 9:35AM|Oct 10 2019 11:08AM|Oct 10 2019 12:24PM|" +
+				"Oct 10 2019 1:45PM|Oct 11 2019 9:57AM|Oct 11 2019 12:42PM|Oct 14 2019 10:41AM|Oct 14 2019 1:43PM|" +
+				"Oct 24 2019 10:47AM|Oct 24 2019 10:59AM|Oct 31 2019 6:02PM|Oct 1 2019 10:10AM|Oct 11 2019 11:02AM|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getTypeQualifier(), "MMM d yyyy h:mma");
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} \\d{1,2} \\d{4} \\d{1,2}:\\d{2}(?i)(AM|PM)");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
+
+		DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+			validator.parse(inputs[i]);
+		}
+	}
+
+	@Test
+	public void fixedSSS() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
+		analysis.setCollectStatistics(false);
+		final String input = "2019-10-01 07:26:47.617|2019-10-01 12:12:31.587|2019-10-01 12:12:32.827|2019-10-01 12:12:33.840|2019-10-01 12:12:34.770|2019-10-01 12:12:35.830|2019-10-01 12:12:36.690|2019-10-01 12:12:37.590|2019-10-01 12:12:38.357|2019-10-01 12:12:40.117|2019-10-01 12:12:41.087|2019-10-02 07:34:35.987|2019-10-02 07:34:40.680|2019-10-02 07:34:41.293|2019-10-02 07:34:43.640|2019-10-02 07:34:44.910|2019-10-02 07:34:45.907|2019-10-02 07:34:46.987|2019-10-02 07:34:47.867|2019-10-02 07:34:48.820|2019-10-02 07:34:49.930|2019-10-02 07:34:50.747|2019-10-02 07:34:51.923|2019-10-02 07:34:53.763|2019-10-02 07:34:54.090|2019-10-02 07:34:55.340|2019-10-02 07:34:56.500|2019-10-02 07:34:58.330|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSS");
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 

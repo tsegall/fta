@@ -47,6 +47,13 @@ public final class Utils {
 		        .concat(input.substring(offset + length));
 	}
 
+	public static String repeat(final char c, final int count) {
+		StringBuilder s = new StringBuilder(c);
+		for (int i = 0; i < count; i++)
+			s.append(c);
+		return s.toString();
+	}
+
 	/**
 	 * Give a String as input with an offset and length return the integer at that position.
 	 * @param input String to extract integer from
