@@ -1834,7 +1834,40 @@ public class TestDates {
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].matches(result2.getRegExp()));
 		}
+	}
 
+	@Test
+	public void dateYYYY_with_zeroes() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("Date");
+		analysis.setCollectStatistics(true);
+		final String input =
+				"1801|1802|1900|1901|1902|1903|1904|1801|1802|1900|1901|1902|1903|" +
+				"1904|1801|1802|1900|1901|1902|1903|1904|1801|1802|1900|1901|1902|" +
+				"1904|1801|1802|1900|1901|1902|1903|1904|1801|1802|1900|1901|1902|" +
+				"2013|2014|2020|2009|2008|2007|2006|2005|2004|2003|2002|2000|2001|" +
+				"1904|1801|1802|1900|1901|1902|1903|1904|1801|1802|1900|1901|1902|" +
+				"1902|1903|1904|00|";
+		final String[] inputs = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "0+|\\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy");
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		}
 	}
 
 	@Test

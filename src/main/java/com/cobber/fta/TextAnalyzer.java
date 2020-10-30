@@ -2407,7 +2407,7 @@ public class TextAnalyzer {
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG);
 
 			// Sometimes a Long is not a Long but it is really a date
-			if (groupingSeparators == 0 && minLongNonZero > 19000101 && maxLong < 20410101 &&
+			if (groupingSeparators == 0 && minLongNonZero != Long.MAX_VALUE && minLongNonZero > 19000101 && maxLong < 20410101 &&
 					DateTimeParser.plausibleDateCore(false, (int)minLongNonZero%100, ((int)minLongNonZero/100)%100, (int)minLongNonZero/10000, 4)  &&
 					DateTimeParser.plausibleDateCore(false, (int)maxLong%100, ((int)maxLong/100)%100, (int)maxLong/10000, 4)  &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("date"))) {
@@ -2421,16 +2421,16 @@ public class TextAnalyzer {
 					for (String s : cardinality.keySet())
 						if (!Utils.allZeroes(s))
 							trackDateTime(s, matchPatternInfo, true);
-			} else if (groupingSeparators == 0 && minLongNonZero > 1800 && maxLong < 2041 &&
+			} else if (groupingSeparators == 0 && minLongNonZero != Long.MAX_VALUE && minLongNonZero > 1800 && maxLong < 2041 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("year") || dataStreamName.toLowerCase(locale).contains("date"))) {
-				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{4}" : "0|\\d{4}", FTAType.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
+				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{4}" : "0+|\\d{4}", FTAType.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLongNonZero, 1, 1);
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
 
 				// If we are collecting statistics - we need to generate the topK and bottomK
 				if (collectStatistics)
 					for (String s : cardinality.keySet())
-						if (!"0".equals(s))
+						if (Integer.valueOf(s) != 0)
 							trackDateTime(s, matchPatternInfo, true);
 			} else if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
 				// boolean by any other name

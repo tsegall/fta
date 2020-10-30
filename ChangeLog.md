@@ -242,3 +242,9 @@
 
 ### 3.0.11
  - Upgrade dependencies, improve support for padded fields - both days and hours
+
+### 3.0.12
+ - Subtle bug causes NPE, minLongNonZero is initialized to MAX_VALUE (as marker), upgrade libraries
+
+### 3.0.13
+ - Another attempt at fixing the issue in 3.0.12, also add a test
