@@ -248,3 +248,6 @@
 
 ### 3.0.13
  - Another attempt at fixing the issue in 3.0.12, also add a test
+
+### 3.0.14
+ - Bump versions

@@ -225,7 +225,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 6.7`
+`$ gradle wrapper --gradle-version 6.7.1`
 
 `$ ./gradlew installDist`
 

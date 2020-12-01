@@ -21,7 +21,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.github.ben-manes:gradle-versions-plugin:0.33.0"
+    classpath "com.github.ben-manes:gradle-versions-plugin:0.36.0"
   }
 }
 
@@ -29,7 +29,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "3.0.13"
+version = "3.0.14"
 
 repositories {
   mavenCentral()
