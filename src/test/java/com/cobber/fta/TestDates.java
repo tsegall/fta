@@ -631,6 +631,35 @@ public class TestDates {
 	}
 
 	@Test
+	public void mixedDateandDateTime() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
+		analysis.setCollectStatistics(false);
+		final String input =
+				"3/11/2020|12/4/2020|6/14/2020|4/21/2020|3/6/2020|5/8/2020|4/7/2020|12/8/2020|8/12/2020|9/12/2020|" +
+				"3/13/2020|12/11/2020|7/24/2020|6/4/2020|6/29/2020|7/5/2020|4/30/2020|" +
+				"8/10/2020 0:00|9/13/2020 0:00|" +
+				"10/6/2020|3/1/2020|12/14/2020|4/29/2020|11/24/2020|7/21/2020|1/18/2020|6/7/2020|1/25/2020|2/12/2020|10/31/2020|" +
+				"1/20/2021|2/3/2020|12/15/2020|3/3/2020|4/4/2020|5/25/2020|7/20/2020|11/21/2020|9/1/2020|3/18/2020|6/17/2020|12/26/2020|" +
+				"5/27/2020 0:00|";
+		final String inputs[] = input.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getTypeQualifier(), "M/d/yyyy");
+		Assert.assertEquals(result.getMatchCount(), inputs.length - 3);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{4}");
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
+	}
+
+	@Test
 	public void fixedSSS() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);

@@ -268,10 +268,8 @@ public class DateTimeParser {
 					continue;
 				}
 
-				// Process any time-related information
-				if (result.timeElements != -1) {
-					if (answerResult.timeElements == -1)
-						answerResult.timeElements = result.timeElements;
+				// Process any time-related information (can only merge if they both had a time component)
+				if (result.timeElements != -1 && answerResult.timeElements != -1) {
 					if (answerResult.timeFirst == null)
 						answerResult.timeFirst = result.timeFirst;
 					if (answerResult.timeZone == null)

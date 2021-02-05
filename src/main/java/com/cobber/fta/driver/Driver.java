@@ -50,6 +50,8 @@ class Driver {
 				options.col = Integer.valueOf(args[++idx]);
 			else if ("--debug".equals(args[idx]))
 				options.debug = Integer.valueOf(args[++idx]);
+			else if ("--delimiter".equals(args[idx]))
+				options.delimiter = args[++idx];
 			else if ("--detectWindow".equals(args[idx]))
 				options.detectWindow = Integer.valueOf(args[++idx]);
 			else if ("--help".equals(args[idx])) {
@@ -58,6 +60,7 @@ class Driver {
 				logger.println(" --bulk - Enable bulk mode");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
+				logger.println(" --delimiter <ch> - Set the delimiter to the charactere <ch>");
 				logger.println(" --detectWindow <n> - Set the size of the detect window to <n>");
 				logger.println(" --help - Print this help");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");

@@ -41,4 +41,5 @@ class DriverOptions {
 	boolean validate = false;
 	int verbose = 0;
 	int xMaxCharsPerColumn = -1;
+	String delimiter = null;
 }

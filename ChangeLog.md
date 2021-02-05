@@ -254,3 +254,6 @@
 
 ### 3.0.15
  - Bump versions
+
+### 3.0.16
+ - Fix bug with mixed Date processing, add ability to set field separator

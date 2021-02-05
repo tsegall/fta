@@ -86,11 +86,14 @@ class FileProcessor {
 		settings.setHeaderExtractionEnabled(true);
 		settings.detectFormatAutomatically();
 		settings.setLineSeparatorDetectionEnabled(true);
-		settings.setDelimiterDetectionEnabled(true, ',', '\t', '|', ';');
 		settings.setIgnoreLeadingWhitespaces(false);
 		settings.setIgnoreTrailingWhitespaces(false);
 		settings.setNullValue("");
 		settings.setEmptyValue("");
+		if (options.delimiter != null)
+			settings.getFormat().setDelimiter(options.delimiter.charAt(0));
+		else
+			settings.setDelimiterDetectionEnabled(true, ',', '\t', '|', ';');
 		if (options.xMaxCharsPerColumn != -1)
 			settings.setMaxCharsPerColumn(options.xMaxCharsPerColumn);
 
