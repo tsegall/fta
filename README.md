@@ -206,6 +206,12 @@ An outlier is a data point that differs significantly from other member of the d
 detected as a US Phone Number then numbers with invalid area codes or invalid area code exchange pairs will be flagged as outliers.
 - For infinite plugins, outliers may be detected based on a statistical analysis, for example if there are 100 valid integers and one 'O' (letter O) then the 'O' would be identified as an outlier.  In other cases, where a enumerated type is detected, for example 100 instances of RED, 100 instances of BLUE, 100 instances of PINK, and one instance of 'P1NK' then the instance of 'P1NK' woud be identified as an outllier based on its Levenstein distance from one of the other elements in the set.
 
+## Regular Expressions ##
+
+The regular expressions detected (regExp) are a valid Java Regular Expression for the data presented.  However, it is likely that the regular expression will generally be too lax and will commonly accept input that is valid according to the regular expression but not according to a 'true' definition of the type in question.  For example, the regular expression for a Social Security Number (SSN) detected will typically present as "\\d{3}-\\d{2}-\\d{4}" which will be valid for any true SSN, however, the inverse is not true - for example, in a true SSN the first component should have 3 digits and additionally should not be 000, 666, or between 900 and 999.
+
+Where a field is detected as a Semantic Type, for example a UK Postal Code then the RegExp ("([A-Za-z][A-Ha-hK-Yk-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})") will typically be more robust, although also potentially still not a perfect match. 
+
 ## Signatures ##
 
 Given the following three data sets:
@@ -225,7 +231,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 6.8.1`
+`$ gradle wrapper --gradle-version 6.8.3`
 
 `$ ./gradlew installDist`
 

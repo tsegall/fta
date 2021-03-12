@@ -25,6 +25,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	protected PluginDefinition defn;
 	protected Locale locale = null;
 	protected int priority;
+	protected int threshold;
 	protected Pattern[] headerPatterns;
 
 	@Override
@@ -35,9 +36,8 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	LogicalType(PluginDefinition plugin) {
 		this.defn = plugin;
 		this.priority = plugin.priority;
+		this.threshold = plugin.threshold;
 	}
-
-	protected int threshold;
 
 	/**
 	 * Called to perform any initialization.
@@ -58,7 +58,6 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 
 		return true;
 	}
-
 
 	protected int getHeaderConfidence(String dataStreamName) {
 		if (headerPatterns != null)

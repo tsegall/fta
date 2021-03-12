@@ -25,6 +25,7 @@ import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -1220,7 +1221,7 @@ public class TestDoubles {
 				continue;
 			}
 
-			Set<String> samples = new HashSet<String>();
+			Set<String> samples = new LinkedHashSet<String>();
 			NumberFormat nf = NumberFormat.getNumberInstance(locale);
 			nf.setMinimumFractionDigits(2);
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
@@ -1255,6 +1256,48 @@ public class TestDoubles {
 			}
 		}
 	}
+
+@Test
+public void localeDoubleES_CO() throws IOException {
+	final String[] ugly = {
+			"77.506.942,294", "55.466.183,606", "78.184.714,556", "52.225.004,254",
+			"49.728.440,901", "46.654.635,41", "44.855.131,454", "74.523.230,406",
+			"49.266.524,337", "21.683.364,918", "50.170.727,311", "45.015.038,753",
+			"77.374.136,348", "14.954.505,431", "67.357.001,775", "81.430.862,119",
+			"56.012.358,58", "49.427.706,653", "18.983.565,706", "76.804.973,122",
+			"82.300.559,154", "40.007.535,851", "48.120.618,984", "25.215.331,00",
+			"68.970.889,115", "98.530.458,063", "52.423.892,78", "51.938.286,39"
+	};
+	final Locale locale = Locale.forLanguageTag("es-CO");
+
+	final TextAnalyzer analysis = new TextAnalyzer("Separator");
+	analysis.setLocale(locale);
+
+	for (String sample : ugly)
+		analysis.train(sample);
+
+	final TextAnalysisResult result = analysis.getResult();
+
+	Assert.assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
+	Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
+	Assert.assertEquals(result.getSampleCount(), ugly.length);
+	Assert.assertEquals(result.getMatchCount(), ugly.length);
+	Assert.assertEquals(result.getNullCount(), 0);
+	Assert.assertEquals(result.getLeadingZeroCount(), 0);
+	DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+	String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
+	String dec = formatSymbols.getDecimalSeparator() == '.' ? "\\." : "" + formatSymbols.getDecimalSeparator();
+
+	String regExp = "[\\d" + grp + "]*" + dec + "?" + "[\\d" + grp +"]+";
+
+	Assert.assertEquals(result.getRegExp(), regExp);
+	Assert.assertEquals(result.getConfidence(), 1.0);
+
+	for (String sample : ugly) {
+		Assert.assertTrue(sample.matches(regExp), sample + " " + regExp);
+	}
+}
 
 //	@Test
 	public void decimalSeparatorTest_Period() throws IOException {

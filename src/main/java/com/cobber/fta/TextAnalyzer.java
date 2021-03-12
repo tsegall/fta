@@ -1510,8 +1510,7 @@ public class TextAnalyzer {
 
 	/**
 	 * This is the core routine for determining the type of the field. It is
-	 * responsible for setting: - matchPattern - matchPatternInfo - matchCount -
-	 * type
+	 * responsible for setting matchPatternInfo.
 	 */
 	private void determineType() {
 		if (sampleCount == 0) {
@@ -1591,20 +1590,30 @@ public class TextAnalyzer {
 			}
 
 			if (possibleDateTime != 0 && possibleDateTime + 1 >= raw.size()) {
-				final DateTimeParser det = new DateTimeParser(resolutionMode, locale);
-				for (final String sample : raw)
-					det.train(sample);
+				// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
+				// if there happens to be an issue then we swallow it and will not detect the date/datetime.
+				try {
+					final DateTimeParser det = new DateTimeParser(resolutionMode, locale);
+					for (final String sample : raw)
+						det.train(sample);
 
-				final DateTimeParserResult result = det.getResult();
-				final String formatString = result.getFormatString();
-				matchPatternInfo = new PatternInfo(null, result.getRegExp(), result.getType(), formatString, false, -1, -1, null, formatString);
+					final DateTimeParserResult result = det.getResult();
+					final String formatString = result.getFormatString();
+					matchPatternInfo = new PatternInfo(null, result.getRegExp(), result.getType(), formatString, false, -1, -1, null, formatString);
+				}
+				catch (RuntimeException e) {
+					if (debug != 0) {
+						System.err.println("Internal error: " + e.getMessage());
+						e.printStackTrace();
+					}
+				}
 			}
 
 			// Check to see if it might be one of the known Infinite Logical Types
 			int i = 0;
 			double bestConfidence = 0.0;
 			for (LogicalTypeInfinite logical : infiniteTypes) {
-				if ((double)candidateCounts[i]/raw.size() >= logical.getThreshold()/100.0) {
+				if (logical.getConfidence(candidateCounts[i], raw.size(), dataStreamName)  >= logical.getThreshold()/100.0) {
 					int count = 0;
 					PatternInfo candidate = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 					for (final String sample : raw) {

@@ -36,7 +36,8 @@
 		"description": "Telephone Number (Generic)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypePhoneNumber",
 		"headerRegExps": [ ".*(?i)(phone|fax|mobile|cell).*" ],
-		"headerRegExpConfidence": [ 100 ],
+		"headerRegExpConfidence": [ 98 ],
+		"threshold": 95,
 		"priority": 40
 	},
 	{

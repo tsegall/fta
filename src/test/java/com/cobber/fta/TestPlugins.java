@@ -257,6 +257,39 @@ public class TestPlugins {
 		long outlierCount = outliers.get("(014) 427-4427");
 		Assert.assertEquals(outlierCount, 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		// Confidence is 1.0 because we got a boost from seeing the valid header - i.e. 'phone'
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (int i = 0; i < inputs.length; i++) {
+			Assert.assertTrue(inputs[i].trim().matches(result.getRegExp()), inputs[i]);
+		}
+	}
+
+	@Test
+	public void basicPhoneNumberUnrecognizedHeader() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("BTN");
+		final String[] inputs = new String[] {
+				"+1 339 223 3709", "(650) 867-3450", "+44 191 4956203", "(650) 450-8810", "(512) 757-6000", "(336) 222-7000", "(014) 427-4427",
+				"(785) 241-6200", "(312) 596-1000", "(503) 421-7800", "(520) 773-9050", "+1 617 875 9183", "(212) 842-5500", "(415) 901-7000",
+				"+1 781 820 1290", "508.822.8383", "617-426-1400", "+1 781-219-3635", "339.201.9591", "1-800-873-4779"
+		};
+
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypePhoneNumber.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypePhoneNumber.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), LogicalTypePhoneNumber.REGEXP);
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		long outlierCount = outliers.get("(014) 427-4427");
+		Assert.assertEquals(outlierCount, 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getConfidence(), 1.0 - (double)1/result.getSampleCount());
 
 		for (int i = 0; i < inputs.length; i++) {

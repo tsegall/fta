@@ -55,9 +55,6 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		@Override
 		public boolean initialize(Locale locale) {
 			super.initialize(locale);
-
-			threshold = 80;
-
 			return true;
 		}
 
@@ -105,6 +102,16 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 
 		@Override
 		public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
-			return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : REGEXP;
+			return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : REGEXP;
+		}
+
+		@Override
+		public double getConfidence(long matchCount, long realSamples, String dataStreamName) {
+			double is = (double)matchCount/realSamples;
+			// Boost by up to 20% if we like the header
+			if (getHeaderConfidence(dataStreamName) != 0)
+				is = Math.min(is * 1.2, 1.0);
+
+			return is;
 		}
 }
