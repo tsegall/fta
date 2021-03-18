@@ -218,6 +218,8 @@ public class DateTimeParserResult {
 			final char ch = formatString.charAt(i);
 			switch (ch) {
 			case '?':
+				if (dateElements == dateFieldOffsets.length)
+					return null;
 				dateFieldOffsets[dateElements] = i;
 				dateFieldPad[dateElements] = padLength;
 				padLength = 0;
@@ -239,6 +241,8 @@ public class DateTimeParserResult {
 				break;
 
 			case 'M':
+				if (dateElements == dateFieldOffsets.length)
+					return null;
 				dateFieldOffsets[dateElements] = i;
 				dateFieldPad[dateElements] = padLength;
 				padLength = 0;
@@ -268,6 +272,8 @@ public class DateTimeParserResult {
 				break;
 
 			case 'd':
+				if (dateElements == dateFieldOffsets.length)
+					return null;
 				dateFieldOffsets[dateElements] = i;
 				dateFieldPad[dateElements] = padLength;
 				padLength = 0;
@@ -290,6 +296,8 @@ public class DateTimeParserResult {
 			case 'k':
 			case 'h':
 			case 'H':
+				if (timeElements == timeFieldOffsets.length)
+					return null;
 				timeFieldOffsets[timeElements] = i;
 				timeFieldPad[timeElements] = padLength;
 				padLength = 0;
@@ -306,6 +314,8 @@ public class DateTimeParserResult {
 
 			case 'm':
 			case 's':
+				if (timeElements == timeFieldOffsets.length)
+					return null;
 				timeFieldOffsets[timeElements] = i;
 				timeFieldLengths[timeElements] = 2;
 				timeFieldPad[timeElements] = padLength;
@@ -317,6 +327,8 @@ public class DateTimeParserResult {
 				break;
 
 			case 'S':
+				if (timeElements == timeFieldOffsets.length)
+					return null;
 				timeFieldOffsets[timeElements] = i;
 				timeFieldPad[timeElements] = padLength;
 				padLength = 0;
@@ -342,6 +354,8 @@ public class DateTimeParserResult {
 				break;
 
 			case 'y':
+				if (dateElements == dateFieldOffsets.length)
+					return null;
 				dateFieldOffsets[dateElements] = i;
 				dateFieldPad[dateElements] = padLength;
 				padLength = 0;

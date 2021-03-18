@@ -836,6 +836,33 @@ public class TestStrings {
 		}
 	}
 
+	@Test
+	public void testStrange() throws IOException {
+		final TextAnalyzer analysis = new TextAnalyzer("TrimTest");
+		analysis.setCollectStatistics(false);
+		final String[] inputs = new String[] {
+				"PK__3214EC273319DEC5", "PK__3214EC273319DEC5 ", "PK__3214EC273319DEC5",
+		};
+
+		for (String sample : inputs)
+			analysis.train(sample);
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}__\\d{4}\\p{IsAlphabetic}{2}\\d{6}\\p{IsAlphabetic}{3}\\d[ 	]*");
+		Assert.assertEquals(result.getMinLength(), 20);
+		Assert.assertEquals(result.getMaxLength(), 21);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (String sample : inputs)
+			Assert.assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
+	}
+
 	public void _stringPerf(boolean statisticsOn) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!statisticsOn) {

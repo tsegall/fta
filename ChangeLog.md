@@ -260,3 +260,6 @@
 
 ### 3.0.17
  - Improve recognition of Phone Number fields that do not have a recognized header, bump libraries, improve recognition based on headers generally
+
+### 3.0.18
+ - Fix bug in Phase 3 of date detection, updated google phone number library

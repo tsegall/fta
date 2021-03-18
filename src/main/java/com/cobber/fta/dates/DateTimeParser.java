@@ -1120,7 +1120,7 @@ public class DateTimeParser {
 		// So we think we have nailed it - but it only counts if it happily passes a validity check
 		DateTimeParserResult dtp = DateTimeParserResult.asResult(compressed, resolutionMode, locale);
 
-		return dtp.isValid(trimmed) ? compressed : null;
+		return (dtp != null && dtp.isValid(trimmed)) ? compressed : null;
 	}
 
 	private boolean matchAtEnd(String input, String toMatch) {
