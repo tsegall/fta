@@ -263,3 +263,6 @@
 
 ### 3.0.18
  - Fix bug in Phase 3 of date detection, updated google phone number library
+
+### 3.0.19
+ - Fix Copyright
