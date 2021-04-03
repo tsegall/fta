@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package com.cobber.fta;
 
 public class LogicalTypeFiniteSimpleExternal extends LogicalTypeFiniteSimple {
-	public LogicalTypeFiniteSimpleExternal(PluginDefinition plugin) {
+	public LogicalTypeFiniteSimpleExternal(final PluginDefinition plugin) {
 		super(plugin, plugin.regExpReturned, plugin.backout, plugin.threshold);
 		setContent(plugin.contentType, plugin.content);
 	}

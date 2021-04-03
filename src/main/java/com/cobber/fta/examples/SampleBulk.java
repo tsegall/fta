@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 
 public class SampleBulk {
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
-		HashMap<String, Long> basic = new HashMap<>();
+		final HashMap<String, Long> basic = new HashMap<>();
 
 		basic.put("Male", 2000000L);
 		basic.put("Female", 1000000L);

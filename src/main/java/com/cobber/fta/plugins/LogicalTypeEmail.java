@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 			"gmail.com", "hotmail.com", "yahoo.com"
 	};
 
-	public LogicalTypeEmail(PluginDefinition plugin) {
+	public LogicalTypeEmail(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -89,8 +89,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 		if (input.indexOf('@') == -1)
 			return false;
 
-		// Address lists commonly have ;'s as separators as opposed to the
-		// ','
+		// Address lists commonly have ;'s as separators as opposed to the ','
 		if (input.indexOf(';') != -1)
 			input = input.replace(';', ',');
 		try {
@@ -101,18 +100,18 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		int atSigns = charCounts['@'];
 		return atSigns - 1 == charCounts[','] || atSigns - 1 == charCounts[';'];
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
 		return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : ".+";
 	}
 
 	@Override
-	public double getConfidence(long matchCount, long realSamples, String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
 		double is = (double)matchCount/realSamples;
 		if (matchCount != realSamples && getHeaderConfidence(dataStreamName) != 0)
 			return is + (1.0 - is)/2;

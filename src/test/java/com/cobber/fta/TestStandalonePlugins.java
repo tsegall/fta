@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.testng.annotations.Test;
 public class TestStandalonePlugins {
 	@Test
 	public void randomIPV4Address() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV4", "com.cobber.fta.plugins.LogicalTypeIPV4Address");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV4", "com.cobber.fta.plugins.LogicalTypeIPV4Address");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -35,28 +35,28 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomIPV6Address() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV6", "com.cobber.fta.plugins.LogicalTypeIPV6Address");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV6", "com.cobber.fta.plugins.LogicalTypeIPV6Address");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.isValid("::"), "::");
 		Assert.assertTrue(logical.isValid("::1"), "::1");
 		Assert.assertTrue("::".matches(logical.getRegExp()), "::");
 		Assert.assertTrue("::1".matches(logical.getRegExp()), "::1");
 		for (int i = 0; i < 100; i++) {
-			String sample = logical.nextRandom();
+			final String sample = logical.nextRandom();
 			Assert.assertTrue(sample.matches(logical.getRegExp()), sample);
 		}
 	}
 
 	@Test
 	public void randomPhoneNumber() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("TELEPHONE", "com.cobber.fta.plugins.LogicalTypePhoneNumber");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("TELEPHONE", "com.cobber.fta.plugins.LogicalTypePhoneNumber");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++) {
-			String sample = logical.nextRandom();
+			final String sample = logical.nextRandom();
 			Assert.assertTrue(sample.matches(logical.getRegExp()));
 			Assert.assertTrue(logical.isValid(sample), sample);
 		}
@@ -64,8 +64,8 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomEmail() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("EMAIL", "com.cobber.fta.plugins.LogicalTypeEmail");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("EMAIL", "com.cobber.fta.plugins.LogicalTypeEmail");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -75,8 +75,8 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomFirst() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("FIRST_NAME", "com.cobber.fta.plugins.LogicalTypeFirstName");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("FIRST_NAME", "com.cobber.fta.plugins.LogicalTypeFirstName");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -86,13 +86,13 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomLast() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("LAST_NAME", "com.cobber.fta.plugins.LogicalTypeLastName");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("LAST_NAME", "com.cobber.fta.plugins.LogicalTypeLastName");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++) {
-			String example = logical.nextRandom();
+			final String example = logical.nextRandom();
 			Assert.assertTrue(example.matches(logical.getRegExp()));
 			Assert.assertTrue(logical.isValid(example));
 		}
@@ -100,8 +100,8 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomURL() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("URL", "com.cobber.fta.plugins.LogicalTypeURL");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("URL", "com.cobber.fta.plugins.LogicalTypeURL");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -111,8 +111,8 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomZip() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("ZIP", "com.cobber.fta.plugins.LogicalTypeUSZip5");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("ZIP", "com.cobber.fta.plugins.LogicalTypeUSZip5");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -122,8 +122,8 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomGUID() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("GUID", "com.cobber.fta.plugins.LogicalTypeGUID");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("GUID", "com.cobber.fta.plugins.LogicalTypeGUID");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -133,8 +133,8 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomGender() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("GENDER", "com.cobber.fta.plugins.LogicalTypeGenderEN");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("GENDER", "com.cobber.fta.plugins.LogicalTypeGenderEN");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -144,13 +144,13 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomCountry() throws IOException {
-		PluginDefinition plugin = new PluginDefinition("COUNTRY.TEXT_EN", "com.cobber.fta.plugins.LogicalTypeCountryEN");
-		LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
+		final PluginDefinition plugin = new PluginDefinition("COUNTRY.TEXT_EN", "com.cobber.fta.plugins.LogicalTypeCountryEN");
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++) {
-			String example = logical.nextRandom();
+			final String example = logical.nextRandom();
 			Assert.assertTrue(example.matches(logical.getRegExp()));
 			Assert.assertTrue(logical.isValid(example.toLowerCase()), example);
 		}
@@ -173,17 +173,17 @@ public class TestStandalonePlugins {
 		final int SAMPLE_SIZE = 100;
 
 		for (int iters = 0; iters < 100; iters++) {
-			for (String qualifier : allSemanticTypes) {
-				PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
-				LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+			for (final String qualifier : allSemanticTypes) {
+				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
+				final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
 				// Does it support the nextRandom() interface
 				if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
 					continue;
 
-				LogicalTypeCode logical = (LogicalTypeCode)logicalType;
+				final LogicalTypeCode logical = (LogicalTypeCode)logicalType;
 
-				String[] testCases = new String[SAMPLE_SIZE];
+				final String[] testCases = new String[SAMPLE_SIZE];
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
 					testCases[i] = logical.nextRandom();
 					Assert.assertTrue(logical.isValid(testCases[i]), qualifier + ":" + testCases[i]);
@@ -199,15 +199,15 @@ public class TestStandalonePlugins {
 		final int SAMPLE_SIZE = 100;
 
 		for (int iters = 0; iters < 100; iters++) {
-			for (String qualifier : allSemanticTypes) {
-				PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
-				LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition);
+			for (final String qualifier : allSemanticTypes) {
+				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
+				final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition);
 
 				// Does it support the nextRandom() interface
 				if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
 					continue;
 
-				LogicalTypeCode logical = (LogicalTypeCode)logicalType;
+				final LogicalTypeCode logical = (LogicalTypeCode)logicalType;
 
 				String[] testCases = new String[SAMPLE_SIZE];
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
@@ -225,16 +225,16 @@ public class TestStandalonePlugins {
 		final int SAMPLE_SIZE = 100;
 
 		for (int iters = 0; iters < 100; iters++) {
-			for (String qualifier : allSemanticTypes) {
-				LogicalType logicalType = LogicalTypeFactory.newInstance(qualifier);
+			for (final String qualifier : allSemanticTypes) {
+				final LogicalType logicalType = LogicalTypeFactory.newInstance(qualifier);
 
 				// Does it support the nextRandom() interface
 				if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
 					continue;
 
-				LogicalTypeCode logical = (LogicalTypeCode)logicalType;
+				final LogicalTypeCode logical = (LogicalTypeCode)logicalType;
 
-				String[] testCases = new String[SAMPLE_SIZE];
+				final String[] testCases = new String[SAMPLE_SIZE];
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
 					testCases[i] = logical.nextRandom();
 					Assert.assertTrue(logical.isValid(testCases[i]), qualifier + ":" + testCases[i]);
@@ -247,54 +247,54 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomCOORDINATE_LATITUDE_DECIMAL() throws IOException {
-		PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("COORDINATE.LATITUDE_DECIMAL");
-		LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("COORDINATE.LATITUDE_DECIMAL");
+		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
-		String[] validSamples = new String[] { "12.43", "13.49", "90.0", "-69.4", "-90.0" };
+		final String[] validSamples = new String[] { "12.43", "13.49", "90.0", "-69.4", "-90.0" };
 
-		for (String sample : validSamples)
+		for (final String sample : validSamples)
 			Assert.assertTrue(logical.isValid(sample), sample);
 
-		String[] invalidSamples = new String[] { "91.0", "-90.2" };
+		final String[] invalidSamples = new String[] { "91.0", "-90.2" };
 
-		for (String sample : invalidSamples)
+		for (final String sample : invalidSamples)
 			Assert.assertFalse(logical.isValid(sample), sample);
 	}
 
 	@Test
 	public void randomCOORDINATE_LONGITUDE_DECIMAL() throws IOException {
-		PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("COORDINATE.LONGITUDE_DECIMAL");
-		LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("COORDINATE.LONGITUDE_DECIMAL");
+		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
-		String[] validSamples = new String[] { "12.43", "13.49", "180.0", "90.0", "-69.4", "-90.0", "-170.0",  };
+		final String[] validSamples = new String[] { "12.43", "13.49", "180.0", "90.0", "-69.4", "-90.0", "-170.0",  };
 
-		for (String sample : validSamples)
+		for (final String sample : validSamples)
 			Assert.assertTrue(logical.isValid(sample), sample);
 
-		String[] invalidSamples = new String[] { "181.0", "-190.2" };
+		final String[] invalidSamples = new String[] { "181.0", "-190.2" };
 
-		for (String sample : invalidSamples)
+		for (final String sample : invalidSamples)
 			Assert.assertFalse(logical.isValid(sample), sample);
 	}
 
 	@Test
 	public void randomCITY() throws IOException {
-		PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("CITY");
-		LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("CITY");
+		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
-		String[] validSamples = new String[] {
+		final String[] validSamples = new String[] {
 				"Milton Keynes", "Tokyo", "Delhi", "Shanghai", "Sao Paulo", "Mexico City", "Cairo", "Dhaka",
 				"Mumbai", "Beijing","Osaka", "Karachi", "Chongqing", "Buenos Aires", "Istanbul", "Kolkata",
 				"Lagos", "Manila", "Tianjin","Rio De Janeiro", "Malmö", "St. Louis", "Saint-Georges", "Saint-Jean-sur-Richelieu",
 				"MARTHA'S VINEYARD", "CLARK'S MOUNTAIN", "Fort McMurray", "Montréal"
 		};
 
-		for (String sample : validSamples)
+		for (final String sample : validSamples)
 			Assert.assertTrue(logical.isValid(sample), sample);
 
-		String[] invalidSamples = new String[] { "2001Olypics" };
+		final String[] invalidSamples = new String[] { "2001Olypics" };
 
-		for (String sample : invalidSamples)
+		for (final String sample : invalidSamples)
 			Assert.assertFalse(logical.isValid(sample), sample);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,17 +37,17 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
 class FileProcessor {
-	final DriverOptions options;
+	private final DriverOptions options;
 	private PrintStream logger;
 	private String filename;
 
-	FileProcessor(PrintStream logger, String filename, DriverOptions options) {
+	FileProcessor(final PrintStream logger, final String filename, final DriverOptions options) {
 		this.logger = logger;
 		this.filename = filename;
 		this.options = options;
 	}
 
-	void setOptions(TextAnalyzer analyzer) throws IOException {
+	void setOptions(final TextAnalyzer analyzer) throws IOException {
 		if (options.debug != -1)
 			analyzer.setDebug(options.debug);
 		if (options.detectWindow != -1)
@@ -82,7 +82,7 @@ class FileProcessor {
 	}
 
 	void process() throws IOException {
-		CsvParserSettings settings = new CsvParserSettings();
+		final CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);
 		settings.detectFormatAutomatically();
 		settings.setLineSeparatorDetectionEnabled(true);
@@ -103,19 +103,19 @@ class FileProcessor {
 			processAllFields(settings);
 	}
 
-	void processBulk(CsvParserSettings settings) throws IOException {
-		String[] header = null;
-		int numFields = 0;
-		TextAnalyzer analyzer = null;
+	void processBulk(final CsvParserSettings settings) throws IOException {
+		String[] header;
+		int numFields;
+		TextAnalyzer analyzer;
 		TextAnalysisResult result;
         String previousKey = null;
-        String key = null;
+        String key;
         String previousName = null;
         String name = null;
-		Map<String, Long> bulkMap = new HashMap<>();
+		final Map<String, Long> bulkMap = new HashMap<>();
 
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
-			CsvParser parser = new CsvParser(settings);
+		try (final BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
+			final CsvParser parser = new CsvParser(settings);
 			parser.beginParsing(in);
 
 			header = parser.getRecordMetadata().headers();
@@ -124,6 +124,7 @@ class FileProcessor {
 			long thisRecord = 0;
 			String[] row;
 			while ((row = parser.parseNext()) != null) {
+				thisRecord++;
 				if (row.length != numFields) {
 					logger.printf("Record %d has %d fields, expected %d, skipping%n",
 							thisRecord, row.length, numFields);
@@ -131,8 +132,8 @@ class FileProcessor {
 				}
 				key = row[0];
 				name = row[1];
-				String fieldValue = row[2];
-				Long fieldCount = Long.valueOf(row[3]);
+				final String fieldValue = row[2];
+				final Long fieldCount = Long.valueOf(row[3]);
 				if (previousKey == null || !key.equals(previousKey)) {
 					if (!bulkMap.isEmpty()) {
 						analyzer = new TextAnalyzer(previousName);
@@ -158,7 +159,7 @@ class FileProcessor {
 		}
 	}
 
-	void processAllFields(CsvParserSettings settings) throws IOException {
+	private void processAllFields(final CsvParserSettings settings) throws IOException {
 		final long start = System.currentTimeMillis();
 		TextAnalyzer[] analysis = null;
 		String[] header = null;
@@ -166,7 +167,7 @@ class FileProcessor {
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
-			CsvParser parser = new CsvParser(settings);
+			final CsvParser parser = new CsvParser(settings);
 			parser.beginParsing(in);
 
 			header = parser.getRecordMetadata().headers();
@@ -218,11 +219,11 @@ class FileProcessor {
 		// Validate the result of the analysis if requested
 		int[] matched = new int[numFields];
 		int[] blanks = new int[numFields];
-		Set<String> failures = new HashSet<>();
+		final Set<String> failures = new HashSet<>();
 		if (options.validate) {
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
-				CsvParser parser = new CsvParser(settings);
+				final CsvParser parser = new CsvParser(settings);
 				parser.beginParsing(in);
 				numFields = parser.getRecordMetadata().headers().length;
 
@@ -245,7 +246,7 @@ class FileProcessor {
 
 					for (int i = 0; i < numFields; i++) {
 						if (options.col == -1 || options.col == i) {
-							String value = row[i];
+							final String value = row[i];
 							if (value.trim().isEmpty())
 								blanks[i]++;
 							else if (patterns[i].matcher(value).matches())
@@ -271,7 +272,7 @@ class FileProcessor {
 				result = analysis[i].getResult();
 				logger.printf("Field '%s' (%d) - %s%n", header[i], i, result.asJSON(options.pretty, options.verbose));
 				if (options.pluginDefinition) {
-					String pluginDefinition = result.asPlugin();
+					final String pluginDefinition = result.asPlugin();
 					if (pluginDefinition != null)
 						logger.printf("Plugin Definition - %s%n", pluginDefinition);
 				}
@@ -289,7 +290,7 @@ class FileProcessor {
 						logger.printf("\t*** Error: Match Count via RegExp (%d) does not match analysis (%d) ***%n", matched[i], result.getMatchCount());
 					if (options.verbose != 0) {
 						logger.println("Failed to match:");
-						for (String failure : failures)
+						for (final String failure : failures)
 							logger.println("\t" + failure);
 					}
 				}

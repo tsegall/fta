@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,12 +50,12 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	// Count of items with protocol specified (e.g. http://) at index 0 and no protocol index 1
 	int[] protocol = new int[2];
 
-	public LogicalTypeURL(PluginDefinition plugin) {
+	public LogicalTypeURL(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		threshold = 95;
@@ -100,7 +100,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 			index = 1;
 		}
 
-		boolean ret = validator.isValid(input);
+		final boolean ret = validator.isValid(input);
 		if (ret)
 			protocol[index]++;
 
@@ -108,7 +108,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		// Quickly rule out rubbish
 		if (charCounts[' '] != 0)
 				return false;
@@ -121,20 +121,19 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
-
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
 		return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : ".+";
 	}
 
 	@Override
-	public double getConfidence(long matchCount, long realSamples, String dataStreamName) {
-		double is = (double)matchCount/realSamples;
+	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+		double confidence = (double)matchCount/realSamples;
 		// Boost by up to 5% if we like the header, drop by 5% if we have only seen items with no protocol
 		if (getHeaderConfidence(dataStreamName) != 0)
-			is = Math.min(is + Math.min((1.0 - is)/2, 0.05), 1.0);
+			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.05), 1.0);
 		else if (protocol[0] == 0)
-			is = Math.max(is - 0.05, 0.0);
+			confidence = Math.max(confidence - 0.05, 0.0);
 
-		return is;
+		return confidence;
 	}
 }

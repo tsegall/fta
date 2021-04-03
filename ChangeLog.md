@@ -264,5 +264,9 @@
 ### 3.0.18
  - Fix bug in Phase 3 of date detection, updated google phone number library
 
-### 3.0.19
- - Fix Copyright
+### 3.0.20
+ - Lots of PMD fixups
+ - Fix issue related to updating regexp when not all samples matched
+ - Add some Shape testing
+ - Phone number samples need a decent cardinality to pass muster if no header
+ - 'CS' country code was valid (so allow as legal)

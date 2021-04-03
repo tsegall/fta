@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ public class InlineContent {
 	InlineContent() {
 	}
 
-	public InlineContent(String[] members) {
+	public InlineContent(final String[] members) {
 		this.members = members;
 	}
 }

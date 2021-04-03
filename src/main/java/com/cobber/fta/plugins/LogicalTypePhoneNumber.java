@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		private PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 		private static String[] areaCodes = new String[] { "617", "781", "303", "970", "212" };
 
-		public LogicalTypePhoneNumber(PluginDefinition plugin) {
+		public LogicalTypePhoneNumber(final PluginDefinition plugin) {
 			super(plugin);
 		}
 
@@ -79,7 +79,7 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		}
 
 		@Override
-		public boolean isValid(String input) {
+		public boolean isValid(final String input) {
 			try {
 				Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(input, locale.getCountry());
 				return phoneUtil.isValidNumber(phoneNumber);
@@ -90,23 +90,19 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		}
 
 		@Override
-		public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-			try {
-				Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(trimmed, locale.getCountry());
-				return phoneUtil.isPossibleNumber(phoneNumber);
-			}
-	        catch (NumberParseException e) {
-	        	return false;
-	        }
+		public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
+			return isValid(trimmed);
 		}
 
 		@Override
-		public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
-			return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : REGEXP;
+		public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
+			if (getHeaderConfidence(dataStreamName) == 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, dataStreamName) < getThreshold()/100.0)
+				return REGEXP;
+			return null;
 		}
 
 		@Override
-		public double getConfidence(long matchCount, long realSamples, String dataStreamName) {
+		public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
 			double is = (double)matchCount/realSamples;
 			// Boost by up to 20% if we like the header
 			if (getHeaderConfidence(dataStreamName) != 0)

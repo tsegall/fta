@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,14 @@ public class SimpleDateMatcher {
 
 	private static Map<String, Map<String, SimpleFacts>> knownFacts = new HashMap<>();
 
-	private static Map<String, SimpleFacts> getSimpleDataFacts(Locale locale) {
+	private static Map<String, SimpleFacts> getSimpleDataFacts(final Locale locale) {
 		final String languageTag = locale.toLanguageTag();
 
 		// Check to see if we are already in the cache
 		if (knownFacts.get(languageTag) != null)
 			return knownFacts.get(languageTag);
 
-		Set<SimpleFacts> matchers = new HashSet<>();
+		final Set<SimpleFacts> matchers = new HashSet<>();
 
 		matchers.add(new SimpleFacts("d{4} d{2} d{2}", "yyyy MM dd", FTAType.LOCALDATE));
 		matchers.add(new SimpleFacts("d{4} d d{2}", "yyyy M dd", FTAType.LOCALDATE));
@@ -118,8 +118,8 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} z d{4}", "EEE MMM dd HH:mm:ss z yyyy", FTAType.ZONEDDATETIME));
 		matchers.add(new SimpleFacts("EEE MMM {2}d d{2}:d{2}:d{2} z d{4}", "EEE MMM ppd HH:mm:ss z yyyy", FTAType.ZONEDDATETIME));
 
-		HashMap<String, SimpleFacts> localeMatcher = new HashMap<>();
-		for (SimpleFacts sdm : matchers) {
+		final HashMap<String, SimpleFacts> localeMatcher = new HashMap<>();
+		for (final SimpleFacts sdm : matchers) {
 			localeMatcher.put(sdm.getMatcher(), sdm);
 			localeMatcher.put(sdm.getFormat(), sdm);
 		}
@@ -129,12 +129,12 @@ public class SimpleDateMatcher {
 		return localeMatcher;
 	}
 
-	public static FTAType getType(String pattern, Locale locale) {
-		Map<String, SimpleFacts> sfMap = getSimpleDataFacts(locale);
+	public static FTAType getType(final String pattern, final Locale locale) {
+		final Map<String, SimpleFacts> sfMap = getSimpleDataFacts(locale);
 		if (sfMap == null)
 			return null;
 
-		SimpleFacts sf = sfMap.get(pattern);
+		final SimpleFacts sf = sfMap.get(pattern);
 		if (sf == null)
 			return null;
 
@@ -144,7 +144,7 @@ public class SimpleDateMatcher {
 	/**
 	 * Replace an isolated occurrence of the 'target' string with the 'replacement' string.
 	 */
-	private static String replaceString(String input, int len, String target, String replacement) {
+	private static String replaceString(final String input, final int len, final String target, final String replacement) {
 		int startOffset = 0;
 		int found;
 
@@ -180,7 +180,7 @@ public class SimpleDateMatcher {
 	 * @param locale The Locale the date String is in
 	 * @return The compressed representation
 	 */
-	public static String compress(String input, Locale locale) {
+	public static String compress(String input, final Locale locale) {
 		final StringBuilder result = new StringBuilder();
 		int len = input.length();
 		char lastCh = '=';
@@ -189,7 +189,7 @@ public class SimpleDateMatcher {
 
 		input = input.toUpperCase(locale);
 
-		for (String s : LocaleInfo.getAMPMStrings(locale)) {
+		for (final String s : LocaleInfo.getAMPMStrings(locale)) {
 			if (input.endsWith(s)) {
 				input = input.substring(0, input.lastIndexOf(s));
 				len = input.length();
@@ -203,7 +203,7 @@ public class SimpleDateMatcher {
 		// Some locales have weekday abbreviations that overlap with month abbreviations, given this and our very limited
 		// support for EEE, we will only replace weekday abbreviations if at the start of the string and it is long enough
 		// to be of the form 'EEE MMM d{2} d{2}:d{2}:d{2} z d{4}'
-		for (String weekday : LocaleInfo.getShortWeekdays(locale)) {
+		for (final String weekday : LocaleInfo.getShortWeekdays(locale)) {
 			if (len >= 22 && input.startsWith(weekday)) {
 				replaced = replaceString(input, len, weekday, "EEE");
 				if (replaced != null) {
@@ -214,7 +214,7 @@ public class SimpleDateMatcher {
 			}
 		}
 
-		for (String weekday : LocaleInfo.getWeekdays(locale)) {
+		for (final String weekday : LocaleInfo.getWeekdays(locale)) {
 			if (input.startsWith(weekday)) {
 				replaced = replaceString(input, len, weekday, "EEEE");
 				if (replaced != null) {
@@ -225,7 +225,7 @@ public class SimpleDateMatcher {
 			}
 		}
 
-		for (String shortMonth : LocaleInfo.getShortMonths(locale).keySet()) {
+		for (final String shortMonth : LocaleInfo.getShortMonths(locale).keySet()) {
 			replaced = replaceString(input, len, shortMonth, "MMM");
 			if (replaced != null) {
 				input = replaced;
@@ -235,7 +235,7 @@ public class SimpleDateMatcher {
 		}
 
 		if (replaced == null)
-			for (String month : LocaleInfo.getMonths(locale).keySet()) {
+			for (final String month : LocaleInfo.getMonths(locale).keySet()) {
 				replaced = replaceString(input, len, month, "MMMM");
 				if (replaced != null) {
 					input = replaced;
@@ -244,10 +244,10 @@ public class SimpleDateMatcher {
 				}
 			}
 
-		String[] words = input.split(" ");
-		for (int i = 0; i < words.length; i++) {
-			if (DateTimeParser.timeZones.contains(words[i])) {
-				input = replaceString(input, len, words[i], "z");
+		final String[] words = input.split(" ");
+		for (final String word : words) {
+			if (DateTimeParser.timeZones.contains(word)) {
+				input = replaceString(input, len, word, "z");
 				len = input.length();
 				break;
 			}
@@ -366,8 +366,8 @@ public class SimpleDateMatcher {
 
 	public boolean parse() {
 
-		StringBuilder eating = new StringBuilder(input.toUpperCase(locale));
-		boolean found = false;
+		final StringBuilder eating = new StringBuilder(input.toUpperCase(locale));
+		boolean found;
 
 		for (final FormatterToken token : DateTimeParserResult.tokenize(getFormat())) {
 			switch (token.getType()) {
@@ -379,7 +379,7 @@ public class SimpleDateMatcher {
 
 			case MONTH:
 				found = false;
-				for (String month : LocaleInfo.getMonths(locale).keySet())
+				for (final String month : LocaleInfo.getMonths(locale).keySet())
 					if (eating.indexOf(month) == 0) {
 						monthValue = LocaleInfo.monthOffset(month, locale);
 						eating.delete(0, month.length());
@@ -392,7 +392,7 @@ public class SimpleDateMatcher {
 
 			case DAY_OF_WEEK:
 				found = false;
-				for (String weekday : LocaleInfo.getWeekdays(locale)) {
+				for (final String weekday : LocaleInfo.getWeekdays(locale)) {
 					if (eating.indexOf(weekday) == 0) {
 						eating.delete(0, weekday.length());
 						found = true;
@@ -405,7 +405,7 @@ public class SimpleDateMatcher {
 
 			case DAY_OF_WEEK_ABBR:
 				found = false;
-				for (String weekday : LocaleInfo.getShortWeekdays(locale)) {
+				for (final String weekday : LocaleInfo.getShortWeekdays(locale)) {
 					if (eating.indexOf(weekday) == 0) {
 						eating.delete(0, weekday.length());
 						found = true;
@@ -418,7 +418,7 @@ public class SimpleDateMatcher {
 
 			case MONTH_ABBR:
 				found = false;
-				for (String shortMonth : LocaleInfo.getShortMonths(locale).keySet())
+				for (final String shortMonth : LocaleInfo.getShortMonths(locale).keySet())
 					if (eating.indexOf(shortMonth) == 0) {
 						monthValue = LocaleInfo.shortMonthOffset(shortMonth, locale);
 						eating.delete(0, shortMonth.length());
@@ -431,7 +431,7 @@ public class SimpleDateMatcher {
 
 			case AMPM:
 				found = false;
-				for (String s : LocaleInfo.getAMPMStrings(locale)) {
+				for (final String s : LocaleInfo.getAMPMStrings(locale)) {
 					if (eating.indexOf(s) == 0) {
 						eating.delete(0, s.length());
 						found = true;
@@ -587,8 +587,8 @@ public class SimpleDateMatcher {
 		return eating.length() == 0;
 	}
 
-	private int countComponents(String compressed) {
-		int len = compressed.length();
+	private int countComponents(final String compressed) {
+		final int len = compressed.length();
 		int result = 0;
 
 		for (int i = 0; i < len; i++) {
@@ -618,7 +618,7 @@ public class SimpleDateMatcher {
 	 * @param input The input to be parsed
 	 * @param locale The Locale we are currently processing
 	 */
-	public SimpleDateMatcher(String input, Locale locale) {
+	public SimpleDateMatcher(final String input, final Locale locale) {
 		this.input = input;
 		this.compressed = compress(input, locale);
 		this.componentCount = countComponents(compressed);

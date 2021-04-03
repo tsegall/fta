@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,22 +24,22 @@ import com.cobber.fta.core.FTAType;
 
 public class PluginCreditCard extends LogicalTypeInfinite {
 	public final static String REGEXP = "(?:\\d[ -]*?){13,16}";
-	static CreditCardValidator validator = null;
+	static CreditCardValidator validator;
 	static {
 		validator = CreditCardValidator.genericCreditCardValidator();
 	}
 
-	public PluginCreditCard(PluginDefinition plugin) {
+	public PluginCreditCard(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		return validator.isValid(trimmed.replaceAll("[\\s\\-]", ""));
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		return true;
@@ -66,13 +66,13 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input) {
+	public boolean isValid(final String input) {
 		return validator.isValid(input.replaceAll("[\\s\\-]", ""));
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
-			TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
+			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

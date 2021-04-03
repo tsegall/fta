@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ public final class Utils {
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 
-	public static String replaceFirst(String input, String oldString, String newString) {
-		int index = input.indexOf(oldString);
+	public static String replaceFirst(final String input, final String oldString, final String newString) {
+		final int index = input.indexOf(oldString);
 		if (index == -1)
 			return input;
 
@@ -41,14 +41,14 @@ public final class Utils {
 		        .concat(input.substring(index + oldString.length()));
 	}
 
-	public static String replaceAt(String input, int offset, int length, String newString) {
+	public static String replaceAt(final String input, final int offset, final int length, final String newString) {
 		return input.substring(0, offset)
 		        .concat(newString)
 		        .concat(input.substring(offset + length));
 	}
 
 	public static String repeat(final char c, final int count) {
-		StringBuilder s = new StringBuilder(c);
+		final StringBuilder s = new StringBuilder(c);
 		for (int i = 0; i < count; i++)
 			s.append(c);
 		return s.toString();
@@ -62,7 +62,7 @@ public final class Utils {
 	 * @param maxLength maximum length of integer to be extracted.
 	 * @return An integer value from the supplied String.
 	 */
-	public static int getValue(final String input, final int offset, final int minLength, int maxLength) {
+	public static int getValue(final String input, final int offset, final int minLength, final int maxLength) {
 		try {
 			if (minLength == maxLength || (offset + maxLength > input.length()) || !Character.isDigit(input.charAt(offset + maxLength - 1)))
 				return Integer.valueOf(input.substring(offset, offset + minLength));
@@ -74,7 +74,7 @@ public final class Utils {
 		}
 	}
 
-	public static boolean allZeroes(String input) {
+	public static boolean allZeroes(final String input) {
 		if (input == null)
 			return false;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,14 +96,14 @@ public class TextAnalysisResult {
 	 * @param key Do we think this field is a key.
 	 * @param collectStatistics Were statistics collected during this analysis.
 	 */
-	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, boolean trailingWhiteSpace,
-			boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
+	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, final boolean trailingWhiteSpace,
+			final boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
 			final double confidence, final TypeFacts facts, final int minLength, final int maxLength,
-			char decimalSeparator, DateResolutionMode resolutionMode,
-			final Map<String, Long> cardinality, int maxCardinality,
-			final Map<String, Long> outliers, int maxOutliers,
-			final Map<String, Long> shapes, int maxShapes,
-			final boolean key, boolean collectStatistics) {
+			final char decimalSeparator, final DateResolutionMode resolutionMode,
+			final Map<String, Long> cardinality, final int maxCardinality,
+			final Map<String, Long> outliers, final int maxOutliers,
+			final Map<String, Long> shapes, final int maxShapes,
+			final boolean key, final boolean collectStatistics) {
 		this.name = name;
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
@@ -297,7 +297,7 @@ public class TextAnalysisResult {
 		String answer = "";
 		if (leadingWhiteSpace)
 			answer = KnownPatterns.PATTERN_WHITESPACE;
-		boolean optional = patternInfo.regexp.indexOf('|') != -1;
+		final boolean optional = patternInfo.regexp.indexOf('|') != -1;
 		if (optional)
 			answer += "(";
 		answer += patternInfo.regexp;
@@ -458,7 +458,7 @@ public class TextAnalysisResult {
 	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
 		final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<>(
 				new Comparator<Map.Entry<K,V>>() {
-					@Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+					@Override public int compare(final Map.Entry<K,V> e1, final Map.Entry<K,V> e2) {
 						int res = e2.getValue().compareTo(e1.getValue());
 						if (e1.getKey().equals(e2.getKey())) {
 							return res;
@@ -469,7 +469,7 @@ public class TextAnalysisResult {
 				}
 				);
 
-		for (Map.Entry<K, V> entry : map.entrySet())
+		for (final Map.Entry<K, V> entry : map.entrySet())
 			sortedEntries.add(new AbstractMap.SimpleImmutableEntry<K, V>(entry.getKey(), entry.getValue()));
 
 		return sortedEntries;
@@ -497,7 +497,6 @@ public class TextAnalysisResult {
 		else if (!shapes.isEmpty())
 			structureSignature += getRegExp() + shapes.keySet().toString();
 
-		byte[] signature = structureSignature.getBytes(StandardCharsets.UTF_8);
 		MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-1");
@@ -505,6 +504,7 @@ public class TextAnalysisResult {
 			return null;
 		}
 
+		final byte[] signature = structureSignature.getBytes(StandardCharsets.UTF_8);
 		return Base64.getEncoder().encodeToString((md.digest(signature)));
 	}
 
@@ -515,37 +515,39 @@ public class TextAnalysisResult {
 	 */
 	public String getDataSignature() {
 		// Grab a JSON representation of the information required for the Data Signature
-		String dataSignature = internalAsJSON(false, 1, SignatureTarget.DATA_SIGNATURE);
-		byte[] signature = dataSignature.getBytes(StandardCharsets.UTF_8);
+		final String dataSignature = internalAsJSON(false, 1, SignatureTarget.DATA_SIGNATURE);
+
 		MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-1");
 		} catch (NoSuchAlgorithmException e) {
 			return null;
 		}
+
+		final byte[] signature = dataSignature.getBytes(StandardCharsets.UTF_8);
 		return Base64.getEncoder().encodeToString(md.digest(signature));
 	}
 
-	private void outputArray(ArrayNode detail, SortedSet<String> set) {
-		for (String s : set) {
+	private void outputArray(final ArrayNode detail, final SortedSet<String> set) {
+		for (final String s : set) {
 			detail.add(s);
 		}
 	}
 
-	private void outputDetails(ObjectMapper mapper, ArrayNode detail, Map<String, Long> details, int verbose) {
+	private void outputDetails(final ObjectMapper mapper, final ArrayNode detail, final Map<String, Long> details, final int verbose) {
 		int records = 0;
 		for (final Map.Entry<String,Long> entry : entriesSortedByValues(details)) {
 			records++;
 			if (verbose == 1 && records > 100)
 				break;
-			ObjectNode elt = mapper.createObjectNode();
+			final ObjectNode elt = mapper.createObjectNode();
 			elt.put("key", entry.getKey());
 			elt.put("count", entry.getValue());
 			detail.add(elt);
 		}
 	}
 
-	private String jsonError(String message) {
+	private String jsonError(final String message) {
 		return "{ \"Error\": \"" + message + "\" }";
 	}
 
@@ -559,14 +561,14 @@ public class TextAnalysisResult {
 			return null;
 
 		// Check to see if the Regular Expression is too boring to report - e.g. '.*' or '.{3,31}'
-		String regExp = getRegExp();
+		final String regExp = getRegExp();
 		if (regExp.charAt(0) == '.' && (regExp.length() == 2 || (regExp.length() > 1 && regExp.charAt(1) == '{')))
 			return null;
 
-		ObjectMapper mapper = new ObjectMapper();
+		final ObjectMapper mapper = new ObjectMapper();
 
-		ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
-		ObjectNode plugin = mapper.createObjectNode();
+		final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+		final ObjectNode plugin = mapper.createObjectNode();
 		plugin.put("qualifier", name);
 		ArrayNode arrayNode = mapper.createArrayNode();
 		arrayNode.add(".*(?i)" + name);
@@ -601,16 +603,16 @@ public class TextAnalysisResult {
 	 * @param verbose If &gt; 0 provides additional details on the core, Outlier, and Shapes sets.
 	 * @return A JSON representation of the analysis.
 	 */
-	public String asJSON(boolean pretty, int verbose) {
+	public String asJSON(final boolean pretty, final int verbose) {
 		return internalAsJSON(pretty,verbose, SignatureTarget.CONSUMER);
 	}
 
-	private String internalAsJSON(boolean pretty, int verbose, SignatureTarget target) {
-		ObjectMapper mapper = new ObjectMapper();
+	private String internalAsJSON(final boolean pretty, final int verbose, final SignatureTarget target) {
+		final ObjectMapper mapper = new ObjectMapper();
 
-		ObjectWriter writer = pretty ? mapper.writerWithDefaultPrettyPrinter() : mapper.writer();
+		final ObjectWriter writer = pretty ? mapper.writerWithDefaultPrettyPrinter() : mapper.writer();
 
-		ObjectNode analysis = mapper.createObjectNode();
+		final ObjectNode analysis = mapper.createObjectNode();
 		if (target == SignatureTarget.CONSUMER)
 			analysis.put("fieldName", name);
 		analysis.put("sampleCount", sampleCount);
@@ -645,11 +647,11 @@ public class TextAnalysisResult {
 			if (facts.variance != null)
 				analysis.put("standardDeviation", getStandardDeviation());
 			if (facts.topK != null) {
-				ArrayNode detail = analysis.putArray("topK");
+				final ArrayNode detail = analysis.putArray("topK");
 				outputArray(detail, facts.topK);
 			}
 			if (facts.bottomK != null) {
-				ArrayNode detail = analysis.putArray("bottomK");
+				final ArrayNode detail = analysis.putArray("bottomK");
 				outputArray(detail, facts.bottomK);
 			}
 		}
@@ -660,19 +662,19 @@ public class TextAnalysisResult {
 		analysis.put("cardinality", cardinality.size() < maxCardinality ? cardinality.size() : -1);
 
 		if (!cardinality.isEmpty() && verbose > 0) {
-			ArrayNode detail = analysis.putArray("cardinalityDetail");
+			final ArrayNode detail = analysis.putArray("cardinalityDetail");
 			outputDetails(mapper, detail, cardinality, verbose);
 		}
 
 		analysis.put("outlierCardinality", outliers.size() < maxOutliers ? outliers.size() : -1);
 		if (!outliers.isEmpty() && verbose > 0) {
-			ArrayNode detail = analysis.putArray("outlierDetail");
+			final ArrayNode detail = analysis.putArray("outlierDetail");
 			outputDetails(mapper, detail, outliers, verbose);
 		}
 
-		analysis.put("shapesCardinality", (shapes.size() != 0 && shapes.size() < maxShapes) ? shapes.size() : -1);
+		analysis.put("shapesCardinality", (shapes.size() > 0 && shapes.size() < maxShapes) ? shapes.size() : -1);
 		if (!shapes.isEmpty() && verbose > 0) {
-			ArrayNode detail = analysis.putArray("shapesDetail");
+			final ArrayNode detail = analysis.putArray("shapesDetail");
 			outputDetails(mapper, detail, shapes, verbose);
 		}
 

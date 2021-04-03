@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class TestBulk {
 	public void basicBulk() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		HashMap<String, Long> basic = new HashMap<>();
+		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("Male", 2000000L);
 		basic.put("Female", 1000000L);
 		basic.put("", 1000000L);
@@ -58,7 +58,7 @@ public class TestBulk {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final long ITERATIONS = 10000;
 
-		HashMap<String, Long> basic = new HashMap<>();
+		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("Male", 2 *  ITERATIONS);
 		basic.put("Female", ITERATIONS);
 		analysisBulk.trainBulk(basic);
@@ -91,7 +91,7 @@ public class TestBulk {
 		final TextAnalyzer analysisBulk = new TextAnalyzer();
 		final long SAMPLES = 3622;
 
-		HashMap<String, Long> basic = new HashMap<>();
+		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("Disconnect Fractional", 100L);
 		basic.put("Disconnect Other", 137L);
 		basic.put("Disconnect Still Billing", 172L);
@@ -116,7 +116,7 @@ public class TestBulk {
 	public void basicDate() throws IOException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer("ModifiedDate", DateResolutionMode.Auto);
 
-		HashMap<String, Long> basic = new HashMap<>();
+		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("2002-06-01 00:00:00", 10L);
 		basic.put("2008-03-11 10:17:21", 99L);
 		analysisBulk.trainBulk(basic);
@@ -135,7 +135,7 @@ public class TestBulk {
 	public void justBlanks() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		HashMap<String, Long> basic = new HashMap<>();
+		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("", 1000000L);
 		analysis.trainBulk(basic);
 

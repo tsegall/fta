@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,17 +37,17 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	private SingletonSet zipsRef = null;
 	private Set<String> zips = null;
 
-	public LogicalTypeUSZip5(PluginDefinition plugin) {
+	public LogicalTypeUSZip5(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		return compressed.length() == 5 && compressed.toString().equals(REGEXP_CONSTANT);
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		threshold = 95;
@@ -94,9 +94,9 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
-		String upperDataStreamName = dataStreamName.toUpperCase();
-		boolean zipName = (upperDataStreamName.contains("ZIP") || upperDataStreamName.contains("POSTALCODE") || upperDataStreamName.contains("POSTCODE"));
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
+		final String upperDataStreamName = dataStreamName.toUpperCase();
+		final boolean zipName = (upperDataStreamName.contains("ZIP") || upperDataStreamName.contains("POSTALCODE") || upperDataStreamName.contains("POSTCODE"));
 		return (cardinality.size() < 5 && !zipName) || (double)matchCount/realSamples < getThreshold()/100.0 ? getRegExp() : null;
 	}
 }

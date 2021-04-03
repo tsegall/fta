@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.cobber.fta.TextAnalyzer;
 
 public class Performance {
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
 		final TextAnalyzer analysis = new TextAnalyzer("DateOfBirth");
 
@@ -38,18 +38,18 @@ public class Performance {
 				"10/13/2010 1:17:01 PM", "10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM"
 		};
 
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 
 		long iters;
 		for (iters = 0; iters < 100_000; iters++)
-			for (int i = 0; i < inputs.length; i++)
-				analysis.train(inputs[i]);
+			for (final String input : inputs)
+				analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
 
 		System.err.println("Result: " + result.asJSON(true, 1));
 
-		long duration = System.currentTimeMillis() - start;
+		final long duration = System.currentTimeMillis() - start;
 
 		System.err.printf("Count %d, duration: %dms, ~%d per second%n", iters * inputs.length, duration, (long)((iters * inputs.length) / ((double)duration/1000)));
 	}

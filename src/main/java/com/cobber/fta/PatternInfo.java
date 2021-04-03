@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,8 @@ public class PatternInfo {
 	 * @param format
 	 *            The Java format specified for a date pattern (optional).
 	 */
-	public PatternInfo(ID id, final String regexp, final FTAType type, final String typeQualifier,
-			boolean isLogicalType, final int minLength, final int maxLength, final String generalPattern, final String format) {
+	public PatternInfo(final ID id, final String regexp, final FTAType type, final String typeQualifier,
+			final boolean isLogicalType, final int minLength, final int maxLength, final String generalPattern, final String format) {
 		this.id = id;
 		this.regexp = regexp;
 		this.type = type;
@@ -87,7 +87,7 @@ public class PatternInfo {
 		this.format = format;
 	}
 
-	public PatternInfo(PatternInfo that) {
+	public PatternInfo(final PatternInfo that) {
 		this.id = that.id;
 		this.regexp = that.regexp;
 		this.type = that.type;

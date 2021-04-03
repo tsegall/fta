@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.core.RandomSet;
@@ -37,10 +38,10 @@ public class SingletonSet {
 	String content;
 	String key;
 
-	static HashMap<String, RandomSet<String>> memberCache = new HashMap<>();
-	static HashMap<String, String[]> memberArrayCache = new HashMap<>();
+	static Map<String, RandomSet<String>> memberCache = new HashMap<>();
+	static Map<String, String[]> memberArrayCache = new HashMap<>();
 
-	public SingletonSet(String contentType, String content) {
+	public SingletonSet(final String contentType, final String content) {
 		this.contentType = contentType;
 		this.content = content;
 		this.key = contentType + "---" + content;
@@ -48,12 +49,12 @@ public class SingletonSet {
 
 	public Set<String> getMembers() {
 		synchronized(memberCache) {
-			Set<String> result = memberCache.get(key);
+			final Set<String> result = memberCache.get(key);
 			if (result != null)
 				return result;
 
-			RandomSet<String> members = new RandomSet<>();
-			if (contentType.equals("inline")) {
+			final RandomSet<String> members = new RandomSet<>();
+			if ("inline".equals(contentType)) {
 				InlineContent inline;
 				try {
 					inline = (new ObjectMapper()).readValue(content, new TypeReference<InlineContent>(){});
@@ -63,20 +64,20 @@ public class SingletonSet {
 				members.addAll(Arrays.asList(inline.members));
 			}
 			else {
-				Reader reader = null;
-				if (contentType.equals("file"))
+				Reader reader;
+				if ("file".equals(contentType))
 					try {
 						reader = new InputStreamReader(new FileInputStream(content));
 					} catch (FileNotFoundException e) {
 						throw new IllegalArgumentException("Internal error: Issues with 'file' content: " + content, e);
 					}
-				else if (contentType.equals("resource"))
+				else if ("resource".equals(contentType))
 					reader = new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content));
 				else
 					throw new IllegalArgumentException("Internal error: contentType must be 'file' or 'resource'");
 
 				try (BufferedReader bufferedReader = new BufferedReader(reader)){
-					String line = null;
+					String line;
 
 					while ((line = bufferedReader.readLine()) != null)
 						members.add(line);
@@ -91,7 +92,7 @@ public class SingletonSet {
 		}
 	}
 
-	public String getAt(int i) {
+	public String getAt(final int i) {
 		return memberCache.get(key).get(i);
 	}
 }

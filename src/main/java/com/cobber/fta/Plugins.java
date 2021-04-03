@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,29 +33,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Plugins {
 	private Map<String, LogicalType> registered = new HashMap<>();
 
-	public void registerPlugins(Reader JSON, String dataStreamName, Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-		ObjectMapper mapper = new ObjectMapper();
+	public void registerPlugins(final Reader JSON, final String dataStreamName, final Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+		final ObjectMapper mapper = new ObjectMapper();
 		registerPluginList(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale);
 	}
 
-	public void registerPlugins(String JSON, String dataStreamName, Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-		ObjectMapper mapper = new ObjectMapper();
+	public void registerPlugins(final String JSON, final String dataStreamName, final Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+		final ObjectMapper mapper = new ObjectMapper();
 		registerPluginList(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale);
 	}
 
-	public void registerPluginList(List<PluginDefinition> plugins, String dataStreamName, Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		if (locale == null)
 			locale = Locale.getDefault();
-		String languageTag = locale.toLanguageTag();
-		String language = locale.getLanguage();
+		final String languageTag = locale.toLanguageTag();
+		final String language = locale.getLanguage();
 
 		// Only register plugins that are valid for this locale
-		for (PluginDefinition plugin : plugins) {
+		for (final PluginDefinition plugin : plugins) {
 			boolean register = false;
 
 			// Check to see if this plugin is valid for this locale
 			if (plugin.validLocales != null && plugin.validLocales.length != 0) {
-				for (String validLocale : plugin.validLocales) {
+				for (final String validLocale : plugin.validLocales) {
 					if (validLocale.indexOf('-') != -1) {
 						if (validLocale.equals(languageTag)) {
 							register = true;
@@ -93,7 +93,7 @@ public class Plugins {
 		}
 	}
 
-	private void registerLogicalType(LogicalType logical, Locale locale) {
+	private void registerLogicalType(final LogicalType logical, final Locale locale) {
 		logical.initialize(locale);
 
 		if (registered.containsKey(logical.getQualifier()))
@@ -118,7 +118,7 @@ public class Plugins {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	private void registerLogicalTypeClass(PluginDefinition plugin, Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	private void registerLogicalTypeClass(final PluginDefinition plugin, final Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		Class<?> newLogicalType;
 		Constructor<?> ctor;
 		LogicalType logical;
@@ -139,7 +139,7 @@ public class Plugins {
 	 * @param plugin The Plugin Definition for a RegExp Logical Type
 	 * @param locale The current Locale
 	 */
-	private void registerLogicalTypeRegExp(PluginDefinition plugin, Locale locale) {
+	private void registerLogicalTypeRegExp(final PluginDefinition plugin, final Locale locale) {
 		registerLogicalType(new LogicalTypeRegExp(plugin), locale);
 	}
 
@@ -150,7 +150,7 @@ public class Plugins {
 	 * @param locale The current Locale
 	 * @throws FileNotFoundException
 	 */
-	private void registerLogicalTypeFiniteSet(PluginDefinition plugin, Locale locale) {
+	private void registerLogicalTypeFiniteSet(final PluginDefinition plugin, final Locale locale) {
 		registerLogicalType(new LogicalTypeFiniteSimpleExternal(plugin), locale);
 	}
 
@@ -167,7 +167,7 @@ public class Plugins {
 	 * @param qualifier Name of this Logical Type.
 	 * @return A Collection of the currently registered Logical Types.
 	 */
-	public LogicalType getRegistered(String qualifier) {
+	public LogicalType getRegistered(final String qualifier) {
 		return registered.get(qualifier);
 	}
 }

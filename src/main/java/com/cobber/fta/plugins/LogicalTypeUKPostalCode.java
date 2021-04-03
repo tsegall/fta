@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,12 +43,12 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 		Collections.addAll(validShapes, validPostalCodes);
 	}
 
-	public LogicalTypeUKPostalCode(PluginDefinition plugin) {
+	public LogicalTypeUKPostalCode(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		String c = compressed.toString();
 		if (!c.startsWith("\\p{IsAlphabetic}"))
 			return false;
@@ -63,7 +63,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		threshold = 95;
@@ -113,13 +113,13 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input) {
+	public boolean isValid(final String input) {
 	    return validator.matcher(input).matches();
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
-		String upperDataStreamName = dataStreamName.toUpperCase();
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
+		final String upperDataStreamName = dataStreamName.toUpperCase();
 		return (cardinality.size() < 5 && !upperDataStreamName.contains("POST")) || (double)matchCount/realSamples < getThreshold()/100.0 ? REGEXP : null;
 	}
 }

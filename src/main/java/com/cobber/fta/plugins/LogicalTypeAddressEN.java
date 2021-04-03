@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		String[] streets = new String[] {
+		final String[] streets = new String[] {
 				"RED",  "GREEN", "BLUE", "PINK", "BLACK", "WHITE", "ORANGE", "PURPLE",
 				"GREY", "GREEN", "YELLOW", "MAUVE", "CREAM", "BROWN", "SILVER", "GOLD",
 				"PEACH", "OLIVE", "LEMON", "LILAC", "BEIGE", "AMBER", "BURGUNDY"
@@ -50,7 +50,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		threshold = 90;
@@ -77,8 +77,8 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input) {
-		String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
+	public boolean isValid(final String input) {
+		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
 		int length = input.length();
 
 		// Attempt to fail fast
@@ -110,7 +110,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		String inputUpper = trimmed.toUpperCase(Locale.ENGLISH);
 		int spaceIndex = lastIndex[' '];
 
@@ -138,7 +138,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

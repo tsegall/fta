@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *  - RegExp - implementation is based on the detection of the supplied RegExp with a provided set of constraints.
  */
 public class PluginDefinition {
-	private static List<PluginDefinition> builtinPlugins = null;
+	private static List<PluginDefinition> builtinPlugins;
 
 	/** Semantic Type of Plugin (Qualifier). */
 	public String qualifier;
@@ -73,17 +73,17 @@ public class PluginDefinition {
 	/** Minimum number of samples required to declare success. */
 	public int minSamples = -1;
 	/** Need to see both the minimum and maximum values to declare success. */
-	public boolean minMaxPresent = false;
+	public boolean minMaxPresent;
 
 	public PluginDefinition() {
 	}
 
-	public PluginDefinition(String qualifier, String clazz) {
+	public PluginDefinition(final String qualifier, final String clazz) {
 		this.qualifier = qualifier;
 		this.clazz = clazz;
 	}
 
-	public PluginDefinition(String qualifier, String description, String regExpReturned, String[] regExpsToMatch, String[] invalidList, String content, String contentType, String backout, String[] validLocales, String[] headerRegExps, int[] headerRegExpConfidence, int threshold, FTAType  baseType) {
+	public PluginDefinition(final String qualifier, final String description, final String regExpReturned, final String[] regExpsToMatch, final String[] invalidList, final String content, final String contentType, final String backout, final String[] validLocales, final String[] headerRegExps, final int[] headerRegExpConfidence, final int threshold, final FTAType  baseType) {
 		this.qualifier = qualifier;
 		this.description = description;
 		this.regExpReturned = regExpReturned;
@@ -105,7 +105,7 @@ public class PluginDefinition {
 	 * @param qualifier The Qualifier for this Logical Type
 	 * @return The Plugin Definition associated with the supplied Qualifier.
 	 */
-	static PluginDefinition findByQualifier(String qualifier) {
+	public static PluginDefinition findByQualifier(final String qualifier) {
 		synchronized (PluginDefinition.class) {
 			if (builtinPlugins == null) {
 				try (BufferedReader JSON = new BufferedReader(new InputStreamReader(PluginDefinition.class.getResourceAsStream("/reference/plugins.json")))) {
@@ -116,7 +116,7 @@ public class PluginDefinition {
 			}
 		}
 
-		for (PluginDefinition pluginDefinition : builtinPlugins)
+		for (final PluginDefinition pluginDefinition : builtinPlugins)
 			if (pluginDefinition.qualifier.equals(qualifier))
 				return pluginDefinition;
 

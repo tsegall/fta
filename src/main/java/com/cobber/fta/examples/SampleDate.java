@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.cobber.fta.dates.DateTimeParser;
 
 public class SampleDate {
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
 		final TextAnalyzer analysis = new TextAnalyzer("DateOfBirth");
 		final String[] inputs = new String[] {
@@ -38,8 +38,8 @@ public class SampleDate {
 				"10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM", "10/07/2010 1:17:04 PM"
 		};
 
-		for (int i = 0; i < inputs.length; i++)
-			analysis.train(inputs[i]);
+		for (final String input : inputs)
+			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -52,7 +52,7 @@ public class SampleDate {
 		// For example, "yyyy" does not work out of the box if you use ofPattern
 		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getTypeQualifier(), Locale.getDefault());
 
-		for (int i = 0; i < inputs.length; i++)
-			LocalDateTime.parse(inputs[i], formatter);
+		for (final String input : inputs)
+			LocalDateTime.parse(input, formatter);
 	}
 }

@@ -62,7 +62,7 @@ Metrics detected include:
  * nullCount - number of null samples
  * blankCount - number of blank samples
  * regExp - A Regular Expression (Java) that matches the detected Type
- * confidence - The confidence in the determination of the Type
+ * confidence - The percentage confidence (0-1.0) in the determination of the Type
  * type - The Base Type (one of Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
  * typeQualifier - A modifier wrt. the Base Type (e.g. for Date types it will be a pattern, for Long types it might be SIGNED, for String types it might be COUNTRY.ISO-3166-2)
  * min - The minimum value observed

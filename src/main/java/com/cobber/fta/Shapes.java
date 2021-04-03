@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -31,21 +32,23 @@ import com.cobber.fta.core.RegExpGenerator;
 public class Shapes {
 	private Map<String, Long> shapes = new HashMap<>();
 	private Map<String, Long> compressed = new TreeMap<>();
-	private boolean anyShape = false;
-	private boolean isCompressed = false;
+	private boolean anyShape;
+	private boolean isCompressed;
 	private int maxShapes = -1;
+	private long samples;
+	private boolean isAlpha = true;
+	private boolean isNumeric = true;
+	private boolean isAlphaNumeric = true;
 
-	Shapes(int maxShapes) {
+	Shapes(final int maxShapes) {
 		this.maxShapes = maxShapes;
 	}
 
 	/**
 	 * Get the 'best' Regular Expression we can based on the set of shapes.
 	 * Note: this will commonly return null, unless we can do something clever.
-	 *
-	 * @param realSamples The number of real samples that we have observed.
 	 */
-	String getRegExp(long realSamples) {
+	String getRegExp() {
 		compressShapes();
 
 		if (anyShape)
@@ -54,38 +57,35 @@ public class Shapes {
 		if (compressed.size() == 1)
 			return Smashed.smashedAsRegExp(compressed.keySet().iterator().next().trim());
 
-		if (compressed.size() == 2 && realSamples > 100) {
-			Iterator<Map.Entry<String, Long>> iter = compressed.entrySet().iterator();
-			Map.Entry<String, Long> firstShape = iter.next();
-			Map.Entry<String, Long> secondShape = iter.next();
+		if (compressed.size() == 2 && samples > 100) {
+			final Iterator<Map.Entry<String, Long>> iter = compressed.entrySet().iterator();
+			final Map.Entry<String, Long> firstShape = iter.next();
+			final Map.Entry<String, Long> secondShape = iter.next();
 
-			if (firstShape.getValue() > realSamples * 15/100 && secondShape.getValue() > realSamples * 15/100) {
-				String firstRE = Smashed.smashedAsRegExp(firstShape.getKey());
-				String secondRE = Smashed.smashedAsRegExp(secondShape.getKey());
-				return RegExpGenerator.merge(firstRE, secondRE);
-			}
+			if (firstShape.getValue() > samples * 15/100 && secondShape.getValue() > samples * 15/100)
+				return RegExpGenerator.merge(Smashed.smashedAsRegExp(firstShape.getKey()), Smashed.smashedAsRegExp(secondShape.getKey()));
 		}
 
 		Map<String, Long> updatedShapes = new HashMap<>();
 
-		Pattern decimalNumberPattern = Pattern.compile("(?:[^-+0-9\\.]|^)([+-]?[0-9]+\\.[0-9]+)(?:[^0-9\\.]|$)");
+		final Pattern decimalNumberPattern = Pattern.compile("(?:[^-+0-9\\.]|^)([+-]?[0-9]+\\.[0-9]+)(?:[^0-9\\.]|$)");
 
 		// Shrink the shapes map to collapse multiple instances of a float (no exponent) with one.
 	    // e.g. we might have in the map $111.11, $11.11, and $-1111.11 and we will replace this with '$%f'
-		for (Map.Entry<String, Long> shape : shapes.entrySet()) {
+		for (final Map.Entry<String, Long> shape : shapes.entrySet()) {
 
-			String original = shape.getKey();
-			Matcher matcher = decimalNumberPattern.matcher(original);
-			StringBuilder updatedSB = new StringBuilder(original.length());
+			final String original = shape.getKey();
+			final Matcher matcher = decimalNumberPattern.matcher(original);
+			final StringBuilder updatedSB = new StringBuilder(original.length());
 
 			int offset = 0;
 			while (matcher.find(offset)) {
 				updatedSB.append(original.substring(offset, matcher.start(1))).append("%f");
 				offset = matcher.end(1);
 		    }
-		    String updated = updatedSB.length() == 0 ? original : updatedSB.toString();
+		    final String updated = updatedSB.length() == 0 ? original : updatedSB.toString();
 
-		    Long seen = updatedShapes.get(updated);
+		    final Long seen = updatedShapes.get(updated);
 			if (seen == null)
 				updatedShapes.put(updated, shape.getValue());
 			else
@@ -98,16 +98,16 @@ public class Shapes {
 
 		updatedShapes = new HashMap<>();
 		boolean isHex = true;
-		for (Map.Entry<String, Long> shape : shapes.entrySet()) {
+		for (final Map.Entry<String, Long> shape : shapes.entrySet()) {
 
-			String original = shape.getKey();
+			final String original = shape.getKey();
 			if (original.indexOf('X') != -1) {
 				isHex = false;
 				break;
 			}
-			String updated = original.replace('9', 'H').replace('x', 'H');
+			final String updated = original.replace('9', 'H').replace('x', 'H');
 
-		    Long seen = updatedShapes.get(updated);
+		    final Long seen = updatedShapes.get(updated);
 			if (seen == null)
 				updatedShapes.put(updated, shape.getValue());
 			else
@@ -118,6 +118,13 @@ public class Shapes {
 		if (isHex && updatedShapes.size() == 1)
 			return Smashed.smashedAsRegExp(updatedShapes.entrySet().iterator().next().getKey());
 
+		// We had nothing clever to say - so ret a simple classification
+		if (isAlpha)
+			return KnownPatterns.PATTERN_ALPHA_VARIABLE;
+		if (isNumeric)
+			return KnownPatterns.PATTERN_NUMERIC_VARIABLE;
+		if (isAlphaNumeric)
+			return KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE;
 
 		return null;
 	}
@@ -128,13 +135,14 @@ public class Shapes {
 	 * @param trimmed Track the supplied shape.
 	 * @param count The count of the supplied shape.
 	 */
-	void track(final String trimmed, long count) {
+	void track(final String trimmed, final long count) {
+		samples += count;
 		if (!anyShape) {
-			String inputShape = Smashed.smash(trimmed);
+			final String inputShape = Smashed.smash(trimmed);
 			if (inputShape.equals(".+"))
 				anyShape = true;
 			else {
-				Long seen = shapes.get(inputShape);
+				final Long seen = shapes.get(inputShape);
 				isCompressed = false;
 				if (seen == null)
 					if (shapes.size() < maxShapes)
@@ -182,14 +190,38 @@ public class Shapes {
 		if (isCompressed)
 			return;
 
-		for (Map.Entry<String, Long> shape : shapes.entrySet()) {
-			String upperKey = shape.getKey().toUpperCase();
-		    Long seen = compressed.get(upperKey);
+		for (final Map.Entry<String, Long> shape : shapes.entrySet()) {
+			final String upperKey = shape.getKey().toUpperCase(Locale.ROOT);
+		    final Long seen = compressed.get(upperKey);
+		    isAlpha = isAlpha && isAlpha(upperKey);
+		    isNumeric = isNumeric && isNumeric(upperKey);
+		    isAlphaNumeric = isAlphaNumeric && isAlphaNumeric(upperKey);
 			if (seen == null)
 				compressed.put(upperKey, shape.getValue());
 			else
 				compressed.put(upperKey, seen + shape.getValue());
 		}
 		isCompressed = true;
+	}
+
+	private boolean isAlpha(final String input) {
+		for (int i = 0; i < input.length(); i++)
+			if (input.charAt(i) != 'X')
+				return false;
+		return true;
+	}
+
+	private boolean isNumeric(final String input) {
+		for (int i = 0; i < input.length(); i++)
+			if (input.charAt(i) != '9')
+				return false;
+		return true;
+	}
+
+	private boolean isAlphaNumeric(final String input) {
+		for (int i = 0; i < input.length(); i++)
+			if (input.charAt(i) != 'X' && input.charAt(i) != '9')
+				return false;
+		return true;
 	}
 }

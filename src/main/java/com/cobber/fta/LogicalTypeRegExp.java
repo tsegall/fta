@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 
 public class LogicalTypeRegExp extends LogicalType {
-	private static final String WRONG_TYPE = "Internal error: LogicalTypeRegExp baseType must be LONG or DOUBLE, not ";
+	private static final String WRONG_TYPE = "LogicalTypeRegExp baseType must be LONG or DOUBLE, not ";
 	private Pattern pattern;
 	private Long minLong;
 	private Long maxLong;
@@ -32,7 +32,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	private String minString;
 	private String maxString;
 
-	public LogicalTypeRegExp(PluginDefinition plugin) {
+	public LogicalTypeRegExp(final PluginDefinition plugin) {
 		super(plugin);
 
 		if (defn.minimum != null || defn.maximum != null)
@@ -58,7 +58,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		try {
@@ -91,14 +91,14 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public boolean isValid(String input) {
+	public boolean isValid(final String input) {
 		if (!pattern.matcher(input).matches())
 			return false;
 
 		if (defn.minimum != null || defn.maximum != null)
 			switch (defn.baseType) {
 			case LONG:
-				long inputLong = Long.parseLong(input);
+				final long inputLong = Long.parseLong(input);
 				if (minLong != null && inputLong < minLong)
 					return false;
 				if (maxLong != null && inputLong > maxLong)
@@ -106,7 +106,7 @@ public class LogicalTypeRegExp extends LogicalType {
 				break;
 
 			case DOUBLE:
-				double inputDouble = Double.parseDouble(input);
+				final double inputDouble = Double.parseDouble(input);
 				if (minDouble != null && inputDouble < minDouble)
 					return false;
 				if (maxDouble != null && inputDouble > maxDouble)
@@ -128,8 +128,8 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts,
-			Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts,
+			final Map<String, Long> cardinality, final Map<String, Long> outliers) {
 
 		// If this plugin insists on a minimum number of samples (validate it)
 		if (realSamples < getMinSamples())
@@ -177,13 +177,13 @@ public class LogicalTypeRegExp extends LogicalType {
 		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : defn.regExpReturned;
 	}
 
-	public boolean isMatch(String regExp) {
+	public boolean isMatch(final String regExp) {
 		// The optional 'regExpsToMatch' tag is an ordered list of Regular Expressions used to match against the Stream Data.
 		// If not set then the regExpReturned is used to match.
 		if (defn.regExpsToMatch == null)
 			return regExp.equals(defn.regExpReturned);
 
-		for (String re : defn.regExpsToMatch) {
+		for (final String re : defn.regExpsToMatch) {
 			if (regExp.equals(re))
 				return true;
 		}

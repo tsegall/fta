@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,15 +54,15 @@ public class LocaleInfo {
 
 	class LengthComparator implements Comparator<String> {
 		@Override
-		public int compare(String str1, String str2) {
-			int ret = str2.length() - str1.length();
+		public int compare(final String str1, final String str2) {
+			final int ret = str2.length() - str1.length();
 			if (ret != 0)
 				return ret;
 			return str1.compareTo(str2);
 		}
 	}
 
-	private static synchronized void cacheLocaleInfo(Locale locale) {
+	private static synchronized void cacheLocaleInfo(final Locale locale) {
 		final String languageTag = locale.toLanguageTag();
 
 		// Check to see if we are already in the cache
@@ -72,13 +72,12 @@ public class LocaleInfo {
 		final GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(locale);
 		final int actualMonths = cal.getActualMaximum(Calendar.MONTH);
 
-		DateFormatSymbols dfs = new DateFormatSymbols(locale);
-
+		final DateFormatSymbols dfs = new DateFormatSymbols(locale);
 
 		// Setup the Months
 		final String[] longMonths = dfs.getMonths();
-		Map<String, Integer> monthsLocale = new TreeMap<>(localeInfo.new LengthComparator());
-		Map<String, Integer> monthsDefaultLocale = new TreeMap<>(localeInfo.new LengthComparator());
+		final Map<String, Integer> monthsLocale = new TreeMap<>(localeInfo.new LengthComparator());
+		final Map<String, Integer> monthsDefaultLocale = new TreeMap<>(localeInfo.new LengthComparator());
 		RegExpGenerator generator = new RegExpGenerator();
 
 		boolean isAllAlphabetic = true;
@@ -97,7 +96,7 @@ public class LocaleInfo {
 
 		// Setup the Monthly abbreviations
 		final String[] m = dfs.getShortMonths();
-		TreeMap<String, Integer> shortMonthsLocale = new TreeMap<>(localeInfo.new LengthComparator());
+		final TreeMap<String, Integer> shortMonthsLocale = new TreeMap<>(localeInfo.new LengthComparator());
 		generator = new RegExpGenerator();
 
 		for (int i = 0; i <= actualMonths; i++) {
@@ -107,13 +106,13 @@ public class LocaleInfo {
 		}
 		shortMonths.put(languageTag, shortMonthsLocale);
 		shortMonthsRegExp.put(languageTag, generator.getResult());
-		int len = shortMonthsLocale.firstKey().length();
+		final int len = shortMonthsLocale.firstKey().length();
 		shortMonthsLength.put(languageTag, len == shortMonthsLocale.lastKey().length() ? len : -1);
 
 		// Setup the AM/PM strings
-		Set<String> ampmStringsLocale = new LinkedHashSet<>();
+		final Set<String> ampmStringsLocale = new LinkedHashSet<>();
 		String ampmRegExpLocale = "";
-		for (String s : dfs.getAmPmStrings()) {
+		for (final String s : dfs.getAmPmStrings()) {
 			if (ampmRegExpLocale.length() != 0)
 				ampmRegExpLocale += "|";
 			ampmRegExpLocale += s;
@@ -123,10 +122,10 @@ public class LocaleInfo {
 		ampmRegExp.put(languageTag, "(?i)(" + ampmRegExpLocale + ")");
 
 		// Setup the Week Day strings
-		Set<String> weekdaysLocale = new TreeSet<>(localeInfo.new LengthComparator());
+		final Set<String> weekdaysLocale = new TreeSet<>(localeInfo.new LengthComparator());
 		generator = new RegExpGenerator();
 		isAllAlphabetic = true;
-		for (String week : dfs.getWeekdays()) {
+		for (final String week : dfs.getWeekdays()) {
 			if (week.isEmpty())
 				continue;
 			if (isAllAlphabetic && !week.chars().allMatch(Character::isAlphabetic))
@@ -141,10 +140,10 @@ public class LocaleInfo {
 		weekdaysAlphabetic.put(languageTag, isAllAlphabetic);
 
 		// Setup the Short Week Day strings
-		Set<String> shortWeekdaysLocale = new TreeSet<>(localeInfo.new LengthComparator());
+		final Set<String> shortWeekdaysLocale = new TreeSet<>(localeInfo.new LengthComparator());
 		generator = new RegExpGenerator();
 		isAllAlphabetic = true;
-		for (String shortWeek : dfs.getShortWeekdays()) {
+		for (final String shortWeek : dfs.getShortWeekdays()) {
 			if (shortWeek.isEmpty())
 				continue;
 			if (isAllAlphabetic && !shortWeek.chars().allMatch(Character::isAlphabetic))
@@ -164,7 +163,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Map of Month name to month index for this Locale
 	 */
-	public static Map<String, Integer> getMonths(Locale locale) {
+	public static Map<String, Integer> getMonths(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return months.get(locale.toLanguageTag());
 	}
@@ -174,7 +173,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Map of Month name to month index for this Locale
 	 */
-	public static Map<String, Integer> getMonthsDefault(Locale locale) {
+	public static Map<String, Integer> getMonthsDefault(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return monthsDefault.get(locale.toLanguageTag());
 	}
@@ -184,17 +183,17 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Regular Expression for months in this locale
 	 */
-	public static String getMonthsRegExp(Locale locale) {
+	public static String getMonthsRegExp(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return monthsRegExp.get(locale.toLanguageTag());
 	}
 
-	public static int shortMonthOffset(final String month, Locale locale) {
+	public static int shortMonthOffset(final String month, final Locale locale) {
 		final Integer offset = LocaleInfo.getShortMonths(locale).get(month.toUpperCase(locale));
 		return offset == null ? -1 : offset;
 	}
 
-	public static int monthOffset(final String month, Locale locale) {
+	public static int monthOffset(final String month, final Locale locale) {
 		final Integer offset = LocaleInfo.getMonths(locale).get(month.toUpperCase(locale));
 		return offset == null ? -1 : offset;
 	}
@@ -204,7 +203,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return True if all month strings are all Alphabetic
 	 */
-	public static boolean areMonthsAlphabetic(Locale locale) {
+	public static boolean areMonthsAlphabetic(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return monthsAlphabetic.get(locale.toLanguageTag());
 	}
@@ -216,10 +215,10 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Offset of the end of the matched input, or -1 if no match
 	 */
-	public static int skipValidMonth(String input, Locale locale) {
+	public static int skipValidMonth(String input, final Locale locale) {
+		final int inputLength = input.length();
+		final boolean allAlphabetic = LocaleInfo.areMonthsAlphabetic(locale);
 		int upto = 0;
-		int inputLength = input.length();
-		boolean allAlphabetic = LocaleInfo.areMonthsAlphabetic(locale);
 
 		if (allAlphabetic) {
 			while (upto < inputLength && Character.isAlphabetic(input.charAt(upto)))
@@ -233,7 +232,7 @@ public class LocaleInfo {
 		// In some locales the length of a month.toLowerCase().length != month.toUpperCase().length
 		// So try matching first with the name as default, then the Upper case version
 		boolean found = false;
-		for (String monthName : LocaleInfo.getMonthsDefault(locale).keySet()) {
+		for (final String monthName : LocaleInfo.getMonthsDefault(locale).keySet()) {
 			if (input.startsWith(monthName)) {
 				found = true;
 				upto += monthName.length();
@@ -242,7 +241,7 @@ public class LocaleInfo {
 		}
 		if (!found) {
 			input = input.toUpperCase(locale);
-			for (String monthName : LocaleInfo.getMonths(locale).keySet()) {
+			for (final String monthName : LocaleInfo.getMonths(locale).keySet()) {
 				if (input.startsWith(monthName)) {
 					found = true;
 					upto += monthName.length();
@@ -259,7 +258,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Map of month abbreviation name to month index for this Locale
 	 */
-	public static Map<String, Integer> getShortMonths(Locale locale) {
+	public static Map<String, Integer> getShortMonths(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return shortMonths.get(locale.toLanguageTag());
 	}
@@ -271,11 +270,12 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Offset of the end of the matched input, or -1 if no match
 	 */
-	public static int skipValidMonthAbbr(String input, Locale locale) {
-		int upto = 0;
-		int inputLength = input.length();
+	public static int skipValidMonthAbbr(final String input, final Locale locale) {
+		final int inputLength = input.length();
 		// Get the length of Month Abbreviations in this locale
-		int abbrLength = LocaleInfo.getShortMonthsLength(locale);
+		final int abbrLength = LocaleInfo.getShortMonthsLength(locale);
+		int upto = 0;
+
 		if (abbrLength != -1) {
 			// If it is constant length it is easy
 			if (upto + abbrLength > inputLength)
@@ -288,7 +288,7 @@ public class LocaleInfo {
 		}
 
 		boolean found = false;
-		for (String monthAbbr : LocaleInfo.getShortMonths(locale).keySet()) {
+		for (final String monthAbbr : LocaleInfo.getShortMonths(locale).keySet()) {
 			if (input.substring(upto).toUpperCase(locale).startsWith(monthAbbr)) {
 				found = true;
 				upto += monthAbbr.length();
@@ -303,7 +303,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Regular Expression for month abbreviations in this locale
 	 */
-	public static String getShortMonthsRegExp(Locale locale) {
+	public static String getShortMonthsRegExp(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return shortMonthsRegExp.get(locale.toLanguageTag());
 	}
@@ -313,7 +313,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return The length of the Short Months abbreviation (or -1 if not consistent)
 	 */
-	public static int getShortMonthsLength(Locale locale) {
+	public static int getShortMonthsLength(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return shortMonthsLength.get(locale.toLanguageTag());
 	}
@@ -323,7 +323,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Set containing week days for this Locale
 	 */
-	public static Set<String> getWeekdays(Locale locale) {
+	public static Set<String> getWeekdays(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return weekdays.get(locale.toLanguageTag());
 	}
@@ -333,7 +333,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Set containing week day abbreviations for this Locale
 	 */
-	public static Set<String> getShortWeekdays(Locale locale) {
+	public static Set<String> getShortWeekdays(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return shortWeekdays.get(locale.toLanguageTag());
 	}
@@ -343,7 +343,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return True if all Short Week Days strings are all Alphabetic
 	 */
-	public static boolean areDayOfWeekAbbrAlphabetic(Locale locale) {
+	public static boolean areDayOfWeekAbbrAlphabetic(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return shortWeekdaysAlphabetic.get(locale.toLanguageTag());
 	}
@@ -353,12 +353,12 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Regular Expression for week day abbreviations in this locale
 	 */
-	public static String getShortWeekdaysRegExp(Locale locale) {
+	public static String getShortWeekdaysRegExp(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return shortWeekdaysRegExp.get(locale.toLanguageTag());
 	}
 
-	public static boolean validDayOfWeekAbbr(final String dayOfWeekAbbr, Locale locale) {
+	public static boolean validDayOfWeekAbbr(final String dayOfWeekAbbr, final Locale locale) {
 		return LocaleInfo.getShortWeekdays(locale).contains(dayOfWeekAbbr.toUpperCase(locale));
 	}
 
@@ -369,10 +369,10 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Offset of the end of the matched input, or -1 if no match
 	 */
-	public static int skipValidDayOfWeekAbbr(String input, Locale locale) {
+	public static int skipValidDayOfWeekAbbr(String input, final Locale locale) {
+		final int inputLength = input.length();
+		final boolean allAlphabetic = LocaleInfo.areDayOfWeekAbbrAlphabetic(locale);
 		int upto = 0;
-		int inputLength = input.length();
-		boolean allAlphabetic = LocaleInfo.areDayOfWeekAbbrAlphabetic(locale);
 
 		if (allAlphabetic) {
 			while (upto < inputLength && Character.isAlphabetic(input.charAt(upto)))
@@ -383,7 +383,7 @@ public class LocaleInfo {
 
 		boolean found = false;
 		input = input.toUpperCase(locale);
-		for (String dayOfWeekAbbr : LocaleInfo.getShortWeekdays(locale)) {
+		for (final String dayOfWeekAbbr : LocaleInfo.getShortWeekdays(locale)) {
 			if (input.startsWith(dayOfWeekAbbr)) {
 				found = true;
 				upto += dayOfWeekAbbr.length();
@@ -399,7 +399,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Set containing AM/PM strings  for this Locale
 	 */
-	public static Set<String> getAMPMStrings(Locale locale) {
+	public static Set<String> getAMPMStrings(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return ampmStrings.get(locale.toLanguageTag());
 	}
@@ -409,7 +409,7 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Regular Expression for AM/PM strings in this locale
 	 */
-	public static String getAMPMRegExp(Locale locale) {
+	public static String getAMPMRegExp(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return ampmRegExp.get(locale.toLanguageTag());
 	}
@@ -421,10 +421,10 @@ public class LocaleInfo {
 	 * @param locale Locale we are interested in
 	 * @return Offset of the end of the matched input, or -1 if no match
 	 */
-	public static int skipValidAMPM(String input, Locale locale) {
+	public static int skipValidAMPM(final String input, final Locale locale) {
 		int upto = 0;
 
-		for (String ampmIndicator : LocaleInfo.getAMPMStrings(locale)) {
+		for (final String ampmIndicator : LocaleInfo.getAMPMStrings(locale)) {
 			if (input.substring(upto).toUpperCase(locale).startsWith(ampmIndicator)) {
 				upto += ampmIndicator.length();
 				return upto;

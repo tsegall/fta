@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,8 +80,9 @@ public class TestBooleans {
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].matches(result.getRegExp()))
+
+		for (final String input : inputs) {
+			if (input.matches(result.getRegExp()))
 				matches++;
 		}
 		Assert.assertEquals(result.getMatchCount(), matches);
@@ -120,8 +121,8 @@ public class TestBooleans {
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].trim().matches(result.getRegExp()))
+		for (final String input : inputs) {
+			if (input.trim().matches(result.getRegExp()))
 					matches++;
 		}
 		Assert.assertEquals(result.getMatchCount(), matches);
@@ -161,8 +162,8 @@ public class TestBooleans {
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].matches(result.getRegExp()))
+		for (final String input : inputs) {
+			if (input.matches(result.getRegExp()))
 				matches++;
 		}
 		Assert.assertEquals(result.getMatchCount(), matches);
@@ -208,8 +209,8 @@ public class TestBooleans {
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].trim().matches(result.getRegExp()))
+		for (final String input : inputs) {
+			if (input.trim().matches(result.getRegExp()))
 					matches++;
 		}
 		Assert.assertEquals(result.getMatchCount(), matches);
@@ -296,8 +297,8 @@ public class TestBooleans {
 		Assert.assertEquals(result.getMaxValue(), "1");
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -330,8 +331,8 @@ public class TestBooleans {
 		Assert.assertEquals(result.getMaxValue(), "7");
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -365,8 +366,8 @@ public class TestBooleans {
 		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].matches(result.getRegExp()))
+		for (final String input : inputs) {
+			if (input.matches(result.getRegExp()))
 					matches++;
 		}
 		Assert.assertEquals(result.getMatchCount(), matches);

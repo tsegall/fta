@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,9 +124,9 @@ public class TestUtils {
 	};
 
 	static String
-	getNegativePrefix(Locale locale) {
+	getNegativePrefix(final Locale locale) {
 		String negPrefix = "-";
-		NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+		final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 		if (nf instanceof DecimalFormat) {
 			negPrefix = ((DecimalFormat) nf).getNegativePrefix();
 			if (!negPrefix.isEmpty())
@@ -139,9 +139,9 @@ public class TestUtils {
 	}
 
 	static String
-	getNegativeSuffix(Locale locale) {
+	getNegativeSuffix(final Locale locale) {
 		String negSuffix = "";
-		NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+		final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 		if (nf instanceof DecimalFormat) {
 			negSuffix = ((DecimalFormat) nf).getNegativeSuffix();
 			if (!negSuffix.isEmpty())
@@ -153,9 +153,8 @@ public class TestUtils {
 		return negSuffix;
 	}
 
-	static boolean isValidLocale(String value) {
-		Locale[] locales = Locale.getAvailableLocales();
-		for (Locale locale : locales) {
+	static boolean isValidLocale(final String value) {
+		for (final Locale locale : Locale.getAvailableLocales()) {
 			if (value.equals(locale.toString())) {
 				return true;
 		    }
@@ -165,25 +164,25 @@ public class TestUtils {
 
 	@Test
 	public void testDistanceClose() throws IOException {
-		Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
+		final Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
 		assertEquals(TextAnalyzer.distanceLevenshtein("Secondory", universe), 1);
 	}
 
 	@Test
 	public void testDistanceFar() throws IOException {
-		Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
+		final Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
 		assertEquals(TextAnalyzer.distanceLevenshtein("Sec", universe), 6);
 	}
 
 	@Test
 	public void testDistanceHuge() throws IOException {
-		Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
+		final Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));
 		assertEquals(TextAnalyzer.distanceLevenshtein("S", universe), 7);
 	}
 
 	@Test
 	public void testDistanceTelco() throws IOException {
-		Set<String> universe = new HashSet<>(Arrays.asList(new String[] {
+		final Set<String> universe = new HashSet<>(Arrays.asList(new String[] {
 				"DISCONNECT", "DISCONNECT FRACTIONAL", "DISCONNECT OTHE", "DISCONNECT STILL BILLING",
 				"INSTALL FRACTIONAL", "INSTALL FRACTIONAL RERATE", "INSTALL OTHER", "RE-RATES", "RUN RATE"
 				}));
@@ -192,7 +191,7 @@ public class TestUtils {
 
 	@Test
 	public void testDistanceMedia() throws IOException {
-		Set<String> universe = new HashSet<>(Arrays.asList(new String[] {
+		final Set<String> universe = new HashSet<>(Arrays.asList(new String[] {
 			"AUDIO DISC ; VOLUME", "OMPUTER DISC", "ONLINE RESOURCE", "\\QONLINE RESOURCE (EBOOK)\\E",
 			"\\QONLINE RESOURCE (EPUB EBOOK)\\E", "\\QONLINE RESOURCE (PDF EBOOK ; EPUB EBOOK)\\E", "SHEET", "VOLUME"
 		}));

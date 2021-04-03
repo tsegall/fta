@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class LogicalTypeNAStateProvince extends LogicalTypeFiniteSimple {
 	public static final String SEMANTIC_TYPE = "STATE_PROVINCE.STATE_PROVINCE_NA";
 	public static final String REGEXP = "\\p{Alpha}{2}";
 
-	public LogicalTypeNAStateProvince(PluginDefinition plugin) throws FileNotFoundException {
+	public LogicalTypeNAStateProvince(final PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, REGEXP,
 				"\\p{IsAlphabetic}{2}", 95);
 		setContent("resource", "/reference/na_states_provinces.csv");

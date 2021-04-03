@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,25 +21,25 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 class DriverOptions {
 	String charset = "UTF-8";
-	boolean bulk = false;
+	boolean bulk;
 	int col = -1;
 	int debug = -1;
-	String logicalTypes = null;
-	boolean noAnalysis = false;
-	boolean noLogicalTypes = false;
-	boolean noStatistics = false;
+	String logicalTypes;
+	boolean noAnalysis;
+	boolean noLogicalTypes;
+	boolean noStatistics;
 	long recordsToAnalyze = -1;
 	int detectWindow = -1;
-	Locale locale = null;
+	Locale locale;
 	int maxCardinality = -1;
 	int maxOutlierCardinality = -1;
 	int pluginThreshold = -1;
-	boolean pretty = false;
-	boolean pluginDefinition = false;
+	boolean pretty;
+	boolean pluginDefinition;
 	DateResolutionMode resolutionMode = DateResolutionMode.Auto;
 	int threshold = -1;
-	boolean validate = false;
+	boolean validate;
 	int verbose = 0;
 	int xMaxCharsPerColumn = -1;
-	String delimiter = null;
+	String delimiter;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class DetermineDateTimeFormatTests {
 		// "dd-MMMM-yyyy","d MMMM yyyy","d-MMMM-yyyy","MMMM dd',' yyyy",
 		// "MMMM d',' yyyy","MMMM dd yyyy","MMMM d yyyy","MMMM-dd-yyyy","MMMM-d-yyyy"
 		// "2/13/98 9:57"
-		final String input =
+		final String pipedInput =
 				"2017-12-28|18:59|9:59:59|18:59 2017-12-28|2017-12-28 18:59|18:59:59|9:59 2017-12-28|9:59|2017-12-28|" +
 						"9:59:59 2017-12-28|2017 7 8|2017-12-28 9:59:59|18:59:59 2017-12-28|2017-12-28 9:59|7/28/39|39-7-28|" +
 						"39/7/28|2017 7 28|" +
@@ -65,9 +65,9 @@ public class DetermineDateTimeFormatTests {
 						"25 July 2018|25-July-2018|7 June 2017|7-June-2017|June 23, 2017|" +
 						"August 8, 2017|August 18 2017|December 9 2017|January-14-2017|February-4-2017|";
 
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 		Assert.assertEquals(dtp.determineFormatString("9:57"), "H:mm");
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		final String fmts[] = new String[inputs.length];
 		String text;
 		final StringBuilder answer = new StringBuilder();
@@ -146,7 +146,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitTimeOnly() {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertNull(dtp.determineFormatString("12:02:1"));
 		Assert.assertEquals(dtp.determineFormatString("9:57"), "H:mm");
@@ -166,7 +166,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitDateOnlySlash() {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("2/12/98"), "?/??/yy");
 		Assert.assertEquals(dtp.determineFormatString("2/2/02"), "?/?/yy");
@@ -198,7 +198,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitDateOnlyDash() {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("2-12-98"), "?-??-yy");
 		Assert.assertEquals(dtp.determineFormatString("12-12-98"), "??-??-yy");
@@ -212,7 +212,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuit8601DD() {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("2004-01-01T00:00:00+05"), "yyyy-MM-dd'T'HH:mm:ssx");
 
@@ -241,11 +241,11 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitHHmmddMyy() {
-		final String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
+		final String pipedInput = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
 				"16:53 26/9/12|09:53 10/3/12|02:53 23/8/11|19:53 03/2/11|12:53 18/7/10|05:53 30/12/09|22:53 12/6/09|15:53 24/11/08|" +
 				"08:53 08/5/08|01:53 21/10/07|18:53 03/4/07|11:53 15/9/06|04:53 27/2/06|21:53 10/8/05|14:53 22/1/05|07:53 06/7/04|" +
 				"00:53 19/12/03|17:53 01/6/03|10:53 13/11/02|03:53 27/4/02|20:53 08/10/01|13:53 22/3/01|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser(DateResolutionMode.DayFirst);
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -259,19 +259,19 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp));
 		}
 	}
 
 	@Test
 	public void twentyRecords() throws IOException {
-		final String input = "1/3/11|1/3/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|9/17/08|1-15-2011|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "1/3/11|1/3/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|9/17/08|1-15-2011|";
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser(DateResolutionMode.MonthFirst);
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -282,7 +282,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuit8601DDDDDD() {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("2004-01-01T00:00:00+05:00:00"), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
 
@@ -313,7 +313,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void fullMonths() {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("25 July 2018"), "dd MMMM yyyy");
 		Assert.assertEquals(dtp.determineFormatString("25-July-2018"), "dd-MMMM-yyyy");
@@ -330,13 +330,13 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void yyyyMMddHHmmz() {
-		final String input = "2017-08-24 12:10 EDT|2017-07-03 06:10 EDT|2017-05-12 00:10 EDT|2017-03-20 18:10 EDT|2016-07-02 12:10 EDT|" +
+		final String pipedInput = "2017-08-24 12:10 EDT|2017-07-03 06:10 EDT|2017-05-12 00:10 EDT|2017-03-20 18:10 EDT|2016-07-02 12:10 EDT|" +
 				"2017-01-27 11:10 EST|2016-12-06 05:10 EST|2016-10-15 00:10 EDT|2016-08-23 18:10 EDT|2016-05-11 06:10 EDT|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -347,19 +347,19 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp));
 		}
 	}
 
 	@Test
 	public void ddMyy() {
-		final String input = "02/2/17|27/1/14|21/1/11|15/1/08|08/1/05|02/1/02|27/12/98|21/12/95|14/12/92|08/12/89|00/00/00|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "02/2/17|27/1/14|21/1/11|15/1/08|08/1/05|02/1/02|27/12/98|21/12/95|14/12/92|08/12/89|00/00/00|";
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser(DateResolutionMode.DayFirst);
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -370,19 +370,19 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp));
 		}
 	}
 
 	@Test
 	public void sillySep() {
-		final String input = "02_02_2017|27_01_2014|21_01_2011|15_01_2008|08_01_2005|02_01_2002|27_12_1998|21_12_1995|14_12_1992|08_12_2009|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "02_02_2017|27_01_2014|21_01_2011|15_01_2008|08_01_2005|02_01_2002|27_12_1998|21_12_1995|14_12_1992|08_12_2009|";
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser(DateResolutionMode.DayFirst);
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -393,20 +393,20 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp));
 		}
 	}
 
 	@Test
 	public void unixDateCommand(){
-		final String input = "Thu Jul  2 09:48:00 PDT 2020|Wed Jul  1 10:00:56 PDT 2020|Thu Jul  2 04:56:56 PDT 2020|Wed Jul 22 09:48:56 PDT 2020|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "Thu Jul  2 09:48:00 PDT 2020|Wed Jul  1 10:00:56 PDT 2020|Thu Jul  2 04:56:56 PDT 2020|Wed Jul 22 09:48:56 PDT 2020|";
+		final String inputs[] = pipedInput.split("\\|");
 
 		final DateTimeParser det = new DateTimeParser(DateResolutionMode.DayFirst);
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -415,26 +415,26 @@ public class DetermineDateTimeFormatTests {
 
 		Assert.assertEquals(formatString, "EEE MMM ppd HH:mm:ss z yyyy");
 
-		DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getFormatString(), Locale.getDefault());
+		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getFormatString(), Locale.getDefault());
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp));
-			ZonedDateTime.parse(inputs[i], formatter);
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp));
+			ZonedDateTime.parse(input, formatter);
 		}
 	}
 
 	@Test
 	public void basicHMM() {
-		final String input = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
+		final String pipedInput = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
 		"17:16|0:16|7:16|14:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|3:16|10:16|17:16|0:16|7:16|14:16|" +
 		"21:16|4:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|4:16|11:16|3:16|10:16|17:16|0:16|7:16|14:16|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -445,19 +445,19 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp));
 		}
 	}
 
 	@Test
 	public void basicDTPDDMMMMYYYY() {
-		final String input = "25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
+		final String pipedInput = "25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 August 1984|10 May 2000|1 April 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|13 August 1984|10 January 2000|1 May 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 November 1984|10 October 2000|1 January 1970|16 June 1934|06 July 1961|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -472,24 +472,24 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp));
 		}
 	}
 
 	@Test
 	public void basicAMPM() {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("09/Mar/17 3:14 PM"), "dd/MMM/yy h:mm a");
 
-		final String input = "09/Mar/17 3:14 PM|09/Mar/17 11:36 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 8:14 AM|" +
+		final String pipedInput = "09/Mar/17 3:14 PM|09/Mar/17 11:36 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 8:14 AM|" +
 				"09/Mar/17 7:02 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|" +
 				"09/Mar/17 6:59 AM|09/Mar/17 6:57 AM|08/Mar/17 8:12 AM|07/Mar/17 9:27 PM|07/Mar/17 3:34 PM|07/Mar/17 3:01 PM|" +
 				"07/Mar/17 3:00 PM|07/Mar/17 2:51 PM|07/Mar/17 2:46 PM|07/Mar/17 2:40 PM|07/Mar/17 2:23 PM|07/Mar/17 11:04 AM|" +
 				"02/Mar/17 10:57 AM|01/Mar/17 11:56 AM|01/Mar/17 6:14 AM|28/Feb/17 4:56 AM|27/Feb/17 5:58 AM|27/Feb/17 5:58 AM|" +
 				"22/Feb/17 6:48 AM|18/Jan/17 8:29 AM|04/Jan/17 7:37 AM|10/Nov/16 10:42 AM|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -510,29 +510,29 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp));
 		}
 	}
 
 	//@Test FIX
 	public void basicAMPM_viVN() {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("09/thg 3/17 3:14 SA"), "dd/MMM/yy h:mm a");
 
-		final String input = "09/thg 3/17 3:14 CH|09/thg 3/17 11:36 SA|09/thg 3/17 9:12 SA|09/thg 3/17 9:12 SA|09/thg 3/17 9:12 SA|09/thg 3/17 8:14 SA|" +
+		final String pipedInput = "09/thg 3/17 3:14 CH|09/thg 3/17 11:36 SA|09/thg 3/17 9:12 SA|09/thg 3/17 9:12 SA|09/thg 3/17 9:12 SA|09/thg 3/17 8:14 SA|" +
 				"09/thg 3/17 7:02 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|" +
 				"09/thg 3/17 6:59 SA|09/thg 3/17 6:57 SA|08/thg 3/17 8:12 SA|07/thg 3/17 9:27 CH|07/thg 3/17 3:34 CH|07/thg 3/17 3:01 CH|" +
 				"07/thg 3/17 3:00 CH|07/thg 3/17 2:51 CH|07/thg 3/17 2:46 CH|07/thg 3/17 2:40 CH|07/thg 3/17 2:23 CH|07/thg 3/17 11:04 SA|" +
 				"02/thg 3/17 10:57 SA|01/thg 3/17 11:56 SA|01/thg 3/17 6:14 SA|28/thg 2/17 4:56 SA|27/thg 2/17 5:58 SA|27/thg 2/17 5:58 SA|" +
 				"22/thg 2/17 6:48 SA|18/thg 1/17 8:29 SA|04/thg 1/17 7:37 SA|10/thg 11/16 10:42 SA|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser(DateResolutionMode.None, locale);
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -548,24 +548,24 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp));
 		}
 	}
 
 	@Test
 	public void basic_hhmmss_AMPM() {
-		final String input = "06:58:20 AM|07:25:18 PM|01:47:06 AM|05:32:48 AM|11:29:53 PM|02:21:10 PM|04:55:48 AM|" +
+		final String pipedInput = "06:58:20 AM|07:25:18 PM|01:47:06 AM|05:32:48 AM|11:29:53 PM|02:21:10 PM|04:55:48 AM|" +
 				"03:39:14 PM|09:43:02 PM|10:43:15 AM|05:46:07 AM|05:09:34 PM|06:03:58 AM|10:59:15 AM|10:13:28 AM|" +
 				"10:25:10 AM|10:33:03 PM|04:24:44 AM|04:19:29 PM|01:08:48 AM|11:11:47 AM|10:11:06 PM|12:27:06 AM|" +
 				"12:35:14 AM|01:30:55 PM|12:11:05 AM|09:23:51 PM|10:23:20 PM|01:29:57 PM|04:35:17 PM|06:53:23 PM|" +
 				"09:23:13 PM|11:40:44 PM|01:01:02 AM|04:24:19 AM|08:51:48 AM|02:29:26 AM|08:48:32 AM|11:03:13 PM|" +
 				"07:52:27 PM|04:51:40 PM|08:31:11 AM|07:53:57 AM|07:04:03 PM|12:05:00 AM|01:50:13 AM|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -581,25 +581,25 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp), inputs[i]);
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp), input);
 		}
 	}
 
 	@Test
 	public void basic_hhmmss_AMPM_2() {
-		final String input = "06:58:20am|07:25:18pm|01:47:06am|05:32:48am|11:29:53pm|02:21:10pm|04:55:48am|" +
+		final String pipedInput = "06:58:20am|07:25:18pm|01:47:06am|05:32:48am|11:29:53pm|02:21:10pm|04:55:48am|" +
 				"03:39:14pm|09:43:02pm|10:43:15am|05:46:07am|05:09:34pm|06:03:58am|10:59:15am|10:13:28am|" +
 				"10:25:10am|10:33:03pm|04:24:44am|04:19:29pm|01:08:48am|11:11:47am|10:11:06pm|12:27:06am|" +
 				"12:35:14am|01:30:55pm|12:11:05am|09:23:51pm|10:23:20pm|01:29:57pm|04:35:17pm|06:53:23pm|" +
 				"09:23:13pm|11:40:44pm|01:01:02am|04:24:19am|08:51:48am|02:29:26am|08:48:32am|11:03:13pm|" +
 				"07:52:27pm|04:51:40pm|08:31:11am|07:53:57am|07:04:03pm|12:05:00am|01:50:13am|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
 		det.train("");
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -616,19 +616,19 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp), inputs[i]);
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp), input);
 		}
 	}
 
 	@Test
 	public void basicMMMdcommayyyy() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input = "August 20, 2017|August 20, 2017|July 22, 2017|August 5, 2017|July 22, 2017|June 23, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
+		final String pipedInput = "August 20, 2017|August 20, 2017|July 22, 2017|August 5, 2017|July 22, 2017|June 23, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
 				"May 25, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 25, 2017|April 26, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
 				"May 25, 2017|April 26, 2017|March 28, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 25, 2017|April 26, 2017|March 28, 2017|" +
 				"February 27, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 15, 2017|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -648,19 +648,19 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{1,2}, \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
 	@Test
 	public void basicyyyyddMM() throws IOException {
-		final String input = "2011/28/02|2017/31/12|2016/20/10|1999/15/07|2017/31/12|2016/20/10|1999/15/07|2017/31/12|2017/31/12|2016/20/10|1999/15/07|2017/30/12|2017/21/12|2016/20/10|1999/15/07|2017/11/12|2012/31/12|2010/31/12|2016/20/10|1999/15/07|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "2011/28/02|2017/31/12|2016/20/10|1999/15/07|2017/31/12|2016/20/10|1999/15/07|2017/31/12|2017/31/12|2016/20/10|1999/15/07|2017/30/12|2017/21/12|2016/20/10|1999/15/07|2017/11/12|2012/31/12|2010/31/12|2016/20/10|1999/15/07|";
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -672,12 +672,12 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void mixed_yyyyddMM() throws IOException {
-		final String input = "1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|2011/31/02|2017/31/12|2016/20/10|1999/15/07|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|2011/31/02|2017/31/12|2016/20/10|1999/15/07|";
+		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
+		for (final String input : inputs) {
+			det.train(input);
 		}
 
 		final DateTimeParserResult result = det.getResult();
@@ -690,12 +690,12 @@ public class DetermineDateTimeFormatTests {
 	@Test
 	public void basicDDMMMMYYYY() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input = "25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
+		final String pipedInput = "25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 August 1984|10 May 2000|1 April 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|13 August 1984|10 January 2000|1 May 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 November 1984|10 October 2000|1 January 1970|16 June 1934|06 July 1961|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -715,8 +715,8 @@ public class DetermineDateTimeFormatTests {
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} " + KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -883,7 +883,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitDateTime() {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("  2/12/98 9:57    "), "?/??/yy H:mm");
 		Assert.assertNull(dtp.determineFormatString("0¶¶¶¶¶"));
@@ -1223,60 +1223,60 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void testDTPResult_Date() {
-		String[] tests = new String[] { "MM", "MMM", "MMMM", "dd", "yy", "yyyy", "xxx", "x", "EEE", "z", "a" };
+		final String[] tests = new String[] { "MM", "MMM", "MMMM", "dd", "yy", "yyyy", "xxx", "x", "EEE", "z", "a" };
 
-		for (String test : tests) {
-			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+		for (final String test : tests) {
+			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
 			Assert.assertEquals(det.getType(), FTAType.LOCALDATE);
 		}
 	}
 
 	@Test
 	public void testDTPResult_Time() {
-		String[] tests = new String[] { "HH", "mm", "ss", "SSS" };
+		final String[] tests = new String[] { "HH", "mm", "ss", "SSS" };
 
-		for (String test : tests) {
-			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+		for (final String test : tests) {
+			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
 			Assert.assertEquals(det.getType(), FTAType.LOCALTIME);
 		}
 	}
 
 	@Test
 	public void testDTPResult_DateTime() {
-		String[] tests = new String[] { "MM/dd/yyyy HH:mm:ss" };
+		final String[] tests = new String[] { "MM/dd/yyyy HH:mm:ss" };
 
-		for (String test : tests) {
-			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+		for (final String test : tests) {
+			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
 			Assert.assertEquals(det.getType(), FTAType.LOCALDATETIME);
 		}
 	}
 
 	@Test
 	public void testDTPResult_OffsetDateTime() {
-		String[] tests = new String[] { "yyyyMMdd'T'HHmmssxx" };
+		final String[] tests = new String[] { "yyyyMMdd'T'HHmmssxx" };
 
-		for (String test : tests) {
-			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+		for (final String test : tests) {
+			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
 			Assert.assertEquals(det.getType(), FTAType.OFFSETDATETIME);
 		}
 	}
 
 	@Test
 	public void testDTPResult_ZonedDateTime() {
-		String[] tests = new String[] { "EEE MMM dd HH:mm:ss z yyyy" };
+		final String[] tests = new String[] { "EEE MMM dd HH:mm:ss z yyyy" };
 
-		for (String test : tests) {
-			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+		for (final String test : tests) {
+			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
 			Assert.assertEquals(det.getType(), FTAType.ZONEDDATETIME);
 		}
 	}
 
 	@Test
 	public void testDTPResult_Unknown() {
-		String[] tests = new String[] { "W", "V", "G", "u", "L", "Q", "e", "c", "K", "n", "N", "O" };
+		final String[] tests = new String[] { "W", "V", "G", "u", "L", "Q", "e", "c", "K", "n", "N", "O" };
 
-		for (String test : tests) {
-			DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
+		for (final String test : tests) {
+			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
 			Assert.assertEquals(det.getType(), FTAType.LOCALDATE, test);
 		}
 	}
@@ -1330,7 +1330,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitTimeDate() {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("9:57 2/13/98"), "H:mm M/dd/yy");
 		Assert.assertEquals(dtp.determineFormatString("9:57 2/12/98"), "H:mm ?/??/yy");
@@ -1341,7 +1341,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void parseddMMMyyyy() {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("12-May-14"), "dd-MMM-yy");
 		Assert.assertEquals(dtp.determineFormatString("2-Jan-2017"), "d-MMM-yyyy");
@@ -1383,7 +1383,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void intuitTimeDateWithTimeZone() {
-		DateTimeParser dtp = new DateTimeParser(null, Locale.getDefault());
+		final DateTimeParser dtp = new DateTimeParser(null, Locale.getDefault());
 
 		Assert.assertEquals(dtp.determineFormatString("01/30/2012 10:59:48 GMT"), "MM/dd/yyyy HH:mm:ss z");
 	}
@@ -1481,13 +1481,13 @@ public class DetermineDateTimeFormatTests {
 
 	@Test
 	public void bogusInput() {
-		final String inputs = "12:45:64.|21/12/99:|21/12/99:|18:46:|4:38  39|3124/08/|890/65 1/|7/87/33| 89:50|18:52 56:|18/94/06|0463 5 71|50 9:22|" +
+		final String pipedInput = "12:45:64.|21/12/99:|21/12/99:|18:46:|4:38  39|3124/08/|890/65 1/|7/87/33| 89:50|18:52 56:|18/94/06|0463 5 71|50 9:22|" +
 				"95/06/88|0-27-98|08/56 22/|31-0-99|0/7:6/11 //61|8:73/4/13 15|14/23/3367| 00/21/79|22-23-00|0/20/2361|0/2/52 9:50 4 |" +
 				"2015-8-17T|4/01/41 3:43 T450|37/8/005 5:05|0/6/95|0000 7 1|2000-12-12T12:45-72|2000-12-12T12:45-112|" +
 				"12:45:64.|84:12:45.5712:45| 12:45:63.3 |";
-		final String[] input = inputs.split("\\|");
+		final String[] inputs = pipedInput.split("\\|");
 
-		for (final String testCase : input) {
+		for (final String testCase : inputs) {
 			final DateTimeParser det = new DateTimeParser();
 			det.train(testCase);
 			final DateTimeParserResult result = det.getResult();
@@ -1927,7 +1927,7 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParser det = new DateTimeParser();
 		long millis = System.currentTimeMillis();
 		Date d = new Date();
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<String>();
 
 		for (int i = 0; i < 100; i++) {
 			d = new Date(millis);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,26 +21,26 @@ public class RegExpSplitter {
 	private int length;
 	private String regExp;
 
-	RegExpSplitter(int min, int max) {
+	RegExpSplitter(final int min, final int max) {
 		this.min = min;
 		this.max = max;
 	}
 
-	public static RegExpSplitter newInstance(String input) {
+	public static RegExpSplitter newInstance(final String input) {
 		if (input == null || input.length() == 0 || input.charAt(0) != '{')
 			return null;
 
-		int open = input.indexOf('{');
-		int comma = input.indexOf(',');
-		int close = input.indexOf('}');
+		final int open = input.indexOf('{');
+		final int close = input.indexOf('}');
 		if (open == -1 || close == -1)
 			return null;
 
+		final int comma = input.indexOf(',');
 		RegExpSplitter facts;
 		if (comma != -1)
 			facts = new RegExpSplitter(Utils.getValue(input, 1, 1, comma - 1), Utils.getValue(input, comma + 1, 1, close - comma));
 		else {
-			int len = Utils.getValue(input, 1, 1, close - 1);
+			final int len = Utils.getValue(input, 1, 1, close - 1);
 			facts = new RegExpSplitter(len, len);
 		}
 
@@ -50,7 +50,7 @@ public class RegExpSplitter {
 		return facts;
 	}
 
-	public static String qualify(int min, int max) {
+	public static String qualify(final int min, final int max) {
 		if (max == 1 && max == min)
 			return "";
 

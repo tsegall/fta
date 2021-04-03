@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ public class DateTimeParser {
 		this(DateResolutionMode.None, Locale.getDefault());
 	}
 
-	public DateTimeParser(final DateResolutionMode resolutionMode, Locale locale) {
+	public DateTimeParser(final DateResolutionMode resolutionMode, final Locale locale) {
 		this.resolutionMode = resolutionMode;
 		this.locale = locale;
 	}
@@ -146,13 +146,13 @@ public class DateTimeParser {
 	 * @param locale Locale the input string is in
 	 * @return The corresponding DateTimeFormatter (note - this will be a case-insensitive parser).
 	 */
-	public static DateTimeFormatter ofPattern(final String formatString, Locale locale) {
+	public static DateTimeFormatter ofPattern(final String formatString, final Locale locale) {
 		DateTimeFormatter formatter = formatterCache.get(locale.toLanguageTag() + "---" + formatString);
 
 		if (formatter != null)
 			return formatter;
 
-		int fractionOffset = formatString.indexOf("S{");
+		final int fractionOffset = formatString.indexOf("S{");
 		if (fractionOffset != -1)
 			formatter = new DateTimeFormatterBuilder()
 			.appendPattern(formatString.substring(0, fractionOffset))
@@ -278,8 +278,8 @@ public class DateTimeParser {
 						answerResult.amPmIndicator = result.amPmIndicator;
 
 					// If we were H (0-23) and we have a k (1-24) then assume k
-					char was = answerBuffer.charAt(answerResult.timeFieldOffsets[0]);
-					char is = result.getFormatString().charAt(result.timeFieldOffsets[0]);
+					final char was = answerBuffer.charAt(answerResult.timeFieldOffsets[0]);
+					final char is = result.getFormatString().charAt(result.timeFieldOffsets[0]);
 					if (was == 'H' && is == 'k') {
 						final int start = answerResult.timeFieldOffsets[0];
 						final int len = answerResult.timeFieldLengths[0];
@@ -348,7 +348,7 @@ public class DateTimeParser {
 								//  - MMM (and MMMM) -> MMMM
 								final int start = answerResult.dateFieldOffsets[i];
 								final int len = answerResult.dateFieldLengths[i];
-								String was = answerBuffer.substring(start, start + len);
+								final String was = answerBuffer.substring(start, start + len);
 								String replacement = null;
 								if ("MMM".equals(was))
 									replacement = "MMMM";
@@ -381,7 +381,7 @@ public class DateTimeParser {
 			else {
 					final char firstField = resolutionMode == DateResolutionMode.DayFirst ? 'd' : 'M';
 					final char secondField = resolutionMode == DateResolutionMode.DayFirst ? 'M' : 'd';
-					int idx = answerResult.yearOffset == 0 ? 1 : 0;
+					final int idx = answerResult.yearOffset == 0 ? 1 : 0;
 					int start = answerResult.dateFieldOffsets[idx];
 					answerBuffer.replace(start, start + answerResult.dateFieldLengths[idx], Utils.repeat(firstField, answerResult.dateFieldLengths[idx]));
 					start = answerResult.dateFieldOffsets[idx + 1];
@@ -409,7 +409,7 @@ public class DateTimeParser {
 				dateValues[fieldOffsets[2]], dateDigits[fieldOffsets[2]]);
 	}
 
-	public static boolean plausibleDateCore(boolean lenient, final int day, final int month, final int year, final int yearLength) {
+	public static boolean plausibleDateCore(final boolean lenient, final int day, final int month, final int year, final int yearLength) {
 		if (lenient && year == 0 && month == 0 && day == 0)
 			return true;
 
@@ -422,7 +422,7 @@ public class DateTimeParser {
 		return true;
 	}
 
-	private static String dateFormat(final int[] dateDigits, final char dateSeparator, final DateResolutionMode resolutionMode, final boolean yearKnown, boolean yearFirst) {
+	private static String dateFormat(final int[] dateDigits, final char dateSeparator, final DateResolutionMode resolutionMode, final boolean yearKnown, final boolean yearFirst) {
 		if (yearFirst)
 			switch (resolutionMode) {
 			case None:
@@ -432,7 +432,7 @@ public class DateTimeParser {
 			case MonthFirst:
 				return retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
 			default:
-				throw new InternalErrorException("Internal error: unexpected resolutionMode: " + resolutionMode);
+				throw new InternalErrorException("unexpected resolutionMode: " + resolutionMode);
 			}
 		else
 			switch (resolutionMode) {
@@ -443,7 +443,7 @@ public class DateTimeParser {
 			case MonthFirst:
 				return retDigits(dateDigits[0], 'M') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'y');
 			default:
-				throw new InternalErrorException("Internal error: unexpected resolutionMode: " + resolutionMode);
+				throw new InternalErrorException("unexpected resolutionMode: " + resolutionMode);
 			}
 	}
 
@@ -499,7 +499,7 @@ public class DateTimeParser {
 			return null;
 
 		// Second pass is an attempt to 'parse' the provided input string and derive a format
-		String attempt = passTwo(trimmed, resolutionMode);
+		final String attempt = passTwo(trimmed, resolutionMode);
 
 		if (attempt != null)
 			return attempt;
@@ -514,7 +514,7 @@ public class DateTimeParser {
 	 * @param matcher The previously computed matcher which provides both the compressed form of the input as well as a component count
 	 * @return a DateTimeFormatter pattern.
 	 */
-	String passOne(SimpleDateMatcher matcher) {
+	String passOne(final SimpleDateMatcher matcher) {
 		if (!matcher.isKnown())
 			return null;
 
@@ -540,8 +540,8 @@ public class DateTimeParser {
 	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @return a DateTimeFormatter pattern.
 	 */
-	String passTwo(String trimmed, final DateResolutionMode resolutionMode) {
-		int len = trimmed.length();
+	String passTwo(final String trimmed, final DateResolutionMode resolutionMode) {
+		final int len = trimmed.length();
 
 		int digits = 0;
 		int value = 0;
@@ -657,7 +657,7 @@ public class DateTimeParser {
 						return null;
 
 					// Validate the hours
-					int hours = Utils.getValue(trimmed, i, 2, 2);
+					final int hours = Utils.getValue(trimmed, i, 2, 2);
 					if (hours != Integer.MIN_VALUE && hours > 18)
 						return null;
 
@@ -782,9 +782,9 @@ public class DateTimeParser {
 					return null;
 
 				if (timeSeen) {
-					String rest = trimmed.substring(i).toUpperCase(locale);
+					final String rest = trimmed.substring(i).toUpperCase(locale);
 					boolean ampmDetected = false;
-					for (String s : LocaleInfo.getAMPMStrings(locale)) {
+					for (final String s : LocaleInfo.getAMPMStrings(locale)) {
 						if (rest.startsWith(s)) {
 							amPmIndicator = trimmed.charAt(i - 1) == ' ' ? " a" : "a";
 							i += s.length();
@@ -902,7 +902,7 @@ public class DateTimeParser {
 			// If we don't have two date components then it is invalid
 			if (dateComponent == 1)
 				return null;
-			boolean freePass = lenient && dateValue[0] == 0 && dateValue[1] == 0 && dateValue[2] == 0;
+			final boolean freePass = lenient && dateValue[0] == 0 && dateValue[1] == 0 && dateValue[2] == 0;
 			if ((!freePass && dateValue[1] == 0) || dateValue[1] > 31)
 				return null;
 			if (yearInDateFirst) {
@@ -997,10 +997,10 @@ public class DateTimeParser {
 	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @return a DateTimeFormatter pattern.
 	 */
-	String passThree(String trimmed, SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
+	String passThree(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
 		String compressed = matcher.getCompressed();
 		int components = matcher.getComponentCount();
-		boolean ampm = compressed.endsWith("P");
+		final boolean ampm = compressed.endsWith("P");
 
 		// If there is an AM/PM indicator - then make it so.
 		if (ampm)
@@ -1040,14 +1040,14 @@ public class DateTimeParser {
 			// We only support MM/yyyy, MM-yyyy, yyyy/MM, and yyyy-MM
 			if (compressed.length() != 9)
 				return null;
-			int year = compressed.indexOf("d{4}");
+			final int year = compressed.indexOf("d{4}");
 			if (year == -1)
 				return null;
-			int month = compressed.indexOf("d{2}");
+			final int month = compressed.indexOf("d{2}");
 			if (month == -1)
 				return null;
 
-			char separator = compressed.charAt(4);
+			final char separator = compressed.charAt(4);
 			if (separator != '/' && separator != '-')
 				return null;
 
@@ -1060,14 +1060,14 @@ public class DateTimeParser {
 		}
 		else {
 			int alreadyResolved = 0;
-			int yearIndex = compressed.indexOf("d{4}");
+			final int yearIndex = compressed.indexOf("d{4}");
 			if (yearIndex != -1) {
 				compressed = Utils.replaceFirst(compressed, "d{4}", "yyyy");
 				components--;
 				alreadyResolved++;
 			}
 
-			int monthIndex = compressed.indexOf("MMM");
+			final int monthIndex = compressed.indexOf("MMM");
 			if (monthIndex != -1) {
 				components--;
 				alreadyResolved++;
@@ -1088,8 +1088,8 @@ public class DateTimeParser {
 					return null;
 			}
 			else {
-				int first = compressed.indexOf("d{2}");
-				int second = compressed.indexOf("d{2}", first + 4);
+				final int first = compressed.indexOf("d{2}");
+				final int second = compressed.indexOf("d{2}", first + 4);
 
 				if (first == -1 || second == -1)
 					return null;
@@ -1100,8 +1100,8 @@ public class DateTimeParser {
 					if (first > yearIndex)
 						compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "MM"), "d{2}", "dd");
 					else {
-						int firstValue = Utils.getValue(trimmed, first, 2, 2);
-						int secondValue = Utils.getValue(trimmed, second, 2, 2);
+						final int firstValue = Utils.getValue(trimmed, first, 2, 2);
+						final int secondValue = Utils.getValue(trimmed, second, 2, 2);
 
 						if (firstValue > 12)
 							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "dd"), "d{2}", "MM");
@@ -1118,12 +1118,12 @@ public class DateTimeParser {
 		}
 
 		// So we think we have nailed it - but it only counts if it happily passes a validity check
-		DateTimeParserResult dtp = DateTimeParserResult.asResult(compressed, resolutionMode, locale);
+		final DateTimeParserResult dtp = DateTimeParserResult.asResult(compressed, resolutionMode, locale);
 
 		return (dtp != null && dtp.isValid(trimmed)) ? compressed : null;
 	}
 
-	private boolean matchAtEnd(String input, String toMatch) {
+	private boolean matchAtEnd(final String input, final String toMatch) {
 		return input.endsWith(toMatch) || input.endsWith(toMatch + 'a') || input.endsWith(toMatch + " a");
 	}
 }

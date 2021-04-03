@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,9 +62,9 @@ public class DateTimeParserResult {
 	private Locale locale;
 	private int hourLength = -1;
 
-	static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<>();
+	private static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<>();
 
-	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, Locale locale, final int timeElements,
+	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, final Locale locale, final int timeElements,
 			final int[] timeFieldLengths, final int[] timeFieldOffsets, final int[] timeFieldPad, final int hourLength, final int dateElements, final int[] dateFieldLengths,
 			final int[] dateFieldOffsets, final int[] dateFieldPad, final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset,
 			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final List<FormatterToken> tokenized) {
@@ -112,7 +112,7 @@ public class DateTimeParserResult {
 		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET, TIMEZONE_OFFSET_Z, AMPM
 	}
 
-	boolean isDateUnbound() {
+	protected boolean isDateUnbound() {
 		// If there is not a date then it is cannot be unbound
 		if (dateElements == -1)
 			return false;
@@ -130,7 +130,7 @@ public class DateTimeParserResult {
 	/*
 	 * Update the format string and recreate the cached tokenized form.
 	 */
-	public void updateFormatString(String formatString) {
+	public void updateFormatString(final String formatString) {
 		this.formatString = formatString;
 		this.tokenized =  DateTimeParserResult.tokenize(formatString);
 	}
@@ -141,7 +141,7 @@ public class DateTimeParserResult {
 	 * @return A boolean indicating if the input is valid.
 	 */
 	public boolean isValid8(final String input) {
-		DateTimeFormatter dtf = DateTimeParser.ofPattern(getFormatString(), locale);
+		final DateTimeFormatter dtf = DateTimeParser.ofPattern(getFormatString(), locale);
 
 		try {
 			if (FTAType.LOCALTIME.equals(getType()))
@@ -183,7 +183,7 @@ public class DateTimeParserResult {
 	 * @param locale Locale the input string is in
 	 * @return The corresponding DateTimeParserResult
 	 */
-	public static DateTimeParserResult asResult(String formatString, final DateResolutionMode resolutionMode, Locale locale) {
+	public static DateTimeParserResult asResult(final String formatString, final DateResolutionMode resolutionMode, final Locale locale) {
 		final String key = resolutionMode.name() + '#' + locale + '#' + formatString;
 		DateTimeParserResult ret = dtpCache.get(key);
 		if (ret != null)
@@ -233,7 +233,7 @@ public class DateTimeParserResult {
 				}
 
 				if (dateElements == 1 && i + 1 < formatLength) {
-					char nextCh = formatString.charAt(i + 1);
+					final char nextCh = formatString.charAt(i + 1);
 					if (!Character.isAlphabetic(nextCh))
 						dateSeparator = nextCh;
 				}
@@ -265,7 +265,7 @@ public class DateTimeParserResult {
 				dateFieldLengths[dateElements - 1] = monthLength;
 
 				if (dateElements == 1 && i + 1 < formatLength) {
-					char nextCh = formatString.charAt(i + 1);
+					final char nextCh = formatString.charAt(i + 1);
 					if (!Character.isAlphabetic(nextCh))
 						dateSeparator = nextCh;
 				}
@@ -287,7 +287,7 @@ public class DateTimeParserResult {
 				dateFieldLengths[dateElements - 1] = dayLength;
 
 				if (dateElements == 1 && i + 1 < formatLength) {
-					char nextCh = formatString.charAt(i + 1);
+					final char nextCh = formatString.charAt(i + 1);
 					if (!Character.isAlphabetic(nextCh))
 						dateSeparator = nextCh;
 				}
@@ -334,7 +334,7 @@ public class DateTimeParserResult {
 				padLength = 0;
 				int fractions = 1;
 				if (i + 1 < formatLength) {
-					char next = formatString.charAt(i + 1);
+					final char next = formatString.charAt(i + 1);
 					if (next == 'S') {
 						while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 							fractions++;
@@ -342,7 +342,7 @@ public class DateTimeParserResult {
 						}
 					}
 					else if (next == '{') {
-						RegExpSplitter facts = RegExpSplitter.newInstance(formatString.substring(i + 1));
+						final RegExpSplitter facts = RegExpSplitter.newInstance(formatString.substring(i + 1));
 						if (facts == null)
 							return null;
 						i += facts.getLength();
@@ -369,7 +369,7 @@ public class DateTimeParserResult {
 				dateFieldLengths[dateElements - 1] = yearLength;
 
 				if (dateElements == 1 && i + 1 < formatLength) {
-					char nextCh = formatString.charAt(i + 1);
+					final char nextCh = formatString.charAt(i + 1);
 					if (!Character.isAlphabetic(nextCh))
 						dateSeparator = nextCh;
 				}
@@ -422,9 +422,8 @@ public class DateTimeParserResult {
 		return newInstance(ret);
 	}
 
-	public static List<FormatterToken> tokenize(String formatString) {
+	public static List<FormatterToken> tokenize(final String formatString) {
 		final ArrayList<FormatterToken> ret = new ArrayList<>();
-		int upto = 0;
 
 		final int formatLength = formatString.length();
 
@@ -536,7 +535,7 @@ public class DateTimeParserResult {
 				int count = 1;
 				int high = 1;
 				if (i + 1 < formatLength) {
-					char next = formatString.charAt(i + 1);
+					final char next = formatString.charAt(i + 1);
 					if (next == 'S') {
 						while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 							count++;
@@ -545,7 +544,7 @@ public class DateTimeParserResult {
 						high = count;
 					}
 					else if (next == '{') {
-						RegExpSplitter facts = RegExpSplitter.newInstance(formatString.substring(i + 1));
+						final RegExpSplitter facts = RegExpSplitter.newInstance(formatString.substring(i + 1));
 						if (facts == null)
 							return null;
 						i += facts.getLength();
@@ -574,7 +573,7 @@ public class DateTimeParserResult {
 				i++;
 				ret.add(new FormatterToken(Token.CONSTANT_CHAR, formatString.charAt(i)));
 				if (i + 1 >= formatLength || formatString.charAt(i + 1) != '\'') {
-					throw new DateTimeParseException("Unterminated quote in format String", formatString, upto);
+					throw new DateTimeParseException("Unterminated quote in format String", formatString, i);
 				}
 				i++;
 				break;
@@ -657,15 +656,15 @@ public class DateTimeParserResult {
 			case DAY_OF_WEEK:
 			case DAY_OF_WEEK_ABBR:
 				start = upto;
-				int doyWeekOffset = LocaleInfo.skipValidDayOfWeekAbbr(input.substring(upto), locale);
-				if (doyWeekOffset == -1)
+				final int dayOfWeekOffset = LocaleInfo.skipValidDayOfWeekAbbr(input.substring(upto), locale);
+				if (dayOfWeekOffset == -1)
 					throw new DateTimeParseException("Day of Week Abbreviation invalid", input, start);
-				upto += doyWeekOffset;
+				upto += dayOfWeekOffset;
 				break;
 
 			case MONTH:
 				start = upto;
-				int monthOffset = LocaleInfo.skipValidMonth(input.substring(upto), locale);
+				final int monthOffset = LocaleInfo.skipValidMonth(input.substring(upto), locale);
 				if (monthOffset == -1)
 					throw new DateTimeParseException("Month invalid", input, start);
 				upto += monthOffset;
@@ -673,7 +672,7 @@ public class DateTimeParserResult {
 
 			case MONTH_ABBR:
 				start = upto;
-				int monthAbbrOffset = LocaleInfo.skipValidMonthAbbr(input.substring(upto), locale);
+				final int monthAbbrOffset = LocaleInfo.skipValidMonthAbbr(input.substring(upto), locale);
 				if (monthAbbrOffset == -1)
 					throw new DateTimeParseException("Month Abbreviation invalid", input, start);
 				upto += monthAbbrOffset;
@@ -809,7 +808,7 @@ public class DateTimeParserResult {
 
 			case AMPM:
 				start = upto;
-				int ampmOffset = LocaleInfo.skipValidAMPM(input.substring(upto), locale);
+				final int ampmOffset = LocaleInfo.skipValidAMPM(input.substring(upto), locale);
 				if (ampmOffset == -1)
 					throw new DateTimeParseException("Expecting am/pm indicator", input, start);
 				upto += ampmOffset;
@@ -897,7 +896,7 @@ public class DateTimeParserResult {
 		if (tokenized == null)
 			tokenized =  DateTimeParserResult.tokenize(formatString);
 
-		for (FormatterToken t : tokenized) {
+		for (final FormatterToken t : tokenized) {
 			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_Z))
 				return FTAType.OFFSETDATETIME;
 			if (t.getType().equals(Token.TIMEZONE))
@@ -920,7 +919,7 @@ public class DateTimeParserResult {
 		return ret.toString();
 	}
 
-	private void addDigits(StringBuilder b, int digitsMin, int digitsMax, int padding) {
+	private void addDigits(final StringBuilder b, final int digitsMin, int digitsMax, int padding) {
 		if (padding != 0) {
 			digitsMax -= 1;
 			padding = 0;

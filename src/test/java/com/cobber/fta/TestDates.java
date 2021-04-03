@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,8 +80,8 @@ public class TestDates {
 		Assert.assertEquals(result.getMinValue(), "02/22/02");
 		Assert.assertEquals(result.getMaxValue(), "02/02/99");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -117,7 +117,7 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MMM/yy h:mm a");
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 		}
 	}
@@ -129,12 +129,12 @@ public class TestDates {
 		analysis.setCollectStatistics(false);
 		analysis.setLocale(locale);
 		final String dateTimeFormat = "MM/dd/yy h:mm:ss aaa";
-		SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat);
+		final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat);
 		final int sampleCount = 100;
 		final Set<String> samples = new HashSet<>();
 		int locked = -1;
 
-		Calendar calendar = Calendar.getInstance();
+		final Calendar calendar = Calendar.getInstance();
 		for (int i = 0; i < sampleCount; i++) {
 			String sample = null;
 			sample = sdf.format(calendar.getTime());
@@ -156,7 +156,7 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "MM/dd/yy h:mm:ss a");
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 		}
 	}
@@ -193,7 +193,7 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MMM/yy h:mm a");
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 		}
 	}
@@ -201,9 +201,9 @@ public class TestDates {
 	@Test
 	public void basicAMPM_enUSNotSimple() throws IOException {
 		final Locale locale = Locale.forLanguageTag("en-US");
-		DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
+		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
 
-		for (DateResolutionMode resolutionMode : cases) {
+		for (final DateResolutionMode resolutionMode : cases) {
 			final TextAnalyzer analysis = new TextAnalyzer("h:mm a dd/MM/yy", resolutionMode);
 			analysis.setLocale(locale);
 			final String dateTimeFormat = "h:mm a dd/MM/yy";
@@ -232,7 +232,7 @@ public class TestDates {
 			Assert.assertEquals(result.getNullCount(), 0);
 			Assert.assertEquals(result.getConfidence(), 1.0);
 
-			for (String sample : samples) {
+			for (final String sample : samples) {
 				Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 			}
 		}
@@ -270,7 +270,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 		}
 	}
@@ -307,25 +307,25 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 		}
 	}
 
 	@Test
 	public void basicHHmmddMyy() throws IOException {
-		DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
+		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
 
-		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
-		for (Locale locale : locales) {
-			for (DateResolutionMode resolutionMode : cases) {
+		final Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
+		for (final Locale locale : locales) {
+			for (final DateResolutionMode resolutionMode : cases) {
 				final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", resolutionMode);
 				analysis.setLocale(locale);
-				final String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
+				final String pipedInput = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
 						"16:53 26/9/12|09:53 10/3/12|02:53 23/8/11|19:53 03/2/11|12:53 18/7/10|05:53 30/12/09|22:53 12/6/09|15:53 24/11/08|" +
 						"08:53 08/5/08|01:53 21/10/07|18:53 03/4/07|11:53 15/9/06|04:53 27/2/06|21:53 10/8/05|14:53 22/1/05|07:53 06/7/04|" +
 						"00:53 19/12/03|17:53 01/6/03|10:53 13/11/02|03:53 27/4/02|20:53 08/10/01|13:53 22/3/01|";
-				final String inputs[] = input.split("\\|");
+				final String inputs[] = pipedInput.split("\\|");
 				int locked = -1;
 
 				for (int i = 0; i < inputs.length; i++) {
@@ -343,8 +343,8 @@ public class TestDates {
 				Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2} \\d{2}/\\d{1,2}/\\d{2}");
 				Assert.assertEquals(result.getConfidence(), 1.0);
 
-				for (int i = 0; i < inputs.length; i++) {
-					Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+				for (final String input : inputs) {
+					Assert.assertTrue(input.matches(result.getRegExp()));
 				}
 			}
 		}
@@ -352,17 +352,17 @@ public class TestDates {
 
 	@Test
 	public void basicResolutionMode() throws IOException {
-		DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.MonthFirst, DateResolutionMode.Auto };
+		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.MonthFirst, DateResolutionMode.Auto };
 
-		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
-		for (Locale locale : locales) {
-			for (DateResolutionMode resolutionMode : cases) {
+		final Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
+		for (final Locale locale : locales) {
+			for (final DateResolutionMode resolutionMode : cases) {
 				final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", resolutionMode);
 				analysis.setLocale(locale);
-				final String input = "2/2/34|3/3/19|4/4/48|5/5/55|6/6/66|7/7/77|8/8/88|9/9/99|" +
+				final String pipedInput = "2/2/34|3/3/19|4/4/48|5/5/55|6/6/66|7/7/77|8/8/88|9/9/99|" +
 							"12/12/34|4/5/19|6/4/48|7/5/55|12/6/66|12/7/77|3/8/88|2/9/99|" +
 							"1/1/26|4/5/33|6/9/48|9/5/55|12/2/66|11/11/78|3/4/98|2/3/39|";
-				final String inputs[] = input.split("\\|");
+				final String inputs[] = pipedInput.split("\\|");
 				int locked = -1;
 
 				for (int i = 0; i < inputs.length; i++) {
@@ -387,8 +387,8 @@ public class TestDates {
 				Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{2}");
 				Assert.assertEquals(result.getConfidence(), 1.0);
 
-				for (int i = 0; i < inputs.length; i++) {
-					Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+				for (final String input : inputs) {
+					Assert.assertTrue(input.matches(result.getRegExp()));
 				}
 			}
 		}
@@ -398,11 +398,11 @@ public class TestDates {
 	public void basicHHmmddMyyUnresolved() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate");
 		analysis.setCollectStatistics(false);
-		final String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
+		final String pipedInput = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
 				"16:53 26/9/12|09:53 10/3/12|02:53 23/8/11|19:53 03/2/11|12:53 18/7/10|05:53 30/12/09|22:53 12/6/09|15:53 24/11/08|" +
 				"08:53 08/5/08|01:53 21/10/07|18:53 03/4/07|11:53 15/9/06|04:53 27/2/06|21:53 10/8/05|14:53 22/1/05|07:53 06/7/04|" +
 				"00:53 19/12/03|17:53 01/6/03|10:53 13/11/02|03:53 27/4/02|20:53 08/10/01|13:53 22/3/01|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -422,8 +422,8 @@ public class TestDates {
 		//		Assert.assertEquals(result.getMatchCount(), 0);
 		//		Assert.assertEquals(result.getConfidence(), 0.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -431,11 +431,11 @@ public class TestDates {
 	public void basicHHmmddMyyFalse() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
-		final String input = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
+		final String pipedInput = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
 				"16:53 26/9/12|09:53 10/3/12|02:53 23/8/11|19:53 03/2/11|12:53 18/7/10|05:53 30/12/09|22:53 12/6/09|15:53 24/11/08|" +
 				"08:53 08/5/08|01:53 21/10/07|18:53 03/4/07|11:53 15/9/06|04:53 27/2/06|21:53 10/8/05|14:53 22/1/05|07:53 06/7/04|" +
 				"00:53 19/12/03|17:53 01/6/03|10:53 13/11/02|03:53 27/4/02|20:53 08/10/01|13:53 22/3/01|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -453,8 +453,8 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -462,8 +462,8 @@ public class TestDates {
 	public void fixedWidthDay() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
-		final String input = "Oct  1 2019 12:14AM|Jan  5 2020 12:31AM|Feb  2 2020 11:20AM|Mar  8 2020 10:20AM|Mar 15 2020 10:20AM|Mar 22 2020 10:20AM|Mar 29 2020 10:20AM|Jan 12 2020 12:12AM|Jan 19 2020 12:12AM|Jan 26 2020 12:12AM|Jun  1 2020 11:11AM|Jun  8 2020 11:11AM|Jun 15 2020 11:11AM|Jun 22 2020 11:11AM|Jun 29 2020 11:11AM|Oct  1 2019 12:14AM|Jan  5 2020 12:31AM|Feb  2 2020 11:20AM|Mar  8 2020 10:20AM|Mar 15 2020 10:20AM|Mar 22 2020 10:20AM|Mar 29 2020 10:20AM|Jan 12 2020 12:12AM|Jan 19 2020 12:12AM|Jan 26 2020 12:12AM|Jun  1 2020 11:11AM|Jun  8 2020 11:11AM|Jun 15 2020 11:11AM|Jun 22 2020 11:11AM|Jun 29 2020 11:11AM|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "Oct  1 2019 12:14AM|Jan  5 2020 12:31AM|Feb  2 2020 11:20AM|Mar  8 2020 10:20AM|Mar 15 2020 10:20AM|Mar 22 2020 10:20AM|Mar 29 2020 10:20AM|Jan 12 2020 12:12AM|Jan 19 2020 12:12AM|Jan 26 2020 12:12AM|Jun  1 2020 11:11AM|Jun  8 2020 11:11AM|Jun 15 2020 11:11AM|Jun 22 2020 11:11AM|Jun 29 2020 11:11AM|Oct  1 2019 12:14AM|Jan  5 2020 12:31AM|Feb  2 2020 11:20AM|Mar  8 2020 10:20AM|Mar 15 2020 10:20AM|Mar 22 2020 10:20AM|Mar 29 2020 10:20AM|Jan 12 2020 12:12AM|Jan 19 2020 12:12AM|Jan 26 2020 12:12AM|Jun  1 2020 11:11AM|Jun  8 2020 11:11AM|Jun 15 2020 11:11AM|Jun 22 2020 11:11AM|Jun 29 2020 11:11AM|";
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -481,10 +481,10 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
-		DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-			validator.parse(inputs[i]);
+		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+			validator.parse(input);
 		}
 	}
 
@@ -492,8 +492,8 @@ public class TestDates {
 	public void withComma() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
-		final String input = "Jul 21, 2020 9:00 AM|Jul 21, 2020 9:00 AM|Jul 23, 2020 5:00 PM|Jun 03, 2020 3:00 PM|Jun 09, 2020 10:30 AM|Jun 17, 2020 4:00 PM|Jun 23, 2020 3:00 PM|Jun 25, 2020 2:00 PM|Jun 30, 2020 2:30 PM|Jun 30, 2020 8:00 AM|May 19, 2020 9:00 AM|May 19, 2020 9:00 AM|May 28, 2020 2:00 PM|Jul 23, 2020 5:00 PM|Jun 03, 2020 3:00 PM|Jun 09, 2020 10:30 AM|Jun 17, 2020 4:00 PM|Jun 23, 2020 3:00 PM|Jun 25, 2020 2:00 PM|Jun 30, 2020 2:30 PM|Jun 30, 2020 8:00 AM|May 19, 2020 9:00 AM|May 19, 2020 9:00 AM|May 28, 2020 2:00 PM|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "Jul 21, 2020 9:00 AM|Jul 21, 2020 9:00 AM|Jul 23, 2020 5:00 PM|Jun 03, 2020 3:00 PM|Jun 09, 2020 10:30 AM|Jun 17, 2020 4:00 PM|Jun 23, 2020 3:00 PM|Jun 25, 2020 2:00 PM|Jun 30, 2020 2:30 PM|Jun 30, 2020 8:00 AM|May 19, 2020 9:00 AM|May 19, 2020 9:00 AM|May 28, 2020 2:00 PM|Jul 23, 2020 5:00 PM|Jun 03, 2020 3:00 PM|Jun 09, 2020 10:30 AM|Jun 17, 2020 4:00 PM|Jun 23, 2020 3:00 PM|Jun 25, 2020 2:00 PM|Jun 30, 2020 2:30 PM|Jun 30, 2020 8:00 AM|May 19, 2020 9:00 AM|May 19, 2020 9:00 AM|May 28, 2020 2:00 PM|";
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -511,10 +511,10 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
-		DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-			validator.parse(inputs[i]);
+		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+			validator.parse(input);
 		}
 	}
 
@@ -523,7 +523,7 @@ public class TestDates {
 	public void fixedWidthHour() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
-		final String input =
+		final String pipedInput =
 		"Oct 1 2019  2:14AM|Oct 1 2019 10:08AM|Oct 9 2019 12:49PM|Oct 9 2019  2:52PM|Oct 9 2019  6:10PM|" +
 		"Oct 1 2019 12:53PM|Oct 1 2019  1:53PM|Oct 1 2019  6:00PM|Oct 1 2019  6:56PM|Oct 2 2019  9:02PM|" +
 		"Oct 2 2019 12:13AM|Oct 2 2019 12:45PM|Oct 2 2019  4:23PM|Oct 2 2019  4:51PM|Oct 2 2019  5:11PM|" +
@@ -531,7 +531,7 @@ public class TestDates {
 		"Oct 19 2019  6:16PM|Oct 10 2019  4:40AM|Oct 10 2019  9:35AM|Oct 10 2019 11:08AM|Oct 10 2019 12:24PM|" +
 		"Oct 10 2019  1:45PM|Oct 11 2019  9:57AM|Oct 11 2019 12:42PM|Oct 14 2019 10:41AM|Oct 14 2019  1:43PM|" +
 		"Oct 24 2019 10:47AM|Oct 24 2019 10:59AM|Oct 31 2019  6:02PM|Oct 1 2019 10:10AM|Oct 11 2019 11:02AM|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -549,10 +549,10 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
-		DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-			validator.parse(inputs[i]);
+		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+			validator.parse(input);
 		}
 	}
 
@@ -560,7 +560,7 @@ public class TestDates {
 	public void fixedWidthDayHour() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
-		final String input =
+		final String pipedInput =
 				"Oct  1 2019  2:14AM|Oct  1 2019 10:08AM|Oct  9 2019 12:49PM|Oct  9 2019  2:52PM|Oct  9 2019  6:10PM|" +
 				"Oct  1 2019 12:53PM|Oct  1 2019  1:53PM|Oct  1 2019  6:00PM|Oct  1 2019  6:56PM|Oct  2 2019  9:02PM|" +
 				"Oct  2 2019 12:13AM|Oct  2 2019 12:45PM|Oct  2 2019  4:23PM|Oct  2 2019  4:51PM|Oct  2 2019  5:11PM|" +
@@ -568,7 +568,7 @@ public class TestDates {
 				"Oct 19 2019  6:16PM|Oct 10 2019  4:40AM|Oct 10 2019  9:35AM|Oct 10 2019 11:08AM|Oct 10 2019 12:24PM|" +
 				"Oct 10 2019  1:45PM|Oct 11 2019  9:57AM|Oct 11 2019 12:42PM|Oct 14 2019 10:41AM|Oct 14 2019  1:43PM|" +
 				"Oct 24 2019 10:47AM|Oct 24 2019 10:59AM|Oct 31 2019  6:02PM|Oct  1 2019 10:10AM|Oct 11 2019 11:02AM|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -586,10 +586,10 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
-		DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-			validator.parse(inputs[i]);
+		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+			validator.parse(input);
 		}
 	}
 
@@ -597,7 +597,7 @@ public class TestDates {
 	public void variableHour() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
-		final String input =
+		final String pipedInput =
 				"Oct 1 2019 2:14AM|Oct 1 2019 10:08AM|Oct 9 2019 12:49PM|Oct 9 2019 2:52PM|Oct 9 2019 6:10PM|" +
 				"Oct 1 2019 12:53PM|Oct 1 2019 1:53PM|Oct 1 2019 6:00PM|Oct 1 2019 6:56PM|Oct 2 2019 9:02PM|" +
 				"Oct 2 2019 12:13AM|Oct 2 2019 12:45PM|Oct 2 2019 4:23PM|Oct 2 2019 4:51PM|Oct 2 2019 5:11PM|" +
@@ -605,7 +605,7 @@ public class TestDates {
 				"Oct 19 2019 6:16PM|Oct 10 2019 4:40AM|Oct 10 2019 9:35AM|Oct 10 2019 11:08AM|Oct 10 2019 12:24PM|" +
 				"Oct 10 2019 1:45PM|Oct 11 2019 9:57AM|Oct 11 2019 12:42PM|Oct 14 2019 10:41AM|Oct 14 2019 1:43PM|" +
 				"Oct 24 2019 10:47AM|Oct 24 2019 10:59AM|Oct 31 2019 6:02PM|Oct 1 2019 10:10AM|Oct 11 2019 11:02AM|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -623,10 +623,10 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
-		DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-			validator.parse(inputs[i]);
+		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+			validator.parse(input);
 		}
 	}
 
@@ -634,14 +634,14 @@ public class TestDates {
 	public void mixedDateandDateTime() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
-		final String input =
+		final String pipedInput =
 				"3/11/2020|12/4/2020|6/14/2020|4/21/2020|3/6/2020|5/8/2020|4/7/2020|12/8/2020|8/12/2020|9/12/2020|" +
 				"3/13/2020|12/11/2020|7/24/2020|6/4/2020|6/29/2020|7/5/2020|4/30/2020|" +
 				"8/10/2020 0:00|9/13/2020 0:00|" +
 				"10/6/2020|3/1/2020|12/14/2020|4/29/2020|11/24/2020|7/21/2020|1/18/2020|6/7/2020|1/25/2020|2/12/2020|10/31/2020|" +
 				"1/20/2021|2/3/2020|12/15/2020|3/3/2020|4/4/2020|5/25/2020|7/20/2020|11/21/2020|9/1/2020|3/18/2020|6/17/2020|12/26/2020|" +
 				"5/27/2020 0:00|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -662,8 +662,8 @@ public class TestDates {
 	public void fixedSSS() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
-		final String input = "2019-10-01 07:26:47.617|2019-10-01 12:12:31.587|2019-10-01 12:12:32.827|2019-10-01 12:12:33.840|2019-10-01 12:12:34.770|2019-10-01 12:12:35.830|2019-10-01 12:12:36.690|2019-10-01 12:12:37.590|2019-10-01 12:12:38.357|2019-10-01 12:12:40.117|2019-10-01 12:12:41.087|2019-10-02 07:34:35.987|2019-10-02 07:34:40.680|2019-10-02 07:34:41.293|2019-10-02 07:34:43.640|2019-10-02 07:34:44.910|2019-10-02 07:34:45.907|2019-10-02 07:34:46.987|2019-10-02 07:34:47.867|2019-10-02 07:34:48.820|2019-10-02 07:34:49.930|2019-10-02 07:34:50.747|2019-10-02 07:34:51.923|2019-10-02 07:34:53.763|2019-10-02 07:34:54.090|2019-10-02 07:34:55.340|2019-10-02 07:34:56.500|2019-10-02 07:34:58.330|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "2019-10-01 07:26:47.617|2019-10-01 12:12:31.587|2019-10-01 12:12:32.827|2019-10-01 12:12:33.840|2019-10-01 12:12:34.770|2019-10-01 12:12:35.830|2019-10-01 12:12:36.690|2019-10-01 12:12:37.590|2019-10-01 12:12:38.357|2019-10-01 12:12:40.117|2019-10-01 12:12:41.087|2019-10-02 07:34:35.987|2019-10-02 07:34:40.680|2019-10-02 07:34:41.293|2019-10-02 07:34:43.640|2019-10-02 07:34:44.910|2019-10-02 07:34:45.907|2019-10-02 07:34:46.987|2019-10-02 07:34:47.867|2019-10-02 07:34:48.820|2019-10-02 07:34:49.930|2019-10-02 07:34:50.747|2019-10-02 07:34:51.923|2019-10-02 07:34:53.763|2019-10-02 07:34:54.090|2019-10-02 07:34:55.340|2019-10-02 07:34:56.500|2019-10-02 07:34:58.330|";
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -681,8 +681,8 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -690,8 +690,8 @@ public class TestDates {
 	public void twentyRecords() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("FROM_DATE", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
-		final String input = "1/3/11|1/3/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|9/17/08|1-15-2011|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "1/3/11|1/3/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|9/17/08|1-15-2011|";
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -710,8 +710,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 
 		int matches = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].matches(result.getRegExp()))
+		for (final String input : inputs) {
+			if (input.matches(result.getRegExp()))
 				matches++;
 		}
 		Assert.assertEquals(matches, result.getMatchCount());
@@ -721,12 +721,12 @@ public class TestDates {
 	public void dMyy() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.DayFirst);
 		analysis.setCollectStatistics(false);
-		final String input = "1/2/09 6:17|1/2/09 4:53|1/2/09 13:08|1/3/09 14:44|1/4/09 12:56|1/4/09 13:19|1/4/09 20:11|1/2/09 20:09|1/4/09 13:17|1/4/09 14:11|" +
+		final String pipedInput = "1/2/09 6:17|1/2/09 4:53|1/2/09 13:08|1/3/09 14:44|1/4/09 12:56|1/4/09 13:19|1/4/09 20:11|1/2/09 20:09|1/4/09 13:17|1/4/09 14:11|" +
 				"1/5/09 2:42|1/5/09 5:39|1/2/09 9:16|1/5/09 10:08|1/2/09 14:18|1/4/09 1:05|1/5/09 11:37|1/6/09 5:02|1/6/09 7:45|1/2/09 7:35|" +
 				"1/6/09 12:56|1/1/09 11:05|1/5/09 4:10|1/6/09 7:18|1/2/09 1:11|1/1/09 2:24|1/7/09 8:08|1/2/09 2:57|1/1/09 20:21|1/8/09 0:42|" +
 				"1/8/09 3:56|1/8/09 3:16|1/8/09 1:59|1/3/09 9:03|1/5/09 13:17|1/6/09 7:46|1/5/09 20:00|1/8/09 16:24|1/9/09 6:39|1/6/09 22:19|" +
 				"1/6/09 23:00|1/7/09 7:44|1/3/09 13:24|1/7/09 15:12|1/7/09 20:15|1/3/09 10:11|1/9/09 15:58|1/3/09 13:11|1/10/09 12:57|1/10/09 14:43|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -744,8 +744,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "d/M/yy H:mm");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -753,7 +753,7 @@ public class TestDates {
 	public void basicMdyy() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Account_Created", DateResolutionMode.DayFirst);
 		analysis.setCollectStatistics(false);
-		final String input = "1/2/09 6:00|1/2/09 4:42|1/1/09 16:21|9/25/05 21:13|11/15/08 15:47|9/24/08 15:19|1/3/09 9:38|1/2/09 17:43|1/4/09 13:03|6/3/08 4:22|" +
+		final String pipedInput = "1/2/09 6:00|1/2/09 4:42|1/1/09 16:21|9/25/05 21:13|11/15/08 15:47|9/24/08 15:19|1/3/09 9:38|1/2/09 17:43|1/4/09 13:03|6/3/08 4:22|" +
 				"1/5/09 2:23|1/5/09 4:55|1/2/09 8:32|11/11/08 15:53|12/9/08 12:07|1/4/09 0:00|1/5/09 9:35|1/6/09 2:41|1/6/09 7:00|12/30/08 5:44|" +
 				"1/6/09 10:58|12/10/07 12:37|1/5/09 2:33|1/6/09 7:07|12/31/08 2:48|1/1/09 1:56|1/7/09 7:39|1/3/08 7:23|10/24/08 6:48|1/8/09 0:28|" +
 				"1/8/09 3:33|1/8/09 3:06|11/28/07 11:56|1/3/09 8:47|1/5/09 12:45|1/6/09 7:30|12/10/08 19:53|1/8/09 15:57|1/9/09 5:09|1/6/09 12:00|" +
@@ -780,7 +780,7 @@ public class TestDates {
 				"1/23/09 3:00|1/6/09 3:38|1/23/09 3:27|12/20/08 8:41|12/29/08 3:16|1/21/09 13:56|7/30/07 21:10|1/4/09 12:39|1/22/09 9:55|1/22/09 23:23|" +
 				"4/25/07 5:08|1/16/09 1:38|8/3/07 2:48|4/7/08 17:15|1/23/09 6:32|1/5/09 15:43|1/24/09 8:02|1/14/09 4:13|11/28/07 10:05|1/23/09 10:42|" +
 				"1/19/09 14:43|3/7/06 5:47|11/24/08 15:50|12/17/07 19:55|12/7/05 19:48|6/20/08 22:08|6/14/07 13:14|6/14/07 13:14|1/17/06 8:51|5/14/07 12:48|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -798,15 +798,15 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
 	@Test
 	public void basicDateNumber() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Trade Date", DateResolutionMode.DayFirst);
-		final String input = "20120202|20120607|20120627|20120627|20120627|20120627|20120627|20120628|20120312|20120201|" +
+		final String pipedInput = "20120202|20120607|20120627|20120627|20120627|20120627|20120627|20120628|20120312|20120201|" +
 		"20111031|20120229|20120104|20120312|20120312|20120628|20120628|20120628|20120628|20120628|" +
 		"20111027|20120213|20120628|20120227|20120313|20120701|20120702|20120702|20120701|20120701|" +
 		"20120629|20120629|20120629|20120629|20120629|20120629|20120629|20120629|20120629|20120629|" +
@@ -826,7 +826,7 @@ public class TestDates {
 		"20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|20120702|" +
 		"20120702|20120702|20120702|20120702|20120702|20120702|20120629|20120702|20180519|20120702|";
 
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -847,10 +847,10 @@ public class TestDates {
 		Assert.assertEquals(result.getMaxValue(), "20180519");
 
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(result.getTypeQualifier());
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()), input);
 			try {
-				LocalDate.parse(inputs[i], formatter);
+				LocalDate.parse(input, formatter);
 			}
 			catch (DateTimeParseException e) {
 				Assert.fail("Parse failed" + e);
@@ -861,14 +861,14 @@ public class TestDates {
 	@Test
 	public void basicddMMyyHHmm() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("ddMMyy_HHmm", DateResolutionMode.DayFirst);
-		final String input =
+		final String pipedInput =
 				"23/08/17 03:49|23/08/17 03:49|14/08/17 10:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|" +
 				"28/07/17 00:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|28/07/17 00:49|19/07/17 07:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|" +
 				"28/07/17 00:49|19/07/17 07:49|10/07/17 14:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|28/07/17 00:49|19/07/17 07:49|10/07/17 14:49|" +
 				"01/07/17 21:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|28/07/17 00:49|19/07/17 07:49|10/07/17 14:49|01/07/17 21:49|23/06/17 04:49|" +
 				"23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|28/07/17 00:49|19/07/17 07:49|10/07/17 14:49|01/07/17 21:49|23/06/17 04:49|14/06/17 11:49|" +
 				"23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|28/07/17 00:49|19/07/17 07:49|10/07/17 14:49|01/07/17 21:49|23/06/17 04:49|14/06/17 11:49|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -888,16 +888,16 @@ public class TestDates {
 		Assert.assertEquals(result.getMinValue(), "14/06/17 11:49");
 		Assert.assertEquals(result.getMaxValue(), "23/08/17 03:49");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
 	@Test
 	public void mixed_yyyyddMM() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("yyyyddMM", DateResolutionMode.DayFirst);
-		final String input = "1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|2011/31/02|2017/31/12|2016/20/10|1999/15/07|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|2011/31/02|2017/31/12|2016/20/10|1999/15/07|";
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -917,17 +917,17 @@ public class TestDates {
 		Assert.assertEquals(result.getMinValue(), "1970/05/05");
 		Assert.assertEquals(result.getMaxValue(), "2017/31/12");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
 	@Test
 	public void mixed_ddMMyyyy() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("ddMMyyyy", DateResolutionMode.DayFirst);
-		final String input = 	"06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|31/02/2011|31/12/2017|20/10/2016|15/07/1999|";
+		final String pipedInput = "06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|31/02/2011|31/12/2017|20/10/2016|15/07/1999|";
 
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -947,18 +947,18 @@ public class TestDates {
 		Assert.assertEquals(result.getMinValue(), "05/05/1970");
 		Assert.assertEquals(result.getMaxValue(), "31/12/2017");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
 	@Test
 	public void basicHMM() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("H:mm");
-		final String input = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
+		final String pipedInput = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
 		"17:16|0:16|7:16|14:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|3:16|10:16|17:16|0:16|7:16|14:16|" +
 		"21:16|4:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|4:16|11:16|3:16|10:16|17:16|0:16|7:16|14:16|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -978,21 +978,21 @@ public class TestDates {
 		Assert.assertEquals(result.getMinValue(), "0:16");
 		Assert.assertEquals(result.getMaxValue(), "21:16");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
 	@Test
 	public void basicDateDDMMMYYYHHMM() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input =
+		final String pipedInput =
 				"1/30/06 22:01|1/30/06 22:15|1/30/06 22:25|1/30/06 22:35|1/30/06 22:40|1/30/06 22:45|1/30/06 22:47|1/30/06 23:00|1/30/06 23:00|1/30/06 23:11|" +
 						"1/30/06 23:15|1/30/06 23:21|1/30/06 23:31|1/30/06 23:52|1/30/06 23:55|1/30/06 23:58|1/31/06 0:00|1/31/06 0:00|1/31/06 0:00|1/31/06 0:01|" +
 						"1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:01|1/31/06 0:17|1/31/06 0:26|1/31/06 0:30|" +
 						"1/31/06 0:30|1/31/06 0:30|1/31/06 0:47|1/31/06 0:56|1/31/06 1:21|1/31/06 1:34|1/31/06 1:49|1/31/06 2:00|1/31/06 2:08|1/31/06 2:11|1/31/06 2:22|" +
 						"1/31/06 2:48|1/31/06 3:05|1/31/06 3:05|1/31/06 3:30|";
-		final String[] inputs = input.split("\\|");
+		final String[] inputs = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1012,8 +1012,8 @@ public class TestDates {
 		Assert.assertEquals(result.getMinValue(), "1/30/06 22:01");
 		Assert.assertEquals(result.getMaxValue(), "1/31/06 3:30");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1066,8 +1066,8 @@ public class TestDates {
 		Assert.assertEquals(result.getMinValue(), "11 Dec 1916");
 		Assert.assertEquals(result.getMaxValue(), "12 Mar 2019");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1096,8 +1096,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yy");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1149,8 +1149,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "HH:mm:ss");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1176,34 +1176,34 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "HH:mm");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
 	@Test
 	public void basicFrenchDate() throws IOException {
 
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 		LocalDate localDate = LocalDate.now();
 
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		analysis.setLocale(Locale.FRANCE);
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.FRANCE);
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.FRANCE);
 
 		int locked = -1;
 
 		for (int i = 0; i < 100; i++) {
-			String sample = localDate.format(formatter);
+			final String sample = localDate.format(formatter);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
 			localDate = localDate.minusDays(100);
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} [\\p{IsAlphabetic}\\.]{3,5} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
@@ -1215,38 +1215,38 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 
 		// Even the UNK match the RE
-		for (String sample : samples)
+		for (final String sample : samples)
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
 	@Test
 	public void basicBulgarianDate() throws IOException {
 
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 		LocalDate localDate = LocalDate.now();
 
 		if (!TestUtils.isValidLocale("bg_BG"))
 			return;
 
-		Locale bulgarian = Locale.forLanguageTag("bg-BG");
+		final Locale bulgarian = Locale.forLanguageTag("bg-BG");
 
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		analysis.setLocale(bulgarian);
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", bulgarian);
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", bulgarian);
 
 		int locked = -1;
 
 		for (int i = 0; i < 100; i++) {
-			String sample = localDate.format(formatter);
+			final String sample = localDate.format(formatter);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
 			localDate = localDate.minusDays(100);
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} \\p{IsAlphabetic}{1,4} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
@@ -1258,38 +1258,38 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 
 		// Even the UNK match the RE
-		for (String sample : samples)
+		for (final String sample : samples)
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
 	@Test
 	public void basicCatalanDate() throws IOException {
 
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 		LocalDate localDate = LocalDate.now();
 
 		if (!TestUtils.isValidLocale("ca_ES"))
 			return;
 
-		Locale catalan = Locale.forLanguageTag("ca-ES");
+		final Locale catalan = Locale.forLanguageTag("ca-ES");
 
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		analysis.setLocale(catalan);
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", catalan);
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", catalan);
 
 		int locked = -1;
 
 		for (int i = 0; i < 100; i++) {
-			String sample = localDate.format(formatter);
+			final String sample = localDate.format(formatter);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
 			localDate = localDate.minusDays(100);
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} .{5,8} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
@@ -1301,38 +1301,38 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 
 		// Even the UNK match the RE
-		for (String sample : samples)
+		for (final String sample : samples)
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
 	@Test
 	public void basicGermanDate() throws IOException {
 
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 		LocalDate localDate = LocalDate.now();
 
 		if (!TestUtils.isValidLocale("de_AT"))
 			return;
 
-		Locale german = Locale.forLanguageTag("de-AT");
+		final Locale german = Locale.forLanguageTag("de-AT");
 
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		analysis.setLocale(german);
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", german);
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy", german);
 
 		int locked = -1;
 
 		for (int i = 0; i < 100; i++) {
-			String sample = localDate.format(formatter);
+			final String sample = localDate.format(formatter);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
 			localDate = localDate.minusDays(100);
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} \\p{IsAlphabetic}{3} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
@@ -1344,7 +1344,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 
 		// Even the UNK match the RE
-		for (String sample : samples)
+		for (final String sample : samples)
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
@@ -1353,12 +1353,12 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("Spaces");
 		analysis.setCollectStatistics(false);
 		final int iters = 30;
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 
 		int locked = -1;
 
 		for (int i = 0; i < iters; i++) {
-			String s = String.format(" %02d/03/93", i);
+			final String s = String.format(" %02d/03/93", i);
 			samples.add(s);
 			if (analysis.train(s) && locked == -1)
 				locked = i;
@@ -1379,7 +1379,7 @@ public class TestDates {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
@@ -1563,9 +1563,9 @@ public class TestDates {
 	public void basicMMddyy() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("DOB");
 		analysis.setCollectStatistics(false);
-		final String input = "12/5/59|2/13/48|6/29/62|1/7/66|7/3/84|5/28/74|" +
+		final String pipedInput = "12/5/59|2/13/48|6/29/62|1/7/66|7/3/84|5/28/74|" +
 				"|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1583,8 +1583,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "M/d/yy");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1592,9 +1592,9 @@ public class TestDates {
 	public void yyyyMddHHmm() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input = "2017-4-15 21:10|2016-9-27 14:10|2016-3-11 07:10|2015-8-24 00:10|2015-2-04 17:10|" +
+		final String pipedInput = "2017-4-15 21:10|2016-9-27 14:10|2016-3-11 07:10|2015-8-24 00:10|2015-2-04 17:10|" +
 				"2014-7-19 10:10|2013-12-31 03:10|2013-6-13 20:10|2012-11-25 13:10|2012-5-09 06:10|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1612,8 +1612,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-M-dd HH:mm");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1621,8 +1621,8 @@ public class TestDates {
 	public void H_mm_ss_S_false() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1640,8 +1640,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss.S{1,2}");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1649,8 +1649,8 @@ public class TestDates {
 	public void H_mm_ss_S_true() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(true);
-		final String input = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1668,8 +1668,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss.S{1,2}");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1677,8 +1677,8 @@ public class TestDates {
 	public void k_mm_ss_S_false() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|24:01:29.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|24:01:29.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1695,8 +1695,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "k:mm:ss.S{1,2}");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1704,8 +1704,8 @@ public class TestDates {
 	public void k_mm_ss_S_true() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(true);
-		final String input = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|24:01:29.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|24:01:29.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1722,8 +1722,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "k:mm:ss.S{1,2}");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1731,9 +1731,9 @@ public class TestDates {
 	public void Hmmss() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input = "21:53:12|12:53:12|3:53:12|18:53:12|9:53:12|0:53:12|15:53:12|6:53:12|21:53:12|12:53:12|3:53:12|18:53:12|9:53:12|0:53:12|15:53:12|" +
+		final String pipedInput = "21:53:12|12:53:12|3:53:12|18:53:12|9:53:12|0:53:12|15:53:12|6:53:12|21:53:12|12:53:12|3:53:12|18:53:12|9:53:12|0:53:12|15:53:12|" +
 				"6:53:12|21:53:12|12:53:12|3:53:12|18:53:12|9:53:12|0:53:12|15:53:12|6:53:12|21:53:12|12:53:12|3:53:12|18:53:12|9:53:12|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1752,8 +1752,8 @@ public class TestDates {
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss");
 		Assert.assertEquals(analysis.getTrainingSet(), Arrays.asList(Arrays.copyOfRange(inputs, 0, analysis.getDetectWindow())));
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1761,9 +1761,9 @@ public class TestDates {
 	public void yyyyMMddHHmmz() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input = "2017-08-24 12:10 EDT|2017-07-03 06:10 EDT|2017-05-12 00:10 EDT|2017-03-20 18:10 EDT|2016-07-02 12:10 EDT|" +
+		final String pipedInput = "2017-08-24 12:10 EDT|2017-07-03 06:10 EDT|2017-05-12 00:10 EDT|2017-03-20 18:10 EDT|2016-07-02 12:10 EDT|" +
 				"2017-01-27 11:10 EST|2016-12-06 05:10 EST|2016-10-15 00:10 EDT|2016-08-23 18:10 EDT|2016-05-11 06:10 EDT|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1781,8 +1781,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm z");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1808,8 +1808,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1817,10 +1817,10 @@ public class TestDates {
 	public void dateYYYY() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input = "2015|2015|2015|2015|2015|2015|2015|2016|2016|2016|2013|1932|1991|1993|2001|1977|2001|1976|1972|" +
+		final String pipedInput = "2015|2015|2015|2015|2015|2015|2015|2016|2016|2016|2013|1932|1991|1993|2001|1977|2001|1976|1972|" +
 				"1982|2005|1950|1961|1967|1997|1967|1996|2014|2002|1953|1980|2010|2010|1979|1980|1983|1974|1970|" +
 				"1978|2014|2015|1979|1982|2016|2016|2013|2011|1986|1985|2000|2000|2012|2000|2000|";
-		final String[] inputs = input.split("\\|");
+		final String[] inputs = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1859,8 +1859,8 @@ public class TestDates {
 		Assert.assertEquals(result2.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result2.getTypeQualifier(), "yyyy");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result2.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result2.getRegExp()));
 		}
 	}
 
@@ -1868,14 +1868,14 @@ public class TestDates {
 	public void dateYYYY_with_zeroes() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Date");
 		analysis.setCollectStatistics(true);
-		final String input =
+		final String pipedInput =
 				"1801|1802|1900|1901|1902|1903|1904|1801|1802|1900|1901|1902|1903|" +
 				"1904|1801|1802|1900|1901|1902|1903|1904|1801|1802|1900|1901|1902|" +
 				"1904|1801|1802|1900|1901|1902|1903|1904|1801|1802|1900|1901|1902|" +
 				"2013|2014|2020|2009|2008|2007|2006|2005|2004|2003|2002|2000|2001|" +
 				"1904|1801|1802|1900|1901|1902|1903|1904|1801|1802|1900|1901|1902|" +
 				"1902|1903|1904|00|";
-		final String[] inputs = input.split("\\|");
+		final String[] inputs = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1893,8 +1893,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1935,13 +1935,13 @@ public class TestDates {
 	public void basicDateDMMMYY() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input = "1-Jan-14|2-Jan-14|3-Jan-14|6-Jan-14|7-Jan-14|7-Jan-14|8-Jan-14|9-Jan-14|10-Jan-14|" +
+		final String pipedInput = "1-Jan-14|2-Jan-14|3-Jan-14|6-Jan-14|7-Jan-14|7-Jan-14|8-Jan-14|9-Jan-14|10-Jan-14|" +
 				"13-Jan-14|14-Jan-14|15-Jan-14|16-Jan-14|17-Jan-14|20-Jan-14|21-Jan-14|22-Jan-14|" +
 				"23-Jan-14|24-Jan-14|27-Jan-14|28-Jan-14|29-Jan-14|30-Jan-14|31-Jan-14|3-Feb-14|" +
 				"4-Feb-14|5-Feb-14|6-Feb-14|7-Feb-14|10-Feb-14|11-Feb-14|12-Feb-14|13-Feb-14|14-Feb-14|" +
 				"17-Feb-14|18-Feb-14|19-Feb-14|20-Feb-14|21-Feb-14|24-Feb-14|25-Feb-14|26-Feb-14|27-Feb-14|" +
 				"28-Feb-14|3-Mar-14|4-Mar-14|5-Mar-14|";
-		final String[] inputs = input.split("\\|");
+		final String[] inputs = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1959,8 +1959,8 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}-" + KnownPatterns.PATTERN_ALPHA + "{3}-\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1968,13 +1968,13 @@ public class TestDates {
 	public void basicUnixDateCommand() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input =
+		final String pipedInput =
 				"Thu Jul  2 09:48:00 PDT 2020|Thu Jul  1 10:00:56 PDT 2020|Thu Jul  2 04:56:56 PDT 2020|Thu Jul  2 09:48:56 PDT 2020|" +
 				"Thu Jul  2 09:56:14 PDT 2020|Thu Jul  4 04:00:48 PDT 2020|Thu Jul  2 09:56:48 PDT 2020|Thu Jul 23 04:48:48 PDT 2020|" +
 				"Thu Jul  2 09:00:56 PDT 2020|Thu Jul  2 03:00:56 PDT 2020|Thu Jul  9 09:14:00 PDT 2020|Thu Jul  2 09:56:56 PDT 2020|" +
 				"Thu Jul  4 08:14:56 PDT 2020|Thu Jul  2 09:14:56 PDT 2020|Thu Jul 12 09:23:56 PDT 2020|Thu Jul 23 09:56:23 PDT 2020|" +
 				"Thu Jul  2 09:56:56 PDT 2020|Thu Jul 23 08:56:56 PDT 2020|Thu Jul  2 09:56:23 PDT 2020|Thu Jul  5 03:14:56 PDT 2020|";
-		final String[] inputs = input.split("\\|");
+		final String[] inputs = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1992,8 +1992,8 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} \\p{IsAlphabetic}{3} [ \\d]\\d \\d{2}:\\d{2}:\\d{2} .* \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2001,11 +2001,11 @@ public class TestDates {
 	public void basicMMMM_d_yyyy() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input = "September-17-2014|September-11-2011|September-4-2008|August-29-2005|August-23-2002|August-17-1999|" +
+		final String pipedInput = "September-17-2014|September-11-2011|September-4-2008|August-29-2005|August-23-2002|August-17-1999|" +
 				"August-10-1996|August-4-1993|July-29-1990|July-23-1987|July-16-1984|July-10-1981|July-4-1978|June-28-1975|" +
 				"June-21-1972|June-15-1969|June-9-1966|June-3-1963|May-27-1960|May-21-1957|May-15-1954|May-9-1951|May-2-1948|" +
 				"April-26-1945|April-20-1942|April-14-1939|April-7-1936|April-1-1933|March-26-1930|March-20-1927";
-		final String[] inputs = input.split("\\|");
+		final String[] inputs = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2023,8 +2023,8 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3,9}-\\d{1,2}-\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2032,7 +2032,7 @@ public class TestDates {
 	public void startsAsTwoDigitDay() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input =
+		final String pipedInput =
 				"27/6/2012 12:46:03|27/6/2012 15:29:48|27/6/2012 23:32:22|27/6/2012 23:38:51|27/6/2012 23:42:22|" +
 						"27/6/2012 23:49:13|27/6/2012 23:56:02|28/6/2012 08:04:51|28/6/2012 15:53:00|28/6/2012 16:46:34|" +
 						"28/6/2012 17:01:01|28/6/2012 17:53:52|28/6/2012 18:03:31|28/6/2012 18:31:14|28/6/2012 18:46:12|" +
@@ -2041,7 +2041,7 @@ public class TestDates {
 						"1/7/2012 09:15:03|1/7/2012 15:36:44|1/7/2012 18:25:35|1/7/2012 18:31:19|1/7/2012 18:36:04|" +
 						"1/7/2012 19:13:17|1/7/2012 19:13:35|1/7/2012 19:13:49|1/7/2012 19:14:07|1/7/2012 19:14:21|" +
 						"1/7/2012 19:14:29|1/7/2012 19:16:45|1/7/2012 19:17:48|1/7/2012 19:18:19|1/7/2012 19:19:09|";
-		final String[] inputs = input.split("\\|");
+		final String[] inputs = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2059,8 +2059,8 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2068,7 +2068,7 @@ public class TestDates {
 	public void startsAsTwoDigitMonth() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final String input =
+		final String pipedInput =
 				"27/10/2012 12:46:03|27/10/2012 15:29:48|27/10/2012 23:32:22|27/10/2012 23:38:51|27/10/2012 23:42:22|" +
 						"27/10/2012 23:49:13|27/10/2012 23:56:02|28/10/2012 08:04:51|28/10/2012 15:53:00|28/10/2012 16:46:34|" +
 						"28/10/2012 17:01:01|28/10/2012 17:53:52|28/10/2012 18:03:31|28/10/2012 18:31:14|28/10/2012 18:46:12|" +
@@ -2077,7 +2077,7 @@ public class TestDates {
 						"10/7/2012 09:15:03|1/7/2012 15:36:44|1/7/2012 18:25:35|1/7/2012 18:31:19|1/7/2012 18:36:04|" +
 						"1/7/2012 19:13:17|1/7/2012 19:13:35|1/7/2012 19:13:49|1/7/2012 19:14:07|1/7/2012 19:14:21|" +
 						"1/7/2012 19:14:29|1/7/2012 19:16:45|1/7/2012 19:17:48|1/7/2012 19:18:19|1/7/2012 19:19:09|";
-		final String[] inputs = input.split("\\|");
+		final String[] inputs = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -2095,8 +2095,8 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2130,8 +2130,8 @@ public class TestDates {
 		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 
-		for (int i = 0; i < inputs1.length; i++) {
-			Assert.assertTrue(inputs1[i].matches(result1.getRegExp()));
+		for (final String input : inputs1) {
+			Assert.assertTrue(input.matches(result1.getRegExp()));
 		}
 	}
 
@@ -2157,8 +2157,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd-MM-yyyy");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2184,8 +2184,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d-M-yyyy");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 
 	}
@@ -2215,8 +2215,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2240,7 +2240,7 @@ public class TestDates {
 				"00/00/0000", "00/00/0000", "00/00/0000", "09/01/2018", "06/01/2018", "00/00/0000", "00/00/0000", "09/01/2018", "09/01/2018"
 		};
 		int locked = -1;
-		int zeroes = 50;
+		final int zeroes = 50;
 
 		for (int i = 0; i < inputs.length; i++) {
 			if (analysis.train(inputs[i]) && locked == -1)
@@ -2262,8 +2262,8 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)zeroes/result.getSampleCount());
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2298,18 +2298,18 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
 	@Test
 	public void localeDateTest() throws IOException {
 
-		Locale[] locales = DateFormat.getAvailableLocales();
+		final Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] {Locale.forLanguageTag("sv")};
 
-		String testCases[] = {
+		final String testCases[] = {
 //				"yyyy MM dd", "yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
 //				"dd MMM yyyy", "d MMM yyyy", "dd-MMM-yyyy", "d-MMM-yyyy", "dd/MMM/yyyy",
 //				"d/MMM/yyyy", "dd MMMM yyyy", "d MMMM yyyy", "dd-MMMM-yyyy", "d-MMMM-yyyy",
@@ -2324,26 +2324,26 @@ public class TestDates {
 				"EEE MMM dd HH:mm:ss z yyyy"
 		};
 
-		Set <String> problems = new HashSet<>();
+		final Set <String> problems = new HashSet<>();
 		int countTests = 0;
 		int countNotGregorian = 0;
 		int countNotArabicNumerals = 0;
 		int	countNoMonthAbbreviations = 0;
 		int countProblems = 0;
 
-		for (String testCase : testCases) {
+		for (final String testCase : testCases) {
 
 			nextLocale:
-			for (Locale locale : locales) {
-				Set<String> samples = new HashSet<String>();
+			for (final Locale locale : locales) {
+				final Set<String> samples = new HashSet<>();
 				LocalDate localDate = null;
 				LocalDateTime localDateTime = null;
 				OffsetDateTime offsetDateTime = null;
 				ZonedDateTime zonedDateTime = null;
 
-				String testID = locale.toLanguageTag() + " (" + testCase + ") ...";
+				final String testID = locale.toLanguageTag() + " (" + testCase + ") ...";
 
-				Calendar cal = GregorianCalendar.getInstance(locale);
+				final Calendar cal = GregorianCalendar.getInstance(locale);
 				if (!(cal instanceof GregorianCalendar)) {
 					countNotGregorian++;
 					continue;
@@ -2374,7 +2374,7 @@ public class TestDates {
 				analysis.setLocale(locale);
 
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(testCase, locale);
-				FTAType type = SimpleDateMatcher.getType(testCase, locale);
+				final FTAType type = SimpleDateMatcher.getType(testCase, locale);
 
 				if (type.equals(FTAType.LOCALDATE))
 					localDate = LocalDate.now();
@@ -2416,7 +2416,7 @@ public class TestDates {
 					}
 				}
 
-				TextAnalysisResult result = analysis.getResult();
+				final TextAnalysisResult result = analysis.getResult();
 
 				if (locked != TextAnalyzer.DETECT_WINDOW_DEFAULT) {
 					problems.add(testID + "Locked incorrect: " + locked);
@@ -2440,7 +2440,7 @@ public class TestDates {
 				}
 				if (result.getOutlierCount() != 0) {
 					problems.add(testID + "Outliers: " + result.getOutlierCount());
-					for (Map.Entry<String, Long> outlier : result.getOutlierDetails().entrySet())
+					for (final Map.Entry<String, Long> outlier : result.getOutlierDetails().entrySet())
 						System.err.println("'" + outlier.getKey() + "': " + outlier.getValue());
 					countProblems++;
 					continue;
@@ -2458,7 +2458,7 @@ public class TestDates {
 				Assert.assertEquals(result.getNullCount(), 0);
 
 				// Even the UNK match the RE
-				for (String s : samples)
+				for (final String s : samples)
 					if (!s.matches(result.getRegExp())) {
 						problems.add(testID + "RE: " + result.getRegExp() + ", !match: " + s);
 						countProblems++;
@@ -2467,7 +2467,7 @@ public class TestDates {
 			}
 		}
 
-		for (String problem : problems) {
+		for (final String problem : problems) {
 			System.err.println(problem);
 		}
 
@@ -2506,8 +2506,8 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2540,8 +2540,8 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2572,8 +2572,8 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2606,8 +2606,8 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -2666,9 +2666,9 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty())
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
@@ -2702,10 +2702,9 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - 1);
 		Assert.assertEquals(result.getConfidence(), 1.0 - (double)1/result.getSampleCount());
 
-		for (int i = 0; i < inputs.length - 1; i++) {
+		for (int i = 0; i < inputs.length - 1; i++)
 			if (!inputs[i].isEmpty())
 				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
-		}
 	}
 
 	@Test
@@ -2738,9 +2737,9 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty())
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
@@ -2773,9 +2772,9 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty())
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
@@ -2854,11 +2853,11 @@ public class TestDates {
 
 
 		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getTypeQualifier());
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty()) {
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty()) {
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 				try {
-					LocalDate.parse(inputs[i], formatter);
+					LocalDate.parse(input, formatter);
 				}
 				catch (DateTimeParseException e) {
 					Assert.fail("Parse failed" + e);
@@ -2898,11 +2897,11 @@ public class TestDates {
 
 
 		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getTypeQualifier());
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty()) {
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty()) {
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 				try {
-					LocalDate.parse(inputs[i], formatter);
+					LocalDate.parse(input, formatter);
 				}
 				catch (DateTimeParseException e) {
 					Assert.fail("Parse failed" + e);
@@ -2942,11 +2941,11 @@ public class TestDates {
 
 
 		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getTypeQualifier());
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty()) {
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty()) {
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 				try {
-					LocalDate.parse(inputs[i], formatter);
+					LocalDate.parse(input, formatter);
 				}
 				catch (DateTimeParseException e) {
 					Assert.fail("Parse failed" + e);
@@ -2983,9 +2982,9 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty())
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
@@ -3019,9 +3018,9 @@ public class TestDates {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty())
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
@@ -3115,9 +3114,9 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty())
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
@@ -3163,9 +3162,9 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty())
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
@@ -3199,8 +3198,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "M/dd/yyyy h:mm:ss a");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -3233,8 +3232,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "M/d/yyyy");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -3244,7 +3243,7 @@ public class TestDates {
 		FTAType type;
 
 
-		SimpleResult(String regExp, String typeQualifier, String typeString) {
+		SimpleResult(final String regExp, final String typeQualifier, final String typeString) {
 			this.regExp = regExp;
 			this.typeQualifier = typeQualifier;
 			this.type = FTAType.valueOf(typeString.toUpperCase());
@@ -3260,12 +3259,13 @@ public class TestDates {
 		    "MMMM dd, yyyy", "yyyy-MM-dd", "EEEE, MMMM, dd, yyyy",
 		    "yyyy MMM dd", "yyyy/MM/dd", "dd/MM/yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss",
 		    "MMMM d yyyy hh:mm:ss aaa", "yyyy-MM-dd'T'HH:mm:ss",
-//		    "yyyy-MM-dd'T'HH:mm:ss.S", "yyyy/MM/dd HH:mm:ss.S",
-//		    "yyyy-MM-dd HH:mm:ss.S", "MM/dd/yy h:mm:ss aaa",
+		    "yyyy-MM-dd'T'HH:mm:ss.S", "yyyy/MM/dd HH:mm:ss.S",
+		    "yyyy-MM-dd HH:mm:ss.S",
+		    "MM/dd/yy h:mm:ss aaa",
 		    "MM-dd-yy h:mm:ss aaa", "M/dd/yy HH:mm", "M-dd-yy HH:mm", "yyyy-MM-dd'T'HH:mm",
-		    "yyyy-MM-dd'T'HH", "yyyyMMdd'T'HHmmss", "yyyyMMdd'T'HHmm", "yyyyMMdd'T'HH"
-//				"yyyyMMdd'T'HHmmssS",
-//			"M/d", "dd-MMM", "MM-yy", "MMMM-yy",
+		    "yyyy-MM-dd'T'HH", "yyyyMMdd'T'HHmmss", "yyyyMMdd'T'HHmm", "yyyyMMdd'T'HH",
+			"yyyyMMdd'T'HHmmssS",
+			"M/d", "dd-MMM", "MM-yy", "MMMM-yy"
 		};
 
 		final Map<String, SimpleResult> results = new HashMap<>();
@@ -3298,13 +3298,13 @@ public class TestDates {
 		results.put("yyyyMMdd'T'HH", new SimpleResult("\\d{8}T\\d{2}", "yyyyMMdd'T'HH", "LocalDateTime"));
 
 		for (int i = 0; i < tests.length; i++) {
-			TextAnalyzer analysis = new TextAnalyzer();
-			String dateTimeFormat = tests[i];
+			final TextAnalyzer analysis = new TextAnalyzer();
+			final String dateTimeFormat = tests[i];
 			final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat);
 			final int sampleCount = 1000;
 			String[] samples = new String[sampleCount];
 
-			Calendar calendar = Calendar.getInstance();
+			final Calendar calendar = Calendar.getInstance();
 			int iters = 0;
 
 			for (iters = 0; iters < samples.length; iters++) {
@@ -3317,8 +3317,8 @@ public class TestDates {
 			final TextAnalysisResult result = analysis.getResult();
 
 			if (result.getTypeQualifier() != null) {
-				SimpleResult expected = results.get(dateTimeFormat);
-				String actual = result.getRegExp();
+				final SimpleResult expected = results.get(dateTimeFormat);
+				final String actual = result.getRegExp();
 				if (!actual.equals(expected.regExp))
 					System.err.printf("Format: '%s', expected: '%s', actual '%s'\n", dateTimeFormat, expected.regExp, actual);
 				Assert.assertEquals(result.getConfidence(), 1.0);
@@ -3331,7 +3331,7 @@ public class TestDates {
 		}
 	}
 
-	public void _dateTimePerf(boolean statisticsOn) throws IOException {
+	public void _dateTimePerf(final boolean statisticsOn) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!statisticsOn) {
 			analysis.setDefaultLogicalTypes(false);
@@ -3358,9 +3358,9 @@ public class TestDates {
 		long start = System.currentTimeMillis();
 
 		// Run for about reasonable number of seconds
-		int seconds = 5;
+		final int seconds = 5;
 		for (iters = 0; iters < sampleCount; iters++) {
-			String sample = samples[iters%samples.length];
+			final String sample = samples[iters%samples.length];
 			analysis.train(sample);
 			if (bw != null)
 				bw.write(sample + '\n');

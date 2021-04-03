@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ public final class Smashed {
 		// Never called
 	}
 
-	static final char DIGIT = '9';
-	static final char LOW_ALPHABETIC = 'x';
-	static final char HIGH_ALPHABETIC = 'X';
-	static final char HEX = 'H';
+	private static final char DIGIT = '9';
+	private static final char LOW_ALPHABETIC = 'x';
+	private static final char HIGH_ALPHABETIC = 'X';
+	private static final char HEX = 'H';
 
 	/**
 	 * Fast method to simplify a string so that we can determine if all inputs are of the same form.
@@ -41,13 +41,14 @@ public final class Smashed {
 	 * @return A 'smashed' String.
 	 */
 	public static String smash(final String input) {
-		StringBuilder b = new StringBuilder();
+		final int len = input.length();
 
-		int len = input.length();
 		if (len > 30)
 			return ".+";
+
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < len; i++) {
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			// Note: we are using 0-9 not isDigit
 			if (ch >= '0' && ch <= '9')
 				b.append(DIGIT);
@@ -68,11 +69,11 @@ public final class Smashed {
 	 * @param smashed The smashed input
 	 * @return A Regular Expression that captures the 'smashed' input.
 	 */
-	public static String smashedAsRegExp(String smashed) {
+	public static String smashedAsRegExp(final String smashed) {
 		if (".+".equals(smashed))
 			return smashed;
 
-		StringBuilder ret = new StringBuilder();
+		final StringBuilder ret = new StringBuilder();
 		char last = '¶';
 		char ch = '¶';
 		char count = 0;
@@ -123,8 +124,8 @@ public final class Smashed {
 		return ret.toString();
 	}
 
-	private static StringBuilder segment(char toRepeat, int count) {
-		StringBuilder ret = new StringBuilder();
+	private static StringBuilder segment(final char toRepeat, final int count) {
+		final StringBuilder ret = new StringBuilder();
 		String repeater = null;
 		switch (toRepeat) {
 			case HEX:

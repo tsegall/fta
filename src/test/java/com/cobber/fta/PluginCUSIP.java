@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 public class PluginCUSIP extends LogicalTypeFiniteSimple {
 	public final static String REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 
-	public PluginCUSIP(PluginDefinition plugin) throws FileNotFoundException {
+	public PluginCUSIP(final PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, REGEXP, "\\p{Alnum}{9}", 99);
 		setContent("resource", "/CUSIP.txt");
 	}

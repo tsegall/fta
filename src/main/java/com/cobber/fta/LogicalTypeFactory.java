@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,8 @@ public class LogicalTypeFactory {
 	 *
 	 *  Note: isValid(input) can be invoked on the resulting type, and nextRandom() if the type is an subclass of LogicalTypeCode.
 	 */
-	public static LogicalType newInstance(String qualifier) {
-		PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
-		return LogicalTypeFactory.newInstance(pluginDefinition);
+	public static LogicalType newInstance(final String qualifier) {
+		return LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier(qualifier));
 	}
 
 	/**
@@ -43,11 +42,11 @@ public class LogicalTypeFactory {
 	 * @param plugin The Definition for this plugin
 	 * @return The LogicalType The Logical Type associated with the definition (if it exists), null if non-existent.
 	 */
-	public static LogicalType newInstance(PluginDefinition plugin) {
+	public static LogicalType newInstance(final PluginDefinition plugin) {
 		if (plugin == null)
 			return null;
 
-		Locale locale = null;
+		Locale locale;
 
 		// If the plugin is associated with a particular set of locales then use the first plausible one we find to override the default
 		if (plugin.validLocales != null && plugin.validLocales.length != 0)
@@ -65,7 +64,7 @@ public class LogicalTypeFactory {
 	 * @param locale The locale used for this LogicalType
 	 * @return The LogicalType The Logical Type associated with the definition (if it exists), null if non-existent.
 	 */
-	public static LogicalType newInstance(PluginDefinition plugin, Locale locale) {
+	public static LogicalType newInstance(final PluginDefinition plugin, final Locale locale) {
 		LogicalType logical = null;
 
 		if (plugin.clazz != null) {

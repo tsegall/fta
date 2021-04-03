@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
 public class TestPlugins {
-	static Map<String, String> signatures = new HashMap<>();
+	protected final static Map<String, String> signatures = new HashMap<>();
 
 	static {
 		signatures.put("NAME.FIRST", "slggsAEDZ26rz9dqs15eNF23j2w=");
@@ -108,11 +108,11 @@ public class TestPlugins {
 	@Test
 	public void basicGenderTwoValuesMF() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
-		final String input = "F|M|M|F|F|M|F|F|M|" +
+		final String pipedInput = "F|M|M|F|F|M|F|F|M|" +
 				"M|F|M|M|M|F|F|M|M|M|" +
 				"M|F|M|F|F|M|F|M|" +
 				"F|M|F|F|M|F|M|M|M|M|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -132,16 +132,16 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
 	@Test
 	public void basicGenderAllUnknown() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
-		final String input = "U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|";
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -161,18 +161,18 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 0.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
 	@Test
 	public void basicGender() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
-		final String input = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
+		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
 				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
 				"Female|Male|Female|FEMALE|Male|Female|male|Male|Male|male|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -189,15 +189,15 @@ public class TestPlugins {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Long> outliers = result.getOutlierDetails();
-		long outlierCount = outliers.get("UNKNOWN");
+		final long outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		LogicalType logicalGender = analysis.getPlugins().getRegistered(LogicalTypeGenderEN.SEMANTIC_TYPE);
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
-			boolean expected = "male".equalsIgnoreCase(inputs[i].trim()) || "female".equalsIgnoreCase(inputs[i].trim());
-			Assert.assertEquals(logicalGender.isValid(inputs[i]), expected);
+		final LogicalType logicalGender = analysis.getPlugins().getRegistered(LogicalTypeGenderEN.SEMANTIC_TYPE);
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()), input);
+			final boolean expected = "male".equalsIgnoreCase(input.trim()) || "female".equalsIgnoreCase(input.trim());
+			Assert.assertEquals(logicalGender.isValid(input), expected);
 		}
 	}
 
@@ -254,7 +254,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getRegExp(), LogicalTypePhoneNumber.REGEXP);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		final Map<String, Long> outliers = result.getOutlierDetails();
-		long outlierCount = outliers.get("(014) 427-4427");
+		final long outlierCount = outliers.get("(014) 427-4427");
 		Assert.assertEquals(outlierCount, 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		// Confidence is 1.0 because we got a boost from seeing the valid header - i.e. 'phone'
@@ -271,7 +271,8 @@ public class TestPlugins {
 		final String[] inputs = new String[] {
 				"+1 339 223 3709", "(650) 867-3450", "+44 191 4956203", "(650) 450-8810", "(512) 757-6000", "(336) 222-7000", "(014) 427-4427",
 				"(785) 241-6200", "(312) 596-1000", "(503) 421-7800", "(520) 773-9050", "+1 617 875 9183", "(212) 842-5500", "(415) 901-7000",
-				"+1 781 820 1290", "508.822.8383", "617-426-1400", "+1 781-219-3635", "339.201.9591", "1-800-873-4779"
+				"+1 781 820 1290", "508.822.8383", "617-426-1400", "+1 781-219-3635", "339.201.9591", "1-800-873-4779",
+				"5102687777", "5108232370", "8446422227", "7192572713", "7192572713", "9259541178", "5106583226", "5105255950",  "9252441222"
 		};
 
 		for (int i = 0; i < inputs.length; i++)
@@ -287,7 +288,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getRegExp(), LogicalTypePhoneNumber.REGEXP);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		final Map<String, Long> outliers = result.getOutlierDetails();
-		long outlierCount = outliers.get("(014) 427-4427");
+		final long outlierCount = outliers.get("(014) 427-4427");
 		Assert.assertEquals(outlierCount, 1);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		Assert.assertEquals(result.getConfidence(), 1.0 - (double)1/result.getSampleCount());
@@ -320,14 +321,14 @@ public class TestPlugins {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Long> outliers = result.getOutlierDetails();
-		long outlierCount = outliers.get("UNKNOWN");
+		final long outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		LogicalType logicalGender = analysis.getPlugins().getRegistered(LogicalTypeGenderEN.SEMANTIC_TYPE);
+		final LogicalType logicalGender = analysis.getPlugins().getRegistered(LogicalTypeGenderEN.SEMANTIC_TYPE);
 		for (int i = 0; i < inputs.length; i++) {
 			Assert.assertTrue(inputs[i].trim().matches(result.getRegExp()), inputs[i]);
-			boolean expected = "male".equalsIgnoreCase(inputs[i].trim()) || "female".equalsIgnoreCase(inputs[i].trim());
+			final boolean expected = "male".equalsIgnoreCase(inputs[i].trim()) || "female".equalsIgnoreCase(inputs[i].trim());
 			Assert.assertEquals(logicalGender.isValid(inputs[i]), expected);
 		}
 	}
@@ -356,7 +357,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Long> outliers = result.getOutlierDetails();
-		long outlierCount = outliers.get("UNKNOWN");
+		final long outlierCount = outliers.get("UNKNOWN");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)outlierCount/result.getSampleCount());
 
@@ -417,8 +418,8 @@ public class TestPlugins {
 	public void testRegisterFinite() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		analysis.setMaxCardinality(20000);
-		List<PluginDefinition> plugins = new ArrayList<>();
-		PluginDefinition plugin = new PluginDefinition("CUSIP", "com.cobber.fta.PluginCUSIP");
+		final List<PluginDefinition> plugins = new ArrayList<>();
+		final PluginDefinition plugin = new PluginDefinition("CUSIP", "com.cobber.fta.PluginCUSIP");
 		plugin.headerRegExps = new String[] { ".*(?i)(cusip).*" };
 		plugin.headerRegExpConfidence = new int[] { 90 };
 		plugins.add(plugin);
@@ -458,7 +459,7 @@ public class TestPlugins {
 	@Test
 	public void testRegisterInfinite() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
-		List<PluginDefinition> plugins = new ArrayList<>();
+		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", "com.cobber.fta.PluginCreditCard"));
 
 		try {
@@ -496,10 +497,10 @@ public class TestPlugins {
 				"Visa,4012-8888-8888-1881"
 		};
 
-		Set<String>  samples = new HashSet<String>();
+		final Set<String>  samples = new HashSet<String>();
 
 		for (int i = 0; i < input.length; i++) {
-			String s = input[i].split(",")[1];
+			final String s = input[i].split(",")[1];
 			samples.add(s);
 			analysis.train(s);
 		}
@@ -518,7 +519,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getRegExp(), PluginCreditCard.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (String s : samples) {
+		for (final String s : samples) {
 			Assert.assertTrue(s.matches(result.getRegExp()), s);
 		}
 	}
@@ -851,9 +852,9 @@ public class TestPlugins {
 
 	@Test
 	public void random3166_2() throws IOException {
-		TextAnalyzer analyzer = new TextAnalyzer("country");
+		final TextAnalyzer analyzer = new TextAnalyzer("country");
 		analyzer.registerDefaultPlugins(null);
-		LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-2");
+		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-2");
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -863,9 +864,9 @@ public class TestPlugins {
 
 	@Test
 	public void random3166_2_noHeader() throws IOException {
-		TextAnalyzer analyzer = new TextAnalyzer();
+		final TextAnalyzer analyzer = new TextAnalyzer();
 		analyzer.registerDefaultPlugins(Locale.getDefault());
-		LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-2");
+		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-2");
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -875,9 +876,9 @@ public class TestPlugins {
 
 	@Test
 	public void random3166_3() throws IOException {
-		TextAnalyzer analyzer = new TextAnalyzer("country");
+		final TextAnalyzer analyzer = new TextAnalyzer("country");
 		analyzer.registerDefaultPlugins(null);
-		LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-3");
+		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-3");
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -887,9 +888,9 @@ public class TestPlugins {
 
 	@Test
 	public void random4217() throws IOException {
-		TextAnalyzer analyzer = new TextAnalyzer("currency");
+		final TextAnalyzer analyzer = new TextAnalyzer("currency");
 		analyzer.registerDefaultPlugins(null);
-		LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("CURRENCY_CODE.ISO-4217");
+		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("CURRENCY_CODE.ISO-4217");
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -899,9 +900,9 @@ public class TestPlugins {
 
 	@Test
 	public void randomIATA() throws IOException {
-		TextAnalyzer analyzer = new TextAnalyzer("IATA");
+		final TextAnalyzer analyzer = new TextAnalyzer("IATA");
 		analyzer.registerDefaultPlugins(null);
-		LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("AIRPORT_CODE.IATA");
+		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("AIRPORT_CODE.IATA");
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -912,29 +913,29 @@ public class TestPlugins {
 
 	@Test
 	public void testRegister() throws IOException {
-		TextAnalyzer analyzer = new TextAnalyzer();
+		final TextAnalyzer analyzer = new TextAnalyzer();
 		analyzer.registerDefaultPlugins(null);
 
 		LogicalType logical = analyzer.getPlugins().getRegistered(LogicalTypeURL.SEMANTIC_TYPE);
 
 		String valid = "http://www.infogix.com";
-		String invalid = "www infogix.com";
+		final String invalid = "www infogix.com";
 
 		Assert.assertTrue(logical.isValid(valid));
 		Assert.assertFalse(logical.isValid(invalid));
 
 		logical = analyzer.getPlugins().getRegistered(LogicalTypeCountryEN.SEMANTIC_TYPE);
 
-		String ChinaUpper = "CHINA";
+		final String ChinaUpper = "CHINA";
 		Assert.assertTrue(logical.isValid(ChinaUpper));
 
-		String ChinaWithSpaces = "  CHINA  ";
+		final String ChinaWithSpaces = "  CHINA  ";
 		Assert.assertTrue(logical.isValid(ChinaWithSpaces));
 
-		String ChinaCamel = "China";
+		final String ChinaCamel = "China";
 		Assert.assertTrue(logical.isValid(ChinaCamel));
 
-		String Lemuria = "Lemuria";
+		final String Lemuria = "Lemuria";
 		Assert.assertFalse(logical.isValid(Lemuria));
 	}
 
@@ -1291,11 +1292,11 @@ public class TestPlugins {
 		Assert.assertEquals(outliers.get("SA"), Long.valueOf(1));
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		LogicalType logical = analysis.getPlugins().getRegistered("STATE_PROVINCE.STATE_US");
+		final LogicalType logical = analysis.getPlugins().getRegistered("STATE_PROVINCE.STATE_US");
 		for (int i = 0; i < inputs.length; i++) {
-			String trimmed = inputs[i].trim();
+			final String trimmed = inputs[i].trim();
 			Assert.assertTrue(trimmed.matches(result.getRegExp()), inputs[i]);
-			boolean expected = !outliers.containsKey(trimmed);
+			final boolean expected = !outliers.containsKey(trimmed);
 			Assert.assertEquals(logical.isValid(inputs[i]), expected);
 		}
 	}
@@ -1829,7 +1830,7 @@ public class TestPlugins {
 		if (!TestUtils.isValidLocale("de"))
 			return;
 
-		Locale german = Locale.forLanguageTag("de");
+		final Locale german = Locale.forLanguageTag("de");
 
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setLocale(german);
@@ -1844,7 +1845,7 @@ public class TestPlugins {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
@@ -1946,7 +1947,7 @@ public class TestPlugins {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getTypeQualifier(), "MONTH.ABBR_en-US");
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}");
@@ -2001,7 +2002,7 @@ public class TestPlugins {
 				locked = i;
 		}
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\.]{3,5}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
@@ -2132,7 +2133,7 @@ public class TestPlugins {
 		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		samples[0] = "000-00-0000";
 		for (int i = 1; i < samples.length; i++) {
 			b.setLength(0);
@@ -2146,7 +2147,7 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setLengthQualifier(false);
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -2169,7 +2170,7 @@ public class TestPlugins {
 		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
 			b.append(String.format("%03d", random.nextInt(1000)));
@@ -2182,7 +2183,7 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Primary SSN");
 		analysis.setDefaultLogicalTypes(false);
-		List<PluginDefinition> plugins = new ArrayList<>();
+		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("SSN", "Social Security Number", "\\d{3}-\\d{2}-\\d{4}",
 				new String[] {"\\d{3}-\\d{2}-\\d{4}"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" }, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, FTAType.STRING));
 
@@ -2191,7 +2192,7 @@ public class TestPlugins {
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 		analysis.train("032--45-0981");
@@ -2226,7 +2227,7 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("genero");
 		analysis.setDefaultLogicalTypes(false);
-		List<PluginDefinition> plugins = new ArrayList<>();
+		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("GENDER_PT", "Gender (Portuguese Language)", "(?i)(FEMENINO|MASCULINO)",
 				new String[] {"(?i)(FEMENINO|MASCULINO)"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}", null, null, null, 98, FTAType.STRING));
 
@@ -2235,7 +2236,7 @@ public class TestPlugins {
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -2257,15 +2258,15 @@ public class TestPlugins {
 
 	@Test
 	public void testFinitePlugin() throws IOException {
-		InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
+		final InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
 		final Random random = new Random(314159265);
 
-		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
+		final PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
 				null, null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, FTAType.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
-		List<PluginDefinition> plugins = new ArrayList<>();
+		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(pluginDefinition);
 
 		try {
@@ -2284,7 +2285,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getBlankCount(), 11);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		String re = result.getRegExp();
+		final String re = result.getRegExp();
 		Assert.assertEquals(re, "\\p{Alpha}*");
 		Assert.assertEquals(result.getTypeQualifier(), "PLANET");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - 11));
@@ -2297,15 +2298,15 @@ public class TestPlugins {
 
 	@Test
 	public void testFinitePluginBackout() throws IOException {
-		String[] planets = new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" };
+		final String[] planets = new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" };
 		final int SAMPLES = 100;
 		final Random random = new Random(314159265);
 
-		PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
+		final PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
 				null, null, String.join("|",  planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, FTAType.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
-		List<PluginDefinition> plugins = new ArrayList<>();
+		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(pluginDefinition);
 
 		try {
@@ -2336,8 +2337,8 @@ public class TestPlugins {
 	public void testInfiniteDoublePlugin() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("PERCENTAGES");
 		final int COUNT = 1000;
-		List<PluginDefinition> plugins = new ArrayList<>();
-		PluginDefinition plugin = new PluginDefinition("PERCENT", "com.cobber.fta.PluginPercent");
+		final List<PluginDefinition> plugins = new ArrayList<>();
+		final PluginDefinition plugin = new PluginDefinition("PERCENT", "com.cobber.fta.PluginPercent");
 		plugin.headerRegExps = new String[] { ".*(?i)(percent).*" };
 		plugin.headerRegExpConfidence = new int[] { 90 };
 		plugins.add(plugin);
@@ -2348,7 +2349,7 @@ public class TestPlugins {
 			System.err.println(e.getMessage());
 		}
 
-		Random r = new Random(173);
+		final Random r = new Random(173);
 		for (int i = 0; i < COUNT; i++)
 			analysis.train(String.valueOf(r.nextDouble()));
 
@@ -2374,8 +2375,8 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("DOB");
 		final int COUNT = 1000;
 
-		List<PluginDefinition> plugins = new ArrayList<>();
-		PluginDefinition plugin = new PluginDefinition("BIRTHDATE", "com.cobber.fta.PluginBirthDate");
+		final List<PluginDefinition> plugins = new ArrayList<>();
+		final PluginDefinition plugin = new PluginDefinition("BIRTHDATE", "com.cobber.fta.PluginBirthDate");
 		plugin.headerRegExps = new String[] { ".*(?i)(DOB).*" };
 		plugin.headerRegExpConfidence = new int[] { 90 };
 		plugins.add(plugin);
@@ -2388,10 +2389,10 @@ public class TestPlugins {
 
 		LocalDate localDate = LocalDate.now();
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
 		for (int i = 0; i < COUNT; i++) {
-			String sample = localDate.format(formatter);
+			final String sample = localDate.format(formatter);
 			analysis.train(sample);
 			localDate = localDate.minusDays(10);
 		}
@@ -2415,15 +2416,15 @@ public class TestPlugins {
 
 	@Test
 	public void testNames() throws IOException {
-		CsvParserSettings settings = new CsvParserSettings();
+		final CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);
-		String[] header = null;
+		String[] header;
 		String[] row;
-		TextAnalyzer[] analysis = null;
+		TextAnalyzer[] analysis;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/Names.txt")))) {
 
-			CsvParser parser = new CsvParser(settings);
+			final CsvParser parser = new CsvParser(settings);
 			parser.beginParsing(in);
 
 			header = parser.getRecordMetadata().headers();
@@ -2438,44 +2439,44 @@ public class TestPlugins {
 			}
 		}
 
-		TextAnalysisResult first = analysis[0].getResult();
+		final TextAnalysisResult first = analysis[0].getResult();
 		Assert.assertEquals(first.getTypeQualifier(), "NAME.FIRST");
 		Assert.assertEquals(first.getStructureSignature(), signatures.get("NAME.FIRST"));
 
-		TextAnalysisResult last = analysis[1].getResult();
+		final TextAnalysisResult last = analysis[1].getResult();
 		Assert.assertEquals(last.getTypeQualifier(), "NAME.LAST");
 		Assert.assertEquals(last.getStructureSignature(), signatures.get("NAME.LAST"));
 
-		LogicalType logicalFirst = analysis[0].getPlugins().getRegistered(LogicalTypeFirstName.SEMANTIC_TYPE);
+		final LogicalType logicalFirst = analysis[0].getPlugins().getRegistered(LogicalTypeFirstName.SEMANTIC_TYPE);
 		Assert.assertTrue(logicalFirst.isValid("Harry"));
 	}
 
 	@Test
 	public void testNameHeader() throws IOException {
-		String headersGood[] = new String[] {
+		final String headersGood[] = new String[] {
 				"FirstName", "First Name", "First_Name", "FIRSTNAME", "FNAME", "FIRST.NAME", "FIRST-NAME", "GIVEN NAME"
 		};
-		String headersMaybe[] = new String[] {
+		final String headersMaybe[] = new String[] {
 				"NAME"
 		};
-		String headersBad[] = new String[] {
+		final String headersBad[] = new String[] {
 				null, ""
 		};
-		String[] samplesGoodFirstOnly = new String[] {
+		final String[] samplesGoodFirstOnly = new String[] {
 				"Elizabeth", "Sarah", "Tim", "Paula", "Bethany", "Reginald", "Amanda", "Nancy", "Margaret", "Leila"
 		};
-		String[] samplesUnknown = new String[] {
+		final String[] samplesUnknown = new String[] {
 				"Mary Beth", "Mary Joe"
 		};
 
 		// So you need 40% or better success rate if you have 'good' headers
 		for (int i = 0; i < 100; i++) {
-			for (String header : headersGood) {
+			for (final String header : headersGood) {
 				final TextAnalyzer analysis = new TextAnalyzer(header);
 				for (int s = 0; s < 2; s++)
 					analysis.train(samplesGoodFirstOnly[s]);
 
-				for (String sample : samplesUnknown)
+				for (final String sample : samplesUnknown)
 					analysis.train(sample);
 
 				Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
@@ -2485,12 +2486,12 @@ public class TestPlugins {
 
 		// So you need 60% or better success rate if you have 'maybe' headers
 		for (int i = 0; i < 100; i++) {
-			for (String header : headersMaybe) {
+			for (final String header : headersMaybe) {
 				final TextAnalyzer analysis = new TextAnalyzer(header);
 				for (int s = 0; s < 5; s++)
 					analysis.train(samplesGoodFirstOnly[s]);
 
-				for (String sample : samplesUnknown)
+				for (final String sample : samplesUnknown)
 					analysis.train(sample);
 
 				Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
@@ -2499,10 +2500,10 @@ public class TestPlugins {
 		}
 
 		// With 'bad' headers you really need good data, and more of it!
-		for (String header : headersBad) {
+		for (final String header : headersBad) {
 			final TextAnalyzer analysis = new TextAnalyzer(header);
 			for (int i = 0; i < 4; i++)
-				for (String sample : samplesGoodFirstOnly)
+				for (final String sample : samplesGoodFirstOnly)
 					analysis.train(sample);
 
 			Assert.assertEquals(analysis.getResult().getTypeQualifier(), "NAME.FIRST", header);
@@ -2510,9 +2511,9 @@ public class TestPlugins {
 		}
 
 		// With 'bad' headers you really need good data - this is an example of not enough data!
-		for (String header : headersBad) {
+		for (final String header : headersBad) {
 			final TextAnalyzer analysis = new TextAnalyzer(header);
-			for (String sample : samplesGoodFirstOnly) {
+			for (final String sample : samplesGoodFirstOnly) {
 				analysis.train(sample);
 			}
 
@@ -2523,7 +2524,7 @@ public class TestPlugins {
 	@Test
 	public void testRegExpLogicalType_CUSIP() throws IOException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
-		String[] samples = new String[] {
+		final String[] samples = new String[] {
 				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
 				"G0084W951", "G0129K104", "G0129K904", "G0129K954", "G0132V105", "G0176J109", "G0176J909", "G0176J959", "G01767105", "G01767905",
 				"G01767955", "G0177J108", "G0177J908", "G0177J958", "G02602103", "G02602903", "G02602953", "G0335L102", "G0335L902", "G0335L952"
@@ -2532,7 +2533,7 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 
-		List<PluginDefinition> plugins = new ArrayList<>();
+		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
 				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, FTAType.STRING));
 
@@ -2541,7 +2542,7 @@ public class TestPlugins {
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -2563,7 +2564,7 @@ public class TestPlugins {
 	@Test
 	public void testRegExpLogicalType_CUSIP_bulk() throws IOException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
-		String[] samples = new String[] {
+		final String[] samples = new String[] {
 				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
 				"G0084W951", "G0129K104", "G0129K904", "G0129K954", "G0132V105", "G0176J109", "G0176J909", "G0176J959", "G01767105", "G01767905",
 				"G01767955", "G0177J108", "G0177J908", "G0177J958", "G02602103", "G02602903", "G02602953", "G0335L102", "G0335L902", "G0335L952"
@@ -2572,7 +2573,7 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 
-		List<PluginDefinition> plugins = new ArrayList<>();
+		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
 				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, FTAType.STRING));
 
@@ -2582,7 +2583,7 @@ public class TestPlugins {
 			System.err.println(e.getMessage());
 		}
 
-		Map<String, Long> observed = new HashMap<>();
+		final Map<String, Long> observed = new HashMap<>();
 		for (int i = 0; i < samples.length; i++) {
 			observed.put(samples[i], Long.valueOf(i + 1));
 		}
@@ -2606,7 +2607,7 @@ public class TestPlugins {
 	@Test
 	public void testSignatures() throws IOException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
-		String[] samples = new String[] {
+		final String[] samples = new String[] {
 				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
 				"G0084W951", "G0129K104", "G0129K904", "G0129K954", "G0132V105", "G0176J109", "G0176J909", "G0176J959", "G01767105", "G01767905",
 				"G01767955", "G0177J108", "G0177J908", "G0177J958", "G02602103", "G02602903", "G02602953", "G0335L102", "G0335L902", "G0335L952"
@@ -2615,7 +2616,7 @@ public class TestPlugins {
 
 		final TextAnalyzer preAnalysis = new TextAnalyzer("CUSIP");
 
-		for (String sample : samples)
+		for (final String sample : samples)
 			preAnalysis.train(sample);
 
 		final TextAnalysisResult preResult = preAnalysis.getResult();
@@ -2635,7 +2636,7 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 
-		List<PluginDefinition> plugins = new ArrayList<>();
+		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
 				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, FTAType.STRING));
 
@@ -2644,7 +2645,7 @@ public class TestPlugins {
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -2673,7 +2674,7 @@ public class TestPlugins {
 	@Test
 	public void testRegExpLogicalType_FUND() throws IOException {
 		final String FUND_REGEXP = "[\\p{IsAlphabetic}\\d]{10}";
-		String[] samples = new String[] {
+		final String[] samples = new String[] {
 				"BFLGXF682X", "BFLGXF682W", "PNUJWNGCFQ", "SVAXRA5JCJ", "Y7OBPIXWM9", "G8K8TRB34J", "Y3EB59C7IS", "SJBDBG2P2M", "4XC8B8ZE2Y", "JN7BXG4Z6B",
 				"VMTM4FS09S", "INX2TS29XH", "HCUBHG6SL8", "KTCZJMS3C2", "YOUOL9IN2K", "NK8YM32JKG", "J8608B2931", "YFJBB0HOUS", "HKPS0A7DGO", "6USXWQTEK1",
 				"4BTJHZ1I2V", "PDGWWLKDY9", "OQ1KEBQD85", "HS8JYUVVCO", "WZYULQRKW2", "SDLJVXYOUW", "2DBSKJEJMK", "J0DN2PR11M", "DDIKS9IUVJ", "WRUDP8V53N",
@@ -2688,7 +2689,7 @@ public class TestPlugins {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("FUND_ID");
-		List<PluginDefinition> plugins = new ArrayList<>();
+		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("FUND_ID", null, FUND_REGEXP,
 				null, null, null, null, FUND_REGEXP, new String[] { }, null, null, 98, FTAType.STRING));
 
@@ -2697,7 +2698,7 @@ public class TestPlugins {
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -2719,14 +2720,14 @@ public class TestPlugins {
 	@Test
 	public void testRegExpLogicalType_Bug() {
 		final String EXPECTED_REGEXP = "\\p{IsAlphabetic}\\d{10}";
-		String[] samples = new String[] {
+		final String[] samples = new String[] {
 				"a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890",
 				"a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890",
 				"a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890",
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("NotMuch");
-		String pluginDefinitions =
+		final String pluginDefinitions =
 				"[ {" +
 				"  \"qualifier\": \"BUG\"," +
 				"  \"regExpReturned\": \"\\\\d{11}\"," +
@@ -2740,7 +2741,7 @@ public class TestPlugins {
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -2837,7 +2838,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		long outlierCount = outliers.get("GONDWANALAND");
+		final long outlierCount = outliers.get("GONDWANALAND");
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), ".+");
@@ -3018,7 +3019,7 @@ public class TestPlugins {
 	public void basicUSStreet() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		for (String s : TestUtils.validUSStreets) {
+		for (final String s : TestUtils.validUSStreets) {
 			analysis.train(s);
 		}
 
@@ -3039,7 +3040,7 @@ public class TestPlugins {
 	public void basicUSStreet2() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		for (String s : validUSStreets2) {
+		for (final String s : validUSStreets2) {
 			analysis.train(s);
 		}
 

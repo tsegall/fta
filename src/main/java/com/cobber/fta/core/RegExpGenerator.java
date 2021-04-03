@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,15 +44,15 @@ import java.util.regex.Pattern;
 public class RegExpGenerator {
 	private int shortest = Integer.MAX_VALUE;
 	private int longest = Integer.MIN_VALUE;
-	private boolean isAlphabetic = false;
-	private boolean isDigit = false;
-	private boolean isPeriod = false;
-	private boolean isSpace = false;
-	private boolean isUnderscore = false;
-	private boolean isMinus = false;
-	private boolean isOther = false;
-	private int maxClasses = 0;
-	private boolean asSet = false;
+	private boolean isAlphabetic;
+	private boolean isDigit;
+	private boolean isPeriod;
+	private boolean isSpace;
+	private boolean isUnderscore;
+	private boolean isMinus;
+	private boolean isOther;
+	private int maxClasses;
+	private boolean asSet;
 	private int maxSetSize = -1;
 	private Locale locale = null;
 	private Set<String> memory = new TreeSet<>();
@@ -61,7 +61,7 @@ public class RegExpGenerator {
 		this.asSet = false;
 	}
 
-	public RegExpGenerator(boolean asSet, int maxSetSize, Locale locale) {
+	public RegExpGenerator(final boolean asSet, final int maxSetSize, final Locale locale) {
 		this.asSet = asSet;
 		this.maxSetSize = maxSetSize;
 		this.locale = locale;
@@ -73,7 +73,7 @@ public class RegExpGenerator {
 	 * @param ch The character to test.
 	 * @return True if the character is reserved.
 	 */
-	public static boolean isSpecial(char ch) {
+	public static boolean isSpecial(final char ch) {
 		return ch == '.' ||  ch == '+' || ch == '*' || ch == '^' || ch == '$' ||
 				ch == '[' || ch == ']' || ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == '|';
 
@@ -83,7 +83,7 @@ public class RegExpGenerator {
 	 * Return a sloshed single character - protects any characters that is special in a Regular Expression.
 	 * @return A String representation of the input character protected.
 	 */
-	public static String slosh(char ch) {
+	public static String slosh(final char ch) {
 		return isSpecial(ch) ? "\\" + ch : String.valueOf(ch);
 	}
 
@@ -96,7 +96,7 @@ public class RegExpGenerator {
 			return firstRE + '|' + secondRE;
 
 		if (secondRE.contains(firstRE)) {
-			String save = firstRE;
+			final String save = firstRE;
 			firstRE = secondRE;
 			secondRE = save;
 		}
@@ -107,7 +107,7 @@ public class RegExpGenerator {
 		if (firstRE.endsWith(secondRE))
 			return '(' + firstRE.substring(0, firstRE.length() - secondRE.length()) + ")?" + secondRE;
 
-		int start = firstRE.indexOf(secondRE);
+		final int start = firstRE.indexOf(secondRE);
 		return firstRE.substring(0, start) + '(' + secondRE + ")?" + firstRE.substring(start + secondRE.length());
 	}
 
@@ -116,18 +116,18 @@ public class RegExpGenerator {
 	 * @param input The String to be protected.
 	 * @return An escaped String.
 	 */
-	public static String slosh(String input) {
-		int len = input.length();
+	public static String slosh(final String input) {
+		final int len = input.length();
 
 		if (len == 1)
 			return slosh(input.charAt(0));
 
 		int specials = 0;
-		StringBuilder ret = new StringBuilder();
+		final StringBuilder ret = new StringBuilder();
 
 		// Build up the answer and count the number of special characters
 		for (int i = 0; i < input.length(); i++) {
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			if (isSpecial(ch)) {
 				specials++;
 				if (specials > 1)
@@ -158,7 +158,7 @@ public class RegExpGenerator {
 	 * This method should be called for each string in the set.
 	 * @param input The String to be used as part of the set.
 	 */
-	public void train(String input) {
+	public void train(final String input) {
 		if (asSet)
 			memory.add(input.toUpperCase(locale));
 
@@ -166,7 +166,7 @@ public class RegExpGenerator {
 		int classes = 0;
 
 		for (int i = 0; i < len; i++) {
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			if (Character.isAlphabetic(ch))
 				isAlphabetic = true;
 			else if (Character.isDigit(ch))
@@ -209,7 +209,7 @@ public class RegExpGenerator {
 	 * @return A regular expression matching the training set.
 	 */
 	public String getResult() {
-		StringBuilder result = new StringBuilder();
+		final StringBuilder result = new StringBuilder();
 
 		if (asSet) {
 			// Generate a Character class if possible - we would rather see [A-G] than A|B|C|D|E|F|G
@@ -218,7 +218,7 @@ public class RegExpGenerator {
 				char last = 0;
 				char current = 0;
 				boolean collapsible = true;
-				for (String element : memory) {
+				for (final String element : memory) {
 					current = element.charAt(0);
 					if (first == 0)
 						first = current;
@@ -230,7 +230,7 @@ public class RegExpGenerator {
 					last = current;
 				}
 				if (collapsible) {
-					result.append("[").append(first).append('-').append(last).append(']');
+					result.append('[').append(first).append('-').append(last).append(']');
 					return result.toString();
 				}
 			}
@@ -238,22 +238,22 @@ public class RegExpGenerator {
 				if (isAlphabetic)
 					result.append("(?i)");
 				if (memory.size() != 1)
-					result.append("(");
-				for (String element : memory) {
-					result.append(RegExpGenerator.slosh(element)).append("|");
+					result.append('(');
+				for (final String element : memory) {
+					result.append(RegExpGenerator.slosh(element)).append('|');
 				}
 				result.deleteCharAt(result.length() - 1);
 				if (memory.size() != 1)
-					result.append(")");
+					result.append(')');
 				return result.toString();
 			}
 		}
 
 		if (isOther)
-			result.append(".");
+			result.append('.');
 		else {
 			if (maxClasses > 1)
-				result.append("[");
+				result.append('[');
 			if (isAlphabetic)
 				result.append("\\p{IsAlphabetic}");
 			if (isDigit)
@@ -261,13 +261,13 @@ public class RegExpGenerator {
 			if (isPeriod)
 				result.append("\\.");
 			if (isUnderscore)
-				result.append("_");
+				result.append('_');
 			if (isMinus)
 				result.append("\\-");
 			if (isSpace)
-				result.append(" ");
+				result.append(' ');
 			if (maxClasses > 1)
-				result.append("]");
+				result.append(']');
 		}
 
 		return result.append(RegExpSplitter.qualify(shortest, longest)).toString();

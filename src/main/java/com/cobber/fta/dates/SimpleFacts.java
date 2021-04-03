@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ public class SimpleFacts {
 	private final String format;
 	private final FTAType type;
 
-	SimpleFacts(final String matcher, String format, FTAType type) {
+	SimpleFacts(final String matcher, final String format, final FTAType type) {
 		this.matcher = matcher;
 		this.format = format;
 		this.type = type;

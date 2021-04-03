@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +35,12 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	private LogicalTypeCode logicalFirst;
 	private LogicalTypeCode logicalLast;
 
-	public LogicalTypeNameLastFirst(PluginDefinition plugin) {
+	public LogicalTypeNameLastFirst(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
@@ -79,9 +79,9 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input) {
-		String trimmed = input.trim();
-		int comma = trimmed.indexOf(',');
+	public boolean isValid(final String input) {
+		final String trimmed = input.trim();
+		final int comma = trimmed.indexOf(',');
 		if (comma == -1 || comma == 0 || comma == trimmed.length() - 1)
 			return false;
 
@@ -134,7 +134,7 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		return trimmed.length() >= 5 && trimmed.length() <= 30 && charCounts[','] == 1;
 	}
 
@@ -159,8 +159,8 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public double getConfidence(long matchCount, long realSamples, String dataStreamName) {
-		double is = (double)matchCount/realSamples;
+	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+		final double is = (double)matchCount/realSamples;
 		if (matchCount != realSamples && getHeaderConfidence(dataStreamName) != 0)
 			return is + (1.0 - is)/2;
 		else

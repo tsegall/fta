@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,17 +23,17 @@ import com.cobber.fta.core.FTAType;
 
 public abstract class LogicalType implements Comparable<LogicalType> {
 	protected PluginDefinition defn;
-	protected Locale locale = null;
+	protected Locale locale;
 	protected int priority;
 	protected int threshold;
 	protected Pattern[] headerPatterns;
 
 	@Override
-	public int compareTo(LogicalType other) {
+	public int compareTo(final LogicalType other) {
 	  return Integer.compare(priority, other.priority);
 	}
 
-	LogicalType(PluginDefinition plugin) {
+	public LogicalType(final PluginDefinition plugin) {
 		this.defn = plugin;
 		this.priority = plugin.priority;
 		this.threshold = plugin.threshold;
@@ -44,7 +44,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * @param locale The locale used for this analysis
 	 * @return True if initialization was successful.
 	 */
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		if (getBaseType() == null)
 			throw new IllegalArgumentException("baseType cannot be null");
 
@@ -59,7 +59,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 		return true;
 	}
 
-	protected int getHeaderConfidence(String dataStreamName) {
+	protected int getHeaderConfidence(final String dataStreamName) {
 		if (headerPatterns != null)
 			for (int i = 0; i < headerPatterns.length; i++) {
 				if (headerPatterns[i].matcher(dataStreamName).matches())
@@ -119,7 +119,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * We use this percentage in the determination of the Logical Type.  When and how it is used varies based on the plugin.
 	 * @param threshold the new threshold.
 	 */
-	public void setThreshold(int threshold) {
+	public void setThreshold(final int threshold) {
 		this.threshold = threshold;
 	}
 
@@ -131,7 +131,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * @param dataStreamName Name of the Data Stream
 	 * @return Confidence as a percentage.
 	 */
-	public double getConfidence(long matchCount, long realSamples, String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
 		return (double)matchCount/realSamples;
 	}
 
@@ -146,7 +146,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * @param input String to check (trimmed for Numeric base Types, un-trimmed for String base Type)
 	 * @return true iff the supplied String is an instance of this Logical type.
 	 */
-	public abstract boolean isValid(String input);
+	public abstract boolean isValid(final String input);
 
 	/**
 	 * Given the data to date as embodied by the arguments return null if we think this is an instance

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	private static final int ITERS = 5;
 	private Dodge[] iterators = null;
 
-	public LogicalTypePersonName(PluginDefinition plugin, String filename) {
+	public LogicalTypePersonName(final PluginDefinition plugin, final String filename) {
 		super(plugin, REGEXP, ".*", 95);
 		setContent("resource", "/reference/" + filename);
 	}
@@ -65,7 +65,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
-	public boolean isValid(String input) {
+	public boolean isValid(final String input) {
 		String trimmedUpper = input.trim().toUpperCase(locale);
 		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength)
 			return false;
@@ -84,8 +84,8 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
-			TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
+			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
 
 		int headerConfidence = getHeaderConfidence(dataStreamName);
 

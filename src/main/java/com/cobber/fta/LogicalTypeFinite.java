@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 
 	public abstract Set<String> getMembers();
 
-	public LogicalTypeFinite(PluginDefinition plugin) {
+	public LogicalTypeFinite(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -44,17 +44,17 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
-	public boolean isValid(String input) {
-		String trimmedUpper = input.trim().toUpperCase(locale);
+	public boolean isValid(final String input) {
+		final String trimmedUpper = input.trim().toUpperCase(locale);
 		return trimmedUpper.length() >= minLength && trimmedUpper.length() <= maxLength && getMembers().contains(trimmedUpper);
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
-		for (String member : getMembers()) {
-			int len = member.length();
+		for (final String member : getMembers()) {
+			final int len = member.length();
 			if (len < minLength)
 				minLength = len;
 			if (len > maxLength)

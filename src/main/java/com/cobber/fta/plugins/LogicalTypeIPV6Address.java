@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +33,12 @@ public class LogicalTypeIPV6Address extends LogicalTypeInfinite {
 		validator = InetAddressValidator.getInstance();
 	}
 
-	public LogicalTypeIPV6Address(PluginDefinition plugin) {
+	public LogicalTypeIPV6Address(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		threshold = 99;
@@ -48,7 +48,7 @@ public class LogicalTypeIPV6Address extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		StringBuilder ret = new StringBuilder(40);
+		final StringBuilder ret = new StringBuilder(40);
 
 		for (int i = 0; i < 7; i++) {
 			ret.append(String.format("%x", random.nextInt(0xFFFF)));
@@ -80,18 +80,18 @@ public class LogicalTypeIPV6Address extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input) {
+	public boolean isValid(final String input) {
 		return validator.isValidInet6Address(input);
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		return validator.isValidInet6Address(trimmed);
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts,
-			Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts,
+			final Map<String, Long> cardinality, final Map<String, Long> outliers) {
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? null : ".+";
 	}
 

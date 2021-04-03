@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,14 +106,14 @@ class Driver {
 			else if ("--records".equals(args[idx]))
 				options.recordsToAnalyze = Long.valueOf(args[++idx]);
 			else if ("--resolutionMode".equals(args[idx])) {
-				String mode = args[++idx];
-				if (mode.equals("DayFirst"))
+				final String mode = args[++idx];
+				if ("DayFirst".equals(mode))
 					options.resolutionMode = DateResolutionMode.DayFirst;
-				else if (mode.equals("MonthFirst"))
+				else if ("MonthFirst".equals(mode))
 					options.resolutionMode = DateResolutionMode.MonthFirst;
-				else if (mode.equals("Auto"))
+				else if ("Auto".equals(mode))
 					options.resolutionMode = DateResolutionMode.Auto;
-				else if (mode.equals("None"))
+				else if ("None".equals(mode))
 					options.resolutionMode = DateResolutionMode.None;
 				else {
 					logger.printf("Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None%n", mode);
@@ -137,7 +137,7 @@ class Driver {
 
 		if (helpRequested) {
 			// Create a dummy Analyzer to retrieve the Logical Types
-			TextAnalyzer analysis = new TextAnalyzer("*");
+			final TextAnalyzer analysis = new TextAnalyzer("*");
 			if (options.locale != null)
 				analysis.setLocale(options.locale);
 
@@ -146,25 +146,25 @@ class Driver {
 
 
 			// Grab the registered plugins and sort by Qualifier (magically will be all - since passed in '*')
-			Collection<LogicalType> registered = analysis.getPlugins().getRegisteredLogicalTypes();
-			Set<String> qualifiers = new TreeSet<>();
-			for (LogicalType logical : registered)
+			final Collection<LogicalType> registered = analysis.getPlugins().getRegisteredLogicalTypes();
+			final Set<String> qualifiers = new TreeSet<>();
+			for (final LogicalType logical : registered)
 				qualifiers.add(logical.getQualifier());
 
 			if (!registered.isEmpty()) {
 				logger.println("\nRegistered Logical Types:");
-				for (String qualifier : qualifiers) {
-					LogicalType logical = analysis.getPlugins().getRegistered(qualifier);
+				for (final String qualifier : qualifiers) {
+					final LogicalType logical = analysis.getPlugins().getRegistered(qualifier);
 					if (options.verbose == 0) {
 						if (logical instanceof LogicalTypeFinite) {
-							LogicalTypeFinite finite = (LogicalTypeFinite)logical;
+							final LogicalTypeFinite finite = (LogicalTypeFinite)logical;
 							logger.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d%n",
 									logical.getQualifier(), logical.getPriority(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
 						}
 						else if (logical instanceof LogicalTypeInfinite)
 							logger.printf("\t%s (Infinite): Priority: %d%n", logical.getQualifier(), logical.getPriority());
 						else {
-							LogicalTypeRegExp logicalRegExp = (LogicalTypeRegExp)logical;
+							final LogicalTypeRegExp logicalRegExp = (LogicalTypeRegExp)logical;
 							logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s', HeaderRegExps: '%s'%n",
 									logical.getQualifier(), logical.getPriority(), logical.getRegExp(),
 									logicalRegExp.getHeaderRegExps() != null ? String.join("|", logicalRegExp.getHeaderRegExps()) : "None");
@@ -187,9 +187,9 @@ class Driver {
 
 		// Loop over all the file arguments
 		while (idx < args.length) {
-			String filename = args[idx++];
+			final String filename = args[idx++];
 
-			FileProcessor fileProcessor = new FileProcessor(logger, filename, options);
+			final FileProcessor fileProcessor = new FileProcessor(logger, filename, options);
 			fileProcessor.process();
 		}
 	}

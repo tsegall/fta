@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ public class KnownPatterns {
 	public static final String PATTERN_ANY_VARIABLE = ".+";
 	public static final String PATTERN_ALPHA = "\\p{IsAlphabetic}";
 	public static final String PATTERN_NUMERIC = "\\d";
+	public static final String PATTERN_NUMERIC_VARIABLE = PATTERN_NUMERIC + "+";
 	public static final String PATTERN_ALPHA_VARIABLE = PATTERN_ALPHA + "+";
 	public static final String PATTERN_ALPHANUMERIC = "[" + PATTERN_ALPHA + PATTERN_NUMERIC + "]";
 	public static final String PATTERN_ALPHANUMERIC_VARIABLE = PATTERN_ALPHANUMERIC + "+";
@@ -86,14 +87,14 @@ public class KnownPatterns {
 	public String PATTERN_DOUBLE_WITH_EXPONENT;
 	public String PATTERN_SIGNED_DOUBLE_WITH_EXPONENT;
 
-	Map<String, PatternInfo> knownPatterns = new HashMap<>();
-	Map<ID, PatternInfo> knownIDs = new EnumMap<>(ID.class);
-	Map<String, PatternInfo> promotion = new HashMap<>();
-	Map<String, PatternInfo> negation = new HashMap<>();
-	Map<String, PatternInfo> grouping = new HashMap<>();
+	private Map<String, PatternInfo> knownPatterns = new HashMap<>();
+	private Map<ID, PatternInfo> knownIDs = new EnumMap<>(ID.class);
+	private Map<String, PatternInfo> promotion = new HashMap<>();
+	private Map<String, PatternInfo> negation = new HashMap<>();
+	private Map<String, PatternInfo> grouping = new HashMap<>();
 
-	public static String freezeANY(int minTrimmed, int maxTrimmed, int minRawNonBlankLength, int maxRawNonBlankLength, boolean leadingWhiteSpace, boolean trailingWhiteSpace, boolean multiline) {
-		String leadIn = multiline ? "(?s)." : ".";
+	public static String freezeANY(final int minTrimmed, final int maxTrimmed, final int minRawNonBlankLength, final int maxRawNonBlankLength, final boolean leadingWhiteSpace, final boolean trailingWhiteSpace, final boolean multiline) {
+		final String leadIn = multiline ? "(?s)." : ".";
 
 		// If there is no leading or trailing space then use the simple min & max of non-blank fields
 		if (!leadingWhiteSpace && !trailingWhiteSpace)
@@ -103,12 +104,12 @@ public class KnownPatterns {
 		return leadIn + RegExpSplitter.qualify(minTrimmed, maxTrimmed);
 	}
 
-	static String withGrouping(String regExp, char groupingSeparator) {
-		String re = groupingSeparator == '.' ? "\\\\." : String.valueOf(groupingSeparator);
+	private static String withGrouping(final String regExp, final char groupingSeparator) {
+		final String re = groupingSeparator == '.' ? "\\\\." : String.valueOf(groupingSeparator);
 		return regExp.replaceAll("\\\\d", "[\\\\d" + re + "]");
 	}
 
-	String getRegExp(KnownPatterns.ID id) {
+	String getRegExp(final KnownPatterns.ID id) {
 		switch (id) {
 		case ID_LONG:
 			return PATTERN_LONG;
@@ -153,18 +154,18 @@ public class KnownPatterns {
 		return null;
 	}
 
-	void initialize(Locale locale) {
-		DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
-		char groupingSeparator = formatSymbols.getGroupingSeparator();
-		char decimalSeparator = formatSymbols.getDecimalSeparator();
-		char minusSign = formatSymbols.getMinusSign();
+	void initialize(final Locale locale) {
+		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+		final char groupingSeparator = formatSymbols.getGroupingSeparator();
+		final char decimalSeparator = formatSymbols.getDecimalSeparator();
+		final char minusSign = formatSymbols.getMinusSign();
 
 		String optionalSignPrefix = "";
 		String optionalSignSuffix = "";
-		NumberFormat simple = NumberFormat.getNumberInstance(locale);
+		final NumberFormat simple = NumberFormat.getNumberInstance(locale);
 		if (simple instanceof DecimalFormat) {
-			String negPrefix = ((DecimalFormat) simple).getNegativePrefix();
-			String negSuffix = ((DecimalFormat) simple).getNegativeSuffix();
+			final String negPrefix = ((DecimalFormat) simple).getNegativePrefix();
+			final String negSuffix = ((DecimalFormat) simple).getNegativeSuffix();
 
 			if (!negPrefix.isEmpty()) {
 				if (negPrefix.charAt(0) == minusSign)
@@ -249,7 +250,7 @@ public class KnownPatterns {
 				new PatternInfo(ID.ID_BLANK, PATTERN_WHITESPACE, FTAType.STRING, "BLANK", false, -1, -1, null, ""));
 
 		// Build the mapping from ID to PatternInfo
-		for (PatternInfo patternInfo : knownPatterns.values()) {
+		for (final PatternInfo patternInfo : knownPatterns.values()) {
 			knownIDs.put(patternInfo.id, patternInfo);
 		}
 
@@ -318,40 +319,40 @@ public class KnownPatterns {
 		addUnary(grouping, PATTERN_SIGNED_DOUBLE_GROUPING, PATTERN_SIGNED_DOUBLE_GROUPING);
 	}
 
-	void put(String key, PatternInfo patternInfo) {
+	void put(final String key, final PatternInfo patternInfo) {
 		knownPatterns.put(key, patternInfo);
 	}
 
-	PatternInfo getByRegExp(String regExp) {
+	PatternInfo getByRegExp(final String regExp) {
 		return knownPatterns.get(regExp);
 	}
 
-	PatternInfo getByID(ID id) {
+	PatternInfo getByID(final ID id) {
 		return knownIDs.get(id);
 	}
 
-	PatternInfo numericPromotion(ID left, ID right) {
+	PatternInfo numericPromotion(final ID left, final ID right) {
 		return promotion.get(left.toString() + "---" + right.toString());
 	}
 
-	String numericPromotion(String leftPattern, String rightPattern) {
-		PatternInfo result = promotion.get(leftPattern + "---" + rightPattern);
+	String numericPromotion(final String leftPattern, final String rightPattern) {
+		final PatternInfo result = promotion.get(leftPattern + "---" + rightPattern);
 		return result == null ? null : result.regexp;
 	}
 
-	PatternInfo negation(String pattern) {
+	PatternInfo negation(final String pattern) {
 		return negation.get(pattern);
 	}
 
-	PatternInfo grouping(String pattern) {
+	PatternInfo grouping(final String pattern) {
 		return grouping.get(pattern);
 	}
 
-	void addUnary(Map<String, PatternInfo> transformation, String input, String result) {
+	void addUnary(final Map<String, PatternInfo> transformation, final String input, final String result) {
 		transformation.put(input, knownPatterns.get(result));
 	}
 
-	void addBinary(Map<String, PatternInfo> transformation, String left, String right, String result) {
+	void addBinary(final Map<String, PatternInfo> transformation, final String left, final String right, final String result) {
 		transformation.put(left + "---" + right, knownPatterns.get(result));
 	}
 }

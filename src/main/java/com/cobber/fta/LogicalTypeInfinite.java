@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ package com.cobber.fta;
  * subclass this abstract class.
  */
 public abstract class LogicalTypeInfinite extends LogicalTypeCode {
-	public LogicalTypeInfinite(PluginDefinition plugin) {
+	public LogicalTypeInfinite(final PluginDefinition plugin) {
 		super(plugin);
 	}
 

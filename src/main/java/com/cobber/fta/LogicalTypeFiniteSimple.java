@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected Reader reader;
 	protected SingletonSet memberSet;
 
-	public LogicalTypeFiniteSimple(PluginDefinition plugin, String regexp, String backout, int threshold) {
+	public LogicalTypeFiniteSimple(final PluginDefinition plugin, final String regexp, final String backout, final int threshold) {
 		super(plugin);
 		this.qualifier = plugin.qualifier;
 		this.regexp = regexp;
@@ -35,7 +35,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		this.threshold = threshold;
 	}
 
-	public void setContent(String contentType, String content) {
+	public void setContent(final String contentType, final String content) {
 		this.memberSet = new SingletonSet(contentType, content);
 	}
 
@@ -50,7 +50,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		if (this.backout == null)
 			throw new IllegalArgumentException("Internal error: Finite Simple types require backout.");
 
@@ -70,9 +70,9 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples,
-			TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
-		int headerConfidence = getHeaderConfidence(dataStreamName);
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
+			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
+		final int headerConfidence = getHeaderConfidence(dataStreamName);
 
 		int maxOutliers = 1;
 		int minCardinality = 4;

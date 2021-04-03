@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class FormatterToken {
 		this.value = '\0';
 	}
 
-	FormatterToken(final Token type, final int low, int high) {
+	FormatterToken(final Token type, final int low, final int high) {
 		this.type = type;
 		this.count = low;
 		this.high = high;

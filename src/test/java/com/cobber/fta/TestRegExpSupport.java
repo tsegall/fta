@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class TestRegExpSupport {
 
 	@Test
 	public void mixedZip() throws IOException {
-		RegExpGenerator gen = new RegExpGenerator();
+		final RegExpGenerator gen = new RegExpGenerator();
 
 		gen.train("1-1-1-11");
 		gen.train("1-1-11-11");
@@ -72,7 +72,7 @@ public class TestRegExpSupport {
 
 	@Test
 	public void rangeTestAlpha() throws IOException {
-		RegExpGenerator gen = new RegExpGenerator(true, 30, Locale.getDefault());
+		final RegExpGenerator gen = new RegExpGenerator(true, 30, Locale.getDefault());
 
 		gen.train("A");
 		gen.train("B");
@@ -83,7 +83,7 @@ public class TestRegExpSupport {
 
 	@Test
 	public void rangeTestNumbers() throws IOException {
-		RegExpGenerator gen = new RegExpGenerator(true, 30, Locale.getDefault());
+		final RegExpGenerator gen = new RegExpGenerator(true, 30, Locale.getDefault());
 
 		gen.train("0");
 		gen.train("1");

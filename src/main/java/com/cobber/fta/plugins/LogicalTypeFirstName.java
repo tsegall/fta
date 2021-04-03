@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.cobber.fta.PluginDefinition;
 public class LogicalTypeFirstName extends LogicalTypePersonName {
 	public static final String SEMANTIC_TYPE = "NAME.FIRST";
 
-	public LogicalTypeFirstName(PluginDefinition plugin) throws FileNotFoundException {
+	public LogicalTypeFirstName(final PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, "firstnames.txt");
 	}
 }

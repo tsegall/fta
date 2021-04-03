@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class PluginColor extends LogicalTypeFinite {
 		members.addAll(Arrays.asList(colors));
 	}
 
-	public PluginColor(PluginDefinition plugin) {
+	public PluginColor(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -63,8 +63,8 @@ public class PluginColor extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts,
-			Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts,
+			final Map<String, Long> cardinality, final Map<String, Long> outliers) {
 		if (outliers.size() > 3)
 			return ".+";
 

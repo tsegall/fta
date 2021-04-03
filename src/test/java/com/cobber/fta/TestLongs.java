@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 
 public class TestLongs {
-	public void _variableLengthPositiveInteger(boolean collectStatistics) throws IOException {
+	public void _variableLengthPositiveInteger(final boolean collectStatistics) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!collectStatistics)
 			analysis.setCollectStatistics(false);
@@ -81,7 +81,7 @@ public class TestLongs {
 		_variableLengthPositiveInteger(false);
 	}
 
-	public void _variableLengthInteger(boolean collectStatistics) throws IOException {
+	public void _variableLengthInteger(final boolean collectStatistics) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!collectStatistics)
 			analysis.setCollectStatistics(false);
@@ -286,11 +286,11 @@ public class TestLongs {
 		long max = Long.MIN_VALUE;
 		String minValue = String.valueOf(min);
 		String maxValue = String.valueOf(max);
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<String>();
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
-			long l = random.nextInt(100000000);
-			String sample = NumberFormat.getNumberInstance(Locale.US).format(l).toString();
+			final long l = random.nextInt(100000000);
+			final String sample = NumberFormat.getNumberInstance(Locale.US).format(l).toString();
 			if (l < min) {
 				min = l;
 				minValue = sample;
@@ -323,25 +323,25 @@ public class TestLongs {
 		Assert.assertEquals(result.getRegExp(), regExp);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(regExp), sample);
 		}
 	}
 
 	@Test
 	public void groupingSeparatorLargeFRENCH() throws IOException {
-		Locale locales[] = new Locale[] { Locale.GERMAN, Locale.FRANCE };
+		final Locale locales[] = new Locale[] { Locale.GERMAN, Locale.FRANCE };
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<String>();
 
-		for (Locale locale : locales) {
+		for (final Locale locale : locales) {
 			long min = Long.MAX_VALUE;
 			long absMin = Long.MAX_VALUE;
 			long max = Long.MIN_VALUE;
 			String minValue = String.valueOf(min);
 			String maxValue = String.valueOf(max);
-			NumberFormat nf = NumberFormat.getNumberInstance(locale);
+			final NumberFormat nf = NumberFormat.getNumberInstance(locale);
 			final TextAnalyzer analysis = new TextAnalyzer("Separator");
 			analysis.setLocale(locale);
 			samples.clear();
@@ -350,7 +350,7 @@ public class TestLongs {
 				long l = random.nextInt(100000000);
 				if (l%2 == 0)
 					l = -l;
-				String sample = nf.format(l).toString();
+				final String sample = nf.format(l).toString();
 				if (l < min) {
 					min = l;
 				}
@@ -379,14 +379,14 @@ public class TestLongs {
 			Assert.assertEquals(result.getLeadingZeroCount(), 0);
 			Assert.assertEquals(result.getMinValue(), String.valueOf(min));
 			Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
-			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
 			String regExp = "[+-]?[\\d" + RegExpGenerator.slosh(formatSymbols.getGroupingSeparator()) + "]";
 			regExp += RegExpSplitter.qualify(minValue.length(), maxValue.length());
 			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
 
-			for (String sample : samples) {
+			for (final String sample : samples) {
 				Assert.assertTrue(sample.matches(regExp), sample);
 			}
 		}
@@ -396,10 +396,10 @@ public class TestLongs {
 	public void localeLongTest() throws IOException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
-		Locale[] locales = DateFormat.getAvailableLocales();
+		final Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-AE") };
 
-		for (Locale locale : locales) {
+		for (final Locale locale : locales) {
 			long min = Long.MAX_VALUE;
 			long absMin = Long.MAX_VALUE;
 			long max = Long.MIN_VALUE;
@@ -409,32 +409,32 @@ public class TestLongs {
 			final TextAnalyzer analysis = new TextAnalyzer("Separator");
 			analysis.setLocale(locale);
 
-			boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
+			final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 
 			if (!simple) {
 				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
 				continue;
 			}
 
-			Calendar cal = GregorianCalendar.getInstance(locale);
+			final Calendar cal = GregorianCalendar.getInstance(locale);
 			if (!(cal instanceof GregorianCalendar)) {
 				System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
 				continue;
 			}
 
-			DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
-			String negPrefix = TestUtils.getNegativePrefix(locale);
-			String negSuffix = TestUtils.getNegativeSuffix(locale);
+			final String negPrefix = TestUtils.getNegativePrefix(locale);
+			final String negSuffix = TestUtils.getNegativeSuffix(locale);
 
-			Set<String> samples = new HashSet<String>();
-			NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+			final Set<String> samples = new HashSet<String>();
+			final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
 				long l = random.nextLong();
 				if (l % 2 == 0)
 					l = -l;
-				String sample = nf.format(l).toString();
+				final String sample = nf.format(l).toString();
 
 				if (l < min) {
 					min = l;
@@ -481,7 +481,7 @@ public class TestLongs {
 			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
 
-			for (String sample : samples) {
+			for (final String sample : samples) {
 				Assert.assertTrue(sample.matches(regExp), sample + " " + regExp);
 			}
 		}
@@ -658,7 +658,7 @@ public class TestLongs {
 	@Test
 	public void groupingSeparator() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
-		final String input = "3600|7500|3600|3600|800|3600|1200|1200|600|" +
+		final String pipedInput = "3600|7500|3600|3600|800|3600|1200|1200|600|" +
 				"1200|1200|1200|1200|3600|1200|13,000|1200|200|" +
 				"1200|1200|1200|1200|1200|1200|1200|1200|200|" +
 				"1200|3600|1200|1200|1200|1200|1200|1200|200|" +
@@ -670,7 +670,7 @@ public class TestLongs {
 				"3600|1200|1200|1200|1200|1200|1200|1200|200|" +
 				"1200|1200|1200|3600|3600|1200|1200|1200|200|";
 
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -693,9 +693,9 @@ public class TestLongs {
 		Assert.assertEquals(result.getMinValue(), "200");
 		Assert.assertEquals(result.getMaxValue(), "13000");
 
-		String regExp = result.getRegExp();
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(regExp), inputs[i]);
+		final String regExp = result.getRegExp();
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp), input);
 		}
 	}
 
@@ -710,7 +710,7 @@ public class TestLongs {
 		long absMax = 0;
 		String minValue = String.valueOf(Long.MAX_VALUE);
 		String maxValue = "0";
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<String>();
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			long l = random.nextInt(100000000);
@@ -722,8 +722,8 @@ public class TestLongs {
 			if (l > max) {
 				max = l;
 			}
-			String sample = NumberFormat.getNumberInstance(Locale.US).format(l).toString();
-			long pos = Math.abs(l);
+			final String sample = NumberFormat.getNumberInstance(Locale.US).format(l).toString();
+			final long pos = Math.abs(l);
 			if (pos < absMin) {
 				absMin = pos;
 				minValue = NumberFormat.getNumberInstance(Locale.US).format(pos).toString();
@@ -756,7 +756,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getRegExp(), regExp);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(regExp), sample);
 		}
 	}
@@ -786,16 +786,16 @@ public class TestLongs {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		final int iterations = 100_000_000;
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 
-		Map<String, Long> input = new HashMap<>();
+		final Map<String, Long> input = new HashMap<>();
 		for (int i = 0; i < 100; i++)
 			input.put(String.valueOf(i), 1_000_000L);
 		analysis.trainBulk(input);
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		long elapsed = System.currentTimeMillis() - start;
+		final long elapsed = System.currentTimeMillis() - start;
 		System.err.println("Duration: " + elapsed);
 
 		Assert.assertEquals(result.getSampleCount(), iterations);
@@ -853,7 +853,7 @@ public class TestLongs {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final Random random = new Random(314);
-		String[] samples = new String[10000];
+		final String[] samples = new String[10000];
 
 		int iters = 0;
 		for (iters = 0; iters < samples.length; iters++) {
@@ -873,7 +873,7 @@ public class TestLongs {
 		Assert.assertNull(result.getTypeQualifier());
 	}
 
-	public void _longPerf(boolean statisticsOn) throws IOException {
+	public void _longPerf(final boolean statisticsOn) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!statisticsOn) {
 			analysis.setDefaultLogicalTypes(false);
@@ -891,13 +891,13 @@ public class TestLongs {
 		for (int i = 0; i < samples.length; i++)
 			samples[i] = String.valueOf(random.nextInt(100000000));
 
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 
 		long iters = 0;
 		// Run for about reasonable number of seconds
-		int seconds = 5;
+		final int seconds = 5;
 		for (iters = 0; iters < sampleCount; iters++) {
-			String sample = samples[(int)(iters%samples.length)];
+			final String sample = samples[(int)(iters%samples.length)];
 			analysis.train(sample);
 			if (bw != null)
 				bw.write(sample + '\n');

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,16 +151,16 @@ public class TestStrings {
 	@Test
 	public void whiteSpace() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("field,value");
-		final String input = "| |  |   |    |     |      |       |        |         |";
-		final String inputs[] = input.split("\\|");
+		final String pipedInput = "| |  |   |    |     |      |       |        |         |";
+		final String inputs[] = pipedInput.split("\\|");
 
 		analysis.train(null);
-		for (int i = 0; i < inputs.length; i++)
-			analysis.train(inputs[i]);
+		for (final String input : inputs)
+			analysis.train(input);
 
 		analysis.train(null);
-		for (int i = 0; i < inputs.length; i++)
-			analysis.train(inputs[i]);
+		for (final String input : inputs)
+			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -175,15 +175,14 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-		}
+		for (final String input : inputs)
+			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test
 	public void employeeNumber() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("employeeNumber");
-		final String input = "||||||||||||||||||||" +
+		final String pipedInput = "||||||||||||||||||||" +
 				"||||||||||||48|72|242|242|242|335|354|355|355|" +
 				"397|460|567|616|616|70|70|865|1023|1023|1023|1023|1023|1023|1023|1023|1161|1161|1161|1161|1161|" +
 				"1260|1273|1273|1273|136|136|136|136|136|136|136|136|136|1422|1422|1422|1422|1422|1422|1548|1652|" +
@@ -192,7 +191,7 @@ public class TestStrings {
 				"FN270164|FN270168|FN273815|FN273967|FN295633|FN295655|FN295657|FN295659|FN295684|FN295688|" +
 				"FN295842|FN9441020|FN9441048|FN9441064|FN9441082|FN9441138|FN9441189|FN9441244|FN9441246|FN9441248|" +
 				"FN9441330|FN9441334|FN9441383|FN9441501|FN9441505|FN9441516|FN9441529|FN9441680|FN9441695|FN9441804|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 
 		for (int i = 0; i < inputs.length; i++)
 			analysis.train(inputs[i]);
@@ -211,8 +210,8 @@ public class TestStrings {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		int matchCount = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].matches(result.getRegExp()))
+		for (final String input : inputs) {
+			if (input.matches(result.getRegExp()))
 				matchCount++;
 		}
 		Assert.assertEquals(matchCount, result.getMatchCount());
@@ -242,9 +241,8 @@ public class TestStrings {
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 11);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
-		}
+		for (final String input : inputs)
+			Assert.assertTrue(input.matches(result.getRegExp()), input);
 	}
 
 	@Test
@@ -277,10 +275,10 @@ public class TestStrings {
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 10);
 
-		for (int i = 0; i < inputs.length; i++)
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs)
+			Assert.assertTrue(input.matches(result.getRegExp()));
 
-		Map<String,Long> details = result.getCardinalityDetails();
+		final Map<String,Long> details = result.getCardinalityDetails();
 		details.putAll(result.getOutlierDetails());
 		final TextAnalyzer analysisBulk = new TextAnalyzer();
 		analysisBulk.trainBulk(details);
@@ -376,9 +374,9 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		Map<String,Long> details = result.getCardinalityDetails();
+		final Map<String,Long> details = result.getCardinalityDetails();
 		details.put(null, result.getNullCount());
-		long sum = details.values().stream().collect(Collectors.summingLong(Long::longValue));
+		final long sum = details.values().stream().collect(Collectors.summingLong(Long::longValue));
 		final TextAnalyzer analysisBulk = new TextAnalyzer();
 		analysisBulk.trainBulk(details);
 		result = analysisBulk.getResult();
@@ -414,7 +412,7 @@ public class TestStrings {
 		final int iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
-			for (String sample : inputs)
+			for (final String sample : inputs)
 				analysis.train(sample);
 		}
 
@@ -428,15 +426,14 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{32}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-		}
+		for (final String input : inputs)
+			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test
 	public void testMix() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
-		final String input =
+		final String pipedInput =
 				"756059702|G39637955|029326105|63009R109|04269E957|666666666|00768Y727|23908L306|126349AF6|73937B589|" +
 				"516806956|683797104|902973954|600544950|156719909|00724F951|292104106|008479904|219350955|67401P958|" +
 				"902641752|50218P957|00739L901|06746P903|92189F953|G47567905|06740P650|13123X952|38173M952|29359T102|" +
@@ -452,10 +449,10 @@ public class TestStrings {
 				"902641752|50218P957|00739L901|06746P903|92189F953|G47567905|06740P650|13123X952|38173M952|29359T102|" +
 				"229663959|33734E103|118230951|883556102|689648103|97382A900|808194954|60649T957|13645T900|075896950|" +
 				"29266S956|80105N905|032332904|73935X951|73935B955|464288125|87612G901|39945C909|97717X957|14575E105|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 
-		for (int i = 0; i < inputs.length; i++)
-			analysis.train(inputs[i]);
+		for (final String input : inputs)
+			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -472,8 +469,8 @@ public class TestStrings {
 		Assert.assertNull(result.getMean());
 		Assert.assertNull(result.getStandardDeviation());
 
-		for (int i = 0; i < inputs.length; i++)
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs)
+			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test
@@ -484,7 +481,7 @@ public class TestStrings {
 		final int iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
-			for (String sample : inputs)
+			for (final String sample : inputs)
 				analysis.train(sample);
 		}
 
@@ -498,8 +495,8 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), "(?i)(CORRECTIVE|DISCRETIONARY|MARKETING/RETENTION|\\QREACTIVATION(FS ONLY)\\E|UNDEFINED)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -515,7 +512,7 @@ public class TestStrings {
 		final int iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
-			for (String sample : inputs)
+			for (final String sample : inputs)
 				analysis.train(sample);
 		}
 
@@ -529,9 +526,8 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), ".{54,84}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-		}
+		for (final String input : inputs)
+			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test
@@ -547,7 +543,7 @@ public class TestStrings {
 		final int iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
-			for (String sample : inputs)
+			for (final String sample : inputs)
 				analysis.train(sample);
 		}
 
@@ -561,9 +557,8 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), "(?i)(FIGHTER|FIGHTER; WANNABE|HATES FIGHTING|NOT A FIGHTER|WOULD LIKE TO BE A FIGHTER)");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-		}
+		for (final String input : inputs)
+			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test
@@ -577,7 +572,7 @@ public class TestStrings {
 		final int iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
-			for (String sample : inputs)
+			for (final String sample : inputs)
 				analysis.train(sample);
 		}
 
@@ -591,9 +586,8 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), "\\$[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
-		}
+		for (final String input : inputs)
+			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test
@@ -606,7 +600,7 @@ public class TestStrings {
 		final int iterations = 1;
 
 		for (int i = 0; i < iterations; i++) {
-			for (String sample : inputs)
+			for (final String sample : inputs)
 				analysis.train(sample);
 		}
 
@@ -620,9 +614,9 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), "£[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].length() != 0)
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), result.getRegExp());
+		for (final String input : inputs) {
+			if (input.length() != 0)
+				Assert.assertTrue(input.matches(result.getRegExp()), result.getRegExp());
 		}
 	}
 
@@ -632,13 +626,13 @@ public class TestStrings {
 		Assert.assertTrue(analysis.getCollectStatistics());
 		analysis.setCollectStatistics(false);
 		Assert.assertFalse(analysis.getCollectStatistics());
-		final String input =
+		final String pipedInput =
 				"14%|27%|11%|26%|29%|25%|21%|25%|21%|0%|4%|14%|25%|17%|26%|20%|20%|6%|25%|10%|1%|25%|21%|22%|9%|6%|17%|15%|2%|25%|5%|15%|22%|5%|10%|14%|24%|9%|13%|6%|22%|7%|14%|25%|1%|6%|3%|10%|11%|23%|3%|18%|4%|5%|29%|5%|9%|4%|22%|26%|10%|27%|8%|6%|15%|3%|19%|7%|11%|22%|16%|23%|18%|8%|13%|11%|27%|5%|20%|10%|11%|20%|19%|9%|30%|12%|22%|10%|11%|5%|30%|8%|24%|22%|10%|9%|11%|2%|2%|26%|23%|0%|8%|18%|23%|18%|27%|23%|12%|11%|24%|25%|6%|9%|5%|6%|20%|15%|8%|12%|1%|20%|2%|10%|12%|7%|20%|29%|25%|15%|13%|28%|30%|2%|29%|27%|24%|18%|18%|21%|20%|20%|25%|28%|13%|2%|17%|27%|5%|8%|27%|15%|26%|0%|24%|23%|8%|9%|14%|9%|13%|23%|16%|4%|1%|25%|26%|25%|7%|20%|9%|24%|19%|0%|30%|25%|16%|13%|16%|0%|17%|22%|26%|24%|9%|19%|29%|5%|11%|27%|1%|15%|21%|8%|2%|3%|30%|5%|7%|16%|18%|6%|25%|21%|11%|9%|18%|19%|2%|22%|27%|8%|26%|21%|14%|13%|29%|29%|9%|8%|23%|26%|23%|22%|4%|13%|28%|17%|27%|30%|11%|4%|12%|20%|29%|2%|28%|12%|28%|17%|18%|11%|12%|9%|2%|2%|30%|18%|9%|10%|19%|20%|14%|3%|24%|4%|10%|21%|25%|2%|21%|6%|18%|27%|6%|11%|13%|19%|9%|9%|7%|23%|18%|24%|26%|23%|8%|26%|21%|13%|28%|7%|22%|30%|16%|17%|14%|27%|24%|12%|16%|11%|15%|23%|4%|26%|15%|24%|2%|29%|16%|25%|26%|10%|18%|12%|1%|9%|13%|27%|27%|2%|9%|1%|11%|30%|30%|4%|2%|3%|0%|30%|26%|2%|10%|15%|9%|6%|26%|10%|20%|23%|21%|28%|0%|14%|5%|18%|22%|17%|20%|2%|26%|21%|0%|5%|9%|7%|25%|22%|27%|29%|17%|26%|17%|26%|6%|10%|10%|4%|25%|11%|29%|19%|23%|14%|1%|10%|26%|23%|20%|7%|28%|10%|25%|14%|17%|30%|11%|13%|3%|7%|5%|19%|30%|13%|14%|11%|4%|7%|18%|24%|26%|10%|22%|9%|24%|12%|5%|2%|4%|10%|21%|30%|9%|17%|4%|15%|15%|29%|10%|6%|27%|18%|7%|7%|24%|3%|10%|7%|5%|1%|8%|8%|17%|19%|24%|11%|24%|19%|22%|26%|17%|21%|17%|13%|24%|20%|1%|0%|10%|12%|29%|7%|4%|20%|10%|30%|15%|8%|28%|4%|11%|21%|22%|25%|12%|19%|27%|16%|25%|1%|29%|26%|21%|8%|2%|7%|13%|18%|25%|3%|18%|25%|0%|5%|29%|11%|23%|30%|19%|10%|0%|23%|22%|2%|5%|16%|30%|24%|26%|12%|28%|16%|4%|4%|0%|14%|30%|1%|7%|5%|24%|30%|26%|17%|9%|20%|10%|19%|24%|12%|24%|23%|13%|22%|8%|3%|29%|18%|24%|15%|13%|21%|3%|1%|18%|30%|2%|20%|3%|17%|9%|12%|5%|23%|18%|2%|18%|12%|9%|10%|22%|12%|13%|27%|28%|21%|1%|22%|9%|4%|11%|4%|12%|0%|11%|13%|17%|13%|13%|9%|5%|12%|18%|3%|9%|18%|11%|22%|21%|30%|28%|13%|25%|4%|3%|3%|8%|9%|3%|24%|15%|10%|7%|4%|17%|0%|25%|20%|11%|22%|18%|23%|0%|7%|4%|7%|13%|21%|22%|28%|11%|2%|5%|23%|11%|23%|11%|28%|8%|7%|14%|6%|27%|10%|28%|27%|21%|12%|13%|18%|7%|0%|2%|14%|11%|22%|0%|20%|26%|4%|5%|3%|12%|12%|4%|8%|20%|14%|22%|19%|21%|5%|3%|27%|20%|9%|30%|25%|17%|24%|7%|5%|15%|12%|13%|25%|1%|15%|7%|10%|26%|5%|7%|19%|17%|16%|25%|26%|29%|10%|21%|21%|10%|22%|4%|24%|5%|12%|29%|10%|29%|26%|9%|8%|12%|2%|6%|6%|25%|7%|26%|4%|21%|27%|13%|29%|19%|5%|8%|13%|16%|18%|26%|16%|29%|17%|17%|22%|20%|23%|9%|25%|20%|7%|19%|24%|8%|5%|27%|2%|14%|18%|25%|0%|20%|13%|11%|14%|12%|30%|15%|28%|22%|10%|22%|16%|10%|10%|12%|21%|13%|17%|20%|21%|14%|19%|8%|20%|10%|27%|1%|24%|24%|6%|8%|24%|1%|0%|15%|17%|20%|18%|16%|5%|23%|24%|24%|2%|8%|22%|21%|17%|23%|28%|14%|11%|3%|19%|6%|24%|27%|10%|5%|24%|16%|23%|4%|13%|3%|22%|11%|20%|5%|20%|13%|4%|28%|1%|19%|18%|16%|11%|13%|6%|28%|1%|9%|7%|13%|28%|17%|2%|7%|22%|26%|14%|15%|27%|17%|26%|5%|24%|16%|4%|22%|26%|6%|22%|15%|9%|23%|16%|28%|28%|22%|17%|5%|2%|20%|21%|5%|5%|8%|13%|20%|4%|17%|6%|15%|8%|14%|28%|14%|10%|15%|13%|3%|26%|27%|25%|25%|22%|22%|6%|6%|1%|17%|17%|26%|5%|4%|5%|4%|1%|13%|22%|12%|24%|27%|13%|7%|17%|29%|16%|10%|15%|25%|29%|3%|8%|16%|10%|2%|12%|0%|3%|4%|12%|29%|2%|6%|14%|6%|2%|3%|5%|1%|28%|24%|25%|9%|18%|18%|11%|0%|20%|30%|14%|1%|3%|15%|23%|3%|5%|19%|17%|6%|18%|16%|19%|29%|0%|15%|4%|12%|25%|26%|7%|4%|28%|1%|12%|12%|0%|8%|12%|22%|4%|23%|11%|19%|8%|0%|0%|22%|7%|22%|10%|25%|2%|5%|11%|18%|9%|1%|10%|9%|24%|4%|26%|23%|17%|16%|20%|20%|4%|1%|9%|2%|29%|28%|12%|5%|27%|15%|21%|11%|14%|19%|27%|11%|29%|26%|10%|28%|25%|4%|6%|11%|11%|23%|21%|28%|25%|14%|23%|19%|12%|24%|23%|3%|28%|22%|20%|6%|9%|22%|12%|2%|22%|20%|10%|12%|21%|9%|4%|28%|15%|0%|28%|6%|0%|16%|14%|21%|17%|4%|26%|26%|5%|5%|10%|26%|0%|15%|10%|6%|0%|14%|25%|27%|29%|2%|26%|13%|19%|10%|14%|20%|6%|30%|19%|9%|2%|5%|23%|1%|22%|26%|3%|25%|27%|1%|24%|10%|2%|14%|19%|23%|10%|15%|20%|25%|0%|5%|19%|0%|5%|23%|28%|5%|27%|9%|14%|5%|1%|15%|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		final int iterations = 1;
 
 		for (int i = 0; i < iterations; i++) {
-			for (String sample : inputs)
+			for (final String sample : inputs)
 				analysis.train(sample);
 		}
 
@@ -652,9 +646,9 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), "\\d%|\\d{2}%");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].length() != 0)
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), result.getRegExp());
+		for (final String input : inputs) {
+			if (input.length() != 0)
+				Assert.assertTrue(input.matches(result.getRegExp()), result.getRegExp());
 		}
 	}
 
@@ -662,14 +656,14 @@ public class TestStrings {
 	public void testTwoContainedStrings() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("ZipCode");
 		analysis.setCollectStatistics(false);
-		final String input = "99501|45011|60632-4069|95111|57105|11953|90034|44023-1023|85013|53207|48180|61109-4069|19014|95111|66218-4069|10011|88011|10025|10011|93012-1023|78204|67410|97754|66204-4069|99708|33196|99712|53711|19132|" +
+		final String pipedInput = "99501|45011|60632-4069|95111|57105|11953|90034|44023-1023|85013|53207|48180|61109-4069|19014|95111|66218-4069|10011|88011|10025|10011|93012-1023|78204|67410|97754|66204-4069|99708|33196|99712|53711|19132|" +
 				"99501|45011|60632-4069|95111|57105|11953|90034|44023-1023|85013|53207|48180|61109-4069|19014|95111|66218-4069|10011|88011|10025|10011|93012-1023|78204|67410|97754|66204-4069|99708|33196|99712|53711|19132|" +
 				"99501|45011|60632-4069|95111|57105|11953|90034|44023-1023|85013|53207|48180|61109-4069|19014|95111|66218-4069|10011|88011|10025|10011|93012-1023|78204|67410|97754|66204-4069|99708|33196|99712|53711|19132|" +
 				"99501|45011|60632-4069|95111|57105|11953|90034|44023-1023|85013|53207|48180|61109-4069|19014|95111|66218-4069|10011|88011|10025|10011|93012-1023|78204|67410|97754|66204-4069|99708|33196|99712|53711|19132|";
 		final int iterations = 1;
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		for (int i = 0; i < iterations; i++) {
-			for (String sample : inputs)
+			for (final String sample : inputs)
 				analysis.train(sample);
 		}
 
@@ -684,9 +678,9 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), "\\d{5}(-\\d{4})?");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].length() != 0)
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), result.getRegExp());
+		for (final String input : inputs) {
+			if (input.length() != 0)
+				Assert.assertTrue(input.matches(result.getRegExp()), result.getRegExp());
 		}
 	}
 
@@ -699,14 +693,14 @@ public class TestStrings {
 
 		final String inputs1[] = input1.split("\\|");
 		final String inputs2[] = input2.split("\\|");
-		for (String sample : inputs1)
+		for (final String sample : inputs1)
 			analysis1.train(sample);
 
-		for (String sample : inputs2)
+		for (final String sample : inputs2)
 			analysis2.train(sample);
 
-		TextAnalysisResult result1 = analysis1.getResult();
-		TextAnalysisResult result2 = analysis2.getResult();
+		final TextAnalysisResult result1 = analysis1.getResult();
+		final TextAnalysisResult result2 = analysis2.getResult();
 		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 		Assert.assertEquals(result1.getRegExp(), result2.getRegExp());
@@ -722,14 +716,14 @@ public class TestStrings {
 
 		final String inputs1[] = input1.split("\\|");
 		final String inputs2[] = input2.split("\\|");
-		for (String sample : inputs1)
+		for (final String sample : inputs1)
 			analysis1.train(sample);
 
-		for (String sample : inputs2)
+		for (final String sample : inputs2)
 			analysis2.train(sample);
 
-		TextAnalysisResult result1 = analysis1.getResult();
-		TextAnalysisResult result2 = analysis2.getResult();
+		final TextAnalysisResult result1 = analysis1.getResult();
+		final TextAnalysisResult result2 = analysis2.getResult();
 
 		Assert.assertEquals(result1.getStructureSignature(), TestPlugins.signatures.get(LogicalTypeCountryEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
@@ -749,7 +743,7 @@ public class TestStrings {
 		final int iterations = 1;
 
 		for (int i = 0; i < iterations; i++) {
-			for (String sample : inputs)
+			for (final String sample : inputs)
 				analysis.train(sample);
 		}
 
@@ -763,9 +757,9 @@ public class TestStrings {
 		Assert.assertEquals(result.getRegExp(), "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].length() != 0)
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), result.getRegExp());
+		for (final String input : inputs) {
+			if (input.length() != 0)
+				Assert.assertTrue(input.matches(result.getRegExp()), result.getRegExp());
 		}
 	}
 
@@ -782,7 +776,7 @@ public class TestStrings {
 				"aaaaaaaaaa   ", "bbbbbbbbbbb    ", "ccccccccccccccccc     ",
 		};
 
-		for (String sample : inputs)
+		for (final String sample : inputs)
 			analysis.train(sample);
 
 		TextAnalysisResult result = analysis.getResult();
@@ -797,14 +791,14 @@ public class TestStrings {
 		Assert.assertEquals(result.getMaxLength(), 22);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (String sample : inputs)
+		for (final String sample : inputs)
 			Assert.assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
 	}
 
 	@Test
 	public void testAlphaNumeric() throws IOException {
 		final int SAMPLE_COUNT = 100;
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("SSN");
 		analysis.setDefaultLogicalTypes(false);
 
@@ -831,7 +825,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
@@ -844,7 +838,7 @@ public class TestStrings {
 				"PK__3214EC273319DEC5", "PK__3214EC273319DEC5 ", "PK__3214EC273319DEC5",
 		};
 
-		for (String sample : inputs)
+		for (final String sample : inputs)
 			analysis.train(sample);
 
 		TextAnalysisResult result = analysis.getResult();
@@ -859,11 +853,11 @@ public class TestStrings {
 		Assert.assertEquals(result.getMaxLength(), 21);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (String sample : inputs)
+		for (final String sample : inputs)
 			Assert.assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
 	}
 
-	public void _stringPerf(boolean statisticsOn) throws IOException {
+	public void _stringPerf(final boolean statisticsOn) throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!statisticsOn) {
 			analysis.setDefaultLogicalTypes(false);
@@ -881,7 +875,7 @@ public class TestStrings {
 		final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		final StringBuilder b = new StringBuilder(alphabet.length());
 		for (int i = 0; i < samples.length; i++) {
-			int length = random.nextInt(alphabet.length()) + 1;
+			final int length = random.nextInt(alphabet.length()) + 1;
 
 			b.setLength(0);
 			for (int j = 0; j < length; j++)
@@ -889,13 +883,13 @@ public class TestStrings {
 			samples[i] = b.toString();
 		}
 
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 
 		long iters = 0;
 		// Run for about reasonable number of seconds
-		int seconds = 5;
+		final int seconds = 5;
 		for (iters = 0; iters < sampleCount; iters++) {
-			String sample = samples[(int)(iters%samples.length)];
+			final String sample = samples[(int)(iters%samples.length)];
 			analysis.train(sample);
 			if (bw != null)
 				bw.write(sample + '\n');

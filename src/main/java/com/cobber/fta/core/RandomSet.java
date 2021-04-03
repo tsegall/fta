@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,21 +25,21 @@ import java.util.Map;
 
 public class RandomSet<E> extends AbstractSet<E> {
 
-    List<E> dta = new ArrayList<>();
-    Map<E, Integer> idx = new HashMap<>();
+    private final List<E> dta = new ArrayList<>();
+    private final Map<E, Integer> idx = new HashMap<>();
 
     public RandomSet() {
     }
 
-    public RandomSet(Collection<E> items) {
-        for (E item : items) {
+    public RandomSet(final Collection<E> items) {
+        for (final E item : items) {
             idx.put(item, dta.size());
             dta.add(item);
         }
     }
 
     @Override
-    public boolean add(E item) {
+    public boolean add(final E item) {
         if (idx.containsKey(item)) {
             return false;
         }
@@ -53,13 +53,13 @@ public class RandomSet<E> extends AbstractSet<E> {
      * @param id Index of element to remove
      * @return Return the element removed
      */
-    public E removeAt(int id) {
-        if (id >= dta.size()) {
+    public E removeAt(final int id) {
+        if (id >= dta.size())
             return null;
-        }
-        E res = dta.get(id);
+
+        final E res = dta.get(id);
         idx.remove(res);
-        E last = dta.remove(dta.size() - 1);
+        final E last = dta.remove(dta.size() - 1);
         // skip filling the hole if last is removed
         if (id < dta.size()) {
             idx.put(last, id);
@@ -69,21 +69,21 @@ public class RandomSet<E> extends AbstractSet<E> {
     }
 
     @Override
-	public boolean contains(Object item) {
+	public boolean contains(final Object item) {
         return idx.get(item) != null;
     }
 
     @Override
-    public boolean remove(Object item) {
-        Integer id = idx.get(item);
-        if (id == null) {
+    public boolean remove(final Object item) {
+        final Integer id = idx.get(item);
+        if (id == null)
             return false;
-        }
+
         removeAt(id);
         return true;
     }
 
-    public E get(int id) {
+    public E get(final int id) {
         return dta.get(id);
     }
 

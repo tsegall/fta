@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,13 @@ public class TopBottomK<T extends Comparable<C>, C> {
 	private TreeSet<T> starter;
 	private TreeSet<T> top;
 	private TreeSet<T> bottom;
-	boolean split = false;
+	private boolean split;
 
 	TopBottomK() {
 		this(DEFAULT_SIZE);
 	}
 
-	TopBottomK(int size) {
+	TopBottomK(final int size) {
 		if (size <= 0)
 			throw new IllegalArgumentException("size must be > 0");
 		this.size = size;
@@ -50,7 +50,7 @@ public class TopBottomK<T extends Comparable<C>, C> {
 	 * Observe the value provided.
 	 * @param item The item to be observed.
 	 */
-	public void observe(T item) {
+	public void observe(final T item) {
 		if (!split) {
 			if (starter.size() < 2 * size)
 				starter.add(item);
@@ -92,10 +92,10 @@ public class TopBottomK<T extends Comparable<C>, C> {
 		if (starter.size() <= size)
 			return starter;
 
-		Iterator<T> iter = starter.descendingIterator();
+		final Iterator<T> iter = starter.descendingIterator();
 		for (int i = 0; i < size - 1; i++)
 			iter.next();
-		T splitter = iter.next();
+		final T splitter = iter.next();
 		return starter.tailSet(splitter);
 	}
 
@@ -112,10 +112,10 @@ public class TopBottomK<T extends Comparable<C>, C> {
 		if (size >= starter.size())
 			return starter;
 
-		Iterator<T> iter = starter.iterator();
+		final Iterator<T> iter = starter.iterator();
 		for (int i = 0; i < size; i++)
 			iter.next();
-		T splitter = iter.next();
+		final T splitter = iter.next();
 		return starter.headSet(splitter);
 	}
 
@@ -124,7 +124,7 @@ public class TopBottomK<T extends Comparable<C>, C> {
 	 * @return The top K values as Strings.
 	 */
 	public SortedSet<String> topKasString() {
-		TreeSet<String> ret = new TreeSet<>(Collections.reverseOrder());
+		final TreeSet<String> ret = new TreeSet<>(Collections.reverseOrder());
 		ret.addAll(topK().stream().map(x->x.toString()).collect(Collectors.toSet()));
 
 		return ret;

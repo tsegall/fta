@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,17 +29,17 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	public static final String SEMANTIC_TYPE = "COUNTRY.TEXT_EN";
 	static final String REGEXP = ".+";
 
-	public LogicalTypeCountryEN(PluginDefinition plugin) throws FileNotFoundException {
+	public LogicalTypeCountryEN(final PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, REGEXP, "\\p{IsAlphabetic}{2}", 95);
 		setContent("resource", "/reference/countries.csv");
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
 		if (matchCount < 50 && outliers.size() > Math.sqrt(getMembers().size()))
 			return REGEXP;
 
-		int headerConfidence = getHeaderConfidence(dataStreamName);
+		final int headerConfidence = getHeaderConfidence(dataStreamName);
 
 		if (headerConfidence == 0 && (realSamples < 10 || cardinality.size() == 1))
 			return REGEXP;

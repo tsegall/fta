@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,8 +89,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getMinValue(), "47");
 		Assert.assertEquals(result.getMaxValue(), "91");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -131,8 +131,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 12);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -203,8 +203,8 @@ public class RandomTests {
 
 		for (int i = 0; i < pre; i++)
 			analysis.train("");
-		for (int i = 0; i < inputs.length; i++) {
-			analysis.train(inputs[i]);
+		for (final String input : inputs) {
+			analysis.train(input);
 		}
 		for (int i = 0; i < post; i++)
 			analysis.train("");
@@ -218,8 +218,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -227,17 +227,17 @@ public class RandomTests {
 	public void debugging() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("employeeNumber");
 		analysis.setDebug(2);
-		final String input = "||||||||||||||||||||" +
+		final String pipedInput = "||||||||||||||||||||" +
 				"F944255990|F944277490|F944277490|F944285690|F944285690|F944285690|F944285690|F944285690|F944296590|F944296590|" +
 				"F944296590|F944296890|F944299990|F944299990|FN22844690|FN24121490|FN24122790|FN24623590|FN24628690|FN24628890|" +
 				"FN27016490|FN27016890|FN27381590|FN27396790|FN29563390|FN29565590|FN29565790|FN29565990|FN29568490|FN29568890|" +
 				"FN29584290|FN944102090|FN944104890|FN944106490|FN944108290|FN944113890|FN944118990|FN944124490|FN944124690|FN944124890|" +
 				"¶ xyzzy ¶|" +     // MAGIC
 				"FN944133090|FN944133490|FN944138390|FN944150190|FN944150590|FN944151690|FN944152990|FN944168090|FN944169590|FN944180490|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 
-		for (int i = 0; i < inputs.length; i++)
-			analysis.train(inputs[i]);
+		for (final String input : inputs)
+			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -253,8 +253,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 0.9803921568627451);
 
 		int matchCount = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].trim().isEmpty() && inputs[i].matches(result.getRegExp()))
+		for (final String input : inputs) {
+			if (!input.trim().isEmpty() && input.matches(result.getRegExp()))
 				matchCount++;
 		}
 		Assert.assertEquals(matchCount, result.getMatchCount());
@@ -263,14 +263,14 @@ public class RandomTests {
 	@Test
 	public void testTrim() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input = " Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
+		final String pipedInput = " Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi          |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
 				" Hello|  Hello| Hello |  world  |    Hello   |      Hi        ";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -291,8 +291,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -327,7 +327,7 @@ public class RandomTests {
 	public void changeMindMinMax() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setThreshold(97);
-		final String input =
+		final String pipedInput =
 				"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
 						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!" +
 						"Volume!Volume!Volume!Volume!Volume!!Volume!Volume!!!Volume!Volume!Volume!Volume!Volume!Volume!" +
@@ -354,7 +354,7 @@ public class RandomTests {
 						"Volume!Volume!Online resource (ePub ebook)!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Audio disc ; Volume!" +
 						"Volume!Volume!Volume!Volume!Volume!!Volume!Volume!!Volume!Volume!Volume!!Volume!Volume!!" +
 						"Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!Volume!";
-		final String inputs[] = input.split("\\!");
+		final String inputs[] = pipedInput.split("\\!");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -377,11 +377,11 @@ public class RandomTests {
 		Assert.assertEquals(result.getMinValue(), "Audio disc ; Volume");
 		Assert.assertEquals(result.getMaxValue(), "Volume");
 
-		String regExp = result.getRegExp();
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].length() == 0)
+		final String regExp = result.getRegExp();
+		for (final String input : inputs) {
+			if (input.length() == 0)
 				continue;
-			Assert.assertTrue(inputs[i].matches(regExp), inputs[i]);
+			Assert.assertTrue(input.matches(regExp), input);
 		}
 	}
 
@@ -393,7 +393,7 @@ public class RandomTests {
 		Assert.assertTrue(analysis.getLengthQualifier());
 		analysis.setLengthQualifier(false);
 		Assert.assertFalse(analysis.getLengthQualifier());
-		String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 		final int start = 10000;
 		final int end = 99999;
@@ -401,7 +401,7 @@ public class RandomTests {
 		int locked = -1;
 
 		for (int i = start; i < end; i++) {
-			StringBuilder sample = new StringBuilder(STRING_LENGTH);
+			final StringBuilder sample = new StringBuilder(STRING_LENGTH);
 			for (int j = 0; j < STRING_LENGTH; j++)
 				sample.append(alphabet.charAt(random.nextInt(52)));
 			if (analysis.train(sample.toString()) && locked == -1)
@@ -513,9 +513,9 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), "\\d{5}(-\\d{4})?");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty())
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -552,23 +552,22 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{18}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
-
 	}
 
 	@Test
 	public void frenchName() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input = "Adrien|Alain|Albert|Alexandre|Alexis|André|Antoine|Arnaud|Arthur|Aurélien|" +
+		final String pipedInput = "Adrien|Alain|Albert|Alexandre|Alexis|André|Antoine|Arnaud|Arthur|Aurélien|" +
 				"Baptiste|Benjamin|Benoît|Bernard|Bertrand|Bruno|Cédric|Charles|Christian|Christophe|" +
 				"Claude|Clément|Cyril|Damien|Daniel|David|Denis|Didier|Dominique|Dylan|" +
 				"Emmanuel|Éric|Étienne|Enzo|Fabien|Fabrice|Florent|Florian|Francis|Franck|" +
 				"François|Frédéric|Gabriel|Gaétan|Georges|Gérard|Gilbert|Gilles|Grégory|Guillaume|" +
 				"Guy|Henri|Hervé|Hugo|Jacques|Jean|";
 		//Jean-Claude|Jean-François|Jean-Louis|Jean-Luc|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -588,8 +587,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3,10}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
@@ -597,14 +596,14 @@ public class RandomTests {
 	public void basicLengthValidationBlanks() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Spaces");
 		final int iters = 30;
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<String>();
 
 		int locked = -1;
 
-		StringBuilder sb = new StringBuilder("  ");
+		final StringBuilder sb = new StringBuilder("  ");
 
 		for (int i = 0; i < iters; i++) {
-			String s = sb.toString();
+			final String s = sb.toString();
 			samples.add(s);
 			if (analysis.train(s) && locked == -1)
 				locked = i;
@@ -626,7 +625,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			if (sample.trim().length() > 0)
 				Assert.assertTrue(sample.matches(result.getRegExp()));
 		}
@@ -636,14 +635,14 @@ public class RandomTests {
 	public void basicLengthValidationString() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Spaces");
 		final int iters = 30;
-		Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<String>();
 
 		int locked = -1;
 
-		StringBuilder sb = new StringBuilder("  ");
+		final StringBuilder sb = new StringBuilder("  ");
 
 		for (int i = 0; i < iters; i++) {
-			String s = sb.toString();
+			final String s = sb.toString();
 			samples.add(s);
 			if (analysis.train(s) && locked == -1)
 				locked = i;
@@ -666,7 +665,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			if (sample.trim().length() > 0)
 				Assert.assertTrue(sample.matches(result.getRegExp()));
 		}
@@ -675,13 +674,13 @@ public class RandomTests {
 	@Test
 	public void variableSpacesFixedLength() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("variableSpacesFixedLength");
-		final String input = "JMD     |JOD     |JPYP    |KESQ    |KGS     |KHR     |" +
+		final String pipedInput = "JMD     |JOD     |JPYP    |KESQ    |KGS     |KHR     |" +
 				" AXN    | AOAZ   | B1D    | BIFD   | BSD    | BZD    | CZE    | CHF    |" +
 				"  MzR   |  NIO   |  P2N   |  PLN   |  RWF   |  SDG   |  SHP   |  SLL   |" +
 				"   SVQ  |   SYP  |   S33Z |   THB  |   TOP  |   TZS  |   UYE  |   VND  |" +
 				"    CQP |    COU |    CRC |    CUC |    DJF |    EGP |    GLP |    GMD |" +
 				"     APT|     CSU|     44S|    LFUA|XXXXXXXX|     PER|     NAR|     ZMW|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -704,8 +703,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -728,9 +727,9 @@ public class RandomTests {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = alpha3.split("\\|");
 
-		for (int i = 0; i < inputs.length; i++) {
-			analysis.train("a" + inputs[i]);
-			analysis.train("b" + inputs[i]);
+		for (final String input : inputs) {
+			analysis.train("a" + input);
+			analysis.train("b" + input);
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -744,9 +743,9 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(("a" + inputs[i]).matches(result.getRegExp()));
-			Assert.assertTrue(("b" + inputs[i]).matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(("a" + input).matches(result.getRegExp()));
+			Assert.assertTrue(("b" + input).matches(result.getRegExp()));
 		}
 	}
 
@@ -773,8 +772,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -801,8 +800,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -821,21 +820,21 @@ public class RandomTests {
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
+		for (final String input : inputs) {
+			if (analysis.train(input) && locked == -1)
 				locked = realSamples;
-			if (inputs[i].trim().isEmpty())
+			if (input.trim().isEmpty())
 				empty++;
 			else
 				realSamples++;
 
-			int len = inputs[i].trim().length();
+			int len = input.trim().length();
 			if (len != 0) {
 				if (len > maxTrimmedLength)
 					maxTrimmedLength = len;
 				if (len != 0 && len < minTrimmedLength)
 					minTrimmedLength = len;
-				len = inputs[i].length();
+				len = input.length();
 				if (len > maxLength)
 					maxLength = len;
 				if (len != 0 && len < minLength)
@@ -984,7 +983,7 @@ public class RandomTests {
 	@Test
 	public void basicPromote() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input =
+		final String pipedInput =
 				"01000053218|0100BRP90233|0100BRP90237|0180BAA01319|0180BAC30834|0190NSC30194|0190NSC30195|0190NSC30652|0190NSC30653|0190NSC30784|" +
 						"0190NSC30785|0190NSY28569|0190NSZ01245|020035037|02900033|02900033|02900039|02901210|02903036|02903037|" +
 						"030051210001|030051210002|030054160002|030055200003|03700325|03700325|0380F968G059|040000002968|049000000804|049002399361|" +
@@ -995,7 +994,7 @@ public class RandomTests {
 						"0800COA10268|0800COA10268|0800COA10386|0800COA10469|0800COA10470|0800COA10490|0800COB20133|0800COB20134|0800COB20138|0800COB20139|" +
 						"0800COC30257|0800COC30258|0800COC30488|0800COC30504|0800COC30505|0800COC30649|0800COC30815|0800COC30873|0800COC31003|0800COC31004|" +
 						"0800COC31093|0800COC31215|0800COC31216|0800COC31221|0800COC31222|0800COC31229|0800COC31231|0800COC31306|0800COC31307|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1015,21 +1014,21 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{8,12}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
 	@Test
 	public void belowDetectWindow() throws IOException {
 		final String BAD = "hello";
-		String[] samples = new String[] {
+		final String[] samples = new String[] {
 				"1234567", "403901",  "6200243690", "6200243691", "6200243692", "6200243693", "6200243694", "5", "8", "9",
 				BAD, "020035031", "6200243635", "6200243635", "6200206290", "6200206290",
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer();
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -1043,9 +1042,9 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		Assert.assertEquals(result.getShapeCount(), 6);
 
-		for (int i = 0; i < samples.length; i++) {
-			if (!BAD.contentEquals(samples[i]))
-				Assert.assertTrue(samples[i].matches(result.getRegExp()), samples[i]);
+		for (final String sample : samples) {
+			if (!BAD.contentEquals(sample))
+				Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 		}
 	}
 
@@ -1087,24 +1086,24 @@ public class RandomTests {
 		final int iterations = 100000;
 		final Random random = new Random(478031);
 		int locked = -1;
-		StringBuilder line = new StringBuilder();
+		final StringBuilder line = new StringBuilder();
 		int minTrimmedLength = Integer.MAX_VALUE;
 		int maxTrimmedLength = Integer.MIN_VALUE;
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
-		String alphabet = "abcdefhijklmnopqrstuvwxyz";
+		final String alphabet = "abcdefhijklmnopqrstuvwxyz";
 
 		for (int i = 0; i < iterations; i++) {
 			line.setLength(0);
-			int wordCount = random.nextInt(20);
+			final int wordCount = random.nextInt(20);
 			for (int words = 0; words < wordCount; words++) {
-				int charCount = random.nextInt(10);
+				final int charCount = random.nextInt(10);
 				for (int chars = 0; chars < charCount; chars++) {
 					line.append(alphabet.charAt(random.nextInt(25)));
 				}
 				line.append(' ');
 			}
-			String sample = line.toString().trim();
+			final String sample = line.toString().trim();
 			int len = sample.length();
 			if (len > maxLength)
 				maxLength = len;
@@ -1317,7 +1316,7 @@ public class RandomTests {
 		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
 			b.append("+1 ");
@@ -1331,7 +1330,7 @@ public class RandomTests {
 
 
 		final TextAnalyzer analysis = new TextAnalyzer();
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -1344,8 +1343,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), "\\+\\d \\d{3} \\d{3} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < samples.length; i++) {
-			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		for (final String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -1354,7 +1353,7 @@ public class RandomTests {
 		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
 			b.append("1.");
@@ -1368,7 +1367,7 @@ public class RandomTests {
 
 
 		final TextAnalyzer analysis = new TextAnalyzer();
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -1381,8 +1380,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), "\\d\\.\\d{3}\\.\\d{3}\\.\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < samples.length; i++) {
-			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		for (final String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -1391,7 +1390,7 @@ public class RandomTests {
 		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
 			b.append("(");
@@ -1405,7 +1404,7 @@ public class RandomTests {
 
 
 		final TextAnalyzer analysis = new TextAnalyzer();
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -1418,14 +1417,14 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), "\\(\\d{3}\\) \\d{3} \\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < samples.length; i++) {
-			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		for (final String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
 	@Test
 	public void bigExponents() throws IOException {
-		String[] samples = new String[] {
+		final String[] samples = new String[] {
 				"5230CGX16431", "3590E094000", "3590E092401", "3590E012300", "66004890064", "020035020", "270000009882", "020035256", "5520WDB48305", "6200600740",
 				"6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "66004589900", "66004589900",
 				"020035300", "020035300", "020035347", "6020710337", "6020710337", "020035257", "020035053", "020035030", "020035030", "020035031",
@@ -1433,7 +1432,7 @@ public class RandomTests {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer();
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -1451,8 +1450,8 @@ public class RandomTests {
 		Assert.assertEquals(shapes.get("999999999999"), Long.valueOf(1));
 		Assert.assertEquals(shapes.get("9999XXX99999"), Long.valueOf(2));
 
-		for (int i = 0; i < samples.length; i++) {
-			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		for (final String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -1461,7 +1460,7 @@ public class RandomTests {
 		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
 			b.append("[");
@@ -1475,7 +1474,7 @@ public class RandomTests {
 
 
 		final TextAnalyzer analysis = new TextAnalyzer();
-		for (String sample : samples) {
+		for (final String sample : samples) {
 			analysis.train(sample);
 		}
 
@@ -1488,8 +1487,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), "\\[\\d{3}\\)\\{\\[\\d-\\d\\] \\^\\d{3}\\$\\d{4}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < samples.length; i++) {
-			Assert.assertTrue(samples[i].matches(result.getRegExp()));
+		for (final String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -1642,7 +1641,7 @@ public class RandomTests {
 		int locked = -1;
 
 		for (int i = start; i < end; i++) {
-			if (analysis.train("A" + String.valueOf(i)) && locked == -1)
+			if (analysis.train("A" + i) && locked == -1)
 				locked = i - start;
 		}
 
@@ -1689,14 +1688,14 @@ public class RandomTests {
 			"US_STREET"
 	};
 
-	public String[] generateTestData(int type, int length) {
+	public String[] generateTestData(final int type, final int length) {
 		final Random random = new Random(314159265);
 		String[] result = new String[length];
-		String[] candidatesISO3166_3 = TestUtils.valid3166_3.split("\\|");
-		String[] candidatesISO3166_2 = TestUtils.valid3166_2.split("\\|");
-		String[] candidatesZips = TestUtils.validZips.split("\\|");
-		String[] candidatesUSStates = TestUtils.validUSStates.split("\\|");
-		String[] candidatesCAProvinces = TestUtils.validCAProvinces.split("\\|");
+		final String[] candidatesISO3166_3 = TestUtils.valid3166_3.split("\\|");
+		final String[] candidatesISO3166_2 = TestUtils.valid3166_2.split("\\|");
+		final String[] candidatesZips = TestUtils.validZips.split("\\|");
+		final String[] candidatesUSStates = TestUtils.validUSStates.split("\\|");
+		final String[] candidatesCAProvinces = TestUtils.validCAProvinces.split("\\|");
 
 		for (int i = 0; i < length; i++)
 			switch (type) {
@@ -1718,8 +1717,7 @@ public class RandomTests {
 				break;
 			case 4:
 				// Date
-				Date d = new Date(random.nextLong());
-				result[i] = d.toString();
+				result[i] = new Date(random.nextLong()).toString();
 				break;
 			case 5:
 				// ISO 3166-3
@@ -1757,7 +1755,7 @@ public class RandomTests {
 		private TextAnalysisResult answer;
 		private TextAnalyzer analysis;
 
-		AnalysisThread(String id, int streamType, String[] stream, TextAnalysisResult answer) throws IOException {
+		AnalysisThread(final String id, final int streamType, final String[] stream, final TextAnalysisResult answer) throws IOException {
 			this.id = id;
 			this.streamType = streamType;
 			this.stream = stream;
@@ -1770,8 +1768,8 @@ public class RandomTests {
 		@Override
 		public void run() {
 			//			long start = System.currentTimeMillis();
-			for (int i = 0; i < stream.length; i++)
-				analysis.train(stream[i]);
+			for (final String input : stream)
+				analysis.train(input);
 
 			final TextAnalysisResult result = analysis.getResult();
 
@@ -1795,13 +1793,13 @@ public class RandomTests {
 		Thread[] threads = new Thread[THREADS];
 
 		for (int t = 0; t < THREADS; t++) {
-			int type = random.nextInt(decoder.length);
-			int length = 30 + random.nextInt(10000);
-			String[] stream = generateTestData(type, length);
+			final int type = random.nextInt(decoder.length);
+			final int length = 30 + random.nextInt(10000);
+			final String[] stream = generateTestData(type, length);
 
-			TextAnalyzer analysis = new TextAnalyzer();
-			for (int i = 0; i < stream.length; i++)
-				analysis.train(stream[i]);
+			final TextAnalyzer analysis = new TextAnalyzer();
+			for (final String input : stream)
+				analysis.train(input);
 
 			threads[t] = new Thread(new AnalysisThread(String.valueOf(t), type, stream, analysis.getResult()));
 		}
@@ -1833,13 +1831,13 @@ public class RandomTests {
 	class PluginThread implements Runnable {
 		private String id;
 
-		PluginThread(String id) throws IOException {
+		PluginThread(final String id) throws IOException {
 			this.id = id;
 		}
 
 		@Override
 		public void run() {
-			GetPlugin pluginGetter = new GetPlugin();
+			final GetPlugin pluginGetter = new GetPlugin();
 
 			for (int i = 0; i < 1000; i++)
 				pluginGetter.getPlugins();
@@ -1866,7 +1864,7 @@ public class RandomTests {
 		Random any = new Random();
 		private String id;
 
-		LogicalTypeThread(String id) throws IOException {
+		LogicalTypeThread(final String id) throws IOException {
 			this.id = id;
 		}
 
@@ -1874,15 +1872,15 @@ public class RandomTests {
 		public void run() {
 			LogicalType logicalType = null;
 			do {
-				String semanticType = TestStandalonePlugins.allSemanticTypes[any.nextInt(TestStandalonePlugins.allSemanticTypes.length)];
-				PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
+				final String semanticType = TestStandalonePlugins.allSemanticTypes[any.nextInt(TestStandalonePlugins.allSemanticTypes.length)];
+				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
 				logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 			} while (!LTRandom.class.isAssignableFrom(logicalType.getClass()));
 
-			LogicalTypeCode logicalTypeCode = (LogicalTypeCode)logicalType;
+			final LogicalTypeCode logicalTypeCode = (LogicalTypeCode)logicalType;
 
 			for (int i = 0; i < 1000; i++) {
-				String value = logicalTypeCode.nextRandom();
+				final String value = logicalTypeCode.nextRandom();
 				if (!logicalTypeCode.isValid(value))
 					System.err.println("Issue with LogicalType'" + logicalTypeCode.getDescription() + "', value: " + value + "\n");
 				Assert.assertTrue(logicalTypeCode.isValid(value), value);
@@ -1916,15 +1914,15 @@ public class RandomTests {
 			final TextAnalyzer analysis = new TextAnalyzer();
 			analysis.setThreshold(100 - errorRate);
 			Assert.assertEquals(analysis.getThreshold(), 100 - errorRate);
-			int length = random.nextInt(9);
-			long low = (long)Math.pow(10, length);
+			final int length = random.nextInt(9);
+			final long low = (long)Math.pow(10, length);
 			long lowest = low;
 			long lowestFloat = low;
-			int lowLength = String.valueOf(low).length();
-			long high = low + SAMPLES - 1;
-			int highLength = String.valueOf(high).length();
+			final int lowLength = String.valueOf(low).length();
+			final long high = low + SAMPLES - 1;
+			final int highLength = String.valueOf(high).length();
 			int misses = 0;
-			boolean sticky = random.nextBoolean();
+			final boolean sticky = random.nextBoolean();
 			boolean isNegative = false;
 			int floats = 0;
 			int strings = 0;
@@ -1932,7 +1930,7 @@ public class RandomTests {
 			int blanks = 0;
 			int errorCase = -1;
 			long firstFloat = -1;
-			String[] errorCaseDecode = new String[] { "String", "NegativeInt", "Double", "negativeDouble", "null", "blank" };
+			final String[] errorCaseDecode = new String[] { "String", "NegativeInt", "Double", "negativeDouble", "null", "blank" };
 
 			for (long i = low; i <= high; i++) {
 				if (i != low && i != high && random.nextInt(99) < 2) {

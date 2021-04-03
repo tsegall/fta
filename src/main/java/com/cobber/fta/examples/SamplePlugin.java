@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.cobber.fta.TextAnalyzer;
 
 public class SamplePlugin {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException {
 		final String[] inputs = new String[] {
 				"red",  "red", "blue", "pink", "black", "white", "orange", "purple",
 				"grey", "green", "red", "mauve", "red", "brown", "silver", "gold",
@@ -36,7 +36,7 @@ public class SamplePlugin {
 		final TextAnalyzer analysis = new TextAnalyzer("Colors");
 
 		// Register our new magic plugin
-		String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_EN\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"locale\": [ ] } ]";
+		final String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_EN\", \"type\": \"finite\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"locale\": [ ] } ]";
 		try {
 			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", null);
 		} catch (Exception e) {
@@ -44,8 +44,8 @@ public class SamplePlugin {
 			System.exit(1);
 		}
 
-		for (int i = 0; i < inputs.length; i++)
-			analysis.train(inputs[i]);
+		for (final String input : inputs)
+			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Tim Segall
+ * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ import java.security.SecureRandom;
 import java.util.Locale;
 
 public abstract class LogicalTypeCode extends LogicalType implements LTRandom {
-	protected SecureRandom random = null;
+	protected SecureRandom random;
 
-	LogicalTypeCode(PluginDefinition plugin) {
+	LogicalTypeCode(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		random = new SecureRandom(new byte[] { 3, 1, 4, 1, 5, 9, 2 });
@@ -35,7 +35,7 @@ public abstract class LogicalTypeCode extends LogicalType implements LTRandom {
 	}
 
 	@Override
-	public void seed(byte[] seed) {
+	public void seed(final byte[] seed) {
 
 		random = new SecureRandom(seed);
 	}
