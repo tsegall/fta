@@ -152,7 +152,7 @@ public class TestStandalonePlugins {
 		for (int i = 0; i < 100; i++) {
 			final String example = logical.nextRandom();
 			Assert.assertTrue(example.matches(logical.getRegExp()));
-			Assert.assertTrue(logical.isValid(example.toLowerCase()), example);
+			Assert.assertTrue(logical.isValid(example.toLowerCase(Locale.ENGLISH)), example);
 		}
 	}
 

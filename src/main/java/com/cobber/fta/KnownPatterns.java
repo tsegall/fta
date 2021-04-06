@@ -87,11 +87,11 @@ public class KnownPatterns {
 	public String PATTERN_DOUBLE_WITH_EXPONENT;
 	public String PATTERN_SIGNED_DOUBLE_WITH_EXPONENT;
 
-	private Map<String, PatternInfo> knownPatterns = new HashMap<>();
-	private Map<ID, PatternInfo> knownIDs = new EnumMap<>(ID.class);
-	private Map<String, PatternInfo> promotion = new HashMap<>();
-	private Map<String, PatternInfo> negation = new HashMap<>();
-	private Map<String, PatternInfo> grouping = new HashMap<>();
+	private final Map<String, PatternInfo> knownPatterns = new HashMap<>();
+	private final Map<ID, PatternInfo> knownIDs = new EnumMap<>(ID.class);
+	private final Map<String, PatternInfo> promotion = new HashMap<>();
+	private final Map<String, PatternInfo> negation = new HashMap<>();
+	private final Map<String, PatternInfo> grouping = new HashMap<>();
 
 	public static String freezeANY(final int minTrimmed, final int maxTrimmed, final int minRawNonBlankLength, final int maxRawNonBlankLength, final boolean leadingWhiteSpace, final boolean trailingWhiteSpace, final boolean multiline) {
 		final String leadIn = multiline ? "(?s)." : ".";
@@ -109,7 +109,7 @@ public class KnownPatterns {
 		return regExp.replaceAll("\\\\d", "[\\\\d" + re + "]");
 	}
 
-	String getRegExp(final KnownPatterns.ID id) {
+	protected String getRegExp(final KnownPatterns.ID id) {
 		switch (id) {
 		case ID_LONG:
 			return PATTERN_LONG;
@@ -154,7 +154,7 @@ public class KnownPatterns {
 		return null;
 	}
 
-	void initialize(final Locale locale) {
+	protected void initialize(final Locale locale) {
 		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 		final char groupingSeparator = formatSymbols.getGroupingSeparator();
 		final char decimalSeparator = formatSymbols.getDecimalSeparator();
@@ -319,40 +319,40 @@ public class KnownPatterns {
 		addUnary(grouping, PATTERN_SIGNED_DOUBLE_GROUPING, PATTERN_SIGNED_DOUBLE_GROUPING);
 	}
 
-	void put(final String key, final PatternInfo patternInfo) {
+	protected void put(final String key, final PatternInfo patternInfo) {
 		knownPatterns.put(key, patternInfo);
 	}
 
-	PatternInfo getByRegExp(final String regExp) {
+	protected PatternInfo getByRegExp(final String regExp) {
 		return knownPatterns.get(regExp);
 	}
 
-	PatternInfo getByID(final ID id) {
+	protected PatternInfo getByID(final ID id) {
 		return knownIDs.get(id);
 	}
 
-	PatternInfo numericPromotion(final ID left, final ID right) {
+	protected PatternInfo numericPromotion(final ID left, final ID right) {
 		return promotion.get(left.toString() + "---" + right.toString());
 	}
 
-	String numericPromotion(final String leftPattern, final String rightPattern) {
+	protected String numericPromotion(final String leftPattern, final String rightPattern) {
 		final PatternInfo result = promotion.get(leftPattern + "---" + rightPattern);
 		return result == null ? null : result.regexp;
 	}
 
-	PatternInfo negation(final String pattern) {
+	protected PatternInfo negation(final String pattern) {
 		return negation.get(pattern);
 	}
 
-	PatternInfo grouping(final String pattern) {
+	protected PatternInfo grouping(final String pattern) {
 		return grouping.get(pattern);
 	}
 
-	void addUnary(final Map<String, PatternInfo> transformation, final String input, final String result) {
+	protected void addUnary(final Map<String, PatternInfo> transformation, final String input, final String result) {
 		transformation.put(input, knownPatterns.get(result));
 	}
 
-	void addBinary(final Map<String, PatternInfo> transformation, final String left, final String right, final String result) {
+	protected void addBinary(final Map<String, PatternInfo> transformation, final String left, final String right, final String result) {
 		transformation.put(left + "---" + right, knownPatterns.get(result));
 	}
 }

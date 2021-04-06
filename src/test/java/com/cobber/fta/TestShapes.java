@@ -28,10 +28,10 @@ public class TestShapes {
 
 	@Test
 	public void singleAlphaConstantLength() throws IOException {
-		Shapes shapes = new Shapes(MAX_SHAPES);
-		Random r = new Random(2089);
+		final Shapes shapes = new Shapes(MAX_SHAPES);
+		final Random r = new Random(2089);
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
 				b.append(ALPHA.charAt(r.nextInt(ALPHA.length())));
@@ -44,10 +44,10 @@ public class TestShapes {
 
 	@Test
 	public void doubleAlphaConstantLength() throws IOException {
-		Shapes shapes = new Shapes(MAX_SHAPES);
-		Random r = new Random(2089);
+		final Shapes shapes = new Shapes(MAX_SHAPES);
+		final Random r = new Random(2089);
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
 				b.append(ALPHA.charAt(r.nextInt(ALPHA.length())));
@@ -67,10 +67,10 @@ public class TestShapes {
 
 	@Test
 	public void multiAlphaConstantLength() throws IOException {
-		Shapes shapes = new Shapes(MAX_SHAPES);
-		Random r = new Random(2089);
+		final Shapes shapes = new Shapes(MAX_SHAPES);
+		final Random r = new Random(2089);
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int j = 4; j < 9; j++) {
 			for (int i = 0; i < 100; i++) {
 				for (int l = 0; l < j; l++)
@@ -80,15 +80,15 @@ public class TestShapes {
 			}
 		}
 
-		Assert.assertEquals(shapes.getRegExp(), "\\p{IsAlphabetic}+");
+		Assert.assertEquals(shapes.getRegExp(), "\\p{IsAlphabetic}{4,8}");
 	}
 
 	@Test
 	public void singleNumericConstantLength() throws IOException {
-		Shapes shapes = new Shapes(MAX_SHAPES);
-		Random r = new Random(2089);
+		final Shapes shapes = new Shapes(MAX_SHAPES);
+		final Random r = new Random(2089);
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
 				b.append(NUMERIC.charAt(r.nextInt(NUMERIC.length())));
@@ -101,10 +101,10 @@ public class TestShapes {
 
 	@Test
 	public void doubleNumericConstantLength() throws IOException {
-		Shapes shapes = new Shapes(MAX_SHAPES);
-		Random r = new Random(2089);
+		final Shapes shapes = new Shapes(MAX_SHAPES);
+		final Random r = new Random(2089);
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
 				b.append(NUMERIC.charAt(r.nextInt(NUMERIC.length())));

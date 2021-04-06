@@ -22,7 +22,6 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -58,9 +57,9 @@ public class DateTimeParserResult {
 	public Boolean amPmIndicator;
 	public List<FormatterToken> tokenized;
 
-	private DateResolutionMode resolutionMode = DateResolutionMode.None;
-	private Locale locale;
-	private int hourLength = -1;
+	private final DateResolutionMode resolutionMode;
+	private final Locale locale;
+	private final int hourLength;
 
 	private static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<>();
 
@@ -132,7 +131,7 @@ public class DateTimeParserResult {
 	 */
 	public void updateFormatString(final String formatString) {
 		this.formatString = formatString;
-		this.tokenized =  DateTimeParserResult.tokenize(formatString);
+		this.tokenized =  FormatterToken.tokenize(formatString);
 	}
 
 	/**
@@ -416,182 +415,14 @@ public class DateTimeParserResult {
 		// Add to cache
 		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, locale, timeElements, timeFieldLengths, timeFieldOffsets, timeFieldPad,
 				hourLength, dateElements, dateFieldLengths, dateFieldOffsets, dateFieldPad, timeFirst, dateTimeSeparator,
-				yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator, fullyBound ? tokenize(formatString) : null);
+				yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator, fullyBound ? FormatterToken.tokenize(formatString) : null);
 		dtpCache.put(key, ret);
 
 		return newInstance(ret);
 	}
 
-	public static List<FormatterToken> tokenize(final String formatString) {
-		final ArrayList<FormatterToken> ret = new ArrayList<>();
-
-		final int formatLength = formatString.length();
-
-		for (int i = 0; i < formatLength; i++) {
-			final char ch = formatString.charAt(i);
-			switch (ch) {
-			case 'E':
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'E') {
-					i++;
-					if (i + 1 < formatLength && formatString.charAt(i + 1) == 'E') {
-						i++;
-						if (i + 1 < formatLength && formatString.charAt(i + 1) == 'E') {
-							i++;
-							ret.add(new FormatterToken(Token.DAY_OF_WEEK));
-						}
-						else
-							ret.add(new FormatterToken(Token.DAY_OF_WEEK_ABBR));
-					}
-				}
-				break;
-
-			case 'M':
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'M') {
-					i++;
-					if (i + 1 < formatLength && formatString.charAt(i + 1) == 'M') {
-						i++;
-						if (i + 1 < formatLength && formatString.charAt(i + 1) == 'M') {
-							i++;
-							ret.add(new FormatterToken(Token.MONTH));
-						}
-						else
-							ret.add(new FormatterToken(Token.MONTH_ABBR));
-					}
-					else
-						ret.add(new FormatterToken(Token.MONTHS_2));
-				} else
-					ret.add(new FormatterToken(Token.MONTHS_1_OR_2));
-				break;
-
-			case 'd':
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'd') {
-					i++;
-					ret.add(new FormatterToken(Token.DAYS_2));
-				}
-				else
-					ret.add(new FormatterToken(Token.DAYS_1_OR_2));
-
-				break;
-
-			case 'h':
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
-					i++;
-					ret.add(new FormatterToken(Token.HOURS12_2));
-				}
-				else
-					ret.add(new FormatterToken(Token.HOURS12_1_OR_2));
-				break;
-
-			case 'H':
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
-					i++;
-					ret.add(new FormatterToken(Token.HOURS24_2));
-				}
-				else
-					ret.add(new FormatterToken(Token.HOURS24_1_OR_2));
-				break;
-
-			case 'k':
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
-					i++;
-					ret.add(new FormatterToken(Token.CLOCK24_2));
-				}
-				else
-					ret.add(new FormatterToken(Token.CLOCK24_1_OR_2));
-				break;
-
-			case '?':
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
-					i++;
-					ret.add(new FormatterToken(Token.DIGITS_2));
-				}
-				else
-					ret.add(new FormatterToken(Token.DIGITS_1_OR_2));
-				break;
-
-			case 'm':
-			case 's':
-				ret.add(new FormatterToken(ch == 'm' ? Token.MINS_2 : Token.SECS_2));
-				i++;
-				break;
-
-			case 'p':
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
-					i++;
-					ret.add(new FormatterToken(Token.PAD_2));
-				}
-				break;
-
-			case 'y':
-				i++;
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'y') {
-					ret.add(new FormatterToken(Token.YEARS_4));
-					i += 2;
-				} else
-					ret.add(new FormatterToken(Token.YEARS_2));
-				break;
-
-			case 'S':
-				int count = 1;
-				int high = 1;
-				if (i + 1 < formatLength) {
-					final char next = formatString.charAt(i + 1);
-					if (next == 'S') {
-						while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
-							count++;
-							i++;
-						}
-						high = count;
-					}
-					else if (next == '{') {
-						final RegExpSplitter facts = RegExpSplitter.newInstance(formatString.substring(i + 1));
-						if (facts == null)
-							return null;
-						i += facts.getLength();
-						count = facts.getMin();
-						high = facts.getMax();
-					}
-				}
-				ret.add(new FormatterToken(Token.FRACTION, count, high));
-				break;
-
-			case 'x':
-			case 'X':
-				int nextCount = 1;
-				while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
-					nextCount++;
-					i++;
-				}
-				ret.add(new FormatterToken(ch == 'x' ? Token.TIMEZONE_OFFSET : Token.TIMEZONE_OFFSET_Z, nextCount));
-				break;
-
-			case 'z':
-				ret.add(new FormatterToken(Token.TIMEZONE));
-				break;
-
-			case '\'':
-				i++;
-				ret.add(new FormatterToken(Token.CONSTANT_CHAR, formatString.charAt(i)));
-				if (i + 1 >= formatLength || formatString.charAt(i + 1) != '\'') {
-					throw new DateTimeParseException("Unterminated quote in format String", formatString, i);
-				}
-				i++;
-				break;
-
-			case 'a':
-				ret.add(new FormatterToken(Token.AMPM));
-				break;
-
-			default:
-				ret.add(new FormatterToken(Token.CONSTANT_CHAR, ch));
-			}
-		}
-
-		return ret;
-	}
-
 	@SuppressWarnings("incomplete-switch")
-	void validateTokenValue(final Token token, final int value, final String input, final int upto) {
+	private void validateTokenValue(final Token token, final int value, final String input, final int upto) {
 		switch (token) {
 		case CLOCK24_1_OR_2:
 		case CLOCK24_2:
@@ -642,7 +473,7 @@ public class DateTimeParserResult {
 			formatString = getFormatString();
 
 		if (tokenized == null)
-			tokenized = tokenize(formatString);
+			tokenized = FormatterToken.tokenize(formatString);
 
 		Token nextToken = null;
 		for (final FormatterToken token : tokenized) {
@@ -894,7 +725,7 @@ public class DateTimeParserResult {
 			return FTAType.LOCALTIME;
 
 		if (tokenized == null)
-			tokenized =  DateTimeParserResult.tokenize(formatString);
+			tokenized =  FormatterToken.tokenize(formatString);
 
 		for (final FormatterToken t : tokenized) {
 			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_Z))
@@ -952,7 +783,7 @@ public class DateTimeParserResult {
 		if (formatString == null)
 			formatString = getFormatString();
 
-		for (final FormatterToken token : tokenize(formatString)) {
+		for (final FormatterToken token : FormatterToken.tokenize(formatString)) {
 			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.PAD_2 || token.getType() == Token.MONTH ||
 					token.getType() == Token.MONTH_ABBR || token.getType() == Token.DAY_OF_WEEK_ABBR ||
 					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE ||

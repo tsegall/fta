@@ -18,10 +18,10 @@ package com.cobber.fta;
 import java.util.SortedSet;
 
 public class TypeFacts {
-	String minValue;
-	String maxValue;
-	Double mean;
-	Double variance;
-	SortedSet<String> topK;
-	SortedSet<String> bottomK;
+	protected String minValue;
+	protected String maxValue;
+	protected Double mean;
+	protected Double variance;
+	protected SortedSet<String> topK;
+	protected SortedSet<String> bottomK;
 }

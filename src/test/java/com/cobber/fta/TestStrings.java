@@ -193,8 +193,8 @@ public class TestStrings {
 				"FN9441330|FN9441334|FN9441383|FN9441501|FN9441505|FN9441516|FN9441529|FN9441680|FN9441695|FN9441804|";
 		final String inputs[] = pipedInput.split("\\|");
 
-		for (int i = 0; i < inputs.length; i++)
-			analysis.train(inputs[i]);
+		for (final String input : inputs)
+			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
 

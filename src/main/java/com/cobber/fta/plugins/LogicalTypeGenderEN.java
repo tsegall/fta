@@ -25,6 +25,7 @@ import java.util.Set;
 
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.Shapes;
 import com.cobber.fta.TypeFacts;
 import com.cobber.fta.core.RegExpGenerator;
 
@@ -84,7 +85,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, Map<String, Long> cardinality, final Map<String, Long> outliers) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)

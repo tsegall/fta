@@ -265,8 +265,13 @@
  - Fix bug in Phase 3 of date detection, updated google phone number library
 
 ### 3.0.20
- - Lots of PMD fixups
+ - Lots of PMD cleanup
  - Fix issue related to updating regexp when not all samples matched
  - Add some Shape testing
  - Phone number samples need a decent cardinality to pass muster if no header
  - 'CS' country code was valid (so allow as legal)
+
+### 3.0.21
+ - Lots of PMD cleanup
+ - Add support for CHECKDIGIT.LUHN (Digit String that has a valid Luhn Check digit)
+ - Add support for Securities Identifiers - CUSIP, SEDOL, and ISIN

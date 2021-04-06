@@ -99,8 +99,7 @@ public class TestDates {
 
 		LocalDateTime localDateTime = LocalDateTime.now();
 		for (int i = 0; i < sampleCount; i++) {
-			String sample = null;
-			sample = localDateTime.format(dtf);
+			final String sample = localDateTime.format(dtf);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
@@ -136,8 +135,7 @@ public class TestDates {
 
 		final Calendar calendar = Calendar.getInstance();
 		for (int i = 0; i < sampleCount; i++) {
-			String sample = null;
-			sample = sdf.format(calendar.getTime());
+			final String sample = sdf.format(calendar.getTime());
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
@@ -175,8 +173,7 @@ public class TestDates {
 
 		LocalDateTime localDateTime = LocalDateTime.now();
 		for (int i = 0; i < sampleCount; i++) {
-			String sample = null;
-			sample = localDateTime.format(dtf);
+			final String sample = localDateTime.format(dtf);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
@@ -214,8 +211,7 @@ public class TestDates {
 
 			LocalDateTime localDateTime = LocalDateTime.now();
 			for (int i = 0; i < sampleCount; i++) {
-				String sample = null;
-				sample = localDateTime.format(dtf);
+				final String sample = localDateTime.format(dtf);
 				samples.add(sample);
 				if (analysis.train(sample) && locked == -1)
 					locked = i;
@@ -252,8 +248,7 @@ public class TestDates {
 
 		LocalDateTime localDateTime = LocalDateTime.now();
 		for (int i = 0; i < sampleCount; i++) {
-			String sample = null;
-			sample = localDateTime.format(dtf);
+			final String sample = localDateTime.format(dtf);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
@@ -289,8 +284,7 @@ public class TestDates {
 
 		LocalDateTime localDateTime = LocalDateTime.now();
 		for (int i = 0; i < sampleCount; i++) {
-			String sample = null;
-			sample = localDateTime.format(dtf);
+			final String sample = localDateTime.format(dtf);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = i;
@@ -373,7 +367,7 @@ public class TestDates {
 				final TextAnalysisResult result = analysis.getResult();
 
 				Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
-				String expected = "";
+				String expected;
 				if (resolutionMode == DateResolutionMode.DayFirst)
 					expected = "d/M/yy";
 				else if (resolutionMode == DateResolutionMode.MonthFirst)
@@ -1838,8 +1832,8 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 
 		final TextAnalyzer analysis2 = new TextAnalyzer();
@@ -2116,8 +2110,8 @@ public class TestDates {
 		}
 		final TextAnalysisResult result1 = analysis1.getResult();
 
-		for (int i = 0; i < inputs2.length; i++)
-			analysis1.train(inputs2[i]);
+		for (final String input2 : inputs2)
+			analysis1.train(input2);
 		final TextAnalysisResult result2 = analysis1.getResult();
 
 		Assert.assertEquals(result1.getSampleCount(), inputs1.length);
@@ -2130,8 +2124,8 @@ public class TestDates {
 		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 
-		for (final String input : inputs1) {
-			Assert.assertTrue(input.matches(result1.getRegExp()));
+		for (final String input1 : inputs1) {
+			Assert.assertTrue(input1.matches(result1.getRegExp()));
 		}
 	}
 
@@ -2809,11 +2803,11 @@ public class TestDates {
 
 
 		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getTypeQualifier());
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].isEmpty()) {
-				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		for (final String input : inputs) {
+			if (!input.isEmpty()) {
+				Assert.assertTrue(input.matches(result.getRegExp()), input);
 				try {
-					LocalDate.parse(inputs[i], formatter);
+					LocalDate.parse(input, formatter);
 				}
 				catch (DateTimeParseException e) {
 					Assert.fail("Parse failed" + e);
@@ -3297,17 +3291,16 @@ public class TestDates {
 		results.put("yyyyMMdd'T'HHmm", new SimpleResult("\\d{8}T\\d{4}", "yyyyMMdd'T'HHmm", "LocalDateTime"));
 		results.put("yyyyMMdd'T'HH", new SimpleResult("\\d{8}T\\d{2}", "yyyyMMdd'T'HH", "LocalDateTime"));
 
-		for (int i = 0; i < tests.length; i++) {
+		for (final String test : tests) {
 			final TextAnalyzer analysis = new TextAnalyzer();
-			final String dateTimeFormat = tests[i];
+			final String dateTimeFormat = test;
 			final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat);
 			final int sampleCount = 1000;
 			String[] samples = new String[sampleCount];
 
 			final Calendar calendar = Calendar.getInstance();
-			int iters = 0;
 
-			for (iters = 0; iters < samples.length; iters++) {
+			for (int iters = 0; iters < samples.length; iters++) {
 				samples[iters] = sdf.format(calendar.getTime());
 				calendar.add(Calendar.HOUR, -1000);
 				calendar.add(Calendar.MINUTE, 1);
@@ -3348,8 +3341,8 @@ public class TestDates {
 			bw = new BufferedWriter(new FileWriter("/tmp/dateTimePerf.csv"));
 
 		LocalDateTime localDateTime = LocalDateTime.now();
-		int iters = 0;
 
+		int iters;
 		for (iters = 0; iters < samples.length; iters++) {
 			samples[iters] = localDateTime.format(dtf);
 			localDateTime = localDateTime.minusMinutes(1).minusSeconds(1);

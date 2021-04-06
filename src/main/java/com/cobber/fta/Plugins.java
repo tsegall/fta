@@ -31,7 +31,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Plugins {
-	private Map<String, LogicalType> registered = new HashMap<>();
+	private final Map<String, LogicalType> registered = new HashMap<>();
 
 	public void registerPlugins(final Reader JSON, final String dataStreamName, final Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		final ObjectMapper mapper = new ObjectMapper();

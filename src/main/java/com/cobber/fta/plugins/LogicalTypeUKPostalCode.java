@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.Shapes;
 import com.cobber.fta.TypeFacts;
 import com.cobber.fta.core.FTAType;
 
@@ -118,7 +119,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 		final String upperDataStreamName = dataStreamName.toUpperCase();
 		return (cardinality.size() < 5 && !upperDataStreamName.contains("POST")) || (double)matchCount/realSamples < getThreshold()/100.0 ? REGEXP : null;
 	}

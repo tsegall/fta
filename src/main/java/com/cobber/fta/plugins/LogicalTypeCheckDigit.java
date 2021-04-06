@@ -13,35 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta;
+package com.cobber.fta.plugins;
 
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.validator.routines.CreditCardValidator;
+import org.apache.commons.validator.routines.checkdigit.ModulusCheckDigit;
 
+import com.cobber.fta.LogicalTypeInfinite;
+import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.Shapes;
+import com.cobber.fta.TypeFacts;
 import com.cobber.fta.core.FTAType;
 
-public class PluginCreditCard extends LogicalTypeInfinite {
-	public final static String REGEXP = "(?:\\d[ -]*?){13,16}";
-	private static CreditCardValidator validator;
+/**
+ * Plugin to detect valid Luhn check digits (typically Credit Cards or IMEI Numbers).
+ */
+public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
+	public static final String BACKOUT_REGEXP = ".*";
+	private String regExp = BACKOUT_REGEXP;
+	protected ModulusCheckDigit validator;
 
-	static {
-		validator = CreditCardValidator.genericCreditCardValidator();
-	}
-
-	public PluginCreditCard(final PluginDefinition plugin) {
+	public LogicalTypeCheckDigit(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return validator.isValid(trimmed.replaceAll("[\\s\\-]", ""));
+		return isValid(trimmed);
 	}
 
 	@Override
 	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
+
+		threshold = 98;
 
 		return true;
 	}
@@ -52,13 +58,8 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
-		return "CREDITCARD";
-	}
-
-	@Override
 	public String getRegExp() {
-		return REGEXP;
+		return regExp;
 	}
 
 	@Override
@@ -68,12 +69,16 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input) {
-		return validator.isValid(input.replaceAll("[\\s\\-]", ""));
+		return validator.isValid(input);
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
-			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, Shapes shapes) {
-		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, Shapes shapes) {
+
+		if (cardinality.size() < 20 || (double)matchCount/realSamples < getThreshold()/100.0)
+			return BACKOUT_REGEXP;
+
+		regExp = shapes.getRegExp();
+		return null;
 	}
 }

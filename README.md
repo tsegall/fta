@@ -97,6 +97,10 @@ The Semantic Types detected are based on the current locale, the list below is t
 Semantic Type|Description|
 ---------|-------------|
 AIRPORT_CODE.IATA|IATA Airport Code
+CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit
+CHECKDIGIT.CUSIP|North American Security Identifier
+CHECKDIGIT.SEDOL|UK/Ireland Security Identifier
+CHECKDIGIT.ISIN|International Securities Identification Number
 CITY|City/Town
 COORDINATE.LATITUDE_DECIMAL|Latititude (Decimal degrees)
 COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)

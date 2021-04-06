@@ -514,15 +514,15 @@ public class TextAnalysisResult {
 	 * @return A String SHA-1 hash that reflects the data stream contents.
 	 */
 	public String getDataSignature() {
-		// Grab a JSON representation of the information required for the Data Signature
-		final String dataSignature = internalAsJSON(false, 1, SignatureTarget.DATA_SIGNATURE);
-
 		MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-1");
 		} catch (NoSuchAlgorithmException e) {
 			return null;
 		}
+
+		// Grab a JSON representation of the information required for the Data Signature
+		final String dataSignature = internalAsJSON(false, 1, SignatureTarget.DATA_SIGNATURE);
 
 		final byte[] signature = dataSignature.getBytes(StandardCharsets.UTF_8);
 		return Base64.getEncoder().encodeToString(md.digest(signature));

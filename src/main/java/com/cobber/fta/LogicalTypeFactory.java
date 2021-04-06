@@ -22,7 +22,7 @@ import java.util.Locale;
 /**
  * Construct a LogicalType from PluginDefinition or a Semantic Type name.
  */
-public class LogicalTypeFactory {
+public abstract class LogicalTypeFactory {
 	/**
 	 * Return a Logical Type based simply on the name of the Logical Type.  The locale will be derived from the first valid locale in
 	 * the internal plugins file.

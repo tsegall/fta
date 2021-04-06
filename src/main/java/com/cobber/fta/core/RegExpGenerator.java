@@ -52,10 +52,10 @@ public class RegExpGenerator {
 	private boolean isMinus;
 	private boolean isOther;
 	private int maxClasses;
-	private boolean asSet;
 	private int maxSetSize = -1;
 	private Locale locale = null;
-	private Set<String> memory = new TreeSet<>();
+	private final boolean asSet;
+	private final Set<String> memory = new TreeSet<>();
 
 	public RegExpGenerator() {
 		this.asSet = false;
@@ -216,7 +216,7 @@ public class RegExpGenerator {
 			if (memory.size() >= 3 && shortest == 1 && shortest == longest) {
 				char first = 0;
 				char last = 0;
-				char current = 0;
+				char current;
 				boolean collapsible = true;
 				for (final String element : memory) {
 					current = element.charAt(0);

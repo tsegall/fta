@@ -76,8 +76,8 @@ public class DetermineDateTimeFormatTests {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		ZonedDateTime zonedDateTime = ZonedDateTime.now();
 		OffsetDateTime offsetDateTime = OffsetDateTime.now();
-		final Set<String> seen = new HashSet<String>();
-		final Set<Integer> ignore = new HashSet<Integer>();
+		final Set<String> seen = new HashSet<>();
+		final Set<Integer> ignore = new HashSet<>();
 
 		final StringBuilder headerLine = new StringBuilder("RowID,");
 
@@ -1545,8 +1545,8 @@ public class DetermineDateTimeFormatTests {
 	//@Test
 	public void fuzz() {
 		final Random randomGenerator = new Random(12);
-		final Map<String, Integer> formatStrings = new HashMap<String, Integer>();
-		final Map<String, Integer> types = new HashMap<String, Integer>();
+		final Map<String, Integer> formatStrings = new HashMap<>();
+		final Map<String, Integer> types = new HashMap<>();
 		int good = 0;
 		final int iterations = 100000000;
 		final String[] timeZones = TimeZone.getAvailableIDs();
@@ -1927,7 +1927,7 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParser det = new DateTimeParser();
 		long millis = System.currentTimeMillis();
 		Date d = new Date();
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 
 		for (int i = 0; i < 100; i++) {
 			d = new Date(millis);

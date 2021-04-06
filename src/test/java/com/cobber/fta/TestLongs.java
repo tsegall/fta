@@ -66,8 +66,8 @@ public class TestLongs {
 		Assert.assertEquals(result.getMinLength(), 1);
 		Assert.assertEquals(result.getMaxLength(), 7);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -108,8 +108,8 @@ public class TestLongs {
 			Assert.assertEquals(result.getMaxValue(), "10000");
 		}
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -145,8 +145,8 @@ public class TestLongs {
 		Assert.assertEquals(result.getMinValue(), "116789");
 		Assert.assertEquals(result.getMaxValue(), "456789");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -172,8 +172,8 @@ public class TestLongs {
 		Assert.assertEquals(result.getMinValue(), "-2903");
 		Assert.assertEquals(result.getMaxValue(), "5234");
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -286,7 +286,7 @@ public class TestLongs {
 		long max = Long.MIN_VALUE;
 		String minValue = String.valueOf(min);
 		String maxValue = String.valueOf(max);
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			final long l = random.nextInt(100000000);
@@ -333,7 +333,7 @@ public class TestLongs {
 		final Locale locales[] = new Locale[] { Locale.GERMAN, Locale.FRANCE };
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 
 		for (final Locale locale : locales) {
 			long min = Long.MAX_VALUE;
@@ -427,7 +427,7 @@ public class TestLongs {
 			final String negPrefix = TestUtils.getNegativePrefix(locale);
 			final String negSuffix = TestUtils.getNegativeSuffix(locale);
 
-			final Set<String> samples = new HashSet<String>();
+			final Set<String> samples = new HashSet<>();
 			final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
@@ -619,8 +619,8 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 
-		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -710,7 +710,7 @@ public class TestLongs {
 		long absMax = 0;
 		String minValue = String.valueOf(Long.MAX_VALUE);
 		String maxValue = "0";
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			long l = random.nextInt(100000000);
@@ -855,7 +855,7 @@ public class TestLongs {
 		final Random random = new Random(314);
 		final String[] samples = new String[10000];
 
-		int iters = 0;
+		int iters;
 		for (iters = 0; iters < samples.length; iters++) {
 			analysis.train(String.valueOf(random.nextInt(100000000)));
 		}
@@ -893,9 +893,9 @@ public class TestLongs {
 
 		final long start = System.currentTimeMillis();
 
-		long iters = 0;
 		// Run for about reasonable number of seconds
 		final int seconds = 5;
+		long iters;
 		for (iters = 0; iters < sampleCount; iters++) {
 			final String sample = samples[(int)(iters%samples.length)];
 			analysis.train(sample);

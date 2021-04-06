@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta;
+package com.cobber.fta.plugins;
 
-import java.security.SecureRandom;
-import java.util.Locale;
+import org.apache.commons.validator.routines.checkdigit.SedolCheckDigit;
 
-public abstract class LogicalTypeCode extends LogicalType implements LTRandom {
-	protected SecureRandom random;
+import com.cobber.fta.PluginDefinition;
 
-	public LogicalTypeCode(final PluginDefinition plugin) {
+/**
+ * Plugin to detect valid SEDOL identifiers.
+ */
+public class LogicalTypeCheckDigitSEDOL extends LogicalTypeCheckDigit {
+	public static final String SEMANTIC_TYPE = "CHECKDIGIT.SEDOL";
+	public static final String REGEXP = "[\\p{IsAlphabetic}\\d]{6}\\d";
+
+	public LogicalTypeCheckDigitSEDOL(final PluginDefinition plugin) {
 		super(plugin);
+		validator = new SedolCheckDigit();
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) {
-		super.initialize(locale);
-
-		random = new SecureRandom(new byte[] { 3, 1, 4, 1, 5, 9, 2 });
-
-		return true;
+	public String getRegExp() {
+		return REGEXP;
 	}
 
 	@Override
-	public void seed(final byte[] seed) {
-
-		random = new SecureRandom(seed);
+	public String getQualifier() {
+		return SEMANTIC_TYPE;
 	}
 }

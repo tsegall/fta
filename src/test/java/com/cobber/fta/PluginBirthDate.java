@@ -28,7 +28,7 @@ public class PluginBirthDate extends LogicalTypeInfinite {
 	public final static String REGEXP = "\\d{4}/\\d{2}/\\d{2}";
 
 	private static DateTimeParser dtp = new DateTimeParser();
-	private LocalDate plausibleBirth = LocalDate.of(1910, 1, 1);
+	private static LocalDate plausibleBirth = LocalDate.of(1910, 1, 1);
 
 	public PluginBirthDate(final PluginDefinition plugin) {
 		super(plugin);
@@ -77,7 +77,7 @@ public class PluginBirthDate extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
-			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
+			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, Shapes shapes) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

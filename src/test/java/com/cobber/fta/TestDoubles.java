@@ -295,8 +295,8 @@ public class TestDoubles {
 
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		for (int i = 0; i < samples.length; i++)
-			analysis.train(samples[i]);
+		for (final String sample : samples)
+			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -321,8 +321,8 @@ public class TestDoubles {
 		};
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		for (int i = 0; i < samples.length; i++)
-			analysis.train(samples[i]);
+		for (final String sample : samples)
+			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -346,8 +346,8 @@ public class TestDoubles {
 		};
 		final TextAnalyzer analysis = new TextAnalyzer(null);
 
-		for (int i = 0; i < samples.length; i++)
-			analysis.train(samples[i]);
+		for (final String sample : samples)
+			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -382,8 +382,8 @@ public class TestDoubles {
 		};
 		final TextAnalyzer analysis = new TextAnalyzer("EURO_OUTSTANDING");
 
-		for (int i = 0; i < samples.length; i++)
-			analysis.train(samples[i]);
+		for (final String sample : samples)
+			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -418,8 +418,8 @@ public class TestDoubles {
 		};
 		final TextAnalyzer analysis = new TextAnalyzer("EURO_OUTSTANDING");
 
-		for (int i = 0; i < samples.length; i++)
-			analysis.train(samples[i]);
+		for (final String sample : samples)
+			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -444,8 +444,8 @@ public class TestDoubles {
 		analysis.setThreshold(96);
 		Assert.assertEquals(analysis.getThreshold(), 96);
 
-		for (int i = 0; i < samples.length; i++)
-			analysis.train(samples[i]);
+		for (final String sample : samples)
+			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -540,7 +540,7 @@ public class TestDoubles {
 	@Test
 	public void dangerousDouble() throws IOException {
 		final int SAMPLE_COUNT = 100;
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
 		analysis.setDefaultLogicalTypes(false);
 
@@ -571,7 +571,7 @@ public class TestDoubles {
 	@Test
 	public void longWithOutlierPositiveDouble() throws IOException {
 		final int SAMPLE_COUNT = 100;
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
 		analysis.setDefaultLogicalTypes(false);
 
@@ -600,7 +600,7 @@ public class TestDoubles {
 	@Test
 	public void longWithOutlierNegativeDouble() throws IOException {
 		final int SAMPLE_COUNT = 100;
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
 		analysis.setDefaultLogicalTypes(false);
 
@@ -694,7 +694,7 @@ public class TestDoubles {
 	@Test
 	public void backoutToDouble() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final String input =
+		final String pipedInput =
 				"0|0|0|0|0|0|0|0|0|1|2|3|0|0|0|0|0|" +
 						"0|0|0|0|0.25|0|0|0|0|0|0|0|0|0|0|0|0|" +
 						"0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
@@ -709,7 +709,7 @@ public class TestDoubles {
 						"0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|" +
 						"0|0|0|0|0|0.05|0|0|0|0|0|0|0.02|0|0.02|0|0|" +
 						"0|0.01|0|0|0|0|0.02|0|0|0|0|0.01|0|0|0|||";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -733,10 +733,10 @@ public class TestDoubles {
 		Assert.assertEquals(result.getMaxValue(), "3.0");
 
 		final String regExp = result.getRegExp();
-		for (int i = 0; i < inputs.length; i++) {
-			if (inputs[i].length() == 0)
+		for (final String input : inputs) {
+			if (input.length() == 0)
 				continue;
-			Assert.assertTrue(inputs[i].matches(regExp), inputs[i]);
+			Assert.assertTrue(input.matches(regExp), input);
 		}
 	}
 
@@ -767,7 +767,7 @@ public class TestDoubles {
 
 			final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 
-			final Set<String> samples = new HashSet<String>();
+			final Set<String> samples = new HashSet<>();
 			nf.setMinimumFractionDigits(2);
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
 				final double d = random.nextDouble() * random.nextInt();
@@ -803,7 +803,7 @@ public class TestDoubles {
 		final int SAMPLE_SIZE = 1000;
 		String sample;
 
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 		final NumberFormat nf = NumberFormat.getNumberInstance();
 		nf.setMinimumFractionDigits(1);
 		for (int i = 0; i < 10; i++) {
@@ -877,7 +877,7 @@ public class TestDoubles {
 //			System.err.printf("Locale '%s', grouping: %s, decimal: %s, negPrefix: %s, negSuffix: %s.\n",
 //					locale, grp, dec, negPrefix, negSuffix);
 
-			final Set<String> samples = new HashSet<String>();
+			final Set<String> samples = new HashSet<>();
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
 				double d = random.nextDouble() * random.nextInt();
 				final int pow = random.nextInt(10);
@@ -1029,13 +1029,12 @@ public class TestDoubles {
 
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
-			final Set<String> samples = new HashSet<String>();
+			final Set<String> samples = new HashSet<>();
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
 				long l = random.nextInt(10000000);
 				if (l % 2 == 0)
 					l = -l;
-				String sample = String.valueOf(l) + formatSymbols.getDecimalSeparator() + random.nextInt(10);
-
+				final String sample = String.valueOf(l) + formatSymbols.getDecimalSeparator() + random.nextInt(10);
 				samples.add(sample);
 				analysis.train(sample);
 			}
@@ -1068,7 +1067,7 @@ public class TestDoubles {
 		double max = Double.MIN_VALUE;
 		String minValue = String.valueOf(min);
 		String maxValue = String.valueOf(max);
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 
 		final NumberFormat nf = NumberFormat.getNumberInstance();
 		nf.setMinimumFractionDigits(1);
@@ -1115,7 +1114,7 @@ public class TestDoubles {
 		double max = Double.MIN_VALUE;
 		String minValue = String.valueOf(min);
 		String maxValue = String.valueOf(max);
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 
 		final NumberFormat nf = NumberFormat.getNumberInstance(Locale.FRENCH);
 		nf.setMinimumFractionDigits(1);
@@ -1197,7 +1196,7 @@ public class TestDoubles {
 	public void localeDoubleTest() throws IOException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
-		Locale[] locales = DateFormat.getAvailableLocales();
+		final Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] { Locale.forLanguageTag("en"), Locale.forLanguageTag("es-CO") };
 //		Locale[] locales = new Locale[] { Locale.forLanguageTag("es-CO") };
 
@@ -1218,7 +1217,7 @@ public class TestDoubles {
 				continue;
 			}
 
-			final Set<String> samples = new LinkedHashSet<String>();
+			final Set<String> samples = new LinkedHashSet<>();
 			final NumberFormat nf = NumberFormat.getNumberInstance(locale);
 			nf.setMinimumFractionDigits(2);
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
@@ -1330,7 +1329,7 @@ public void localeDoubleES_CO() throws IOException {
 
 			System.err.printf("Locale '%s', grouping: %s.\n", locale, grp);
 
-			final Set<String> samples = new HashSet<String>();
+			final Set<String> samples = new HashSet<>();
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
 				long l = random.nextInt(10000000);
 				if (l % 2 == 0)
@@ -1408,7 +1407,7 @@ public void localeDoubleES_CO() throws IOException {
 
 		final long start = System.currentTimeMillis();
 
-		long iters = 0;
+		long iters;
 		// Run for about reasonable number of seconds
 		final int seconds = 5;
 		for (iters = 0; iters < sampleCount; iters++) {

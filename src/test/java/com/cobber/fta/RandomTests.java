@@ -596,7 +596,7 @@ public class RandomTests {
 	public void basicLengthValidationBlanks() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Spaces");
 		final int iters = 30;
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 
 		int locked = -1;
 
@@ -635,7 +635,7 @@ public class RandomTests {
 	public void basicLengthValidationString() throws IOException {
 		final TextAnalyzer analysis = new TextAnalyzer("Spaces");
 		final int iters = 30;
-		final Set<String> samples = new HashSet<String>();
+		final Set<String> samples = new HashSet<>();
 
 		int locked = -1;
 
@@ -708,7 +708,7 @@ public class RandomTests {
 		}
 	}
 
-	final String alpha3 = "aaa|bbb|ccc|ddd|eee|fff|ggg|hhh|iii|jjj|" +
+	private final String alpha3 = "aaa|bbb|ccc|ddd|eee|fff|ggg|hhh|iii|jjj|" +
 			"aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|" +
 			"iii|ééé|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
 			"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
@@ -716,7 +716,7 @@ public class RandomTests {
 			"iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|aaa|iii|sss|sss|sss|vvv|jjj|jjj|jjj|bbb|" +
 			"iii|uuu|bbb|bbb|vvv|mmm|uuu|fff|vvv|fff|iii|bbb|iii|ggg|bbb|sss|mmm|uuu|sss|uuu|" +
 			"kkk|lll|nnn|ooo|qqq|ppp|rrr|ttt|www|zzz|mmm|iii|uuu|fff|ggg|ggg|uuu|uuu|uuu|uuu|";
-	final String number3 = "111|123|707|902|104|223|537|902|111|443|" +
+	private final String number3 = "111|123|707|902|104|223|537|902|111|443|" +
 			"121|234|738|902|002|431|679|093|124|557|886|631|235|569|002|149|963|271|905|501|" +
 			"171|734|038|002|882|215|875|193|214|997|126|361|098|888|314|111|222|341|458|082|" +
 			"371|334|438|442|782|715|775|893|314|337|326|781|984|349|534|888|654|841|158|182|" +
@@ -806,11 +806,11 @@ public class RandomTests {
 	}
 
 
-	void simpleStringTest(final String name, final String input) {
+	private void simpleStringTest(final String name, final String input) {
 		simpleArrayTest(name, input.split("\\|"));
 	}
 
-	void simpleArrayTest(final String name, final String[] inputs) {
+	private void simpleArrayTest(final String name, final String[] inputs) {
 		final TextAnalyzer analysis = new TextAnalyzer("DataValueFootnoteSymbol");
 		int locked = -1;
 		int realSamples = 0;
@@ -1393,7 +1393,7 @@ public class RandomTests {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
-			b.append("(");
+			b.append('(');
 			b.append(String.format("%03d", random.nextInt(1000)));
 			b.append(") ");
 			b.append(String.format("%03d", random.nextInt(1000)));
@@ -1463,7 +1463,7 @@ public class RandomTests {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
-			b.append("[");
+			b.append('[');
 			b.append(String.format("%03d", random.nextInt(1000)));
 			b.append("){[0-9] ^");
 			b.append(String.format("%03d", random.nextInt(1000)));
@@ -1749,11 +1749,11 @@ public class RandomTests {
 	}
 
 	class AnalysisThread implements Runnable {
-		private String id;
-		private int streamType;
-		private String[] stream;
-		private TextAnalysisResult answer;
-		private TextAnalyzer analysis;
+		private final String id;
+		private final int streamType;
+		private final String[] stream;
+		private final TextAnalysisResult answer;
+		private final TextAnalyzer analysis;
 
 		AnalysisThread(final String id, final int streamType, final String[] stream, final TextAnalysisResult answer) throws IOException {
 			this.id = id;
@@ -1814,7 +1814,7 @@ public class RandomTests {
 
 	class GetPlugin {
 		// one instance of plugins per thread
-		private ThreadLocal<TextAnalyzer> textAnalyzer = new ThreadLocal<>();
+		private final ThreadLocal<TextAnalyzer> textAnalyzer = new ThreadLocal<>();
 
 		public Plugins getPlugins() {
 			TextAnalyzer textAnalyzer = this.textAnalyzer.get();
@@ -1829,7 +1829,7 @@ public class RandomTests {
 	}
 
 	class PluginThread implements Runnable {
-		private String id;
+		private final String id;
 
 		PluginThread(final String id) throws IOException {
 			this.id = id;
@@ -1861,7 +1861,7 @@ public class RandomTests {
 	}
 
 	class LogicalTypeThread implements Runnable {
-		Random any = new Random();
+		private Random any = new Random();
 		private String id;
 
 		LogicalTypeThread(final String id) throws IOException {
@@ -1870,7 +1870,7 @@ public class RandomTests {
 
 		@Override
 		public void run() {
-			LogicalType logicalType = null;
+			LogicalType logicalType;
 			do {
 				final String semanticType = TestStandalonePlugins.allSemanticTypes[any.nextInt(TestStandalonePlugins.allSemanticTypes.length)];
 				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);

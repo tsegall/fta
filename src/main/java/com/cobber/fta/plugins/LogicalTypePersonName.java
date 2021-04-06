@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.Shapes;
 import com.cobber.fta.TypeFacts;
 
 public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
@@ -85,7 +86,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 
 	@Override
 	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
-			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
+			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 
 		int headerConfidence = getHeaderConfidence(dataStreamName);
 

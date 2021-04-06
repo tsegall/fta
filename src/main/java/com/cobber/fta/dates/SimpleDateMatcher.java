@@ -369,7 +369,7 @@ public class SimpleDateMatcher {
 		final StringBuilder eating = new StringBuilder(input.toUpperCase(locale));
 		boolean found;
 
-		for (final FormatterToken token : DateTimeParserResult.tokenize(getFormat())) {
+		for (final FormatterToken token : FormatterToken.tokenize(getFormat())) {
 			switch (token.getType()) {
 			case CONSTANT_CHAR:
 				if (eating.length() == 0 || eating.charAt(0) != token.getValue())

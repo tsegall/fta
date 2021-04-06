@@ -25,30 +25,33 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.core.RegExpSplitter;
 
 /**
  * Class used to manage Shapes.
  */
 public class Shapes {
-	private Map<String, Long> shapes = new HashMap<>();
-	private Map<String, Long> compressed = new TreeMap<>();
+	private final Map<String, Long> shapes = new HashMap<>();
+	private final Map<String, Long> compressed = new TreeMap<>();
 	private boolean anyShape;
 	private boolean isCompressed;
-	private int maxShapes = -1;
+	private int maxShapes;
 	private long samples;
 	private boolean isAlpha = true;
 	private boolean isNumeric = true;
 	private boolean isAlphaNumeric = true;
+	private int minLength = Integer.MAX_VALUE;
+	private int maxLength = Integer.MIN_VALUE;
 
-	Shapes(final int maxShapes) {
+	public Shapes(final int maxShapes) {
 		this.maxShapes = maxShapes;
 	}
 
 	/**
 	 * Get the 'best' Regular Expression we can based on the set of shapes.
-	 * Note: this will commonly return null, unless we can do something clever.
+	 * @return The 'best' Regular Expression we can based on the set of shapes, or null if nothing clever can be discerned.
 	 */
-	String getRegExp() {
+	public String getRegExp() {
 		compressShapes();
 
 		if (anyShape)
@@ -118,15 +121,21 @@ public class Shapes {
 		if (isHex && updatedShapes.size() == 1)
 			return Smashed.smashedAsRegExp(updatedShapes.entrySet().iterator().next().getKey());
 
-		// We had nothing clever to say - so ret a simple classification
-		if (isAlpha)
-			return KnownPatterns.PATTERN_ALPHA_VARIABLE;
-		if (isNumeric)
-			return KnownPatterns.PATTERN_NUMERIC_VARIABLE;
-		if (isAlphaNumeric)
-			return KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE;
+		// We had nothing clever to say - so return a simple classification if possible
+		String pattern = null;
+		if (isAlpha || isNumeric) {
+			pattern = isAlpha ? KnownPatterns.PATTERN_ALPHA : KnownPatterns.PATTERN_NUMERIC;
+			if (compressed.size() == maxLength - minLength + 1)
+				pattern += RegExpSplitter.qualify(minLength, maxLength);
+			else
+				pattern += "+";
+		}
+		else if (isAlphaNumeric) {
+			pattern = KnownPatterns.PATTERN_ALPHANUMERIC;
+			pattern += minLength == maxLength ? RegExpSplitter.qualify(minLength, maxLength) : "+";
+		}
 
-		return null;
+		return pattern;
 	}
 
 	/**
@@ -135,11 +144,11 @@ public class Shapes {
 	 * @param trimmed Track the supplied shape.
 	 * @param count The count of the supplied shape.
 	 */
-	void track(final String trimmed, final long count) {
+	public void track(final String trimmed, final long count) {
 		samples += count;
 		if (!anyShape) {
 			final String inputShape = Smashed.smash(trimmed);
-			if (inputShape.equals(".+"))
+			if (".+".equals(inputShape))
 				anyShape = true;
 			else {
 				final Long seen = shapes.get(inputShape);
@@ -155,7 +164,7 @@ public class Shapes {
 
 			// If we overflow or we decide it is not meaningful - then just throw the analysis away
 			if (anyShape)
-				shapes = new HashMap<>();
+				shapes.clear();
 		}
 	}
 
@@ -163,7 +172,7 @@ public class Shapes {
 	 * Get the 'best' shape - where 'best' is the one with the highest count.
 	 * @return The 'best' shape entry (shape and count).
 	 */
-	Map.Entry<String, Long> getBest() {
+	public Map.Entry<String, Long> getBest() {
 		compressShapes();
 		return Collections.max(compressed.entrySet(), Map.Entry.comparingByValue());
 	}
@@ -172,7 +181,7 @@ public class Shapes {
 	 * Get the Map of shapes.
 	 * @return The ordered (by shape) Map of all shapes.
 	 */
-	Map<String, Long> getShapes() {
+	public Map<String, Long> getShapes() {
 		compressShapes();
 		return compressed;
 	}
@@ -181,7 +190,7 @@ public class Shapes {
 	 * Get the size of the Map.
 	 * @return The Map size.
 	 */
-	int size() {
+	public int size() {
 		compressShapes();
 		return compressed.size();
 	}
@@ -192,10 +201,15 @@ public class Shapes {
 
 		for (final Map.Entry<String, Long> shape : shapes.entrySet()) {
 			final String upperKey = shape.getKey().toUpperCase(Locale.ROOT);
-		    final Long seen = compressed.get(upperKey);
-		    isAlpha = isAlpha && isAlpha(upperKey);
-		    isNumeric = isNumeric && isNumeric(upperKey);
-		    isAlphaNumeric = isAlphaNumeric && isAlphaNumeric(upperKey);
+			final Long seen = compressed.get(upperKey);
+			isAlpha = isAlpha && isAlpha(upperKey);
+			isNumeric = isNumeric && isNumeric(upperKey);
+			isAlphaNumeric = isAlphaNumeric && isAlphaNumeric(upperKey);
+			final int len = upperKey.length();
+			if (len < minLength)
+				minLength = len;
+			if (len > maxLength)
+				maxLength = len;
 			if (seen == null)
 				compressed.put(upperKey, shape.getValue());
 			else

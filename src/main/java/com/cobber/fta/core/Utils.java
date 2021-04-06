@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class Utils {
+public abstract class Utils {
 
 	private Utils() {
 		// Never called

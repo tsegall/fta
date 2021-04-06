@@ -373,5 +373,29 @@
 		"minSamples": 1000,
 		"minMaxPresent": true,
 		"priority": 280
+	},
+	{
+		"qualifier": "CHECKDIGIT.LUHN",
+		"description": "LUHN Checkdigit (Credit Cards, IMEI, etc)",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitLuhn",
+		"priority": 290
+	},
+	{
+		"qualifier": "CHECKDIGIT.CUSIP",
+		"description": "CUSIP - North American Security Identifiers",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitCUSIP",
+		"priority": 291
+	},
+	{
+		"qualifier": "CHECKDIGIT.SEDOL",
+		"description": "SEDOL - UK Security Identifiers",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitSEDOL",
+		"priority": 292
+	},
+	{
+		"qualifier": "CHECKDIGIT.SEDOL",
+		"description": "ISIN - International Securities Identification Number",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitISIN",
+		"priority": 293
 	}
 ]

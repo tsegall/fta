@@ -514,14 +514,14 @@ public class DateTimeParser {
 	 * @param matcher The previously computed matcher which provides both the compressed form of the input as well as a component count
 	 * @return a DateTimeFormatter pattern.
 	 */
-	String passOne(final SimpleDateMatcher matcher) {
+	private String passOne(final SimpleDateMatcher matcher) {
 		if (!matcher.isKnown())
 			return null;
 
-		int[] dateValue = new int[] {-1, -1, -1};
-
 		if (!matcher.parse())
 			return null;
+
+		int[] dateValue = new int[] {-1, -1, -1};
 
 		dateValue[0] = matcher.getDayOfMonth();
 		dateValue[1] = matcher.getMonthValue();
@@ -540,7 +540,7 @@ public class DateTimeParser {
 	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @return a DateTimeFormatter pattern.
 	 */
-	String passTwo(final String trimmed, final DateResolutionMode resolutionMode) {
+	private String passTwo(final String trimmed, final DateResolutionMode resolutionMode) {
 		final int len = trimmed.length();
 
 		int digits = 0;
@@ -997,7 +997,7 @@ public class DateTimeParser {
 	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
 	 * @return a DateTimeFormatter pattern.
 	 */
-	String passThree(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
+	private String passThree(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
 		String compressed = matcher.getCompressed();
 		int components = matcher.getComponentCount();
 		final boolean ampm = compressed.endsWith("P");
@@ -1082,7 +1082,7 @@ public class DateTimeParser {
 					compressed = Utils.replaceFirst(compressed, "d{2}", "dd");
 				else if (compressed.indexOf(" {2}d") != -1)
 					compressed = Utils.replaceFirst(compressed, " {2}d", " ppd");
-				else if (compressed.indexOf("d") != -1)
+				else if (compressed.indexOf('d') != -1)
 					;
 				else
 					return null;

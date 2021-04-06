@@ -16,6 +16,6 @@
 package com.cobber.fta;
 
 public interface LTRandom {
-	public String nextRandom();
-	public void seed(byte[] seed);
+	String nextRandom();
+	void seed(byte[] seed);
 }

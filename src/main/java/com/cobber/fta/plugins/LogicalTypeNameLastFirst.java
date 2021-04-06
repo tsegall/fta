@@ -22,6 +22,7 @@ import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.Shapes;
 import com.cobber.fta.TypeFacts;
 import com.cobber.fta.core.FTAType;
 
@@ -140,7 +141,7 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts,
-			Map<String, Long> cardinality, Map<String, Long> outliers) {
+			Map<String, Long> cardinality, Map<String, Long> outliers, final Shapes shapes) {
 
 		int minCardinality = 8;
 		int minSamples = 10;

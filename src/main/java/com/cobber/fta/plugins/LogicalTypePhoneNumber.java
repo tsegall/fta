@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.Shapes;
 import com.cobber.fta.TypeFacts;
 import com.cobber.fta.core.FTAType;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -95,7 +96,7 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		}
 
 		@Override
-		public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers) {
+		public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 			if (getHeaderConfidence(dataStreamName) == 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, dataStreamName) < getThreshold()/100.0)
 				return REGEXP;
 			return null;
