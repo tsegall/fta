@@ -207,7 +207,7 @@ The mandatory 'filename' tag contains a file with the list of valid elements enu
 ## Outliers ##
 
 An outlier is a data point that differs significantly from other member of the data set.  There are a set of algorithms used to detect outliers in the input stream:
-- For Finite plugins, the set of valid values is predefined and hence outlier detection is simply those elements not in the set.  For example the Semantic type COUNTRY.ISO-3166-2 is backed by a list of both current and historically valid two letter country codes, and hence the two letter charater 'PP' would be detected as an outlier, as would the string 'Unknown'.
+- For Finite plugins, the set of valid values is predefined and hence outlier detection is simply those elements not in the set.  For example the Semantic type COUNTRY.ISO-3166-2 is backed by a list of both current and historically valid two letter country codes, and hence the two letter character 'PP' would be detected as an outlier, as would the string 'Unknown'.
 - For RegExp plugins, the set of valid patterns is predefined and hence outlier detection is simply any element which does not match the pattern.
 - For any fields detected as a known Semantic Type then the outliers are based on the particular Semantic Type, for example if the Semantic Type is
 detected as a US Phone Number then numbers with invalid area codes or invalid area code exchange pairs will be flagged as outliers.
