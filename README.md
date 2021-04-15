@@ -64,7 +64,7 @@ Metrics detected include:
  * regExp - A Regular Expression (Java) that matches the detected Type
  * confidence - The percentage confidence (0-1.0) in the determination of the Type
  * type - The Base Type (one of Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
- * typeQualifier - A modifier wrt. the Base Type (e.g. for Date types it will be a pattern, for Long types it might be SIGNED, for String types it might be COUNTRY.ISO-3166-2)
+ * typeQualifier - A modifier with respect to the Base Type (e.g. for Date types it will be a pattern, for Long types it might be SIGNED, for String types it might be COUNTRY.ISO-3166-2)
  * min - The minimum value observed
  * max - The maximum value observed
  * bottomK - lowest 10 values (Numeric and String types only)
@@ -76,8 +76,8 @@ Metrics detected include:
  * leadingWhiteSpace - Does the observed set have leading white space
  * trailingWhiteSpace - Does the observed set have trailing white space
  * multiline - Does the observed set have leading multiline elements
- * logicalType -Does the oserved set reflect a Semantic Type
- * possibleKey - Does the observed set appear to be a Key field (i.e. unique)
+ * logicalType - Does the observed set reflect a Semantic Type
+ * possibleKey - The percentage confidence (0-1.0) that the observed set is a Key field (i.e. unique)
  * cardinalityDetail - Details on the valid set, list of elements and occurence count
  * outlierDetail - Details on the invalid set, list of elements and occurence count
  * shapeDetail - Details on the shapes set, list of elements and occurence count. This will collapse all numerics to '9', and all alphabetics to 'X'
@@ -119,9 +119,9 @@ IPADDRESS.IPV6|IP V6 Address
 LANGUAGE.ISO-639-2|Language code - ISO 639, two character
 LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...
 MACADDRESS|MAC Address
-MONTH.ABBR_en-US|Month Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)
+MONTH.ABBR_en-US|Month Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US)
 MONTH.DIGITS|Month represented as a number (1-12)
-MONTH.FULL_en-US|Full Month name <LOCALE> = Locale, e.g. en-US for English langauge in US)
+MONTH.FULL_en-US|Full Month name <LOCALE> = Locale, e.g. en-US for English language in US)
 NAME.FIRST|First Name
 NAME.FIRST_LAST|Merged Name (First Last)
 NAME.LAST|Last Name
@@ -184,7 +184,7 @@ The mandatory 'baseType' tag constrains the plugin to streams that are of this B
 
 The optional 'validLocales' tag is used to constrain the plugin to a set of languages or locales.
 
-The optional 'headerRegExps' tag is an ordered list of Regular Expression used to match against the Stream Name (if present), along with the parallel list 'headerRegExpConfidence' it controls the use of the Stream Name to match the Semantic Type.  For RegExp plugins the headerRegExps are optional but if present must have a confidence of 100% and will be required to match in order for the Stream to be declared a match.
+The optional 'headerRegExps' tag is an ordered list of Regular Expression used to match against the Stream Name (if present), along with the parallel list 'headerRegExpConfidence' it controls the use of the Stream Name to match the Semantic Type.  For RegExp plugins the headerRegExps are optional but if present must have a confidence of 100% and will be required to match for the Stream to be declared a match.
 
 ### RegExp plugins ###
 
@@ -206,12 +206,12 @@ The mandatory 'filename' tag contains a file with the list of valid elements enu
 
 ## Outliers ##
 
-An outlier is a data point that differs significantly from other member of the data set.  There are a set of algorithms used to detect outliers:
-- For Finite plugins, the set of valid values is predefined and hence outlier detection is simply those elements not in the set.
+An outlier is a data point that differs significantly from other member of the data set.  There are a set of algorithms used to detect outliers in the input stream:
+- For Finite plugins, the set of valid values is predefined and hence outlier detection is simply those elements not in the set.  For example the Semantic type COUNTRY.ISO-3166-2 is backed by a list of both current and historically valid two letter country codes, and hence the two letter charater 'PP' would be detected as an outlier, as would the string 'Unknown'.
 - For RegExp plugins, the set of valid patterns is predefined and hence outlier detection is simply any element which does not match the pattern.
 - For any fields detected as a known Semantic Type then the outliers are based on the particular Semantic Type, for example if the Semantic Type is
 detected as a US Phone Number then numbers with invalid area codes or invalid area code exchange pairs will be flagged as outliers.
-- For infinite plugins, outliers may be detected based on a statistical analysis, for example if there are 100 valid integers and one 'O' (letter O) then the 'O' would be identified as an outlier.  In other cases, where a enumerated type is detected, for example 100 instances of RED, 100 instances of BLUE, 100 instances of PINK, and one instance of 'P1NK' then the instance of 'P1NK' woud be identified as an outllier based on its Levenstein distance from one of the other elements in the set.
+- For infinite plugins, outliers may be detected based on a statistical analysis. For example if there are 100 valid integers and one 'O' (letter O) then the 'O' would be identified as an outlier.  In other cases, where a enumerated type is detected, for example 100 instances of RED, 100 instances of BLUE, 100 instances of PINK, and one instance of 'P1NK' then the instance of 'P1NK' would be identified as an outlier based on its Levenshtein distance from one of the other elements in the set.
 
 ## Regular Expressions ##
 
