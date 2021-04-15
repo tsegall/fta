@@ -117,6 +117,8 @@ public class DateTimeParser {
 	// lenient allows dates of the form 00/00/00 etc to be viewed as valid for the purpose of Format detection
 	private boolean lenient = true;
 
+	private static final Map<String, DateTimeFormatter> formatterCache = new HashMap<>();
+
 	public DateTimeParser(final DateResolutionMode resolutionMode) {
 		this(resolutionMode, Locale.getDefault());
 	}
@@ -129,8 +131,6 @@ public class DateTimeParser {
 		this.resolutionMode = resolutionMode;
 		this.locale = locale;
 	}
-
-	private static final Map<String, DateTimeFormatter> formatterCache = new HashMap<>();
 
 	/**
 	 * Given an input string with a DateTimeFormatter pattern return a suitable DateTimeFormatter.

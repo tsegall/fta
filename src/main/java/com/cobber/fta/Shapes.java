@@ -35,7 +35,7 @@ public class Shapes {
 	private final Map<String, Long> compressed = new TreeMap<>();
 	private boolean anyShape;
 	private boolean isCompressed;
-	private int maxShapes;
+	private final int maxShapes;
 	private long samples;
 	private boolean isAlpha = true;
 	private boolean isNumeric = true;

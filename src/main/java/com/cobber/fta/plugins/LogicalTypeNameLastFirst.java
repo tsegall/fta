@@ -44,9 +44,9 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
-		PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
+		final PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
 		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
-		PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
+		final PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
 		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, Locale.getDefault());
 
 		threshold = 95;
@@ -87,7 +87,7 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 			return false;
 
 		boolean processingLast = true;
-		int len = trimmed.length();
+		final int len = trimmed.length();
 		int spaces = 0;
 		int dashes = 0;
 		int apostrophe = 0;
@@ -100,7 +100,7 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 				dashes = 0;
 				continue;
 			}
-			char ch = trimmed.charAt(i);
+			final char ch = trimmed.charAt(i);
 			if (Character.isAlphabetic(ch)) {
 				alphas++;
 				continue;
@@ -140,8 +140,8 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts,
-			Map<String, Long> cardinality, Map<String, Long> outliers, final Shapes shapes) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts,
+			final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 
 		int minCardinality = 8;
 		int minSamples = 10;

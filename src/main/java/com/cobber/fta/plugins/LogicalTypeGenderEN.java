@@ -91,18 +91,18 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 		if (outliers.size() > 1)
 			return BACKOUT_REGEX;
 
-		boolean positiveStreamName = dataStreamName.toLowerCase(locale).contains("gender");
+		final boolean positiveStreamName = dataStreamName.toLowerCase(locale).contains("gender");
 		if (!positiveStreamName && cardinality.size() - outliers.size() <= 1)
 			return BACKOUT_REGEX;
 
-		String outlier = null;
+		String outlier;
 		if (!outliers.isEmpty()) {
 			outlier = outliers.keySet().iterator().next();
 			cardinality = new HashMap<>(cardinality);
 			cardinality.remove(outlier);
 		}
 
-		int count = cardinality.size();
+		final int count = cardinality.size();
 		Iterator<String> iter = null;
 		String first = null;
 		if (count != 0) {
@@ -112,7 +112,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 
 		// If we have seen no more than one outlier then we are feeling pretty good unless we are in Strict mode (e.g. 100%)
 		if ((threshold != 100 && outliers.size() <= 1) || (double)matchCount / realSamples >= getThreshold()/100.0) {
-			RegExpGenerator re = new RegExpGenerator(true, 5, locale);
+			final RegExpGenerator re = new RegExpGenerator(true, 5, locale);
 			// There is some complexity here due to the facts that 'Male' & 'Female' are good predictors of Gender.
 			// However a field with only 'M' and 'F' in it is not, so in this case we would like an extra hint.
 			if (count == 1) {
@@ -121,7 +121,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 				re.train(first);
 				re.train(opposites.get(first));
 			} else if (count == 2) {
-				String second = iter.next();
+				final String second = iter.next();
 				if (!positiveStreamName && (first.equals("M") || first.equals("F")) && (second.equals("M") || second.equals("F")))
 					return BACKOUT_REGEX;
 				if (opposites.get(first).equals(second)) {
@@ -129,10 +129,10 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 					re.train(second);
 				}
 				else
-					for (String element : members)
+					for (final String element : members)
 						re.train(element);
 			} else {
-				for (String element : members)
+				for (final String element : members)
 					re.train(element);
 			}
 			if (!outliers.isEmpty())

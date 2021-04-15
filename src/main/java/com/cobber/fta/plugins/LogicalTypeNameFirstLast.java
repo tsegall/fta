@@ -44,9 +44,9 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
-		PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
+		final PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
 		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
-		PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
+		final PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
 		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, Locale.getDefault());
 
 		threshold = 95;
@@ -87,7 +87,7 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 			return false;
 
 		boolean processingLast = false;
-		int len = trimmed.length();
+		final int len = trimmed.length();
 		int dashes = 0;
 		int spaces = 0;
 		int apostrophe = 0;
@@ -99,7 +99,7 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 				dashes = 0;
 				continue;
 			}
-			char ch = trimmed.charAt(i);
+			final char ch = trimmed.charAt(i);
 			if (Character.isAlphabetic(ch)) {
 				alphas++;
 				continue;

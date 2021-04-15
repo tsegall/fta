@@ -40,6 +40,18 @@ public class SimpleDateMatcher {
 
 	private static Map<String, Map<String, SimpleFacts>> knownFacts = new HashMap<>();
 
+	private final SimpleFacts simpleFacts;
+	private final String input;
+	private final String compressed;
+	private final int componentCount;
+	private final Locale locale;
+	private int dayOfMonth = -1;
+	private int dayLength = -1;
+	private int monthValue = -1;
+	private int monthLength = -1;
+	private int year = -1;
+	private int yearLength = -1;
+
 	private static Map<String, SimpleFacts> getSimpleDataFacts(final Locale locale) {
 		final String languageTag = locale.toLanguageTag();
 
@@ -307,18 +319,6 @@ public class SimpleDateMatcher {
 
 		return result.toString();
 	}
-
-	private SimpleFacts simpleFacts;
-	private String input;
-	private String compressed;
-	private int componentCount;
-	private Locale locale;
-	private int dayOfMonth = -1;
-	private int dayLength = -1;
-	private int monthValue = -1;
-	private int monthLength = -1;
-	private int year = -1;
-	private int yearLength = -1;
 
 	public FTAType getType() {
 		return simpleFacts.getType();

@@ -47,16 +47,16 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return logicalFirst.nextRandom().toLowerCase() + "." + logicalLast.nextRandom().toLowerCase() + "@" + mailDomains[random.nextInt(mailDomains.length)];
+		return logicalFirst.nextRandom().toLowerCase(Locale.ROOT) + "." + logicalLast.nextRandom().toLowerCase(Locale.ROOT) + "@" + mailDomains[random.nextInt(mailDomains.length)];
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
 		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
-		PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
+		final PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
 		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, Locale.getDefault());
 
 		threshold = 95;
@@ -102,7 +102,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		int atSigns = charCounts['@'];
+		final int atSigns = charCounts['@'];
 		return atSigns - 1 == charCounts[','] || atSigns - 1 == charCounts[';'];
 	}
 
@@ -113,7 +113,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
-		double is = (double)matchCount/realSamples;
+		final double is = (double)matchCount/realSamples;
 		if (matchCount != realSamples && getHeaderConfidence(dataStreamName) != 0)
 			return is + (1.0 - is)/2;
 		else

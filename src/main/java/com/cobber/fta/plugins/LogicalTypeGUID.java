@@ -47,7 +47,7 @@ public class LogicalTypeGUID extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		StringBuilder ret = new StringBuilder(36);
+		final StringBuilder ret = new StringBuilder(36);
 
 		for (int i = 0; i < 32; i++) {
 			if (i == 8 || i == 12 || i == 16 || i == 20)
@@ -80,7 +80,7 @@ public class LogicalTypeGUID extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input) {
-		int len = input.length();
+		final int len = input.length();
 		if (len != 36)
 			return false;
 
@@ -90,7 +90,7 @@ public class LogicalTypeGUID extends LogicalTypeInfinite {
 		for (int i = 0; i < len; i++) {
 			if (i == 8 || i == 13 || i == 18 || i == 23)
 				continue;
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			if ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))
 				continue;
 			return false;

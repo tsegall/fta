@@ -53,7 +53,7 @@ public class RegExpGenerator {
 	private boolean isOther;
 	private int maxClasses;
 	private int maxSetSize = -1;
-	private Locale locale = null;
+	private Locale locale;
 	private final boolean asSet;
 	private final Set<String> memory = new TreeSet<>();
 

@@ -18,7 +18,7 @@ package com.cobber.fta.examples;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 
-public class Performance {
+public abstract class Performance {
 
 	public static void main(final String[] args) {
 

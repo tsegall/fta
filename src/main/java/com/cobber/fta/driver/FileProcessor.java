@@ -38,8 +38,8 @@ import com.univocity.parsers.csv.CsvParserSettings;
 
 class FileProcessor {
 	private final DriverOptions options;
-	private PrintStream logger;
-	private String filename;
+	private final PrintStream logger;
+	private final String filename;
 
 	FileProcessor(final PrintStream logger, final String filename, final DriverOptions options) {
 		this.logger = logger;
@@ -47,7 +47,7 @@ class FileProcessor {
 		this.options = options;
 	}
 
-	void setOptions(final TextAnalyzer analyzer) throws IOException {
+	private void setOptions(final TextAnalyzer analyzer) throws IOException {
 		if (options.debug != -1)
 			analyzer.setDebug(options.debug);
 		if (options.detectWindow != -1)
@@ -81,7 +81,7 @@ class FileProcessor {
 			analyzer.setThreshold(options.threshold);
 	}
 
-	void process() throws IOException {
+	protected void process() throws IOException {
 		final CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);
 		settings.detectFormatAutomatically();
@@ -103,7 +103,7 @@ class FileProcessor {
 			processAllFields(settings);
 	}
 
-	void processBulk(final CsvParserSettings settings) throws IOException {
+	private void processBulk(final CsvParserSettings settings) throws IOException {
 		String[] header;
 		int numFields;
 		TextAnalyzer analyzer;

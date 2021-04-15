@@ -38,7 +38,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 	public static final String REGEXP = "([A-Za-z][A-Ha-hK-Yk-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})";
 	private static String[] validPostalCodes = { "XX9X 9XX", "X9X 9XX", "X9 9XX", "X99 9XX", "XX9 9XX", "XX99 9XX" };
 	private static Set<String> validShapes = new HashSet<>();
-	Pattern validator = Pattern.compile(REGEXP);
+	private Pattern validator = Pattern.compile(REGEXP);
 
 	static {
 		Collections.addAll(validShapes, validPostalCodes);
@@ -120,7 +120,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
-		final String upperDataStreamName = dataStreamName.toUpperCase();
+		final String upperDataStreamName = dataStreamName.toUpperCase(Locale.ROOT);
 		return (cardinality.size() < 5 && !upperDataStreamName.contains("POST")) || (double)matchCount/realSamples < getThreshold()/100.0 ? REGEXP : null;
 	}
 }

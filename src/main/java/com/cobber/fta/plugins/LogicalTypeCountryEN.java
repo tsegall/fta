@@ -28,7 +28,7 @@ import com.cobber.fta.TypeFacts;
  */
 public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	public static final String SEMANTIC_TYPE = "COUNTRY.TEXT_EN";
-	static final String REGEXP = ".+";
+	public static final String REGEXP = ".+";
 
 	public LogicalTypeCountryEN(final PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, REGEXP, "\\p{IsAlphabetic}{2}", 95);

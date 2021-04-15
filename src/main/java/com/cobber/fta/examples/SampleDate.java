@@ -23,7 +23,7 @@ import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.dates.DateTimeParser;
 
-public class SampleDate {
+public abstract class SampleDate {
 
 	public static void main(final String[] args) {
 

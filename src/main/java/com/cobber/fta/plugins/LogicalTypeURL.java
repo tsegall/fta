@@ -33,7 +33,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "URI.URL";
 	public static final String REGEXP_PROTOCOL = "(https?|ftp|file)";
 	public static final String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
-	static UrlValidator validator = null;
+	private static UrlValidator validator;
 	private static String[] sitesList = new String[] {
 			"www.jnj.com", "http://www.medifast1.com/index.jsp", "graybar.com", "johnsoncontrols.com", "commscope.com", "www.energizer.com", "ashland.com", "hersheys.com", "www.flowserve.com", "www.exxonmobil.com",
 			"pattersoncompanies.com", "www.campbellsoup.com", "mars.com", "www.bjs.com", "conagra.com", "www.lilly.com", "sap.com", "jci.com", "www.dtcc.com", "bakerhughes.com", "www.microsoft.com", "www.jackson.com",
@@ -49,7 +49,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 		validator = UrlValidator.getInstance();
 	}
 	// Count of items with protocol specified (e.g. http://) at index 0 and no protocol index 1
-	int[] protocol = new int[2];
+	private int[] protocol = new int[2];
 
 	public LogicalTypeURL(final PluginDefinition plugin) {
 		super(plugin);

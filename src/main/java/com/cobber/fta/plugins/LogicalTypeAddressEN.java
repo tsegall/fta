@@ -31,11 +31,11 @@ import com.cobber.fta.core.FTAType;
  */
 public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "STREET_ADDRESS_EN";
-	private boolean multiline = false;
-	private SingletonSet addressMarkersRef = null;
-	private Set<String> addressMarkers = null;
+	private boolean multiline;
+	private SingletonSet addressMarkersRef;
+	private Set<String> addressMarkers;
 
-	public LogicalTypeAddressEN(PluginDefinition plugin) {
+	public LogicalTypeAddressEN(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -79,15 +79,16 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input) {
-		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
-		int length = input.length();
+		final int length = input.length();
 
 		// Attempt to fail fast
 		if (length > 60)
 			return false;
 
+		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
+
 		// Simple case first - last 'word is something we recognize
-		int spaceIndex = inputUpper.trim().lastIndexOf(' ');
+		final int spaceIndex = inputUpper.trim().lastIndexOf(' ');
 		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1)))
 			return true;
 
@@ -98,7 +99,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 		if (!Character.isDigit(inputUpper.charAt(0)))
 			return false;
 
-		String[] words = inputUpper.replace(",", "").split(" ");
+		final String[] words = inputUpper.replace(",", "").split(" ");
 		if (words.length < 3)
 			return false;
 
@@ -112,8 +113,8 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		String inputUpper = trimmed.toUpperCase(Locale.ENGLISH);
-		int spaceIndex = lastIndex[' '];
+		final String inputUpper = trimmed.toUpperCase(Locale.ENGLISH);
+		final int spaceIndex = lastIndex[' '];
 
 		// Track whether this is a multi-line field or not
 		if (!multiline)
@@ -129,7 +130,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 		if (!Character.isDigit(inputUpper.charAt(0)) || charCounts[' '] < 3)
 			return false;
 
-		String[] words = inputUpper.replace(",", "").split(" ");
+		final String[] words = inputUpper.replace(",", "").split(" ");
 		for (int i = 1; i < words.length  - 1; i++) {
 			if (addressMarkers.contains(words[i]))
 				return true;

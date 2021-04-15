@@ -21,7 +21,7 @@ import java.io.StringReader;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 
-public class SamplePlugin {
+public abstract class SamplePlugin {
 
 	public static void main(final String[] args) throws IOException {
 		final String[] inputs = new String[] {

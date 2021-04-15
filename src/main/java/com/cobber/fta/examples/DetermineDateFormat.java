@@ -5,7 +5,7 @@ import java.util.Locale;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
-public class DetermineDateFormat {
+public abstract class DetermineDateFormat {
 
 	public static void main(final String[] args) {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.MonthFirst, Locale.ENGLISH);

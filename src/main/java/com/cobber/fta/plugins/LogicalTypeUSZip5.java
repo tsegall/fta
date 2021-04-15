@@ -35,8 +35,8 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	public static final String REGEXP_CONSTANT = "\\d{5}";
 	public static final String REGEXP_VARIABLE = "\\d{3,5}";
 	private int minLength = 5;
-	private SingletonSet zipsRef = null;
-	private Set<String> zips = null;
+	private SingletonSet zipsRef;
+	private Set<String> zips;
 
 	public LogicalTypeUSZip5(final PluginDefinition plugin) {
 		super(plugin);
@@ -81,7 +81,7 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(String input) {
-		int len = input.length();
+		final int len = input.length();
 
 		if (len > 5 || len < 3)
 			return false;

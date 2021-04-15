@@ -20,7 +20,7 @@ import java.util.HashMap;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 
-public class SampleBulk {
+public abstract class SampleBulk {
 	public static void main(final String[] args) {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");

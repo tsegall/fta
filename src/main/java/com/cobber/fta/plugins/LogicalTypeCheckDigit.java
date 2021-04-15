@@ -73,7 +73,7 @@ public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, Shapes shapes) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 
 		if (cardinality.size() < 20 || (double)matchCount/realSamples < getThreshold()/100.0)
 			return BACKOUT_REGEXP;

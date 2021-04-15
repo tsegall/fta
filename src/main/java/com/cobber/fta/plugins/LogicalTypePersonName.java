@@ -34,7 +34,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	// The threshold we use if we have a moderate signal from the header
 	private static final int IDENTIFIED_HIGH_THRESHOLD = 60;
 	private static final int ITERS = 5;
-	private Dodge[] iterators = null;
+	private Dodge[] iterators;
 
 	public LogicalTypePersonName(final PluginDefinition plugin, final String filename) {
 		super(plugin, REGEXP, ".*", 95);
@@ -50,12 +50,12 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 			for (int i = 0; i < iterators.length; i++) {
 				iterators[i] = new Dodge();
 				iterators[i].iter = getMembers().iterator();
-				int offset = random.nextInt(getMembers().size() / 2);
+				final int offset = random.nextInt(getMembers().size() / 2);
 				for (int j = 0; j < offset; j++)
 					iterators[i].iter.next();
 			}
 		}
-		Dodge any = iterators[random.nextInt(ITERS)];
+		final Dodge any = iterators[random.nextInt(ITERS)];
 		if (!any.iter.hasNext())
 			any.iter = getMembers().iterator();
 		return any.iter.next();
@@ -67,7 +67,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	 */
 	@Override
 	public boolean isValid(final String input) {
-		String trimmedUpper = input.trim().toUpperCase(locale);
+		final String trimmedUpper = input.trim().toUpperCase(locale);
 		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength)
 			return false;
 		if (getMembers().contains(trimmedUpper))
@@ -88,7 +88,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
 			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 
-		int headerConfidence = getHeaderConfidence(dataStreamName);
+		final int headerConfidence = getHeaderConfidence(dataStreamName);
 
 		if (headerConfidence >= 90 && (double)matchCount / realSamples >= (double)IDENTIFIED_LOW_THRESHOLD/100)
 			return null;

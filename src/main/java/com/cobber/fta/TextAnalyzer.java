@@ -126,7 +126,7 @@ public class TextAnalyzer {
 
 	/** The maximum number of shapes tracked. */
 	public static final int MAX_SHAPES_DEFAULT = 400;
-	private int maxShapes = MAX_SHAPES_DEFAULT;
+	private final int maxShapes = MAX_SHAPES_DEFAULT;
 
 	/** We are prepared to recognize any set of this size as an enum (and give a suitable regular expression). */
 	private static final int MAX_ENUM_SIZE = 40;
@@ -157,7 +157,7 @@ public class TextAnalyzer {
 	// 0: d{4} 1: d{+} 2: [-]d{+}
 	// input "hello world" 0: a{5} a{5} 1: a{+} a{+} 2: a{+}
 
-	private Shapes shapes = new Shapes(MAX_SHAPES_DEFAULT);
+	private final Shapes shapes = new Shapes(MAX_SHAPES_DEFAULT);
 
 	/**
 	 * An Escalation contains three regExps in order of increasing genericity.  So for example the following 3 regExps:
@@ -212,7 +212,7 @@ public class TextAnalyzer {
 
 	private double minDouble = Double.MAX_VALUE;
 	private double maxDouble = -Double.MAX_VALUE;
-	private TopBottomK<Double, Double> tbDouble = new TopBottomK<>();
+	private final TopBottomK<Double, Double> tbDouble = new TopBottomK<>();
 
 	double currentM2 = 0.0;
 	double currentMean = 0.0;
@@ -220,11 +220,11 @@ public class TextAnalyzer {
 	private long minLong = Long.MAX_VALUE;
 	private long minLongNonZero = Long.MAX_VALUE;
 	private long maxLong = Long.MIN_VALUE;
-	private TopBottomK<Long, Long> tbLong = new TopBottomK<>();
+	private final TopBottomK<Long, Long> tbLong = new TopBottomK<>();
 
 	private String minString;
 	private String maxString;
-	private TopBottomK<String, String> tbString = new TopBottomK<>();
+	private final TopBottomK<String, String> tbString = new TopBottomK<>();
 
 	private String minOutlierString;
 	private String maxOutlierString;
@@ -234,23 +234,23 @@ public class TextAnalyzer {
 
 	private LocalTime minLocalTime;
 	private LocalTime maxLocalTime;
-	private TopBottomK<LocalTime, LocalTime> tbLocalTime = new TopBottomK<>();
+	private final TopBottomK<LocalTime, LocalTime> tbLocalTime = new TopBottomK<>();
 
 	private LocalDate minLocalDate;
 	private LocalDate maxLocalDate;
-	private TopBottomK<LocalDate, ChronoLocalDate> tbLocalDate = new TopBottomK<>();
+	private final TopBottomK<LocalDate, ChronoLocalDate> tbLocalDate = new TopBottomK<>();
 
 	private LocalDateTime minLocalDateTime;
 	private LocalDateTime maxLocalDateTime;
-	private TopBottomK<LocalDateTime, ChronoLocalDateTime<?>> tbLocalDateTime = new TopBottomK<>();
+	private final TopBottomK<LocalDateTime, ChronoLocalDateTime<?>> tbLocalDateTime = new TopBottomK<>();
 
 	private ZonedDateTime minZonedDateTime;
 	private ZonedDateTime maxZonedDateTime;
-	private TopBottomK<ZonedDateTime, ChronoZonedDateTime<?>> tbZonedDateTime = new TopBottomK<>();
+	private final TopBottomK<ZonedDateTime, ChronoZonedDateTime<?>> tbZonedDateTime = new TopBottomK<>();
 
 	private OffsetDateTime minOffsetDateTime;
 	private OffsetDateTime maxOffsetDateTime;
-	private TopBottomK<OffsetDateTime, OffsetDateTime> tbOffsetDateTime = new TopBottomK<>();
+	private final TopBottomK<OffsetDateTime, OffsetDateTime> tbOffsetDateTime = new TopBottomK<>();
 
 	// The minimum length (not trimmed)
 	private int minRawLength = Integer.MAX_VALUE;
@@ -272,16 +272,16 @@ public class TextAnalyzer {
 	private long totalLeadingZeros;
 	private long groupingSeparators;
 
-	private List<LogicalTypeInfinite> infiniteTypes = new ArrayList<>();
-	private List<LogicalTypeFinite> finiteTypes = new ArrayList<>();
-	private List<LogicalTypeRegExp> regExpTypes = new ArrayList<>();
+	private final List<LogicalTypeInfinite> infiniteTypes = new ArrayList<>();
+	private final List<LogicalTypeFinite> finiteTypes = new ArrayList<>();
+	private final List<LogicalTypeRegExp> regExpTypes = new ArrayList<>();
 	private int[] candidateCounts;
 
-	private KnownPatterns knownPatterns = new KnownPatterns();
+	private final KnownPatterns knownPatterns = new KnownPatterns();
 
 	private DateTimeParser dateTimeParser;
 
-	private Plugins plugins = new Plugins();
+	private final Plugins plugins = new Plugins();
 
 	/**
 	 * Construct a Text Analyzer for the named data stream.  Note: The resolution mode will be 'None'.

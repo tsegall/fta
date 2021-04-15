@@ -18,7 +18,7 @@ package com.cobber.fta.examples;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 
-public class Trivial {
+public abstract class Trivial {
 
 	public static void main(final String[] args) {
 

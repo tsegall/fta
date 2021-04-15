@@ -29,7 +29,7 @@ import com.cobber.fta.core.FTAType;
 public class LogicalTypeIPV4Address extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "IPADDRESS.IPV4";
 	public static final String REGEXP = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-	static InetAddressValidator validator = null;
+	private static InetAddressValidator validator;
 	static {
 		validator = InetAddressValidator.getInstance();
 	}
@@ -49,7 +49,7 @@ public class LogicalTypeIPV4Address extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		StringBuilder ret = new StringBuilder(36);
+		final StringBuilder ret = new StringBuilder(36);
 
 		ret.append(random.nextInt(256));
 		ret.append('.');

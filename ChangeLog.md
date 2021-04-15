@@ -275,3 +275,7 @@
  - Lots of PMD cleanup
  - Add support for CHECKDIGIT.LUHN (Digit String that has a valid Luhn Check digit)
  - Add support for Securities Identifiers - CUSIP, SEDOL, and ISIN
+
+### 3.0.22
+ - More PMD cleanups
+ - Minor documentation fix

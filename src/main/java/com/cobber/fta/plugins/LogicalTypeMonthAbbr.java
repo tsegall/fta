@@ -30,8 +30,8 @@ import com.cobber.fta.dates.LocaleInfo;
  * Plugin to detect Month Abbreviations.
  */
 public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
-	private Set<String> months = null;
-	private String[] monthsArray = null;
+	private Set<String> months;
+	private String[] monthsArray;
 
 	public LogicalTypeMonthAbbr(final PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin);

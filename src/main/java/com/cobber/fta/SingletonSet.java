@@ -34,9 +34,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Class used to cache the large sets across multiple threads.
  */
 public class SingletonSet {
-	private String contentType;
-	private String content;
-	private String key;
+	private final String contentType;
+	private final String content;
+	private final String key;
 
 	private final static Map<String, RandomSet<String>> memberCache = new HashMap<>();
 

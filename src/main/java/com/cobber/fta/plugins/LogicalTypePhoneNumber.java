@@ -33,7 +33,7 @@ import com.google.i18n.phonenumbers.Phonenumber;
 public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		public static final String SEMANTIC_TYPE = "TELEPHONE";
 		public static final String REGEXP = ".*";
-		private PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+		private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 		private static String[] areaCodes = new String[] { "617", "781", "303", "970", "212" };
 
 		public LogicalTypePhoneNumber(final PluginDefinition plugin) {
@@ -42,19 +42,19 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 
 		@Override
 		public String nextRandom() {
-			String base = "+1" + areaCodes[random.nextInt(areaCodes.length)];
+			final String base = "+1" + areaCodes[random.nextInt(areaCodes.length)];
 			while (true) {
-				StringBuilder result = new StringBuilder(base);
+				final StringBuilder result = new StringBuilder(base);
 				for (int i = 0; i < 7; i++)
 					result.append(random.nextInt(10));
-				String attempt = result.toString();
+				final String attempt = result.toString();
 				if (isValid(attempt))
 					return attempt;
 			}
 		}
 
 		@Override
-		public boolean initialize(Locale locale) {
+		public boolean initialize(final Locale locale) {
 			super.initialize(locale);
 			return true;
 		}
@@ -82,7 +82,7 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 		@Override
 		public boolean isValid(final String input) {
 			try {
-				Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(input, locale.getCountry());
+				final Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(input, locale.getCountry());
 				return phoneUtil.isValidNumber(phoneNumber);
 			}
 	        catch (NumberParseException e) {

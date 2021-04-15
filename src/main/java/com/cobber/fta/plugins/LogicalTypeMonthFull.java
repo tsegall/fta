@@ -30,15 +30,15 @@ import com.cobber.fta.dates.LocaleInfo;
  * Plugin to detect full Month Names.
  */
 public class LogicalTypeMonthFull extends LogicalTypeFinite {
-	private Set<String> months = null;
-	private String[] monthsArray = null;
+	private Set<String> months;
+	private String[] monthsArray;
 
 	public LogicalTypeMonthFull(final PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin);
 	}
 
 	@Override
-	public boolean initialize(Locale locale) {
+	public boolean initialize(final Locale locale) {
 		super.initialize(locale);
 
 		threshold = 95;
