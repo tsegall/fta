@@ -56,7 +56,12 @@ public class DetermineDateFormat {
 
 ## Metrics ##
 
-Metrics detected include:
+In addition to the input/configuration attributes:
+ * fieldName - the name of the input stream
+ * dateResolutionMode - One of None, DayFirst, MonthFirst, or Auto. This will determine what decision to make in the absence of adequate data.
+ * signatureVersion - Version of FTA used to generate data
+
+The following Metrics are detected:
  * sampleCount - number of samples observed
  * matchCount - number of samples that match the detected Base (or Semantic) type
  * nullCount - number of null samples
@@ -67,8 +72,8 @@ Metrics detected include:
  * typeQualifier - A modifier with respect to the Base Type (e.g. for Date types it will be a pattern, for Long types it might be SIGNED, for String types it might be COUNTRY.ISO-3166-2)
  * min - The minimum value observed
  * max - The maximum value observed
- * bottomK - lowest 10 values (Numeric and String types only)
- * topK - highest 10 values
+ * bottomK (Date, Time, Numeric, and String types only) - lowest 10 values
+ * topK (Date, Time, Numeric, and String types only) - highest 10 values
  * minLength - The minimum length observed (Includes whitespace)
  * maxLength - The maximum length observed (Includes whitespace)
  * cardinality - The cardinality of the valid set (or MaxCardinality if the set is larger than MaxCardinality)
@@ -76,15 +81,16 @@ Metrics detected include:
  * leadingWhiteSpace - Does the observed set have leading white space
  * trailingWhiteSpace - Does the observed set have trailing white space
  * multiline - Does the observed set have leading multiline elements
- * logicalType - Does the observed set reflect a Semantic Type
+ * logicalType - Does the observed stream, reflect a Semantic Type
  * possibleKey - The percentage confidence (0-1.0) that the observed set is a Key field (i.e. unique)
  * cardinalityDetail - Details on the valid set, list of elements and occurence count
  * outlierDetail - Details on the invalid set, list of elements and occurence count
- * shapeDetail - Details on the shapes set, list of elements and occurence count. This will collapse all numerics to '9', and all alphabetics to 'X'
- * shapeCardinality - The cardinality of the shapes observed
+ * shapesDetail - Details on the shapes set, list of elements and occurence count. This will collapse all numerics to '9', and all alphabetics to 'X'
+ * shapesCardinality - The cardinality of the shapes observed
  * structureSignature - A SHA-1 hash that reflects the data stream structure
  * dataSignature - A SHA-1 hash that reflects the data stream contents
- * mean/standardDeviation (Numeric types only) - The mean and standard deviation (Uses Welford's algorithm)
+ * mean (Numeric types only) - The mean (Uses Welford's algorithm)
+ * standardDeviation (Numeric types only) - The standard deviation (Uses Welford's algorithm)
  * leadingZeroCount (Long type only) - The leading number of zeroes
  * decimalSeparator (Double type only) - The character used to separate th integer part fom the fractional part
 
