@@ -18,6 +18,8 @@ package com.cobber.fta;
 import java.security.SecureRandom;
 import java.util.Locale;
 
+import com.cobber.fta.core.FTAPluginException;
+
 public abstract class LogicalTypeCode extends LogicalType implements LTRandom {
 	protected SecureRandom random;
 
@@ -26,7 +28,7 @@ public abstract class LogicalTypeCode extends LogicalType implements LTRandom {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) {
+	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
 		random = new SecureRandom(new byte[] { 3, 1, 4, 1, 5, 9, 2 });

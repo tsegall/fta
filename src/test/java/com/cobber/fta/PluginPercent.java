@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.util.Locale;
 import java.util.Map;
 
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
 public class PluginPercent extends LogicalTypeInfinite {
@@ -38,7 +39,7 @@ public class PluginPercent extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) {
+	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
 		return true;
@@ -76,7 +77,7 @@ public class PluginPercent extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
-			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, Shapes shapes) {
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, Shapes shapes) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

@@ -21,7 +21,8 @@ import java.util.Map;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
-import com.cobber.fta.TypeFacts;
+import com.cobber.fta.FactsTypeBased;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -31,84 +32,84 @@ import com.google.i18n.phonenumbers.Phonenumber;
  * Plugin to detect Phone Numbers.
  */
 public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
-		public static final String SEMANTIC_TYPE = "TELEPHONE";
-		public static final String REGEXP = ".*";
-		private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-		private static String[] areaCodes = new String[] { "617", "781", "303", "970", "212" };
+	public static final String SEMANTIC_TYPE = "TELEPHONE";
+	public static final String REGEXP = ".*";
+	private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+	private static String[] areaCodes = new String[] { "617", "781", "303", "970", "212" };
 
-		public LogicalTypePhoneNumber(final PluginDefinition plugin) {
-			super(plugin);
+	public LogicalTypePhoneNumber(final PluginDefinition plugin) {
+		super(plugin);
+	}
+
+	@Override
+	public String nextRandom() {
+		final String base = "+1" + areaCodes[random.nextInt(areaCodes.length)];
+		while (true) {
+			final StringBuilder result = new StringBuilder(base);
+			for (int i = 0; i < 7; i++)
+				result.append(random.nextInt(10));
+			final String attempt = result.toString();
+			if (isValid(attempt))
+				return attempt;
 		}
+	}
 
-		@Override
-		public String nextRandom() {
-			final String base = "+1" + areaCodes[random.nextInt(areaCodes.length)];
-			while (true) {
-				final StringBuilder result = new StringBuilder(base);
-				for (int i = 0; i < 7; i++)
-					result.append(random.nextInt(10));
-				final String attempt = result.toString();
-				if (isValid(attempt))
-					return attempt;
-			}
+	@Override
+	public boolean initialize(final Locale locale) throws FTAPluginException {
+		super.initialize(locale);
+		return true;
+	}
+
+	@Override
+	public String getQualifier() {
+		return SEMANTIC_TYPE;
+	}
+
+	@Override
+	public FTAType getBaseType() {
+		return FTAType.STRING;
+	}
+
+	@Override
+	public String getRegExp() {
+		return REGEXP;
+	}
+
+	@Override
+	public boolean isRegExpComplete() {
+		return false;
+	}
+
+	@Override
+	public boolean isValid(final String input) {
+		try {
+			final Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(input, locale.getCountry());
+			return phoneUtil.isValidNumber(phoneNumber);
 		}
-
-		@Override
-		public boolean initialize(final Locale locale) {
-			super.initialize(locale);
-			return true;
-		}
-
-		@Override
-		public String getQualifier() {
-			return SEMANTIC_TYPE;
-		}
-
-		@Override
-		public FTAType getBaseType() {
-			return FTAType.STRING;
-		}
-
-		@Override
-		public String getRegExp() {
-			return REGEXP;
-		}
-
-		@Override
-		public boolean isRegExpComplete() {
+		catch (NumberParseException e) {
 			return false;
 		}
+	}
 
-		@Override
-		public boolean isValid(final String input) {
-			try {
-				final Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(input, locale.getCountry());
-				return phoneUtil.isValidNumber(phoneNumber);
-			}
-	        catch (NumberParseException e) {
-	        	return false;
-	        }
-		}
+	@Override
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
+		return isValid(trimmed);
+	}
 
-		@Override
-		public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-			return isValid(trimmed);
-		}
+	@Override
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
+		if (getHeaderConfidence(dataStreamName) == 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, dataStreamName) < getThreshold()/100.0)
+			return REGEXP;
+		return null;
+	}
 
-		@Override
-		public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
-			if (getHeaderConfidence(dataStreamName) == 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, dataStreamName) < getThreshold()/100.0)
-				return REGEXP;
-			return null;
-		}
+	@Override
+	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+		double is = (double)matchCount/realSamples;
+		// Boost by up to 20% if we like the header
+		if (getHeaderConfidence(dataStreamName) != 0)
+			is = Math.min(is * 1.2, 1.0);
 
-		@Override
-		public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
-			double is = (double)matchCount/realSamples;
-			// Boost by up to 20% if we like the header
-			if (getHeaderConfidence(dataStreamName) != 0)
-				is = Math.min(is * 1.2, 1.0);
-
-			return is;
-		}
+		return is;
+	}
 }

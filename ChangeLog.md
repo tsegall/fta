@@ -279,3 +279,9 @@
 ### 3.0.22
  - More PMD cleanups
  - Minor documentation fix
+
+### 4.0.0
+ - Interface change - now throw FTAPluginException if passed invalid Plugins
+ - Add fta version to the output, just in case we ever change signatures
+ - Add fta version to the jar - so we can tell what is deployed independent of the jar filename
+ - Add --version option to Driver - so we can see what version we are running

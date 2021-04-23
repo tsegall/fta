@@ -26,6 +26,7 @@ import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.plugins.LogicalTypeUSZip5;
 
@@ -1870,11 +1871,14 @@ public class RandomTests {
 
 		@Override
 		public void run() {
-			LogicalType logicalType;
+			LogicalType logicalType = null;
 			do {
 				final String semanticType = TestStandalonePlugins.allSemanticTypes[any.nextInt(TestStandalonePlugins.allSemanticTypes.length)];
-				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
-				logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+				try {
+					logicalType = LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier(semanticType), Locale.getDefault());
+				} catch (FTAPluginException e) {
+					e.printStackTrace();
+				}
 			} while (!LTRandom.class.isAssignableFrom(logicalType.getClass()));
 
 			final LogicalTypeCode logicalTypeCode = (LogicalTypeCode)logicalType;

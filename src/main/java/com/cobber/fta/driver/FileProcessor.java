@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.FTAPluginException;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
@@ -73,7 +74,7 @@ class FileProcessor {
 				else
 					analyzer.getPlugins().registerPlugins(new FileReader(options.logicalTypes), analyzer.getStreamName(), options.locale);
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-					| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | FTAPluginException e) {
 				System.err.println("Failed to register plugin: " + e.getMessage());
 				System.exit(1);
 			}

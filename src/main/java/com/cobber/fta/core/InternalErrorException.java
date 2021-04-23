@@ -19,7 +19,6 @@ package com.cobber.fta.core;
  * InternalErrorException is thrown when we get into an 'impossible' state.  This represents a bug!
  */
 public class InternalErrorException extends RuntimeException {
-
 	private static final long serialVersionUID = 1L;
 
 	public InternalErrorException(final String message) {
@@ -29,5 +28,4 @@ public class InternalErrorException extends RuntimeException {
 	public InternalErrorException(final String message, final Throwable cause) {
 		super("Internal Error: " + message, cause);
 	}
-
 }

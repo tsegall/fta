@@ -29,7 +29,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "3.0.22"
+version = "4.0.0"
 
 repositories {
   mavenCentral()
@@ -63,6 +63,15 @@ artifacts {
 
 signing {
     sign configurations.archives
+}
+
+jar {
+    manifest {
+        attributes(
+            'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+	    'Implementation-Version': "${version}"
+        )
+    }
 }
 
 uploadArchives {

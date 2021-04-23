@@ -37,14 +37,14 @@ public abstract class Utils {
 			return input;
 
 		return input.substring(0, index)
-		        .concat(newString)
-		        .concat(input.substring(index + oldString.length()));
+				.concat(newString)
+				.concat(input.substring(index + oldString.length()));
 	}
 
 	public static String replaceAt(final String input, final int offset, final int length, final String newString) {
 		return input.substring(0, offset)
-		        .concat(newString)
-		        .concat(input.substring(offset + length));
+				.concat(newString)
+				.concat(input.substring(offset + length));
 	}
 
 	public static String repeat(final char c, final int count) {
@@ -84,4 +84,10 @@ public abstract class Utils {
 
 		return true;
 	}
+
+	private static String version = Utils.class.getPackage().getImplementationVersion();
+	public static String getVersion(){
+		return version;
+	}
+
 }

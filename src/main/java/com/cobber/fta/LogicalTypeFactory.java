@@ -19,6 +19,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
+import com.cobber.fta.core.FTAPluginException;
+
 /**
  * Construct a LogicalType from PluginDefinition or a Semantic Type name.
  */
@@ -31,8 +33,9 @@ public abstract class LogicalTypeFactory {
 	 * @return The LogicalType The Logical Type associated with the definition (if it exists), null if non-existent.
 	 *
 	 *  Note: isValid(input) can be invoked on the resulting type, and nextRandom() if the type is an subclass of LogicalTypeCode.
+	 * @throws FTAPluginException Thrown when the plugin is incorrectly configured.
 	 */
-	public static LogicalType newInstance(final String qualifier) {
+	public static LogicalType newInstance(final String qualifier) throws FTAPluginException {
 		return LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier(qualifier));
 	}
 
@@ -41,8 +44,9 @@ public abstract class LogicalTypeFactory {
 	 *
 	 * @param plugin The Definition for this plugin
 	 * @return The LogicalType The Logical Type associated with the definition (if it exists), null if non-existent.
+	 * @throws FTAPluginException Thrown when the plugin is incorrectly configured.
 	 */
-	public static LogicalType newInstance(final PluginDefinition plugin) {
+	public static LogicalType newInstance(final PluginDefinition plugin) throws FTAPluginException {
 		if (plugin == null)
 			return null;
 
@@ -63,8 +67,9 @@ public abstract class LogicalTypeFactory {
 	 * @param plugin The Definition for this plugin
 	 * @param locale The locale used for this LogicalType
 	 * @return The LogicalType The Logical Type associated with the definition (if it exists), null if non-existent.
+	 * @throws FTAPluginException Thrown when the plugin is incorrectly configured.
 	 */
-	public static LogicalType newInstance(final PluginDefinition plugin, final Locale locale) {
+	public static LogicalType newInstance(final PluginDefinition plugin, final Locale locale) throws FTAPluginException {
 		LogicalType logical = null;
 
 		if (plugin.clazz != null) {
@@ -78,7 +83,7 @@ public abstract class LogicalTypeFactory {
 
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
-				throw new IllegalArgumentException("Logical type: " + plugin.qualifier + " of class " + plugin.clazz + " does not appear to be a Logical Type.", e);
+				throw new FTAPluginException("Logical type: " + plugin.qualifier + " of class " + plugin.clazz + " does not appear to be a Logical Type.", e);
 			}
 		}
 		else if (plugin.content != null)
@@ -87,7 +92,7 @@ public abstract class LogicalTypeFactory {
 			logical = new LogicalTypeRegExp(plugin);
 
 		if (!(logical instanceof LogicalType))
-			throw new IllegalArgumentException("Failed to instantiate a new Logical Type.");
+			throw new FTAPluginException("Failed to instantiate a new Logical Type.");
 
 		logical.initialize(locale);
 

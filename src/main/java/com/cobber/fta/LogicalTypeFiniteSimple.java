@@ -20,6 +20,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import com.cobber.fta.core.FTAPluginException;
+
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected String qualifier;
 	protected String regexp;
@@ -50,9 +52,9 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) {
+	public boolean initialize(final Locale locale) throws FTAPluginException {
 		if (this.backout == null)
-			throw new IllegalArgumentException("Internal error: Finite Simple types require backout.");
+			throw new FTAPluginException("Internal error: Finite Simple types require backout.");
 
 		super.initialize(locale);
 
@@ -71,7 +73,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	@Override
 	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
-			final TypeFacts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 		final int headerConfidence = getHeaderConfidence(dataStreamName);
 
 		int maxOutliers = 1;

@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.util.Locale;
 import java.util.Set;
 
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
 /**
@@ -50,7 +51,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) {
+	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
 		for (final String member : getMembers()) {

@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
 public abstract class LogicalType implements Comparable<LogicalType> {
@@ -43,10 +44,11 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * Called to perform any initialization.
 	 * @param locale The locale used for this analysis
 	 * @return True if initialization was successful.
+	 * @throws FTAPluginException Thrown when the plugin is incorrectly configured.
 	 */
-	public boolean initialize(final Locale locale) {
+	public boolean initialize(final Locale locale) throws FTAPluginException {
 		if (getBaseType() == null)
-			throw new IllegalArgumentException("baseType cannot be null");
+			throw new FTAPluginException("baseType cannot be null");
 
 		this.locale = locale;
 
@@ -89,6 +91,14 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 */
 	public int getPriority() {
 		return priority;
+	}
+
+	/**
+	 *  Is this plugin sensitive to the input locale.
+	 *  @return True if the plugin is sensitive to the input locale.
+	 */
+	public boolean isLocaleSensitive() {
+		return defn.localeSensitive;
 	}
 
 	/**
@@ -161,7 +171,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * @param shapes Shapes observed
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, TypeFacts facts, Map<String, Long> cardinality, Map<String, Long> outliers, Shapes shapes);
+	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, FactsTypeBased facts, Map<String, Long> cardinality, Map<String, Long> outliers, Shapes shapes);
 
 	/**
 	 * Does the set of members enumerated reflect the entire set.  For example any of the ISO sets are reference sets and

@@ -26,7 +26,8 @@ import java.util.Set;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
-import com.cobber.fta.TypeFacts;
+import com.cobber.fta.FactsTypeBased;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.RegExpGenerator;
 
 /**
@@ -61,7 +62,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) {
+	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
 		threshold = 95;
@@ -85,7 +86,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)

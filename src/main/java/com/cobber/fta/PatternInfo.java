@@ -65,6 +65,8 @@ public class PatternInfo {
 	 *            The type qualifier of the pattern (optional).
 	 * @param isLogicalType
 	 *			  A boolean indicating if this is a Logical Type.
+	 * @param isLocaleSensitive
+	 *			  A boolean indicating if this is sensitive to the input locale.
 	 * @param minLength
 	 *            The minimum length of this pattern (-1 implies undefined)
 	 * @param maxLength
@@ -75,7 +77,7 @@ public class PatternInfo {
 	 *            The Java format specified for a date pattern (optional).
 	 */
 	public PatternInfo(final ID id, final String regexp, final FTAType type, final String typeQualifier,
-			final boolean isLogicalType, final int minLength, final int maxLength, final String generalPattern, final String format) {
+			final boolean isLogicalType, boolean isLocaleSensitive, final int minLength, final int maxLength, final String generalPattern, final String format) {
 		this.id = id;
 		this.regexp = regexp;
 		this.type = type;

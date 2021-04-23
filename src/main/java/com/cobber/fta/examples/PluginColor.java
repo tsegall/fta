@@ -23,7 +23,7 @@ import java.util.Set;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
-import com.cobber.fta.TypeFacts;
+import com.cobber.fta.FactsTypeBased;
 
 public class PluginColor extends LogicalTypeFinite {
 	public static final String SEMANTIC_TYPE = "COLOR.TEXT_EN";
@@ -64,7 +64,7 @@ public class PluginColor extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts,
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts,
 			final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 		if (outliers.size() > 3)
 			return ".+";

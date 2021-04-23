@@ -29,6 +29,7 @@ import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.LogicalTypeRegExp;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 class Driver {
@@ -126,6 +127,10 @@ class Driver {
 				options.validate = true;
 			else if ("--verbose".equals(args[idx]))
 				options.verbose++;
+			else if ("--version".equals(args[idx])) {
+				logger.printf("%s%n", Utils.getVersion());
+				System.exit(0);
+			}
 			else if ("--xMaxCharsPerColumn".equals(args[idx]))
 				options.xMaxCharsPerColumn = Integer.valueOf(args[++idx]);
 			else {

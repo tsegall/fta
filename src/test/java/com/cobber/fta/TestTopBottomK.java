@@ -24,6 +24,8 @@ import java.util.Random;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAPluginException;
+
 public class TestTopBottomK {
 	@Test
 	public void basicZips() throws IOException {
@@ -305,7 +307,7 @@ public class TestTopBottomK {
 	}
 
 	@Test
-	public void basicFirstNames() throws IOException {
+	public void basicFirstNames() throws IOException, FTAPluginException {
 		final TopBottomK<String, String> t = new TopBottomK<>();
 		final HashSet<String> bottomK = new HashSet<>(Arrays.asList(new String[] {
 				"AARON", "ABBEY", "ABBIE", "ABBY", "ABDUL", "ABE", "ABEL", "ABIGAIL", "ABRAHAM", "ABRAM" } ));

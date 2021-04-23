@@ -17,7 +17,7 @@ package com.cobber.fta;
 
 import java.util.SortedSet;
 
-public class TypeFacts {
+public class FactsTypeBased {
 	protected String minValue;
 	protected String maxValue;
 	protected Double mean;

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.InternalErrorException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,6 +43,8 @@ public class PluginDefinition {
 	public String description;
 	/** locales this plugin applies to - empty set, implies all locales.  Can use just language instead of tag, e.g. "en" rather than "en_US". */
 	public String[] validLocales;
+	/** Is this plugin sensitive to the input locale? */
+	public boolean localeSensitive;
 	/** The relative priority of this plugin. */
 	public int priority = 1000;
 
@@ -83,7 +86,9 @@ public class PluginDefinition {
 		this.clazz = clazz;
 	}
 
-	public PluginDefinition(final String qualifier, final String description, final String regExpReturned, final String[] regExpsToMatch, final String[] invalidList, final String content, final String contentType, final String backout, final String[] validLocales, final String[] headerRegExps, final int[] headerRegExpConfidence, final int threshold, final FTAType  baseType) {
+	public PluginDefinition(final String qualifier, final String description, final String regExpReturned, final String[] regExpsToMatch, final String[] invalidList,
+			final String content, final String contentType, final String backout, final String[] validLocales, boolean localeSensitive,
+			final String[] headerRegExps, final int[] headerRegExpConfidence, final int threshold, final FTAType  baseType) {
 		this.qualifier = qualifier;
 		this.description = description;
 		this.regExpReturned = regExpReturned;
@@ -93,6 +98,7 @@ public class PluginDefinition {
 		this.contentType = contentType;
 		this.backout = backout;
 		this.validLocales = validLocales;
+		this.localeSensitive = localeSensitive;
 		this.headerRegExps = headerRegExps;
 		this.headerRegExpConfidence = headerRegExpConfidence;
 		this.threshold = threshold;
@@ -111,7 +117,7 @@ public class PluginDefinition {
 				try (BufferedReader JSON = new BufferedReader(new InputStreamReader(PluginDefinition.class.getResourceAsStream("/reference/plugins.json")))) {
 					builtinPlugins = (new ObjectMapper()).readValue(JSON, new TypeReference<List<PluginDefinition>>(){});
 				} catch (Exception e) {
-					throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
+					throw new InternalErrorException("Issues with reference plugins file", e);
 				}
 			}
 		}

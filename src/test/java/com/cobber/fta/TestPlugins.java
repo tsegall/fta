@@ -2295,7 +2295,7 @@ public class TestPlugins {
 		analysis.setDefaultLogicalTypes(false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("SSN", "Social Security Number", "\\d{3}-\\d{2}-\\d{4}",
-				new String[] {"\\d{3}-\\d{2}-\\d{4}"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" }, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, FTAType.STRING));
+				new String[] {"\\d{3}-\\d{2}-\\d{4}"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" }, true, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), null);
@@ -2339,7 +2339,7 @@ public class TestPlugins {
 		analysis.setDefaultLogicalTypes(false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("GENDER_PT", "Gender (Portuguese Language)", "(?i)(FEMENINO|MASCULINO)",
-				new String[] {"(?i)(FEMENINO|MASCULINO)"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}", null, null, null, 98, FTAType.STRING));
+				new String[] {"(?i)(FEMENINO|MASCULINO)"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}", null, true, null, null, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), null);
@@ -2373,7 +2373,7 @@ public class TestPlugins {
 		final Random random = new Random(314159265);
 
 		final PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
-				null, null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, FTAType.STRING);
+				null, null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*", new String[] { "en" }, true, null, null, 98, FTAType.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		final List<PluginDefinition> plugins = new ArrayList<>();
@@ -2413,7 +2413,7 @@ public class TestPlugins {
 		final Random random = new Random(314159265);
 
 		final PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
-				null, null, String.join("|",  planets), "inline", "\\p{Alpha}*", new String[] { "en" }, null, null, 98, FTAType.STRING);
+				null, null, String.join("|",  planets), "inline", "\\p{Alpha}*", new String[] { "en" }, true, null, null, 98, FTAType.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		final List<PluginDefinition> plugins = new ArrayList<>();
@@ -2645,7 +2645,7 @@ public class TestPlugins {
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
-				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, FTAType.STRING));
+				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, false, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
@@ -2685,7 +2685,7 @@ public class TestPlugins {
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
-				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, FTAType.STRING));
+				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, false, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
@@ -2748,7 +2748,7 @@ public class TestPlugins {
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
-				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, FTAType.STRING));
+				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}", new String[] { }, false, new String[] { ".*CUSIP.*" }, new int[] { 100 }, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
@@ -2801,7 +2801,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("FUND_ID");
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("FUND_ID", null, FUND_REGEXP,
-				null, null, null, null, FUND_REGEXP, new String[] { }, null, null, 98, FTAType.STRING));
+				null, null, null, null, FUND_REGEXP, new String[] { }, false, null, null, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "FUND_ID", null);

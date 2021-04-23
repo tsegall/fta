@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 
@@ -32,7 +33,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	private String minString;
 	private String maxString;
 
-	public LogicalTypeRegExp(final PluginDefinition plugin) {
+	public LogicalTypeRegExp(final PluginDefinition plugin) throws FTAPluginException {
 		super(plugin);
 
 		if (defn.minimum != null || defn.maximum != null)
@@ -53,12 +54,12 @@ public class LogicalTypeRegExp extends LogicalType {
 				break;
 
 			default:
-				throw new InternalErrorException(WRONG_TYPE + defn.baseType);
+				throw new FTAPluginException(WRONG_TYPE + defn.baseType);
 			}
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) {
+	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
 		try {
@@ -128,7 +129,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final TypeFacts facts,
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts,
 			final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
 
 		// If this plugin insists on a minimum number of samples (validate it)

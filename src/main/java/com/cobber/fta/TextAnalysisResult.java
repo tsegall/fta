@@ -21,11 +21,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,20 +48,15 @@ public class TextAnalysisResult {
 	private static final String NOT_ENABLED = "Statistics not enabled.";
 
 	private final String name;
+	private final Locale locale;
 	private final long matchCount;
 	private final long sampleCount;
 	private final long nullCount;
 	private final long blankCount;
-	private final long leadingZeroCount;
 	private final PatternInfo patternInfo;
-	private final boolean leadingWhiteSpace;
-	private final boolean trailingWhiteSpace;
-	private final boolean multiline;
 	private final double confidence;
-	private final TypeFacts facts;
-	private final int minLength;
-	private final int maxLength;
-	private final char decimalSeparator;
+	private final FactsCore factsCore;
+	private final FactsTypeBased facts;
 	private final DateResolutionMode resolutionMode;
 	private final Map<String, Long> cardinality;
 	private final int maxCardinality;
@@ -67,25 +64,18 @@ public class TextAnalysisResult {
 	private final int maxOutliers;
 	private final Map<String, Long> shapes;
 	private final int maxShapes;
-	private final boolean key;
 	private final boolean collectStatistics;
 
 	/**
 	 * @param name The name of the data stream being analyzed.
+	 * @param locale The locale the analysis was performed in.
 	 * @param matchCount The number of samples that match the patternInfo.
-	 * @param patternInfo The PatternInfo associated with this matchCount.
-	 * @param leadingWhiteSpace Do any elements have leading White Space?
-	 * @param trailingWhiteSpace Do any elements have trailing White Space?
-	 * @param multiline Are any elements multi-line?
 	 * @param sampleCount The total number of samples seen.
 	 * @param nullCount The number of nulls seen in the sample set.
 	 * @param blankCount The number of blanks seen in the sample set.
-	 * @param leadingZeroCount The number of leading zeros seen in sample set.  Only relevant for type Long.
-	 * @param confidence The percentage confidence in the analysis.  The matchCount divided by the sampleCount.
+	 * @param patternInfo The PatternInfo associated with this matchCount.
 	 * @param facts A set of string representations of minimum/maximum/sum/topK/bottomK values.  Only relevant for Numeric/String types.
-	 * @param minLength Get the minimum length. Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace.
-	 * @param maxLength Get the maximum length. Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace.
-	 * @param decimalSeparator Get the Decimal separator used to interpret this field (only relevant for type double.
+	 * @param confidence The percentage confidence in the analysis.  The matchCount divided by the sampleCount.
 	 * @param resolutionMode Determines what to do when the Date field is ambiguous (i.e. we cannot determine which
 	 *   of the fields is the day or the month.  If resolutionMode is DayFirst, then assume day is first, if resolutionMode is
 	 *   MonthFirst then assume month is first, if it is Auto then choose either DayFirst or MonthFirst based on the locale, if it
@@ -93,32 +83,25 @@ public class TextAnalysisResult {
 	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param shapes A map of input shapes and the count of occurrences of the these shapes.
-	 * @param key Do we think this field is a key.
 	 * @param collectStatistics Were statistics collected during this analysis.
 	 */
-	TextAnalysisResult(final String name, final long matchCount, final PatternInfo patternInfo, final boolean leadingWhiteSpace, final boolean trailingWhiteSpace,
-			final boolean multiline, final long sampleCount, final long nullCount, final long blankCount, final long leadingZeroCount,
-			final double confidence, final TypeFacts facts, final int minLength, final int maxLength,
-			final char decimalSeparator, final DateResolutionMode resolutionMode,
+	TextAnalysisResult(final String name, Locale locale, final long matchCount, final long sampleCount,
+			final long nullCount, final long blankCount,
+			final PatternInfo patternInfo, final FactsCore factsCore, final FactsTypeBased facts,
+			final double confidence, final DateResolutionMode resolutionMode,
 			final Map<String, Long> cardinality, final int maxCardinality,
 			final Map<String, Long> outliers, final int maxOutliers,
-			final Map<String, Long> shapes, final int maxShapes,
-			final boolean key, final boolean collectStatistics) {
+			final Map<String, Long> shapes, final int maxShapes, final boolean collectStatistics) {
 		this.name = name;
+		this.locale = locale;
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
-		this.leadingWhiteSpace = leadingWhiteSpace;
-		this.trailingWhiteSpace = trailingWhiteSpace;
-		this.multiline = multiline;
 		this.sampleCount = sampleCount;
 		this.nullCount = nullCount;
 		this.blankCount = blankCount;
-		this.leadingZeroCount = leadingZeroCount;
 		this.confidence = confidence;
+		this.factsCore = factsCore;
 		this.facts = facts;
-		this.minLength = minLength;
-		this.maxLength = maxLength;
-		this.decimalSeparator = decimalSeparator;
 		this.resolutionMode = resolutionMode;
 		this.cardinality = cardinality;
 		this.maxCardinality = maxCardinality;
@@ -126,7 +109,6 @@ public class TextAnalysisResult {
 		this.maxOutliers = maxOutliers;
 		this.shapes = shapes;
 		this.maxShapes = maxShapes;
-		this.key = key;
 		this.collectStatistics = collectStatistics;
 	}
 
@@ -211,7 +193,7 @@ public class TextAnalysisResult {
 	 * @return The minimum length.
 	 */
 	public int getMinLength() {
-		return minLength;
+		return factsCore.minRawLength;
 	}
 
 	/**
@@ -220,7 +202,7 @@ public class TextAnalysisResult {
 	 * @return The maximum length.
 	 */
 	public int getMaxLength() {
-		return maxLength;
+		return factsCore.maxRawLength;
 	}
 
 	/**
@@ -229,7 +211,7 @@ public class TextAnalysisResult {
 	 * @return The Decimal Separator.
 	 */
 	public char getDecimalSeparator() {
-		return decimalSeparator;
+		return factsCore.decimalSeparator;
 	}
 
 	/**
@@ -290,12 +272,12 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression.
 	 */
 	public String getRegExp() {
-		if (patternInfo.isLogicalType || (!leadingWhiteSpace && !trailingWhiteSpace))
+		if (patternInfo.isLogicalType || (!factsCore.leadingWhiteSpace && !factsCore.trailingWhiteSpace))
 			return patternInfo.regexp;
 
 		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
 		String answer = "";
-		if (leadingWhiteSpace)
+		if (factsCore.leadingWhiteSpace)
 			answer = KnownPatterns.PATTERN_WHITESPACE;
 		final boolean optional = patternInfo.regexp.indexOf('|') != -1;
 		if (optional)
@@ -303,7 +285,7 @@ public class TextAnalysisResult {
 		answer += patternInfo.regexp;
 		if (optional)
 			answer += ")";
-		if (trailingWhiteSpace)
+		if (factsCore.trailingWhiteSpace)
 			answer += KnownPatterns.PATTERN_WHITESPACE;
 
 		return answer;
@@ -323,7 +305,7 @@ public class TextAnalysisResult {
 	 * @return True if any elements matched have leading White Space.
 	 */
 	public boolean getLeadingWhiteSpace() {
-		return leadingWhiteSpace;
+		return factsCore.leadingWhiteSpace;
 	}
 
 	/**
@@ -331,7 +313,7 @@ public class TextAnalysisResult {
 	 * @return True if any elements matched have trailing White Space.
 	 */
 	public boolean getTrailingWhiteSpace() {
-		return trailingWhiteSpace;
+		return factsCore.trailingWhiteSpace;
 	}
 
 	/**
@@ -339,7 +321,7 @@ public class TextAnalysisResult {
 	 * @return True if any elements matched are multi-line.
 	 */
 	public boolean getMultiline() {
-		return multiline;
+		return factsCore.multiline;
 	}
 
 	/**
@@ -373,7 +355,7 @@ public class TextAnalysisResult {
 	 * @return Count of all leading zero samples.
 	 */
 	public long getLeadingZeroCount() {
-		return leadingZeroCount;
+		return factsCore.leadingZeroCount;
 	}
 
 	/**
@@ -444,7 +426,7 @@ public class TextAnalysisResult {
 	 * @return True if the field could be a key field.
 	 */
 	public boolean isKey() {
-		return key;
+		return factsCore.key;
 	}
 
 	/**
@@ -629,7 +611,7 @@ public class TextAnalysisResult {
 		}
 
 		if (FTAType.DOUBLE == patternInfo.type)
-			analysis.put("decimalSeparator", String.valueOf(decimalSeparator));
+			analysis.put("decimalSeparator", String.valueOf(factsCore.decimalSeparator));
 
 		if (statisticsEnabled()) {
 			if (facts.minValue != null)
@@ -638,8 +620,8 @@ public class TextAnalysisResult {
 				analysis.put("max", facts.maxValue);
 		}
 
-		analysis.put("minLength", minLength);
-		analysis.put("maxLength", maxLength);
+		analysis.put("minLength", factsCore.minRawLength);
+		analysis.put("maxLength", factsCore.maxRawLength);
 
 		if (statisticsEnabled()) {
 			if (facts.mean != null)
@@ -687,7 +669,9 @@ public class TextAnalysisResult {
 
 		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("logicalType", isLogicalType());
-			analysis.put("possibleKey", key);
+			analysis.put("possibleKey", factsCore.key);
+			analysis.put("detectionLocale", locale.toLanguageTag());
+			analysis.put("ftaVersion", Utils.getVersion());
 
 			String signature = getStructureSignature();
 			if (signature != null)
@@ -696,6 +680,7 @@ public class TextAnalysisResult {
 			signature = getDataSignature();
 			if (signature != null)
 				analysis.put("dataSignature", signature);
+
 		}
 
 		try {
