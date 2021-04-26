@@ -19,9 +19,10 @@ import java.util.HashMap;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.FTAException;
 
 public abstract class SampleBulk {
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final HashMap<String, Long> basic = new HashMap<>();
@@ -37,6 +38,5 @@ public abstract class SampleBulk {
 		System.err.printf("Result: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
 
 		System.err.println("Detail: " + result.asJSON(true, 1));
-
 	}
 }

@@ -17,10 +17,11 @@ package com.cobber.fta.examples;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.FTAException;
 
 public abstract class Performance {
 
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("DateOfBirth");
 

@@ -108,7 +108,7 @@ public class DateTimeParserResult {
 	enum Token {
 		CLOCK24_1_OR_2, CLOCK24_2, CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DAY_OF_WEEK, DAY_OF_WEEK_ABBR, DIGITS_1_OR_2, MONTHS_1_OR_2,
 		MONTHS_2, HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, PAD_2, SECS_2, FRACTION,
-		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, TIMEZONE_OFFSET, TIMEZONE_OFFSET_Z, AMPM
+		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, LOCALIZED_TIMEZONE_OFFSET, TIMEZONE_OFFSET, TIMEZONE_OFFSET_Z, AMPM
 	}
 
 	protected boolean isDateUnbound() {
@@ -728,7 +728,7 @@ public class DateTimeParserResult {
 			tokenized =  FormatterToken.tokenize(formatString);
 
 		for (final FormatterToken t : tokenized) {
-			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_Z))
+			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_Z) || t.getType().equals(Token.LOCALIZED_TIMEZONE_OFFSET))
 				return FTAType.OFFSETDATETIME;
 			if (t.getType().equals(Token.TIMEZONE))
 				return FTAType.ZONEDDATETIME;

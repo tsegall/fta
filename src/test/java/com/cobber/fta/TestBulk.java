@@ -22,13 +22,14 @@ import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeGenderEN;
 
 public class TestBulk {
 	@Test
-	public void basicBulk() throws IOException {
+	public void basicBulk() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		final HashMap<String, Long> basic = new HashMap<>();
@@ -53,7 +54,7 @@ public class TestBulk {
 	}
 
 	@Test
-	public void basicBulkSignature() throws IOException {
+	public void basicBulkSignature() throws IOException, FTAException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer();
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final long ITERATIONS = 10000;
@@ -87,7 +88,7 @@ public class TestBulk {
 	}
 
 	@Test
-	public void basicDistance() throws IOException {
+	public void basicDistance() throws IOException, FTAException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer();
 		final long SAMPLES = 3622;
 
@@ -113,7 +114,7 @@ public class TestBulk {
 	}
 
 	@Test
-	public void basicDate() throws IOException {
+	public void basicDate() throws IOException, FTAException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer("ModifiedDate", DateResolutionMode.Auto);
 
 		final HashMap<String, Long> basic = new HashMap<>();
@@ -132,7 +133,7 @@ public class TestBulk {
 	}
 
 	@Test
-	public void justBlanks() throws IOException {
+	public void justBlanks() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		final HashMap<String, Long> basic = new HashMap<>();

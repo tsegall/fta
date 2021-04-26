@@ -28,7 +28,9 @@ import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 
 public class KnownPatterns {
-	private static final String OPTIONAL_SIGN = "[+-]?";
+	public static final String OPTIONAL_SIGN = "[+-]?";
+	public static final String OPTIONAL_UNICODE_SIGN = "[+\u2212-]?";
+	public static final char LEFT_TO_RIGHT_MARK = '\u200E';
 
 	public enum ID {
 		ID_BOOLEAN_TRUE_FALSE,
@@ -164,18 +166,26 @@ public class KnownPatterns {
 		String optionalSignSuffix = "";
 		final NumberFormat simple = NumberFormat.getNumberInstance(locale);
 		if (simple instanceof DecimalFormat) {
-			final String negPrefix = ((DecimalFormat) simple).getNegativePrefix();
-			final String negSuffix = ((DecimalFormat) simple).getNegativeSuffix();
+			String negPrefix = ((DecimalFormat) simple).getNegativePrefix();
+			String negSuffix = ((DecimalFormat) simple).getNegativeSuffix();
 
+			// Ignore the LEFT_TO_RIGHT_MARK if it exists
+			if (!negPrefix.isEmpty() && negPrefix.charAt(0) == LEFT_TO_RIGHT_MARK)
+				negPrefix = negPrefix.substring(1);
 			if (!negPrefix.isEmpty()) {
-				if (negPrefix.charAt(0) == minusSign)
+				if (negPrefix.charAt(0) == minusSign && minusSign == '-')
 					optionalSignPrefix = OPTIONAL_SIGN;
+				else if (negPrefix.charAt(0) == minusSign && minusSign == '\u2212')  // Unicode minus
+					optionalSignPrefix = OPTIONAL_UNICODE_SIGN;
 				else
 					optionalSignPrefix = RegExpGenerator.slosh(negPrefix) + "?";
 			}
+
 			if (!negSuffix.isEmpty()) {
-				if (negSuffix.charAt(0) == minusSign)
+				if (negSuffix.charAt(0) == minusSign && minusSign == '-')
 					optionalSignSuffix = OPTIONAL_SIGN;
+				else if (negSuffix.charAt(0) == minusSign && minusSign == '\u2212')  // Unicode minus
+					optionalSignSuffix = OPTIONAL_UNICODE_SIGN;
 				else
 					optionalSignSuffix = RegExpGenerator.slosh(negSuffix) + "?";
 			}

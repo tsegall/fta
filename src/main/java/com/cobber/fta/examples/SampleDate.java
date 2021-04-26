@@ -21,11 +21,12 @@ import java.util.Locale;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.dates.DateTimeParser;
 
 public abstract class SampleDate {
 
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("DateOfBirth");
 		final String[] inputs = new String[] {

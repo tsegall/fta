@@ -33,12 +33,13 @@ import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 
 public class TestLongs {
-	public void _variableLengthPositiveInteger(final boolean collectStatistics) throws IOException {
+	public void _variableLengthPositiveInteger(final boolean collectStatistics) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!collectStatistics)
 			analysis.setCollectStatistics(false);
@@ -72,16 +73,16 @@ public class TestLongs {
 	}
 
 	@Test
-	public void variableLengthPositiveInteger() throws IOException {
+	public void variableLengthPositiveInteger() throws IOException, FTAException {
 		_variableLengthPositiveInteger(true);
 	}
 
 	@Test
-	public void variableLengthPositiveInteger_ns() throws IOException {
+	public void variableLengthPositiveInteger_ns() throws IOException, FTAException {
 		_variableLengthPositiveInteger(false);
 	}
 
-	public void _variableLengthInteger(final boolean collectStatistics) throws IOException {
+	public void _variableLengthInteger(final boolean collectStatistics) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!collectStatistics)
 			analysis.setCollectStatistics(false);
@@ -114,17 +115,17 @@ public class TestLongs {
 	}
 
 	@Test
-	public void variableLengthInteger() throws IOException {
+	public void variableLengthInteger() throws IOException, FTAException {
 		_variableLengthInteger(true);
 	}
 
 	@Test
-	public void variableLengthInteger_ns() throws IOException {
+	public void variableLengthInteger_ns() throws IOException, FTAException {
 		_variableLengthInteger(false);
 	}
 
 	@Test
-	public void constantLengthInteger() throws IOException {
+	public void constantLengthInteger() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "456789|456089|456700|116789|433339|409187".split("\\|");
 		int locked = -1;
@@ -151,7 +152,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void trailingMinus() throws IOException {
+	public void trailingMinus() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "458-|123|901|404|209-|12|0|0|676|1894-|2903-|111-|5234".split("\\|");
 		int locked = -1;
@@ -178,7 +179,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void leadingZeros() throws IOException {
+	public void leadingZeros() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
 
 		analysis.train("000019284");
@@ -254,7 +255,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void leadingZerosWith0() throws IOException {
+	public void leadingZerosWith0() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
 
 		analysis.train("0");
@@ -278,7 +279,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void groupingSeparatorLarge() throws IOException {
+	public void groupingSeparatorLarge() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Random random = new Random();
 		final int SAMPLE_SIZE = 10000;
@@ -329,7 +330,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void groupingSeparatorLargeFRENCH() throws IOException {
+	public void groupingSeparatorLargeFRENCH() throws IOException, FTAException {
 		final Locale locales[] = new Locale[] { Locale.GERMAN, Locale.FRANCE };
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
@@ -393,11 +394,54 @@ public class TestLongs {
 	}
 
 	@Test
-	public void localeLongTest() throws IOException {
+	public void trailingMinusArEH() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		final Locale locale = Locale.forLanguageTag("ar-EH");
+		analysis.setLocale(locale);
+		final Random random = new Random(1);
+		final int SAMPLE_SIZE = 1000;
+
+		final NumberFormat nf = NumberFormat.getNumberInstance(locale);
+		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+		for (int i = 0; i < SAMPLE_SIZE; i++) {
+			long l = random.nextLong();
+			if (l % 2 == 0)
+				l = -l;
+			final String sample = nf.format(l).toString();
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		int javaVersion = TestUtils.getJavaVersion();
+		if (javaVersion >= 15) {
+			// Detected as String because negative numbers are prefixed with LEFT TO RIGHT MARK
+			Assert.assertEquals(result.getType(), FTAType.STRING);
+		} if (javaVersion == 11) {
+			// Seems like Java 11 is just broken - the minus sign is a LEFT TO RIGHT MARK
+			if (formatSymbols.getMinusSign() == '\u200E')
+				return;
+		}
+		else if (javaVersion == 8) {
+			Assert.assertEquals(result.getType(), FTAType.LONG);
+			Assert.assertEquals(result.getRegExp(), "[\\d,]{21,25}[+-]?");
+			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+			Assert.assertEquals(result.getNullCount(), 0);
+			Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		}
+		else {
+			Assert.fail("Java version untested: " + javaVersion);
+		}
+	}
+
+	@Test
+	public void localeLongTest() throws IOException, FTAException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-AE") };
+		//				Locale[] locales = new Locale[] { Locale.forLanguageTag("yi") };
 
 		for (final Locale locale : locales) {
 			long min = Long.MAX_VALUE;
@@ -422,6 +466,12 @@ public class TestLongs {
 				continue;
 			}
 
+			String variant = locale.getDisplayVariant();
+			if (variant != null && !variant.isEmpty()) {
+				System.err.printf("Skipping locale '%s' as it has a Variant: '%s'.\n", locale, variant);
+				continue;
+			}
+
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
 			final String negPrefix = TestUtils.getNegativePrefix(locale);
@@ -429,6 +479,9 @@ public class TestLongs {
 
 			final Set<String> samples = new HashSet<>();
 			final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+
+//			System.err.printf("Locale '%s', negPrefix: %s, negSuffix: %s, min: %s, max: %s, absMax:%s.\n",
+//					locale.toLanguageTag(), negPrefix, negSuffix, String.valueOf(min), String.valueOf(max), absMinValue);
 
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
 				long l = random.nextLong();
@@ -457,11 +510,9 @@ public class TestLongs {
 
 			final TextAnalysisResult result = analysis.getResult();
 
-//			System.err.printf("Locale '%s', re: '%s', negPrefix: %s, negSuffix: %s, min: %s, max: %s, absMax:%s.\n",
-//					locale, result.getRegExp(), negPrefix, negSuffix, String.valueOf(min), String.valueOf(max), absMinValue);
 
 			Assert.assertEquals(result.getType(), FTAType.LONG);
-			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toString());
+			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toLanguageTag());
 			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			Assert.assertEquals(result.getNullCount(), 0);
@@ -478,7 +529,7 @@ public class TestLongs {
 				regExp += negSuffix;
 			Assert.assertEquals(result.getDecimalSeparator(), '.');
 
-			Assert.assertEquals(result.getRegExp(), regExp);
+			Assert.assertEquals(result.getRegExp(), regExp, locale.toLanguageTag());
 			Assert.assertEquals(result.getConfidence(), 1.0);
 
 			for (final String sample : samples) {
@@ -488,7 +539,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void someInts() throws IOException {
+	public void someInts() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		Assert.assertTrue(analysis.getNumericWidening());
 		analysis.setNumericWidening(false);
@@ -530,7 +581,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void manyConstantLengthLongs() throws IOException {
+	public void manyConstantLengthLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
 		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;
@@ -562,12 +613,12 @@ public class TestLongs {
 	}
 
 	@Test
-	public void paddedLongs() throws IOException {
+	public void paddedLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RowID");
 		final String inputs[] = new String[] {
-			    "    0", "    1", "    2", "    3", "    4", "    5", "    6", "    7", "    8", "    9",
-			    "    10", "    11", "    12", "    13", "    14", "    15", "    16", "    17", "    18", "    19",
-			    "    20", "    21", "    22", "    23", "    24", "    25", "    26", "    27", "    28", "    29"
+				"    0", "    1", "    2", "    3", "    4", "    5", "    6", "    7", "    8", "    9",
+				"    10", "    11", "    12", "    13", "    14", "    15", "    16", "    17", "    18", "    19",
+				"    20", "    21", "    22", "    23", "    24", "    25", "    26", "    27", "    28", "    29"
 		};
 		int locked = -1;
 
@@ -595,7 +646,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void signedLongs() throws IOException {
+	public void signedLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
 		final String inputs[] = new String[] {
 				"+400089", "2000931", "-3287392873", "-327398267", "-34", "56", "93823908", "34567", "-757363", "0",
@@ -625,7 +676,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void manyKnownInts() throws IOException {
+	public void manyKnownInts() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
 		final int iterations = 100000;
@@ -656,7 +707,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void groupingSeparator() throws IOException {
+	public void groupingSeparator() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final String pipedInput = "3600|7500|3600|3600|800|3600|1200|1200|600|" +
 				"1200|1200|1200|1200|3600|1200|13,000|1200|200|" +
@@ -700,7 +751,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void groupingSeparatorSigned() throws IOException {
+	public void groupingSeparatorSigned() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Random random = new Random(21456);
 		final int SAMPLE_SIZE = 100;
@@ -762,7 +813,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void testQualifierNumeric() throws IOException {
+	public void testQualifierNumeric() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Numeric");
 		analysis.setLengthQualifier(false);
 
@@ -782,7 +833,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void justSimple() throws IOException {
+	public void justSimple() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		final int iterations = 100_000_000;
@@ -804,7 +855,7 @@ public class TestLongs {
 	}
 
 	@Test
-	public void manyRandomInts() throws IOException {
+	public void manyRandomInts() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
 		final int iterations = TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
@@ -830,26 +881,26 @@ public class TestLongs {
 	}
 
 	@Test
-    public void longToSigned() throws IOException {
-            final TextAnalyzer analysis = new TextAnalyzer("LongToSigned");
-            final int SAMPLE_SIZE = 100;
+	public void longToSigned() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("LongToSigned");
+		final int SAMPLE_SIZE = 100;
 
-            for (int i = 0; i < 100; i++)
-                    analysis.train(String.valueOf(i));
-            analysis.train("-1");
+		for (int i = 0; i < 100; i++)
+			analysis.train(String.valueOf(i));
+		analysis.train("-1");
 
-            final TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
-            Assert.assertEquals(result.getType(), FTAType.LONG);
-            Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
-            Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE + 1);
-            Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE + 1);
-            Assert.assertEquals(result.getNullCount(), 0);
-            Assert.assertEquals(result.getLeadingZeroCount(), 0);
-    }
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE + 1);
+		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE + 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+	}
 
 	@Test
-	public void noStatistics() throws IOException {
+	public void noStatistics() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final Random random = new Random(314);
@@ -873,7 +924,7 @@ public class TestLongs {
 		Assert.assertNull(result.getTypeQualifier());
 	}
 
-	public void _longPerf(final boolean statisticsOn) throws IOException {
+	public void _longPerf(final boolean statisticsOn) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!statisticsOn) {
 			analysis.setDefaultLogicalTypes(false);
@@ -927,12 +978,12 @@ public class TestLongs {
 	}
 
 	@Test
-	public void longPerf() throws IOException {
+	public void longPerf() throws IOException, FTAException {
 		_longPerf(true);
 	}
 
 	@Test
-	public void longPerfNoStatistics() throws IOException {
+	public void longPerfNoStatistics() throws IOException, FTAException {
 		_longPerf(false);
 	}
 }

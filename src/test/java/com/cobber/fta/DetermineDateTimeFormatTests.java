@@ -36,6 +36,7 @@ import java.util.TimeZone;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
@@ -84,7 +85,7 @@ public class DetermineDateTimeFormatTests {
 		// Work out headers and which columns we want.
 		for (int i = 0; i < inputs.length; i++) {
 			fmts[i] = dtp.determineFormatString(inputs[i]);
-				Assert.assertNotNull(fmts[i], inputs[i]);
+			Assert.assertNotNull(fmts[i], inputs[i]);
 
 			final String header = fmts[i].replace(':', '_').replace('\'', '_');
 
@@ -194,7 +195,7 @@ public class DetermineDateTimeFormatTests {
 	public void testSpaces() {
 		Assert.assertEquals(DateTimeParser.parse("2018 12 24"), "yyyy MM dd");
 	}
-	*/
+	 */
 
 	@Test
 	public void intuitDateOnlyDash() {
@@ -426,10 +427,26 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void EEE_With_Offset() {
+		final DateTimeParser det = new DateTimeParser();
+		det.train("Wed Apr 21 08:10:38 GMT+8 2021");
+		final DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss O yyyy");
+	}
+
+	@Test
+	public void EEE_With_LongOffset() {
+		final DateTimeParser det = new DateTimeParser();
+		det.train("Wed Apr 21 08:10:38 GMT-07:00 2021");
+		final DateTimeParserResult result = det.getResult();
+		Assert.assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss OOOO yyyy");
+	}
+
+	@Test
 	public void basicHMM() {
 		final String pipedInput = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
-		"17:16|0:16|7:16|14:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|3:16|10:16|17:16|0:16|7:16|14:16|" +
-		"21:16|4:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|4:16|11:16|3:16|10:16|17:16|0:16|7:16|14:16|";
+				"17:16|0:16|7:16|14:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|3:16|10:16|17:16|0:16|7:16|14:16|" +
+				"21:16|4:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|4:16|11:16|3:16|10:16|17:16|0:16|7:16|14:16|";
 		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
@@ -622,7 +639,7 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
-	public void basicMMMdcommayyyy() throws IOException {
+	public void basicMMMdcommayyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput = "August 20, 2017|August 20, 2017|July 22, 2017|August 5, 2017|July 22, 2017|June 23, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
 				"May 25, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 25, 2017|April 26, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
@@ -688,7 +705,7 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
-	public void basicDDMMMMYYYY() throws IOException {
+	public void basicDDMMMMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput = "25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
@@ -1556,70 +1573,70 @@ public class DetermineDateTimeFormatTests {
 			final int len = 5 + randomGenerator.nextInt(15);
 			final StringBuilder s = new StringBuilder(len);
 			int digits = 0;
-		    for (int i = 0; s.length() <= len; ++i) {
-		    	final int randomInt = randomGenerator.nextInt(100);
-		      if (randomInt < 10) {
-		    	  if (Math.abs(randomInt % 2) == 1)
-		    		  s.append("2000-12-12");
-		    	  else
-		    		  s.append("12:45");
-		    	  continue;
-		      }
-		      if (randomInt < 50) {
-		    	  if (i == 10 && randomInt % 10 == 1) {
-		    		  s.append('T');
-		    		  continue;
-		    	  }
-		    	  if (digits == 4) {
-		    		  i--;
-		    		  continue;
-		    	  }
-		    	  s.append("0123456789".charAt(randomInt % 10));
-		    	  digits++;
-		    	  continue;
-		      }
-		      digits = 0;
-		      if (randomInt < 60) {
-		    	  s.append(':');
-		    	  continue;
-		      }
-		      if (randomInt < 70) {
-		    	  s.append('/');
-		    	  continue;
-		      }
-		      if (randomInt < 80) {
-		    	  if (i < 10)
-		    		  s.append('-');
-		    	  else
-		    		  s.append(Math.abs(randomInt % 2)  == 1 ? '+' : '-');
-		    	  continue;
-		      }
-		      if (randomInt < 95) {
-		    	  s.append(' ');
-		    	  continue;
-		      }
-		      if (randomInt < 97) {
-		    	  s.append('T');
-		    	  continue;
-		      }
-		      if (randomInt < 99) {
-		    	  final int idx = randomGenerator.nextInt(timeZones.length - 1);
-		    	  s.append(timeZones[idx]);
-		    	  continue;
-		      }
-		      s.append(",.;':\"[]{}\\|=!@#$%^&*<>".charAt(randomGenerator.nextInt(100) % 23));
-		    }
+			for (int i = 0; s.length() <= len; ++i) {
+				final int randomInt = randomGenerator.nextInt(100);
+				if (randomInt < 10) {
+					if (Math.abs(randomInt % 2) == 1)
+						s.append("2000-12-12");
+					else
+						s.append("12:45");
+					continue;
+				}
+				if (randomInt < 50) {
+					if (i == 10 && randomInt % 10 == 1) {
+						s.append('T');
+						continue;
+					}
+					if (digits == 4) {
+						i--;
+						continue;
+					}
+					s.append("0123456789".charAt(randomInt % 10));
+					digits++;
+					continue;
+				}
+				digits = 0;
+				if (randomInt < 60) {
+					s.append(':');
+					continue;
+				}
+				if (randomInt < 70) {
+					s.append('/');
+					continue;
+				}
+				if (randomInt < 80) {
+					if (i < 10)
+						s.append('-');
+					else
+						s.append(Math.abs(randomInt % 2)  == 1 ? '+' : '-');
+					continue;
+				}
+				if (randomInt < 95) {
+					s.append(' ');
+					continue;
+				}
+				if (randomInt < 97) {
+					s.append('T');
+					continue;
+				}
+				if (randomInt < 99) {
+					final int idx = randomGenerator.nextInt(timeZones.length - 1);
+					s.append(timeZones[idx]);
+					continue;
+				}
+				s.append(",.;':\"[]{}\\|=!@#$%^&*<>".charAt(randomGenerator.nextInt(100) % 23));
+			}
 
-		    final int amPmSwitch = randomGenerator.nextInt(100);
-		    if (amPmSwitch == 98)
-		    	s.append("am");
-		    else if (amPmSwitch == 99)
-		    	s.append("pm");
+			final int amPmSwitch = randomGenerator.nextInt(100);
+			if (amPmSwitch == 98)
+				s.append("am");
+			else if (amPmSwitch == 99)
+				s.append("pm");
 
-		    final DateTimeParser det = new DateTimeParser();
-		    final String input = s.toString();
+			final DateTimeParser det = new DateTimeParser();
+			final String input = s.toString();
 			//System.err.printf("Input ... '%s'\n", input);
-		    final String trimmed = input.trim();
+			final String trimmed = input.trim();
 			try {
 				det.train(input);
 

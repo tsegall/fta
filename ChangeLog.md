@@ -285,3 +285,9 @@
  - Add fta version to the output, just in case we ever change signatures
  - Add fta version to the jar - so we can tell what is deployed independent of the jar filename
  - Add --version option to Driver - so we can see what version we are running
+
+### 4.1.0
+ - Add support for localized offset in Dates 'O' and 'OOOO'
+ - Don't throw unchecked exceptions for invalid locales and issues with pluginns since these should be trapped and reported by client
+ - Add support for Unicode minus sign \u2212
+ - Add support to ignore Unicode LEFT_TO_RIGHT_MARK \u200E

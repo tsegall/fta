@@ -19,9 +19,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +36,7 @@ import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeAddressEN;
@@ -81,7 +85,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicGenderTwoValues() throws IOException {
+	public void basicGenderTwoValues() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Male|" +
 				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
@@ -113,7 +117,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicGenderTwoValuesMF() throws IOException {
+	public void basicGenderTwoValuesMF() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "F|M|M|F|F|M|F|F|M|" +
 				"M|F|M|M|M|F|F|M|M|M|" +
@@ -145,7 +149,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicGenderAllUnknown() throws IOException {
+	public void basicGenderAllUnknown() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|";
 		final String inputs[] = pipedInput.split("\\|");
@@ -174,7 +178,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicGender() throws IOException {
+	public void basicGender() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
 				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
@@ -209,7 +213,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicGenderDE() throws IOException {
+	public void basicGenderDE() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		analysis.setLocale(Locale.forLanguageTag("de-AT"));
 
@@ -240,7 +244,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicPhoneNumber() throws IOException {
+	public void basicPhoneNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Phone");
 		final String[] inputs = new String[] {
 				"+1 339 223 3709", "(650) 867-3450", "+44 191 4956203", "(650) 450-8810", "(512) 757-6000", "(336) 222-7000", "(014) 427-4427",
@@ -272,7 +276,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicPhoneNumberUnrecognizedHeader() throws IOException {
+	public void basicPhoneNumberUnrecognizedHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BTN");
 		final String[] inputs = new String[] {
 				"+1 339 223 3709", "(650) 867-3450", "+44 191 4956203", "(650) 450-8810", "(512) 757-6000", "(336) 222-7000", "(014) 427-4427",
@@ -305,7 +309,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicGenderWithSpaces() throws IOException {
+	public void basicGenderWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = " Female| MALE|Male| Female|Female|MALE |Female |Female |Unknown |Male |" +
 				" Male|Female |Male|Male|Male|Female | Female|Male |Male |Male |" +
@@ -340,7 +344,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicGenderTriValue() throws IOException {
+	public void basicGenderTriValue() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
 				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
@@ -373,7 +377,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicGenderNoDefaults() throws IOException {
+	public void basicGenderNoDefaults() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		analysis.setDefaultLogicalTypes(false);
 
@@ -421,7 +425,7 @@ public class TestPlugins {
 	};
 
 	@Test
-	public void testRegisterFinite() throws IOException {
+	public void testRegisterFinite() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		analysis.setMaxCardinality(20000);
 		final List<PluginDefinition> plugins = new ArrayList<>();
@@ -463,7 +467,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testRegisterInfinite() throws IOException {
+	public void testRegisterInfinite() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", "com.cobber.fta.PluginCreditCard"));
@@ -531,7 +535,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicGUID() throws IOException {
+	public void basicGUID() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("GUID");
 		final String[] inputs = new String[] {
 				"DAA3EDDE-5BCF-4D2A-8FB0-E120089343AF",
@@ -594,7 +598,7 @@ public class TestPlugins {
 			"Tuddenham@lavastorm.com|Williams@lavastorm.com|Wilson@lavastorm.com|";
 
 	@Test
-	public void basicEmail() throws IOException {
+	public void basicEmail() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = validEmails.split("\\|");
 		int locked = -1;
@@ -627,7 +631,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void degenerativeEmail() throws IOException {
+	public void degenerativeEmail() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput = validEmails + validEmails + validEmails + validEmails + "ask|not|what|your|country|can|";
 		final String inputs[] = pipedInput.split("\\|");
@@ -669,7 +673,7 @@ public class TestPlugins {
 			"http://www.java.com|http://www.slashdot.org|http://theregister.co.uk|";
 
 	@Test
-	public void basicURL() throws IOException {
+	public void basicURL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = INPUT_URLS.split("\\|");
 		int locked = -1;
@@ -701,7 +705,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicURLResource() throws IOException {
+	public void basicURLResource() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = INPUT_URLS.split("\\|");
 		int locked = -1;
@@ -731,7 +735,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicURLMixed() throws IOException {
+	public void basicURLMixed() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = INPUT_URLS.split("\\|");
 
@@ -759,7 +763,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void backoutURL() throws IOException {
+	public void backoutURL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = INPUT_URLS.split("\\|");
 		int locked = -1;
@@ -793,7 +797,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void notEmail() throws IOException {
+	public void notEmail() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput = "2@3|3@4|b4@5|" +
 				"6@7|7@9|12@13|100@2|" +
@@ -831,7 +835,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicZip() throws IOException {
+	public void basicZip() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = TestUtils.validZips.split("\\|");
 		int locked = -1;
@@ -857,7 +861,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void random3166_2() throws IOException {
+	public void random3166_2() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("country");
 		analyzer.registerDefaultPlugins(null);
 		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-2");
@@ -869,7 +873,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void random3166_2_noHeader() throws IOException {
+	public void random3166_2_noHeader() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer();
 		analyzer.registerDefaultPlugins(Locale.getDefault());
 		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-2");
@@ -881,7 +885,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void random3166_3() throws IOException {
+	public void random3166_3() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("country");
 		analyzer.registerDefaultPlugins(null);
 		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-3");
@@ -893,7 +897,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void random4217() throws IOException {
+	public void random4217() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("currency");
 		analyzer.registerDefaultPlugins(null);
 		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("CURRENCY_CODE.ISO-4217");
@@ -905,7 +909,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void randomIATA() throws IOException {
+	public void randomIATA() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("IATA");
 		analyzer.registerDefaultPlugins(null);
 		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("AIRPORT_CODE.IATA");
@@ -918,7 +922,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testRegister() throws IOException {
+	public void testRegister() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer();
 		analyzer.registerDefaultPlugins(null);
 
@@ -946,7 +950,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicZipHeader() throws IOException {
+	public void basicZipHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
 		final String inputs[] = new String[] {
 			"", "", "", "", "", "", "", "", "", "27215", "75251", "66045", "", "",
@@ -971,7 +975,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicLuhn() throws IOException {
+	public void basicLuhn() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("IMEI");
 		final String inputs[] = new String[] {
 				"518328079297586", "494238109049246", "497201528898871", "916790719773953", "991640416096547", "517179040180885", "496180503928286",
@@ -998,7 +1002,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicCUSIP() throws IOException {
+	public void basicCUSIP() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		final String inputs[] = new String[] {
 				"B38564108", "B38564900", "B38564959", "C15396AB7", "D18190898", "D18190906", "D18190955", "F21107101", "F21107903", "F21107952",
@@ -1024,7 +1028,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicSEDOL() throws IOException {
+	public void basicSEDOL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SEDOL");
 		final String inputs[] = new String[] {
 				"0078416", "B63H849", "BJVNSS4", "B5M6XQ7", "B082RF1", "B0SWJX3", "3319521", "BLDYK61", "BD6K457", "B19NLV4", "B1XZS82",
@@ -1049,7 +1053,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicISIN() throws IOException {
+	public void basicISIN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ISIN");
 		final String inputs[] = new String[] {
 				"GB0000784164", "GB00B63H8491", "JE00BJVNSS43", "ES0177542018", "GB00B082RF11", "GB00B0SWJX34", "GB0033195214",
@@ -1075,7 +1079,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicIPAddress() throws IOException {
+	public void basicIPAddress() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
 		final String inputs[] = new String[] {
 			"8.8.8.8", "4.4.4.4", "1.1.1.1", "172.217.4.196", "192.168.86.1", "64.68.200.46", "23.45.133.21",
@@ -1103,7 +1107,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicZipHeaderDE() throws IOException {
+	public void basicZipHeaderDE() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
 		analysis.setLocale(Locale.forLanguageTag("de-AT"));
 		final String inputs[] = new String[] {
@@ -1128,7 +1132,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void zipUnwind() throws IOException {
+	public void zipUnwind() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput = "02421|02420|02421|02420|02421|02420|02421|02420|02421|02420|" +
 				"02421|02420|02421|02420|02421|02420|02421|02420|02421|02420|" +
@@ -1211,7 +1215,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void zipNotReal() throws IOException {
+	public void zipNotReal() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput =
 				"10248|10249|10250|10251|10252|10253|10254|10255|10256|10257|10258|10259|10260|10261|10262|10263|10264|" +
@@ -1289,7 +1293,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void sameZip() throws IOException {
+	public void sameZip() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int copies = 100;
 		final String sample = "02421";
@@ -1317,7 +1321,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void sameZipWithHeader() throws IOException {
+	public void sameZipWithHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ZipCode");
 		final int copies = 100;
 		final String sample = "02421";
@@ -1346,7 +1350,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicStateHeader() throws IOException {
+	public void basicStateHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingState");
 
 		final String[] inputs = new String[] {
@@ -1373,7 +1377,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicStateSpaces() throws IOException {
+	public void basicStateSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
 		final String pipedInput = " AL| AK| AZ| KY| KS| LA| ME| MD| MI| MA| MN| MS|MO |NE| MT| SD|TN | TX| UT| VT| WI|" +
 						" VA| WA| WV| HI| ID| IL| IN| IA| KS| ky| LA| ME| MD| MA| MI| MN| MS| MO| MT| NE| NV|" +
@@ -1412,7 +1416,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicEmailList() throws IOException {
+	public void basicEmailList() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput = "Bachmann@lavastorm.com,Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
 				"coleman@lavastorm.com,Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
@@ -1455,7 +1459,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicEmailListSemicolon() throws IOException {
+	public void basicEmailListSemicolon() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput = "Bachmann@lavastorm.com;Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
 				"coleman@lavastorm.com;Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
@@ -1490,7 +1494,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicStates() throws IOException {
+	public void basicStates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		final String inputs[] = TestUtils.validUSStates.split("\\|");
@@ -1525,7 +1529,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicStatesBelowThreshold() throws IOException {
+	public void basicStatesBelowThreshold() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		final String inputs[] = TestUtils.validUSStates.split("\\|");
@@ -1557,7 +1561,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicStatesWithDash() throws IOException {
+	public void basicStatesWithDash() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		final String pipedInput = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
@@ -1594,7 +1598,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicStates100Percent() throws IOException {
+	public void basicStates100Percent() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		analysis.setPluginThreshold(100);
@@ -1631,7 +1635,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void thresholdTooLow() throws IOException {
+	public void thresholdTooLow() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		try {
@@ -1645,7 +1649,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void thresholdTooHigh() throws IOException {
+	public void thresholdTooHigh() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		try {
@@ -1659,7 +1663,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void thresholdPostStart() throws IOException {
+	public void thresholdPostStart() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		analysis.setThreshold(100);
@@ -1689,7 +1693,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void pluginThresholdTooLow() throws IOException {
+	public void pluginThresholdTooLow() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		try {
@@ -1703,7 +1707,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void pluginThresholdTooHigh() throws IOException {
+	public void pluginThresholdTooHigh() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		try {
@@ -1717,7 +1721,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void pluginThresholdPostStart() throws IOException {
+	public void pluginThresholdPostStart() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		analysis.setPluginThreshold(100);
@@ -1747,7 +1751,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void collectStatisticsPostStart() throws IOException {
+	public void collectStatisticsPostStart() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		final String pipedInput = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
@@ -1774,7 +1778,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicStatesLower() throws IOException {
+	public void basicStatesLower() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput = "al|ak|az|ky|ks|la|me|md|mi|ma|mn|ms|mo|ne|mt|sd|tn|tx|ut|vt|wi|" +
 				"va|wa|wv|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|" +
@@ -1809,7 +1813,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicCA() throws IOException {
+	public void basicCA() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = TestUtils.validCAProvinces.split("\\|");
 		int locked = -1;
@@ -1838,7 +1842,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicAU() throws IOException {
+	public void basicAU() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setLocale(Locale.forLanguageTag("en-AU"));
 		final String inputs[] = TestUtils.validAUStates.split("\\|");
@@ -1868,7 +1872,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void notZipButNumeric() throws IOException {
+	public void notZipButNumeric() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int start = 10000;
 		final int end = 99999;
@@ -1894,7 +1898,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void notZips() throws IOException {
+	public void notZips() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int start = 10000;
 		final int end = 99999;
@@ -1935,49 +1939,52 @@ public class TestPlugins {
 					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|UNK|Nov|Dez|";
 
 	@Test
-	public void basicMonthAbbrGerman() throws IOException {
+	public void basicMonthAbbrGerman() throws IOException, FTAException {
 
 		if (!TestUtils.isValidLocale("de"))
 			return;
 
 		final Locale german = Locale.forLanguageTag("de");
 
+		final DateFormatSymbols dfs = new DateFormatSymbols(german);
+		final String[] m = dfs.getShortMonths();
+		final GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(german);
+		final int actualMonths = cal.getActualMaximum(Calendar.MONTH);
+
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setLocale(german);
 
 		final int badCount = 4;
-		final String inputs[] = MONTH_TEST_GERMAN.split("\\|");
+		final int iterations = 10;
+		int bads = 0;
 
-		int locked = -1;
-
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
+		for (int i = 0; i < iterations; i++) {
+			for (int j = 0; j < actualMonths; j++)
+				analysis.train(m[j]);
+			if (bads < badCount) {
+				analysis.train("UNKN");
+				bads++;
+			}
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}");
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(result.getRegExp(), TestUtils.getJavaVersion() == 8 ? "\\p{IsAlphabetic}{3}" : "[\\p{IsAlphabetic}\\.]{3,4}");
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), "MONTH.ABBR_de");
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getSampleCount(), iterations * actualMonths + badCount);
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("UNK"), Long.valueOf(4));
-		Assert.assertEquals(result.getMatchCount(), inputs.length - badCount);
+		Assert.assertEquals(outliers.get("UNKN"), Long.valueOf(4));
+		Assert.assertEquals(result.getMatchCount(), iterations * actualMonths);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
 		Assert.assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
-
-		// Even the UNK match the RE
-		for (final String input : inputs)
-			Assert.assertTrue(input.matches(result.getRegExp()), input);
 	}
 
 	@Test
-	public void basicMonthAbbrBackout() throws IOException {
+	public void basicMonthAbbrBackout() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = TestUtils.months.split("\\|");
 
@@ -2012,7 +2019,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicMonthAbbrExcessiveBad() throws IOException {
+	public void basicMonthAbbrExcessiveBad() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String inputs[] = TestUtils.months.split("\\|");
 
@@ -2045,7 +2052,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicMonthAbbr() throws IOException {
+	public void basicMonthAbbr() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int badCount = 4;
 		final String inputs[] = TestUtils.months.split("\\|");
@@ -2099,7 +2106,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicMonthAbbrFrench() throws IOException {
+	public void basicMonthAbbrFrench() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setLocale(Locale.FRENCH);
 		final int badCount = 4;
@@ -2134,7 +2141,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicStateLowCard() throws IOException {
+	public void basicStateLowCard() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
 		final String input = "MA|MI|ME|MO|MS|";
 		final String inputs[] = input.split("\\|");
@@ -2169,7 +2176,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicISO4127() throws IOException {
+	public void basicISO4127() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CurrencyCode");
 		final String pipedInput = "JMD|JOD|JPY|KES|KGS|KHR|KMF|KPW|KZT|LRD|MKD|MRU|" +
 				"AFN|AOA|BBD|BIF|BSD|BZD|CHE|CHF|CHW|CLF|CLP|CNY|" +
@@ -2207,7 +2214,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicISO3166_3() throws IOException {
+	public void basicISO3166_3() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("3166 Alpha-3");
 		final String inputs[] = TestUtils.valid3166_3.split("\\|");
 		int locked = -1;
@@ -2239,7 +2246,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void possibleSSN() throws IOException {
+	public void possibleSSN() throws IOException, FTAException {
 		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
@@ -2276,7 +2283,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testRegExpLogicalType_SSN() throws IOException {
+	public void testRegExpLogicalType_SSN() throws IOException, FTAException {
 		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
@@ -2327,7 +2334,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testGenderPT() throws IOException {
+	public void testGenderPT() throws IOException, FTAException {
 		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
@@ -2367,7 +2374,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testFinitePlugin() throws IOException {
+	public void testFinitePlugin() throws IOException, FTAException {
 		final InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
 		final Random random = new Random(314159265);
@@ -2407,7 +2414,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testFinitePluginBackout() throws IOException {
+	public void testFinitePluginBackout() throws IOException, FTAException {
 		final String[] planets = new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" };
 		final int SAMPLES = 100;
 		final Random random = new Random(314159265);
@@ -2444,7 +2451,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testInfiniteDoublePlugin() throws IOException {
+	public void testInfiniteDoublePlugin() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("PERCENTAGES");
 		final int COUNT = 1000;
 		final List<PluginDefinition> plugins = new ArrayList<>();
@@ -2481,7 +2488,7 @@ public class TestPlugins {
 	}
 
 	/*@Test - TODO dates do not support Semantic Types :-( */
-	public void testInfiniteDateTimePlugin() throws IOException {
+	public void testInfiniteDateTimePlugin() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("DOB");
 		final int COUNT = 1000;
 
@@ -2525,7 +2532,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testNames() throws IOException {
+	public void testNames() throws IOException, FTAException {
 		final CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);
 		String[] header;
@@ -2562,7 +2569,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testNameHeader() throws IOException {
+	public void testNameHeader() throws IOException, FTAException {
 		final String headersGood[] = new String[] {
 				"FirstName", "First Name", "First_Name", "FIRSTNAME", "FNAME", "FIRST.NAME", "FIRST-NAME", "GIVEN NAME"
 		};
@@ -2632,7 +2639,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testRegExpLogicalType_CUSIP() throws IOException {
+	public void testRegExpLogicalType_CUSIP() throws IOException, FTAException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 		final String[] samples = new String[] {
 				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
@@ -2672,7 +2679,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testRegExpLogicalType_CUSIP_bulk() throws IOException {
+	public void testRegExpLogicalType_CUSIP_bulk() throws IOException, FTAException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 		final String[] samples = new String[] {
 				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
@@ -2715,7 +2722,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testSignatures() throws IOException {
+	public void testSignatures() throws IOException, FTAException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 		final String[] samples = new String[] {
 				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
@@ -2782,7 +2789,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testRegExpLogicalType_FUND() throws IOException {
+	public void testRegExpLogicalType_FUND() throws IOException, FTAException {
 		final String FUND_REGEXP = "[\\p{IsAlphabetic}\\d]{10}";
 		final String[] samples = new String[] {
 				"BFLGXF682X", "BFLGXF682W", "PNUJWNGCFQ", "SVAXRA5JCJ", "Y7OBPIXWM9", "G8K8TRB34J", "Y3EB59C7IS", "SJBDBG2P2M", "4XC8B8ZE2Y", "JN7BXG4Z6B",
@@ -2828,7 +2835,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void testRegExpLogicalType_Bug() {
+	public void testRegExpLogicalType_Bug() throws FTAException {
 		final String EXPECTED_REGEXP = "\\p{IsAlphabetic}\\d{10}";
 		final String[] samples = new String[] {
 				"a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890",
@@ -2871,7 +2878,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicISO3166_2() throws IOException {
+	public void basicISO3166_2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("3166 Alpha-2");
 		final String inputs[] = TestUtils.valid3166_2.split("\\|");
 		int locked = -1;
@@ -2903,7 +2910,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicCountry() throws IOException {
+	public void basicCountry() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput = "Venezuela|USA|Finland|USA|USA|Germany|France|Italy|Mexico|Germany|" +
 				"Sweden|Germany|Sweden|Spain|Spain|Venezuela|Germany|Germany|Germany|Brazil|" +
@@ -2956,7 +2963,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void constantLengthCountry() throws IOException {
+	public void constantLengthCountry() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = new String[] {
 				"ARUBA", "BENIN", "BURMA", "CHILE", "CHINA", "CONGO", "EGYPT", "FYROM", "GABON", "GHANA", "HAITI", "INDIA",
@@ -2984,7 +2991,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void thinAddress() throws IOException {
+	public void thinAddress() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Example_Address");
 		final String[] inputs = new String[] {
 				"123 Test St",
@@ -3015,7 +3022,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicCountryHeader() throws IOException {
+	public void basicCountryHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingCountry");
 		final String[] inputs = new String[] {
 				"", "", "", "", "", "", "", "", "", "USA", "France", "USA",
@@ -3126,7 +3133,7 @@ public class TestPlugins {
 	};
 
 	@Test
-	public void basicUSStreet() throws IOException {
+	public void basicUSStreet() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		for (final String s : TestUtils.validUSStreets) {
@@ -3147,7 +3154,7 @@ public class TestPlugins {
 	}
 
 	@Test
-	public void basicUSStreet2() throws IOException {
+	public void basicUSStreet2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		for (final String s : validUSStreets2) {

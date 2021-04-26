@@ -23,11 +23,12 @@ import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 
 public class TestRegExpPlugins {
 	@Test
-	public void testRegExpLogicalType_MAC() throws IOException {
+	public void testRegExpLogicalType_MAC() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"00:0a:95:9d:68:16", "00:0a:94:77:68:16", "00:0a:95:9d:68:16", "00:0a:90:9d:68:16",
 				"00:0a:95:9d:68:16", "00:0a:93:8a:68:16", "00:0a:95:9d:60:16", "00:0e:95:9d:68:16",
@@ -57,7 +58,7 @@ public class TestRegExpPlugins {
 	}
 
 	@Test
-	public void testRegExpLogicalType_SSN_plus_outlier() throws IOException {
+	public void testRegExpLogicalType_SSN_plus_outlier() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("SSN");
@@ -87,7 +88,7 @@ public class TestRegExpPlugins {
 	}
 
 	@Test
-	public void testRegExpLogicalType_SSN_noPlugin() throws IOException {
+	public void testRegExpLogicalType_SSN_noPlugin() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("SSN");
@@ -116,7 +117,7 @@ public class TestRegExpPlugins {
 	}
 
 	@Test
-	public void testRegExpLogicalType_Month() throws IOException {
+	public void testRegExpLogicalType_Month() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"1", "3", "4", "7", "11", "4", "5", "6", "7", "12", "2",
 				"3", "5", "6", "10", "11", "10", "3", "5", "2", "1", "12",
@@ -144,7 +145,7 @@ public class TestRegExpPlugins {
 	}
 
 	@Test
-	public void testLatitudeSigned() throws IOException {
+	public void testLatitudeSigned() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"51.5", "39.195", "46.18806", "-36.1333333", "33.52056", "39.79", "40.69361", "36.34333", "32.0666667", "48.8833333", "40.71417",
 				"51.45", "29.42389", "43.69556", "40.03222", "53.6772222", "45.4166667", "17.3833333", "51.52721", "40.76083", "53.5", "51.8630556",
@@ -174,7 +175,7 @@ public class TestRegExpPlugins {
 	}
 
 	@Test
-	public void testLatitudeUnsigned() throws IOException {
+	public void testLatitudeUnsigned() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"51.5", "39.195", "46.18806", "36.1333333", "33.52056", "39.79", "40.69361", "36.34333", "32.0666667", "48.8833333", "40.71417",
 				"51.45", "29.42389", "43.69556", "40.03222", "53.6772222", "45.4166667", "17.3833333", "51.52721", "40.76083", "53.5", "51.8630556",
@@ -204,7 +205,7 @@ public class TestRegExpPlugins {
 	}
 
 	@Test
-	public void testCity() throws IOException {
+	public void testCity() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"Abbott Park", "Akron", "Alberta", "Allentown", "Allison Park", "Alpharetta", "Alsip", "Alviso", "Andover", "Annapolis Junction",
 				"Arlington", "Atlanta", "Austin", "Avon Lake", "Baltimore", "Battle Creek", "Beaverton", "Bella Vista", "Bellaire", "Bellevue",

@@ -29,6 +29,7 @@ import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.LogicalTypeRegExp;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
@@ -36,7 +37,7 @@ class Driver {
 
 	static DriverOptions options;
 
-	public static void main(final String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException, FTAException {
 		final PrintStream logger = System.err;
 		boolean helpRequested = false;
 

@@ -39,6 +39,7 @@ import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
@@ -47,7 +48,7 @@ import com.cobber.fta.dates.SimpleDateMatcher;
 
 public class TestDates {
 	@Test
-	public void dateOutlier() throws IOException {
+	public void dateOutlier() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		final String[] inputs = "12/12/12|12/12/32|02/22/02".split("\\|");
@@ -86,7 +87,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicAMPMVietname() throws IOException {
+	public void basicAMPMVietname() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
@@ -122,7 +123,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void simpleAMPM() throws IOException {
+	public void simpleAMPM() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
@@ -160,7 +161,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicAMPM_enUS() throws IOException {
+	public void basicAMPM_enUS() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
@@ -196,7 +197,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicAMPM_enUSNotSimple() throws IOException {
+	public void basicAMPM_enUSNotSimple() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
 
@@ -235,7 +236,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicAMPM_viVNNotSimple() throws IOException {
+	public void basicAMPM_viVNNotSimple() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
 		final TextAnalyzer analysis = new TextAnalyzer("h:mm a dd/MM/yy", DateResolutionMode.DayFirst);
 		analysis.setCollectStatistics(false);
@@ -271,7 +272,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicAMPMBug() throws IOException {
+	public void basicAMPMBug() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
@@ -307,7 +308,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicHHmmddMyy() throws IOException {
+	public void basicHHmmddMyy() throws IOException, FTAException {
 		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
 
 		final Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
@@ -345,7 +346,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicResolutionMode() throws IOException {
+	public void basicResolutionMode() throws IOException, FTAException {
 		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.MonthFirst, DateResolutionMode.Auto };
 
 		final Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
@@ -389,7 +390,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicHHmmddMyyUnresolved() throws IOException {
+	public void basicHHmmddMyyUnresolved() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate");
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
@@ -422,7 +423,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicHHmmddMyyFalse() throws IOException {
+	public void basicHHmmddMyyFalse() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "00:53 15/2/17|17:53 29/7/16|10:53 11/1/16|03:53 25/6/15|20:53 06/12/14|13:53 20/5/14|06:53 01/11/13|23:53 14/4/13|" +
@@ -453,7 +454,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void fixedWidthDay() throws IOException {
+	public void fixedWidthDay() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "Oct  1 2019 12:14AM|Jan  5 2020 12:31AM|Feb  2 2020 11:20AM|Mar  8 2020 10:20AM|Mar 15 2020 10:20AM|Mar 22 2020 10:20AM|Mar 29 2020 10:20AM|Jan 12 2020 12:12AM|Jan 19 2020 12:12AM|Jan 26 2020 12:12AM|Jun  1 2020 11:11AM|Jun  8 2020 11:11AM|Jun 15 2020 11:11AM|Jun 22 2020 11:11AM|Jun 29 2020 11:11AM|Oct  1 2019 12:14AM|Jan  5 2020 12:31AM|Feb  2 2020 11:20AM|Mar  8 2020 10:20AM|Mar 15 2020 10:20AM|Mar 22 2020 10:20AM|Mar 29 2020 10:20AM|Jan 12 2020 12:12AM|Jan 19 2020 12:12AM|Jan 26 2020 12:12AM|Jun  1 2020 11:11AM|Jun  8 2020 11:11AM|Jun 15 2020 11:11AM|Jun 22 2020 11:11AM|Jun 29 2020 11:11AM|";
@@ -483,7 +484,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void withComma() throws IOException {
+	public void withComma() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "Jul 21, 2020 9:00 AM|Jul 21, 2020 9:00 AM|Jul 23, 2020 5:00 PM|Jun 03, 2020 3:00 PM|Jun 09, 2020 10:30 AM|Jun 17, 2020 4:00 PM|Jun 23, 2020 3:00 PM|Jun 25, 2020 2:00 PM|Jun 30, 2020 2:30 PM|Jun 30, 2020 8:00 AM|May 19, 2020 9:00 AM|May 19, 2020 9:00 AM|May 28, 2020 2:00 PM|Jul 23, 2020 5:00 PM|Jun 03, 2020 3:00 PM|Jun 09, 2020 10:30 AM|Jun 17, 2020 4:00 PM|Jun 23, 2020 3:00 PM|Jun 25, 2020 2:00 PM|Jun 30, 2020 2:30 PM|Jun 30, 2020 8:00 AM|May 19, 2020 9:00 AM|May 19, 2020 9:00 AM|May 28, 2020 2:00 PM|";
@@ -514,7 +515,7 @@ public class TestDates {
 
 
 	@Test
-	public void fixedWidthHour() throws IOException {
+	public void fixedWidthHour() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput =
@@ -551,7 +552,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void fixedWidthDayHour() throws IOException {
+	public void fixedWidthDayHour() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput =
@@ -588,7 +589,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void variableHour() throws IOException {
+	public void variableHour() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput =
@@ -625,7 +626,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void mixedDateandDateTime() throws IOException {
+	public void mixedDateandDateTime() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput =
@@ -653,7 +654,7 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 	}
 	@Test
-	public void fixedSSS() throws IOException {
+	public void fixedSSS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "2019-10-01 07:26:47.617|2019-10-01 12:12:31.587|2019-10-01 12:12:32.827|2019-10-01 12:12:33.840|2019-10-01 12:12:34.770|2019-10-01 12:12:35.830|2019-10-01 12:12:36.690|2019-10-01 12:12:37.590|2019-10-01 12:12:38.357|2019-10-01 12:12:40.117|2019-10-01 12:12:41.087|2019-10-02 07:34:35.987|2019-10-02 07:34:40.680|2019-10-02 07:34:41.293|2019-10-02 07:34:43.640|2019-10-02 07:34:44.910|2019-10-02 07:34:45.907|2019-10-02 07:34:46.987|2019-10-02 07:34:47.867|2019-10-02 07:34:48.820|2019-10-02 07:34:49.930|2019-10-02 07:34:50.747|2019-10-02 07:34:51.923|2019-10-02 07:34:53.763|2019-10-02 07:34:54.090|2019-10-02 07:34:55.340|2019-10-02 07:34:56.500|2019-10-02 07:34:58.330|";
@@ -681,7 +682,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void twentyRecords() throws IOException {
+	public void twentyRecords() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("FROM_DATE", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "1/3/11|1/3/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|9/17/08|1-15-2011|";
@@ -712,7 +713,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dMyy() throws IOException {
+	public void dMyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.DayFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "1/2/09 6:17|1/2/09 4:53|1/2/09 13:08|1/3/09 14:44|1/4/09 12:56|1/4/09 13:19|1/4/09 20:11|1/2/09 20:09|1/4/09 13:17|1/4/09 14:11|" +
@@ -744,7 +745,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicMdyy() throws IOException {
+	public void basicMdyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Account_Created", DateResolutionMode.DayFirst);
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "1/2/09 6:00|1/2/09 4:42|1/1/09 16:21|9/25/05 21:13|11/15/08 15:47|9/24/08 15:19|1/3/09 9:38|1/2/09 17:43|1/4/09 13:03|6/3/08 4:22|" +
@@ -798,7 +799,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicDateNumber() throws IOException {
+	public void basicDateNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Trade Date", DateResolutionMode.DayFirst);
 		final String pipedInput = "20120202|20120607|20120627|20120627|20120627|20120627|20120627|20120628|20120312|20120201|" +
 		"20111031|20120229|20120104|20120312|20120312|20120628|20120628|20120628|20120628|20120628|" +
@@ -853,7 +854,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicddMMyyHHmm() throws IOException {
+	public void basicddMMyyHHmm() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ddMMyy_HHmm", DateResolutionMode.DayFirst);
 		final String pipedInput =
 				"23/08/17 03:49|23/08/17 03:49|14/08/17 10:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|23/08/17 03:49|14/08/17 10:49|05/08/17 17:49|" +
@@ -888,7 +889,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void mixed_yyyyddMM() throws IOException {
+	public void mixed_yyyyddMM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("yyyyddMM", DateResolutionMode.DayFirst);
 		final String pipedInput = "1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|2011/31/02|2017/31/12|2016/20/10|1999/15/07|";
 		final String inputs[] = pipedInput.split("\\|");
@@ -917,7 +918,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void mixed_ddMMyyyy() throws IOException {
+	public void mixed_ddMMyyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ddMMyyyy", DateResolutionMode.DayFirst);
 		final String pipedInput = "06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|31/02/2011|31/12/2017|20/10/2016|15/07/1999|";
 
@@ -947,7 +948,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicHMM() throws IOException {
+	public void basicHMM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("H:mm");
 		final String pipedInput = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
 		"17:16|0:16|7:16|14:16|3:16|10:16|17:16|0:16|7:16|14:16|21:16|3:16|10:16|17:16|0:16|7:16|14:16|" +
@@ -978,7 +979,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicDateDDMMMYYYHHMM() throws IOException {
+	public void basicDateDDMMMYYYHHMM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput =
 				"1/30/06 22:01|1/30/06 22:15|1/30/06 22:25|1/30/06 22:35|1/30/06 22:40|1/30/06 22:45|1/30/06 22:47|1/30/06 23:00|1/30/06 23:00|1/30/06 23:11|" +
@@ -1012,7 +1013,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void slashLoop() throws IOException {
+	public void slashLoop() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("thin", DateResolutionMode.MonthFirst);
 		final String input = "1/1/06 0:00";
 		final int iterations = 30;
@@ -1038,7 +1039,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicDateDDMMMYYY() throws IOException {
+	public void basicDateDDMMMYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "22 Jan 1971|12 Mar 2019|02 Jun 1996|11 Dec 1916|19 Apr 1993|26 Sep 1998|09 Dec 1959|14 Jul 2000|18 Aug 2008".split("\\|");
 		int locked = -1;
@@ -1066,7 +1067,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void slashDateDDMMYY() throws IOException {
+	public void slashDateDDMMYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String[] inputs = "22/01/70|12/01/03|02/01/66|02/01/46|02/01/93|02/01/78|02/01/74|14/01/98|12/01/34".split("\\|");
@@ -1096,7 +1097,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void slashDateAmbiguousMMDDYY() throws IOException {
+	public void slashDateAmbiguousMMDDYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("thin", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 		final String input = " 04/03/13";
@@ -1122,7 +1123,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicTimeHHMMSS() throws IOException {
+	public void basicTimeHHMMSS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String[] inputs = "00:10:00|00:10:00|23:07:00|06:07:00|16:07:00|06:37:00|06:07:00|06:09:00|06:20:00|06:57:00".split("\\|");
@@ -1149,7 +1150,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicTimeHHMM() throws IOException {
+	public void basicTimeHHMM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String[] inputs = "00:10|00:10|23:07|06:07|16:07|06:37|06:07|06:09|06:20|06:57".split("\\|");
@@ -1176,7 +1177,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicFrenchDate() throws IOException {
+	public void basicFrenchDate() throws IOException, FTAException {
 
 		final Set<String> samples = new HashSet<>();
 		LocalDate localDate = LocalDate.now();
@@ -1214,7 +1215,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicBulgarianDate() throws IOException {
+	public void basicBulgarianDate() throws IOException, FTAException {
 
 		final Set<String> samples = new HashSet<>();
 		LocalDate localDate = LocalDate.now();
@@ -1242,7 +1243,8 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\d{1,2} \\p{IsAlphabetic}{1,4} \\d{4}");
+		// Post Java 8 the month abbreviations have changed
+		Assert.assertEquals(result.getRegExp(), TestUtils.getJavaVersion() == 8 ? "\\d{1,2} \\p{IsAlphabetic}{1,4} \\d{4}" : "\\d{1,2} \\p{IsAlphabetic}{3,4} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
@@ -1257,7 +1259,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicCatalanDate() throws IOException {
+	public void basicCatalanDate() throws IOException, FTAException {
 
 		final Set<String> samples = new HashSet<>();
 		LocalDate localDate = LocalDate.now();
@@ -1300,7 +1302,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicGermanDate() throws IOException {
+	public void basicGermanDate() throws IOException, FTAException {
 
 		final Set<String> samples = new HashSet<>();
 		LocalDate localDate = LocalDate.now();
@@ -1328,7 +1330,8 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\d{1,2} \\p{IsAlphabetic}{3} \\d{4}");
+		// Post Java 8 the month abbreviations now appear with a period when necessary
+		Assert.assertEquals(result.getRegExp(), TestUtils.getJavaVersion() == 8 ? "\\d{1,2} \\p{IsAlphabetic}{3} \\d{4}" : "\\d{1,2} [\\p{IsAlphabetic}\\.]{3,4} \\d{4}");
 		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
@@ -1343,7 +1346,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicLengthValidationDate() throws IOException {
+	public void basicLengthValidationDate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Spaces");
 		analysis.setCollectStatistics(false);
 		final int iters = 30;
@@ -1379,7 +1382,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dateTimeYYYYMMDDTHHMMSS() throws IOException {
+	public void dateTimeYYYYMMDDTHHMMSS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 
@@ -1416,7 +1419,7 @@ public class TestDates {
 
 
 	@Test
-	public void dateTimeYYYYMMDDTHHMMssSSSZ() throws IOException {
+	public void dateTimeYYYYMMDDTHHMMssSSSZ() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 
@@ -1457,7 +1460,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dateTimeYYYYMMDDTHHMMSSNNNN() throws IOException {
+	public void dateTimeYYYYMMDDTHHMMSSNNNN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ISODate", DateResolutionMode.Auto);
 
 		analysis.train("2004-01-01T00:00:00-05:00");
@@ -1499,7 +1502,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dateTimeYYYYMMDDTHHMMSSZ() throws IOException {
+	public void dateTimeYYYYMMDDTHHMMSSZ() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 
@@ -1526,7 +1529,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dateTimeYYYYMMDDTHHMMSSZwithStatistics() throws IOException {
+	public void dateTimeYYYYMMDDTHHMMSSZwithStatistics() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		analysis.train("01/26/2012 10:42:23 GMT");
@@ -1554,7 +1557,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicMMddyy() throws IOException {
+	public void basicMMddyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("DOB");
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "12/5/59|2/13/48|6/29/62|1/7/66|7/3/84|5/28/74|" +
@@ -1583,7 +1586,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void yyyyMddHHmm() throws IOException {
+	public void yyyyMddHHmm() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "2017-4-15 21:10|2016-9-27 14:10|2016-3-11 07:10|2015-8-24 00:10|2015-2-04 17:10|" +
@@ -1612,7 +1615,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void H_mm_ss_S_false() throws IOException {
+	public void H_mm_ss_S_false() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
@@ -1640,7 +1643,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void H_mm_ss_S_true() throws IOException {
+	public void H_mm_ss_S_true() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(true);
 		final String pipedInput = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
@@ -1668,7 +1671,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void k_mm_ss_S_false() throws IOException {
+	public void k_mm_ss_S_false() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|24:01:29.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
@@ -1695,7 +1698,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void k_mm_ss_S_true() throws IOException {
+	public void k_mm_ss_S_true() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(true);
 		final String pipedInput = "1:01:50.00|2:01:16.00|2:01:30.00|2:01:55.00|5:01:49.00|9:01:51.00|11:01:20.0|11:01:47.0|12:01:16.0|12:01:55.0|14:01:21.0|14:01:25.0|14:01:43.0|15:01:03.0|15:01:39.0|15:01:48.0|15:01:51.0|19:01:47.0|20:01:34.0|21:01:03.0|21:01:27.0|22:01:15.0|22:01:32.0|24:01:29.0|11:01:58.0|13:01:31.0|16:01:24.0|16:01:58.0|17:01:05.0|11:01:38.0|11:01:44.0|13:01:41.0|14:01:14.0|14:01:59.0|14:01:59.0|14:01:59.0|15:01:04.0|15:01:11.0|15:01:54.0|";
@@ -1722,7 +1725,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void Hmmss() throws IOException {
+	public void Hmmss() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "21:53:12|12:53:12|3:53:12|18:53:12|9:53:12|0:53:12|15:53:12|6:53:12|21:53:12|12:53:12|3:53:12|18:53:12|9:53:12|0:53:12|15:53:12|" +
@@ -1752,7 +1755,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void yyyyMMddHHmmz() throws IOException {
+	public void yyyyMMddHHmmz() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "2017-08-24 12:10 EDT|2017-07-03 06:10 EDT|2017-05-12 00:10 EDT|2017-03-20 18:10 EDT|2016-07-02 12:10 EDT|" +
@@ -1781,7 +1784,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dateYYYYMMDD() throws IOException {
+	public void dateYYYYMMDD() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String[] inputs = "2010-01-22|2019-01-12|1996-01-02|1916-01-02|1993-01-02|1998-01-02|2001-01-02|2000-01-14|2008-01-12".split("\\|");
@@ -1808,7 +1811,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dateYYYY() throws IOException {
+	public void dateYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "2015|2015|2015|2015|2015|2015|2015|2016|2016|2016|2013|1932|1991|1993|2001|1977|2001|1976|1972|" +
@@ -1859,7 +1862,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dateYYYY_with_zeroes() throws IOException {
+	public void dateYYYY_with_zeroes() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Date");
 		analysis.setCollectStatistics(true);
 		final String pipedInput =
@@ -1893,7 +1896,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void randomFormats() throws IOException {
+	public void randomFormats() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String[] inputs = new String[] {
@@ -1926,7 +1929,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicDateDMMMYY() throws IOException {
+	public void basicDateDMMMYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "1-Jan-14|2-Jan-14|3-Jan-14|6-Jan-14|7-Jan-14|7-Jan-14|8-Jan-14|9-Jan-14|10-Jan-14|" +
@@ -1959,7 +1962,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicUnixDateCommand() throws IOException {
+	public void basicUnixDateCommand() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput =
@@ -1992,7 +1995,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicMMMM_d_yyyy() throws IOException {
+	public void basicMMMM_d_yyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "September-17-2014|September-11-2011|September-4-2008|August-29-2005|August-23-2002|August-17-1999|" +
@@ -2023,7 +2026,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void startsAsTwoDigitDay() throws IOException {
+	public void startsAsTwoDigitDay() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput =
@@ -2059,7 +2062,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void startsAsTwoDigitMonth() throws IOException {
+	public void startsAsTwoDigitMonth() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String pipedInput =
@@ -2095,7 +2098,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void slashDateYYYYMMDD() throws IOException {
+	public void slashDateYYYYMMDD() throws IOException, FTAException {
 		final TextAnalyzer analysis1 = new TextAnalyzer();
 		final TextAnalyzer analysis2 = new TextAnalyzer();
 		analysis1.setCollectStatistics(false);
@@ -2130,7 +2133,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicDateDDMMYYYY() throws IOException {
+	public void basicDateDDMMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String[] inputs = "22-01-2010|12-01-2019|02-01-1996|02-01-1916|02-01-1993|02-01-1998|02-01-2001|14-01-2000|12-01-2008".split("\\|");
@@ -2157,7 +2160,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void variableDateDDMMYYYY() throws IOException {
+	public void variableDateDDMMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String[] inputs = "22-1-2010|12-1-2019|2-1-1996|2-1-1916|2-1-1993|2-1-1998|22-11-2001|14-1-2000|12-5-2008".split("\\|");
@@ -2185,7 +2188,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void slashDateDDMMYYYY() throws IOException {
+	public void slashDateDDMMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final String[] inputs = "22/01/2010|12/01/2019|02/01/1996|02/01/1916|02/01/1993|02/01/1998|02/01/2001|14/01/2000|12/01/2008".split("\\|");
@@ -2215,7 +2218,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void lenientDates() throws IOException {
+	public void lenientDates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("INACTIVE DATE");
 		analysis.setCollectStatistics(false);
 		final String inputs[] = new String[] {
@@ -2262,7 +2265,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void anotherDateSwitcher() throws IOException {
+	public void anotherDateSwitcher() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("INACTIVE DATE");
 		analysis.setCollectStatistics(false);
 		final String inputs[] = new String[] {
@@ -2298,7 +2301,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void localeDateTest() throws IOException {
+	public void localeDateTest() throws IOException, FTAException {
 
 		final Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] {Locale.forLanguageTag("sv")};
@@ -2472,7 +2475,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void novelApproachDateTime() throws IOException {
+	public void novelApproachDateTime() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE");
 		analysis.setCollectStatistics(false);
 		final String inputs[] = new String[] {
@@ -2506,7 +2509,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void novelApproachDate() throws IOException {
+	public void novelApproachDate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
 		analysis.setCollectStatistics(false);
 		final String inputs[] = new String[] {
@@ -2540,7 +2543,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicHours24() throws IOException {
+	public void basicHours24() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RETURN_TIME");
 		analysis.setCollectStatistics(false);
 		final String inputs[] = new String[] {
@@ -2572,7 +2575,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void basicHours24Change() throws IOException {
+	public void basicHours24Change() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RETURN_TIME");
 		analysis.setCollectStatistics(false);
 		final String inputs[] = new String[] {
@@ -2606,7 +2609,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void timMBug1() throws IOException {
+	public void timMBug1() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimMeagherBug1");
 		analysis.setCollectStatistics(false);
 
@@ -2632,7 +2635,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void longAsDateWith0() throws IOException {
+	public void longAsDateWith0() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("stringField:string");
 		analysis.setCollectStatistics(false);
 
@@ -2667,7 +2670,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dottedDates() throws IOException {
+	public void dottedDates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dottedDate");
 		analysis.setCollectStatistics(false);
 
@@ -2702,7 +2705,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void colonDates_ddMMyyyy() throws IOException {
+	public void colonDates_ddMMyyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("colonDate");
 		analysis.setCollectStatistics(false);
 
@@ -2738,7 +2741,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void colonDates_MMddyyyy() throws IOException {
+	public void colonDates_MMddyyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("colonDates_MMddyyyy");
 		analysis.setCollectStatistics(false);
 
@@ -2773,7 +2776,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void shortDates_MM_slash_yyyy() throws IOException {
+	public void shortDates_MM_slash_yyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_MM_yyyy");
 		analysis.setCollectStatistics(false);
 
@@ -2817,7 +2820,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void shortDates_MM_dash_yyyy() throws IOException {
+	public void shortDates_MM_dash_yyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_MM_yyyy");
 		analysis.setCollectStatistics(false);
 
@@ -2861,7 +2864,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void shortDates_yyyy_slash_MM() throws IOException {
+	public void shortDates_yyyy_slash_MM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_yyyy_MM");
 		analysis.setCollectStatistics(false);
 
@@ -2905,7 +2908,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void shortDates_yyyy_dash_MM() throws IOException {
+	public void shortDates_yyyy_dash_MM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_yyyy_MM");
 		analysis.setCollectStatistics(false);
 
@@ -2949,7 +2952,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void doubleStep() throws IOException {
+	public void doubleStep() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("doubleStep");
 		analysis.setCollectStatistics(false);
 
@@ -2983,7 +2986,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void quadrupleStep() throws IOException {
+	public void quadrupleStep() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("quadrupleStep");
 		analysis.setCollectStatistics(false);
 
@@ -3019,7 +3022,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void intuitDateddMMyyyyHHmmss() throws IOException {
+	public void intuitDateddMMyyyyHHmmss() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 
@@ -3075,7 +3078,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void bizarreFractions() throws IOException {
+	public void bizarreFractions() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 
@@ -3115,7 +3118,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void variableLengthFractions() throws IOException {
+	public void variableLengthFractions() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 
@@ -3163,7 +3166,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dateIssueAMPM() throws IOException {
+	public void dateIssueAMPM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CREATED_ON");
 		analysis.setCollectStatistics(false);
 		final String inputs[] = new String[] {
@@ -3198,7 +3201,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dateSwitcher() throws IOException {
+	public void dateSwitcher() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Contract Signed Date");
 		analysis.setCollectStatistics(false);
 		final String inputs[] = new String[] {
@@ -3245,7 +3248,7 @@ public class TestDates {
 	}
 
 	@Test
-	public void dqplus() throws IOException {
+	public void dqplus() throws IOException, FTAException {
 
 		final String[] tests = new String[] {
 			"MM/dd/yyyy", "MMM d yyyy", "M/dd/yyyy", "MM/dd/yy",
@@ -3324,7 +3327,7 @@ public class TestDates {
 		}
 	}
 
-	public void _dateTimePerf(final boolean statisticsOn) throws IOException {
+	public void _dateTimePerf(final boolean statisticsOn) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!statisticsOn) {
 			analysis.setDefaultLogicalTypes(false);
@@ -3383,12 +3386,12 @@ public class TestDates {
 	}
 
 	@Test
-	public void dateTimePerf() throws IOException {
+	public void dateTimePerf() throws IOException, FTAException {
 		_dateTimePerf(true);
 	}
 
 	@Test
-	public void dateTimePerfNoStatistics() throws IOException {
+	public void dateTimePerfNoStatistics() throws IOException, FTAException {
 		_dateTimePerf(false);
 	}
 }

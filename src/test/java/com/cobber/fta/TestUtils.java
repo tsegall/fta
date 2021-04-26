@@ -19,6 +19,7 @@ import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -123,15 +124,20 @@ public class TestUtils {
 			"324 North Lancaster Dr."
 	};
 
+
 	static String
 	getNegativePrefix(final Locale locale) {
+		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+		final char minusSign = formatSymbols.getMinusSign();
 		String negPrefix = "-";
 		final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 		if (nf instanceof DecimalFormat) {
 			negPrefix = ((DecimalFormat) nf).getNegativePrefix();
 			if (!negPrefix.isEmpty())
-				if ("-".equals(negPrefix))
-					negPrefix = "[+-]?";
+				if (negPrefix.charAt(0) == minusSign && minusSign == '-')
+					negPrefix = KnownPatterns.OPTIONAL_SIGN;
+				else if (negPrefix.charAt(0) == minusSign && minusSign == '\u2212')  // Unicode minus
+					negPrefix = KnownPatterns.OPTIONAL_UNICODE_SIGN;
 				else
 					negPrefix = RegExpGenerator.slosh(negPrefix) + "?";
 		}
@@ -140,13 +146,17 @@ public class TestUtils {
 
 	static String
 	getNegativeSuffix(final Locale locale) {
+		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+		final char minusSign = formatSymbols.getMinusSign();
 		String negSuffix = "";
 		final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 		if (nf instanceof DecimalFormat) {
 			negSuffix = ((DecimalFormat) nf).getNegativeSuffix();
 			if (!negSuffix.isEmpty())
-				if ("-".equals(negSuffix))
-					negSuffix = "[+-]?";
+				if (negSuffix.charAt(0) == minusSign && minusSign == '-')
+					negSuffix = KnownPatterns.OPTIONAL_SIGN;
+				else if (negSuffix.charAt(0) == minusSign && minusSign == '\u2212')  // Unicode minus
+					negSuffix = KnownPatterns.OPTIONAL_UNICODE_SIGN;
 				else
 					negSuffix = RegExpGenerator.slosh(negSuffix) + "?";
 		}
@@ -157,7 +167,7 @@ public class TestUtils {
 		for (final Locale locale : Locale.getAvailableLocales()) {
 			if (value.equals(locale.toString())) {
 				return true;
-		    }
+			}
 		}
 		return false;
 	}
@@ -185,16 +195,24 @@ public class TestUtils {
 		final Set<String> universe = new HashSet<>(Arrays.asList(new String[] {
 				"DISCONNECT", "DISCONNECT FRACTIONAL", "DISCONNECT OTHE", "DISCONNECT STILL BILLING",
 				"INSTALL FRACTIONAL", "INSTALL FRACTIONAL RERATE", "INSTALL OTHER", "RE-RATES", "RUN RATE"
-				}));
+		}));
 		assertEquals(TextAnalyzer.distanceLevenshtein("INSTALL FRACTIONAL", universe), 7);
 	}
 
 	@Test
 	public void testDistanceMedia() throws IOException {
 		final Set<String> universe = new HashSet<>(Arrays.asList(new String[] {
-			"AUDIO DISC ; VOLUME", "OMPUTER DISC", "ONLINE RESOURCE", "\\QONLINE RESOURCE (EBOOK)\\E",
-			"\\QONLINE RESOURCE (EPUB EBOOK)\\E", "\\QONLINE RESOURCE (PDF EBOOK ; EPUB EBOOK)\\E", "SHEET", "VOLUME"
+				"AUDIO DISC ; VOLUME", "OMPUTER DISC", "ONLINE RESOURCE", "\\QONLINE RESOURCE (EBOOK)\\E",
+				"\\QONLINE RESOURCE (EPUB EBOOK)\\E", "\\QONLINE RESOURCE (PDF EBOOK ; EPUB EBOOK)\\E", "SHEET", "VOLUME"
 		}));
 		assertEquals(TextAnalyzer.distanceLevenshtein("\\QONLINE RESOURCE (EBOOK)\\E", universe), 5);
+	}
+
+	static int getJavaVersion() {
+		String javaVersion = System.getProperty("java.specification.version");
+		if ("1.8".equals(javaVersion))
+			return 8;
+
+		return Integer.valueOf(javaVersion);
 	}
 }

@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAPluginException;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -82,7 +83,7 @@ class FileProcessor {
 			analyzer.setThreshold(options.threshold);
 	}
 
-	protected void process() throws IOException {
+	protected void process() throws IOException, FTAException {
 		final CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);
 		settings.detectFormatAutomatically();
@@ -104,7 +105,7 @@ class FileProcessor {
 			processAllFields(settings);
 	}
 
-	private void processBulk(final CsvParserSettings settings) throws IOException {
+	private void processBulk(final CsvParserSettings settings) throws IOException, FTAException {
 		String[] header;
 		int numFields;
 		TextAnalyzer analyzer;
@@ -160,7 +161,7 @@ class FileProcessor {
 		}
 	}
 
-	private void processAllFields(final CsvParserSettings settings) throws IOException {
+	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAException {
 		final long start = System.currentTimeMillis();
 		TextAnalyzer[] analysis = null;
 		String[] header = null;

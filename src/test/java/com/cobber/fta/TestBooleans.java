@@ -21,11 +21,12 @@ import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 
 public class TestBooleans {
 	@Test
-	public void onlyTrue() throws IOException {
+	public void onlyTrue() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		analysis.train("true");
@@ -47,7 +48,7 @@ public class TestBooleans {
 	}
 
 	@Test
-	public void basicBoolean() throws IOException {
+	public void basicBoolean() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "false|true|TRUE|    false   |FALSE |TRUE|true|false|False|True|false|  FALSE|FALSE|true|TRUE|bogus".split("\\|");
 		final int NULL_COUNT = 2;
@@ -89,7 +90,7 @@ public class TestBooleans {
 	}
 
 	@Test
-	public void basicBooleanYesNo() throws IOException {
+	public void basicBooleanYesNo() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "no|yes|YES|    no   |NO |YES|yes|no|No|Yes|no|  NO|NO|yes|YES|bogus".split("\\|");
 		int locked = -1;
@@ -129,7 +130,7 @@ public class TestBooleans {
 	}
 
 	@Test
-	public void basicBooleanYesNoManySamples() throws IOException {
+	public void basicBooleanYesNoManySamples() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "no|yes|YES|    no   |NO |YES|yes|no|No|Yes|no|  NO|NO|yes|YES|no|yes|YES|    no   |NO |YES|yes|no|No|Yes|no|  NO|NO|yes|YES|bogus".split("\\|");
 		final int NULL_COUNT = 2;
@@ -170,7 +171,7 @@ public class TestBooleans {
 	}
 
 	@Test
-	public void basicBooleanYN() throws IOException {
+	public void basicBooleanYN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = new String[] {
 				"Y", "Y", "Y", "Y", "Y", "", "Y", "", "", "Y",
@@ -217,7 +218,7 @@ public class TestBooleans {
 	}
 
 	@Test
-	public void basicBooleanN_Bad() throws IOException {
+	public void basicBooleanN_Bad() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int countN = 30;
 		final int countC = 10;
@@ -244,7 +245,7 @@ public class TestBooleans {
 	}
 
 	@Test
-	public void justY() throws IOException {
+	public void justY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int COUNT = 50;
 
@@ -269,7 +270,7 @@ public class TestBooleans {
 	}
 
 	@Test
-	public void basicPseudoBoolean() throws IOException {
+	public void basicPseudoBoolean() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "0|1|1|0|0|1|1|0|0|1|0|0|0|1|1|0|1|1|1|1|0|0|0|0|1|1|1".split("\\|");
 		int locked = -1;
@@ -303,7 +304,7 @@ public class TestBooleans {
 	}
 
 	@Test
-	public void notPseudoBoolean() throws IOException {
+	public void notPseudoBoolean() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "7|1|1|7|7|1|1|7|7|1|7|7|7|1|1|7|1|1|1|1|7|7|7|7|1|1|1".split("\\|");
 		int locked = -1;
@@ -337,7 +338,7 @@ public class TestBooleans {
 	}
 
 	@Test
-	public void basicNotPseudoBoolean() throws IOException {
+	public void basicNotPseudoBoolean() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "0|5|5|0|0|5|5|0|0|5|0|0|0|5|5|0|5|5|5|5|0|0|0|0|5|5|5|A".split("\\|");
 		int locked = -1;

@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import com.cobber.fta.Smashed;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 
@@ -129,6 +130,8 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleFacts("EEEE, MMMM, d{2}, d{4}", "EEEE, MMMM, dd, yyyy", FTAType.LOCALDATE));
 		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} z d{4}", "EEE MMM dd HH:mm:ss z yyyy", FTAType.ZONEDDATETIME));
 		matchers.add(new SimpleFacts("EEE MMM {2}d d{2}:d{2}:d{2} z d{4}", "EEE MMM ppd HH:mm:ss z yyyy", FTAType.ZONEDDATETIME));
+		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} O d{4}", "EEE MMM dd HH:mm:ss O yyyy", FTAType.OFFSETDATETIME));
+		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} OOOO d{4}", "EEE MMM dd HH:mm:ss OOOO yyyy", FTAType.OFFSETDATETIME));
 
 		final HashMap<String, SimpleFacts> localeMatcher = new HashMap<>();
 		for (final SimpleFacts sdm : matchers) {
@@ -262,6 +265,26 @@ public class SimpleDateMatcher {
 				input = replaceString(input, len, word, "z");
 				len = input.length();
 				break;
+			}
+			else {
+				// Look for a localized zone-offset (O), something of the form GMT+8 or GMT+08:00
+				if (word.startsWith("GMT+") || word.startsWith("GMT-")) {
+					String balance = word.substring(4);
+					int offsetLength = balance.length();
+					if (offsetLength == 0)
+						break;
+					String smashed = Smashed.smash(balance);
+					if ("9".equals(smashed) || "99".equals(smashed) || "9:99".equals(smashed)) {
+						input = replaceString(input, len, word, "O");
+						len = input.length();
+						break;
+					}
+					else if ("99:99".equals(smashed) || "99:99.99".equals(smashed)) {
+						input = replaceString(input, len, word, "OOOO");
+						len = input.length();
+						break;
+					}
+				}
 			}
 		}
 
@@ -443,6 +466,7 @@ public class SimpleDateMatcher {
 				break;
 
 			case TIMEZONE:
+			case LOCALIZED_TIMEZONE_OFFSET:
 				while (eating.length() > 0 && eating.charAt(0) != ' ')
 					eating.deleteCharAt(0);
 				break;

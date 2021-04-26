@@ -20,10 +20,11 @@ import java.io.StringReader;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.FTAException;
 
 public abstract class SamplePlugin {
 
-	public static void main(final String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException, FTAException {
 		final String[] inputs = new String[] {
 				"red",  "red", "blue", "pink", "black", "white", "orange", "purple",
 				"grey", "green", "red", "mauve", "red", "brown", "silver", "gold",

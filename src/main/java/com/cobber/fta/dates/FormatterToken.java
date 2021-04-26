@@ -165,6 +165,10 @@ class FormatterToken {
 				i++;
 				break;
 
+			case 'O':
+				ret.add(new FormatterToken(Token.LOCALIZED_TIMEZONE_OFFSET));
+				break;
+
 			case 'p':
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 					i++;

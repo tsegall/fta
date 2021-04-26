@@ -34,13 +34,14 @@ import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.RegExpGenerator;
 
 public class TestDoubles {
 
 	@Test
-	public void positiveDouble() throws IOException {
+	public void positiveDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "43.80|1.1|0.1|2.03|.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
@@ -70,7 +71,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void tinyDouble() throws IOException {
+	public void tinyDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String input = "0e-17";
 
@@ -92,7 +93,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void positiveDouble2() throws IOException {
+	public void positiveDouble2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "43.80|1.1|0.1|2.03|0.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
@@ -120,7 +121,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void negativeDouble() throws IOException {
+	public void negativeDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "43.80|-1.1|-.1|2.03|.1|-99.23|14.08976|-14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
@@ -150,7 +151,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void basicPromoteToDouble() throws IOException {
+	public void basicPromoteToDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInut =
 					"8|172.67|22.73|150|30.26|54.55|45.45|433.22|172.73|7.73|" +
@@ -183,7 +184,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void trailingMinus() throws IOException {
+	public void trailingMinus() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String[] inputs = "458.00-|123.00|901.21|404.064|209.01-|12.0|0.0|0|676.00|1894.80-|2903.22-|111.14-|5234.00".split("\\|");
 		int locked = -1;
@@ -211,7 +212,7 @@ public class TestDoubles {
 
 
 	@Test
-	public void floatBug() throws IOException {
+	public void floatBug() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"352115", "277303", "324576", "818328", "698915", "438223", "104583", "355898", "387829", "130771",
 				"246823", "833969", "380632", "467021", "869890", "15191", "463747", "847192", "706545", "895018",
@@ -249,7 +250,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void signedFloatBug() throws IOException {
+	public void signedFloatBug() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"352115", "277303", "324576", "818328", "698915", "438223", "104583", "355898", "387829", "130771",
 				"246823", "833969", "380632", "467021", "869890", "15191", "463747", "847192", "706545", "895018",
@@ -288,7 +289,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void mixedInput() throws IOException {
+	public void mixedInput() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"8", "172.67", "22.73", "150", "30.26", "54.55", "45.45", "433.22", "172.73", "7.73",
 				"218.18", "47.27", "31.81", "22.73", "21.43", "7.27", "26.25", "7.27", "45.45" };
@@ -314,7 +315,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void impossibleExponent() throws IOException {
+	public void impossibleExponent() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E503", "1103E402"
@@ -339,7 +340,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void impossibleExponentNullHeader() throws IOException {
+	public void impossibleExponentNullHeader() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E503", "1103E402"
@@ -364,7 +365,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void singleDoubleWithWidening() throws IOException {
+	public void singleDoubleWithWidening() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
@@ -400,7 +401,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void simpleIntegerWithWidening() throws IOException {
+	public void simpleIntegerWithWidening() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
@@ -433,7 +434,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void lateDouble() throws IOException {
+	public void lateDouble() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"-10000", "-1000", "-340", "-2500", "-1000", "-2062", "-2500", "-1927", "-2500", "-1927",
 				"-1000", "-2062", "-2000", "-8000", "-8000", "-15000", "-2500", "-15000", "-5000", "-1000",
@@ -462,7 +463,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void manyRandomDoubles() throws IOException {
+	public void manyRandomDoubles() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
@@ -499,7 +500,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void manyConstantLengthDoublesI18N_1() throws IOException {
+	public void manyConstantLengthDoublesI18N_1() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
@@ -538,7 +539,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void dangerousDouble() throws IOException {
+	public void dangerousDouble() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
@@ -569,7 +570,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void longWithOutlierPositiveDouble() throws IOException {
+	public void longWithOutlierPositiveDouble() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
@@ -598,7 +599,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void longWithOutlierNegativeDouble() throws IOException {
+	public void longWithOutlierNegativeDouble() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
@@ -629,7 +630,7 @@ public class TestDoubles {
 
 	// BUG - In general, even if the locale suggests otherwise we should still cope with 1234.56 as a valid double
 	//@Test
-	public void manyConstantLengthDoublesI18N_2() throws IOException {
+	public void manyConstantLengthDoublesI18N_2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
 		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
@@ -667,7 +668,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void testFromFuzz1() throws IOException {
+	public void testFromFuzz1() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String input =
 				"100|-101.0|102|103|104|105|106|107|hello|109|110|111|112|113|114|115|116|117|118|119|";
@@ -692,7 +693,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void backoutToDouble() throws IOException {
+	public void backoutToDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput =
 				"0|0|0|0|0|0|0|0|0|1|2|3|0|0|0|0|0|" +
@@ -741,7 +742,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void localeNegativeDoubleTest() throws IOException {
+	public void localeNegativeDoubleTest() throws IOException, FTAException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
@@ -795,7 +796,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void simpleDoubleExponentTest() throws IOException {
+	public void simpleDoubleExponentTest() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleDoubleExponentTest");
 		analysis.setCollectStatistics(false);
 		final DecimalFormat df = new DecimalFormat("0.00E00");
@@ -840,7 +841,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void localeNegativeDoubleExponentTest() throws IOException {
+	public void localeNegativeDoubleExponentTest() throws IOException, FTAException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
@@ -912,7 +913,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void spacedDoubles() throws IOException {
+	public void spacedDoubles() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("AMT");
 		analysis.setCollectStatistics(false);
 		final String inputs[] = new String[] {
@@ -952,7 +953,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void latitude() throws IOException {
+	public void latitude() throws IOException, FTAException {
 		final TextAnalyzer analysis1 = new TextAnalyzer("LATITUDE");
 		final TextAnalyzer analysis2 = new TextAnalyzer("LATITUDE");
 		final TextAnalyzer analysis3 = new TextAnalyzer("LATITUDE");
@@ -1017,7 +1018,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void decimalSeparatorTest_Locale() throws IOException {
+	public void decimalSeparatorTest_Locale() throws IOException, FTAException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = new Locale[] { Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("en-US") };
@@ -1059,7 +1060,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void monetaryDecimalSeparatorDefault() throws IOException {
+	public void monetaryDecimalSeparatorDefault() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Random random = new Random();
 		final int SAMPLE_SIZE = 10000;
@@ -1105,7 +1106,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void monetaryDecimalSeparatorFrench() throws IOException {
+	public void monetaryDecimalSeparatorFrench() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		analysis.setLocale(Locale.FRENCH);
 		final Random random = new Random(314159265);
@@ -1152,7 +1153,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void doublesWithSpaces() throws IOException {
+	public void doublesWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput =
 				" 0.56000537| 0.4644182| 0.53597438| 0.66897142| 0.58498305| 0.53236401| 0.57459098| 0.66013932| 0.52850509| 0.59274352| 0.63449258|" +
@@ -1193,7 +1194,7 @@ public class TestDoubles {
 	}
 
 	@Test
-	public void localeDoubleTest() throws IOException {
+	public void localeDoubleTest() throws IOException, FTAException {
 		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
@@ -1254,7 +1255,7 @@ public class TestDoubles {
 	}
 
 @Test
-public void localeDoubleES_CO() throws IOException {
+public void localeDoubleES_CO() throws IOException, FTAException {
 	final String[] ugly = {
 			"77.506.942,294", "55.466.183,606", "78.184.714,556", "52.225.004,254",
 			"49.728.440,901", "46.654.635,41", "44.855.131,454", "74.523.230,406",
@@ -1296,7 +1297,7 @@ public void localeDoubleES_CO() throws IOException {
 }
 
 //	@Test
-	public void decimalSeparatorTest_Period() throws IOException {
+	public void decimalSeparatorTest_Period() throws IOException, FTAException {
 		final Random random = new Random(1);
 		final Set<String> failures = new HashSet<>();
 		final int SAMPLE_SIZE = 1000;
@@ -1387,7 +1388,7 @@ public void localeDoubleES_CO() throws IOException {
 		Assert.assertEquals(failures.size(), 0);
 	}
 
-	public void _doublePerf(final boolean statisticsOn) throws IOException {
+	public void _doublePerf(final boolean statisticsOn) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!statisticsOn) {
 			analysis.setDefaultLogicalTypes(false);
@@ -1441,12 +1442,12 @@ public void localeDoubleES_CO() throws IOException {
 	}
 
 	@Test
-	public void doublePerf() throws IOException {
+	public void doublePerf() throws IOException, FTAException {
 		_doublePerf(true);
 	}
 
 	@Test
-	public void doublePerfNoStatistics() throws IOException {
+	public void doublePerfNoStatistics() throws IOException, FTAException {
 		_doublePerf(false);
 	}
 }

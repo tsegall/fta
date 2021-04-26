@@ -49,7 +49,9 @@ import java.util.Set;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
@@ -930,7 +932,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	private void initialize() {
+	private void initialize() throws FTAPluginException, FTAUnsupportedLocaleException {
 		final Calendar cal = Calendar.getInstance(locale);
 		if (!(cal instanceof GregorianCalendar))
 			throw new IllegalArgumentException("No support for locales that do not use the Gregorian Calendar");
@@ -948,7 +950,7 @@ public class TextAnalyzer {
 		for (final LogicalType logical : plugins.getRegisteredLogicalTypes()) {
 
 			if ((logical instanceof LogicalTypeFinite) && ((LogicalTypeFinite)logical).getSize() + 10 > getMaxCardinality())
-				throw new IllegalArgumentException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
+				throw new FTAPluginException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getQualifier());
 
 			if (logical instanceof LogicalTypeInfinite)
 				infiniteTypes.add((LogicalTypeInfinite)logical);
@@ -977,14 +979,17 @@ public class TextAnalyzer {
 		final NumberFormat simple = NumberFormat.getNumberInstance(locale);
 		if (simple instanceof DecimalFormat) {
 			String signFacts = ((DecimalFormat) simple).getNegativePrefix();
+			// Ignore the LEFT_TO_RIGHT_MARK if it exists
+			if (!signFacts.isEmpty() && signFacts.charAt(0) == KnownPatterns.LEFT_TO_RIGHT_MARK)
+				signFacts = signFacts.substring(1);
 			if (signFacts.length() > 1)
-				throw new IllegalArgumentException("No support for locales with multi-character sign prefixes");
+				throw new FTAUnsupportedLocaleException("No support for locales with multi-character sign prefixes");
 			hasNegativePrefix = !signFacts.isEmpty();
 			if (hasNegativePrefix)
 				negativePrefix = signFacts.charAt(0);
 			signFacts = ((DecimalFormat) simple).getNegativeSuffix();
 			if (signFacts.length() > 1)
-				throw new IllegalArgumentException("No support for locales with multi-character sign suffixes");
+				throw new FTAUnsupportedLocaleException("No support for locales with multi-character sign suffixes");
 			hasNegativeSuffix = !signFacts.isEmpty();
 			if (hasNegativeSuffix)
 				negativeSuffix = signFacts.charAt(0);
@@ -1005,7 +1010,7 @@ public class TextAnalyzer {
 			final int dayIndex = pattern.indexOf('d');
 			final int monthIndex = pattern.indexOf('M');
 			if (dayIndex == -1 || monthIndex == -1)
-				throw new IllegalArgumentException("Failed to determine DateResolutionMode for this locale");
+				throw new FTAUnsupportedLocaleException("Failed to determine DateResolutionMode for this locale");
 			// We assume that if Day is before Month, then Day is also before Year!
 			resolutionMode = dayIndex < monthIndex ? DateResolutionMode.DayFirst : DateResolutionMode.MonthFirst;
 		}
@@ -1069,8 +1074,10 @@ public class TextAnalyzer {
 	 *
 	 * @param observed
 	 *            A Map containing the observed items and the corresponding count
+	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
+	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
-	public void trainBulk(Map<String, Long> observed) {
+	public void trainBulk(Map<String, Long> observed) throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Sort so we have the most frequent first
 		observed = Utils.sortByValue(observed);
 		Observation[] facts = new Observation[observed.size()];
@@ -1151,8 +1158,10 @@ public class TextAnalyzer {
 	 * @param rawInput
 	 *            The raw input as a String
 	 * @return A boolean indicating if the resultant type is currently known.
+	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
+	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
-	public boolean train(final String rawInput) {
+	public boolean train(final String rawInput) throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Initialize if we have not already done so
 		if (!initialized) {
 			initialize();
@@ -2052,11 +2061,12 @@ public class TextAnalyzer {
 				if (matchPatternInfo.isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
 					final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
-					if (logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers, shapes) != null)
+					final String newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers, shapes);
+					if (newPattern != null)
 						if (FTAType.LONG.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
 						else if (FTAType.STRING.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
-							backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
+							backoutToPattern(realSamples, newPattern);
 				}
 				else {
 
@@ -2352,8 +2362,10 @@ public class TextAnalyzer {
 	 * after all training is complete, but may be invoked at any stage.
 	 *
 	 * @return A TextAnalysisResult with the analysis of any training completed.
+	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
+	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
-	public TextAnalysisResult getResult() {
+	public TextAnalysisResult getResult() throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Normally we will initialize as a consequence of the first call to train() but just in case no training happens!
 		if (!initialized)
 			initialize();
