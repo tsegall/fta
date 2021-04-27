@@ -57,9 +57,10 @@ public class DetermineDateFormat {
 ## Metrics ##
 
 In addition to the input/configuration attributes:
- * fieldName - the name of the input stream
- * dateResolutionMode - One of None, DayFirst, MonthFirst, or Auto. This will determine what decision to make in the absence of adequate data.
- * signatureVersion - Version of FTA used to generate data
+ * fieldName - Name of the input stream
+ * dateResolutionMode - Mode used to determine how to resolve dates in the absence of adequate data. One of None, DayFirst, MonthFirst, or Auto. 
+ * detectionLocale - Locale used to run the analysis (e.g. "en-US")
+ * ftaVersion - Version of FTA used to generate analysis
 
 The following Metrics are detected:
  * sampleCount - number of samples observed
