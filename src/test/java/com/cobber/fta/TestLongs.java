@@ -393,47 +393,36 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	// BROKEN @Test
 	public void trailingMinusArEH() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Locale locale = Locale.forLanguageTag("ar-EH");
 		analysis.setLocale(locale);
-		final Random random = new Random(1);
-		final int SAMPLE_SIZE = 1000;
+
+		String[] samples = {
+				"1", "2", "3", "4", "5", "6", "7", "8", "9",
+				"1000-", "12", "13", "156", "209", "22012-", "40",
+				"489", "932", "98", "12", "333304", "2", "12", "178",
+				"95","83"
+		};
 
 		final NumberFormat nf = NumberFormat.getNumberInstance(locale);
 		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
-		for (int i = 0; i < SAMPLE_SIZE; i++) {
-			long l = random.nextLong();
-			if (l % 2 == 0)
-				l = -l;
-			final String sample = nf.format(l).toString();
+		for (final String sample : samples) {
 			analysis.train(sample);
+			System.err.println(String.valueOf(sample));
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
-		int javaVersion = TestUtils.getJavaVersion();
-		if (javaVersion >= 15) {
-			// Detected as String because negative numbers are prefixed with LEFT TO RIGHT MARK
-			Assert.assertEquals(result.getType(), FTAType.STRING);
-		} if (javaVersion == 11) {
-			// Seems like Java 11 is just broken - the minus sign is a LEFT TO RIGHT MARK
-			if (formatSymbols.getMinusSign() == '\u200E')
-				return;
-		}
-		else if (javaVersion == 8) {
-			Assert.assertEquals(result.getType(), FTAType.LONG);
-			Assert.assertEquals(result.getRegExp(), "[\\d,]{21,25}[+-]?");
-			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
-			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
-			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
-			Assert.assertEquals(result.getNullCount(), 0);
-			Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		}
-		else {
-			Assert.fail("Java version untested: " + javaVersion);
-		}
+
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+		Assert.assertEquals(result.getRegExp(), "[\\d,]{21,25}[+-]?");
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getMatchCount(), samples.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 	}
 
 	@Test

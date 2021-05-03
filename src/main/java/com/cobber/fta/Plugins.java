@@ -130,7 +130,7 @@ public class Plugins {
 		logical = (LogicalType)ctor.newInstance(plugin);
 
 		if (!(logical instanceof LogicalType))
-			throw new IllegalArgumentException("Logical type: " + plugin.clazz + " does not appear to be a Logical Type.");
+			throw new FTAPluginException("Logical type: " + plugin.clazz + " does not appear to be a Logical Type.");
 
 		registerLogicalType(logical, locale);
 	}

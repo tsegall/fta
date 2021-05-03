@@ -291,3 +291,8 @@
  - Don't throw unchecked exceptions for invalid locales and issues with pluginns since these should be trapped and reported by client
  - Add support for Unicode minus sign \u2212
  - Add support to ignore Unicode LEFT_TO_RIGHT_MARK \u200E
+
+### 4.1.1
+ - Fixup documentation to align 4.X
+ - Bump google phone number version
+ - Change a couple more exceptions

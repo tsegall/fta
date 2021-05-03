@@ -133,6 +133,9 @@ public class TestUtils {
 		final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 		if (nf instanceof DecimalFormat) {
 			negPrefix = ((DecimalFormat) nf).getNegativePrefix();
+			// Ignore the LEFT_TO_RIGHT_MARK if it exists
+			if (!negPrefix.isEmpty() && negPrefix.charAt(0) == KnownPatterns.LEFT_TO_RIGHT_MARK)
+				negPrefix = negPrefix.substring(1);
 			if (!negPrefix.isEmpty())
 				if (negPrefix.charAt(0) == minusSign && minusSign == '-')
 					negPrefix = KnownPatterns.OPTIONAL_SIGN;

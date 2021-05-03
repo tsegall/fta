@@ -29,7 +29,8 @@ import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.LogicalTypeRegExp;
 import com.cobber.fta.TextAnalyzer;
-import com.cobber.fta.core.FTAException;
+import com.cobber.fta.core.FTAPluginException;
+import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
@@ -37,7 +38,7 @@ class Driver {
 
 	static DriverOptions options;
 
-	public static void main(final String[] args) throws IOException, FTAException {
+	public static void main(final String[] args) throws IOException {
 		final PrintStream logger = System.err;
 		boolean helpRequested = false;
 
@@ -196,7 +197,16 @@ class Driver {
 			final String filename = args[idx++];
 
 			final FileProcessor fileProcessor = new FileProcessor(logger, filename, options);
-			fileProcessor.process();
+			try {
+				fileProcessor.process();
+			} catch (FTAPluginException e) {
+				logger.printf("Plugin Exception: %s%n", e.getMessage());
+				System.exit(1);
+			} catch (FTAUnsupportedLocaleException e) {
+				Locale activeLocale = options.locale != null ? options.locale : Locale.getDefault();
+				logger.printf("Unsupported Locale: %s, error: %s%n", activeLocale.toLanguageTag(), e.getMessage());
+				System.exit(1);
+			}
 		}
 	}
 }

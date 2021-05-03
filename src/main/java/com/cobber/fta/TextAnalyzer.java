@@ -935,10 +935,10 @@ public class TextAnalyzer {
 	private void initialize() throws FTAPluginException, FTAUnsupportedLocaleException {
 		final Calendar cal = Calendar.getInstance(locale);
 		if (!(cal instanceof GregorianCalendar))
-			throw new IllegalArgumentException("No support for locales that do not use the Gregorian Calendar");
+			throw new FTAUnsupportedLocaleException("No support for locales that do not use the Gregorian Calendar");
 
 		if (!NumberFormat.getNumberInstance(locale).format(0).matches("\\d"))
-			throw new IllegalArgumentException("No support for locales that do not use Arabic numerals");
+			throw new FTAUnsupportedLocaleException("No support for locales that do not use Arabic numerals");
 
 		raw = new ArrayList<>(detectWindow);
 		detectWindowEscalations = new ArrayList<>(detectWindow);
