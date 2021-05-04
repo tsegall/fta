@@ -85,7 +85,7 @@ The following Metrics are detected:
  * trailingWhiteSpace - Does the observed set have trailing white space
  * multiline - Does the observed set have leading multiline elements
  * logicalType - Does the observed stream, reflect a Semantic Type
- * possibleKey - The percentage confidence (0-1.0) that the observed set is a Key field (i.e. unique)
+ * keyConfidence - The percentage confidence (0-1.0) that the observed set is a Key field (i.e. unique)
  * cardinalityDetail - Details on the valid set, list of elements and occurence count
  * outlierDetail - Details on the invalid set, list of elements and occurence count
  * shapesDetail - Details on the shapes set, list of elements and occurence count. This will collapse all numerics to '9', and all alphabetics to 'X'

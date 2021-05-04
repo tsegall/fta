@@ -422,11 +422,22 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Is this field a possible key?
-	 * @return True if the field could be a key field.
+	 * Is this field a key?
+	 * @return A Double (0.0 ... 1.0) representing our confidence that this stream is a key.
 	 */
-	public boolean isKey() {
-		return factsCore.key;
+	public double getKeyConfidence() {
+		return factsCore.keyConfidence;
+	}
+
+	/**
+	 * Update the Key Confidence - this is typically used where we have an external source that indicated definitively that this is a key.
+	 * @param keyConfidence The new keyConfidence
+	 * @return The prior confidence value.
+	 */
+	public double setKeyConfidence(final double keyConfidence) {
+		final double ret = factsCore.keyConfidence;
+		factsCore.keyConfidence = keyConfidence;
+		return ret;
 	}
 
 	/**
@@ -669,7 +680,7 @@ public class TextAnalysisResult {
 
 		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("logicalType", isLogicalType());
-			analysis.put("possibleKey", factsCore.key);
+			analysis.put("keyConfidence", factsCore.keyConfidence);
 			analysis.put("detectionLocale", locale.toLanguageTag());
 			analysis.put("ftaVersion", Utils.getVersion());
 

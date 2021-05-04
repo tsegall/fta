@@ -27,7 +27,7 @@ public class FactsCore {
 	/* Do any elements have trailing White Space? */
 	protected boolean trailingWhiteSpace;
 	/* Is this field a possible key? */
-	protected boolean key;
+	protected double keyConfidence;
 	/* The number of leading zeros seen in sample set.  Only relevant for type Long. */
 	protected long leadingZeroCount;
 	/* Get the Decimal Separator used to interpret Doubles.  Only relevant for type double. */

@@ -2742,7 +2742,7 @@ public class TextAnalyzer {
 		final FactsTypeBased facts = calculateFacts();
 
 		// Attempt to identify keys?
-		factsCore.key = false;
+		factsCore.keyConfidence = 0.0;
 		if (sampleCount > MIN_SAMPLES_FOR_KEY && maxCardinality >= MIN_SAMPLES_FOR_KEY / 2 &&
 				(cardinality.size() == maxCardinality || cardinality.size() == sampleCount) &&
 				blankCount == 0 && nullCount == 0 &&
@@ -2750,14 +2750,14 @@ public class TextAnalyzer {
 				(matchPatternInfo.typeQualifier == null &&
 				((FTAType.STRING.equals(matchPatternInfo.type) && factsCore.minRawLength == factsCore.maxRawLength && factsCore.minRawLength < 32)
 						|| FTAType.LONG.equals(matchPatternInfo.type))))) {
-			factsCore.key = true;
+			factsCore.keyConfidence = 0.9;
 
 			if (cardinality.size() == maxCardinality)
 				// Might be a key but only iff every element in the cardinality
 				// set only has a count of 1
 				for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
 					if (entry.getValue() != 1) {
-						factsCore.key = false;
+						factsCore.keyConfidence = 0.0;
 						break;
 					}
 				}

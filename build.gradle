@@ -29,7 +29,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "4.1.1"
+version = "4.2.0"
 
 repositories {
   mavenCentral()

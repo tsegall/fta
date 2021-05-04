@@ -296,3 +296,7 @@
  - Fixup documentation to align 4.X
  - Bump google phone number version
  - Change a couple more exceptions
+
+### 4.2.0
+ - Interface change - possibleKey (boolean) is now keyConfidence (double - 0.0 -> 1.0)
+ - Added setKeyConfidence to TextAnalysisResult so we can override if external system knows better

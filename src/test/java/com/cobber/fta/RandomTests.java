@@ -1547,7 +1547,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
 		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertTrue(result.isKey());
+		Assert.assertEquals(result.getKeyConfidence(), 0.9);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1586,7 +1586,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getOutlierCount(), outliers);
 		Assert.assertEquals(result.getSampleCount(), outliers + end - start);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
-		Assert.assertTrue(result.isKey());
+		Assert.assertEquals(result.getKeyConfidence(), 0.9);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)15/result.getSampleCount());
 	}
 
@@ -1653,7 +1653,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d{6}");
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertTrue(result.isKey());
+		Assert.assertEquals(result.getKeyConfidence(), 0.9);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1679,7 +1679,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
 		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertFalse(result.isKey());
+		Assert.assertEquals(result.getKeyConfidence(), 0.0);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
