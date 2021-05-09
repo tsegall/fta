@@ -51,6 +51,7 @@ public class TextAnalysisResult {
 	private final Locale locale;
 	private final long matchCount;
 	private final long sampleCount;
+	private final long totalCount;
 	private final long nullCount;
 	private final long blankCount;
 	private final PatternInfo patternInfo;
@@ -70,6 +71,7 @@ public class TextAnalysisResult {
 	 * @param name The name of the data stream being analyzed.
 	 * @param locale The locale the analysis was performed in.
 	 * @param matchCount The number of samples that match the patternInfo.
+	 * @param totalCount The total number of samples in the stream (typically -1 to indicate unknown).
 	 * @param sampleCount The total number of samples seen.
 	 * @param nullCount The number of nulls seen in the sample set.
 	 * @param blankCount The number of blanks seen in the sample set.
@@ -85,7 +87,7 @@ public class TextAnalysisResult {
 	 * @param shapes A map of input shapes and the count of occurrences of the these shapes.
 	 * @param collectStatistics Were statistics collected during this analysis.
 	 */
-	TextAnalysisResult(final String name, Locale locale, final long matchCount, final long sampleCount,
+	TextAnalysisResult(final String name, Locale locale, final long matchCount, final long totalCount, final long sampleCount,
 			final long nullCount, final long blankCount,
 			final PatternInfo patternInfo, final FactsCore factsCore, final FactsTypeBased facts,
 			final double confidence, final DateResolutionMode resolutionMode,
@@ -96,6 +98,7 @@ public class TextAnalysisResult {
 		this.locale = locale;
 		this.matchCount = matchCount;
 		this.patternInfo = patternInfo;
+		this.totalCount = totalCount;
 		this.sampleCount = sampleCount;
 		this.nullCount = nullCount;
 		this.blankCount = blankCount;
@@ -325,8 +328,16 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the count of all samples seen.
-	 * @return Count of all samples.
+	 * Get the total number of elements in the Data Stream (if known).
+	 * @return total number of elements in the Data Stream (if known) - -1 if not.
+	 */
+	public long getTotalCount() {
+		return totalCount;
+	}
+
+	/**
+	 * Get the count of all samples observed.
+	 * @return Count of all samples observed.
 	 */
 	public long getSampleCount() {
 		return sampleCount;
@@ -427,17 +438,6 @@ public class TextAnalysisResult {
 	 */
 	public double getKeyConfidence() {
 		return factsCore.keyConfidence;
-	}
-
-	/**
-	 * Update the Key Confidence - this is typically used where we have an external source that indicated definitively that this is a key.
-	 * @param keyConfidence The new keyConfidence
-	 * @return The prior confidence value.
-	 */
-	public double setKeyConfidence(final double keyConfidence) {
-		final double ret = factsCore.keyConfidence;
-		factsCore.keyConfidence = keyConfidence;
-		return ret;
 	}
 
 	/**
@@ -608,6 +608,7 @@ public class TextAnalysisResult {
 		final ObjectNode analysis = mapper.createObjectNode();
 		if (target == SignatureTarget.CONSUMER)
 			analysis.put("fieldName", name);
+		analysis.put("totalCount", totalCount);
 		analysis.put("sampleCount", sampleCount);
 		analysis.put("matchCount", matchCount);
 		analysis.put("nullCount", nullCount);

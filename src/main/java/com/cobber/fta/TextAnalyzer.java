@@ -147,6 +147,7 @@ public class TextAnalyzer {
 	private boolean hasNegativePrefix;
 	private char negativeSuffix;
 	private boolean hasNegativeSuffix;
+	private long totalCount = -1;
 	private long sampleCount;
 	private long nullCount;
 	private long blankCount;
@@ -582,12 +583,27 @@ public class TextAnalyzer {
 		return lengthQualifier;
 	}
 
+	/**
+	 * Set the Key Confidence - this is typically used where we have an external source that indicated definitively that this is a key.
+	 * @param keyConfidence The new keyConfidence
+	 */
+	public void setKeyConfidence(final double keyConfidence) {
+		factsCore.keyConfidence = keyConfidence;
+	}
+
+	/**
+	 * Set the total number of elements in the Data Stream (if known).
+	 */
+	public void setTotalCount(final long totalCount) {
+		this.totalCount = totalCount;
+	}
+
 	String getRegExp(final KnownPatterns.ID id) {
 		return knownPatterns.getRegExp(id);
 	}
 
 	// Track basic facts for the field - called for all input
-	void trackLengthAndShape(final String input, final long count) {
+	private void trackLengthAndShape(final String input, final long count) {
 		// We always want to track basic facts for the field
 		final int length = input.length();
 
@@ -2741,30 +2757,33 @@ public class TextAnalyzer {
 
 		final FactsTypeBased facts = calculateFacts();
 
-		// Attempt to identify keys?
-		factsCore.keyConfidence = 0.0;
-		if (sampleCount > MIN_SAMPLES_FOR_KEY && maxCardinality >= MIN_SAMPLES_FOR_KEY / 2 &&
-				(cardinality.size() == maxCardinality || cardinality.size() == sampleCount) &&
-				blankCount == 0 && nullCount == 0 &&
-				((matchPatternInfo.typeQualifier != null && matchPatternInfo.typeQualifier.equals("GUID")) ||
-				(matchPatternInfo.typeQualifier == null &&
-				((FTAType.STRING.equals(matchPatternInfo.type) && factsCore.minRawLength == factsCore.maxRawLength && factsCore.minRawLength < 32)
-						|| FTAType.LONG.equals(matchPatternInfo.type))))) {
-			factsCore.keyConfidence = 0.9;
+		// Only attempt to do key identification if we have not already been told the answer
+		if (factsCore.keyConfidence == null) {
+			// Attempt to identify keys?
+			factsCore.keyConfidence = 0.0;
+			if (sampleCount > MIN_SAMPLES_FOR_KEY && maxCardinality >= MIN_SAMPLES_FOR_KEY / 2 &&
+					(cardinality.size() == maxCardinality || cardinality.size() == sampleCount) &&
+					blankCount == 0 && nullCount == 0 &&
+					((matchPatternInfo.typeQualifier != null && matchPatternInfo.typeQualifier.equals("GUID")) ||
+					(matchPatternInfo.typeQualifier == null &&
+					((FTAType.STRING.equals(matchPatternInfo.type) && factsCore.minRawLength == factsCore.maxRawLength && factsCore.minRawLength < 32)
+							|| FTAType.LONG.equals(matchPatternInfo.type))))) {
+				factsCore.keyConfidence = 0.9;
 
-			if (cardinality.size() == maxCardinality)
-				// Might be a key but only iff every element in the cardinality
-				// set only has a count of 1
-				for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
-					if (entry.getValue() != 1) {
-						factsCore.keyConfidence = 0.0;
-						break;
+				if (cardinality.size() == maxCardinality)
+					// Might be a key but only iff every element in the cardinality
+					// set only has a count of 1
+					for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
+						if (entry.getValue() != 1) {
+							factsCore.keyConfidence = 0.0;
+							break;
+						}
 					}
-				}
+			}
 		}
 
 		return new TextAnalysisResult(dataStreamName, locale,
-				matchCount, sampleCount, nullCount,blankCount,
+				matchCount, totalCount, sampleCount, nullCount,blankCount,
 				matchPatternInfo, factsCore, facts, confidence, resolutionMode,
 				cardinality, maxCardinality, outliers, maxOutliers, shapes.getShapes(), maxShapes, collectStatistics);
 	}

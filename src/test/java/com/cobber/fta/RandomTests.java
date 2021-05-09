@@ -1591,6 +1591,30 @@ public class RandomTests {
 	}
 
 	@Test
+	public void testDataSignature() throws IOException, FTAException {
+		final TextAnalyzer analysis1 = new TextAnalyzer("Anaysis1");
+		final TextAnalyzer analysis2 = new TextAnalyzer("Anaysis2");
+		analysis2.setTotalCount(1000000);
+
+		final int start = 10000;
+
+		for (int i = start; i < start + 1000; i++) {
+			analysis1.train(String.valueOf(i));
+		}
+		final TextAnalysisResult result1 = analysis1.getResult();
+		Assert.assertEquals(result1.getTotalCount(), -1);
+
+		for (int i = start; i < start + 1000; i++) {
+			analysis2.train(String.valueOf(i));
+		}
+		final TextAnalysisResult result2 = analysis2.getResult();
+		Assert.assertEquals(result2.getTotalCount(), 1000000);
+
+		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
+		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
+	}
+
+	@Test
 	public void setMaxOutliers() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
 		final int start = 10000;

@@ -2782,7 +2782,7 @@ public class TestPlugins {
 
 		// Data Signature is independent of Structure
 		Assert.assertEquals(preResult.getDataSignature(), result.getDataSignature());
-		Assert.assertEquals(preResult.getDataSignature(), "WZIh7WJ/eEgtyXlSFbWEAvHceOQ=");
+		Assert.assertEquals(preResult.getDataSignature(), "Esgd86eqoOpuaj5oYAmV6oBKQlI=");
 
 		Assert.assertEquals(preResult.getStructureSignature(), "yW7lIrjlrjF/WZwIInoH/TrmhCw=");
 		Assert.assertEquals(result.getStructureSignature(), "Frd1mNXRneO3yWDzQa4eEdRgtJs=");

@@ -85,7 +85,7 @@ The following Metrics are detected:
  * trailingWhiteSpace - Does the observed set have trailing white space
  * multiline - Does the observed set have leading multiline elements
  * logicalType - Does the observed stream, reflect a Semantic Type
- * keyConfidence - The percentage confidence (0-1.0) that the observed set is a Key field (i.e. unique)
+ * keyConfidence - The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique).  Note: this field may be set on the Analyzer - and if so FTA attempts no further analysis.
  * cardinalityDetail - Details on the valid set, list of elements and occurence count
  * outlierDetail - Details on the invalid set, list of elements and occurence count
  * shapesDetail - Details on the shapes set, list of elements and occurence count. This will collapse all numerics to '9', and all alphabetics to 'X'
@@ -96,6 +96,9 @@ The following Metrics are detected:
  * standardDeviation (Numeric types only) - The standard deviation (Uses Welford's algorithm)
  * leadingZeroCount (Long type only) - The leading number of zeroes
  * decimalSeparator (Double type only) - The character used to separate th integer part fom the fractional part
+
+The following fields are *not* calculated by FTA (but may be set on the Analyzer).
+ * totalCount - The total number of elements in the Data Stream (-1 unless set explicitly).
 
 ## Semantic Type detection ##
 

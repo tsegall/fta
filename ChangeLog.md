@@ -300,3 +300,7 @@
 ### 4.2.0
  - Interface change - possibleKey (boolean) is now keyConfidence (double - 0.0 -> 1.0)
  - Added setKeyConfidence to TextAnalysisResult so we can override if external system knows better
+
+### 4.3.0
+ - Interface change - add support for totalCount, will be -1 unless set explicitly by something external that knows the answer.
+ - Interface change - move setKeyConfidence to TextAnalyzer
