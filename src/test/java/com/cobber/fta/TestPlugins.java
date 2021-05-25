@@ -1023,7 +1023,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d]{9}");
+		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{9}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
