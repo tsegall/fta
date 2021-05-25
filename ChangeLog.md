@@ -304,3 +304,7 @@
 ### 4.3.0
  - Interface change - add support for totalCount, will be -1 unless set explicitly by something external that knows the answer.
  - Interface change - move setKeyConfidence to TextAnalyzer
+
+### 4.3.1
+ - Fix bad RegExp for CUSIPs
+ - Upgrade google phone number library

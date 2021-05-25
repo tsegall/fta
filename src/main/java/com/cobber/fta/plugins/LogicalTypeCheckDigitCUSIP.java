@@ -32,7 +32,7 @@ public class LogicalTypeCheckDigitCUSIP extends LogicalTypeCheckDigit {
 
 	@Override
 	public String getRegExp() {
-		return "\\p{IsAlphabetic}\\d]{9}";
+		return "[\\p{IsAlphabetic}\\d]{9}";
 	}
 
 	@Override

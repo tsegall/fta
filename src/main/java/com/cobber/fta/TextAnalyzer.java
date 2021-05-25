@@ -593,6 +593,7 @@ public class TextAnalyzer {
 
 	/**
 	 * Set the total number of elements in the Data Stream (if known).
+	 * @param totalCount The total number of elements, as opposed to the number sampled.
 	 */
 	public void setTotalCount(final long totalCount) {
 		this.totalCount = totalCount;
