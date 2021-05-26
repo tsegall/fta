@@ -93,7 +93,7 @@ The following Metrics are detected:
  * structureSignature - A SHA-1 hash that reflects the data stream structure
  * dataSignature - A SHA-1 hash that reflects the data stream contents
  * mean (Numeric types only) - The mean (Uses Welford's algorithm)
- * standardDeviation (Numeric types only) - The standard deviation (Uses Welford's algorithm)
+ * standardDeviation (Numeric types only) - The population standard deviation (Uses Welford's algorithm)
  * leadingZeroCount (Long type only) - The leading number of zeroes
  * decimalSeparator (Double type only) - The character used to separate th integer part fom the fractional part
 
