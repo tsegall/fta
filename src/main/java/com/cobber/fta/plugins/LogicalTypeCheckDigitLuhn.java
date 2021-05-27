@@ -26,7 +26,7 @@ public class LogicalTypeCheckDigitLuhn extends LogicalTypeCheckDigit {
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.LUHN";
 
 	public LogicalTypeCheckDigitLuhn(final PluginDefinition plugin) {
-		super(plugin);
+		super(plugin, -1);
 		validator = new LuhnCheckDigit();
 	}
 

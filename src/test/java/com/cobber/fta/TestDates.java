@@ -3281,9 +3281,9 @@ public class TestDates {
 		results.put("dd-MM-yyyy HH:mm:ss", new SimpleResult("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}", "dd-MM-yyyy HH:mm:ss", "LocalDateTime"));
 		results.put("MMMM d yyyy hh:mm:ss aaa", new SimpleResult("\\p{IsAlphabetic}{3,9} \\d{1,2} \\d{4} \\d{2}:\\d{2}:\\d{2} (?i)(AM|PM)", "MMMM d yyyy hh:mm:ss a", "LocalDateTime"));
 		results.put("yyyy-MM-dd'T'HH:mm:ss", new SimpleResult("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm:ss", "LocalDateTime"));
-		results.put("yyyy-MM-dd'T'HH:mm:ss.S", new SimpleResult("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}", "yyyy-MM-dd'T'HH:mm:ss.SSS", "LocalDateTime"));
-		results.put("yyyy/MM/dd HH:mm:ss.S", new SimpleResult("\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}", "yyyy/MM/dd HH:mm:ss.SSS", "LocalDateTime"));
-		results.put("yyyy-MM-dd HH:mm:ss.S", new SimpleResult("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}", "yyyy-MM-dd HH:mm:ss.SSS", "LocalDateTime"));
+		results.put("yyyy-MM-dd'T'HH:mm:ss.S", new SimpleResult("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}", "yyyy-MM-dd'T'HH:mm:ss.S{1,3}", "LocalDateTime"));
+		results.put("yyyy/MM/dd HH:mm:ss.S", new SimpleResult("\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}", "yyyy/MM/dd HH:mm:ss.S{1,3}", "LocalDateTime"));
+		results.put("yyyy-MM-dd HH:mm:ss.S", new SimpleResult("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}", "yyyy-MM-dd HH:mm:ss.S{1,3}", "LocalDateTime"));
 		results.put("MM/dd/yy h:mm:ss aaa", new SimpleResult("\\d{2}/\\d{2}/\\d{2} \\d{1,2}:\\d{2}:\\d{2} (?i)(AM|PM)", "MM/dd/yy h:mm:ss a", "LocalDateTime"));
 		results.put("MM-dd-yy h:mm:ss aaa", new SimpleResult("\\d{2}-\\d{2}-\\d{2} \\d{1,2}:\\d{2}:\\d{2} (?i)(AM|PM)", "MM-dd-yy h:mm:ss a", "LocalDateTime"));
 		results.put("M/dd/yy HH:mm", new SimpleResult("\\d{1,2}/\\d{2}/\\d{2} \\d{2}:\\d{2}", "M/dd/yy HH:mm", "LocalDateTime"));
@@ -3308,6 +3308,7 @@ public class TestDates {
 				calendar.add(Calendar.HOUR, -1000);
 				calendar.add(Calendar.MINUTE, 1);
 				calendar.add(Calendar.SECOND, 1);
+				calendar.add(Calendar.MILLISECOND, 17);
 				analysis.train(samples[iters]);
 			}
 			final TextAnalysisResult result = analysis.getResult();

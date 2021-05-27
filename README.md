@@ -113,6 +113,7 @@ CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit
 CHECKDIGIT.CUSIP|North American Security Identifier
 CHECKDIGIT.SEDOL|UK/Ireland Security Identifier
 CHECKDIGIT.ISIN|International Securities Identification Number
+CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)
 CITY|City/Town
 COORDINATE.LATITUDE_DECIMAL|Latititude (Decimal degrees)
 COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)

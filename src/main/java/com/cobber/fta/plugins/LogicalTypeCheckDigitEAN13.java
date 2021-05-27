@@ -15,24 +15,25 @@
  */
 package com.cobber.fta.plugins;
 
-import org.apache.commons.validator.routines.checkdigit.CUSIPCheckDigit;
+import org.apache.commons.validator.routines.checkdigit.EAN13CheckDigit;
 
 import com.cobber.fta.PluginDefinition;
 
 /**
- * Plugin to detect valid CUSIPs .
+ * Plugin to detect valid EAN-13 (UPC, ISBN-13) identifiers.
  */
-public class LogicalTypeCheckDigitCUSIP extends LogicalTypeCheckDigit {
-	public static final String SEMANTIC_TYPE = "CHECKDIGIT.CUSIP";
+public class LogicalTypeCheckDigitEAN13 extends LogicalTypeCheckDigit {
+	public static final String SEMANTIC_TYPE = "CHECKDIGIT.EAN13";
+	public static final String REGEXP = "\\d{13}\\d";
 
-	public LogicalTypeCheckDigitCUSIP(final PluginDefinition plugin) {
-		super(plugin, 9);
-		validator = new CUSIPCheckDigit();
+	public LogicalTypeCheckDigitEAN13(final PluginDefinition plugin) {
+		super(plugin, 13);
+		validator = new EAN13CheckDigit();
 	}
 
 	@Override
 	public String getRegExp() {
-		return "[\\p{IsAlphabetic}\\d]{9}";
+		return REGEXP;
 	}
 
 	@Override

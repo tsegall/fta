@@ -279,6 +279,27 @@ public class TestLongs {
 	}
 
 	@Test
+	public void testBuggyEAN() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
+
+		for (int i = 0; i < 6; i++)
+			analysis.train("31");
+		for (int i = 0; i < 24; i++)
+			analysis.train("");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), 30);
+		Assert.assertEquals(result.getMatchCount(), 6);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{2}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
 	public void groupingSeparatorLarge() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Random random = new Random();

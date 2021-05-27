@@ -397,5 +397,11 @@
 		"description": "ISIN - International Securities Identification Number",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitISIN",
 		"priority": 293
+	},
+	{
+		"qualifier": "CHECKDIGIT.EAN13",
+		"description": "EAN-13 - EAN-13/UPC/ISBN-13 Check digit",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitEAN13",
+		"priority": 294
 	}
 ]

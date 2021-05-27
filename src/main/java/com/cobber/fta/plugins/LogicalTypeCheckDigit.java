@@ -20,10 +20,10 @@ import java.util.Map;
 
 import org.apache.commons.validator.routines.checkdigit.ModulusCheckDigit;
 
+import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
-import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
@@ -34,9 +34,11 @@ public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
 	public static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
 	protected ModulusCheckDigit validator;
+	private int length;				/* Length of check digit - -1 indicates variable length */
 
-	public LogicalTypeCheckDigit(final PluginDefinition plugin) {
+	public LogicalTypeCheckDigit(final PluginDefinition plugin, int length) {
 		super(plugin);
+		this.length = length;
 	}
 
 	@Override
@@ -70,7 +72,7 @@ public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input) {
-		return validator.isValid(input);
+		return (length == -1 || input.length() == length) && validator.isValid(input);
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public class LogicalTypeCheckDigitSEDOL extends LogicalTypeCheckDigit {
 	public static final String REGEXP = "[\\p{IsAlphabetic}\\d]{6}\\d";
 
 	public LogicalTypeCheckDigitSEDOL(final PluginDefinition plugin) {
-		super(plugin);
+		super(plugin, 7);
 		validator = new SedolCheckDigit();
 	}
 

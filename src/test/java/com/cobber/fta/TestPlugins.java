@@ -41,6 +41,7 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeAddressEN;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitCUSIP;
+import com.cobber.fta.plugins.LogicalTypeCheckDigitEAN13;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitISIN;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitLuhn;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitSEDOL;
@@ -82,6 +83,7 @@ public class TestPlugins {
 		signatures.put(LogicalTypeCheckDigitCUSIP.SEMANTIC_TYPE, "4EK6Y3hBd2en5Hm9EUKnVbrUjlM=");
 		signatures.put(LogicalTypeCheckDigitSEDOL.SEMANTIC_TYPE, "A6zVzMb8GxHKIRvQeHJYY2mUqV0=");
 		signatures.put(LogicalTypeCheckDigitISIN.SEMANTIC_TYPE, "ROIyMHsrinw2O/REk9ClAb0WUEs=");
+		signatures.put(LogicalTypeCheckDigitEAN13.SEMANTIC_TYPE, "nIgwF5al9Zoihvrh2HxG/BcCH3Q=");
 	}
 
 	@Test
@@ -1049,6 +1051,33 @@ public class TestPlugins {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 		Assert.assertEquals(result.getRegExp(), LogicalTypeCheckDigitSEDOL.REGEXP);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void basicUPC() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("UPC");
+		final String inputs[] = new String[] {
+				"9780444505156", "4605664000050", "3014260115531", "8020187300016", "8076809513456", "3155250001387",
+				"2151191106847", "1626093139220", "8556467100101", "0922077722381", "3064298186966", "1068035884902",
+				"4709099997098", "2460125680880", "9686595482097", "2455962755150", "1883097580551", "9664864959587",
+				"4632812983156", "8715988259303", "4114932292979", "1635056616685", "1850775082089", "4514120918771"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCheckDigitEAN13.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeCheckDigitEAN13.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeCheckDigitEAN13.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 

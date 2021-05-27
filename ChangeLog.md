@@ -308,3 +308,8 @@
 ### 4.3.1
  - Fix bad RegExp for CUSIPs
  - Upgrade google phone number library
+
+### 4.3.2
+ - Upgrade google phone number library
+ - Fix unreliable test
+ - Add support for EAN Checkdigit

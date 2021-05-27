@@ -27,7 +27,7 @@ public class LogicalTypeCheckDigitISIN extends LogicalTypeCheckDigit {
 	public static final String REGEXP = "\\p{IsAlphabetic}\\p{IsAlphabetic}[\\p{IsAlphabetic}\\d]{9}\\d";
 
 	public LogicalTypeCheckDigitISIN(final PluginDefinition plugin) {
-		super(plugin);
+		super(plugin, 12);
 		validator = new ISINCheckDigit();
 	}
 
