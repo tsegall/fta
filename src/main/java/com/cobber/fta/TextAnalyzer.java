@@ -1345,7 +1345,7 @@ public class TextAnalyzer {
 			int repetitions = 1;
 			for (int i = 1; i < l0withSentinel.length(); i++) {
 				final char ch = l0withSentinel.charAt(i);
-				if (ch == last) {
+				if (ch == last && i + 1 != l0withSentinel.length()) {
 					repetitions++;
 				} else {
 					if (last == 'd' || last == 'a') {

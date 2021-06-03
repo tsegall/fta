@@ -765,6 +765,24 @@ public class TestStrings {
 	}
 
 	@Test
+	public void testBugPipe() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Centroid");
+		analysis.setCollectStatistics(false);
+
+		analysis.train("10010|");
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getRegExp(), "\\d{5}\\|");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
 	public void testTrimmedLength() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TrimTest");
 		analysis.setCollectStatistics(false);
