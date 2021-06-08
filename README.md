@@ -95,7 +95,7 @@ The following Metrics are detected:
  * mean (Numeric types only) - The mean (Uses Welford's algorithm)
  * standardDeviation (Numeric types only) - The population standard deviation (Uses Welford's algorithm)
  * leadingZeroCount (Long type only) - The leading number of zeroes
- * decimalSeparator (Double type only) - The character used to separate th integer part fom the fractional part
+ * decimalSeparator (Double type only) - The character used to separate the integral component from the fractional component
 
 The following fields are *not* calculated by FTA (but may be set on the Analyzer).
  * totalCount - The total number of elements in the Data Stream (-1 unless set explicitly).
