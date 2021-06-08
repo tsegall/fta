@@ -86,9 +86,9 @@ The following Metrics are detected:
  * multiline - Does the observed set have leading multiline elements
  * logicalType - Does the observed stream, reflect a Semantic Type
  * keyConfidence - The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique).  Note: this field may be set on the Analyzer - and if so FTA attempts no further analysis.
- * cardinalityDetail - Details on the valid set, list of elements and occurence count
- * outlierDetail - Details on the invalid set, list of elements and occurence count
- * shapesDetail - Details on the shapes set, list of elements and occurence count. This will collapse all numerics to '9', and all alphabetics to 'X'
+ * cardinalityDetail - Details on the valid set, list of elements and occurrence count
+ * outlierDetail - Details on the invalid set, list of elements and occurrence count
+ * shapesDetail - Details on the shapes set, list of elements and occurrence count. This will collapse all numerics to '9', and all alphabetics to 'X'
  * shapesCardinality - The cardinality of the shapes observed
  * structureSignature - A SHA-1 hash that reflects the data stream structure
  * dataSignature - A SHA-1 hash that reflects the data stream contents
@@ -115,7 +115,7 @@ CHECKDIGIT.SEDOL|UK/Ireland Security Identifier
 CHECKDIGIT.ISIN|International Securities Identification Number
 CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)
 CITY|City/Town
-COORDINATE.LATITUDE_DECIMAL|Latititude (Decimal degrees)
+COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)
 COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)
 COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)
 COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2
