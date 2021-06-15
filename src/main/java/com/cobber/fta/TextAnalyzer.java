@@ -592,6 +592,15 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Set the Uniqueness - this is typically used where we have an external source that has visibility into the entire data set and
+	 * 'knows' the uniqueness of the set as a whole.
+	 * @param uniqueness The new Uniqueness
+	 */
+	public void setUniqueness(final double uniqueness) {
+		factsCore.uniqueness = uniqueness;
+	}
+
+	/**
 	 * Set the total number of elements in the Data Stream (if known).
 	 * @param totalCount The total number of elements, as opposed to the number sampled.
 	 */
@@ -2780,6 +2789,21 @@ public class TextAnalyzer {
 							break;
 						}
 					}
+			}
+		}
+
+		// Only attempt to do uniqueness if we have not already been told the answer
+		if (factsCore.uniqueness == null) {
+			if (cardinality.size() == 0)
+				factsCore.uniqueness = 0.0;
+			// Can only generate uniqueness if we have not overflowed Max Cardinality
+			else if (cardinality.size() < maxCardinality) {
+				int uniques = 0;
+				for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
+					if (entry.getValue() == 1)
+						uniques++;
+				}
+				factsCore.uniqueness = (double)uniques/cardinality.size();
 			}
 		}
 

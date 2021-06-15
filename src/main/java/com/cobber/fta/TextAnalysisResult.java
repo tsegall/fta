@@ -434,10 +434,19 @@ public class TextAnalysisResult {
 
 	/**
 	 * Is this field a key?
-	 * @return A Double (0.0 ... 1.0) representing our confidence that this stream is a key.
+	 * @return A Double (0.0 ... 1.0) representing our confidence that this field is a key.
 	 */
 	public double getKeyConfidence() {
 		return factsCore.keyConfidence;
+	}
+
+	/**
+	 * How unique is this field, i.e. the number of elements in the set with a cardinality of one / cardinality.
+	 * Note: Only supported if the cardinality presented is less than Max Cardinality.
+	 * @return A Double (0.0 ... 1.0) representing the uniqueness of this field.
+	 */
+	public double getUniqueness() {
+		return factsCore.uniqueness;
 	}
 
 	/**
@@ -682,6 +691,7 @@ public class TextAnalysisResult {
 		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("logicalType", isLogicalType());
 			analysis.put("keyConfidence", factsCore.keyConfidence);
+			analysis.put("uniqueness", factsCore.uniqueness);
 			analysis.put("detectionLocale", locale.toLanguageTag());
 			analysis.put("ftaVersion", Utils.getVersion());
 

@@ -32,4 +32,6 @@ public class FactsCore {
 	protected long leadingZeroCount;
 	/* Get the Decimal Separator used to interpret Doubles.  Only relevant for type double. */
 	protected char decimalSeparator = '.';
+	/* What is the uniqueness percentage of this column. */
+	protected Double uniqueness;
 }

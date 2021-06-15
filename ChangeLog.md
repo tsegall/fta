@@ -313,3 +313,9 @@
  - Upgrade google phone number library
  - Fix unreliable test
  - Add support for EAN Checkdigit
+
+### 4.3.3
+ - Fix bug with fields with trailing pipe symbols
+
+### 4.4.0
+ - Add Uniqueness metric
