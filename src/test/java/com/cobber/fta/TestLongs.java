@@ -300,6 +300,71 @@ public class TestLongs {
 	}
 
 	@Test
+	public void testUniqueness() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
+		final int tooBig = analysis.getMaxCardinality() - 1;
+
+		for (int i = 0; i < tooBig; i++)
+			analysis.train(String.valueOf(i));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), tooBig);
+		Assert.assertEquals(result.getMatchCount(), tooBig);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getUniqueness(), 1.0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void testUniquenessBlown() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
+		final int tooBig = analysis.getMaxCardinality();
+
+		for (int i = 0; i < tooBig; i++)
+			analysis.train(String.valueOf(i));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), tooBig);
+		Assert.assertEquals(result.getMatchCount(), tooBig);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getUniqueness(), -1.0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void testUniquenessNone() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
+		final int tooBig = analysis.getMaxCardinality() - 1;
+
+		for (int i = 0; i < tooBig; i++) {
+			analysis.train(String.valueOf(i));
+			analysis.train(String.valueOf(i));
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), tooBig * 2);
+		Assert.assertEquals(result.getMatchCount(), tooBig * 2);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getUniqueness(), 0.0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
 	public void groupingSeparatorLarge() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Random random = new Random();

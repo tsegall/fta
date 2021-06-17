@@ -319,3 +319,6 @@
 
 ### 4.4.0
  - Add Uniqueness metric
+
+### 4.4.1
+ - Uniqueness should never be null -1.0 indicates no Perspective

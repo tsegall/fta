@@ -2805,6 +2805,9 @@ public class TextAnalyzer {
 				}
 				factsCore.uniqueness = (double)uniques/cardinality.size();
 			}
+			else
+				// -1 indicates we have no perspective on the uniqueness of this field
+				factsCore.uniqueness = -1.0;
 		}
 
 		return new TextAnalysisResult(dataStreamName, locale,
