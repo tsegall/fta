@@ -142,12 +142,22 @@ NAME.FIRST|First Name
 NAME.FIRST_LAST|Merged Name (First Last)
 NAME.LAST|Last Name
 NAME.LAST_FIRST|Merged Name (Last, First)
-POSTAL_CODE.POSTAL_CODE_CA|Postal Code (CA)
-POSTAL_CODE.ZIP5_US|Postal Code (US)
-SSN|Social Security Number (US)
-STATE_PROVINCE.PROVINCE_CA|Canadian Province
-STATE_PROVINCE.STATE_PROVINCE_NA|US State/Canadian Province
-STATE_PROVINCE.STATE_US|US State
+POSTAL_CODE.POSTAL_CODE_AU|Postal Code (en-AU)
+POSTAL_CODE.POSTAL_CODE_CA|Postal Code (en-CA)
+POSTAL_CODE.ZIP5_US|Postal Code (en-US)
+POSTAL_CODE.POSTAL_CODE_UK|Postal Code (en-UK)
+REGION|World Region
+SSN|Social Security Number (en-US)
+STATE_PROVINCE.STATE_AU|Australian State Code (en-AU)
+STATE_PROVINCE.PROVINCE_CA|Canadian Province Code (en-CA/en-US)
+STATE_PROVINCE.STATE_MX|Mexican State Code (es-MX)
+STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code (en-CA/en-US/es-MX)
+STATE_PROVINCE.STATE_US|US State Code (en-CA/en-US)
+STATE_PROVINCE.STATE_NAME_AU|Australian State Name (en-AU)
+STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name (en-CA/en-US)
+STATE_PROVINCE.STATE_NAME_MX|Mexican State Name (es-MX)
+STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name (en-CA/en-US/es-MX)
+STATE_PROVINCE.STATE_NAME_US|US State Name (en-CA/en-US)
 STREET_ADDRESS_EN|Street Address (English Language)
 TELEPHONE|Telephone Number (Generic)
 URI.URL|URL - see RFC 3986

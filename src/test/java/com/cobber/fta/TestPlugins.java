@@ -70,6 +70,10 @@ public class TestPlugins {
 		signatures.put("STATE_PROVINCE.STATE_AU", "khHytrFa0Oj4KP/37i2mRhJmliU=");
 		signatures.put("STATE_PROVINCE.PROVINCE_CA", "jwzKHMfuq3AO4lEKEm0e/ZmOIRA=");
 		signatures.put("STATE_PROVINCE.STATE_US", "JD5jeXHLzGctpqicY44B9iJzyXU=");
+		signatures.put("STATE_PROVINCE.STATE_MX", "h565UW3Wl3GYzYAriMJM6T1LsmY=");
+		signatures.put("STATE_PROVINCE.STATE_NAME_AU", "iNmmCNk8cEQ6mQuhOTxSlO+nvUk=");
+		signatures.put("STATE_PROVINCE.STATE_NAME_US", "y0oxFvZb1RpG1UVwi/hSCEymwzc=");
+		signatures.put("STATE_PROVINCE.STATE_PROVINCE_NAME_NA", "KfDjCnkj/KmZglkvM32W3OBEwxU=");
 		signatures.put("GUID", "AtovlR1okrAJUeTCpYUUTXow4yM=");
 		signatures.put(LogicalTypeCountryEN.SEMANTIC_TYPE, "T4UZNFT895GsC99J7dOz/ENNYvM=");
 		signatures.put(LogicalTypeAddressEN.SEMANTIC_TYPE, "5P7tWzPdbjVvyHhLklpTf00Zxl8=");
@@ -1445,6 +1449,110 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void basicStateMX() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Estado");
+
+		final String[] inputs = new String[] {
+				"SLP", "SON", "TAB", "TAM", "TLA", "VER", "YUC", "ZAC",
+				"AGU", "BCN", "BCS", "CAM", "CHH", "CHP", "CMX", "COA",
+				"COL", "DUR", "GRO", "GUA", "HID", "JAL", "MEX", "MIC",
+				"MOR", "NAY", "NLE", "OAX", "PUE", "QUE", "ROO", "SIN",
+				"SLP", "SON", "TAB", "TAM", "TLA", "UK", "YUC", "ZAC"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_MX");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("STATE_PROVINCE.STATE_MX"));
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\p{Alpha}{3}");
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.get("UK"), Long.valueOf(1));
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
+	}
+
+	@Test
+	public void basicAUStateName() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("State");
+		analysis.setLocale(Locale.forLanguageTag("en-AU"));
+
+		final String[] inputs = new String[] {
+				"Victoria", "New South Wales", "South Australia", "Tasmania", "Western Australia", "New South Wales", "Northern Territory", "Tasmania",
+				"Northern Territory", "Australian Capital Territory", "Victoria", "Western Australia", "Western Australia", "Northern Territory", "Australian Capital Territory", "New South Wales",
+				"Northern Territory", "South Australia", "Western Australia", "Queensland", "Northern Territory", "South Australia", "Australian Capital Territory", "Tasmania",
+				"South Australia", "Victoria", "Western Australia", "Australian Capital Territory", "Victoria", "Australian Capital Territory", "Tasmania", "Northern Territory",
+				"South Australia", "Victoria", "Victoria", "New South Wales", "New South Wales", "UK", "Tasmania", "Western Australia"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_NAME_AU");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("STATE_PROVINCE.STATE_NAME_AU"));
+		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getOutlierCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "[ \\p{IsAlphabetic}]+");
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.get("UK"), Long.valueOf(1));
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
+
+		for (final String input : inputs) {
+			if (!"UK".equals(input))
+				Assert.assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void basicNAStateName() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Billing State/Province");
+
+		final String[] inputs = new String[] {
+				"ST", "ST", "NY", "IN", "IN", "Georgia", "WI", "WI", "WI", "WI", "WI", "WI", "WI",
+				"WI", "WI", "WI", "WI", "WI", "WI", "WI", "WI", "WI", "WI", "WI", "Ohio", "Ohio", "Ohio",
+				"Ohio", "Ohio", "Ohio", "WI", "Ohio", "Ohio", "Ohio", "Ohio", "Ohio", "Massachusetts",
+				"CA", "MN", "MN", "MN", "MN", "MN", "Ny", "Ny", "MN", "IL", "IL", "IL", "IL", "NJ", "NJ",
+				"NJ", "NJ", "NJ", "NJ", "IL", "IL", "NY", "MN", "MN", "MN", "MN", "MN", "MN", "MN", "MN",
+				"MN", "MN", "MN", "MN", "MN", "MN", "MN", "MN", "Utrecht", "MN", "IN", "CO", "CO", "CO",
+				"CO", "CO", "IL", "IL", "IL", "IL", "IL", "OK", "IA", "IA", "IA", "IL", "IL", "IL", "IL",
+				"IL", "MI", "MI", "WI", "WI", "Brussels", "MI", "MI", "MI", "MI", "MI", "MI", "IL", "CA",
+				"IL", "IL", "IL", "IL", "IL", "IL", "IL", "IL", "IL", "ON", "IL", "IL", "IL", "IL", "IL",
+				"IL", "NY", "Michigan", "Michigan", "Michigan", "Michigan", "Michigan", "Michigan", "Michigan",
+				"Michigan", "Michigan", "Michigan", "Michigan", "Michigan", "Michigan", "Michigan", "Michigan",
+				"Michigan", "Michigan", "Michigan", "CA", "CA", "CA", "CA", "CT", "CT", "CT", "CT", "CT", "CT",
+				"CT", "CA", "CA", "CA", "CA", "CA", "Michigan", "NY", "WI", "IL", "NC", "OR", "IL", "MO",
+				"MO", "MO", "IL", "IL", "IL", "IL", "IL", "IL", "AL", "IL", "IL", "IL", "IL", "IL", "Comunidad de Madrid",
+				"IL", "CA", "IDF", "Ohio", "Ohio", "Ohio", "Ohio", "Ohio", "Ohio", "OH", "CT", "", "IL", "IL", "IL"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_PROVINCE_NAME_NA");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("STATE_PROVINCE.STATE_PROVINCE_NAME_NA"));
+		Assert.assertEquals(result.getMatchCount(),
+				inputs.length - result.getBlankCount() - result.getOutlierCount() - result.getBlankCount());
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "[ \\p{IsAlphabetic}]+");
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		Assert.assertEquals(outliers.size(), 5);
+		Assert.assertEquals(result.getConfidence(), 0.9696969696969697);
+	}
+
+	@Test
 	public void basicEmailList() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final String pipedInput = "Bachmann@lavastorm.com,Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
@@ -1873,6 +1981,7 @@ public class TestPlugins {
 	@Test
 	public void basicAU() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setDebug(2);
 		analysis.setLocale(Locale.forLanguageTag("en-AU"));
 		final String inputs[] = TestUtils.validAUStates.split("\\|");
 		int locked = -1;
