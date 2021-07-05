@@ -61,8 +61,8 @@ public class RegExpGenerator {
 		this.asSet = false;
 	}
 
-	public RegExpGenerator(final boolean asSet, final int maxSetSize, final Locale locale) {
-		this.asSet = asSet;
+	public RegExpGenerator(final int maxSetSize, final Locale locale) {
+		this.asSet = true;
 		this.maxSetSize = maxSetSize;
 		this.locale = locale;
 	}
@@ -205,7 +205,7 @@ public class RegExpGenerator {
 	}
 
 	/**
-	 * Given the set of Strings trained() return a Regular Expression which will accept any of the training set.
+	 * Given the set of Strings trained (See @link #train(String)) return a Regular Expression which will accept any of the training set.
 	 * @return A regular expression matching the training set.
 	 */
 	public String getResult() {
@@ -270,7 +270,12 @@ public class RegExpGenerator {
 				result.append(']');
 		}
 
-		return result.append(RegExpSplitter.qualify(shortest, longest)).toString();
+		if (longest - shortest <= 6)
+			result.append(RegExpSplitter.qualify(shortest, longest));
+		else
+			result.append('+');
+
+		return result.toString();
 	}
 
 	/**

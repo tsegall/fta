@@ -113,7 +113,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 
 		// If we have seen no more than one outlier then we are feeling pretty good unless we are in Strict mode (e.g. 100%)
 		if ((threshold != 100 && outliers.size() <= 1) || (double)matchCount / realSamples >= getThreshold()/100.0) {
-			final RegExpGenerator re = new RegExpGenerator(true, 5, locale);
+			final RegExpGenerator re = new RegExpGenerator(5, locale);
 			// There is some complexity here due to the facts that 'Male' & 'Female' are good predictors of Gender.
 			// However a field with only 'M' and 'F' in it is not, so in this case we would like an extra hint.
 			if (count == 1) {

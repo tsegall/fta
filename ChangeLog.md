@@ -322,3 +322,13 @@
 
 ### 4.4.1
  - Uniqueness should never be null -1.0 indicates no Perspective
+
+### 4.5.0
+ - Add new Semantic Type REGION - captures a World Region (e.g. Europe, North America, ...)
+ - Add new Semantic Type STATE_PROVINCE.STATE_MX - Mexican State Code
+ - Add new Semantic Types STATE_PROVINCE.STATE_NAME_<CC>, for CC = AU, CA, MX, US, and NA (for North America)
+	- Captures State names, e.g. California, Ontario (also includes State Codes)
+
+### 4.5.1
+ - Switch Semantic Type REGION -> REGION.TEXT_EN (add test)
+ - Prefer to generate the RegExpReturned from Finite types

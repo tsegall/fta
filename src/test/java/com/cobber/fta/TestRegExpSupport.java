@@ -15,7 +15,9 @@
  */
 package com.cobber.fta;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Locale;
 
 import org.testng.Assert;
@@ -71,8 +73,36 @@ public class TestRegExpSupport {
 	}
 
 	@Test
+	public void fromFile15() throws IOException {
+		final RegExpGenerator gen = new RegExpGenerator(15, Locale.getDefault());
+
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream("/reference/world_region.csv")))) {
+		    String line;
+		    while ((line = br.readLine()) != null) {
+		       gen.train(line);
+		    }
+		}
+
+		Assert.assertEquals(gen.getResult(), "(?i)(AFRICA|ASIA|ASIA PACIFIC|AUSTRALIA/NZ|CARIBBEAN|CENTRAL AMERICA|EUROPE|MIDDLE EAST|NORTH AMERICA|OCEANIA|SOUTH AMERICA|THE CARIBBEAN)");
+	}
+
+	@Test
+	public void fromFile5() throws IOException {
+		final RegExpGenerator gen = new RegExpGenerator(5, Locale.getDefault());
+
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream("/reference/world_region.csv")))) {
+		    String line;
+		    while ((line = br.readLine()) != null) {
+		       gen.train(line);
+		    }
+		}
+
+		Assert.assertEquals(gen.getResult(), ".+");
+	}
+
+	@Test
 	public void rangeTestAlpha() throws IOException {
-		final RegExpGenerator gen = new RegExpGenerator(true, 30, Locale.getDefault());
+		final RegExpGenerator gen = new RegExpGenerator(30, Locale.getDefault());
 
 		gen.train("A");
 		gen.train("B");
@@ -83,7 +113,7 @@ public class TestRegExpSupport {
 
 	@Test
 	public void rangeTestNumbers() throws IOException {
-		final RegExpGenerator gen = new RegExpGenerator(true, 30, Locale.getDefault());
+		final RegExpGenerator gen = new RegExpGenerator(30, Locale.getDefault());
 
 		gen.train("0");
 		gen.train("1");

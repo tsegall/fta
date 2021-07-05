@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.core.FTAPluginException;
+import com.cobber.fta.core.RegExpGenerator;
 
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected String qualifier;
@@ -39,6 +40,16 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	public void setContent(final String contentType, final String content) {
 		this.memberSet = new SingletonSet(contentType, content);
+
+		// If the Regular Expression has not been set then generate one based on the content
+		if (regexp == null) {
+			final RegExpGenerator gen = new RegExpGenerator(15, Locale.getDefault());
+
+			for (String elt : getMembers())
+			       gen.train(elt);
+
+			regexp = gen.getResult();
+		}
 	}
 
 	@Override

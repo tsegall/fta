@@ -1,6 +1,6 @@
 # Fast Text Analyzer #
 
-Analyze Text data to determine Base (and optionally Semantic) type information and other key metrics associated with a text stream.
+Analyze Text data to determine Base Type and optionally Semantic type information and other key metrics associated with a text stream.
 A key objective of the analysis is that it should be sufficiently fast to be in-line (e.g. as the
 data is input from some source it should be possible to stream the data through this class without
 undue performance degradation).  See Performance notes below.
@@ -107,7 +107,7 @@ Note 1: this field may be set on the Analyzer - and if so FTA attempts no furthe
 
 In addition to detecting a set of Base types fta will also, when enabled (default on - setDefaultLogicalTypes(false) to disable) infer Semantic type information along with the Base types.
 
-The Semantic Types detected are based on the current locale, the list below is the detected set if the language is set to en_US:
+Detection of some Semantic Types is dependent on the current locale as indicated below:
 
 Semantic Type|Description|
 ---------|-------------|
@@ -146,7 +146,7 @@ POSTAL_CODE.POSTAL_CODE_AU|Postal Code (en-AU)
 POSTAL_CODE.POSTAL_CODE_CA|Postal Code (en-CA)
 POSTAL_CODE.ZIP5_US|Postal Code (en-US)
 POSTAL_CODE.POSTAL_CODE_UK|Postal Code (en-UK)
-REGION|World Region
+REGION.TEXT_EN|World Region
 SSN|Social Security Number (en-US)
 STATE_PROVINCE.STATE_AU|Australian State Code (en-AU)
 STATE_PROVINCE.PROVINCE_CA|Canadian Province Code (en-CA/en-US)

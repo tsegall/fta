@@ -1844,7 +1844,7 @@ public class TextAnalyzer {
 		// All outliers are now part of the cardinality set and there are now no outliers
 		cardinality.putAll(outliers);
 
-		final RegExpGenerator gen = new RegExpGenerator(true, MAX_ENUM_SIZE, locale);
+		final RegExpGenerator gen = new RegExpGenerator(MAX_ENUM_SIZE, locale);
 		for (final String s : cardinality.keySet())
 			gen.train(s);
 
@@ -2658,7 +2658,7 @@ public class TextAnalyzer {
 			// Try a nice discrete enum
 			if (!updated && cardinalityUpper.size() > 1 && cardinalityUpper.size() <= MAX_ENUM_SIZE && (interestingSamples > reflectionSamples || interestingSamples / cardinalityUpper.size() >= 3)) {
 				// Rip through the enum doing some basic sanity checks
-				RegExpGenerator gen = new RegExpGenerator(true, MAX_ENUM_SIZE, locale);
+				RegExpGenerator gen = new RegExpGenerator(MAX_ENUM_SIZE, locale);
 				boolean fail = false;
 				int excessiveDigits = 0;
 
@@ -2707,7 +2707,7 @@ public class TextAnalyzer {
 						}
 
 						// Regenerate the enum without the outliers removed
-						gen = new RegExpGenerator(true, MAX_ENUM_SIZE, locale);
+						gen = new RegExpGenerator(MAX_ENUM_SIZE, locale);
 						for (final String elt : cardinalityUpper.keySet())
 							gen.train(elt);
 					}
