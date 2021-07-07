@@ -65,10 +65,10 @@ In addition to the input/configuration attributes:
  * ftaVersion - Version of FTA used to generate analysis
 
 The following Metrics are detected:
- * sampleCount - number of samples observed
- * matchCount - number of samples that match the detected Base (or Semantic) type
- * nullCount - number of null samples
- * blankCount - number of blank samples
+ * sampleCount - Number of samples observed
+ * matchCount - Number of samples that match the detected Base (or Semantic) type
+ * nullCount - Number of null samples
+ * blankCount - Number of blank samples
  * regExp - A Regular Expression (Java) that matches the detected Type
  * confidence - The percentage confidence (0-1.0) in the determination of the Type
  * type - The Base Type (one of Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
@@ -118,6 +118,8 @@ CHECKDIGIT.SEDOL|UK/Ireland Security Identifier
 CHECKDIGIT.ISIN|International Securities Identification Number
 CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)
 CITY|City/Town
+CONTINENT.CODE_EN|Continent Code
+CONTINENT.TEXT_EN|Continent Name
 COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)
 COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)
 COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)
@@ -135,9 +137,9 @@ IPADDRESS.IPV6|IP V6 Address
 LANGUAGE.ISO-639-2|Language code - ISO 639, two character
 LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...
 MACADDRESS|MAC Address
-MONTH.ABBR_en-US|Month Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US)
+MONTH.ABBR_<Locale>|Month Abbreviation <LOCALE> = Locale, for example, en-US for English language in US
 MONTH.DIGITS|Month represented as a number (1-12)
-MONTH.FULL_en-US|Full Month name <LOCALE> = Locale, e.g. en-US for English language in US)
+MONTH.FULL_<Locale>|Full Month name <LOCALE> = Locale, for example, en-US for English language in US
 NAME.FIRST|First Name
 NAME.FIRST_LAST|Merged Name (First Last)
 NAME.LAST|Last Name

@@ -1577,7 +1577,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(),
 				inputs.length - result.getBlankCount() - result.getOutlierCount() - result.getBlankCount());
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "(?i)(AFRICA|ASIA|ASIA PACIFIC|AUSTRALIA/NZ|CARIBBEAN|CENTRAL AMERICA|EUROPE|MIDDLE EAST|NORTH AMERICA|OCEANIA|SOUTH AMERICA|THE CARIBBEAN)");
+		Assert.assertEquals(result.getRegExp(), "(?i)(AFRICA|ANTARCTICA|ASIA|ASIA PACIFIC|AUSTRALIA/NZ|CARIBBEAN|CENTRAL AMERICA|EUROPE|MIDDLE EAST|NORTH AMERICA|OCEANIA|SOUTH AMERICA|THE CARIBBEAN)");
 		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 0);
 		Assert.assertEquals(result.getConfidence(), 1.0);

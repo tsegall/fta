@@ -288,7 +288,7 @@
 
 ### 4.1.0
  - Add support for localized offset in Dates 'O' and 'OOOO'
- - Don't throw unchecked exceptions for invalid locales and issues with pluginns since these should be trapped and reported by client
+ - Don't throw unchecked exceptions for invalid locales and issues with plugins since these should be trapped and reported by client
  - Add support for Unicode minus sign \u2212
  - Add support to ignore Unicode LEFT_TO_RIGHT_MARK \u200E
 
@@ -332,3 +332,6 @@
 ### 4.5.1
  - Switch Semantic Type REGION -> REGION.TEXT_EN (add test)
  - Prefer to generate the RegExpReturned from Finite types
+
+### 4.5.2
+ - Add new Semantic Types - CONTINENT.CODE_EN, CONTINENT.TEXT_EN

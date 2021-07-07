@@ -264,6 +264,26 @@
 		"priority": 142
 	},
 	{
+		"qualifier": "CONTINENT.TEXT_EN",
+		"description": "Continent",
+		"headerRegExps": [ ".*(?i)(continent|region).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"content": "/reference/continent_en.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 150
+	},
+	{
+		"qualifier": "CONTINENT.CODE_EN",
+		"description": "Continent Code",
+		"headerRegExps": [ ".*(?i)(continent|region).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"content": "/reference/continent_code_en.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 152
+	},
+	{
 		"qualifier": "REGION.TEXT_EN",
 		"description": "World Region",
 		"headerRegExps": [ ".*(?i)(region).*" ],
@@ -271,7 +291,7 @@
 		"content": "/reference/world_region.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 150
+		"priority": 154
 	},
 	{
 		"qualifier": "AIRPORT_CODE.IATA",
