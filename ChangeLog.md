@@ -335,3 +335,8 @@
 
 ### 4.5.2
  - Add new Semantic Types - CONTINENT.CODE_EN, CONTINENT.TEXT_EN
+
+### 4.5.3
+ - Fix broken Sample - SamplePlugin
+ - Enhance ColorPlugin to support French as well as English
+ - Add French sample

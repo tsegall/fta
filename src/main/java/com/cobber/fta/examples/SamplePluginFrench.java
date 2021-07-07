@@ -18,29 +18,32 @@ package com.cobber.fta.examples;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
 
-public abstract class SamplePlugin {
+public abstract class SamplePluginFrench {
 
 	public static void main(final String[] args) throws IOException, FTAException {
 		final String[] inputs = new String[] {
-				"red",  "red", "blue", "pink", "black", "white", "orange", "purple",
-				"grey", "green", "red", "mauve", "red", "brown", "silver", "gold",
-				"peach", "olive", "lemon", "lilac", "beige", "red", "burgundy", "aquamarine",
-				"red",  "red", "blue", "pink", "black", "white", "orange", "purple",
-				"grey", "green", "red", "mauve", "red", "brown", "silver", "gold",
-				"peach", "olive", "lemon", "lilac", "beige", "red", "burgundy", "aquamarine"
+				"rouge",  "rouge", "BLEUE", "ROSE", "NOIRE", "BLANCHE", "orange", "MAUVE",
+				"GRISE", "VERTE", "rouge", "mauve", "rouge", "MARRON", "ARGENT", "OR",
+				"PÊCHE", "olive", "CITRON", "LILAS", "beige", "rouge", "BOURGOGNE",
+				"rouge",  "rouge", "BLEUE", "ROSE", "NOIRE", "BLANCHE", "orange", "MAUVE",
+				"GRISE", "VERTE", "rouge", "mauve", "rouge", "MARRON", "ARGENT", "OR",
+				"PÊCHE", "olive", "CITRON", "LILAS", "beige", "rouge", "BOURGOGNE"
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("Colors");
+		final Locale locale = Locale.forLanguageTag("fr-FR");
+		analysis.setLocale(locale);
 
 		// Register our new magic plugin
-		final String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_<LANG>\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"validLocales\": [ \"en\", \"fr-FR\" ] } ]";
+		final String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_<LANG>\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"validLocales\": [ \"en-US\", \"fr-FR\" ] } ]";
 		try {
-			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", null);
+			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", locale);
 		} catch (InvocationTargetException e) {
 			System.err.println("Failed to register plugin: " + e.getCause().getMessage());
 			System.exit(1);

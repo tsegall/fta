@@ -16,46 +16,71 @@
 package com.cobber.fta.examples;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
-import com.cobber.fta.FactsTypeBased;
+import com.cobber.fta.core.FTAPluginException;
 
 public class PluginColor extends LogicalTypeFinite {
-	public static final String SEMANTIC_TYPE = "COLOR.TEXT_EN";
-	private static Set<String> members = new HashSet<>();
-	private static String[] colors = new String[] {
+	public static final String SEMANTIC_TYPE_BASE = "COLOR.TEXT_";
+	public static final Map<String, Set<String>> members = new HashMap<>();
+	private static String[] colorsEN = new String[] {
 			"RED",  "GREEN", "BLUE", "PINK", "BLACK", "WHITE", "ORANGE", "PURPLE",
-			"GREY", "GREEN", "YELLOW", "MAUVE", "CREAM", "BROWN", "SILVER", "GOLD",
+			"GREY", "YELLOW", "MAUVE", "CREAM", "BROWN", "SILVER", "GOLD",
 			"PEACH", "OLIVE", "LEMON", "LILAC", "BEIGE", "AMBER", "BURGUNDY"
 	};
+	private static String[] colorsFR = new String[] {
+			"ROUGE", "VERTE", "BLEUE", "ROSE", "NOIRE", "BLANCHE", "ORANGE", "MAUVE",
+			"GRISE", "JAUNE", "MAUVE", "CRÈME", "MARRON", "ARGENT", "OR",
+			"PÊCHE", "OLIVE", "CITRON", "LILAS", "BEIGE", "AMBRE", "BOURGOGNE"
+	};
+
+	private String language;
 
 	static {
-		members.addAll(Arrays.asList(colors));
+		members.put("EN", new HashSet<String>(Arrays.asList(colorsEN)));
+		members.put("FR", new HashSet<String>(Arrays.asList(colorsFR)));
 	}
 
-	public PluginColor(final PluginDefinition plugin) {
+	public PluginColor(final PluginDefinition plugin) throws FTAPluginException {
 		super(plugin);
 	}
 
 	@Override
-	public Set<String> getMembers() {
-		return members;
+	public boolean initialize(final Locale locale) throws FTAPluginException {
+		if (!defn.isSupported(locale))
+			throw new FTAPluginException("Locale '" + language + "' is not supported");
+
+		language = locale.toLanguageTag().split("[-_]+")[0].toUpperCase(Locale.ROOT);
+
+		return super.initialize(locale);
 	}
 
+	@Override
+	public Set<String> getMembers() {
+		return members.get(language);
+	}
 
 	@Override
 	public String nextRandom() {
-		return colors[random.nextInt(colors.length)];
+		if ("EN".equals(language))
+			return colorsEN[random.nextInt(colorsEN.length)];
+		if ("FR".equals(language))
+			return colorsFR[random.nextInt(colorsFR.length)];
+
+		return null;
 	}
 
 	@Override
 	public String getQualifier() {
-		return SEMANTIC_TYPE;
+		return SEMANTIC_TYPE_BASE + language;
 	}
 
 	@Override

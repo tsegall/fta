@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.cobber.fta.core.FTAType;
@@ -127,5 +128,25 @@ public class PluginDefinition {
 				return pluginDefinition;
 
 		return null;
+	}
+
+	public boolean isSupported(final Locale locale) {
+		final String languageTag = locale.toLanguageTag();
+		final String language = locale.getLanguage();
+
+		// Check to see if this plugin is valid for this locale
+		if (validLocales != null && validLocales.length != 0) {
+			for (final String validLocale : validLocales) {
+				if (validLocale.indexOf('-') != -1) {
+					if (validLocale.equals(languageTag))
+						return true;
+				}
+				else if (validLocale.equals(language))
+					return true;
+			}
+			return false;
+		}
+
+		return true;
 	}
 }

@@ -47,30 +47,10 @@ public class Plugins {
 	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
 		if (locale == null)
 			locale = Locale.getDefault();
-		final String languageTag = locale.toLanguageTag();
-		final String language = locale.getLanguage();
 
 		// Only register plugins that are valid for this locale
 		for (final PluginDefinition plugin : plugins) {
-			boolean register = false;
-
-			// Check to see if this plugin is valid for this locale
-			if (plugin.validLocales != null && plugin.validLocales.length != 0) {
-				for (final String validLocale : plugin.validLocales) {
-					if (validLocale.indexOf('-') != -1) {
-						if (validLocale.equals(languageTag)) {
-							register = true;
-							break;
-						}
-					}
-					else if (validLocale.equals(language)) {
-						register = true;
-						break;
-					}
-				}
-			}
-			else
-				register = true;
+			boolean register = plugin.isSupported(locale);
 
 			// Check to see if this plugin requires a mandatory hotword (and it is present)
 			if (register) {
