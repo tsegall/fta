@@ -23,6 +23,7 @@ import java.util.Base64;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -251,7 +252,7 @@ public class TextAnalysisResult {
 	 * Get the topK values.
 	 * @return The top K values (default: 10).
 	 */
-	public SortedSet<String> getTopK() {
+	public Set<String> getTopK() {
 		if (!collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.topK;
@@ -261,7 +262,7 @@ public class TextAnalysisResult {
 	 * Get the bottomK values.
 	 * @return The bottom K values (default: 10).
 	 */
-	public SortedSet<String> getBottomK() {
+	public Set<String> getBottomK() {
 		if (!collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.bottomK;
@@ -530,7 +531,7 @@ public class TextAnalysisResult {
 		return Base64.getEncoder().encodeToString(md.digest(signature));
 	}
 
-	private void outputArray(final ArrayNode detail, final SortedSet<String> set) {
+	private void outputArray(final ArrayNode detail, final Set<String> set) {
 		for (final String s : set) {
 			detail.add(s);
 		}

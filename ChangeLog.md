@@ -340,3 +340,6 @@
  - Fix broken Sample - SamplePlugin
  - Enhance ColorPlugin to support French as well as English
  - Add French sample
+
+### 4.5.4
+ - Fix formatting for TopK and BottomK (when Date or Time types) to honor formatting of input

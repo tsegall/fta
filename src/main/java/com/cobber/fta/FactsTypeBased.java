@@ -15,13 +15,13 @@
  */
 package com.cobber.fta;
 
-import java.util.SortedSet;
+import java.util.Set;
 
 public class FactsTypeBased {
 	protected String minValue;
 	protected String maxValue;
 	protected Double mean;
 	protected Double variance;
-	protected SortedSet<String> topK;
-	protected SortedSet<String> bottomK;
+	protected Set<String> topK;
+	protected Set<String> bottomK;
 }

@@ -41,11 +41,13 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
@@ -2261,8 +2263,8 @@ public class TextAnalyzer {
 
 				ret.minValue = minLocalDate == null ? null : minLocalDate.format(dtf);
 				ret.maxValue = maxLocalDate == null ? null : maxLocalDate.format(dtf);
-				ret.bottomK = tbLocalDate.bottomKasString();
-				ret.topK = tbLocalDate.topKasString();
+				ret.bottomK = alignFormat(tbLocalDate.bottomKasString(), FTAType.LOCALDATE, dtf);
+				ret.topK = alignFormat(tbLocalDate.topKasString(), FTAType.LOCALDATE, dtf);
 			}
 			break;
 
@@ -2272,8 +2274,8 @@ public class TextAnalyzer {
 
 				ret.minValue = minLocalTime == null ? null : minLocalTime.format(dtf);
 				ret.maxValue = maxLocalTime == null ? null : maxLocalTime.format(dtf);
-				ret.bottomK = tbLocalTime.bottomKasString();
-				ret.topK = tbLocalTime.topKasString();
+				ret.bottomK = alignFormat(tbLocalTime.bottomKasString(), FTAType.LOCALTIME, dtf);
+				ret.topK = alignFormat(tbLocalTime.topKasString(), FTAType.LOCALTIME, dtf);
 			}
 			break;
 
@@ -2283,8 +2285,8 @@ public class TextAnalyzer {
 
 				ret.minValue = minLocalDateTime == null ? null : minLocalDateTime.format(dtf);
 				ret.maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(dtf);
-				ret.bottomK = tbLocalDateTime.bottomKasString();
-				ret.topK = tbLocalDateTime.topKasString();
+				ret.bottomK = alignFormat(tbLocalDateTime.bottomKasString(), FTAType.LOCALDATETIME, dtf);
+				ret.topK = alignFormat(tbLocalDateTime.topKasString(), FTAType.LOCALDATETIME, dtf);
 			}
 			break;
 
@@ -2294,8 +2296,8 @@ public class TextAnalyzer {
 
 				ret.minValue = minZonedDateTime.format(dtf);
 				ret.maxValue = maxZonedDateTime.format(dtf);
-				ret.bottomK = tbZonedDateTime.bottomKasString();
-				ret.topK = tbZonedDateTime.topKasString();
+				ret.bottomK = alignFormat(tbZonedDateTime.bottomKasString(), FTAType.ZONEDDATETIME, dtf);
+				ret.topK = alignFormat(tbZonedDateTime.topKasString(), FTAType.ZONEDDATETIME, dtf);
 			}
 			break;
 
@@ -2305,10 +2307,40 @@ public class TextAnalyzer {
 
 				ret.minValue = minOffsetDateTime.format(dtf);
 				ret.maxValue = maxOffsetDateTime.format(dtf);
-				ret.bottomK = tbOffsetDateTime.bottomKasString();
-				ret.topK = tbOffsetDateTime.topKasString();
+				ret.bottomK = alignFormat(tbOffsetDateTime.bottomKasString(), FTAType.OFFSETDATETIME, dtf);
+				ret.topK = alignFormat(tbOffsetDateTime.topKasString(), FTAType.OFFSETDATETIME, dtf);
 			}
 			break;
+		}
+
+		return ret;
+	}
+
+	/*
+	 * Return a new Set (in the same order) as the input set but formatted according to the supplied DateTimeFormatter.
+	 * The input set is ordered based on the position on a timeline, not lexigraphically.
+	 * Note: The input set is formatted according to the default formatter based on the type.
+	 */
+	private Set<String> alignFormat(final SortedSet<String> toFix, final FTAType type, final DateTimeFormatter dtf) {
+		Set<String> ret = new LinkedHashSet<>();
+		for (String s : toFix) {
+			switch (type) {
+			case LOCALDATE:
+				ret.add(LocalDate.parse(s).format(dtf));
+				break;
+			case LOCALTIME:
+				ret.add(LocalTime.parse(s).format(dtf));
+				break;
+			case LOCALDATETIME:
+				ret.add(LocalDateTime.parse(s).format(dtf));
+				break;
+			case ZONEDDATETIME:
+				ret.add(ZonedDateTime.parse(s).format(dtf));
+				break;
+			case OFFSETDATETIME:
+				ret.add(OffsetDateTime.parse(s).format(dtf));
+				break;
+			}
 		}
 
 		return ret;
