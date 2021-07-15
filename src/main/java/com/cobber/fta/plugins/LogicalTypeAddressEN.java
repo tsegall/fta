@@ -19,12 +19,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
 import com.cobber.fta.SingletonSet;
-import com.cobber.fta.AnalysisConfig;
-import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
@@ -58,7 +58,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 		threshold = 90;
 
-		addressMarkersRef = new SingletonSet("resource", "/reference/address_markers.csv");
+		addressMarkersRef = new SingletonSet("resource", "/reference/en_street_markers.csv");
 		addressMarkers = addressMarkersRef.getMembers();
 
 		return true;

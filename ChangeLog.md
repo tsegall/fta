@@ -353,3 +353,7 @@
  - PhoneNumber Plugin - The Google library is very permissive and generally strips punctuation, be little more discerning so that we don't treat ordinary numbers as phone numbers
  - Switch Random to SecureRandom
  - Now builds on Java 11, always targets Java 8 (currently)
+
+### 4.5.6
+ - Rationalize names of reference files
+ - Add new Semantic Types - HONORIFIC_EN, STREET_MARKER_EN

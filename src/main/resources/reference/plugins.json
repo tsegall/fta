@@ -91,11 +91,33 @@
 		"priority": 70
 	},
 	{
+		"qualifier": "STREET_MARKER_EN",
+		"description": "Street Marker (English Language)",
+		"validLocales": [ "en" ],
+		"headerRegExps": [ ".*(?i)(street).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"content": "/reference/en_street_markers.csv",
+		"contentType": "resource",
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 71
+	},
+	{
 		"qualifier": "GENDER.TEXT_EN",
 		"description": "Gender (English Language)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGenderEN",
 		"validLocales": [ "en" ],
 		"priority": 80
+	},
+	{
+		"qualifier": "HONORIFIC_EN",
+		"description": "Honorific (English Language)",
+		"validLocales": [ "en" ],
+		"headerRegExps": [ ".*(?i)(honorific|title).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"content": "/reference/en_honorific.csv",
+		"contentType": "resource",
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 81
 	},
 	{
 		"qualifier": "COUNTRY.TEXT_EN",
@@ -268,7 +290,7 @@
 		"description": "Continent",
 		"headerRegExps": [ ".*(?i)(continent|region).*" ],
 		"headerRegExpConfidence": [ 90 ],
-		"content": "/reference/continent_en.csv",
+		"content": "/reference/en_continent.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 150
@@ -278,7 +300,7 @@
 		"description": "Continent Code",
 		"headerRegExps": [ ".*(?i)(continent|region).*" ],
 		"headerRegExpConfidence": [ 90 ],
-		"content": "/reference/continent_code_en.csv",
+		"content": "/reference/en_continent_code.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 152
@@ -288,7 +310,7 @@
 		"description": "World Region",
 		"headerRegExps": [ ".*(?i)(region).*" ],
 		"headerRegExpConfidence": [ 90 ],
-		"content": "/reference/world_region.csv",
+		"content": "/reference/en_world_region.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 154
@@ -425,7 +447,7 @@
 		"headerRegExpConfidence": [ 90 ],
 		"regExpReturned": "[-' \\p{IsAlphabetic}]+",
 		"validLocales": [ "en" ],
-		"content": "/reference/language_en.csv",
+		"content": "/reference/en_language.csv",
 		"contentType": "resource",
 		"backout": "[\\p{Alpha}]+",
 		"priority": 250

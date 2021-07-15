@@ -18,11 +18,11 @@ package com.cobber.fta.plugins;
 import java.io.FileNotFoundException;
 import java.util.Map;
 
+import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
-import com.cobber.fta.AnalysisConfig;
-import com.cobber.fta.FactsTypeBased;
 
 /**
  * Plugin to detect Country names. (English-language only).
@@ -33,7 +33,7 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 
 	public LogicalTypeCountryEN(final PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, REGEXP, "\\p{IsAlphabetic}{2}", 95);
-		setContent("resource", "/reference/countries.csv");
+		setContent("resource", "/reference/en_countries.csv");
 	}
 
 	@Override

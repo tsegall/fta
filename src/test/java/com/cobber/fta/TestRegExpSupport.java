@@ -76,7 +76,7 @@ public class TestRegExpSupport {
 	public void fromFile15() throws IOException {
 		final RegExpGenerator gen = new RegExpGenerator(15, Locale.getDefault());
 
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream("/reference/world_region.csv")))) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream("/reference/en_world_region.csv")))) {
 		    String line;
 		    while ((line = br.readLine()) != null) {
 		       gen.train(line);
@@ -90,7 +90,7 @@ public class TestRegExpSupport {
 	public void fromFile5() throws IOException {
 		final RegExpGenerator gen = new RegExpGenerator(5, Locale.getDefault());
 
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream("/reference/world_region.csv")))) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream("/reference/en_world_region.csv")))) {
 		    String line;
 		    while ((line = br.readLine()) != null) {
 		       gen.train(line);
