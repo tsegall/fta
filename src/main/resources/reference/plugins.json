@@ -518,5 +518,11 @@
 		"description": "EAN-13 - EAN-13/UPC/ISBN-13 Check digit",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitEAN13",
 		"priority": 294
+	},
+	{
+		"qualifier": "CHECKDIGIT.IBAN",
+		"description": "IBAN - International Bank Account Number",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitIBAN",
+		"priority": 295
 	}
 ]

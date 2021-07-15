@@ -18,7 +18,7 @@ package com.cobber.fta.plugins;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.validator.routines.checkdigit.ModulusCheckDigit;
+import org.apache.commons.validator.routines.checkdigit.CheckDigit;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.FactsTypeBased;
@@ -34,7 +34,7 @@ import com.cobber.fta.core.FTAType;
 public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
 	public static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
-	protected ModulusCheckDigit validator;
+	protected CheckDigit validator;
 	private int length;				/* Length of check digit - -1 indicates variable length */
 
 	public LogicalTypeCheckDigit(final PluginDefinition plugin, int length) {

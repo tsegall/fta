@@ -42,6 +42,7 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeAddressEN;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitCUSIP;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitEAN13;
+import com.cobber.fta.plugins.LogicalTypeCheckDigitIBAN;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitISIN;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitLuhn;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitSEDOL;
@@ -90,6 +91,7 @@ public class TestPlugins {
 		signatures.put(LogicalTypeCheckDigitSEDOL.SEMANTIC_TYPE, "A6zVzMb8GxHKIRvQeHJYY2mUqV0=");
 		signatures.put(LogicalTypeCheckDigitISIN.SEMANTIC_TYPE, "ROIyMHsrinw2O/REk9ClAb0WUEs=");
 		signatures.put(LogicalTypeCheckDigitEAN13.SEMANTIC_TYPE, "AP6Bjl97rR4D1ogsqPqXGoD5Dq4=");
+		signatures.put(LogicalTypeCheckDigitIBAN.SEMANTIC_TYPE, "ahEtumk3vTi+ErbmmqrmBN7OeVU=");
 	}
 
 	@Test
@@ -3332,5 +3334,61 @@ public class TestPlugins {
 		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeAddressEN.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getRegExp(), ".+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void basicIBAN() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = new String[] {
+				"AD1400080001001234567890", "AT483200000012345864", "AZ96AZEJ00000000001234567890",
+				"BH02CITI00001077181611", "BY86AKBB10100000002966000000", "BE71096123456769",
+				"BA393385804800211234", "BR1500000000000010932840814P2", "BG18RZBB91550123456789",
+				"CR23015108410026012345", "HR1723600001101234565", "CY21002001950000357001234567",
+				"CZ5508000000001234567899", "DK9520000123456789", "DO22ACAU00000000000123456789",
+				"EG800002000156789012345180002", "SV43ACAT00000000000000123123", "EE471000001020145685",
+				"FO9264600123456789", "FI1410093000123458", "FR7630006000011234567890189",
+				"GE60NB0000000123456789", "DE75512108001245126199", "GI04BARC000001234567890",
+				"GR9608100010000001234567890", "GL8964710123456789", "GT20AGRO00000000001234567890",
+				"VA59001123000012345678", "HU93116000060000000012345676", "IS750001121234563108962099",
+				"IQ20CBIQ861800101010500", "IE64IRCE92050112345678", "IL170108000000012612345",
+				"IT60X0542811101000000123456", "JO71CBJO0000000000001234567890", "KZ563190000012344567",
+				"XK051212012345678906", "KW81CBKU0000000000001234560101", "LV97HABA0012345678910",
+				"LB92000700000000123123456123", "LY38021001000000123456789", "LI7408806123456789012",
+				"LT601010012345678901", "LU120010001234567891", "MT31MALT01100000000000000000123",
+				"MR1300020001010000123456753", "MU43BOMM0101123456789101000MUR", "MD21EX000000000001234567",
+				"MC5810096180790123456789085", "ME25505000012345678951", "NL02ABNA0123456789",
+				"MK07200002785123453", "NO8330001234567", "PK36SCBL0000001123456702",
+				"PS92PALS000000000400123456702", "PL10105000997603123456789123", "PT50002700000001234567833",
+				"QA54QNBA000000000000693123456", "RO09BCYP0000001234567890", "LC14BOSL123456789012345678901234",
+				"SM76P0854009812123456789123", "ST23000200000289355710148", "SA4420000001234567891234",
+				"RS35105008123123123173", "SC52BAHL01031234567890123456USD", "SK8975000000000012345671",
+				"SI56192001234567892", "ES7921000813610123456789", "SD8811123456789012",
+				"SE7280000810340009783242", "CH5604835012345678009", "TL380010012345678910106",
+				"TN5904018104004942712345", "TR320010009999901234567890", "UA903052992990004149123456789",
+				"AE460090000000123456789", "GB33BUKB20201555555555", "VG21PACG0000000123456789" };
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getCardinality(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCheckDigitIBAN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeCheckDigitIBAN.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+		}
 	}
 }

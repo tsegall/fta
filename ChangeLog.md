@@ -357,3 +357,6 @@
 ### 4.5.6
  - Rationalize names of reference files
  - Add new Semantic Types - HONORIFIC_EN, STREET_MARKER_EN
+
+### 4.5.7
+ - Add new Semantic Types - CHECKDIGIT.IBAN

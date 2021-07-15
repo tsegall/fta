@@ -115,6 +115,7 @@ AIRPORT_CODE.IATA|IATA Airport Code
 CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit (and length between 8 and 30 inclusive)
 CHECKDIGIT.CUSIP|North American Security Identifier
 CHECKDIGIT.SEDOL|UK/Ireland Security Identifier
+CHECKDIGIT.IBAN|International Bank Account Number
 CHECKDIGIT.ISIN|International Securities Identification Number
 CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)
 CITY|City/Town
@@ -132,6 +133,8 @@ DAY.DIGITS|Day represented as a number (1-31)
 EMAIL|Email Address
 GENDER.TEXT_EN|Gender (English Language)
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67
+HONORIFIC_EN|Title (English language)
+STREET_MARKER_EN| Street Suffix (English Language)
 IPADDRESS.IPV4|IP V4 Address
 IPADDRESS.IPV6|IP V6 Address
 LANGUAGE.ISO-639-2|Language code - ISO 639, two character
