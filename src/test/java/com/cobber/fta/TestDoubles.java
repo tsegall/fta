@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -28,7 +29,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.testng.Assert;
@@ -36,9 +36,11 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.RegExpGenerator;
 
 public class TestDoubles {
+	private static final SecureRandom random = new SecureRandom();
 
 	@Test
 	public void positiveDouble() throws IOException, FTAException {
@@ -468,7 +470,6 @@ public class TestDoubles {
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
 		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;
-		final Random random = new Random();
 		int locked = -1;
 
 		for (int i = 0; i < nullIterations; i++) {
@@ -505,7 +506,6 @@ public class TestDoubles {
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
 		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
-		final Random random = new Random();
 		int locked = -1;
 		final Locale locale = Locale.forLanguageTag("de-AT");
 		analysis.setLocale(locale);
@@ -546,7 +546,6 @@ public class TestDoubles {
 		analysis.setDefaultLogicalTypes(false);
 
 		analysis.train("1010e:");
-		final Random random = new Random(401);
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%04d.0e+%d",
 					random.nextInt(10000), random.nextInt(10));
@@ -634,7 +633,6 @@ public class TestDoubles {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
 		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
-		final Random random = new Random();
 		int locked = -1;
 		final Locale locale = Locale.forLanguageTag("de-DE");
 		analysis.setCollectStatistics(false);
@@ -741,9 +739,47 @@ public class TestDoubles {
 		}
 	}
 
+	boolean isTooHard(Locale locale) {
+		final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
+
+		if (!simple) {
+			System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+			return true;
+		}
+
+		final Calendar cal = GregorianCalendar.getInstance(locale);
+		if (!(cal instanceof GregorianCalendar)) {
+			System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
+			return true;
+		}
+
+		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+		final String negPrefix = TestUtils.getNegativePrefix(locale);
+		final String negSuffix = TestUtils.getNegativeSuffix(locale);
+
+		if (negPrefix.isEmpty() && negSuffix.isEmpty()) {
+			System.err.printf("Skipping locale '%s' as it has empty negPrefix and negSuffix.\n", locale);
+			return true;
+		}
+
+		String variant = locale.getDisplayVariant();
+		if (variant != null && !variant.isEmpty()) {
+			System.err.printf("Skipping locale '%s' as it has a Variant: '%s'.\n", locale, variant);
+			return true;
+		}
+
+		final String getExponentSeparator = formatSymbols.getExponentSeparator();
+		if (getExponentSeparator.length() != 1 || (getExponentSeparator.charAt(0) != 'e' &&  getExponentSeparator.charAt(0) != 'E')) {
+			System.err.printf("Skipping locale '%s' as it uses a non-standard exponentiaion character (%s).\n", locale, getExponentSeparator);
+			return true;
+		}
+
+		return false;
+	}
+
 	@Test
 	public void localeNegativeDoubleTest() throws IOException, FTAException {
-		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("hr-HR") };
@@ -753,28 +789,25 @@ public class TestDoubles {
 			final TextAnalyzer analysis = new TextAnalyzer("Separator");
 			analysis.setLocale(locale);
 
-			final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
-
-			if (!simple) {
-				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+			if (isTooHard(locale))
 				continue;
-			}
-
-			final Calendar cal = GregorianCalendar.getInstance(locale);
-			if (!(cal instanceof GregorianCalendar)) {
-				System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
-				continue;
-			}
 
 			final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 
 			final Set<String> samples = new HashSet<>();
 			nf.setMinimumFractionDigits(2);
-			for (int i = 0; i < SAMPLE_SIZE; i++) {
-				final double d = random.nextDouble() * random.nextInt();
-				final String sample = nf.format(d).toString();
-				samples.add(sample);
-				analysis.train(sample);
+
+			try {
+				for (int i = 0; i < SAMPLE_SIZE; i++) {
+					final double d = random.nextDouble() * random.nextInt();
+					final String sample = nf.format(d).toString();
+					samples.add(sample);
+					analysis.train(sample);
+				}
+			}
+			catch (FTAUnsupportedLocaleException e) {
+				System.err.printf("Skipping locale '%s' = reason: '%s'.\n", locale, e.getMessage());
+				continue;
 			}
 
 			final TextAnalysisResult result = analysis.getResult();
@@ -800,7 +833,6 @@ public class TestDoubles {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleDoubleExponentTest");
 		analysis.setCollectStatistics(false);
 		final DecimalFormat df = new DecimalFormat("0.00E00");
-		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		String sample;
 
@@ -842,27 +874,22 @@ public class TestDoubles {
 
 	@Test
 	public void localeNegativeDoubleExponentTest() throws IOException, FTAException {
-		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("mk-MK") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-JO") };
 
 		for (final Locale locale : locales) {
 			final TextAnalyzer analysis = new TextAnalyzer("localeNegativeDoubleExponentTest");
 			analysis.setLocale(locale);
 
-			final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
-
-			if (!simple) {
-				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+			if ("Arabic".contentEquals(locale.getDisplayLanguage())) {
+				System.err.printf("Skipping Arabic locale '%s' - broken on Java 8.\n", locale.toLanguageTag());
 				continue;
 			}
 
-			final Calendar cal = GregorianCalendar.getInstance(locale);
-			if (!(cal instanceof GregorianCalendar)) {
-				System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
+			if (isTooHard(locale))
 				continue;
-			}
+
 
 			if ("mk-MK".contentEquals(locale.toLanguageTag())) {
 				System.err.printf("Skipping locale '%s' as it has trailing neg suffix.\n", locale);
@@ -870,26 +897,31 @@ public class TestDoubles {
 			}
 
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
-
 			final DecimalFormat df = new DecimalFormat("#E0", formatSymbols);
 
-//			String grp = Utils.slosh(formatSymbols.getGroupingSeparator());
-//			String dec = Utils.slosh(formatSymbols.getDecimalSeparator());
-//			System.err.printf("Locale '%s', grouping: %s, decimal: %s, negPrefix: %s, negSuffix: %s.\n",
-//					locale, grp, dec, negPrefix, negSuffix);
+			String grp = RegExpGenerator.slosh(formatSymbols.getGroupingSeparator());
+			String dec = RegExpGenerator.slosh(formatSymbols.getDecimalSeparator());
+			System.err.printf("Locale '%s', grouping: '%s', decimal: '%s', negPrefix: '%s', negSuffix: '%s'.\n",
+					locale, grp, dec, TestUtils.getNegativePrefix(locale), TestUtils.getNegativeSuffix(locale));
 
 			final Set<String> samples = new HashSet<>();
-			for (int i = 0; i < SAMPLE_SIZE; i++) {
-				double d = random.nextDouble() * random.nextInt();
-				final int pow = random.nextInt(10);
-				if (pow % 2 == 0)
-					d *= Math.pow(10, pow);
-				else
-					d *= Math.pow(d,  -pow);
+			try {
+				for (int i = 0; i < SAMPLE_SIZE; i++) {
+					double d = random.nextDouble() * random.nextInt();
+					final int pow = random.nextInt(10);
+					if (pow % 2 == 0)
+						d *= Math.pow(10, pow);
+					else
+						d *= Math.pow(d,  -pow);
 
-				final String sample = df.format(d).toString();
-				samples.add(sample);
-				analysis.train(sample);
+					final String sample = df.format(d).toString();
+					samples.add(sample);
+					analysis.train(sample);
+				}
+			}
+			catch (FTAUnsupportedLocaleException e) {
+				System.err.printf("Skipping locale '%s' = reason: '%s'.\n", locale, e.getMessage());
+				continue;
 			}
 
 			final TextAnalysisResult result = analysis.getResult();
@@ -907,6 +939,8 @@ public class TestDoubles {
 			final String actualRegExp = result.getRegExp();
 
 			for (final String sample : samples) {
+				if (!sample.matches(actualRegExp))
+					System.err.println("Locale: " + locale + " " + sample + " " + actualRegExp);
 				Assert.assertTrue(sample.matches(actualRegExp), "Locale: " + locale + " " + sample + " " + actualRegExp);
 			}
 		}
@@ -1019,7 +1053,6 @@ public class TestDoubles {
 
 	@Test
 	public void decimalSeparatorTest_Locale() throws IOException, FTAException {
-		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = new Locale[] { Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("en-US") };
 
@@ -1062,7 +1095,6 @@ public class TestDoubles {
 	@Test
 	public void monetaryDecimalSeparatorDefault() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
-		final Random random = new Random();
 		final int SAMPLE_SIZE = 10000;
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
@@ -1109,7 +1141,6 @@ public class TestDoubles {
 	public void monetaryDecimalSeparatorFrench() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		analysis.setLocale(Locale.FRENCH);
-		final Random random = new Random(314159265);
 		final int SAMPLE_SIZE = 10000;
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
@@ -1195,55 +1226,54 @@ public class TestDoubles {
 
 	@Test
 	public void localeDoubleTest() throws IOException, FTAException {
-		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] { Locale.forLanguageTag("en"), Locale.forLanguageTag("es-CO") };
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("es-CO") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("bg-BG") };
 
 		for (final Locale locale : locales) {
 			final TextAnalyzer analysis = new TextAnalyzer("Separator");
 			analysis.setLocale(locale);
 
-			final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
-
-			if (!simple) {
-				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+			if (isTooHard(locale))
 				continue;
-			}
-
-			final Calendar cal = GregorianCalendar.getInstance(locale);
-			if (!(cal instanceof GregorianCalendar)) {
-				System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
-				continue;
-			}
 
 			final Set<String> samples = new LinkedHashSet<>();
 			final NumberFormat nf = NumberFormat.getNumberInstance(locale);
 			nf.setMinimumFractionDigits(2);
-			for (int i = 0; i < SAMPLE_SIZE; i++) {
-				final double d = random.nextDouble() * 100000000;
-				final String sample = nf.format(d).toString();
-				samples.add(sample);
-				analysis.train(sample);
+
+			try {
+				for (int i = 0; i < SAMPLE_SIZE; i++) {
+					final double d = random.nextDouble() * 100000000;
+					final String sample = nf.format(d).toString();
+					samples.add(sample);
+					analysis.train(sample);
+				}
+			}
+			catch (FTAUnsupportedLocaleException e) {
+				System.err.printf("Skipping locale '%s' = reason: '%s'.\n", locale, e.getMessage());
+				continue;
 			}
 
 			final TextAnalysisResult result = analysis.getResult();
 
+			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+			final String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
+			final String dec = formatSymbols.getDecimalSeparator() == '.' ? "\\." : "" + formatSymbols.getDecimalSeparator();
+//			System.err.printf("Locale: '%s', grp = '%s',  dec = '%s'.%n", locale, grp, dec);
+
+			if (result.getType() == FTAType.STRING) {
+				for (String s : samples)
+					System.err.println(s);
+			}
 			Assert.assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
 			Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
 			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			Assert.assertEquals(result.getNullCount(), 0);
 			Assert.assertEquals(result.getLeadingZeroCount(), 0);
-			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
-
-			final String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
-			final String dec = formatSymbols.getDecimalSeparator() == '.' ? "\\." : "" + formatSymbols.getDecimalSeparator();
 
 			final String regExp = "[\\d" + grp + "]*" + dec + "?" + "[\\d" + grp +"]+";
-
-//			System.err.println("Locale: " + locale + ", grp = '" + grp + "', dec = '" + dec + "', re: " + regExp + "'");
 
 			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
@@ -1298,7 +1328,6 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 
 //	@Test
 	public void decimalSeparatorTest_Period() throws IOException, FTAException {
-		final Random random = new Random(1);
 		final Set<String> failures = new HashSet<>();
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
@@ -1394,7 +1423,6 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 			analysis.setDefaultLogicalTypes(false);
 			analysis.setCollectStatistics(false);
 		}
-		final Random random = new Random(314);
 		final long sampleCount = 100_000_000_000L;
 		boolean saveOutput = false;
 		BufferedWriter bw = null;
@@ -1427,7 +1455,6 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), iters + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMinLength(), 12);
 		Assert.assertEquals(result.getMaxLength(), 18);
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		Assert.assertEquals(result.getConfidence(), 1.0);

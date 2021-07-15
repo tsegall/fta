@@ -60,13 +60,10 @@ public class TextAnalysisResult {
 	private final FactsCore factsCore;
 	private final FactsTypeBased facts;
 	private final DateResolutionMode resolutionMode;
+	private final AnalysisConfig analysisConfig;
 	private final Map<String, Long> cardinality;
-	private final int maxCardinality;
 	private final Map<String, Long> outliers;
-	private final int maxOutliers;
 	private final Map<String, Long> shapes;
-	private final int maxShapes;
-	private final boolean collectStatistics;
 
 	/**
 	 * @param name The name of the data stream being analyzed.
@@ -83,18 +80,19 @@ public class TextAnalysisResult {
 	 *   of the fields is the day or the month.  If resolutionMode is DayFirst, then assume day is first, if resolutionMode is
 	 *   MonthFirst then assume month is first, if it is Auto then choose either DayFirst or MonthFirst based on the locale, if it
 	 *   is None then the pattern returned will have '?' in to represent any ambiguity present.
+	 * @param analysisConfig The Configuration of the current analysis.
 	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param shapes A map of input shapes and the count of occurrences of the these shapes.
-	 * @param collectStatistics Were statistics collected during this analysis.
 	 */
 	TextAnalysisResult(final String name, Locale locale, final long matchCount, final long totalCount, final long sampleCount,
 			final long nullCount, final long blankCount,
 			final PatternInfo patternInfo, final FactsCore factsCore, final FactsTypeBased facts,
 			final double confidence, final DateResolutionMode resolutionMode,
-			final Map<String, Long> cardinality, final int maxCardinality,
-			final Map<String, Long> outliers, final int maxOutliers,
-			final Map<String, Long> shapes, final int maxShapes, final boolean collectStatistics) {
+			final AnalysisConfig analysisConfig,
+			final Map<String, Long> cardinality,
+			final Map<String, Long> outliers,
+			final Map<String, Long> shapes) {
 		this.name = name;
 		this.locale = locale;
 		this.matchCount = matchCount;
@@ -107,13 +105,10 @@ public class TextAnalysisResult {
 		this.factsCore = factsCore;
 		this.facts = facts;
 		this.resolutionMode = resolutionMode;
+		this.analysisConfig = analysisConfig;
 		this.cardinality = cardinality;
-		this.maxCardinality = maxCardinality;
 		this.outliers = outliers;
-		this.maxOutliers = maxOutliers;
 		this.shapes = shapes;
-		this.maxShapes = maxShapes;
-		this.collectStatistics = collectStatistics;
 	}
 
 	/**
@@ -176,7 +171,7 @@ public class TextAnalysisResult {
 	 * @return The minimum value as a String.
 	 */
 	public String getMinValue() {
-		if (!collectStatistics)
+		if (!analysisConfig.collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.minValue;
 	}
@@ -186,7 +181,7 @@ public class TextAnalysisResult {
 	 * @return The maximum value as a String.
 	 */
 	public String getMaxValue() {
-		if (!collectStatistics)
+		if (!analysisConfig.collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.maxValue;
 	}
@@ -231,7 +226,7 @@ public class TextAnalysisResult {
 	 * @return The mean.
 	 */
 	public Double getMean() {
-		if (!collectStatistics)
+		if (!analysisConfig.collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.mean;
 	}
@@ -241,7 +236,7 @@ public class TextAnalysisResult {
 	 * @return The Standard Deviation.
 	 */
 	public Double getStandardDeviation() {
-		if (!collectStatistics)
+		if (!analysisConfig.collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
 
 
@@ -253,7 +248,7 @@ public class TextAnalysisResult {
 	 * @return The top K values (default: 10).
 	 */
 	public Set<String> getTopK() {
-		if (!collectStatistics)
+		if (!analysisConfig.collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.topK;
 	}
@@ -263,7 +258,7 @@ public class TextAnalysisResult {
 	 * @return The bottom K values (default: 10).
 	 */
 	public Set<String> getBottomK() {
-		if (!collectStatistics)
+		if (!analysisConfig.collectStatistics)
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.bottomK;
 	}
@@ -455,7 +450,7 @@ public class TextAnalysisResult {
 	 * @return True if statistics were collected.
 	 */
 	public boolean statisticsEnabled() {
-		return collectStatistics;
+		return analysisConfig.collectStatistics;
 	}
 
 	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
@@ -663,20 +658,20 @@ public class TextAnalysisResult {
 		if (patternInfo.isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
-		analysis.put("cardinality", cardinality.size() < maxCardinality ? cardinality.size() : -1);
+		analysis.put("cardinality", cardinality.size() < analysisConfig.maxCardinality ? cardinality.size() : -1);
 
 		if (!cardinality.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("cardinalityDetail");
 			outputDetails(mapper, detail, cardinality, verbose);
 		}
 
-		analysis.put("outlierCardinality", outliers.size() < maxOutliers ? outliers.size() : -1);
+		analysis.put("outlierCardinality", outliers.size() < analysisConfig.maxOutliers ? outliers.size() : -1);
 		if (!outliers.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("outlierDetail");
 			outputDetails(mapper, detail, outliers, verbose);
 		}
 
-		analysis.put("shapesCardinality", (shapes.size() > 0 && shapes.size() < maxShapes) ? shapes.size() : -1);
+		analysis.put("shapesCardinality", (shapes.size() > 0 && shapes.size() < analysisConfig.maxShapes) ? shapes.size() : -1);
 		if (!shapes.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("shapesDetail");
 			outputDetails(mapper, detail, shapes, verbose);
@@ -703,7 +698,6 @@ public class TextAnalysisResult {
 			signature = getDataSignature();
 			if (signature != null)
 				analysis.put("dataSignature", signature);
-
 		}
 
 		try {

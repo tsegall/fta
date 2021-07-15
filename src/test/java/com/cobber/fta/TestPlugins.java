@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.security.SecureRandom;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -30,7 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.testng.Assert;
@@ -59,6 +59,7 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
 public class TestPlugins {
+	private static final SecureRandom random = new SecureRandom();
 	protected final static Map<String, String> signatures = new HashMap<>();
 
 	static {
@@ -84,11 +85,11 @@ public class TestPlugins {
 		signatures.put(LogicalTypeIPV4Address.SEMANTIC_TYPE, "tjKmv3C98nzoxPHtvYb1sp+UQEY=");
 		signatures.put(LogicalTypePhoneNumber.SEMANTIC_TYPE, "YOwAVZnoqmDtMa0wUtlF+Mda69U=");
 		signatures.put(LogicalTypeURL.SEMANTIC_TYPE, "r+muJMmeRDtmg9qyVbWCOAMusc8=");
-		signatures.put(LogicalTypeCheckDigitLuhn.SEMANTIC_TYPE, "45HtMywjm5EUGuqpQ6JGySq1bZg=");
+		signatures.put(LogicalTypeCheckDigitLuhn.SEMANTIC_TYPE, "ySEbGrpJCO/yoMiVxyK5vi9sBtU=");
 		signatures.put(LogicalTypeCheckDigitCUSIP.SEMANTIC_TYPE, "4EK6Y3hBd2en5Hm9EUKnVbrUjlM=");
 		signatures.put(LogicalTypeCheckDigitSEDOL.SEMANTIC_TYPE, "A6zVzMb8GxHKIRvQeHJYY2mUqV0=");
 		signatures.put(LogicalTypeCheckDigitISIN.SEMANTIC_TYPE, "ROIyMHsrinw2O/REk9ClAb0WUEs=");
-		signatures.put(LogicalTypeCheckDigitEAN13.SEMANTIC_TYPE, "nIgwF5al9Zoihvrh2HxG/BcCH3Q=");
+		signatures.put(LogicalTypeCheckDigitEAN13.SEMANTIC_TYPE, "AP6Bjl97rR4D1ogsqPqXGoD5Dq4=");
 	}
 
 	@Test
@@ -476,8 +477,9 @@ public class TestPlugins {
 	@Test
 	public void testRegisterInfinite() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
+		analysis.setDefaultLogicalTypes(false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("CUSIP", "com.cobber.fta.PluginCreditCard"));
+		plugins.add(new PluginDefinition("CC", "com.cobber.fta.PluginCreditCard"));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "Ignore", null);
@@ -498,20 +500,16 @@ public class TestPlugins {
 				"JCB,3566002020360505",
 				"MasterCard,5555555555554444",
 				"MasterCard,5105105105105100",
+				"MasterCard (2 series),2223003122003222",
+				"MasterCard (debit),5200828282828210",
+				"MasterCard (prepaid),5105105105105100",
 				"Visa,4111111111111111",
 				"Visa,4012888888881881",
 				"Visa,4222222222222",
-//				"Dankort (PBS),76009244561",
+				"Visa,4242424242424242",
+				"Visa (debit),4000056655665556",
 				"Dankort (PBS),5019717010103742",
-				"Switch/Solo (Paymentech),6331101999990016",
-				"MasterCard,5555 5555 5555 4444",
-				"MasterCard,5105 1051 0510 5100",
-				"Visa,4111 1111 1111 1111",
-				"Visa,4012 8888 8888 1881",
-				"MasterCard,5555-5555-5555-4444",
-				"MasterCard,5105-1051-0510-5100",
-				"Visa,4111-1111-1111-1111",
-				"Visa,4012-8888-8888-1881"
+				"Switch/Solo (Paymentech),6331101999990016"
 		};
 
 		final Set<String>  samples = new HashSet<>();
@@ -524,13 +522,13 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getTypeQualifier(), "CREDITCARD");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getMinLength(), 13);
-		Assert.assertEquals(result.getMaxLength(), 19);
+		Assert.assertEquals(result.getMaxLength(), 16);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertTrue(result.isLogicalType());
 		Assert.assertEquals(result.getRegExp(), PluginCreditCard.REGEXP);
@@ -996,14 +994,14 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCheckDigitLuhn.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeCheckDigitLuhn.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 1);
 		Assert.assertEquals(result.getRegExp(), "\\d{15}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
@@ -1074,14 +1072,14 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCheckDigitEAN13.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeCheckDigitEAN13.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 1);
 		Assert.assertEquals(result.getRegExp(), LogicalTypeCheckDigitEAN13.REGEXP);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
@@ -2416,7 +2414,6 @@ public class TestPlugins {
 
 	@Test
 	public void possibleSSN() throws IOException, FTAException {
-		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
@@ -2453,7 +2450,6 @@ public class TestPlugins {
 
 	@Test
 	public void testRegExpLogicalType_SSN() throws IOException, FTAException {
-		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
@@ -2504,7 +2500,6 @@ public class TestPlugins {
 
 	@Test
 	public void testGenderPT() throws IOException, FTAException {
-		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
 		for (int i = 0; i < samples.length; i++) {
@@ -2546,7 +2541,6 @@ public class TestPlugins {
 	public void testFinitePlugin() throws IOException, FTAException {
 		final InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
-		final Random random = new Random(314159265);
 
 		final PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
 				null, null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*", new String[] { "en" }, true, null, null, 98, FTAType.STRING);
@@ -2568,13 +2562,12 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getBlankCount(), 11);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		final String re = result.getRegExp();
 		Assert.assertEquals(re, "\\p{Alpha}*");
 		Assert.assertEquals(result.getTypeQualifier(), "PLANET");
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - 11));
+		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 		Assert.assertEquals(result.getOutlierCount(), 1);
 		Assert.assertEquals(result.getSampleCount(), SAMPLES + 1);
 		final Map<String, Long> outliers = result.getOutlierDetails();
@@ -2584,12 +2577,11 @@ public class TestPlugins {
 
 	@Test
 	public void testFinitePluginBackout() throws IOException, FTAException {
-		final String[] planets = new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" };
+		final InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
-		final Random random = new Random(314159265);
 
 		final PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
-				null, null, String.join("|",  planets), "inline", "\\p{Alpha}*", new String[] { "en" }, true, null, null, 98, FTAType.STRING);
+				null, null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*", new String[] { "en" }, true, null, null, 98, FTAType.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		final List<PluginDefinition> plugins = new ArrayList<>();
@@ -2603,13 +2595,12 @@ public class TestPlugins {
 
 		analysis.train("io");
 		for (int i = 0; i < SAMPLES; i++) {
-			analysis.train(planets[random.nextInt(planets.length)]);
+			analysis.train(planets.members[random.nextInt(planets.members.length)]);
 		}
 		analysis.train("europa");
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getBlankCount(), 11);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), "(?i)(EARTH|EUROPA|IO|JUPITER|MARS|MERCURY|NEPTUNE|PLUTO|SATURN|URANUS|VENUS)");
@@ -2635,9 +2626,8 @@ public class TestPlugins {
 			System.err.println(e.getMessage());
 		}
 
-		final Random r = new Random(173);
 		for (int i = 0; i < COUNT; i++)
-			analysis.train(String.valueOf(r.nextDouble()));
+			analysis.train(String.valueOf(random.nextDouble()));
 
 		analysis.train("A");
 		analysis.train("BBBBBBBBBBBBBBBBBBBBBBBBB");

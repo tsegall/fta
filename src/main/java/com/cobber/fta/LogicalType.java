@@ -147,7 +147,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 
 	/**
 	 * The underlying type we are qualifying.
-	 * @return The underlying type - e.g. STRING, INT, etc.
+	 * @return The underlying type - e.g. STRING, LONG, etc.
 	 */
 	public abstract FTAType getBaseType();
 
@@ -169,9 +169,10 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * @param cardinality Cardinality set, up to the maximum maintained
 	 * @param outliers Outlier set, up to the maximum maintained
 	 * @param shapes Shapes observed
+	 * @param analysisConfig The Configuration of the current analysis
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, FactsTypeBased facts, Map<String, Long> cardinality, Map<String, Long> outliers, Shapes shapes);
+	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, FactsTypeBased facts, Map<String, Long> cardinality, Map<String, Long> outliers, Shapes shapes, AnalysisConfig analysisConfig);
 
 	/**
 	 * Does the set of members enumerated reflect the entire set.  For example any of the ISO sets are reference sets and

@@ -16,11 +16,11 @@
 package com.cobber.fta;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.testng.Assert;
@@ -31,6 +31,8 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.plugins.LogicalTypeUSZip5;
 
 public class RandomTests {
+	private static final SecureRandom random = new SecureRandom();
+
 	@Test
 	public void getReflectionSampleSize() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
@@ -389,7 +391,6 @@ public class RandomTests {
 	@Test
 	public void testQualifierAlpha() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alpha");
-		final Random random = new Random(21456);
 		final int STRING_LENGTH = 5;
 		Assert.assertTrue(analysis.getLengthQualifier());
 		analysis.setLengthQualifier(false);
@@ -1085,7 +1086,6 @@ public class RandomTests {
 	public void textBlocks() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int iterations = 100000;
-		final Random random = new Random(478031);
 		int locked = -1;
 		final StringBuilder line = new StringBuilder();
 		int minTrimmedLength = Integer.MAX_VALUE;
@@ -1121,10 +1121,9 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getSampleCount(), iterations);
 		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -1133,7 +1132,6 @@ public class RandomTests {
 	@Test
 	public void setDetectWindow() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final Random random = new Random();
 		int locked = -1;
 		int sample = 0;
 
@@ -1183,7 +1181,6 @@ public class RandomTests {
 	@Test
 	public void setDetectWindowTooLate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final Random random = new Random();
 		int locked = -1;
 		int i = 0;
 
@@ -1206,7 +1203,6 @@ public class RandomTests {
 	public void setLocaleTooLate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final Locale locale = Locale.forLanguageTag("en-US");
-		final Random random = new Random();
 		int locked = -1;
 		int i = 0;
 
@@ -1250,7 +1246,6 @@ public class RandomTests {
 	@Test
 	public void setMaxCardinalityTooLate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final Random random = new Random();
 		int locked = -1;
 		int i = 0;
 
@@ -1293,7 +1288,6 @@ public class RandomTests {
 	@Test
 	public void setMaxOutliersTooLate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
-		final Random random = new Random();
 		int locked = -1;
 		int i = 0;
 
@@ -1314,7 +1308,6 @@ public class RandomTests {
 
 	@Test
 	public void USPhone() throws IOException, FTAException {
-		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
@@ -1351,7 +1344,6 @@ public class RandomTests {
 
 	@Test
 	public void USPhone2() throws IOException, FTAException {
-		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
@@ -1388,7 +1380,6 @@ public class RandomTests {
 
 	@Test
 	public void USPhone3() throws IOException, FTAException {
-		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
@@ -1458,7 +1449,6 @@ public class RandomTests {
 
 	@Test
 	public void difficultRegExp() throws IOException, FTAException {
-		final Random random = new Random(314159265);
 		String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
@@ -1499,7 +1489,6 @@ public class RandomTests {
 
 		analysis.setMaxCardinality(2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 
-		final Random random = new Random();
 		final int nullIterations = 50;
 		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
 		int locked = -1;
@@ -1714,7 +1703,6 @@ public class RandomTests {
 	};
 
 	public String[] generateTestData(final int type, final int length) {
-		final Random random = new Random(314159265);
 		String[] result = new String[length];
 		final String[] candidatesISO3166_3 = TestUtils.valid3166_3.split("\\|");
 		final String[] candidatesISO3166_2 = TestUtils.valid3166_2.split("\\|");
@@ -1818,7 +1806,6 @@ public class RandomTests {
 
 	@Test
 	public void testThreading() throws IOException, FTAException, FTAException, InterruptedException {
-		final Random random = new Random(271828);
 		final int THREADS = 1000;
 		Thread[] threads = new Thread[THREADS];
 
@@ -1891,7 +1878,6 @@ public class RandomTests {
 	}
 
 	class LogicalTypeThread implements Runnable {
-		private Random any = new Random();
 		private String id;
 
 		LogicalTypeThread(final String id) throws IOException, FTAException {
@@ -1902,7 +1888,7 @@ public class RandomTests {
 		public void run() {
 			LogicalType logicalType = null;
 			do {
-				final String semanticType = TestStandalonePlugins.allSemanticTypes[any.nextInt(TestStandalonePlugins.allSemanticTypes.length)];
+				final String semanticType = TestStandalonePlugins.allSemanticTypes[random.nextInt(TestStandalonePlugins.allSemanticTypes.length)];
 				try {
 					logicalType = LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier(semanticType), Locale.getDefault());
 				} catch (FTAException e) {
@@ -1939,7 +1925,6 @@ public class RandomTests {
 
 	//@Test
 	public void fuzzInt() throws IOException, FTAException {
-		final Random random = new Random(3141562);
 		final int SAMPLES = 1000;
 		final int errorRate = 1;
 

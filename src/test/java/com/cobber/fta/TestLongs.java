@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -27,7 +28,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.testng.Assert;
@@ -35,10 +35,13 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 
 public class TestLongs {
+	private static final SecureRandom random = new SecureRandom();
+
 	public void _variableLengthPositiveInteger(final boolean collectStatistics) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		if (!collectStatistics)
@@ -367,7 +370,6 @@ public class TestLongs {
 	@Test
 	public void groupingSeparatorLarge() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
-		final Random random = new Random();
 		final int SAMPLE_SIZE = 10000;
 		long min = Long.MAX_VALUE;
 		long max = Long.MIN_VALUE;
@@ -418,7 +420,6 @@ public class TestLongs {
 	@Test
 	public void groupingSeparatorLargeFRENCH() throws IOException, FTAException {
 		final Locale locales[] = new Locale[] { Locale.GERMAN, Locale.FRANCE };
-		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Set<String> samples = new HashSet<>();
 
@@ -469,7 +470,8 @@ public class TestLongs {
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
 			String regExp = "[+-]?[\\d" + RegExpGenerator.slosh(formatSymbols.getGroupingSeparator()) + "]";
-			regExp += RegExpSplitter.qualify(minValue.length(), maxValue.length());
+			int minLength = minValue.charAt(0) == '-' ? minValue.length() - 1 : minValue.length();
+			regExp += RegExpSplitter.qualify(minLength, maxValue.length());
 			Assert.assertEquals(result.getRegExp(), regExp);
 			Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -513,10 +515,9 @@ public class TestLongs {
 
 	@Test
 	public void localeLongTest() throws IOException, FTAException {
-		final Random random = new Random(1);
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
-		//				Locale[] locales = new Locale[] { Locale.forLanguageTag("yi") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-EH") };
 
 		for (final Locale locale : locales) {
 			long min = Long.MAX_VALUE;
@@ -552,35 +553,46 @@ public class TestLongs {
 			final String negPrefix = TestUtils.getNegativePrefix(locale);
 			final String negSuffix = TestUtils.getNegativeSuffix(locale);
 
+			if (negPrefix.isEmpty() && negSuffix.isEmpty()) {
+				System.err.printf("Skipping locale '%s' as it has empty negPrefix and negSuffix.\n", locale);
+				continue;
+			}
+
 			final Set<String> samples = new HashSet<>();
 			final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 
 //			System.err.printf("Locale '%s', negPrefix: %s, negSuffix: %s, min: %s, max: %s, absMax:%s.\n",
 //					locale.toLanguageTag(), negPrefix, negSuffix, String.valueOf(min), String.valueOf(max), absMinValue);
 
-			for (int i = 0; i < SAMPLE_SIZE; i++) {
-				long l = random.nextLong();
-				if (l % 2 == 0)
-					l = -l;
-				final String sample = nf.format(l).toString();
+			try {
+				for (int i = 0; i < SAMPLE_SIZE; i++) {
+					long l = random.nextLong();
+					if (l % 2 == 0)
+						l = -l;
+					final String sample = nf.format(l).toString();
 
-				if (l < min) {
-					min = l;
-				}
-				if (l > max) {
-					max = l;
-				}
-				if (Math.abs(l) < absMin) {
-					absMin = Math.abs(l);
-					absMinValue = nf.format(Math.abs(l)).toString();
-				}
-				if (Math.abs(l) > absMax) {
-					absMax = Math.abs(l);
-					absMaxValue = nf.format(Math.abs(l)).toString();
-				}
+					if (l < min) {
+						min = l;
+					}
+					if (l > max) {
+						max = l;
+					}
+					if (Math.abs(l) < absMin) {
+						absMin = Math.abs(l);
+						absMinValue = nf.format(Math.abs(l)).toString();
+					}
+					if (Math.abs(l) > absMax) {
+						absMax = Math.abs(l);
+						absMaxValue = nf.format(Math.abs(l)).toString();
+					}
 
-				samples.add(sample);
-				analysis.train(sample);
+					samples.add(sample);
+					analysis.train(sample);
+				}
+			}
+			catch (FTAUnsupportedLocaleException e) {
+				System.err.printf("Skipping locale '%s' = reason: '%s'.\n", locale, e.getMessage());
+				continue;
 			}
 
 			final TextAnalysisResult result = analysis.getResult();
@@ -619,7 +631,6 @@ public class TestLongs {
 		Assert.assertTrue(analysis.getNumericWidening());
 		analysis.setNumericWidening(false);
 		Assert.assertFalse(analysis.getNumericWidening());
-		final Random random = new Random();
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
 		int locked = -1;
@@ -660,7 +671,6 @@ public class TestLongs {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
 		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;
-		final Random random = new Random();
 		int locked = -1;
 
 		for (int i = 0; i < nullIterations; i++) {
@@ -828,7 +838,6 @@ public class TestLongs {
 	@Test
 	public void groupingSeparatorSigned() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
-		final Random random = new Random(21456);
 		final int SAMPLE_SIZE = 100;
 		long min = Long.MAX_VALUE;
 		long max = Long.MIN_VALUE;
@@ -934,7 +943,6 @@ public class TestLongs {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
 		final int iterations = TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
-		final Random random = new Random();
 		int locked = -1;
 
 		for (int i = 0; i < nullIterations; i++) {
@@ -978,7 +986,6 @@ public class TestLongs {
 	public void noStatistics() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
-		final Random random = new Random(314);
 		final String[] samples = new String[10000];
 
 		int iters;
@@ -991,9 +998,8 @@ public class TestLongs {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), iters);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMinLength(), 5);
 		Assert.assertEquals(result.getMaxLength(), 8);
-		Assert.assertEquals(result.getRegExp(), "\\d{5,8}");
+		Assert.assertEquals(result.getRegExp(), "\\d{" + result.getMinLength() + ",8}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertNull(result.getTypeQualifier());
@@ -1005,7 +1011,6 @@ public class TestLongs {
 			analysis.setDefaultLogicalTypes(false);
 			analysis.setCollectStatistics(false);
 		}
-		final Random random = new Random(314);
 		final long sampleCount = 100_000_000_000L;
 		boolean saveOutput = false;
 		BufferedWriter bw = null;
@@ -1038,9 +1043,8 @@ public class TestLongs {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), iters + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMinLength(), 5);
 		Assert.assertEquals(result.getMaxLength(), 8);
-		Assert.assertEquals(result.getRegExp(), "\\d{5,8}");
+		Assert.assertEquals(result.getRegExp(), "\\d{" + result.getMinLength() + ",8}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertNull(result.getTypeQualifier());

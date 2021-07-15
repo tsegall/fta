@@ -120,6 +120,10 @@ public class PatternInfo {
 				FTAType.OFFSETDATETIME.equals(this.type) || FTAType.ZONEDDATETIME.equals(this.type);
 	}
 
+	public FTAType getBaseType() {
+		return type;
+	}
+
 	/**
 	 * Is this pattern Alphabetic?
 	 *
@@ -145,5 +149,10 @@ public class PatternInfo {
 	 */
 	public boolean isLogicalType() {
 		return isLogicalType;
+	}
+
+	@Override
+	public String toString() {
+		return "type: " + type + ", typeQualifier: " + typeQualifier + ", regexp: " + regexp;
 	}
 }

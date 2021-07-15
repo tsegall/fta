@@ -21,6 +21,7 @@ import java.util.Map;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
+import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.FactsTypeBased;
 
 /**
@@ -36,7 +37,7 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 		if (matchCount < 50 && outliers.size() > Math.sqrt(getMembers().size()))
 			return REGEXP;
 

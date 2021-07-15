@@ -17,6 +17,7 @@ package com.cobber.fta;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -29,7 +30,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -43,6 +43,8 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.dates.DateTimeParserResult;
 
 public class DetermineDateTimeFormatTests {
+	private static final SecureRandom random = new SecureRandom();
+
 	@Test
 	public void allOptions() {
 		// "H_mm","MM/dd/yy","dd/MM/yyyy","yyyy/MM/dd","yyyy-MM-dd'T'HH_mm_ssx",
@@ -1561,7 +1563,6 @@ public class DetermineDateTimeFormatTests {
 
 	//@Test
 	public void fuzz() {
-		final Random randomGenerator = new Random(12);
 		final Map<String, Integer> formatStrings = new HashMap<>();
 		final Map<String, Integer> types = new HashMap<>();
 		int good = 0;
@@ -1570,11 +1571,11 @@ public class DetermineDateTimeFormatTests {
 		final PrintStream logger = System.err;
 
 		for (int iters = 0; iters < iterations; iters++) {
-			final int len = 5 + randomGenerator.nextInt(15);
+			final int len = 5 + random.nextInt(15);
 			final StringBuilder s = new StringBuilder(len);
 			int digits = 0;
 			for (int i = 0; s.length() <= len; ++i) {
-				final int randomInt = randomGenerator.nextInt(100);
+				final int randomInt = random.nextInt(100);
 				if (randomInt < 10) {
 					if (Math.abs(randomInt % 2) == 1)
 						s.append("2000-12-12");
@@ -1620,14 +1621,14 @@ public class DetermineDateTimeFormatTests {
 					continue;
 				}
 				if (randomInt < 99) {
-					final int idx = randomGenerator.nextInt(timeZones.length - 1);
+					final int idx = random.nextInt(timeZones.length - 1);
 					s.append(timeZones[idx]);
 					continue;
 				}
-				s.append(",.;':\"[]{}\\|=!@#$%^&*<>".charAt(randomGenerator.nextInt(100) % 23));
+				s.append(",.;':\"[]{}\\|=!@#$%^&*<>".charAt(random.nextInt(100) % 23));
 			}
 
-			final int amPmSwitch = randomGenerator.nextInt(100);
+			final int amPmSwitch = random.nextInt(100);
 			if (amPmSwitch == 98)
 				s.append("am");
 			else if (amPmSwitch == 99)

@@ -343,3 +343,13 @@
 
 ### 4.5.4
  - Fix formatting for TopK and BottomK (when Date or Time types) to honor formatting of input
+ - Upgrade google phone number library
+
+### 4.5.5
+ - RegExp for exponent should cope with Unicode Minus sign
+ - Improve debugging support
+ - Infinite types now only operate on the base type they are configure for - will stop TELEPHONE eating dates
+ - FirstLast Plugin - insist on a decent spread of names, so don't get caught by 5 things that could be names repeated 2000 times
+ - PhoneNumber Plugin - The Google library is very permissive and generally strips punctuation, be little more discerning so that we don't treat ordinary numbers as phone numbers
+ - Switch Random to SecureRandom
+ - Now builds on Java 11, always targets Java 8 (currently)

@@ -74,7 +74,7 @@ public class KnownPatterns {
 	public static final String PATTERN_BOOLEAN_Y_N = "(?i)(N|Y)";
 	public static final String PATTERN_BOOLEAN_ONE_ZERO = "[0|1]";
 
-	private static final String EXPONENT_REGEXP = "(?:[eE]([-+]?\\d+))?";
+	private String EXPONENT_REGEXP;
 
 	public String PATTERN_LONG;
 	public String PATTERN_LONG_GROUPING;
@@ -195,6 +195,7 @@ public class KnownPatterns {
 			optionalSignSuffix = "";
 		}
 
+		EXPONENT_REGEXP = "(?:[eE](" + optionalSignPrefix + "\\d+))?";
 		PATTERN_LONG = "\\d+";
 		PATTERN_SIGNED_LONG = optionalSignPrefix + "\\d+" + optionalSignSuffix;
 		PATTERN_SIGNED_LONG_TRAILING = PATTERN_LONG + "-?";
@@ -209,7 +210,7 @@ public class KnownPatterns {
 
 		PATTERN_DOUBLE_WITH_EXPONENT = PATTERN_DOUBLE + EXPONENT_REGEXP;
 		// Not quite what you would expect, always use +- if you have an exponent (locale ar_AE for
-		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = OPTIONAL_SIGN + PATTERN_DOUBLE + EXPONENT_REGEXP;
+		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = optionalSignPrefix + PATTERN_DOUBLE + EXPONENT_REGEXP;
 
 		knownPatterns.put(PATTERN_BOOLEAN_TRUE_FALSE,
 				new PatternInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, FTAType.BOOLEAN, "TRUE_FALSE", false, false, 4, 5, null, ""));

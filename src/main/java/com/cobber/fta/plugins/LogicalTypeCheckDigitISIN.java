@@ -18,6 +18,7 @@ package com.cobber.fta.plugins;
 import org.apache.commons.validator.routines.checkdigit.ISINCheckDigit;
 
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.core.FTAType;
 
 /**
  * Plugin to detect valid International Securities Identification Number.
@@ -39,5 +40,10 @@ public class LogicalTypeCheckDigitISIN extends LogicalTypeCheckDigit {
 	@Override
 	public String getQualifier() {
 		return SEMANTIC_TYPE;
+	}
+
+	@Override
+	public FTAType getBaseType() {
+		return FTAType.STRING;
 	}
 }

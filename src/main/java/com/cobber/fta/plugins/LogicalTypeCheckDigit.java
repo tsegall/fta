@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.validator.routines.checkdigit.ModulusCheckDigit;
 
+import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
@@ -67,7 +68,7 @@ public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
 
 	@Override
 	public FTAType getBaseType() {
-		return FTAType.STRING;
+		return FTAType.LONG;
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 
 		if (cardinality.size() < 20 || (double)matchCount/realSamples < getThreshold()/100.0)
 			return BACKOUT_REGEXP;

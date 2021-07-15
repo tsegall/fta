@@ -16,8 +16,8 @@
 package com.cobber.fta;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 import org.testng.Assert;
@@ -27,6 +27,8 @@ import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 
 public class TestRegExpPlugins {
+	private static final SecureRandom random = new SecureRandom();
+
 	@Test
 	public void testRegExpLogicalType_MAC() throws IOException, FTAException {
 		final String[] samples = new String[] {
@@ -65,7 +67,6 @@ public class TestRegExpPlugins {
 
 		analysis.train("Unknown");
 
-		final Random random = new Random(401);
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%03d-%02d-%04d",
 					random.nextInt(1000),  random.nextInt(100), random.nextInt(10000));
@@ -94,7 +95,6 @@ public class TestRegExpPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("SSN");
 		analysis.setDefaultLogicalTypes(false);
 
-		final Random random = new Random(401);
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%03d-%02d-%04d",
 					random.nextInt(1000),  random.nextInt(100), random.nextInt(10000));

@@ -16,12 +16,13 @@
 package com.cobber.fta;
 
 import java.io.IOException;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class TestShapes {
+	private static final SecureRandom random = new SecureRandom();
 	private static String ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private static String NUMERIC = "0123456789";
 	private static int MAX_SHAPES = 1000;
@@ -29,12 +30,11 @@ public class TestShapes {
 	@Test
 	public void singleAlphaConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
-		final Random r = new Random(2089);
 
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
-				b.append(ALPHA.charAt(r.nextInt(ALPHA.length())));
+				b.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
 			shapes.track(b.toString(), 1);
 			b.setLength(0);
 		}
@@ -45,19 +45,18 @@ public class TestShapes {
 	@Test
 	public void doubleAlphaConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
-		final Random r = new Random(2089);
 
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
-				b.append(ALPHA.charAt(r.nextInt(ALPHA.length())));
+				b.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
 			shapes.track(b.toString(), 1);
 			b.setLength(0);
 		}
 
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 7; j++)
-				b.append(ALPHA.charAt(r.nextInt(ALPHA.length())));
+				b.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
 			shapes.track(b.toString(), 1);
 			b.setLength(0);
 		}
@@ -68,13 +67,12 @@ public class TestShapes {
 	@Test
 	public void multiAlphaConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
-		final Random r = new Random(2089);
 
 		final StringBuilder b = new StringBuilder();
 		for (int j = 4; j < 9; j++) {
 			for (int i = 0; i < 100; i++) {
 				for (int l = 0; l < j; l++)
-					b.append(ALPHA.charAt(r.nextInt(ALPHA.length())));
+					b.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
 				shapes.track(b.toString(), 1);
 				b.setLength(0);
 			}
@@ -86,12 +84,11 @@ public class TestShapes {
 	@Test
 	public void singleNumericConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
-		final Random r = new Random(2089);
 
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
-				b.append(NUMERIC.charAt(r.nextInt(NUMERIC.length())));
+				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
 			shapes.track(b.toString(), 1);
 			b.setLength(0);
 		}
@@ -102,19 +99,18 @@ public class TestShapes {
 	@Test
 	public void doubleNumericConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
-		final Random r = new Random(2089);
 
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
-				b.append(NUMERIC.charAt(r.nextInt(NUMERIC.length())));
+				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
 			shapes.track(b.toString(), 1);
 			b.setLength(0);
 		}
 
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 7; j++)
-				b.append(NUMERIC.charAt(r.nextInt(NUMERIC.length())));
+				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
 			shapes.track(b.toString(), 1);
 			b.setLength(0);
 		}

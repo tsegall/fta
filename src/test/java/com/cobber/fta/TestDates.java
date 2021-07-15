@@ -41,6 +41,7 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.dates.LocaleInfo;
@@ -2304,21 +2305,20 @@ public class TestDates {
 	public void localeDateTest() throws IOException, FTAException {
 
 		final Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] {Locale.forLanguageTag("sv")};
+//		Locale[] locales = new Locale[] {Locale.forLanguageTag("mgh")};
 
 		final String testCases[] = {
-//				"yyyy MM dd", "yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
-//				"dd MMM yyyy", "d MMM yyyy", "dd-MMM-yyyy", "d-MMM-yyyy", "dd/MMM/yyyy",
+				"yyyy MM dd", "yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
+				"dd MMM yyyy", "d MMM yyyy", "dd-MMM-yyyy", "d-MMM-yyyy", "dd/MMM/yyyy",
 //				"d/MMM/yyyy", "dd MMMM yyyy", "d MMMM yyyy", "dd-MMMM-yyyy", "d-MMMM-yyyy",
 //				"dd/MMMM/yyyy", "d/MMMM/yyyy", "dd MMM yy", "d MMM yy", "dd-MMM-yy",
 //				"d-MMM-yy", "dd/MMM/yy", "d/MMM/yy", "MMM dd',' yyyy", "MMM d',' yyyy",
 //				"MMM dd yyyy", "MMM d yyyy", "MMM-dd-yyyy", "MMM-d-yyyy", "MMMM dd',' yyyy",
 //				"MMMM d',' yyyy", "MMMM dd yyyy", "MMMM d yyyy", "MMMM-dd-yyyy", "MMMM-d-yyyy",
 //				"yyyyMMdd'T'HHmmss'Z'", "yyyyMMdd'T'HHmmss", "yyyyMMdd'T'HHmmssxx", "yyyyMMdd'T'HHmmssxx",
-//				"yyyyMMdd'T'HHmmss.SSSxx", "yyyyMMdd'T'HHmmss.SSSxx",
-//				"dd/MMM/yy h:mm a",
-//				"dd/MMM/yy hh:mm a",
-				"EEE MMM dd HH:mm:ss z yyyy"
+//				"yyyyMMdd'T'HHmmss.SSSxx", "yyyyMMdd'T'HHmmss.SSSxx", "dd/MMM/yy h:mm a",
+//				"dd/MMM/yy hh:mm a"
+//				"EEE MMM dd HH:mm:ss z yyyy"
 		};
 
 		final Set <String> problems = new HashSet<>();
@@ -2326,6 +2326,7 @@ public class TestDates {
 		int countNotGregorian = 0;
 		int countNotArabicNumerals = 0;
 		int	countNoMonthAbbreviations = 0;
+		int countNotSupported = 0;
 		int countProblems = 0;
 
 		for (final String testCase : testCases) {
@@ -2346,6 +2347,9 @@ public class TestDates {
 					continue;
 				}
 
+				if (locale.toLanguageTag().equals("mgh"))
+					continue;
+
 				if (!NumberFormat.getNumberInstance(locale).format(0).matches("\\d")) {
 					countNotArabicNumerals++;
 					continue;
@@ -2359,11 +2363,7 @@ public class TestDates {
 				final TextAnalyzer analysis = new TextAnalyzer();
 				analysis.setCollectStatistics(false);
 
-				// We do not like Japanese the Month Abbreviations are 1, 2, 3, 4, 5, ... which causes issues
-				if ("Japanese".equals(locale.getDisplayLanguage()))
-					continue;
-
-//				System.err.println("TestCas " + testCase + ", Locale: " + locale + ", country: " + locale.getCountry() +
+//				System.err.println("TestCase: " + testCase + ", Locale: " + locale + ", country: " + locale.getCountry() +
 //						", language: " + locale.getDisplayLanguage() + ", name: " + locale.toLanguageTag());
 
 				countTests++;
@@ -2385,32 +2385,40 @@ public class TestDates {
 				String sample = null;
 				int locked = -1;
 
-				for (int i = 0; i < 100; i++) {
-					if (type.equals(FTAType.LOCALDATE))
-						sample = localDate.format(formatter);
-					else if (type.equals(FTAType.LOCALDATETIME))
-						sample = localDateTime.format(formatter);
-					else if (type.equals(FTAType.OFFSETDATETIME))
-						sample = offsetDateTime.format(formatter);
-					else if (type.equals(FTAType.ZONEDDATETIME))
-						sample = zonedDateTime.format(formatter);
+				try {
+					for (int i = 0; i < 100; i++) {
+						if (type.equals(FTAType.LOCALDATE))
+							sample = localDate.format(formatter);
+						else if (type.equals(FTAType.LOCALDATETIME))
+							sample = localDateTime.format(formatter);
+						else if (type.equals(FTAType.OFFSETDATETIME))
+							sample = offsetDateTime.format(formatter);
+						else if (type.equals(FTAType.ZONEDDATETIME))
+							sample = zonedDateTime.format(formatter);
 
-					samples.add(sample);
-					if (analysis.train(sample) && locked == -1)
-						locked = i;
+						samples.add(sample);
+//						System.err.println(sample);
+						if (analysis.train(sample) && locked == -1)
+							locked = i;
 
-					if (type.equals(FTAType.LOCALDATE)) {
-						localDate = localDate.minusDays(100);
+						if (type.equals(FTAType.LOCALDATE)) {
+							localDate = localDate.minusDays(100);
+						}
+						else if (type.equals(FTAType.LOCALDATETIME)) {
+							localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+						}
+						else if (type.equals(FTAType.OFFSETDATETIME)) {
+							offsetDateTime = offsetDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+						}
+						else if (type.equals(FTAType.ZONEDDATETIME)) {
+							zonedDateTime = zonedDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
+						}
 					}
-					else if (type.equals(FTAType.LOCALDATETIME)) {
-						localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
-					}
-					else if (type.equals(FTAType.OFFSETDATETIME)) {
-						offsetDateTime = offsetDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
-					}
-					else if (type.equals(FTAType.ZONEDDATETIME)) {
-						zonedDateTime = zonedDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
-					}
+				}
+				catch (FTAUnsupportedLocaleException e) {
+					problems.add(testID + "Locale: '" + locale.toLanguageTag() + "' not supported: '" + e.getMessage() + "'");
+					countNotSupported++;
+					continue;
 				}
 
 				final TextAnalysisResult result = analysis.getResult();
@@ -2468,8 +2476,8 @@ public class TestDates {
 			System.err.println(problem);
 		}
 
-		System.err.printf("%d not Gregorian (skipped), %d not Arabic numerals, %d no Month abbr. (skipped), %d locales, %d failures (of %d tests)\n",
-				countNotGregorian, countNotArabicNumerals, countNoMonthAbbreviations, locales.length, countProblems, countTests);
+		System.err.printf("%d not Gregorian (skipped), %d not Arabic numerals, %d no Month abbr. (skipped), %d locales not supported, %d locales, %d failures (of %d tests)\n",
+				countNotGregorian, countNotArabicNumerals, countNoMonthAbbreviations, countNotSupported, locales.length, countProblems, countTests);
 
 		Assert.assertEquals(countProblems, 0);
 	}

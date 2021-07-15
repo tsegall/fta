@@ -16,10 +16,10 @@
 package com.cobber.fta;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Random;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -27,6 +27,8 @@ import org.testng.annotations.Test;
 import com.cobber.fta.core.FTAPluginException;
 
 public class TestTopBottomK {
+	private static final SecureRandom random = new SecureRandom();
+
 	@Test
 	public void basicZips() throws IOException {
 		final String[] candidatesZips = TestUtils.validZips.split("\\|");
@@ -62,7 +64,6 @@ public class TestTopBottomK {
 	public void basicIntegers9() throws IOException {
 		final int SIZE = 9;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
-		final Random random = new Random(662607004);
 		final HashSet<Integer> topK = new HashSet<>(Arrays.asList(new Integer[] {0, 1, 2, 3, 4, 5, 6, 7, 8} ));
 		final HashSet<Integer> bottomK = new HashSet<>(Arrays.asList(new Integer[] {0, 1, 2, 3, 4, 5, 6, 7, 8} ));
 
@@ -87,7 +88,6 @@ public class TestTopBottomK {
 	public void basicIntegers10() throws IOException {
 		final int SIZE = 10;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
-		final Random random = new Random(662607004);
 		final HashSet<Integer> topK = new HashSet<>(Arrays.asList(new Integer[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} ));
 		final HashSet<Integer> bottomK = new HashSet<>(Arrays.asList(new Integer[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} ));
 
@@ -112,7 +112,6 @@ public class TestTopBottomK {
 	public void basicIntegers11() throws IOException {
 		final int SIZE = 11;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
-		final Random random = new Random(662607004);
 		final HashSet<Integer> topK = new HashSet<>(Arrays.asList(new Integer[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10} ));
 		final HashSet<Integer> bottomK = new HashSet<>(Arrays.asList(new Integer[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} ));
 
@@ -137,7 +136,6 @@ public class TestTopBottomK {
 	public void basicIntegers19() throws IOException {
 		final int SIZE = 19;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
-		final Random random = new Random(662607004);
 		final HashSet<Integer> topK = new HashSet<>(Arrays.asList(new Integer[] {9, 10, 11, 12, 13, 14, 15, 16, 17, 18} ));
 		final HashSet<Integer> bottomK = new HashSet<>(Arrays.asList(new Integer[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} ));
 
@@ -162,7 +160,6 @@ public class TestTopBottomK {
 	public void basicIntegers20() throws IOException {
 		final int SIZE = 20;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
-		final Random random = new Random(662607004);
 		final HashSet<Integer> topK = new HashSet<>(Arrays.asList(new Integer[] {10, 11, 12, 13, 14, 15, 16, 17, 18, 19} ));
 		final HashSet<Integer> bottomK = new HashSet<>(Arrays.asList(new Integer[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} ));
 
@@ -187,7 +184,6 @@ public class TestTopBottomK {
 	public void basicIntegers21() throws IOException {
 		final int SIZE = 21;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
-		final Random random = new Random(662607004);
 		final HashSet<Integer> topK = new HashSet<>(Arrays.asList(new Integer[] {11, 12, 13, 14, 15, 16, 17, 18, 19, 20} ));
 		final HashSet<Integer> bottomK = new HashSet<>(Arrays.asList(new Integer[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} ));
 
@@ -212,7 +208,6 @@ public class TestTopBottomK {
 	public void basicIntegers100() throws IOException {
 		final int SIZE = 100;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
-		final Random random = new Random(662607004);
 		final HashSet<Integer> topK = new HashSet<>(Arrays.asList(new Integer[] {99, 98, 97, 96, 95, 94, 93, 92, 91, 90} ));
 		final HashSet<Integer> bottomK = new HashSet<>(Arrays.asList(new Integer[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} ));
 
@@ -237,7 +232,6 @@ public class TestTopBottomK {
 	public void basicIntegers11_size5() throws IOException {
 		final int SIZE = 11;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>(5);
-		final Random random = new Random(662607004);
 		final HashSet<Integer> topK = new HashSet<>(Arrays.asList(new Integer[] { 6, 7, 8, 9, 10} ));
 		final HashSet<Integer> bottomK = new HashSet<>(Arrays.asList(new Integer[] {0, 1, 2, 3, 4} ));
 
@@ -261,7 +255,6 @@ public class TestTopBottomK {
 	@Test
 	public void basicLongs100() throws IOException {
 		final TopBottomK<Long, Long> t = new TopBottomK<>();
-		final Random random = new Random(662607004);
 		final HashSet<Long> topK = new HashSet<>(Arrays.asList(new Long[] {99L, 98L, 97L, 96L, 95L, 94L, 93L, 92L, 91L, 90L} ));
 		final HashSet<Long> bottomK = new HashSet<>(Arrays.asList(new Long[] {0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L} ));
 
@@ -285,7 +278,6 @@ public class TestTopBottomK {
 	@Test
 	public void basicDoubles100() throws IOException {
 		final TopBottomK<Double, Double> t = new TopBottomK<>();
-		final Random random = new Random(662607004);
 		final HashSet<Double> topK = new HashSet<>(Arrays.asList(new Double[] {99.0, 98.0, 97.0, 96.0, 95.0, 94.0, 93.0, 92.0, 91.0, 90.0} ));
 		final HashSet<Double> bottomK = new HashSet<>(Arrays.asList(new Double[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0} ));
 

@@ -64,7 +64,7 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 
 	@Override
 	public FTAType getBaseType() {
-		return FTAType.STRING;
+		return FTAType.LONG;
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, Shapes shapes) {
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, Shapes shapes, AnalysisConfig analysisConfig) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

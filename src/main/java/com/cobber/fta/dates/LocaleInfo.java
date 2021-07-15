@@ -52,6 +52,8 @@ public class LocaleInfo {
 
 	private static LocaleInfo localeInfo = new LocaleInfo();
 
+	private static Map<String, String> unsupportedReason = new HashMap<>();
+
 	class LengthComparator implements Comparator<String> {
 		@Override
 		public int compare(final String str1, final String str2) {
@@ -60,6 +62,17 @@ public class LocaleInfo {
 				return ret;
 			return str1.compareTo(str2);
 		}
+	}
+
+	private static boolean isNonNumeric(final String input) {
+		if (input == null)
+			return true;
+
+		for (int i = 0; i < input.length(); i++)
+			if (!Character.isDigit(input.charAt(i)))
+				return true;
+
+		return false;
 	}
 
 	private static synchronized void cacheLocaleInfo(final Locale locale) {
@@ -102,6 +115,10 @@ public class LocaleInfo {
 		for (int i = 0; i <= actualMonths; i++) {
 			final String shortMonth = m[i].toUpperCase(locale);
 			shortMonthsLocale.put(shortMonth, i + 1);
+			if (m[i].length() != shortMonth.length())
+				unsupportedReason.put(languageTag, "Month abbreviation has different length when upshifted: '" + m[i] + "'");
+			if (!isNonNumeric(m[i]))
+				unsupportedReason.put(languageTag, "Month abbreviation is Numeric.");
 			generator.train(m[i]);
 		}
 		shortMonths.put(languageTag, shortMonthsLocale);
@@ -292,6 +309,8 @@ public class LocaleInfo {
 			if (input.substring(upto).toUpperCase(locale).startsWith(monthAbbr)) {
 				found = true;
 				upto += monthAbbr.length();
+				// TODO - Note this makes a rash assumption that the upper case length of the month is the same as the input!
+				// This is not the case with Language 'el', Month Μαΐ.
 				break;
 			}
 		}
@@ -402,6 +421,16 @@ public class LocaleInfo {
 	public static Set<String> getAMPMStrings(final Locale locale) {
 		cacheLocaleInfo(locale);
 		return ampmStrings.get(locale.toLanguageTag());
+	}
+
+	/**
+	 * Check that this locale is supported.
+	 * @param locale Locale we are interested in
+	 * @return String Return reason if not supported, otherwise null.
+	 */
+	public static String isSupported(final Locale locale) {
+		cacheLocaleInfo(locale);
+		return unsupportedReason.get(locale.toLanguageTag());
 	}
 
 	/**
