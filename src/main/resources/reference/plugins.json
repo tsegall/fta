@@ -306,16 +306,6 @@
 		"priority": 152
 	},
 	{
-		"qualifier": "REGION.TEXT_EN",
-		"description": "World Region",
-		"headerRegExps": [ ".*(?i)(region).*" ],
-		"headerRegExpConfidence": [ 90 ],
-		"content": "/reference/en_world_region.csv",
-		"contentType": "resource",
-		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 154
-	},
-	{
 		"qualifier": "AIRPORT_CODE.IATA",
 		"description": "IATA Airport Code",
 		"headerRegExps": [ ".*(?i)(iata|air).*" ],

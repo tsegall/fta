@@ -112,12 +112,12 @@ Detection of some Semantic Types is dependent on the current locale as indicated
 Semantic Type|Description|
 ---------|-------------|
 AIRPORT_CODE.IATA|IATA Airport Code
-CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit (and length between 8 and 30 inclusive)
 CHECKDIGIT.CUSIP|North American Security Identifier
-CHECKDIGIT.SEDOL|UK/Ireland Security Identifier
+CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)
 CHECKDIGIT.IBAN|International Bank Account Number
 CHECKDIGIT.ISIN|International Securities Identification Number
-CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)
+CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit (and length between 8 and 30 inclusive)
+CHECKDIGIT.SEDOL|UK/Ireland Security Identifier
 CITY|City/Town
 CONTINENT.CODE_EN|Continent Code
 CONTINENT.TEXT_EN|Continent Name
@@ -151,7 +151,6 @@ POSTAL_CODE.POSTAL_CODE_AU|Postal Code (en-AU)
 POSTAL_CODE.POSTAL_CODE_CA|Postal Code (en-CA)
 POSTAL_CODE.ZIP5_US|Postal Code (en-US)
 POSTAL_CODE.POSTAL_CODE_UK|Postal Code (en-UK)
-REGION.TEXT_EN|World Region
 SSN|Social Security Number (en-US)
 STATE_PROVINCE.STATE_AU|Australian State Code (en-AU)
 STATE_PROVINCE.PROVINCE_CA|Canadian Province Code (en-CA/en-US)

@@ -360,3 +360,6 @@
 
 ### 4.5.7
  - Add new Semantic Types - CHECKDIGIT.IBAN
+
+### 4.5.8
+ - Remove semantic Type REGION.TEXT_EN

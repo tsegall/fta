@@ -76,7 +76,6 @@ public class TestPlugins {
 		signatures.put("STATE_PROVINCE.STATE_NAME_AU", "iNmmCNk8cEQ6mQuhOTxSlO+nvUk=");
 		signatures.put("STATE_PROVINCE.STATE_NAME_US", "y0oxFvZb1RpG1UVwi/hSCEymwzc=");
 		signatures.put("STATE_PROVINCE.STATE_PROVINCE_NAME_NA", "KfDjCnkj/KmZglkvM32W3OBEwxU=");
-		signatures.put("REGION.TEXT_EN", "vOcrAYq1ML8Im8G0BI7kgl7aA08=");
 		signatures.put("GUID", "AtovlR1okrAJUeTCpYUUTXow4yM=");
 		signatures.put(LogicalTypeCountryEN.SEMANTIC_TYPE, "T4UZNFT895GsC99J7dOz/ENNYvM=");
 		signatures.put(LogicalTypeAddressEN.SEMANTIC_TYPE, "5P7tWzPdbjVvyHhLklpTf00Zxl8=");
@@ -1551,36 +1550,6 @@ public class TestPlugins {
 		final Map<String, Long> outliers = result.getOutlierDetails();
 		Assert.assertEquals(outliers.size(), 5);
 		Assert.assertEquals(result.getConfidence(), 0.9696969696969697);
-	}
-
-	@Test
-	public void basicRegion() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("Billing State/Province");
-
-		final String[] inputs = new String[] {
-				"Asia", "Europe", "North America", "Europe", "Europe", "South America", "Asia Pacific", "Middle East", "Asia",
-				"North America", "Europe", "South America", "Middle East", "South America", "Asia Pacific", "Middle East",
-				"Asia", "Europe", "North America", "North America", "North America", "North America", "Europe", "South America",
-				"Asia Pacific", "Middle East", "Asia", "Europe", "Europe", "South America", "South America", "Asia Pacific",
-				"Middle East", "Asia", "Europe", "North America", "Asia Pacific", "Asia Pacific", "Asia Pacific", "Asia Pacific"
-		};
-
-		for (final String input : inputs)
-			analysis.train(input);
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "REGION.TEXT_EN");
-		Assert.assertEquals(result.getStructureSignature(), signatures.get("REGION.TEXT_EN"));
-		Assert.assertEquals(result.getMatchCount(),
-				inputs.length - result.getBlankCount() - result.getOutlierCount() - result.getBlankCount());
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "(?i)(AFRICA|ANTARCTICA|ASIA|ASIA PACIFIC|AUSTRALIA/NZ|CARIBBEAN|CENTRAL AMERICA|EUROPE|MIDDLE EAST|NORTH AMERICA|OCEANIA|SOUTH AMERICA|THE CARIBBEAN)");
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.size(), 0);
-		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test
