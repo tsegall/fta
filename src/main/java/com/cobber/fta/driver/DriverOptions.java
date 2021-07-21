@@ -28,7 +28,7 @@ class DriverOptions {
 	protected boolean noAnalysis;
 	protected boolean noLogicalTypes;
 	protected boolean noStatistics;
-	protected long recordsToAnalyze = -1;
+	protected long recordsToProcess = -1;
 	protected int detectWindow = -1;
 	protected Locale locale;
 	protected int maxCardinality = -1;
@@ -36,6 +36,7 @@ class DriverOptions {
 	protected int pluginThreshold = -1;
 	protected boolean pretty;
 	protected boolean pluginDefinition;
+	protected String pluginSamples;
 	protected DateResolutionMode resolutionMode = DateResolutionMode.Auto;
 	protected int threshold = -1;
 	protected boolean validate;

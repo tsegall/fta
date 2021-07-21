@@ -47,6 +47,12 @@
 		"priority": 50
 	},
 	{
+		"qualifier": "VIN",
+		"description": "Vehicle Identification Number",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeVIN",
+		"priority": 51
+	},
+	{
 		"qualifier": "POSTAL_CODE.ZIP5_US",
 		"description": "Postal Code (US)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUSZip5",
@@ -393,7 +399,7 @@
 		"headerRegExps": [ "^(?i)(city|town)$|^.*[ _](?i)(city|town)$|^(?i)(city|town)[ _].*$|.*[a-z](City|Town)$" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
-		"regExpReturned": "[-' \\.\\p{IsAlphabetic}]+",
+		"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
 		"baseType": "STRING",
 		"priority": 210
 	},
@@ -413,8 +419,7 @@
 		"headerRegExps": [ ".*(?i)(SSN).*", ".*(?i)(Social).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpsToMatch": [ "\\d{3}-\\d{2}-\\d{4}" ],
-		"regExpReturned": "\\d{3}-\\d{2}-\\d{4}",
-		"invalidList": [ "000-00-0000" ],
+		"regExpReturned": "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}",
 		"validLocales": [ "en-US" ],
 		"threshold": 98,
 		"baseType": "STRING",

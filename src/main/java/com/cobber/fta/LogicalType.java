@@ -161,10 +161,10 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	/**
 	 * Given the data to date as embodied by the arguments return null if we think this is an instance
 	 * of this logical type, if not return a new suitable pattern.
-	 * instance of this logical type.
 	 * @param dataStreamName The name of the Data Stream
 	 * @param matchCount Number of samples that match so far (as determined by isValid()
 	 * @param realSamples Number of real (i.e. non-blank and non-null) samples that we have processed so far.
+	 * @param currentRegExp The current Regular Expression that we matched against
 	 * @param facts Facts (min, max, sum) for the analysis to date (optional - i.e. maybe null)
 	 * @param cardinality Cardinality set, up to the maximum maintained
 	 * @param outliers Outlier set, up to the maximum maintained
@@ -172,7 +172,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * @param analysisConfig The Configuration of the current analysis
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, FactsTypeBased facts, Map<String, Long> cardinality, Map<String, Long> outliers, Shapes shapes, AnalysisConfig analysisConfig);
+	public abstract String isValidSet(String dataStreamName, long matchCount, long realSamples, String currentRegExp, FactsTypeBased facts, Map<String, Long> cardinality, Map<String, Long> outliers, Shapes shapes, AnalysisConfig analysisConfig);
 
 	/**
 	 * Does the set of members enumerated reflect the entire set.  For example any of the ISO sets are reference sets and

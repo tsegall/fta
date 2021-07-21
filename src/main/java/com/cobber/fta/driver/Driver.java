@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.cobber.fta.LogicalType;
+import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.LogicalTypeRegExp;
@@ -74,6 +75,7 @@ class Driver {
 				logger.println(" --noLogicalTypes - Do not register any Logical Types");
 				logger.println(" --noStatistics - Do not track statistics");
 				logger.println(" --pluginDefinition - Output the plugin definitions from the training data set");
+				logger.println(" --pluginSamples <PluginName> - Generate <n> samples for the provided Plugin (n based on --records)");
 				logger.println(" --pluginThreshold <n> - Set the plugin threshold percentage (0-100) for detection");
 				logger.println(" --pretty - Pretty print analysis");
 				logger.println(" --records <n> - The number of records to analyze");
@@ -102,12 +104,14 @@ class Driver {
 				options.noStatistics = true;
 			else if ("--pluginDefinition".equals(args[idx]))
 				options.pluginDefinition = true;
+			else if ("--pluginSamples".equals(args[idx]))
+				options.pluginSamples = args[++idx];
 			else if ("--pluginThreshold".equals(args[idx]))
 				options.pluginThreshold = Integer.valueOf(args[++idx]);
 			else if ("--pretty".equals(args[idx]))
 				options.pretty = true;
 			else if ("--records".equals(args[idx]))
-				options.recordsToAnalyze = Long.valueOf(args[++idx]);
+				options.recordsToProcess = Long.valueOf(args[++idx]);
 			else if ("--resolutionMode".equals(args[idx])) {
 				final String mode = args[++idx];
 				if ("DayFirst".equals(mode))
@@ -142,26 +146,43 @@ class Driver {
 			idx++;
 		}
 
+		// Are we generating samples?
+		if (options.pluginSamples != null) {
+			long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
+			final TextAnalyzer analyzer = getDefaultAnalysis();
+			Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
+
+			for (LogicalType logical : registered)
+				if (logical.getQualifier().equals(options.pluginSamples)) {
+					if (!(logical instanceof LogicalTypeCode)) {
+						logger.printf("Plugin named '%s' does not support nextRandom(), use --help%n", options.pluginSamples);
+						System.exit(1);
+					}
+
+					LogicalTypeCode logicalCode = (LogicalTypeCode)logical;
+
+					for (long l = 0; l < ouputRecords; l++)
+						logger.println(logicalCode.nextRandom());
+					System.exit(0);
+				}
+
+			logger.printf("Failed to locate plugin named '%s', use --help%n", options.pluginSamples);
+			System.exit(1);
+		}
+
 		if (helpRequested) {
-			// Create a dummy Analyzer to retrieve the Logical Types
-			final TextAnalyzer analysis = new TextAnalyzer("*");
-			if (options.locale != null)
-				analysis.setLocale(options.locale);
-
-			// Load the default set of plugins for Logical Type detection (normally done by a call to train())
-			analysis.registerDefaultPlugins(options.locale);
-
-
-			// Grab the registered plugins and sort by Qualifier (magically will be all - since passed in '*')
-			final Collection<LogicalType> registered = analysis.getPlugins().getRegisteredLogicalTypes();
+			final TextAnalyzer analyzer = getDefaultAnalysis();
+			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 			final Set<String> qualifiers = new TreeSet<>();
+
+			// Sort the registered plugins by Qualifier
 			for (final LogicalType logical : registered)
 				qualifiers.add(logical.getQualifier());
 
 			if (!registered.isEmpty()) {
 				logger.println("\nRegistered Logical Types:");
 				for (final String qualifier : qualifiers) {
-					final LogicalType logical = analysis.getPlugins().getRegistered(qualifier);
+					final LogicalType logical = analyzer.getPlugins().getRegistered(qualifier);
 					if (options.verbose == 0) {
 						if (logical instanceof LogicalTypeFinite) {
 							final LogicalTypeFinite finite = (LogicalTypeFinite)logical;
@@ -208,5 +229,17 @@ class Driver {
 				System.exit(1);
 			}
 		}
+	}
+
+	private static TextAnalyzer getDefaultAnalysis() {
+		// Create an Analyzer to retrieve the Logical Types (magically will be all - since passed in '*')
+		final TextAnalyzer analysis = new TextAnalyzer("*");
+		if (options.locale != null)
+			analysis.setLocale(options.locale);
+
+		// Load the default set of plugins for Logical Type detection (normally done by a call to train())
+		analysis.registerDefaultPlugins(options.locale);
+
+		return  analysis;
 	}
 }

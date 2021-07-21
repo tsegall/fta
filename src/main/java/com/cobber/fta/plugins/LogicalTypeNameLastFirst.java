@@ -18,13 +18,13 @@ package com.cobber.fta.plugins;
 import java.util.Locale;
 import java.util.Map;
 
+import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
-import com.cobber.fta.AnalysisConfig;
-import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
@@ -33,7 +33,7 @@ import com.cobber.fta.core.FTAType;
  */
 public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "NAME.LAST_FIRST";
-	public static final String REGEXP = "[- \\p{IsAlphabetic}]+, ?[- \\p{IsAlphabetic}]+";
+	public static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*, ?[- \\p{IsAlphabetic}]+";
 	private static final String BACKOUT = ".+";
 	private LogicalTypeCode logicalFirst;
 	private LogicalTypeCode logicalLast;
@@ -142,8 +142,8 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts,
-			final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, String currentRegExp,
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 
 		int minCardinality = 8;
 		int minSamples = 10;

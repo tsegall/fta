@@ -363,3 +363,12 @@
 
 ### 4.5.8
  - Remove semantic Type REGION.TEXT_EN
+
+### 4.5.9
+ - Improve SSN RegExp and test cases, fix bug where detection compares against RegExpReturned not RegExpsToMatch
+ - Improve RegExp for City and Names
+ - Widen out list for Honorifics
+ - Add new Semantic Type - VIN (Vehicle Identification Number)
+
+### 4.5.10
+ - FirstLast Plugin - insist on a decent spread of distinct last names and distinct first names

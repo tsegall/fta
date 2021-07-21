@@ -248,7 +248,6 @@ public class TestRegExpPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getTypeQualifier(), "CITY");
-		Assert.assertEquals(result.getRegExp(), "[-' \\.\\p{IsAlphabetic}]+");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);

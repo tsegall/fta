@@ -992,8 +992,11 @@ public class TestDoubles {
 		final TextAnalyzer analysis2 = new TextAnalyzer("LATITUDE");
 		final TextAnalyzer analysis3 = new TextAnalyzer("LATITUDE");
 		analysis1.setCollectStatistics(false);
+		analysis1.setDebug(2);
 		analysis2.setCollectStatistics(false);
+		analysis2.setDebug(2);
 		analysis3.setCollectStatistics(false);
+		analysis3.setDebug(2);
 		final String inputs1[] = new String[] {
 				"-89.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
 				"-69.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
@@ -1038,8 +1041,8 @@ public class TestDoubles {
 		Assert.assertEquals(result1.getTypeQualifier(), result2.getTypeQualifier());
 		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
-		Assert.assertEquals(result1.getDataSignature(), result3.getDataSignature());
 		Assert.assertEquals(result1.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		Assert.assertEquals(result1.getDataSignature(), result3.getDataSignature());
 		Assert.assertEquals(result1.getRegExp(), "[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result1.getNullCount(), 0);
 		Assert.assertEquals(result1.getSampleCount(), inputs1.length);

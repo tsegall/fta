@@ -87,7 +87,7 @@ public class LogicalTypeGenderEN extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)

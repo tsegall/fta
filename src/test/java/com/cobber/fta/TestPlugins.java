@@ -77,6 +77,8 @@ public class TestPlugins {
 		signatures.put("STATE_PROVINCE.STATE_NAME_US", "y0oxFvZb1RpG1UVwi/hSCEymwzc=");
 		signatures.put("STATE_PROVINCE.STATE_PROVINCE_NAME_NA", "KfDjCnkj/KmZglkvM32W3OBEwxU=");
 		signatures.put("GUID", "AtovlR1okrAJUeTCpYUUTXow4yM=");
+		signatures.put("SSN", "SaJgghJaa44guUQ5oMO6woNkWac=");
+
 		signatures.put(LogicalTypeCountryEN.SEMANTIC_TYPE, "T4UZNFT895GsC99J7dOz/ENNYvM=");
 		signatures.put(LogicalTypeAddressEN.SEMANTIC_TYPE, "5P7tWzPdbjVvyHhLklpTf00Zxl8=");
 		signatures.put(LogicalTypeEmail.SEMANTIC_TYPE, "+A0AMjgeFlGRlPKsX/iXYmoWpfY=");
@@ -2389,15 +2391,21 @@ public class TestPlugins {
 
 		final StringBuilder b = new StringBuilder();
 		samples[0] = "000-00-0000";
-		for (int i = 1; i < samples.length; i++) {
+		int i = 1;
+		while (i < samples.length - 1) {
 			b.setLength(0);
-			b.append(String.format("%03d", random.nextInt(999) + 1));
+			int component = random.nextInt(899) + 1;
+			if (component == 666)
+				continue;
+			b.append(String.format("%03d", component));
 			b.append('-');
 			b.append(String.format("%02d", random.nextInt(99) + 1));
 			b.append('-');
 			b.append(String.format("%04d", random.nextInt(9999) + 1));
 			samples[i] = b.toString();
+			i++;
 		}
+		samples[samples.length - 1] = "943-00-1067";
 
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setLengthQualifier(false);
@@ -2408,14 +2416,49 @@ public class TestPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getMatchCount(), samples.length - 2);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getRegExp(), "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}");
+		Assert.assertTrue(result.isLogicalType());
+		Assert.assertEquals(result.getTypeQualifier(), "SSN");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get("SSN"));
+		Assert.assertEquals(result.getConfidence(), 0.998);
+
+		for (int l = 1; l < samples.length - 1; l++) {
+			Assert.assertTrue(samples[l].matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void notSSN() throws IOException, FTAException {
+		final String pipedInput = "000-00-0000|063-02-3609|527-99-6328|209-50-0139|239-64-4998|" +
+				"210-19-0049|635-31-8665|215-38-8995|209-50-0139|304-88-9478|" +
+				"312-35-8549|063-02-3609|927-99-6328|209-00-0139|239-64-4998|" +
+				"113-36-8579|363-22-3701|887-88-6124|207-33-4569|211-11-0498|" +
+				"532-71-2239|963-02-3609|527-99-6328|909-56-0139|934-66-4597|";
+		final String samples[] = pipedInput.split("\\|");
+
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setLengthQualifier(false);
+		for (final String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getMatchCount(), samples.length);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
-		Assert.assertEquals(result.getConfidence(), 0.999);
+		Assert.assertFalse(result.isLogicalType());
+		Assert.assertEquals(result.getConfidence(), 1.0);
 
-		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()));
+		for (int l = 0; l < samples.length; l++) {
+			Assert.assertTrue(samples[l].matches(result.getRegExp()));
 		}
 	}
 

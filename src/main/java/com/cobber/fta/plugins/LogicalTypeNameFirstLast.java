@@ -15,8 +15,10 @@
  */
 package com.cobber.fta.plugins;
 
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.FactsTypeBased;
@@ -33,10 +35,14 @@ import com.cobber.fta.core.FTAType;
  */
 public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "NAME.FIRST_LAST";
-	public static final String REGEXP = "[- \\p{IsAlphabetic}]+ [- \\p{IsAlphabetic}]+";
+	public static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]* \\p{IsAlphabetic}[- \\p{IsAlphabetic}]*";
 	private static final String BACKOUT = ".+";
 	private LogicalTypeCode logicalFirst;
 	private LogicalTypeCode logicalLast;
+	private static final int MAX_FIRST_NAMES = 100;
+	private static final int MAX_LAST_NAMES = 100;
+	private Set<String> lastNames;
+	private Set<String> firstNames;
 
 	public LogicalTypeNameFirstLast(final PluginDefinition plugin) {
 		super(plugin);
@@ -50,6 +56,9 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
 		final PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
 		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, Locale.getDefault());
+
+		lastNames = new HashSet<>();
+		firstNames = new HashSet<>();
 
 		threshold = 95;
 
@@ -131,7 +140,15 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 			return false;
 		}
 
-		return logicalFirst.isValid(trimmed.substring(0, lastSpace)) || logicalLast.isValid(trimmed.substring(lastSpace + 1));
+		final String firstName = trimmed.substring(0, lastSpace);
+		final String lastName = trimmed.substring(lastSpace + 1);
+
+		if (firstNames.size() < MAX_FIRST_NAMES)
+			firstNames.add(firstName);
+		if (lastNames.size() < MAX_LAST_NAMES)
+			lastNames.add(lastName);
+
+		return logicalFirst.isValid(firstName) || logicalLast.isValid(lastName);
 	}
 
 	@Override
@@ -140,8 +157,8 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts,
-			final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, String currentRegExp,
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 
 		int minCardinality = 10;
 		int minSamples = 20;
@@ -150,7 +167,14 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 			minSamples = 5;
 		}
 
+		// Reject if there is not a reasonable spread of values
 		if (getHeaderConfidence(dataStreamName) == 0 && cardinality.size() < analysisConfig.maxCardinality && (double)cardinality.size()/matchCount < .2)
+			return BACKOUT;
+
+		// Reject if there is not a reasonable spread of last or first names
+		if (getHeaderConfidence(dataStreamName) == 0 &&
+				((lastNames.size() < MAX_LAST_NAMES && (double)lastNames.size()/matchCount < .2) ||
+				(firstNames.size() < MAX_FIRST_NAMES && (double)firstNames.size()/matchCount < .2)))
 			return BACKOUT;
 
 		if (cardinality.size() < minCardinality)

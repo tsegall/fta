@@ -24,7 +24,7 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 
 public class LogicalTypeRegExp extends LogicalType {
-	private static final String WRONG_TYPE = "LogicalTypeRegExp baseType must be LONG or DOUBLE, not ";
+	private static final String WRONG_TYPE = "LogicalTypeRegExp baseType must be LONG, DOUBLE or STRING, not ";
 	private Pattern pattern;
 	private Long minLong;
 	private Long maxLong;
@@ -129,16 +129,18 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, final FactsTypeBased facts,
-			final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, String currentRegExp,
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+
+		String backout = currentRegExp;
 
 		// If this plugin insists on a minimum number of samples (validate it)
 		if (realSamples < getMinSamples())
-			return defn.regExpReturned;
+			return backout;
 
 		// Plugins can insist that the maximum and minimum values be present in the observed set.
 		if (getMinMaxPresent() && (cardinality.get(defn.minimum) == null || cardinality.get(defn.maximum) == null))
-			return defn.regExpReturned;
+			return backout;
 
 		if (defn.headerRegExps != null) {
 			boolean requiredHeaderMissing = false;
@@ -147,7 +149,7 @@ public class LogicalTypeRegExp extends LogicalType {
 					requiredHeaderMissing = true;
 			}
 			if (requiredHeaderMissing)
-				return defn.regExpReturned;
+				return backout;
 		}
 
 		if (facts != null) {
@@ -155,19 +157,19 @@ public class LogicalTypeRegExp extends LogicalType {
 			case LONG:
 				if ((minLong != null && Long.parseLong(facts.minValue) < minLong) ||
 						(maxLong != null && Long.parseLong(facts.maxValue) > maxLong))
-					return defn.regExpReturned;
+					return backout;
 				break;
 
 			case DOUBLE:
 				if ((minDouble != null && Double.parseDouble(facts.minValue) < minDouble) ||
 						(maxDouble != null && Double.parseDouble(facts.maxValue) > maxDouble))
-					return defn.regExpReturned;
+					return backout;
 				break;
 
 			case STRING:
 				if ((minString != null && facts.minValue.compareTo(minString) < 0) ||
 						(maxString != null && facts.maxValue.compareTo(maxString) > 0))
-					return defn.regExpReturned;
+					return backout;
 				break;
 
 			default:
@@ -175,7 +177,7 @@ public class LogicalTypeRegExp extends LogicalType {
 			}
 		}
 
-		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : defn.regExpReturned;
+		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : backout;
 	}
 
 	public boolean isMatch(final String regExp) {

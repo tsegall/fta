@@ -1577,7 +1577,7 @@ public class TextAnalyzer {
 
 			if (level0patternInfo == null) {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
-					if (logical.getRegExp().equals(level0pattern)) {
+					if (logical.isMatch(level0pattern)) {
 						level0patternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						break;
 					}
@@ -1645,7 +1645,7 @@ public class TextAnalyzer {
 				}
 			}
 
-			debug("determineType() - initial, matchPatternInfo - %s%n", matchPatternInfo);
+			debug("Type determination - initial, matchPatternInfo - %s%n", matchPatternInfo);
 
 			// Check to see if it might be one of the known Infinite Logical Types
 			int i = 0;
@@ -1677,10 +1677,20 @@ public class TextAnalyzer {
 					if (currentConfidence > bestConfidence && currentConfidence >= logical.getThreshold()/100.0) {
 						matchPatternInfo = candidate;
 						bestConfidence = currentConfidence;
-						debug("determineType() - infinite type, matchPatternInfo - %s%n", matchPatternInfo);
+						debug("Type determination - infinite type, matchPatternInfo - %s%n", matchPatternInfo);
 					}
 				}
 				i++;
+			}
+
+			// Try a regExp match nice and early - we can always back out
+			for (final LogicalTypeRegExp logical : regExpTypes) {
+				if (matchPatternInfo.type.equals(logical.getBaseType()) &&
+						logical.isMatch(matchPatternInfo.regexp)) {
+					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+					debug("Type determination - was '%s', matchPatternInfo - %s%n", matchPatternInfo.type, matchPatternInfo);
+					break;
+				}
 			}
 
 			for (final String sample : raw)
@@ -1897,6 +1907,7 @@ public class TextAnalyzer {
 
 		outliers.clear();
 		outliersSmashed.clear();
+		debug("Type determination - backing out, matchPatternInfo - %s%n", matchPatternInfo);
 	}
 
 	/**
@@ -2097,7 +2108,7 @@ public class TextAnalyzer {
 				if (matchPatternInfo.isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
 					final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
-					final String newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers, shapes, analysisConfig);
+					final String newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, shapes, analysisConfig);
 					if (newPattern != null)
 						if (FTAType.LONG.equals(matchPatternInfo.type) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
@@ -2158,7 +2169,7 @@ public class TextAnalyzer {
 		for (final String elt : minusMatches.keySet())
 			newCardinality.remove(elt);
 
-		if (logical.isValidSet(dataStreamName, validCount, realSamples, null, newCardinality, newOutliers, shapes, analysisConfig) != null)
+		if (logical.isValidSet(dataStreamName, validCount, realSamples, matchPatternInfo.regexp, null, newCardinality, newOutliers, shapes, analysisConfig) != null)
 			return new FiniteMatchResult();
 
 		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, dataStreamName), validCount, newOutliers, newCardinality);
@@ -2458,6 +2469,8 @@ public class TextAnalyzer {
 			confidence = (double) matchCount / realSamples;
 		}
 
+		boolean backedOutRegExp = false;
+
 		// Do we need to back out from any of our Logical type determinations.  Most of the time this backs out of
 		// Infinite type determinations (since we have not yet declared it to be a Finite type).  However it is possible
 		// that this is a subsequent call to getResult()!!
@@ -2465,14 +2478,15 @@ public class TextAnalyzer {
 			final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
 
 			String newPattern;
-			if ((newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, null, cardinality, outliers, shapes, analysisConfig)) != null) {
-				if (FTAType.STRING.equals(logical.getBaseType())) {
-					backoutToPattern(realSamples, newPattern);
+			if ((newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, shapes, analysisConfig)) != null) {
+				if (FTAType.STRING.equals(logical.getBaseType()) || FTAType.LONG.equals(logical.getBaseType())) {
+					if (FTAType.STRING.equals(logical.getBaseType()))
+						backoutToPattern(realSamples, newPattern);
+					else
+						backoutLogicalLongType(logical, realSamples);
 					confidence = (double) matchCount / realSamples;
-				}
-				else if (FTAType.LONG.equals(logical.getBaseType())) {
-					backoutLogicalLongType(logical, realSamples);
-					confidence = (double) matchCount / realSamples;
+					if (logical instanceof LogicalTypeRegExp)
+						backedOutRegExp = true;
 				}
 			}
 			else {
@@ -2529,9 +2543,10 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (FTAType.LONG.equals(logical.getBaseType()) &&
 							logical.isMatch(matchPatternInfo.regexp) &&
-							logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+							logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+						debug("Type determination - was LONG, matchPatternInfo - %s%n", matchPatternInfo);
 						break;
 					}
 				}
@@ -2557,7 +2572,7 @@ public class TextAnalyzer {
 			for (final LogicalTypeRegExp logical : regExpTypes) {
 				if (FTAType.DOUBLE.equals(logical.getBaseType()) &&
 						logical.isMatch(matchPatternInfo.regexp) &&
-						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+						logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 					confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
 					break;
@@ -2682,16 +2697,17 @@ public class TextAnalyzer {
 				}
 			}
 
-			for (final LogicalTypeRegExp logical : regExpTypes) {
-				if (FTAType.STRING.equals(logical.getBaseType()) &&
-						logical.isMatch(matchPatternInfo.regexp) &&
-						logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
-					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-					confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
-					updated = true;
-					break;
+			if (!backedOutRegExp)
+				for (final LogicalTypeRegExp logical : regExpTypes) {
+					if (FTAType.STRING.equals(logical.getBaseType()) &&
+							logical.isMatch(matchPatternInfo.regexp) &&
+							logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+						confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+						updated = true;
+						break;
+					}
 				}
-			}
 
 			final long interestingSamples = sampleCount - (nullCount + blankCount);
 
@@ -2760,7 +2776,7 @@ public class TextAnalyzer {
 					for (final LogicalTypeRegExp logical : regExpTypes) {
 						if (FTAType.STRING.equals(logical.getBaseType()) &&
 								logical.isMatch(matchPatternInfo.regexp) &&
-								logical.isValidSet(dataStreamName, matchCount, realSamples, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+								logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 							matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 							confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
 							break;
@@ -2777,7 +2793,7 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (FTAType.STRING.equals(logical.getBaseType()) &&
 							logical.isMatch(regExp) &&
-							logical.isValidSet(dataStreamName, bestShape.getValue(), realSamples, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+							logical.isValidSet(dataStreamName, bestShape.getValue(), realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						matchCount = bestShape.getValue();
 						confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);

@@ -204,7 +204,7 @@ class FileProcessor {
 							analysis[i].train(row[i]);
 					}
 				}
-				if (thisRecord == options.recordsToAnalyze) {
+				if (thisRecord == options.recordsToProcess) {
 					parser.stopParsing();
 					break;
 				}
@@ -257,7 +257,7 @@ class FileProcessor {
 								failures.add(value);
 						}
 					}
-					if (thisRecord == options.recordsToAnalyze) {
+					if (thisRecord == options.recordsToProcess) {
 						parser.stopParsing();
 						break;
 					}

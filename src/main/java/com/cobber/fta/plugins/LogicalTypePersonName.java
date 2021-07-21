@@ -18,18 +18,18 @@ package com.cobber.fta.plugins;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
-import com.cobber.fta.AnalysisConfig;
-import com.cobber.fta.FactsTypeBased;
 
 public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	private class Dodge {
 		Iterator<String> iter;
 	}
 
-	public static final String REGEXP = "[- \\p{IsAlphabetic}]*";
+	public static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*";
 	// The threshold we use if we have a strong signal from the header
 	private static final int IDENTIFIED_LOW_THRESHOLD = 40;
 	// The threshold we use if we have a moderate signal from the header
@@ -87,7 +87,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 
 	@Override
 	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+			String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 
 		final int headerConfidence = getHeaderConfidence(dataStreamName);
 

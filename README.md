@@ -165,6 +165,7 @@ STATE_PROVINCE.STATE_NAME_US|US State Name (en-CA/en-US)
 STREET_ADDRESS_EN|Street Address (English Language)
 TELEPHONE|Telephone Number (Generic)
 URI.URL|URL - see RFC 3986
+VIN|Vehicle Identification Number
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
 * Infinite - captures any infinite type (e.g. Even numbers).  Implemented via a Java Class.
