@@ -1744,12 +1744,12 @@ public class TextAnalyzer {
 	}
 
 	class OutlierAnalysis {
-		int alphas;
-		int digits;
-		int spaces;
-		int other;
+		long alphas;
+		long digits;
+		long spaces;
+		long other;
 		int doubles;
-		int nonAlphaNumeric;
+		long nonAlphaNumeric;
 		boolean negative;
 		boolean exponent;
 
@@ -1810,7 +1810,7 @@ public class TextAnalyzer {
 	private boolean conditionalBackoutToPattern(final long realSamples, final PatternInfo current) {
 		final OutlierAnalysis analysis = new OutlierAnalysis(outliers, current);
 
-		final int badCharacters = current.isAlphabetic() ? analysis.digits : analysis.alphas;
+		final long badCharacters = current.isAlphabetic() ? analysis.digits : analysis.alphas;
 		// If we are currently Alphabetic and the only errors are digits then convert to AlphaNumeric
 		if (badCharacters != 0 && analysis.spaces == 0 && analysis.other == 0 && current.isAlphabetic()) {
 			if (outliers.size() == analysisConfig.maxOutliers || analysis.digits > .01 * realSamples) {
@@ -1916,7 +1916,7 @@ public class TextAnalyzer {
 	 * @param realSamples The number of real samples we have seen.
 	 */
 	private void backoutLogicalLongType(final LogicalType logical, final long realSamples) {
-		int otherLongs = 0;
+		long otherLongs = 0;
 
 		final Map<String, Long> outliersCopy = new HashMap<>(outliers);
 

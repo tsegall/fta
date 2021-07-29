@@ -376,3 +376,6 @@
 ### 4.5.11
  - Switch back to random (no SecureRandom) for Bulk mode.
  - Add Semantic Types - GENDER.TEXT_PT, JOB_TITLE_EN
+
+### 4.5.12
+ - Clean up some warnings identified by Github

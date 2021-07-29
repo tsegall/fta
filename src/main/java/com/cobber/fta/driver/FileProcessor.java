@@ -266,8 +266,8 @@ class FileProcessor {
 		}
 
 		int typesDetected = 0;
-		int matchCount = 0;
-		int sampleCount = 0;
+		long matchCount = 0;
+		long sampleCount = 0;
 		TextAnalysisResult result = null;
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
