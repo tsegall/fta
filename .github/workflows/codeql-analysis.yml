@@ -64,7 +64,7 @@ jobs:
     #    uses a compiled language
 
     - run: |
-       gradle -b build7.gradle build
+       gradle -b build7.gradle jar
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
