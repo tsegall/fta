@@ -372,3 +372,7 @@
 
 ### 4.5.10
  - FirstLast Plugin - insist on a decent spread of distinct last names and distinct first names
+
+### 4.5.11
+ - Switch back to random (no SecureRandom) for Bulk mode.
+ - Add Semantic Types - GENDER.TEXT_PT, JOB_TITLE_EN

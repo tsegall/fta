@@ -31,7 +31,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Class used to cache the large sets across multiple threads.
+ * Class used to cache large sets across multiple threads.
  */
 public class SingletonSet {
 	private final String contentType;

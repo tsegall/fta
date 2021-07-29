@@ -213,7 +213,9 @@ The mandatory 'threshold' tag is the percentage of valid samples required by thi
 
 The mandatory 'baseType' tag constrains the plugin to streams that are of this Base Type (see discussion above on the valid Base Types).
 
-The optional 'validLocales' tag is used to constrain the plugin to a set of languages or locales.
+The optional 'validLocales' tag is used to constrain the plugin to a set of languages or locales.  This is the set of locales where the plugin should be enabled.
+For example, [ "en-US" ,"en-CA" ] indicates that the plugin should be enabled in both the US and Canada, [ "en" ] indicates that the plugin should be enabled in
+any locale that uses the English language.
 
 The optional 'headerRegExps' tag is an ordered list of Regular Expression used to match against the Stream Name (if present), along with the parallel list 'headerRegExpConfidence' it controls the use of the Stream Name to match the Semantic Type.  For RegExp plugins the headerRegExps are optional but if present must have a confidence of 100% and will be required to match for the Stream to be declared a match.
 

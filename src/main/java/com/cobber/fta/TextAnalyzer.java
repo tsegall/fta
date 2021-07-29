@@ -17,7 +17,6 @@ package com.cobber.fta;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -46,6 +45,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -89,8 +89,6 @@ import com.cobber.fta.dates.LocaleInfo;
  * </pre>
  */
 public class TextAnalyzer {
-	private static final SecureRandom random = new SecureRandom();
-
 	/** The default value for the number of samples to collect before making a type determination. */
 	public static final int DETECT_WINDOW_DEFAULT = 20;
 	private int detectWindow = DETECT_WINDOW_DEFAULT;
@@ -1122,6 +1120,8 @@ public class TextAnalyzer {
 			running += facts[f].count;
 			facts[f].percentage = (double)running/total;
 		}
+
+		final Random random = new Random(271828);
 
 		// First send in a random set of samples until we are trained
 		boolean trained = false;
