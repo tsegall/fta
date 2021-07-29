@@ -1,0 +1,102 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: 'jacoco'
+apply plugin: "com.github.ben-manes.versions"
+
+configureVersions()
+
+def configureVersions() {
+  def versions = new Properties()
+  versions.load(new FileInputStream("$project.rootDir/versions.properties"))
+  versions.each { prop -> project.ext.set(prop.key, prop.value) }
+}
+
+// We should always build a Java 8 compatible library
+if (JavaVersion.current().java9Compatible) {
+  project.afterEvaluate {
+    tasks.withType(JavaCompile) {
+      options.compilerArgs.addAll(['--release', 8])
+    }
+  }
+}
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+
+  dependencies {
+    classpath "com.github.ben-manes:gradle-versions-plugin:0.36.0"
+  }
+}
+
+mainClassName = "com.cobber.fta.driver.Driver"
+
+group = "com.cobber.fta"
+archivesBaseName = "fta"
+version = "4.5.11"
+
+repositories {
+  mavenCentral()
+}
+
+test {
+  // enable TestNG support (default is JUnit)
+  useTestNG()
+  dependsOn cleanTest
+  testLogging.showStandardStreams = true
+}
+
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+  systemProperty "file.encoding", "UTF-8"
+}
+
+javadoc.options.encoding = 'UTF-8'
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+artifacts {
+  archives javadocJar, sourcesJar
+}
+
+jar {
+    manifest {
+        attributes(
+            'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+	    'Implementation-Version': "${version}"
+        )
+    }
+}
+
+dependencies {
+  implementation group: 'com.univocity', name: 'univocity-parsers', version: "${univocityVersion}"
+  implementation group: 'com.sun.mail', name: 'javax.mail', version: "${javaxMailApiVersion}"
+  implementation group: 'commons-validator', name: 'commons-validator', version: "${commonsValidatorVersion}"
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonDatabindVersion}"
+  implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: "${googlePhoneNumberVersion}"
+  implementation group: 'org.apache.commons', name: 'commons-text', version: "${commonsTextVersion}"
+  testImplementation group: 'org.testng', name: 'testng', version: "${testngVersion}"
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination file("${buildDir}/reports/coverage")
+    }
+    afterEvaluate {
+        classDirectories.from = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/Driver**'])
+        })
+    }
+}
