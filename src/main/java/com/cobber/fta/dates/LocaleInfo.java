@@ -348,6 +348,16 @@ public class LocaleInfo {
 	}
 
 	/**
+	 * Retrieve a Regular Expression for a week day in this Locale
+	 * @param locale Locale we are interested in
+	 * @return Regular Expression for week day in this locale
+	 */
+	public static String getWeekdaysRegExp(final Locale locale) {
+		cacheLocaleInfo(locale);
+		return weekdaysRegExp.get(locale.toLanguageTag());
+	}
+
+	/**
 	 * Retrieve the Set containing the week day abbreviations for this Locale
 	 * @param locale Locale we are interested in
 	 * @return Set containing week day abbreviations for this Locale

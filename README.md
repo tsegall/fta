@@ -130,8 +130,11 @@ COUNTRY.TEXT_EN|Country as a string (English language)
 CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...
 CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217
 DAY.DIGITS|Day represented as a number (1-31)
+DAY.ABBR_<Locale>|Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US
+DAY.FULL_<Locale>|Full Day of Week name <LOCALE> = Locale, e.g. en-US for English langauge in US
 EMAIL|Email Address
 GENDER.TEXT_EN|Gender (English Language)
+GENDER.TEXT_PT|Gender (Portugese Language)
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67
 HONORIFIC_EN|Title (English language)
 STREET_MARKER_EN| Street Suffix (English Language)
@@ -169,8 +172,8 @@ VIN|Vehicle Identification Number
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
 * Infinite - captures any infinite type (e.g. Even numbers).  Implemented via a Java Class.
-* Finite - captures any finite type (e.g. First Name, Day of Week, ...).  Implemented via a supplied file with the valid elements enumerated.
-* RegExp - captures any type that can be expressed via a Regular Expression (e.g. SSN).  Implemented via a supplied set of Regular Expressions.
+* Finite - captures any finite type (e.g. First Name, Day of Week, ...).  Implemented via a supplied list with the valid elements enumerated.
+* RegExp - captures any type that can be expressed via a Regular Expression (e.g. SSN).  Implemented via a set of Regular Expressions used to match against.
 
 Note: The Stream Name can be used to bias detection of the incoming data and/or solely determine the detection.
 
@@ -191,12 +194,17 @@ Note: The Stream Name can be used to bias detection of the incoming data and/or 
 		"headerRegExpConfidence": [ 100 ],
 	},
 	{
-		"qualifier": "PLANET",
-		"regExpReturned": "\\p{IsAlphabetic}*",
-		"threshold": 98,
-		"filename": "Planets.txt",
-		"baseType": "STRING"
-	}
+		"qualifier" : "PLANET_JP",
+		"description": "Planets in Japanese (Kanji) via an inline list",
+		"headerRegExps" : [ ".*星" ],
+		"headerRegExpConfidence" : [ 70 ],
+		"contentType": "inline",
+		"content": "{ \"members\": [ \"冥王星\", \"土星\", \"地球\", \"天王星\", \"木星\", \"水星\", \"海王星\", \"火星\", \"金星\" ] }",
+		"regExpReturned" : "(?i)(冥王星|土星|地球|天王星|木星|水星|海王星|火星|金星)",
+		"backout": ".*",
+                "validLocales": [ "jp" ],
+		"baseType" : "STRING"
+	},
 ]
 ```
 
@@ -235,7 +243,9 @@ The optional 'invalidList' tag is a list of invalid values for this Semantic Typ
 
 ### Finite plugins ###
 
-The mandatory 'filename' tag contains a file with the list of valid elements enumerated.
+The mandatory 'contentType' tag determines how the content is provided (possible values are 'inline', 'resource', or 'file').
+
+The mandatory 'content' tag is either a file reference if the contentType is 'resource' or 'file' or the actual content if the contentType is 'inline'.
 
 ## Outliers ##
 

@@ -131,4 +131,25 @@ public class TestRegExpSupport {
 		gen.train("5");
 		Assert.assertEquals(gen.getResult(), "[0-9]");
 	}
+
+	@Test
+	public void rangeConstantComponent() throws IOException {
+		final RegExpGenerator gen = new RegExpGenerator(30, Locale.getDefault());
+
+		gen.train("AXP109785");
+		gen.train("AXP356785");
+		gen.train("AXP109005");
+		gen.train("AXP223785");
+		gen.train("AXP347885");
+		gen.train("AXP111185");
+		gen.train("AXP166778");
+		gen.train("AXP734377");
+		gen.train("AXP093633");
+		gen.train("AXP098637");
+		gen.train("AXP371295");
+		gen.train("AXP343456");
+		gen.train("AXP000345");
+		gen.train("AXP990213");
+		Assert.assertEquals(gen.getResult(), "(?i)(AXP000345|AXP093633|AXP098637|AXP109005|AXP109785|AXP111185|AXP166778|AXP223785|AXP343456|AXP347885|AXP356785|AXP371295|AXP734377|AXP990213)");
+	}
 }

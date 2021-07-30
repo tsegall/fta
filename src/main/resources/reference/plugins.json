@@ -119,10 +119,12 @@
 		"description": "Gender (Portugese Language)",
 		"headerRegExps" : [ ".*(?i)Gênero" ],
 		"headerRegExpConfidence" : [ 70 ],
-		"regExpsToMatch" : [ "(?i)(FEMININO|MASCULINO|OUTROS)" ],
+		"contentType": "inline",
+		"content": "{ \"members\": [ \"FEMININO\", \"MASCULINO\", \"OUTROS\" ] }",
 		"regExpReturned" : "(?i)(FEMININO|MASCULINO|OUTROS)",
 		"validLocales": [ "pt" ],
-		"baseType": "STRING",
+		"backout": ".*",
+		"baseType" : "STRING",
 		"priority": 81
 	},
 	{
@@ -154,9 +156,21 @@
 	},
 	{
 		"qualifier": "MONTH.FULL_<LOCALE>",
-		"description": "Fulll Month name <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"description": "Full Month name <LOCALE> = Locale, e.g. en-US for English langauge in US)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthFull",
-		"priority": 105
+		"priority": 101
+	},
+	{
+		"qualifier": "DOY.ABBR_<LOCALE>",
+		"description": "Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeDOYAbbr",
+		"priority": 102
+	},
+	{
+		"qualifier": "DOY.FULL_<LOCALE>",
+		"description": "Full Day of Week name <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeDOYFull",
+		"priority": 103
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",

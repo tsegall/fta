@@ -379,3 +379,6 @@
 
 ### 4.5.12
  - Clean up some warnings identified by Github
+
+### 4.5.13
+ - Add Semantic Types - DAY.ABBR_<Locale>, DAY.FULL_<Locale>
