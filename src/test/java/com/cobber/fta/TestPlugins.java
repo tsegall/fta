@@ -320,6 +320,37 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void trickyPhoneNumber() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Phone");
+		final String[] inputs = new String[] {
+				"617.875.9182", "7818609182", "+13392237279", "+13392237280", "7818201295", "617.875.9183",
+				"7818609182", "+13392237271", "+13392237281", "7818201295", "617.875.9184", "7818609182",
+				"+13392237272", "+13392237283", "7818201295", "617.875.9185", "7818609182", "+13392237278",
+				"+13392237289", "7818201295", "617.875.9188", "7818609182", "+13392237277", "+13392237287",
+				"7818201295", "617.875.9189", "7818609182", "+13392237279", "+13392237280", "7818201295",
+				"617.875.9182", "7818609182", "+13392237279", "+13392237280", "7818201295"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypePhoneNumber.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypePhoneNumber.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), LogicalTypePhoneNumber.REGEXP);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.trim().matches(result.getRegExp()), input);
+		}
+	}
+
+	@Test
 	public void basicGenderWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = " Female| MALE|Male| Female|Female|MALE |Female |Female |Unknown |Male |" +

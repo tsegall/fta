@@ -731,6 +731,31 @@ public class TestLongs {
 	}
 
 	@Test
+	public void someLongs() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("stringField");
+		analysis.setThreshold(90);
+		final String inputs[] = new String[] {
+				"12", "baz", "boo", "1234", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "10" };
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getRegExp(), "\\d{1,4}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 0.9166666666666666);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - 2);
+	}
+
+
+	@Test
 	public void signedLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
 		final String inputs[] = new String[] {

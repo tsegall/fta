@@ -117,7 +117,7 @@
 	{
 		"qualifier" : "GENDER.TEXT_PT",
 		"description": "Gender (Portugese Language)",
-		"headerRegExps" : [ ".*(?i)Gênero" ],
+		"headerRegExps" : [ ".*(?i)(Gender|Gênero)" ],
 		"headerRegExpConfidence" : [ 70 ],
 		"contentType": "inline",
 		"content": "{ \"members\": [ \"FEMININO\", \"MASCULINO\", \"OUTROS\" ] }",

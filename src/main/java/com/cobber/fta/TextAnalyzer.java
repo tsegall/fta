@@ -1609,19 +1609,19 @@ public class TextAnalyzer {
 			// - we have the same key but a better count
 			// - we have different keys but same type (signed vs. not-signed)
 			// - we have different keys, two numeric types and an improvement of at least 5%
-			// - we have different keys, different types and an improvement of at least 10%
+			// - we have different keys, different types and an improvement of at least 10% and we are below the threshold
 			if (level2 != null &&
 					((matchPatternInfo == null && level2patternInfo != null)
 					|| (best.getKey().equals(level2pattern) && level2value > best.getValue())
 					|| (!best.getKey().equals(level2pattern) && level2patternInfo != null
 							&& matchPatternInfo.type.equals(level2patternInfo.type)
-							&& level2.getValue() > best.getValue())
+							&& level2value > best.getValue())
 					|| (!best.getKey().equals(level2pattern) && level2patternInfo != null
 							&& matchPatternInfo.isNumeric()
 							&& level2patternInfo.isNumeric()
-							&& (double)level2.getValue() >= 1.05 * best.getValue())
-					|| (!best.getKey().equals(level2pattern)
-							&& (double)level2.getValue() >= 1.10 * best.getValue()))) {
+							&& level2value >= 1.05 * best.getValue())
+					|| (!best.getKey().equals(level2pattern) && (double)best.getValue()/raw.size() < (double)threshold/100
+							&& level2value >= 1.10 * best.getValue()))) {
 				matchPatternInfo = level2patternInfo;
 			}
 
