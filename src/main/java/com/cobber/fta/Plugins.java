@@ -31,6 +31,9 @@ import com.cobber.fta.core.FTAPluginException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * A singleton (per thread) used to track the set of plugins.
+ */
 public class Plugins {
 	private final Map<String, LogicalType> registered = new HashMap<>();
 

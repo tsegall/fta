@@ -22,7 +22,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
 /**
- * All Logical Types that consist of a constrained domain, e.g. a finite (small) number of elements should
+ * All Logical Types that consist of a constrained domain, for example, a finite (small) number of elements should
  * subclass this abstract class.
  */
 public abstract class LogicalTypeFinite extends LogicalTypeCode {

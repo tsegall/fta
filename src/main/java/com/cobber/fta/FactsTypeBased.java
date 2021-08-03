@@ -17,11 +17,20 @@ package com.cobber.fta;
 
 import java.util.Set;
 
+/**
+ * A set of facts (based on type) for the Analysis in question.
+ */
 public class FactsTypeBased {
+	/** The minimum value observed. */
 	protected String minValue;
+	/** The maximum value observed. */
 	protected String maxValue;
+	/** The mean of the observed values (Numeric types only). */
 	protected Double mean;
+	/** The variance of the observed values (Numeric types only). */
 	protected Double variance;
+	/** The top 10  values. */
 	protected Set<String> topK;
+	/** The bottom 10  values. */
 	protected Set<String> bottomK;
 }

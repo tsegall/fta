@@ -17,6 +17,17 @@ package com.cobber.fta;
 
 import com.cobber.fta.core.RegExpGenerator;
 
+/**
+ *
+ * Smashed will generate a simplified string, used to determine if all inputs are of the same form.
+ *
+ * Smashed strings follow the following rules:
+ *  - Strings of length greater than SMASHED_MAX are replaced with .+
+ *  - any digit is replaced with '9'
+ *  - any low alpha (a-f, A-F) is replaced with 'x'
+ *  - any high alpha (g-z, G-Z) is replaced with 'X'
+ *  - any % is sloshed (i.e. replaced with %%)
+ */
 public final class Smashed {
 
 	private Smashed() {
@@ -28,14 +39,10 @@ public final class Smashed {
 	private static final char HIGH_ALPHABETIC = 'X';
 	private static final char HEX = 'H';
 
+	private static final int SMAHED_MAX = 30;
+
 	/**
 	 * Fast method to simplify a string so that we can determine if all inputs are of the same form.
-	 * Smashed strings follow the following rules:
-	 *  - Strings of length greater than 30 are replaced with .+
-	 *  - any digit is replaced with '9'
-	 *  - any low alpha (a-f, A-F) is replaced with 'x'
-	 *  - any high alpha (g-z, G-Z) is replaced with 'X'
-	 *  - any % is sloshed (i.e. replaced with %%)
 	 *
 	 * @param input The input String to be smashed.
 	 * @return A 'smashed' String.
@@ -43,7 +50,7 @@ public final class Smashed {
 	public static String smash(final String input) {
 		final int len = input.length();
 
-		if (len > 30)
+		if (len > SMAHED_MAX)
 			return ".+";
 
 		final StringBuilder b = new StringBuilder();

@@ -20,6 +20,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * A Utility class with a set of helper functions.
+ */
 public abstract class Utils {
 
 	private Utils() {
@@ -74,6 +77,10 @@ public abstract class Utils {
 		}
 	}
 
+	/**
+	 * @param input Test if the supplied input is a string of all 0's.
+	 * @return True if input is a string of 0's.
+	 */
 	public static boolean allZeroes(final String input) {
 		if (input == null)
 			return false;
@@ -86,8 +93,12 @@ public abstract class Utils {
 	}
 
 	private static String version = Utils.class.getPackage().getImplementationVersion();
-	public static String getVersion(){
+
+	/**
+	 * Get the version of the FTA library.
+	 * @return The version of the FTA library.
+	 */
+	public static String getVersion() {
 		return version;
 	}
-
 }

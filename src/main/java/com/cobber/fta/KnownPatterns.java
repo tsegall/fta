@@ -27,6 +27,9 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 
+/**
+ * A set of predefined patterns, for simple numerics, strings and boolean values.
+ */
 public class KnownPatterns {
 	public static final String OPTIONAL_SIGN = "[+-]?";
 	public static final String OPTIONAL_UNICODE_SIGN = "[+\u2212-]?";

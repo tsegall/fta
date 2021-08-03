@@ -15,23 +15,26 @@
  */
 package com.cobber.fta;
 
-public class FactsCore {
-	/* The minimum length (not trimmed) -- Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
+/**
+ * A set of core facts for the Analysis in question.
+ */
+public final class FactsCore {
+	/** The minimum length (not trimmed) -- Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
 	protected int minRawLength = Integer.MAX_VALUE;
-	/* The maximum length (not trimmed) -- Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
+	/** The maximum length (not trimmed) -- Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
 	protected int maxRawLength = Integer.MIN_VALUE;
-	/* @param multiline Are any elements multi-line? */
+	/** Are any elements multi-line? */
 	protected boolean multiline;
-	/* Do any elements have leading White Space? */
+	/** Do any elements have leading White Space? */
 	protected boolean leadingWhiteSpace;
-	/* Do any elements have trailing White Space? */
+	/** Do any elements have trailing White Space? */
 	protected boolean trailingWhiteSpace;
-	/* Is this field a possible key? */
+	/** The percentage confidence (0-1.0) that the observed stream is a Key field. */
 	protected Double keyConfidence;
-	/* The number of leading zeros seen in sample set.  Only relevant for type Long. */
+	/** The number of leading zeros seen in sample set.  Only relevant for type Long. */
 	protected long leadingZeroCount;
-	/* Get the Decimal Separator used to interpret Doubles.  Only relevant for type double. */
+	/** Get the Decimal Separator used to interpret Doubles.  Only relevant for type double. */
 	protected char decimalSeparator = '.';
-	/* What is the uniqueness percentage of this column. */
+	/** What is the uniqueness percentage of this column. */
 	protected Double uniqueness;
 }

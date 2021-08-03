@@ -15,7 +15,19 @@
  */
 package com.cobber.fta;
 
+/**
+ * This interface provides a nextRandom method which creates a new valid example of the Semantic Type.
+ */
 public interface LTRandom {
+	/**
+	 * nextRandom will generate a random (secure) valid example of this Semantic Type.
+	 * @return a new valid example of the Semantic Type.
+	 */
 	String nextRandom();
+
+	/**
+	 * Seed the secure random number generator used to create examples.
+	 * @param seed The Byte array used to seed the random number geerator.
+	 */
 	void seed(byte[] seed);
 }

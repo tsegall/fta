@@ -22,6 +22,9 @@ import java.util.regex.Pattern;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
+/**
+ * All Logical Types are derived from this abstract class.
+ */
 public abstract class LogicalType implements Comparable<LogicalType> {
 	protected PluginDefinition defn;
 	protected Locale locale;

@@ -16,7 +16,7 @@
 package com.cobber.fta;
 
 /**
- * All Logical Types that consist of a unconstrained domain, e.g. an infinite (or large) number of elements should
+ * All Logical Types that consist of a unconstrained domain, for example, an infinite (or large) number of elements should
  * subclass this abstract class.
  */
 public abstract class LogicalTypeInfinite extends LogicalTypeCode {

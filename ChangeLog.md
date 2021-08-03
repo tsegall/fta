@@ -387,3 +387,6 @@
  - Upgrade version of phone number library
  - Minimal mod to Gender detection in Portugese
  - Only use level 2 pattern if below detection threshold (and associated test)
+
+### 4.5.15
+ - Improve Java Doc

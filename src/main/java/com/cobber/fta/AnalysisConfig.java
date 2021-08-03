@@ -15,10 +15,13 @@
  */
 package com.cobber.fta;
 
+/**
+ * Capture how the Analysis is configured.  Attributes on the analysis are typically frozen once training has started.
+ */
 public class AnalysisConfig {
 	/** The maximum Cardinality tracked. */
 	public int maxCardinality;
-	/** The maximum # of outliers tracked. */
+	/** The maximum number of outliers tracked. */
 	public int maxOutliers;
 	/** The maximum number of shapes tracked. */
 	public int maxShapes;
