@@ -42,10 +42,10 @@ public abstract class SamplePlugin {
 		try {
 			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", null);
 		} catch (InvocationTargetException e) {
-			System.err.println("Failed to register plugin: " + e.getCause().getMessage());
+			System.err.println("ERROR: Failed to register plugin: " + e.getCause().getMessage());
 			System.exit(1);
 		} catch (Exception e) {
-			System.err.println("Failed to register plugin: " + e.getMessage());
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
 			System.exit(1);
 		}
 

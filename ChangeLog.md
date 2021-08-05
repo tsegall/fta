@@ -356,10 +356,10 @@
 
 ### 4.5.6
  - Rationalize names of reference files
- - Add new Semantic Types - HONORIFIC_EN, STREET_MARKER_EN
+ - ENH: Add new Semantic Types - HONORIFIC_EN, STREET_MARKER_EN
 
 ### 4.5.7
- - Add new Semantic Types - CHECKDIGIT.IBAN
+ - ENH: Add new Semantic Types - CHECKDIGIT.IBAN
 
 ### 4.5.8
  - Remove semantic Type REGION.TEXT_EN
@@ -368,25 +368,29 @@
  - Improve SSN RegExp and test cases, fix bug where detection compares against RegExpReturned not RegExpsToMatch
  - Improve RegExp for City and Names
  - Widen out list for Honorifics
- - Add new Semantic Type - VIN (Vehicle Identification Number)
+ - ENH: Add new Semantic Type - VIN (Vehicle Identification Number)
 
 ### 4.5.10
  - FirstLast Plugin - insist on a decent spread of distinct last names and distinct first names
 
 ### 4.5.11
  - Switch back to random (no SecureRandom) for Bulk mode.
- - Add Semantic Types - GENDER.TEXT_PT, JOB_TITLE_EN
+ - ENH: Add Semantic Types - GENDER.TEXT_PT, JOB_TITLE_EN
 
 ### 4.5.12
  - Clean up some warnings identified by Github
 
 ### 4.5.13
- - Add Semantic Types - DAY.ABBR_<Locale>, DAY.FULL_<Locale>
+ - ENH: Add Semantic Types - DAY.ABBR_<Locale>, DAY.FULL_<Locale>
 
 ### 4.5.14
- - Upgrade version of phone number library
+ - ENH: Upgrade version of phone number library
  - Minimal mod to Gender detection in Portugese
  - Only use level 2 pattern if below detection threshold (and associated test)
 
 ### 4.5.15
- - Improve Java Doc
+ - ENH: Improve Java Doc
+
+### 4.5.16
+ - ENH: Improve error message from CLI if plugin file not found
+ - BUG: Fix rejection of Finite plugins with a small number of members

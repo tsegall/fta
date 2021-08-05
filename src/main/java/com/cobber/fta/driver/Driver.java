@@ -123,7 +123,7 @@ class Driver {
 				else if ("None".equals(mode))
 					options.resolutionMode = DateResolutionMode.None;
 				else {
-					logger.printf("Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None%n", mode);
+					logger.printf("ERROR: Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None%n", mode);
 					System.exit(1);
 				}
 			}
@@ -140,7 +140,7 @@ class Driver {
 			else if ("--xMaxCharsPerColumn".equals(args[idx]))
 				options.xMaxCharsPerColumn = Integer.valueOf(args[++idx]);
 			else {
-				logger.printf("Unrecognized option: '%s', use --help%n", args[idx]);
+				logger.printf("ERROR: Unrecognized option: '%s', use --help%n", args[idx]);
 				System.exit(1);
 			}
 			idx++;
@@ -155,7 +155,7 @@ class Driver {
 			for (LogicalType logical : registered)
 				if (logical.getQualifier().equals(options.pluginSamples)) {
 					if (!(logical instanceof LogicalTypeCode)) {
-						logger.printf("Plugin named '%s' does not support nextRandom(), use --help%n", options.pluginSamples);
+						logger.printf("ERROR: Plugin named '%s' does not support nextRandom(), use --help%n", options.pluginSamples);
 						System.exit(1);
 					}
 
@@ -166,7 +166,7 @@ class Driver {
 					System.exit(0);
 				}
 
-			logger.printf("Failed to locate plugin named '%s', use --help%n", options.pluginSamples);
+			logger.printf("ERROR: Failed to locate plugin named '%s', use --help%n", options.pluginSamples);
 			System.exit(1);
 		}
 

@@ -25,6 +25,8 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -72,11 +74,16 @@ class FileProcessor {
 				if (options.logicalTypes.charAt(0) == '[')
 					analyzer.getPlugins().registerPlugins(new StringReader(options.logicalTypes),
 							analyzer.getStreamName(), options.locale);
-				else
+				else {
+					if(!Files.isRegularFile(Paths.get(options.logicalTypes))) {
+						System.err.println("ERROR: Failed to read Logical Types file: " + options.logicalTypes);
+						System.exit(1);
+					}
 					analyzer.getPlugins().registerPlugins(new FileReader(options.logicalTypes), analyzer.getStreamName(), options.locale);
+				}
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
 					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | FTAPluginException e) {
-				System.err.println("Failed to register plugin: " + e.getMessage());
+				System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
 				System.exit(1);
 			}
 		if (options.threshold != -1)
@@ -176,7 +183,7 @@ class FileProcessor {
 			numFields = header.length;
 			analysis = new TextAnalyzer[numFields];
 			if (options.col > numFields) {
-				logger.printf("Column %d does not exist.  Only %d field(s) in input.%n", options.col, numFields);
+				logger.printf("ERROR: Column %d does not exist.  Only %d field(s) in input.%n", options.col, numFields);
 				System.exit(1);
 			}
 			for (int i = 0; i < numFields; i++) {
@@ -211,7 +218,7 @@ class FileProcessor {
 			}
 		}
 		catch (FileNotFoundException e) {
-			logger.printf("Filename '%s' not found.%n", filename);
+			logger.printf("ERROR: Filename '%s' not found.%n", filename);
 			System.exit(1);
 		}
 

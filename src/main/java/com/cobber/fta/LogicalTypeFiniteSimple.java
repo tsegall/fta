@@ -88,7 +88,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		final int headerConfidence = getHeaderConfidence(dataStreamName);
 
 		int maxOutliers = 1;
-		int minCardinality = 4;
+		int minCardinality = Math.min(getMembers().size(), 4);
 		int minSamples = 20;
 		if (headerConfidence != 0) {
 			minCardinality = 1;
