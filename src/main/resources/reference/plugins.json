@@ -128,6 +128,19 @@
 		"priority": 81
 	},
 	{
+		"qualifier" : "GENDER.TEXT_JP",
+		"description": "Gender (Japanese Language)",
+		"headerRegExps" : [ "(性|性別)" ],
+		"headerRegExpConfidence" : [ 70 ],
+		"contentType": "inline",
+		"content": "{ \"members\": [ \"女性\",\"女\",\"男性\",\"男\"\"その他\" ] }",
+		"regExpReturned" : "(女性|女|男性|男|その他)",
+		"validLocales": [ "jp" ],
+		"backout": ".*",
+		"baseType" : "STRING",
+		"priority": 82
+	},
+	{
 		"qualifier": "HONORIFIC_EN",
 		"description": "Honorific (English Language)",
 		"validLocales": [ "en" ],
@@ -192,7 +205,7 @@
 		"content": "/reference/mx_states.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 112
+		"priority": 111
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_US",
@@ -203,7 +216,7 @@
 		"content": "/reference/us_states.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 114
+		"priority": 112
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NA",
@@ -212,7 +225,7 @@
 		"validLocales": [ "en-US", "en-CA", "es-MX" ],
 		"headerRegExps": [ ".*(?i)(state|province|estado).*" ],
 		"headerRegExpConfidence": [ 90 ],
-		"priority": 116
+		"priority": 113
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_AU",
@@ -224,7 +237,7 @@
 		"content": "{ \"members\": [ \"ACT\", \"NSW\", \"NT\", \"QLD\", \"SA\", \"TAS\", \"VIC\", \"WA\" ] }",
 		"contentType": "inline",
 		"backout": "\\p{IsAlphabetic}{2,3}",
-		"priority": 118
+		"priority": 114
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_CA",
@@ -236,7 +249,7 @@
 		"content": "/reference/ca_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 120
+		"priority": 115
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_MX",
@@ -248,7 +261,7 @@
 		"content": "/reference/mx_states_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 122
+		"priority": 116
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_US",
@@ -260,7 +273,7 @@
 		"content": "/reference/us_states_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 124
+		"priority": 117
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NAME_NA",
@@ -272,7 +285,7 @@
 		"content": "/reference/na_states_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 126
+		"priority": 118
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_AU",
@@ -284,7 +297,43 @@
 		"content": "/reference/au_states_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 128
+		"priority": 119
+	},
+	{
+		"qualifier": "STATE_PROVINCE.STATE_NAME_DE",
+		"description": "German State",
+		"validLocales": [ "de-DE" ],
+		"headerRegExps": [ ".*(?i)(state|staat).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "[ \\p{IsAlphabetic}]+",
+		"content": "/reference/de_states_full.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 120
+	},
+	{
+		"qualifier": "STATE_PROVINCE.REGION_NAME_FR",
+		"description": "French Region",
+		"validLocales": [ "fr-FR" ],
+		"headerRegExps": [ ".*(?i)(region|région).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "[ \\p{IsAlphabetic}]+",
+		"content": "/reference/fr_regions.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 121
+	},
+	{
+		"qualifier": "STATE_PROVINCE.DEPARTMENT_NAME_FR",
+		"description": "French Department",
+		"validLocales": [ "fr-FR" ],
+		"headerRegExps": [ ".*(?i)(department|Département).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "[ \\p{IsAlphabetic}]+",
+		"content": "/reference/fr_department.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 122
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",

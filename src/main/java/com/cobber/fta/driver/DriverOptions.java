@@ -15,8 +15,16 @@
  */
 package com.cobber.fta.driver;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Locale;
 
+import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 class DriverOptions {
@@ -43,4 +51,43 @@ class DriverOptions {
 	protected int verbose;
 	protected int xMaxCharsPerColumn = -1;
 	protected String delimiter;
+
+	public void apply(final TextAnalyzer analyzer) throws IOException {
+		if (this.debug != -1)
+			analyzer.setDebug(this.debug);
+		if (this.detectWindow != -1)
+			analyzer.setDetectWindow(this.detectWindow);
+		if (this.maxCardinality != -1)
+			analyzer.setMaxCardinality(this.maxCardinality);
+		if (this.maxOutlierCardinality != -1)
+			analyzer.setMaxOutliers(this.maxOutlierCardinality);
+		if (this.pluginThreshold != -1)
+			analyzer.setPluginThreshold(this.pluginThreshold);
+		if (this.locale != null)
+			analyzer.setLocale(this.locale);
+		if (this.noStatistics)
+			analyzer.setCollectStatistics(false);
+		if (this.noLogicalTypes)
+			analyzer.setDefaultLogicalTypes(false);
+
+		if (this.logicalTypes != null)
+			try {
+				if (this.logicalTypes.charAt(0) == '[')
+					analyzer.getPlugins().registerPlugins(new StringReader(this.logicalTypes),
+							analyzer.getStreamName(), this.locale);
+				else {
+					if(!Files.isRegularFile(Paths.get(this.logicalTypes))) {
+						System.err.println("ERROR: Failed to read Logical Types file: " + this.logicalTypes);
+						System.exit(1);
+					}
+					analyzer.getPlugins().registerPlugins(new FileReader(this.logicalTypes), analyzer.getStreamName(), this.locale);
+				}
+			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | FTAPluginException e) {
+				System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+				System.exit(1);
+			}
+		if (this.threshold != -1)
+			analyzer.setThreshold(this.threshold);
+	}
 }

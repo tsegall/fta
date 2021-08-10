@@ -394,3 +394,6 @@
 ### 4.5.16
  - ENH: Improve error message from CLI if plugin file not found
  - BUG: Fix rejection of Finite plugins with a small number of members
+
+### 4.5.17
+ - ENH: Add Semantic Types - GENDER.TEXT_JP, STATE_PROVINCE.DEPARTMENT_FR, STATE_PROVINCE.REGION_FR, STATE_PROVINCE.STATE_NAME_DE

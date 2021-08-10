@@ -19,9 +19,9 @@ package com.cobber.fta;
  * A set of core facts for the Analysis in question.
  */
 public final class FactsCore {
-	/** The minimum length (not trimmed) -- Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
+	/** The minimum length (not trimmed) - Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
 	protected int minRawLength = Integer.MAX_VALUE;
-	/** The maximum length (not trimmed) -- Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
+	/** The maximum length (not trimmed) - Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
 	protected int maxRawLength = Integer.MIN_VALUE;
 	/** Are any elements multi-line? */
 	protected boolean multiline;

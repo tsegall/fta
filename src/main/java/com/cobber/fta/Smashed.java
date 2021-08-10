@@ -39,7 +39,7 @@ public final class Smashed {
 	private static final char HIGH_ALPHABETIC = 'X';
 	private static final char HEX = 'H';
 
-	private static final int SMAHED_MAX = 30;
+	private static final int SMASHED_MAX = 30;
 
 	/**
 	 * Fast method to simplify a string so that we can determine if all inputs are of the same form.
@@ -50,10 +50,11 @@ public final class Smashed {
 	public static String smash(final String input) {
 		final int len = input.length();
 
-		if (len > SMAHED_MAX)
+		if (len > SMASHED_MAX)
 			return ".+";
 
-		final StringBuilder b = new StringBuilder();
+		// Allocate len + 2 - we need at least len (and maybe more if we see %'s, but this will be enough most of the time)
+		final StringBuilder b = new StringBuilder(len + 2);
 		for (int i = 0; i < len; i++) {
 			final char ch = input.charAt(i);
 			// Note: we are using 0-9 not isDigit

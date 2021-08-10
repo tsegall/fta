@@ -19,14 +19,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,45 +44,6 @@ class FileProcessor {
 		this.logger = logger;
 		this.filename = filename;
 		this.options = options;
-	}
-
-	private void setOptions(final TextAnalyzer analyzer) throws IOException {
-		if (options.debug != -1)
-			analyzer.setDebug(options.debug);
-		if (options.detectWindow != -1)
-			analyzer.setDetectWindow(options.detectWindow);
-		if (options.maxCardinality != -1)
-			analyzer.setMaxCardinality(options.maxCardinality);
-		if (options.maxOutlierCardinality != -1)
-			analyzer.setMaxOutliers(options.maxOutlierCardinality);
-		if (options.pluginThreshold != -1)
-			analyzer.setPluginThreshold(options.pluginThreshold);
-		if (options.locale != null)
-			analyzer.setLocale(options.locale);
-		if (options.noStatistics)
-			analyzer.setCollectStatistics(false);
-		if (options.noLogicalTypes)
-			analyzer.setDefaultLogicalTypes(false);
-
-		if (options.logicalTypes != null)
-			try {
-				if (options.logicalTypes.charAt(0) == '[')
-					analyzer.getPlugins().registerPlugins(new StringReader(options.logicalTypes),
-							analyzer.getStreamName(), options.locale);
-				else {
-					if(!Files.isRegularFile(Paths.get(options.logicalTypes))) {
-						System.err.println("ERROR: Failed to read Logical Types file: " + options.logicalTypes);
-						System.exit(1);
-					}
-					analyzer.getPlugins().registerPlugins(new FileReader(options.logicalTypes), analyzer.getStreamName(), options.locale);
-				}
-			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | FTAPluginException e) {
-				System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
-				System.exit(1);
-			}
-		if (options.threshold != -1)
-			analyzer.setThreshold(options.threshold);
 	}
 
 	protected void process() throws IOException, FTAPluginException, FTAUnsupportedLocaleException {
@@ -146,7 +102,7 @@ class FileProcessor {
 				if (previousKey == null || !key.equals(previousKey)) {
 					if (!bulkMap.isEmpty()) {
 						analyzer = new TextAnalyzer(previousName);
-						setOptions(analyzer);
+						options.apply(analyzer);
 						analyzer.trainBulk(bulkMap);
 						result = analyzer.getResult();
 						logger.printf("Field '%s' - %s%n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
@@ -160,7 +116,7 @@ class FileProcessor {
 
 			if (!bulkMap.isEmpty()) {
 				analyzer = new TextAnalyzer(name);
-				setOptions(analyzer);
+				options.apply(analyzer);
 				analyzer.trainBulk(bulkMap);
 				result = analyzer.getResult();
 				logger.printf("Field '%s' - %s%n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
@@ -170,7 +126,7 @@ class FileProcessor {
 
 	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException {
 		final long start = System.currentTimeMillis();
-		TextAnalyzer[] analysis = null;
+		Processor processor = null;
 		String[] header = null;
 		int numFields = 0;
 
@@ -181,7 +137,6 @@ class FileProcessor {
 
 			header = parser.getRecordMetadata().headers();
 			numFields = header.length;
-			analysis = new TextAnalyzer[numFields];
 			if (options.col > numFields) {
 				logger.printf("ERROR: Column %d does not exist.  Only %d field(s) in input.%n", options.col, numFields);
 				System.exit(1);
@@ -189,9 +144,8 @@ class FileProcessor {
 			for (int i = 0; i < numFields; i++) {
 				if ((options.col == -1 || options.col == i) && options.verbose != 0)
 					System.out.println(header[i]);
-				analysis[i] = new TextAnalyzer(header[i], options.resolutionMode);
-				setOptions(analysis[i]);
 			}
+			processor = new Processor(header, options);
 
 			long thisRecord = 0;
 			String[] row;
@@ -203,14 +157,7 @@ class FileProcessor {
 							thisRecord, row.length, numFields);
 					continue;
 				}
-				for (int i = 0; i < numFields; i++) {
-					if (options.col == -1 || options.col == i) {
-						if (options.verbose != 0)
-							System.out.printf("\"%s\"%n", row[i]);
-						if (!options.noAnalysis)
-							analysis[i].train(row[i]);
-					}
-				}
+				processor.consume(row);
 				if (thisRecord == options.recordsToProcess) {
 					parser.stopParsing();
 					break;
@@ -241,7 +188,7 @@ class FileProcessor {
 
 				for (int i = 0; i < numFields; i++)
 					if (options.col == -1 || options.col == i) {
-						results[i] = analysis[i].getResult();
+						results[i] = processor.getResult(i);
 						patterns[i] = Pattern.compile(results[i].getRegExp());
 					}
 
@@ -278,7 +225,7 @@ class FileProcessor {
 		TextAnalysisResult result = null;
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
-				result = analysis[i].getResult();
+				result = processor.getResult(i);
 				logger.printf("Field '%s' (%d) - %s%n", header[i], i, result.asJSON(options.pretty, options.verbose));
 				if (options.pluginDefinition) {
 					final String pluginDefinition = result.asPlugin();

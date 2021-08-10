@@ -209,7 +209,7 @@ class Driver {
 		}
 
 		if (idx == args.length) {
-			logger.printf("No file to process supplied, use --help%n");
+			logger.printf("ERROR: No file to process supplied, use --help%n");
 			System.exit(1);
 		}
 
@@ -221,11 +221,11 @@ class Driver {
 			try {
 				fileProcessor.process();
 			} catch (FTAPluginException e) {
-				logger.printf("Plugin Exception: %s%n", e.getMessage());
+				logger.printf("ERROR: Plugin Exception: %s%n", e.getMessage());
 				System.exit(1);
 			} catch (FTAUnsupportedLocaleException e) {
 				Locale activeLocale = options.locale != null ? options.locale : Locale.getDefault();
-				logger.printf("Unsupported Locale: %s, error: %s%n", activeLocale.toLanguageTag(), e.getMessage());
+				logger.printf("ERROR: Unsupported Locale: %s, error: %s%n", activeLocale.toLanguageTag(), e.getMessage());
 				System.exit(1);
 			}
 		}

@@ -126,7 +126,7 @@ public class RegExpGenerator {
 		final StringBuilder ret = new StringBuilder();
 
 		// Build up the answer and count the number of special characters
-		for (int i = 0; i < input.length(); i++) {
+		for (int i = 0; i < len; i++) {
 			final char ch = input.charAt(i);
 			if (isSpecial(ch)) {
 				specials++;
