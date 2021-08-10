@@ -109,72 +109,72 @@ In addition to detecting a set of Base types fta will also, when enabled (defaul
 
 Detection of some Semantic Types is dependent on the current locale as indicated below:
 
-Semantic Type|Description|
+Semantic Type|Description|Locale
 ---------|-------------|
-AIRPORT_CODE.IATA|IATA Airport Code
-CHECKDIGIT.CUSIP|North American Security Identifier
-CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)
-CHECKDIGIT.IBAN|International Bank Account Number
-CHECKDIGIT.ISIN|International Securities Identification Number
-CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit (and length between 8 and 30 inclusive)
-CHECKDIGIT.SEDOL|UK/Ireland Security Identifier
-CITY|City/Town
-CONTINENT.CODE_EN|Continent Code
-CONTINENT.TEXT_EN|Continent Name
-COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)
-COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)
-COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)
-COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2
-COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3
-COUNTRY.TEXT_EN|Country as a string (English language)
-CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...
-CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217
+AIRPORT_CODE.IATA|IATA Airport Code|*
+CHECKDIGIT.CUSIP|North American Security Identifier|*
+CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)|*
+CHECKDIGIT.IBAN|International Bank Account Number|*
+CHECKDIGIT.ISIN|International Securities Identification Number|*
+CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit (and length between 8 and 30 inclusive)|*
+CHECKDIGIT.SEDOL|UK/Ireland Security Identifier|*
+CITY|City/Town|en
+CONTINENT.CODE_EN|Continent Code|en
+CONTINENT.TEXT_EN|Continent Name|en
+COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|*
+COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|*
+COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|*
+COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2|*
+COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|*
+COUNTRY.TEXT_EN|Country as a string (English language)|en
+CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|*
+CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|*
 DAY.DIGITS|Day represented as a number (1-31)
-DAY.ABBR_<Locale>|Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US
-DAY.FULL_<Locale>|Full Day of Week name <LOCALE> = Locale, e.g. en-US for English langauge in US
-EMAIL|Email Address
-GENDER.TEXT_EN|Gender (English Language)
-GENDER.TEXT_DE|Gender (German Language)
-GENDER.TEXT_FR|Gender (French Language)
-GENDER.TEXT_PT|Gender (Portugese Language)
-GENDER.TEXT_JP|Gender (Japanese Language)
-GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67
-HONORIFIC_EN|Title (English language)
-STREET_MARKER_EN| Street Suffix (English Language)
-IPADDRESS.IPV4|IP V4 Address
-IPADDRESS.IPV6|IP V6 Address
-LANGUAGE.ISO-639-2|Language code - ISO 639, two character
-LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...
-MACADDRESS|MAC Address
-MONTH.ABBR_<Locale>|Month Abbreviation <LOCALE> = Locale, for example, en-US for English language in US
-MONTH.DIGITS|Month represented as a number (1-12)
-MONTH.FULL_<Locale>|Full Month name <LOCALE> = Locale, for example, en-US for English language in US
-NAME.FIRST|First Name
-NAME.FIRST_LAST|Merged Name (First Last)
-NAME.LAST|Last Name
-NAME.LAST_FIRST|Merged Name (Last, First)
-POSTAL_CODE.POSTAL_CODE_AU|Postal Code (en-AU)
-POSTAL_CODE.POSTAL_CODE_CA|Postal Code (en-CA)
-POSTAL_CODE.ZIP5_US|Postal Code (en-US)
-POSTAL_CODE.POSTAL_CODE_UK|Postal Code (en-UK)
-SSN|Social Security Number (en-US)
-STATE_PROVINCE.STATE_AU|Australian State Code (en-AU)
-STATE_PROVINCE.PROVINCE_CA|Canadian Province Code (en-CA/en-US)
-STATE_PROVINCE.STATE_NAME_DE|German State Name (de-DE)
-STATE_PROVINCE.STATE_MX|Mexican State Code (es-MX)
-STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code (en-CA/en-US/es-MX)
-STATE_PROVINCE.STATE_US|US State Code (en-CA/en-US)
-STATE_PROVINCE.STATE_NAME_AU|Australian State Name (en-AU)
-STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name (en-CA/en-US)
-STATE_PROVINCE.STATE_NAME_MX|Mexican State Name (es-MX)
-STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name (en-CA/en-US/es-MX)
-STATE_PROVINCE.STATE_NAME_US|US State Name (en-CA/en-US)
-STATE_PROVINCE.DEPARTMENT_FR|French Department Name (fr-FR)
-STATE_PROVINCE.REGION_FR|French Region Name (fr-FR)
-STREET_ADDRESS_EN|Street Address (English Language)
-TELEPHONE|Telephone Number (Generic)
-URI.URL|URL - see RFC 3986
-VIN|Vehicle Identification Number
+DAY.ABBR_<Locale>|Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US|<CurrentLocale>
+DAY.FULL_<Locale>|Full Day of Week name <LOCALE> = Locale, e.g. en-US for English language in US|<CurrentLocale>
+EMAIL|Email Address|*
+GENDER.TEXT_EN|Gender (English Language)|en
+GENDER.TEXT_DE|Gender (German Language)|de
+GENDER.TEXT_FR|Gender (French Language)|fr
+GENDER.TEXT_PT|Gender (Portugese Language)|pt
+GENDER.TEXT_JP|Gender (Japanese Language)|jp
+GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
+HONORIFIC_EN|Title (English language)|en
+STREET_MARKER_EN| Street Suffix (English Language)|en
+IPADDRESS.IPV4|IP V4 Address|*
+IPADDRESS.IPV6|IP V6 Address|*
+LANGUAGE.ISO-639-2|Language code - ISO 639, two character|*
+LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...|en
+MACADDRESS|MAC Address|*
+MONTH.ABBR_<Locale>|Month Abbreviation <LOCALE> = Locale, for example, en-US for English language in US|<CurrentLocale>
+MONTH.DIGITS|Month represented as a number (1-12)|<CurrentLocale>
+MONTH.FULL_<Locale>|Full Month name <LOCALE> = Locale, for example, en-US for English language in US|<CurrentLocale>
+NAME.FIRST|First Name|en
+NAME.FIRST_LAST|Merged Name (First Last)|en
+NAME.LAST|Last Name|en
+NAME.LAST_FIRST|Merged Name (Last, First)|en
+POSTAL_CODE.POSTAL_CODE_AU|Postal Code|en-AU
+POSTAL_CODE.POSTAL_CODE_CA|Postal Code|en-CA
+POSTAL_CODE.ZIP5_US|Postal Code|en-US
+POSTAL_CODE.POSTAL_CODE_UK|Postal Code|en-UK
+SSN|Social Security Number|en-US
+STATE_PROVINCE.STATE_AU|Australian State Code|en-AU
+STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA/en-US
+STATE_PROVINCE.STATE_NAME_DE|German State Name|de-DE
+STATE_PROVINCE.STATE_MX|Mexican State Code|es-MX
+STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA/en-US/es-MX
+STATE_PROVINCE.STATE_US|US State Code|en-CA/en-US
+STATE_PROVINCE.STATE_NAME_AU|Australian State Name|en-AU
+STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name|en-CA/en-US
+STATE_PROVINCE.STATE_NAME_MX|Mexican State Name|es-MX
+STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA/en-US/es-MX
+STATE_PROVINCE.STATE_NAME_US|US State Name|en-CA/en-US
+STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
+STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
+STREET_ADDRESS_EN|Street Address (English Language)|en
+TELEPHONE|Telephone Number (Generic)|*
+URI.URL|URL - see RFC 3986|*
+VIN|Vehicle Identification Number|*
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
 * Infinite - captures any infinite type (e.g. Even numbers).  Implemented via a Java Class.

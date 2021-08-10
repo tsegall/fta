@@ -401,3 +401,7 @@
 ### 4.5.18
  - ENH: Improve list of French regions (include common alternate spellings, old regions, etc).
  - ENH: Add Semantic Types - GENDER.TEXT_DE, GENDER.TEXT_FR
+
+### 4.5.19
+ - ENH: Improve documentation wrt Locales
+ - BUG: CONTINENT* and CITY should only be active in English language

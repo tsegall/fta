@@ -399,6 +399,7 @@
 		"content": "/reference/en_continent.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
+		"validLocales": [ "en" ],
 		"priority": 150
 	},
 	{
@@ -409,6 +410,7 @@
 		"content": "/reference/en_continent_code.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
+		"validLocales": [ "en" ],
 		"priority": 152
 	},
 	{
@@ -501,6 +503,7 @@
 		"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 		"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
 		"baseType": "STRING",
+		"validLocales": [ "en" ],
 		"priority": 210
 	},
 	{
