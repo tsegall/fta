@@ -109,8 +109,8 @@ In addition to detecting a set of Base types fta will also, when enabled (defaul
 
 Detection of some Semantic Types is dependent on the current locale as indicated below:
 
-Semantic Type|Description|Locale
----------|-------------|
+Semantic Type|Description|Locale|
+---------|-------------|--------|
 AIRPORT_CODE.IATA|IATA Airport Code|*
 CHECKDIGIT.CUSIP|North American Security Identifier|*
 CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)|*
@@ -130,8 +130,8 @@ COUNTRY.TEXT_EN|Country as a string (English language)|en
 CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|*
 CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|*
 DAY.DIGITS|Day represented as a number (1-31)
-DAY.ABBR_<Locale>|Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US|<CurrentLocale>
-DAY.FULL_<Locale>|Full Day of Week name <LOCALE> = Locale, e.g. en-US for English language in US|<CurrentLocale>
+DAY.ABBR_<Locale>|Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US|Current Locale
+DAY.FULL_<Locale>|Full Day of Week name <LOCALE> = Locale, e.g. en-US for English language in US|Current Locale
 EMAIL|Email Address|*
 GENDER.TEXT_EN|Gender (English Language)|en
 GENDER.TEXT_DE|Gender (German Language)|de
@@ -146,9 +146,9 @@ IPADDRESS.IPV6|IP V6 Address|*
 LANGUAGE.ISO-639-2|Language code - ISO 639, two character|*
 LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...|en
 MACADDRESS|MAC Address|*
-MONTH.ABBR_<Locale>|Month Abbreviation <LOCALE> = Locale, for example, en-US for English language in US|<CurrentLocale>
-MONTH.DIGITS|Month represented as a number (1-12)|<CurrentLocale>
-MONTH.FULL_<Locale>|Full Month name <LOCALE> = Locale, for example, en-US for English language in US|<CurrentLocale>
+MONTH.ABBR_<Locale>|Month Abbreviation <LOCALE> = Locale, for example, en-US for English language in US|Current Locale
+MONTH.DIGITS|Month represented as a number (1-12)|Current Locale
+MONTH.FULL_<Locale>|Full Month name <LOCALE> = Locale, for example, en-US for English language in US|Current Locale
 NAME.FIRST|First Name|en
 NAME.FIRST_LAST|Merged Name (First Last)|en
 NAME.LAST|Last Name|en
