@@ -115,6 +115,32 @@
 		"priority": 80
 	},
 	{
+		"qualifier" : "GENDER.TEXT_DE",
+		"description": "Gender (German Language)",
+		"headerRegExps" : [ ".*(?i)(Gender|Geschlecht)" ],
+		"headerRegExpConfidence" : [ 70 ],
+		"contentType": "inline",
+		"content": "{ \"members\": [ \"MÄNNLICH\", \"WEIBLICH\", \"DIVERS\" ] }",
+		"regExpReturned" : "(?i)(MÄNNLICH|WEIBLICH|DIVERS)",
+		"validLocales": [ "de" ],
+		"backout": ".*",
+		"baseType" : "STRING",
+		"priority": 81
+	},
+	{
+		"qualifier" : "GENDER.TEXT_FR",
+		"description": "Gender (French Language)",
+		"headerRegExps" : [ ".*(?i)(Gender|Genre|Sexe)" ],
+		"headerRegExpConfidence" : [ 70 ],
+		"contentType": "inline",
+		"content": "{ \"members\": [ \"FEMME\", \"HOMME\", \"AUTRE\" ] }",
+		"regExpReturned" : "(?i)(FEMME|HOMME|AUTRE)",
+		"validLocales": [ "fr" ],
+		"backout": ".*",
+		"baseType" : "STRING",
+		"priority": 82
+	},
+	{
 		"qualifier" : "GENDER.TEXT_PT",
 		"description": "Gender (Portugese Language)",
 		"headerRegExps" : [ ".*(?i)(Gender|Gênero)" ],
@@ -125,7 +151,7 @@
 		"validLocales": [ "pt" ],
 		"backout": ".*",
 		"baseType" : "STRING",
-		"priority": 81
+		"priority": 83
 	},
 	{
 		"qualifier" : "GENDER.TEXT_JP",
@@ -138,7 +164,7 @@
 		"validLocales": [ "jp" ],
 		"backout": ".*",
 		"baseType" : "STRING",
-		"priority": 82
+		"priority": 84
 	},
 	{
 		"qualifier": "HONORIFIC_EN",
@@ -149,7 +175,7 @@
 		"content": "/reference/en_honorific.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 82
+		"priority": 89
 	},
 	{
 		"qualifier": "COUNTRY.TEXT_EN",

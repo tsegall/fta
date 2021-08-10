@@ -134,7 +134,10 @@ DAY.ABBR_<Locale>|Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for Eng
 DAY.FULL_<Locale>|Full Day of Week name <LOCALE> = Locale, e.g. en-US for English langauge in US
 EMAIL|Email Address
 GENDER.TEXT_EN|Gender (English Language)
+GENDER.TEXT_DE|Gender (German Language)
+GENDER.TEXT_FR|Gender (French Language)
 GENDER.TEXT_PT|Gender (Portugese Language)
+GENDER.TEXT_JP|Gender (Japanese Language)
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67
 HONORIFIC_EN|Title (English language)
 STREET_MARKER_EN| Street Suffix (English Language)
@@ -157,6 +160,7 @@ POSTAL_CODE.POSTAL_CODE_UK|Postal Code (en-UK)
 SSN|Social Security Number (en-US)
 STATE_PROVINCE.STATE_AU|Australian State Code (en-AU)
 STATE_PROVINCE.PROVINCE_CA|Canadian Province Code (en-CA/en-US)
+STATE_PROVINCE.STATE_NAME_DE|German State Name (de-DE)
 STATE_PROVINCE.STATE_MX|Mexican State Code (es-MX)
 STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code (en-CA/en-US/es-MX)
 STATE_PROVINCE.STATE_US|US State Code (en-CA/en-US)
@@ -165,6 +169,8 @@ STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name (en-CA/en-US)
 STATE_PROVINCE.STATE_NAME_MX|Mexican State Name (es-MX)
 STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name (en-CA/en-US/es-MX)
 STATE_PROVINCE.STATE_NAME_US|US State Name (en-CA/en-US)
+STATE_PROVINCE.DEPARTMENT_FR|French Department Name (fr-FR)
+STATE_PROVINCE.REGION_FR|French Region Name (fr-FR)
 STREET_ADDRESS_EN|Street Address (English Language)
 TELEPHONE|Telephone Number (Generic)
 URI.URL|URL - see RFC 3986

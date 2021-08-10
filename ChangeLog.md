@@ -397,3 +397,7 @@
 
 ### 4.5.17
  - ENH: Add Semantic Types - GENDER.TEXT_JP, STATE_PROVINCE.DEPARTMENT_FR, STATE_PROVINCE.REGION_FR, STATE_PROVINCE.STATE_NAME_DE
+
+### 4.5.18
+ - ENH: Improve list of French regions (include common alternate spellings, old regions, etc).
+ - ENH: Add Semantic Types - GENDER.TEXT_DE, GENDER.TEXT_FR
