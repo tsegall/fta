@@ -129,8 +129,8 @@ COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|*
 COUNTRY.TEXT_EN|Country as a string (English language)|en
 CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|*
 CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|*
-DAY.DIGITS|Day represented as a number (1-31)
-DAY.ABBR_&lt;Locale&g;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
+DAY.DIGITS|Day represented as a number (1-31)|*
+DAY.ABBR_&lt;Locale&gt;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
 DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
 EMAIL|Email Address|*
 GENDER.TEXT_EN|Gender (English Language)|en
