@@ -59,6 +59,7 @@ public class PluginDefinition {
 	public Set<String> invalidList;
 	/** Simple finite plugins: the content with the set of valid elements. */
 	public String content;
+	/** ContentType describes the supplied content and must be one of 'inline', 'file' or 'resource'. */
 	public String contentType;
 	public String backout;
 

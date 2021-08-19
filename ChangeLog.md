@@ -405,3 +405,9 @@
 ### 4.5.19
  - ENH: Improve documentation wrt Locales
  - BUG: CONTINENT* and CITY should only be active in English language
+
+### 4.5.20
+ - ENH: Bump Jackson and google phone number
+ - ENH: Minimize the number of bogus 'enums' - do not generate enum for long constant length strings of digits and alphas
+ - ENH: Improve documentation
+ - BUG: Fix Job Title plugin when presented with no words

@@ -212,8 +212,10 @@ public class RegExpGenerator {
 		final StringBuilder result = new StringBuilder();
 
 		if (asSet) {
+			boolean constantLength = shortest == longest;
+
 			// Generate a Character class if possible - we would rather see [A-G] than A|B|C|D|E|F|G
-			if (memory.size() >= 3 && shortest == 1 && shortest == longest) {
+			if (memory.size() >= 3 && shortest == 1 && constantLength) {
 				char first = 0;
 				char last = 0;
 				char current;
@@ -234,7 +236,9 @@ public class RegExpGenerator {
 					return result.toString();
 				}
 			}
-			if (memory.size() <= maxSetSize) {
+
+			// Hoping to output a nice enum like (?i)(SMALL|MEDIUM|LARGE|HUGE), dodge long constant length strings.
+			if (memory.size() <= maxSetSize && !(constantLength && !isSpace && !isOther && !isUnderscore && shortest >= 12)) {
 				if (isAlphabetic)
 					result.append("(?i)");
 				if (memory.size() != 1)

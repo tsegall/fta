@@ -15,6 +15,9 @@
  */
 package com.cobber.fta.core;
 
+/**
+ * Base exception for all FTA exceptions.
+ */
 public class FTAException extends Exception {
 	private static final long serialVersionUID = 1L;
 

@@ -15,6 +15,9 @@
  */
 package com.cobber.fta.core;
 
+/**
+ * FTAUnsupportedLocaleException is thrown when we are unable to cope with the Locale supplied.
+ */
 public class FTAUnsupportedLocaleException extends FTAException {
 	private static final long serialVersionUID = 1L;
 

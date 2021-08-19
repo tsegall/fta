@@ -15,6 +15,9 @@
  */
 package com.cobber.fta.core;
 
+/**
+ * FTAPluginException is thrown when we are provided with an incorrect plugin definition.
+ */
 public class FTAPluginException extends FTAException {
 	private static final long serialVersionUID = 1L;
 

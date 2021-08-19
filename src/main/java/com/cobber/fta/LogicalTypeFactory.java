@@ -62,7 +62,7 @@ public abstract class LogicalTypeFactory {
 	}
 
 	/**
-	 * Return a Logical Type based on a Plugin Definition.
+	 * Return a Logical Type based on a Plugin Definition in a particular locale.
 	 *
 	 * @param plugin The Definition for this plugin
 	 * @param locale The locale used for this LogicalType

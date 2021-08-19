@@ -134,7 +134,7 @@ public class TextAnalysisResult {
 	 * @return The Type of the data stream.
 	 */
 	public FTAType getType() {
-		return patternInfo.type;
+		return patternInfo.getBaseType();
 	}
 
 	/**
@@ -271,7 +271,7 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression.
 	 */
 	public String getRegExp() {
-		if (patternInfo.isLogicalType || (!factsCore.leadingWhiteSpace && !factsCore.trailingWhiteSpace))
+		if (patternInfo.isLogicalType() || (!factsCore.leadingWhiteSpace && !factsCore.trailingWhiteSpace))
 			return patternInfo.regexp;
 
 		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
@@ -488,7 +488,7 @@ public class TextAnalysisResult {
 	 * @return A String SHA-1 hash that reflects the structure of the data stream.
 	 */
 	public String getStructureSignature() {
-		String structureSignature = patternInfo.type.toString() + ":";
+		String structureSignature = patternInfo.getBaseType().toString() + ":";
 
 		if (isLogicalType())
 			structureSignature += getTypeQualifier();
@@ -586,7 +586,7 @@ public class TextAnalysisResult {
 				plugin.put("maximum", facts.maxValue);
 		}
 
-		plugin.put("baseType", patternInfo.type.toString());
+		plugin.put("baseType", patternInfo.getBaseType().toString());
 
 		try {
 			return writer.writeValueAsString(plugin);
@@ -621,13 +621,13 @@ public class TextAnalysisResult {
 		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("regExp", getRegExp());
 			analysis.put("confidence", confidence);
-			analysis.put("type", patternInfo.type.toString());
+			analysis.put("type", patternInfo.getBaseType().toString());
 
 			if (patternInfo.typeQualifier != null)
 				analysis.put("typeQualifier", patternInfo.typeQualifier);
 		}
 
-		if (FTAType.DOUBLE == patternInfo.type)
+		if (FTAType.DOUBLE == patternInfo.getBaseType())
 			analysis.put("decimalSeparator", String.valueOf(factsCore.decimalSeparator));
 
 		if (statisticsEnabled()) {

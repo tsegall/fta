@@ -94,6 +94,9 @@ public class LogicalTypeJobTitleEN extends LogicalTypeInfinite {
 		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
 		final String[] words = inputUpper.split("[-/; ,]");
 
+		if (words.length == 0)
+			return false;
+
 		String firstWord = words[0];
 		int firstWordLength = firstWord.length();
 		if (firstWordLength < 2)

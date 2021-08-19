@@ -46,12 +46,12 @@ public class PatternInfo {
 	public KnownPatterns.ID id;
 	public String regexp;
 	public String generalPattern;
-	public int minLength;
-	public int maxLength;
+	private int minLength;
+	private int maxLength;
 	public String format;
-	public FTAType type;
+	private FTAType type;
 	public String typeQualifier;
-	public boolean isLogicalType;
+	private boolean isLogicalType;
 
 	/**
 	 * Construct a new information block for the supplied pattern.
@@ -120,8 +120,31 @@ public class PatternInfo {
 				FTAType.OFFSETDATETIME.equals(this.type) || FTAType.ZONEDDATETIME.equals(this.type);
 	}
 
+	/**
+	 * The base FTAType that this pattern is based on.
+	 *
+	 * @return The FTAType of the pattern.
+	 */
 	public FTAType getBaseType() {
 		return type;
+	}
+
+	/**
+	 * The minimum length of this pattern (-1 indicates undefined).
+	 *
+	 * @return An integer with the minimum length of this pattern.
+	 */
+	public int getMinLength() {
+		return minLength;
+	}
+
+	/**
+	 * The maximum length of this pattern (-1 indicates undefined).
+	 *
+	 * @return An integer with the maximum length of this pattern.
+	 */
+	public int getMaxLength() {
+		return maxLength;
 	}
 
 	/**
