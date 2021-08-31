@@ -1461,6 +1461,86 @@ public class TestDates {
 	}
 
 	@Test
+	public void variableFractionalSeconds() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+
+		analysis.train("2021-08-23T18:49:50.991-04:00");
+		analysis.train("2021-08-23T19:03:44.449-04:00");
+		analysis.train("2021-08-23T19:03:44.5-04:00");
+		analysis.train("2021-08-23T19:03:44.757-04:00");
+		analysis.train("2021-08-23T19:03:45.046-04:00");
+		analysis.train("2021-08-23T19:03:45.338-04:00");
+		analysis.train("2021-08-23T19:03:45.63-04:00");
+		analysis.train("2021-08-23T19:03:45.922-04:00");
+		analysis.train("2021-08-23T18:51:56.043-04:00");
+		analysis.train("2021-08-23T18:51:57.189-04:00");
+		analysis.train("2021-08-23T18:52:01.167-04:00");
+		analysis.train("2021-08-23T18:52:03.302-04:00");
+		analysis.train("2021-08-23T18:52:03.596-04:00");
+		analysis.train("2021-08-23T18:52:04.234-04:00");
+		analysis.train("2021-08-23T18:52:06.261-04:00");
+		analysis.train("2021-08-23T18:52:06.608-04:00");
+		analysis.train("2021-08-23T18:52:07.666-04:00");
+		analysis.train("2021-08-23T18:52:08.023-04:00");
+		analysis.train("2021-08-23T18:52:09.286-04:00");
+		analysis.train("2021-08-23T18:53:39.559-04:00");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.OFFSETDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss.S{1,3}xxx");
+		Assert.assertEquals(result.getSampleCount(), 20);
+		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}[-+][0-9]{2}:[0-9]{2}");
+		Assert.assertEquals(result.getMatchCount(), 20);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		analysis.train("2008-01-01T00:00:00-05:00");
+		result = analysis.getResult();
+		Assert.assertEquals(result.getSampleCount(), 21);
+	}
+
+	@Test
+	public void variableFractionalSecondsWithStats() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(true);
+
+		analysis.train("2021-08-23T18:49:50.991-04:00");
+		analysis.train("2021-08-23T19:03:44.449-04:00");
+		analysis.train("2021-08-23T19:03:44.5-04:00");
+		analysis.train("2021-08-23T19:03:44.757-04:00");
+		analysis.train("2021-08-23T19:03:45.046-04:00");
+		analysis.train("2021-08-23T19:03:45.338-04:00");
+		analysis.train("2021-08-23T19:03:45.63-04:00");
+		analysis.train("2021-08-23T19:03:45.922-04:00");
+		analysis.train("2021-08-23T18:51:56.043-04:00");
+		analysis.train("2021-08-23T18:51:57.189-04:00");
+		analysis.train("2021-08-23T18:52:01.167-04:00");
+		analysis.train("2021-08-23T18:52:03.302-04:00");
+		analysis.train("2021-08-23T18:52:03.596-04:00");
+		analysis.train("2021-08-23T18:52:04.234-04:00");
+		analysis.train("2021-08-23T18:52:06.261-04:00");
+		analysis.train("2021-08-23T18:52:06.608-04:00");
+		analysis.train("2021-08-23T18:52:07.666-04:00");
+		analysis.train("2021-08-23T18:52:08.023-04:00");
+		analysis.train("2021-08-23T18:52:09.286-04:00");
+		analysis.train("2021-08-23T18:53:39.559-04:00");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.OFFSETDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss.S{1,3}xxx");
+		Assert.assertEquals(result.getSampleCount(), 20);
+		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}[-+][0-9]{2}:[0-9]{2}");
+		Assert.assertEquals(result.getMatchCount(), 20);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		analysis.train("2008-01-01T00:00:00-05:00");
+		result = analysis.getResult();
+		Assert.assertEquals(result.getSampleCount(), 21);
+	}
+
+	@Test
 	public void dateTimeYYYYMMDDTHHMMSSNNNN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ISODate", DateResolutionMode.Auto);
 

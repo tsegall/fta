@@ -153,11 +153,15 @@ public class DateTimeParser {
 			return formatter;
 
 		final int fractionOffset = formatString.indexOf("S{");
-		if (fractionOffset != -1)
-			formatter = new DateTimeFormatterBuilder()
+		if (fractionOffset != -1) {
+			DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
 			.appendPattern(formatString.substring(0, fractionOffset))
-			.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 3, false)
-			.toFormatter(locale);
+			.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 3, false);
+			int upto = fractionOffset + "S{1,3}".length();
+			if (upto < formatString.length())
+				builder.appendPattern(formatString.substring(upto));
+			formatter = builder.toFormatter(locale);
+		}
 		else if ("yyyy".equals(formatString))
             // The default formatter with "yyyy" will not default the month/day, make it so!
             formatter = new DateTimeFormatterBuilder()

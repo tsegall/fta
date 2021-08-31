@@ -411,3 +411,6 @@
  - ENH: Minimize the number of bogus 'enums' - do not generate enum for long constant length strings of digits and alphas
  - ENH: Improve documentation
  - BUG: Fix Job Title plugin when presented with no words
+
+### 4.5.21
+ - BUG: Could not cope with fractional seconds that was not at the end (e.g. 2021-08-23T19:03:45.63-04:00)

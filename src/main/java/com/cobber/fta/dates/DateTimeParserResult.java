@@ -577,7 +577,7 @@ public class DateTimeParserResult {
 					}
 					if (!Character.isDigit(input.charAt(upto))) {
 						if (i < token.getCount())
-							throw new DateTimeParseException("Expecting digit", input, upto);
+							throw new DateTimeParseException("Insufficient digits in input (S)", input, upto);
 						else
 							break;
 					}
