@@ -414,3 +414,6 @@
 
 ### 4.5.21
  - BUG: Could not cope with fractional seconds that was not at the end (e.g. 2021-08-23T19:03:45.63-04:00)
+
+### 4.5.22
+ - ENH: Add support for Italian/Spanish/Netherlands Provinces - STATE_PROVINCE.PROVINCE_IT, STATE_PROVINCE.PROVINCE_NAME_IT, STATE_PROVINCE.PROVINCE_NAME_ES, STATE_PROVINCE.PROVINCE_NAME_NL

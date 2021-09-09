@@ -164,12 +164,16 @@ STATE_PROVINCE.STATE_NAME_DE|German State Name|de-DE
 STATE_PROVINCE.STATE_MX|Mexican State Code|es-MX
 STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA/en-US/es-MX
 STATE_PROVINCE.STATE_US|US State Code|en-CA/en-US
+STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
 STATE_PROVINCE.STATE_NAME_AU|Australian State Name|en-AU
 STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name|en-CA/en-US
 STATE_PROVINCE.STATE_NAME_MX|Mexican State Name|es-MX
 STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA/en-US/es-MX
 STATE_PROVINCE.STATE_NAME_US|US State Name|en-CA/en-US
 STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
+STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
+STATE_PROVINCE.PROVINCE_NAME_ES|Spanish Province Name|es-ES
+STATE_PROVINCE.PROVINCE_NAME_NL|Netherlands Province Name|nl-NL
 STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
 STREET_ADDRESS_EN|Street Address (English Language)|en
 TELEPHONE|Telephone Number (Generic)|*
