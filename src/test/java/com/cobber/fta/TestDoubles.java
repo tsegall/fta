@@ -539,6 +539,76 @@ public class TestDoubles {
 	}
 
 	@Test
+	public void manyFrenchDoubles() throws IOException, FTAException {
+		final String[] samplesUS = new String[] {
+				"54.00", "12719300.00", "4819.00", "262612.00", "141300.00",
+				"44876900.00", "681023.00", "460198.00", "1123220.00", "18300.00",
+				"166658.00", "114656.00", "61461.00", "263058.00", "23747.00",
+				"44539.00", "70836.00", "351498.00", "669803.00", "116655.00",
+				"542.00", "12719300.00", "4819.00", "262612.00", "141300.00",
+				"44876900.00", "681023.00", "460198.00", "1123220.00", "18300.00"
+
+		};
+		String[] samples = new String[samplesUS.length];
+		final TextAnalyzer analysis = new TextAnalyzer();
+		analysis.setCollectStatistics(false);
+		final Locale locale = Locale.forLanguageTag("fr-FR");
+		analysis.setLocale(locale);
+
+		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(locale);
+		formatter.setMinimumFractionDigits(2);
+		formatter.setMaximumFractionDigits(2);
+
+		for (int i = 0; i < samples.length; i++) {
+			double d = Double.valueOf(samplesUS[i]);
+			samples[i] = formatter.format(d);
+		}
+
+
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
+		Assert.assertEquals(result.getDecimalSeparator(), ',');
+		Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_GROUPING));
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (final String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void doublesWithNan() throws IOException, FTAException {
+		final String[] samples = new String[] {
+				"", "9.04", "nan", "0.92", "0.89", "9.02", "-1.88", "4.84", "", "", "1.24", "1.83", "-0.23", "1.35", "nan",
+				"1.4", "1.34", "-0.48", "0.6", "1.23", "", "9.04", "nan", "0.92", "0.89", "9.02", "-1.88", "4.84", "",
+				"", "1.24", "1.83", "-0.23", "1.35", "nan", "1.4", "1.34", "-0.48", "0.6", "1.23",
+				"22.24", "1202.43", "-0.234", "71.45", "3.411", "234.321", "-0.4848", "0.66666", "1.23", "10.0"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer();
+
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
+		Assert.assertEquals(result.getDecimalSeparator(), '.');
+		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
+		Assert.assertEquals(result.getConfidence(), 1 - (double)4/(result.getSampleCount() - result.getBlankCount()));
+
+		for (final String sample : samples) {
+			if (!sample.isEmpty() && !"nan".equals(sample))
+				Assert.assertTrue(sample.matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void dangerousDouble() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();

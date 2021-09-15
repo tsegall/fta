@@ -417,3 +417,7 @@
 
 ### 4.5.22
  - ENH: Add support for Italian/Spanish/Netherlands Provinces - STATE_PROVINCE.PROVINCE_IT, STATE_PROVINCE.PROVINCE_NAME_IT, STATE_PROVINCE.PROVINCE_NAME_ES, STATE_PROVINCE.PROVINCE_NAME_NL
+
+### 4.5.23
+ - ENH: Add Semantic Types - NATIONALITY_EN, STATE_PROVINCE.COUNTY_UK
+ - BUG: Be a bit more forgiving of rubbish like NaN when processing Double data (REGRESSION)

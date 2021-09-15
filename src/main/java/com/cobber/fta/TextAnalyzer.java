@@ -1466,15 +1466,12 @@ public class TextAnalyzer {
 			}
 		}
 
-		// Promote anything to STRING
-		if (bestPattern != null && secondBestPattern != null && FTAType.STRING.equals(bestPattern.getBaseType())) {
-			best = new AbstractMap.SimpleEntry<>(best.getKey(),
-					best.getValue() + secondBest.getValue());
-		}
-		else if (bestPattern != null && secondBestPattern != null && secondBestPattern.id == KnownPatterns.ID.ID_ANY_VARIABLE) {
-			best = new AbstractMap.SimpleEntry<>(secondBest.getKey(),
-					best.getValue() + secondBest.getValue());
-		}
+		// Promote almost anything to STRING, DOUBLES are pretty clear (unlike LONGS) so do not promote these
+		if (bestPattern != null && secondBestPattern != null && !FTAType.DOUBLE.equals(bestPattern.getBaseType()))
+			if (FTAType.STRING.equals(bestPattern.getBaseType()))
+				best = new AbstractMap.SimpleEntry<>(best.getKey(), best.getValue() + secondBest.getValue());
+			else if (secondBestPattern.id == KnownPatterns.ID.ID_ANY_VARIABLE)
+				best = new AbstractMap.SimpleEntry<>(secondBest.getKey(), best.getValue() + secondBest.getValue());
 
 		return best;
 	}
@@ -1607,7 +1604,7 @@ public class TextAnalyzer {
 			// Take any level 2 if
 			// - we have something we recognize (and we had nothing)
 			// - we have the same key but a better count
-			// - we have different keys but same type (signed vs. not-signed)
+			// - we have different keys but same type (signed versus not-signed)
 			// - we have different keys, two numeric types and an improvement of at least 5%
 			// - we have different keys, different types and an improvement of at least 10% and we are below the threshold
 			if (level2 != null &&

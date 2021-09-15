@@ -153,11 +153,13 @@ NAME.FIRST|First Name|en
 NAME.FIRST_LAST|Merged Name (First Last)|en
 NAME.LAST|Last Name|en
 NAME.LAST_FIRST|Merged Name (Last, First)|en
+NATIONALITY_EN|Nationality|en
 POSTAL_CODE.POSTAL_CODE_AU|Postal Code|en-AU
 POSTAL_CODE.POSTAL_CODE_CA|Postal Code|en-CA
 POSTAL_CODE.ZIP5_US|Postal Code|en-US
 POSTAL_CODE.POSTAL_CODE_UK|Postal Code|en-UK
 SSN|Social Security Number|en-US
+STATE_PROVINCE.COUNTY_UK|United Kingdom County|en-UK
 STATE_PROVINCE.STATE_AU|Australian State Code|en-AU
 STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA/en-US
 STATE_PROVINCE.STATE_NAME_DE|German State Name|de-DE
@@ -173,7 +175,7 @@ STATE_PROVINCE.STATE_NAME_US|US State Name|en-CA/en-US
 STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
 STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
 STATE_PROVINCE.PROVINCE_NAME_ES|Spanish Province Name|es-ES
-STATE_PROVINCE.PROVINCE_NAME_NL|Netherlands Province Name|nl-NL
+STATE_PROVINCE.PROVINCE_NAME_NL|Dutch Province Name|nl-NL
 STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
 STREET_ADDRESS_EN|Street Address (English Language)|en
 TELEPHONE|Telephone Number (Generic)|*

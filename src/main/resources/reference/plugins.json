@@ -167,6 +167,17 @@
 		"priority": 84
 	},
 	{
+		"qualifier": "NATIONALITY_EN",
+		"description": "Nationality (English Language)",
+		"validLocales": [ "en" ],
+		"headerRegExps": [ ".*(?i)(nationality).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"content": "/reference/en_nationality.csv",
+		"contentType": "resource",
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 88
+	},
+	{
 		"qualifier": "HONORIFIC_EN",
 		"description": "Honorific (English Language)",
 		"validLocales": [ "en" ],
@@ -407,6 +418,18 @@
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 126
+	},
+	{
+		"qualifier": "STATE_PROVINCE.COUNTY_UK",
+		"description": "United Kingdom County Name",
+		"validLocales": [ "en-GB" ,"en-UK" ],
+		"headerRegExps": [ ".*(?i)(county).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "[-, \\p{IsAlphabetic}]+",
+		"content": "/reference/gb_counties_full.csv",
+		"contentType": "resource",
+		"backout": "[-, \\p{IsAlphabetic}]+",
+		"priority": 127
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
