@@ -177,6 +177,8 @@ STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
 STATE_PROVINCE.PROVINCE_NAME_ES|Spanish Province Name|es-ES
 STATE_PROVINCE.PROVINCE_NAME_NL|Dutch Province Name|nl-NL
 STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
+STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH,fr-CH,it-CH
+STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH,fr-CH,it-CH
 STREET_ADDRESS_EN|Street Address (English Language)|en
 TELEPHONE|Telephone Number (Generic)|*
 URI.URL|URL - see RFC 3986|*

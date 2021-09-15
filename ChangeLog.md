@@ -421,3 +421,7 @@
 ### 4.5.23
  - ENH: Add Semantic Types - NATIONALITY_EN, STATE_PROVINCE.COUNTY_UK
  - BUG: Be a bit more forgiving of rubbish like NaN when processing Double data (REGRESSION)
+
+### 4.5.24
+ - ENH: Bump google phone number version
+ - ENH: Add Semantic Types - STATE_PROVINCE.CANTON_NAME_CH, STATE_PROVINCE.CANTON_CH
