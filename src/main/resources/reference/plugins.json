@@ -431,6 +431,18 @@
 		"priority": 127
 	},
 	{
+		"qualifier": "STATE_PROVINCE.COUNTY_US",
+		"description": "US County Name",
+		"validLocales": [ "en-US" ],
+		"headerRegExps": [ ".*(?i)(county).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "[-, \\p{IsAlphabetic}]+",
+		"content": "/reference/us_counties_full.csv",
+		"contentType": "resource",
+		"backout": "[-,\\. \\p{IsAlphabetic}]+",
+		"priority": 128
+	},
+	{
 		"qualifier": "STATE_PROVINCE.COUNTY_UK",
 		"description": "United Kingdom County Name",
 		"validLocales": [ "en-GB" ,"en-UK" ],
@@ -440,7 +452,7 @@
 		"content": "/reference/gb_counties_full.csv",
 		"contentType": "resource",
 		"backout": "[-, \\p{IsAlphabetic}]+",
-		"priority": 128
+		"priority": 129
 	},
 	{
 		"qualifier": "STATE_PROVINCE.CANTON_NAME_CH",
@@ -452,7 +464,7 @@
 		"content": "/reference/ch_cantons_full.csv",
 		"contentType": "resource",
 		"backout": "[-\\. \\p{IsAlphabetic}]+",
-		"priority": 129
+		"priority": 130
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
@@ -462,7 +474,17 @@
 		"content": "/reference/ISO-4217.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 130
+		"priority": 135
+	},
+	{
+		"qualifier": "CURRENCY.TEXT_EN",
+		"description": "Currency Name",
+		"headerRegExps": [ ".*(?i)(currency).*" ],
+		"headerRegExpConfidence": [ 90, 70 ],
+		"content": "/reference/en_currency_full.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 136
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-3",
@@ -520,36 +542,36 @@
 		"qualifier": "NAME.FIRST",
 		"description": "First Name",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
-		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name).*", "(?i)(first)", "(?i)(name)" ],
+		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name).*", "(?i)(first)", "(?i)(name|nome|nom)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
-		"validLocales": [ "en" ],
+		"validLocales": [ "br", "de", "en", "fr", "pt" ],
 		"priority": 170
 	},
 	{
 		"qualifier": "NAME.LAST",
 		"description": "Last Name",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
-		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name).*", "(?i)(last)", "(?i)(name)" ],
+		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name|sobrenome|nachname).*", "(?i)(last)", "(?i)(name|nome|nom)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
-		"validLocales": [ "en" ],
+		"validLocales": [ "br", "de", "en", "fr", "pt" ],
 		"priority": 171
 	},
 	{
 		"qualifier": "NAME.LAST_FIRST",
 		"description": "Merged Name (Last, First)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameLastFirst",
-		"headerRegExps": [ ".*(?i)(name).*" ],
+		"headerRegExps": [ ".*(?i)(name|nome|nom).*" ],
 		"headerRegExpConfidence": [ 60 ],
-		"validLocales": [ "en" ],
+		"validLocales": [ "br", "de", "en", "fr", "pt" ],
 		"priority": 172
 	},
 	{
 		"qualifier": "NAME.FIRST_LAST",
 		"description": "Merged Name (First Last)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameFirstLast",
-		"headerRegExps": [ ".*(?i)(name).*" ],
+		"headerRegExps": [ ".*(?i)(name|nome|nom).*" ],
 		"headerRegExpConfidence": [ 60 ],
-		"validLocales": [ "en" ],
+		"validLocales": [ "br", "de", "en", "fr", "pt" ],
 		"priority": 173
 	},
 	{

@@ -129,6 +129,7 @@ COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|*
 COUNTRY.TEXT_EN|Country as a string (English language)|en
 CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|*
 CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|*
+CURRENCY.TEXT_EN|Currency Name|en
 DAY.DIGITS|Day represented as a number (1-31)|*
 DAY.ABBR_&lt;Locale&gt;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
 DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
@@ -140,19 +141,19 @@ GENDER.TEXT_PT|Gender (Portugese Language)|pt
 GENDER.TEXT_JP|Gender (Japanese Language)|jp
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
-STREET_MARKER_EN| Street Suffix (English Language)|en
 IPADDRESS.IPV4|IP V4 Address|*
 IPADDRESS.IPV6|IP V6 Address|*
+JOB_TITLE_EN|Job Title|en
 LANGUAGE.ISO-639-2|Language code - ISO 639, two character|*
 LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...|en
 MACADDRESS|MAC Address|*
 MONTH.ABBR_&lt;Locale&gt;|Month Abbreviation &lt;LOCALE&gt; = Locale, for example, en-US for English language in US|Current Locale
 MONTH.DIGITS|Month represented as a number (1-12)|*
 MONTH.FULL_&lt;Locale&gt;|Full Month name &lt;LOCALE&gt; = Locale, for example, en-US for English language in US|Current Locale
-NAME.FIRST|First Name|en
-NAME.FIRST_LAST|Merged Name (First Last)|en
-NAME.LAST|Last Name|en
-NAME.LAST_FIRST|Merged Name (Last, First)|en
+NAME.FIRST|First Name|br, de, en, fr, pt
+NAME.FIRST_LAST|Merged Name (First Last)|br, de, en, fr, pt
+NAME.LAST|Last Name|br, de, en, fr, pt
+NAME.LAST_FIRST|Merged Name (Last, First)|br, de, en, fr, pt
 NATIONALITY_EN|Nationality|en
 POSTAL_CODE.POSTAL_CODE_AU|Postal Code|en-AU
 POSTAL_CODE.POSTAL_CODE_CA|Postal Code|en-CA
@@ -180,6 +181,7 @@ STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
 STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH,fr-CH,it-CH
 STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH,fr-CH,it-CH
 STREET_ADDRESS_EN|Street Address (English Language)|en
+STREET_MARKER_EN| Street Suffix (English Language)|en
 TELEPHONE|Telephone Number (Generic)|*
 URI.URL|URL - see RFC 3986|*
 VIN|Vehicle Identification Number|*
@@ -290,6 +292,12 @@ Given the following three data sets:
 
 The StructureSignature for all three will be identical as the field will be detected as 'COUNTRY.TEXT_EN', i.e. a Country Name in the English language.  Note this is despite the fact that there is no overlapping data values in the BirthCountry dataset compared to the other data sets.
 The DataSignature will be identical for AccountLocation and PrimaryCountry as the dataset is identical and will differ from the DataSignature for the BirthCountry.
+
+## Validation and Generation ##
+
+FTA can also be used to validate an input stream either based on known Semantic Types or on Semantic Types detected by FTA.  For example, it is possible to retrieve the LogicalType for a known Semantic Type and then invoke the isValid() method.  This is typically only useful for 'Closed' Semantic Types (isClosed() == true), i.e. those for which there is a known constrained set.  A good example of a closed Semantic Type is the Country code as defined by ISO-3166 Alpha 3.  An example where isValid() would be less useful is FIRST_NAME.  For those cases where the Semantic Type is not one of those known to FTA - the result returned will include a Java Regular Expression which can be used to validate new values.  Please refer to the Validation example for further details.
+
+In addition to validating a data Stream, FTA can also be used to generate a synthetic pseudo-random data stream.  For any detected Semantic Type which implements the LTRandom interface it is possible to generate a 'random' element of the Semantic Type by invoking nextRandom().
 
 ## Getting Starting ##
 

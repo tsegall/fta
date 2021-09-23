@@ -425,3 +425,9 @@
 ### 4.5.24
  - ENH: Bump google phone number version
  - ENH: Add Semantic Types - STATE_PROVINCE.CANTON_NAME_CH, STATE_PROVINCE.CANTON_CH
+
+### 4.5.25
+ - ENH: Add Semantic Types - CURRENCY.TEXT_EN, STATE_PROVINCE.COUNTY_US
+ - ENH: Bump jackson, googlephonenumber
+ - ENH: Enable Name support for Brazil, German, French and Portugal
+ - ENH: Add example and documentation for validation use case.

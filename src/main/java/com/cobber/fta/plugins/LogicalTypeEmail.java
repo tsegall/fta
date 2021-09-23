@@ -15,19 +15,20 @@
  */
 package com.cobber.fta.plugins;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
-import com.cobber.fta.AnalysisConfig;
-import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
@@ -47,9 +48,23 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 		super(plugin);
 	}
 
+	private boolean isAscii(String input) {
+		return StandardCharsets.US_ASCII.newEncoder().canEncode(input);
+	}
+
 	@Override
 	public String nextRandom() {
-		return logicalFirst.nextRandom().toLowerCase(Locale.ROOT) + "." + logicalLast.nextRandom().toLowerCase(Locale.ROOT) + "@" + mailDomains[random.nextInt(mailDomains.length)];
+		String firstName;
+		do {
+			firstName = logicalFirst.nextRandom().toLowerCase(Locale.ROOT);
+		}
+		while (!isAscii(firstName));
+		String lastName;
+		do {
+			lastName = logicalLast.nextRandom().toLowerCase(Locale.ROOT);
+		}
+		while (!isAscii(lastName));
+		return firstName + "." + lastName + "@" + mailDomains[random.nextInt(mailDomains.length)];
 	}
 
 	@Override

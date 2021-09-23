@@ -302,9 +302,9 @@ public class TestTopBottomK {
 	public void basicFirstNames() throws IOException, FTAPluginException {
 		final TopBottomK<String, String> t = new TopBottomK<>();
 		final HashSet<String> bottomK = new HashSet<>(Arrays.asList(new String[] {
-				"AARON", "ABBEY", "ABBIE", "ABBY", "ABDUL", "ABE", "ABEL", "ABIGAIL", "ABRAHAM", "ABRAM" } ));
+				"AALIYAH", "AARON", "AARYA", "ABBEY", "ABBIE", "ABBY", "ABDALLAH", "ABDUL", "ABE", "ABEL" } ));
 		final HashSet<String> topK = new HashSet<>(Arrays.asList(new String[] {
-				"ZOE", "ZOFIA", "ZOILA", "ZOLA", "ZONA", "ZORA", "ZORAIDA", "ZULA", "ZULEMA", "ZULMA" } ));
+				"ÉLEA", "ÉLIA", "ÉLINA", "ÉLYAS", "ÉLÉA", "ÉLÉNA", "ÉMILIA", "ÉRICA", "ÍRIS", "ÍSIS" } ));
 
 		final PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
 		final LogicalTypeCode logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
