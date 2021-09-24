@@ -60,7 +60,7 @@ public class Shapes {
 		if (compressed.size() == 1)
 			return Smashed.smashedAsRegExp(compressed.keySet().iterator().next().trim());
 
-		if (compressed.size() == 2 && samples > 100) {
+		if (compressed.size() == 2 && samples >= 100) {
 			final Iterator<Map.Entry<String, Long>> iter = compressed.entrySet().iterator();
 			final Map.Entry<String, Long> firstShape = iter.next();
 			final Map.Entry<String, Long> secondShape = iter.next();

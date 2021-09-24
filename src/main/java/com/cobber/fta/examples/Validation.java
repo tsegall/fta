@@ -16,15 +16,31 @@
 package com.cobber.fta.examples;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import com.cobber.fta.LogicalType;
+import com.cobber.fta.LogicalTypeFactory;
+import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
 
+/**
+ * Simple class to demonstrate how to validate input based on the use of Semantic Types.
+ *	1.	Example based on an a-priori known Semantic Type
+ *	2.	Example based on a Semantic Type from training
+ *	3.	Example based on input that is not a Semantic Type - so only have a Regular Expression
+ */
 public abstract class Validation {
 
 	public static void main(final String[] args) throws IOException, FTAException {
+		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("EMAIL");
+		final LogicalType knownLogicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+
+		// Make sure we like India and do not like Gondwana
+		System.err.println("Is 'elease.campo@gmail.com' valid? " + knownLogicalType.isValid("elease.campo@gmail.com"));
+		System.err.println("Is 'double@at@cobber.com' valid? " + knownLogicalType.isValid("double@at@cobber.com"));
+
 		//
 		// Example for Logical Types ...
 		//

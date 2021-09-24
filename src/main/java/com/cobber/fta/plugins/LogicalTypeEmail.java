@@ -41,7 +41,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	private LogicalTypeCode logicalFirst;
 	private LogicalTypeCode logicalLast;
 	private static String[] mailDomains = new String[] {
-			"gmail.com", "hotmail.com", "yahoo.com"
+			"gmail.com", "hotmail.com", "yahoo.com", "hotmail.com", "aol.com", "msn.com", "comcast.net", "live.com"
 	};
 
 	public LogicalTypeEmail(final PluginDefinition plugin) {

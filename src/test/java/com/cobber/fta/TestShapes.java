@@ -43,6 +43,26 @@ public class TestShapes {
 	}
 
 	@Test
+	public void zip() throws IOException {
+		final Shapes shapes = new Shapes(MAX_SHAPES);
+
+		final StringBuilder b = new StringBuilder();
+		for (int i = 0; i < 100; i++) {
+			for (int j = 0; j < 5; j++)
+				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
+			if (i % 2 == 0) {
+				b.append('-');
+				for (int j = 0; j < 4; j++)
+					b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
+			}
+			shapes.track(b.toString(), 1);
+			b.setLength(0);
+		}
+
+		Assert.assertEquals(shapes.getRegExp(), "\\d{5}(-\\d{4})?");
+	}
+
+	@Test
 	public void doubleAlphaConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
 

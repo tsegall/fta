@@ -298,7 +298,7 @@ public class TestDates {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), sampleCount);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(6, 7, 6, 7, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
+		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2} \\p{IsAlphabetic}|\\d:\\d{2} \\p{IsAlphabetic}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());

@@ -431,3 +431,6 @@
  - ENH: Bump jackson, googlephonenumber
  - ENH: Enable Name support for Brazil, German, French and Portugal
  - ENH: Add example and documentation for validation use case.
+
+### 4.5.26
+ - ENH: Add example and documentarion for generation use case.
