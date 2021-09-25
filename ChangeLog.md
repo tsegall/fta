@@ -434,3 +434,6 @@
 
 ### 4.5.26
  - ENH: Add example and documentarion for generation use case.
+
+### 4.5.27
+ - ENH: Add Semantic Types - CHECKDIGIT.ABA (ABA Number (or Routing Transit Number (RTN)))

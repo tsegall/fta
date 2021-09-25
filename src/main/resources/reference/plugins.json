@@ -721,7 +721,7 @@
 		"priority": 292
 	},
 	{
-		"qualifier": "CHECKDIGIT.SEDOL",
+		"qualifier": "CHECKDIGIT.ISIN",
 		"description": "ISIN - International Securities Identification Number",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitISIN",
 		"priority": 293
@@ -738,6 +738,13 @@
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitIBAN",
 		"priority": 295
 	},
+	{
+                "qualifier": "CHECKDIGIT.ABA",
+                "description": "ABA Number (or Routing Transit Number (RTN))",
+                "clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitABA",
+                "priority": 296
+        },
+
 	{
 		"qualifier": "JOB_TITLE_EN",
 		"description": "Job Title (English Language)",

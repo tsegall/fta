@@ -112,6 +112,7 @@ Detection of some Semantic Types is dependent on the current locale as indicated
 Semantic Type|Description|Locale|
 ---------|-------------|--------|
 AIRPORT_CODE.IATA|IATA Airport Code|*
+CHECKDIGIT.ABA|ABA Number (or Routing Transit Number (RTN))|*
 CHECKDIGIT.CUSIP|North American Security Identifier|*
 CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)|*
 CHECKDIGIT.IBAN|International Bank Account Number|*

@@ -40,6 +40,7 @@ import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeAddressEN;
+import com.cobber.fta.plugins.LogicalTypeCheckDigitABA;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitCUSIP;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitEAN13;
 import com.cobber.fta.plugins.LogicalTypeCheckDigitIBAN;
@@ -93,6 +94,7 @@ public class TestPlugins {
 		signatures.put(LogicalTypeCheckDigitISIN.SEMANTIC_TYPE, "ROIyMHsrinw2O/REk9ClAb0WUEs=");
 		signatures.put(LogicalTypeCheckDigitEAN13.SEMANTIC_TYPE, "AP6Bjl97rR4D1ogsqPqXGoD5Dq4=");
 		signatures.put(LogicalTypeCheckDigitIBAN.SEMANTIC_TYPE, "ahEtumk3vTi+ErbmmqrmBN7OeVU=");
+		signatures.put(LogicalTypeCheckDigitABA.SEMANTIC_TYPE, "z/uWdWQDM6Ln80wNSIshhGV5et4=");
 	}
 
 	@Test
@@ -3427,6 +3429,39 @@ public class TestPlugins {
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCheckDigitIBAN.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeCheckDigitIBAN.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test
+	public void basicABA() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer();
+		final String[] inputs = new String[] {
+				"981140283", "989853459", "892328657", "781258896", "112551654", "438364101", "806651255", "095050162", "505993780", "827776957", "086820709", "609581894", "463724075",
+				 "167622596", "355856417", "138265568", "479756862", "779880373", "750997751", "053438344", "199436608", "391657007", "033359472", "465043929", "977684902", "373527896"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getCardinality(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeCheckDigitABA.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeCheckDigitABA.SEMANTIC_TYPE));
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 

@@ -29,7 +29,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
 /**
- * Plugin to detect valid Luhn check digits (typically Credit Cards or IMEI Numbers).
+ * Plugin to detect valid check digits.
  */
 public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
 	public static final String BACKOUT_REGEXP = ".*";
