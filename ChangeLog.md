@@ -437,3 +437,10 @@
 
 ### 4.5.27
  - ENH: Add Semantic Types - CHECKDIGIT.ABA (ABA Number (or Routing Transit Number (RTN)))
+
+### 4.5.28
+ - ENH: Improve County list (by removing County word)
+
+### 4.5.29
+ - ENH: Improve FIRST and LAST name country support
+ - ENH: Allow comments in reference files

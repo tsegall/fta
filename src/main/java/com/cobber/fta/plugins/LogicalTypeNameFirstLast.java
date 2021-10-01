@@ -130,6 +130,8 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 			if (ch == '.' && alphas == 1)
 				continue;
 
+			// Strictly speaking this is not correct since it rejects 'Oscar de la Renta'
+			// OTOH if we lose one or two it should not matter and it dramatically helps with the false positives
 			if (ch == ' ') {
 				spaces++;
 				if (spaces == 2)

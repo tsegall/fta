@@ -58,12 +58,14 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 		do {
 			firstName = logicalFirst.nextRandom().toLowerCase(Locale.ROOT);
 		}
-		while (!isAscii(firstName));
+		while (!isAscii(firstName) || firstName.indexOf(' ') != -1);
 		String lastName;
 		do {
 			lastName = logicalLast.nextRandom().toLowerCase(Locale.ROOT);
 		}
-		while (!isAscii(lastName));
+		while (!isAscii(lastName) || lastName.indexOf(' ') != -1);
+		if (lastName.indexOf(' ') != -1)
+			System.err.println("***** " + lastName);
 		return firstName + "." + lastName + "@" + mailDomains[random.nextInt(mailDomains.length)];
 	}
 

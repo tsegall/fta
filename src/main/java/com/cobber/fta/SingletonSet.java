@@ -37,17 +37,24 @@ public class SingletonSet {
 	private final String contentType;
 	private final String content;
 	private final String key;
+	private final String commentLeader;
 
 	private final static Map<String, RandomSet<String>> memberCache = new HashMap<>();
 
 	/**
+	 * Create a SingletonSet using "#" as the comment character.
 	 * @param contentType One of 'inline', 'file' or 'resource'.
 	 * @param content Either the content (for type 'inline') or the name of a file or resource.
 	 */
 	public SingletonSet(final String contentType, final String content) {
+		this(contentType, content, "#");
+	}
+
+	public SingletonSet(final String contentType, final String content, final String commentLeader) {
 		this.contentType = contentType;
 		this.content = content;
 		this.key = contentType + "---" + content;
+		this.commentLeader = commentLeader;
 	}
 
 	public Set<String> getMembers() {
@@ -82,8 +89,11 @@ public class SingletonSet {
 				try (BufferedReader bufferedReader = new BufferedReader(reader)){
 					String line;
 
-					while ((line = bufferedReader.readLine()) != null)
+					while ((line = bufferedReader.readLine()) != null) {
+						if (commentLeader != null && line.startsWith(commentLeader))
+							continue;
 						members.add(line);
+					}
 				} catch (IOException e) {
 					throw new IllegalArgumentException("Internal error: Issues with 'file/resource' content: " + content, e);
 				}

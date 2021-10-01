@@ -151,10 +151,10 @@ MACADDRESS|MAC Address|*
 MONTH.ABBR_&lt;Locale&gt;|Month Abbreviation &lt;LOCALE&gt; = Locale, for example, en-US for English language in US|Current Locale
 MONTH.DIGITS|Month represented as a number (1-12)|*
 MONTH.FULL_&lt;Locale&gt;|Full Month name &lt;LOCALE&gt; = Locale, for example, en-US for English language in US|Current Locale
-NAME.FIRST|First Name|br, de, en, fr, pt
-NAME.FIRST_LAST|Merged Name (First Last)|br, de, en, fr, pt
-NAME.LAST|Last Name|br, de, en, fr, pt
-NAME.LAST_FIRST|Merged Name (Last, First)|br, de, en, fr, pt
+NAME.FIRST|First Name|br, de, do, en, es, fr, gt, mx, pr, pt
+NAME.FIRST_LAST|Merged Name (First Last)|br, de, do, en, es, fr, gt, mx, pr, pt
+NAME.LAST|Last Name|br, de, do, en, es, fr, gt, mx, pr, pt
+NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, pr, pt
 NATIONALITY_EN|Nationality|en
 POSTAL_CODE.POSTAL_CODE_AU|Postal Code|en-AU
 POSTAL_CODE.POSTAL_CODE_CA|Postal Code|en-CA

@@ -302,7 +302,7 @@ public class TestTopBottomK {
 	public void basicFirstNames() throws IOException, FTAPluginException {
 		final TopBottomK<String, String> t = new TopBottomK<>();
 		final HashSet<String> bottomK = new HashSet<>(Arrays.asList(new String[] {
-				"AALIYAH", "AARON", "AARYA", "ABBEY", "ABBIE", "ABBY", "ABDALLAH", "ABDUL", "ABE", "ABEL" } ));
+				"AALIYAH", "AARON", "AARYA", "AARÓN", "ABBEY", "ABBIE", "ABBY", "ABDALLAH", "ABDUL", "ABE" } ));
 		final HashSet<String> topK = new HashSet<>(Arrays.asList(new String[] {
 				"ÉLEA", "ÉLIA", "ÉLINA", "ÉLYAS", "ÉLÉA", "ÉLÉNA", "ÉMILIA", "ÉRICA", "ÍRIS", "ÍSIS" } ));
 
