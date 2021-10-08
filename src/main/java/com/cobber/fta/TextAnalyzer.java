@@ -275,19 +275,29 @@ public class TextAnalyzer {
 	private final Plugins plugins = new Plugins();
 
 	/**
+	 * Construct a Text Analyzer using the supplied context.
+	 *
+	 * @param context The context used to interpret the stream.
+	 */
+	public TextAnalyzer(final AnalyzerContext context) {
+		this.dataStreamName = context.getStreamName();
+		this.resolutionMode = context.getDateResolutionMode();
+	}
+
+	/**
 	 * Construct a Text Analyzer for the named data stream.  Note: The resolution mode will be 'None'.
 	 *
 	 * @param name The name of the data stream (e.g. the column of the CSV file)
 	 */
 	public TextAnalyzer(final String name) {
-		this(name, DateResolutionMode.None);
+		this(new AnalyzerContext(name, DateResolutionMode.None, null, null));
 	}
 
 	/**
 	 * Construct an anonymous Text Analyzer for a data stream.  Note: The resolution mode will be 'None'.
 	 */
 	public TextAnalyzer() {
-		this(null, DateResolutionMode.None);
+		this(new AnalyzerContext(null, DateResolutionMode.None, null, null));
 	}
 
 	/**
@@ -300,8 +310,7 @@ public class TextAnalyzer {
 	 *   is None then the pattern returned will have '?' in to represent any ambiguity present.
 	 */
 	public TextAnalyzer(final String name, final DateResolutionMode resolutionMode) {
-		this.dataStreamName = name == null ? "anonymous" : name;
-		this.resolutionMode = resolutionMode;
+		this(new AnalyzerContext(name, resolutionMode, null, null));
 	}
 
 	/**

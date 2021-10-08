@@ -35,7 +35,7 @@
 		"qualifier": "TELEPHONE",
 		"description": "Telephone Number (Generic)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypePhoneNumber",
-		"headerRegExps": [ ".*(?i)(phone|fax|mobile|cell).*" ],
+		"headerRegExps": [ ".*(?i)(phone|fax|mobile|cell|Mobiel).*" ],
 		"headerRegExpConfidence": [ 98 ],
 		"threshold": 95,
 		"priority": 40
@@ -88,6 +88,18 @@
 		"threshold": 98,
 		"baseType": "LONG",
 		"priority": 63
+	},
+	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_NL",
+		"description": "Postal Code (NL)",
+		"validLocales": [ "nl-NL" ],
+		"headerRegExps": [ ".*(?i)(post).*", ".*(?i)(code).*" ],
+		"headerRegExpConfidence": [ 95, 75 ],
+		"regExpsToMatch": [ "\\d{4}\\p{IsAlphabetic}{2}" ],
+		"regExpReturned": "\\d{4}\\p{IsAlphabetic}{2}",
+		"threshold": 95,
+		"baseType": "STRING",
+		"priority": 64
 	},
 	{
 		"qualifier": "STREET_ADDRESS_EN",
@@ -154,6 +166,19 @@
 		"priority": 83
 	},
 	{
+		"qualifier" : "GENDER.TEXT_NL",
+		"description": "Gender (Netherlands)",
+		"headerRegExps" : [ ".*(?i)(Gender|Geslacht)" ],
+		"headerRegExpConfidence" : [ 70 ],
+		"contentType": "inline",
+		"content": "{ \"members\": [ \"M\", \"V\", \"O\" ] }",
+		"regExpReturned" : "(?i)(M|O|V)",
+		"validLocales": [ "nl" ],
+		"backout": ".*",
+		"baseType" : "STRING",
+		"priority": 84
+	},
+	{
 		"qualifier" : "GENDER.TEXT_JP",
 		"description": "Gender (Japanese Language)",
 		"headerRegExps" : [ "(性|性別)" ],
@@ -164,7 +189,7 @@
 		"validLocales": [ "jp" ],
 		"backout": ".*",
 		"baseType" : "STRING",
-		"priority": 84
+		"priority": 85
 	},
 	{
 		"qualifier": "NATIONALITY_EN",
@@ -542,36 +567,36 @@
 		"qualifier": "NAME.FIRST",
 		"description": "First Name",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
-		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name).*", "(?i)(first)", "(?i)(name|nome|nom)" ],
+		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name|voornaam|vnaam).*", "(?i)(first)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
-		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "pr", "pt" ],
+		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
 		"priority": 170
 	},
 	{
 		"qualifier": "NAME.LAST",
 		"description": "Last Name",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
-		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name|sobrenome|nachname).*", "(?i)(last)", "(?i)(name|nome|nom)" ],
+		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name|sobrenome|nachname|achternaam|anaam).*", "(?i)(last)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
-		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "pr", "pt" ],
+		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
 		"priority": 171
 	},
 	{
 		"qualifier": "NAME.LAST_FIRST",
 		"description": "Merged Name (Last, First)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameLastFirst",
-		"headerRegExps": [ ".*(?i)(name|nome|nom).*" ],
+		"headerRegExps": [ ".*(?i)(name|nome|nom|naam).*" ],
 		"headerRegExpConfidence": [ 60 ],
-		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "pr", "pt" ],
+		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
 		"priority": 172
 	},
 	{
 		"qualifier": "NAME.FIRST_LAST",
 		"description": "Merged Name (First Last)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameFirstLast",
-		"headerRegExps": [ ".*(?i)(name|nome|nom).*" ],
+		"headerRegExps": [ ".*(?i)(name|nome|nom|naam).*" ],
 		"headerRegExpConfidence": [ 60 ],
-		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "pr", "pt" ],
+		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
 		"priority": 173
 	},
 	{

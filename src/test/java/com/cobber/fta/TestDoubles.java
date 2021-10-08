@@ -347,7 +347,7 @@ public class TestDoubles {
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E503", "1103E402"
 		};
-		final TextAnalyzer analysis = new TextAnalyzer(null);
+		final TextAnalyzer analysis = new TextAnalyzer();
 
 		for (final String sample : samples)
 			analysis.train(sample);

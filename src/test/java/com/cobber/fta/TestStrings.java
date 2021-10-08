@@ -211,6 +211,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getBlankCount(), 32);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{2,9}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getName(), "employeeNumber");
 
 		int matchCount = 0;
 		for (final String input : inputs) {

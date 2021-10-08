@@ -1,6 +1,6 @@
 #
 # Set of common last names, currently based on US data with the addition of common last names from:
-# Brazil, Germany, France, Portugal, Spain, Mexico, Dominican Republic, Puerto Rico, Guatemala
+# Brazil, Germany, France, Portugal, Spain, Mexico, Netherlands, Dominican Republic, Puerto Rico, Guatemala
 #
 AARON
 ABAD
@@ -1201,6 +1201,7 @@ BROTHERTON
 BROUGH
 BROUGHTON
 BROUSSARD
+BROUWER
 BROWDER
 BROWER
 BROWN
@@ -2304,6 +2305,7 @@ DEHOYOS
 DEITZ
 DEJESUS
 DEJONG
+DEKKER
 DELACERDA
 DELACRUZ
 DELAFUENTE
@@ -2451,6 +2453,7 @@ DIEZ
 DIGGS
 DIGIACOMO
 DIGIOVANNI
+DIJKSTRA
 DILL
 DILLARD
 DILLER
@@ -4104,6 +4107,7 @@ HENDREN
 HENDRICK
 HENDRICKS
 HENDRICKSON
+HENDRIKS
 HENDRIX
 HENDRY
 HENG
@@ -6182,6 +6186,7 @@ MEFFORD
 MEHTA
 MEI
 MEIER
+MEIJER
 MEISNER
 MEISSNER
 MEISTER
@@ -8515,10 +8520,12 @@ SMART
 SMEDLEY
 SMELTZER
 SMILEY
+SMIT
 SMITH
 SMITHERMAN
 SMITHERS
 SMITHSON
+SMITS
 SMOCK
 SMOOT
 SMOTHERS

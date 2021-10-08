@@ -444,3 +444,10 @@
 ### 4.5.29
  - ENH: Improve FIRST and LAST name country support
  - ENH: Allow comments in reference files
+
+### 4.6.0
+ - ENH: Extend context provided to Analysis (now includes Stream Name, Resolution Mode, Composite Name, Composite elements)
+ - NOTE: Bumped to 4.6.0 because new TextAnalzer(null) will now complain, nobody ***should*** have done this, because that is really new TextAnalzer()
+
+### 4.6.1
+ - ENH: Add support for the Netherlands (PostalCode, FIRST & LAST names, GENDER)

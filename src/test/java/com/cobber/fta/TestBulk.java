@@ -130,6 +130,7 @@ public class TestBulk {
 		Assert.assertEquals(resultBulk.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
 		Assert.assertEquals(resultBulk.getMatchCount(), 109);
 		Assert.assertEquals(resultBulk.getConfidence(), 1.0);
+		Assert.assertEquals(resultBulk.getName(), "ModifiedDate");
 	}
 
 	@Test

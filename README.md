@@ -138,6 +138,7 @@ EMAIL|Email Address|*
 GENDER.TEXT_EN|Gender (English Language)|en
 GENDER.TEXT_DE|Gender (German Language)|de
 GENDER.TEXT_FR|Gender (French Language)|fr
+GENDER.TEXT_NL|Gender (Dutch Language)|nl
 GENDER.TEXT_PT|Gender (Portugese Language)|pt
 GENDER.TEXT_JP|Gender (Japanese Language)|jp
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
@@ -151,15 +152,16 @@ MACADDRESS|MAC Address|*
 MONTH.ABBR_&lt;Locale&gt;|Month Abbreviation &lt;LOCALE&gt; = Locale, for example, en-US for English language in US|Current Locale
 MONTH.DIGITS|Month represented as a number (1-12)|*
 MONTH.FULL_&lt;Locale&gt;|Full Month name &lt;LOCALE&gt; = Locale, for example, en-US for English language in US|Current Locale
-NAME.FIRST|First Name|br, de, do, en, es, fr, gt, mx, pr, pt
-NAME.FIRST_LAST|Merged Name (First Last)|br, de, do, en, es, fr, gt, mx, pr, pt
-NAME.LAST|Last Name|br, de, do, en, es, fr, gt, mx, pr, pt
-NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, pr, pt
+NAME.FIRST|First Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
+NAME.FIRST_LAST|Merged Name (First Last)|br, de, do, en, es, fr, gt, mx, nl, pr, pt
+NAME.LAST|Last Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
+NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NATIONALITY_EN|Nationality|en
 POSTAL_CODE.POSTAL_CODE_AU|Postal Code|en-AU
 POSTAL_CODE.POSTAL_CODE_CA|Postal Code|en-CA
-POSTAL_CODE.ZIP5_US|Postal Code|en-US
+POSTAL_CODE.POSTAL_CODE_NL|Postal Code|nl-NL
 POSTAL_CODE.POSTAL_CODE_UK|Postal Code|en-UK
+POSTAL_CODE.ZIP5_US|Postal Code|en-US
 SSN|Social Security Number|en-US
 STATE_PROVINCE.COUNTY_UK|United Kingdom County|en-UK
 STATE_PROVINCE.STATE_AU|Australian State Code|en-AU

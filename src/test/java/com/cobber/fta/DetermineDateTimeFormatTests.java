@@ -268,6 +268,28 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test
+	public void xx() {
+		final String pipedInput = "2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2017-08-09T15:29:22+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|";
+		final String inputs[] = pipedInput.split("\\|");
+		final DateTimeParser det = new DateTimeParser(DateResolutionMode.DayFirst);
+
+		for (int i = 0; i < inputs.length; i++) {
+			det.train(inputs[i]);
+		}
+
+		final DateTimeParserResult result = det.getResult();
+		final String formatString = result.getFormatString();
+
+		Assert.assertEquals(formatString, "yyyy-MM-dd'T'HH:mm:ssxx");
+
+		final String regExp = result.getRegExp();
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(regExp));
+		}
+	}
+
+	@Test
 	public void twentyRecords() throws IOException {
 		final String pipedInput = "1/3/11|1/3/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|7/25/11|9/17/08|1-15-2011|";
 		final String inputs[] = pipedInput.split("\\|");

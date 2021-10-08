@@ -257,6 +257,34 @@ public class TestPlugins {
 	}
 
 	@Test
+	public void basicPostalCodeNL() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("P_PCODE");
+		analysis.setLocale(Locale.forLanguageTag("nl-NL"));
+
+		final String pipedInput = "2345AQ|5993FG|3898WW|5543NH|1992WW|4002CS|5982KG|1090DD|3030XX|2547DE|6587DS|3215QQ|7745VD|4562DD|4582SS|2257WE|3578HT|4568FB|4573LF|3574SS|8122GK|4523EW|7128RT|2548RF|6873HH|4837NR|2358EE|3731HY|1587SW|1088TR|";		final String inputs[] = pipedInput.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "POSTAL_CODE.POSTAL_CODE_NL");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{4}\\p{IsAlphabetic}{2}");
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()), input);
+		}
+	}
+
+	@Test
 	public void basicPhoneNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Phone");
 		final String[] inputs = new String[] {
