@@ -451,3 +451,6 @@
 
 ### 4.6.1
  - ENH: Add support for the Netherlands (PostalCode, FIRST & LAST names, GENDER)
+
+### 4.6.2
+ - ENH: Rework Gender support to improve I18N

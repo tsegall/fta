@@ -135,8 +135,10 @@ DAY.DIGITS|Day represented as a number (1-31)|*
 DAY.ABBR_&lt;Locale&gt;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
 DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
 EMAIL|Email Address|*
-GENDER.TEXT_EN|Gender (English Language)|en
 GENDER.TEXT_DE|Gender (German Language)|de
+GENDER.TEXT_EN|Gender (English Language)|en
+GENDER.TEXT_ES|Gender (Spanish Language)|es
+GENDER.TEXT_IT|Gender (Italian Language)|it
 GENDER.TEXT_FR|Gender (French Language)|fr
 GENDER.TEXT_NL|Gender (Dutch Language)|nl
 GENDER.TEXT_PT|Gender (Portugese Language)|pt

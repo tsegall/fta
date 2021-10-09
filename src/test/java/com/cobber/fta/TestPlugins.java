@@ -51,7 +51,7 @@ import com.cobber.fta.plugins.LogicalTypeCountryEN;
 import com.cobber.fta.plugins.LogicalTypeEmail;
 import com.cobber.fta.plugins.LogicalTypeFirstName;
 import com.cobber.fta.plugins.LogicalTypeGUID;
-import com.cobber.fta.plugins.LogicalTypeGenderEN;
+import com.cobber.fta.plugins.LogicalTypeGender;
 import com.cobber.fta.plugins.LogicalTypeIPV4Address;
 import com.cobber.fta.plugins.LogicalTypePhoneNumber;
 import com.cobber.fta.plugins.LogicalTypeURL;
@@ -83,7 +83,7 @@ public class TestPlugins {
 		signatures.put(LogicalTypeCountryEN.SEMANTIC_TYPE, "T4UZNFT895GsC99J7dOz/ENNYvM=");
 		signatures.put(LogicalTypeAddressEN.SEMANTIC_TYPE, "5P7tWzPdbjVvyHhLklpTf00Zxl8=");
 		signatures.put(LogicalTypeEmail.SEMANTIC_TYPE, "+A0AMjgeFlGRlPKsX/iXYmoWpfY=");
-		signatures.put(LogicalTypeGenderEN.SEMANTIC_TYPE, "Jy3n2yHSDBuLhpoKY8FoMrmI4NE=");
+		signatures.put(LogicalTypeGender.SEMANTIC_TYPE + "EN", "Jy3n2yHSDBuLhpoKY8FoMrmI4NE=");
 		signatures.put(LogicalTypeUSZip5.SEMANTIC_TYPE, "VvLLosjm/N/z7zpF2IDSgpeT02c=");
 		signatures.put(LogicalTypeIPV4Address.SEMANTIC_TYPE, "tjKmv3C98nzoxPHtvYb1sp+UQEY=");
 		signatures.put(LogicalTypePhoneNumber.SEMANTIC_TYPE, "YOwAVZnoqmDtMa0wUtlF+Mda69U=");
@@ -116,8 +116,8 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGenderEN.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGender.SEMANTIC_TYPE + "EN");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGender.SEMANTIC_TYPE + "EN"));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE)");
 		Assert.assertEquals(result.getOutlierCount(), 0);
@@ -148,13 +148,46 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGender.SEMANTIC_TYPE + "EN");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGender.SEMANTIC_TYPE + "EN"));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(F|M)");
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()), input);
+		}
+	}
+
+	@Test
+	public void basicGenderThreeValues() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		final int UNKNOWNS = 3;
+		final String pipedInput = "F|M|M|F|F|M|F|F|M|U|" +
+				"M|F|M|M|M|F|F|M|M|M|U|" +
+				"M|F|M|F|F|M|F|M|U|" +
+				"F|M|F|F|M|F|M|M|M|M|";
+		final String inputs[] = pipedInput.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGender.SEMANTIC_TYPE + "EN");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGender.SEMANTIC_TYPE + "EN"));
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "(?i)(F|M|U)");
+		Assert.assertEquals(result.getOutlierCount(), 1);
+		Assert.assertEquals(result.getMatchCount(), inputs.length - UNKNOWNS);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)UNKNOWNS/result.getSampleCount());
 
 		for (final String input : inputs) {
 			Assert.assertTrue(input.matches(result.getRegExp()), input);
@@ -177,8 +210,8 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGender.SEMANTIC_TYPE + "EN");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGender.SEMANTIC_TYPE + "EN"));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(F|FEMALE|M|MALE|U)");
 		Assert.assertEquals(result.getOutlierCount(), 1);
@@ -208,8 +241,8 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGenderEN.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGender.SEMANTIC_TYPE + "EN");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGender.SEMANTIC_TYPE + "EN"));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Long> outliers = result.getOutlierDetails();
@@ -217,11 +250,41 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		final LogicalType logicalGender = analysis.getPlugins().getRegistered(LogicalTypeGenderEN.SEMANTIC_TYPE);
+		final LogicalType logicalGender = analysis.getPlugins().getRegistered(LogicalTypeGender.SEMANTIC_TYPE + "EN");
 		for (final String input : inputs) {
 			Assert.assertTrue(input.matches(result.getRegExp()), input);
 			final boolean expected = "male".equalsIgnoreCase(input.trim()) || "female".equalsIgnoreCase(input.trim());
 			Assert.assertEquals(logicalGender.isValid(input), expected);
+		}
+	}
+
+	@Test
+	public void basicGenderNL() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("GESLACH");
+		final int UNKNOWNS = 3;
+		analysis.setLocale(Locale.forLanguageTag("nl-NL"));
+
+		final String pipedInput = "M|V|M|M|O|V|M|O|M|M|M|V|M|V|V|M|M|V|M|V|M|M|M|M|O|M|V|M|V|M|";
+		final String inputs[] = pipedInput.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), "GENDER.TEXT_NL");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "(?i)(M|O|V)");
+		Assert.assertEquals(result.getMatchCount(), inputs.length - UNKNOWNS);
+		Assert.assertEquals(result.getConfidence(), 1 - (double)UNKNOWNS/result.getSampleCount());
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}
 
@@ -398,8 +461,8 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGenderEN.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGender.SEMANTIC_TYPE + "EN");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGender.SEMANTIC_TYPE + "EN"));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Long> outliers = result.getOutlierDetails();
@@ -407,7 +470,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		final LogicalType logicalGender = analysis.getPlugins().getRegistered(LogicalTypeGenderEN.SEMANTIC_TYPE);
+		final LogicalType logicalGender = analysis.getPlugins().getRegistered(LogicalTypeGender.SEMANTIC_TYPE + "EN");
 		for (final String input : inputs) {
 			Assert.assertTrue(input.trim().matches(result.getRegExp()), input);
 			final boolean expected = "male".equalsIgnoreCase(input.trim()) || "female".equalsIgnoreCase(input.trim());
@@ -434,8 +497,8 @@ public class TestPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGenderEN.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGenderEN.SEMANTIC_TYPE));
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeGender.SEMANTIC_TYPE + "EN");
+		Assert.assertEquals(result.getStructureSignature(), signatures.get(LogicalTypeGender.SEMANTIC_TYPE + "EN"));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		final Map<String, Long> outliers = result.getOutlierDetails();

@@ -120,63 +120,11 @@
 		"priority": 71
 	},
 	{
-		"qualifier": "GENDER.TEXT_EN",
-		"description": "Gender (English Language)",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeGenderEN",
-		"validLocales": [ "en" ],
+		"qualifier": "GENDER.TEXT_<LOCALE>",
+		"description": "Gender",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeGender",
+		"validLocales": [ "de", "en", "es", "it", "fr", "nl", "pt" ],
 		"priority": 80
-	},
-	{
-		"qualifier" : "GENDER.TEXT_DE",
-		"description": "Gender (German Language)",
-		"headerRegExps" : [ ".*(?i)(Gender|Geschlecht)" ],
-		"headerRegExpConfidence" : [ 70 ],
-		"contentType": "inline",
-		"content": "{ \"members\": [ \"MÄNNLICH\", \"WEIBLICH\", \"DIVERS\" ] }",
-		"regExpReturned" : "(?i)(MÄNNLICH|WEIBLICH|DIVERS)",
-		"validLocales": [ "de" ],
-		"backout": ".*",
-		"baseType" : "STRING",
-		"priority": 81
-	},
-	{
-		"qualifier" : "GENDER.TEXT_FR",
-		"description": "Gender (French Language)",
-		"headerRegExps" : [ ".*(?i)(Gender|Genre|Sexe)" ],
-		"headerRegExpConfidence" : [ 70 ],
-		"contentType": "inline",
-		"content": "{ \"members\": [ \"FEMME\", \"HOMME\", \"AUTRE\" ] }",
-		"regExpReturned" : "(?i)(FEMME|HOMME|AUTRE)",
-		"validLocales": [ "fr" ],
-		"backout": ".*",
-		"baseType" : "STRING",
-		"priority": 82
-	},
-	{
-		"qualifier" : "GENDER.TEXT_PT",
-		"description": "Gender (Portugese Language)",
-		"headerRegExps" : [ ".*(?i)(Gender|Gênero)" ],
-		"headerRegExpConfidence" : [ 70 ],
-		"contentType": "inline",
-		"content": "{ \"members\": [ \"FEMININO\", \"MASCULINO\", \"OUTROS\" ] }",
-		"regExpReturned" : "(?i)(FEMININO|MASCULINO|OUTROS)",
-		"validLocales": [ "pt" ],
-		"backout": ".*",
-		"baseType" : "STRING",
-		"priority": 83
-	},
-	{
-		"qualifier" : "GENDER.TEXT_NL",
-		"description": "Gender (Netherlands)",
-		"headerRegExps" : [ ".*(?i)(Gender|Geslacht)" ],
-		"headerRegExpConfidence" : [ 70 ],
-		"contentType": "inline",
-		"content": "{ \"members\": [ \"M\", \"V\", \"O\" ] }",
-		"regExpReturned" : "(?i)(M|O|V)",
-		"validLocales": [ "nl" ],
-		"backout": ".*",
-		"baseType" : "STRING",
-		"priority": 84
 	},
 	{
 		"qualifier" : "GENDER.TEXT_JP",
@@ -189,7 +137,7 @@
 		"validLocales": [ "jp" ],
 		"backout": ".*",
 		"baseType" : "STRING",
-		"priority": 85
+		"priority": 81
 	},
 	{
 		"qualifier": "NATIONALITY_EN",

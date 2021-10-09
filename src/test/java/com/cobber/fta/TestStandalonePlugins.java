@@ -135,7 +135,7 @@ public class TestStandalonePlugins {
 
 	@Test
 	public void randomGender() throws IOException, FTAPluginException {
-		final PluginDefinition plugin = new PluginDefinition("GENDER", "com.cobber.fta.plugins.LogicalTypeGenderEN");
+		final PluginDefinition plugin = new PluginDefinition("GENDER", "com.cobber.fta.plugins.LogicalTypeGender");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
 		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
@@ -161,7 +161,7 @@ public class TestStandalonePlugins {
 	public static String allSemanticTypes[] = new String[] {
 			"EMAIL", "URI.URL", "IPADDRESS.IPV4", "IPADDRESS.IPV6", "TELEPHONE", "GUID",
 			"POSTAL_CODE.ZIP5_US", "POSTAL_CODE.POSTAL_CODE_UK", "POSTAL_CODE.POSTAL_CODE_CA", "POSTAL_CODE.POSTAL_CODE_AU",
-			"STREET_ADDRESS_EN", "GENDER.TEXT_EN", "COUNTRY.TEXT_EN",
+			"STREET_ADDRESS_EN", "GENDER.TEXT_<LOCALE>", "COUNTRY.TEXT_EN",
 			"STATE_PROVINCE.PROVINCE_CA", "STATE_PROVINCE.STATE_US", "STATE_PROVINCE.STATE_PROVINCE_NA", "STATE_PROVINCE.STATE_AU",
 			"CURRENCY_CODE.ISO-4217", "COUNTRY.ISO-3166-3", "COUNTRY.ISO-3166-2",
 			"AIRPORT_CODE.IATA", "CITY", "SSN",
@@ -242,7 +242,10 @@ public class TestStandalonePlugins {
 					Assert.assertTrue(logical.isValid(testCases[i]), qualifier + ":" + testCases[i]);
 				}
 				for (int i = 0; i < SAMPLE_SIZE; i++)
+					if (!testCases[i].matches(logical.getRegExp())) {
+						System.err.println(qualifier + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
 					Assert.assertTrue(testCases[i].matches(logical.getRegExp()), qualifier + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
+				}
 			}
 		}
 	}

@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
-import com.cobber.fta.plugins.LogicalTypeGenderEN;
+import com.cobber.fta.plugins.LogicalTypeGender;
 
 public class TestBulk {
 	@Test
@@ -42,7 +42,7 @@ public class TestBulk {
 
 		Assert.assertEquals(result.getSampleCount(), 4000000);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(),  LogicalTypeGender.SEMANTIC_TYPE + "EN");
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 1000000L);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE)");
@@ -74,7 +74,7 @@ public class TestBulk {
 
 		Assert.assertEquals(resultBulk.getSampleCount(), 3 * ITERATIONS);
 		Assert.assertEquals(resultBulk.getType(), FTAType.STRING);
-		Assert.assertEquals(resultBulk.getTypeQualifier(),  LogicalTypeGenderEN.SEMANTIC_TYPE);
+		Assert.assertEquals(resultBulk.getTypeQualifier(),  LogicalTypeGender.SEMANTIC_TYPE + "EN");
 		Assert.assertEquals(resultBulk.getNullCount(), 0);
 		Assert.assertEquals(resultBulk.getRegExp(), "(?i)(FEMALE|MALE)");
 		Assert.assertEquals(resultBulk.getMatchCount(), 3 * ITERATIONS);

@@ -2158,15 +2158,16 @@ public class TextAnalyzer {
 		}
 
 		// Sweep the balance and check they are part of the set
-		if ((double) missCount / realSamples <= missThreshold) {
-			for (final Map.Entry<String, Long> entry : cardinalityUpper.entrySet()) {
-				if (logical.isValid(entry.getKey()))
-					validCount += entry.getValue();
-				else {
-					missCount += entry.getValue();
-					minusMatches.put(entry.getKey(), entry.getValue());
-					newOutliers.put(entry.getKey(), entry.getValue());
-				}
+		if ((double) missCount / realSamples > missThreshold)
+			return new FiniteMatchResult();
+
+		for (final Map.Entry<String, Long> entry : cardinalityUpper.entrySet()) {
+			if (logical.isValid(entry.getKey()))
+				validCount += entry.getValue();
+			else {
+				missCount += entry.getValue();
+				minusMatches.put(entry.getKey(), entry.getValue());
+				newOutliers.put(entry.getKey(), entry.getValue());
 			}
 		}
 
