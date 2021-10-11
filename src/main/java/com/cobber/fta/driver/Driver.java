@@ -35,7 +35,7 @@ import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
-class Driver {
+public class Driver {
 
 	static DriverOptions options;
 
