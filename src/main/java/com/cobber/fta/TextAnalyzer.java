@@ -15,6 +15,9 @@
  */
 package com.cobber.fta;
 
+import static com.cobber.fta.dates.DateTimeParserResult.FRACTION_INDEX;
+import static com.cobber.fta.dates.DateTimeParserResult.HOUR_INDEX;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
@@ -1978,7 +1981,6 @@ public class TextAnalyzer {
 	 * @param input The raw input string
 	 */
 	private void trackResult(final String input, final boolean fromTraining, final long count) {
-
 		if (fromTraining)
 			trackLengthAndShape(input, count);
 
@@ -2061,10 +2063,14 @@ public class TextAnalyzer {
 						if (ditch != '?') {
 							final int offset = matchPatternInfo.format.indexOf(ditch);
 
-							// S is s special case (unlike H, H, M, d) and is *NOT* handled by the default DateTimeFormatter.ofPattern
-							if (ditch == 'S')
-								newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, result.timeFieldLengths[3],
-										"S{1," + result.timeFieldLengths[3] + "}");
+							// S is a special case (unlike H, H, M, d) and is *NOT* handled by the default DateTimeFormatter.ofPattern
+							if (ditch == 'S') {
+								// The input is shorter than we expected so set the minimum length to 1 and then update
+								int len = result.timeFieldLengths[FRACTION_INDEX].getPatternLength();
+								result.timeFieldLengths[FRACTION_INDEX].setMin(1);
+								newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, len,
+										result.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
+							}
 							else
 								newFormatString = new StringBuffer(matchPatternInfo.format).deleteCharAt(offset).toString();
 
@@ -2072,16 +2078,17 @@ public class TextAnalyzer {
 						}
 						else if (e.getMessage().equals("Expecting end of input, extraneous input found, last token (FRACTION)")) {
 							final int offset = matchPatternInfo.format.indexOf('S');
-							final int oldLength = result.timeFieldLengths[3];
-							result.timeFieldLengths[3] = oldLength + 1;
+							final int oldLength = result.timeFieldLengths[FRACTION_INDEX].getPatternLength();
+							result.timeFieldLengths[FRACTION_INDEX].set(result.timeFieldLengths[FRACTION_INDEX].getMin(),
+									result.timeFieldLengths[FRACTION_INDEX].getMax() + 1);
 							newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, oldLength,
-									"S{1," + result.timeFieldLengths[3] + "}");
+									result.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
 							updated = true;
 						}
 						else if (e.getMessage().equals("Invalid value for hours: 24 (expected 0-23)")) {
 							final int offset = matchPatternInfo.format.indexOf('H');
-							newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, result.timeFieldLengths[0],
-									result.timeFieldLengths[0] == 1 ? "k" : "kk");
+							newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, result.timeFieldLengths[HOUR_INDEX].getMin(),
+									result.timeFieldLengths[HOUR_INDEX].getMin() == 1 ? "k" : "kk");
 							updated = true;
 						}
 

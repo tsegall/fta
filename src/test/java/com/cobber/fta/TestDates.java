@@ -654,6 +654,7 @@ public class TestDates {
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{4}");
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 	}
+
 	@Test
 	public void fixedSSS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.MinMax;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 import com.cobber.fta.core.Utils;
@@ -38,6 +39,9 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
  * DateTimeParserResult is the result of a {@link DateTimeParser} analysis.
  */
 public class DateTimeParserResult {
+	public final static int HOUR_INDEX = 0;
+	public final static int FRACTION_INDEX = 3;
+
 	public int timeElements = -1;
 	public int dateElements = -1;
 	public Boolean timeFirst;
@@ -48,7 +52,7 @@ public class DateTimeParserResult {
 	public int[] dateFieldLengths = new int[] {-1, -1, -1};
 	public int[] dateFieldOffsets = new int[] {-1, -1, -1};
 	public int[] dateFieldPad = new int[] {0, 0, 0};
-	public int[] timeFieldLengths = new int[] {-1, -1, -1, -1};
+	public MinMax[] timeFieldLengths = new MinMax[] {new MinMax(), new MinMax(), new MinMax(), new MinMax()};
 	public int[] timeFieldOffsets = new int[] {-1, -1, -1, -1};
 	public int[] timeFieldPad = new int[] {0, 0, 0, 0};
 	public String timeZone = "";
@@ -64,7 +68,7 @@ public class DateTimeParserResult {
 	private static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<>();
 
 	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, final Locale locale, final int timeElements,
-			final int[] timeFieldLengths, final int[] timeFieldOffsets, final int[] timeFieldPad, final int hourLength, final int dateElements, final int[] dateFieldLengths,
+			final MinMax[] timeFieldLengths, final int[] timeFieldOffsets, final int[] timeFieldPad, final int hourLength, final int dateElements, final int[] dateFieldLengths,
 			final int[] dateFieldOffsets, final int[] dateFieldPad, final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset,
 			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final List<FormatterToken> tokenized) {
 		this.formatString = formatString;
@@ -91,9 +95,17 @@ public class DateTimeParserResult {
 	}
 
 	public static DateTimeParserResult newInstance(final DateTimeParserResult r) {
+		MinMax[] timeFieldLengthsClone = null;
+		if (r.timeFieldLengths != null) {
+			timeFieldLengthsClone = new MinMax[r.timeFieldLengths.length];
+			for (int i = 0; i < r.timeFieldLengths.length; i++) {
+				timeFieldLengthsClone[i] = new MinMax(r.timeFieldLengths[i]);
+			}
+		}
+
 		return new DateTimeParserResult(r.formatString, r.resolutionMode, r.locale,
 				r.timeElements,
-				r.timeFieldLengths != null ? Arrays.copyOf(r.timeFieldLengths, r.timeFieldLengths.length) : null,
+				timeFieldLengthsClone,
 				r.timeFieldOffsets != null ? Arrays.copyOf(r.timeFieldOffsets, r.timeFieldOffsets.length) : null,
 				r.timeFieldPad != null ? Arrays.copyOf(r.timeFieldPad, r.timeFieldPad.length) : null,
 				r.hourLength, r.dateElements,
@@ -200,7 +212,7 @@ public class DateTimeParserResult {
 		int[] dateFieldLengths = new int[] {-1, -1, -1};
 		int[] dateFieldOffsets = new int[] {-1, -1, -1};
 		int[] dateFieldPad = new int[] {0, 0, 0};
-		int[] timeFieldLengths = new int[] {-1, -1, -1, -1};
+		MinMax[] timeFieldLengths = new MinMax[] {new MinMax(), new MinMax(), new MinMax(), new MinMax()};
 		int[] timeFieldOffsets = new int[] {-1, -1, -1, -1};
 		int[] timeFieldPad = new int[] {0, 0, 0, 0};
 		String timeZone = "";
@@ -304,10 +316,12 @@ public class DateTimeParserResult {
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 					i++;
 					hourLength = 2;
+					timeFieldLengths[timeElements].set(2, 2);
 				}
-				else
+				else {
 					hourLength = 1;
-				timeFieldLengths[timeElements] = hourLength;
+					timeFieldLengths[timeElements].set(1, 2);
+				}
 				timeElements++;
 				break;
 
@@ -316,7 +330,7 @@ public class DateTimeParserResult {
 				if (timeElements == timeFieldOffsets.length)
 					return null;
 				timeFieldOffsets[timeElements] = i;
-				timeFieldLengths[timeElements] = 2;
+				timeFieldLengths[timeElements].set(2);
 				timeFieldPad[timeElements] = padLength;
 				padLength = 0;
 				timeElements++;
@@ -331,24 +345,28 @@ public class DateTimeParserResult {
 				timeFieldOffsets[timeElements] = i;
 				timeFieldPad[timeElements] = padLength;
 				padLength = 0;
-				int fractions = 1;
 				if (i + 1 < formatLength) {
 					final char next = formatString.charAt(i + 1);
 					if (next == 'S') {
+						int fractions = 1;
 						while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
 							fractions++;
 							i++;
 						}
+						timeFieldLengths[timeElements].set(fractions);
 					}
 					else if (next == '{') {
 						final RegExpSplitter facts = RegExpSplitter.newInstance(formatString.substring(i + 1));
 						if (facts == null)
 							return null;
 						i += facts.getLength();
-						fractions = facts.getMin();
+						timeFieldLengths[timeElements].set(facts.getMin(), facts.getMax());
 					}
+					else
+						timeFieldLengths[timeElements].set(1);
 				}
-				timeFieldLengths[timeElements] = fractions;
+				else
+					timeFieldLengths[timeElements].set(1);
 				timeElements++;
 				break;
 
@@ -944,7 +962,7 @@ public class DateTimeParserResult {
 			timeAnswer = hours + ":mm:ss" ;
 			break;
 		case 4:
-			timeAnswer = hours + ":mm:ss." + Utils.repeat('S', timeFieldLengths[3]);
+			timeAnswer = hours + ":mm:ss." + Utils.repeat('S', timeFieldLengths[FRACTION_INDEX].getMin());
 			break;
 		}
 		if (amPmIndicator != null && amPmIndicator)

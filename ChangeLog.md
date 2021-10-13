@@ -457,3 +457,6 @@
 
 ### 4.6.3
  - ENH: Allow other folks to call the Driver
+
+### 4.6.4
+ - BUG: Significant rework of fractional seconds handling to broaden support - see dateBug()

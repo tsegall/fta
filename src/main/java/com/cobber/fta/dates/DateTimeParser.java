@@ -15,6 +15,9 @@
  */
 package com.cobber.fta.dates;
 
+import static com.cobber.fta.dates.DateTimeParserResult.FRACTION_INDEX;
+import static com.cobber.fta.dates.DateTimeParserResult.HOUR_INDEX;
+
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
@@ -31,6 +34,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import com.cobber.fta.core.InternalErrorException;
+import com.cobber.fta.core.MinMax;
 import com.cobber.fta.core.Utils;
 
 /**
@@ -154,10 +158,11 @@ public class DateTimeParser {
 
 		final int fractionOffset = formatString.indexOf("S{");
 		if (fractionOffset != -1) {
+			MinMax minMax = new MinMax(formatString.substring(fractionOffset, formatString.indexOf('}', fractionOffset)));
 			DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
 			.appendPattern(formatString.substring(0, fractionOffset))
-			.appendFraction(ChronoField.MICRO_OF_SECOND, 1, 3, false);
-			int upto = fractionOffset + "S{1,3}".length();
+			.appendFraction(ChronoField.MICRO_OF_SECOND, minMax.getMin(), minMax.getMax(), false);
+			int upto = fractionOffset + minMax.getPatternLength();
 			if (upto < formatString.length())
 				builder.appendPattern(formatString.substring(upto));
 			formatter = builder.toFormatter(locale);
@@ -282,26 +287,41 @@ public class DateTimeParser {
 						answerResult.amPmIndicator = result.amPmIndicator;
 
 					// If we were H (0-23) and we have a k (1-24) then assume k
-					final char was = answerBuffer.charAt(answerResult.timeFieldOffsets[0]);
-					final char is = result.getFormatString().charAt(result.timeFieldOffsets[0]);
+					final char was = answerBuffer.charAt(answerResult.timeFieldOffsets[HOUR_INDEX]);
+					final char is = result.getFormatString().charAt(result.timeFieldOffsets[HOUR_INDEX]);
 					if (was == 'H' && is == 'k') {
-						final int start = answerResult.timeFieldOffsets[0];
-						final int len = answerResult.timeFieldLengths[0];
+						final int start = answerResult.timeFieldOffsets[HOUR_INDEX];
+						answerResult.timeFieldLengths[0].merge(result.timeFieldLengths[HOUR_INDEX]);
+						final int len = answerResult.timeFieldLengths[HOUR_INDEX].getMin();
 						answerBuffer.replace(start, start + len, Utils.repeat('k', len));
 					}
 
 					if (result.timeFieldLengths != null) {
-						// Adjust the Hours, Minutes, or Seconds fields if the length is shorter (but not the fractions of Seconds)
-						for (int i = 0; i < result.timeFieldLengths.length - 1; i++) {
-							if (answerResult.timeFieldLengths[i] == -1)
+						// Shrink the Hours, Minutes, or Seconds fields if the length is shorter
+						// Expand the fractions of Seconds if the length is longer
+						for (int i = 0; i < result.timeFieldLengths.length; i++) {
+							if (!answerResult.timeFieldLengths[i].isSet())
 								answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
-							else
-								if (result.timeFieldLengths[i] < answerResult.timeFieldLengths[i]) {
+							else {
+								// Hours, Minutes, or Seconds
+								if (i < result.timeFieldLengths.length - 1 && result.timeFieldLengths[i].getMin() < answerResult.timeFieldLengths[i].getMin()) {
 									final int start = answerResult.timeFieldOffsets[i];
-									final int len = answerResult.timeFieldLengths[i];
-									answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
-									answerBuffer.replace(start, start + len, Utils.repeat(answerBuffer.charAt(start), result.timeFieldLengths[i]));
+									final int len = answerResult.timeFieldLengths[i].getMin();
+									answerResult.timeFieldLengths[i].setMin(result.timeFieldLengths[i].getMin());
+									for (int j = i + 1; j < result.timeFieldLengths.length; j++)
+										answerResult.timeFieldOffsets[j]--;
+									// Fix up the String
+									answerBuffer.replace(start, start + len, Utils.repeat(answerBuffer.charAt(start), result.timeFieldLengths[i].getMin()));
 								}
+								// Fractions of Seconds
+								else if (i == FRACTION_INDEX && result.timeFieldLengths[FRACTION_INDEX].compareTo(answerResult.timeFieldLengths[FRACTION_INDEX]) != 0) {
+									final int start = answerResult.timeFieldOffsets[FRACTION_INDEX];
+									final int len = answerResult.timeFieldLengths[FRACTION_INDEX].getPatternLength();
+									// Fix up the String
+									answerResult.timeFieldLengths[i].merge(result.timeFieldLengths[FRACTION_INDEX]);
+									answerBuffer.replace(start, start + len, answerResult.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
+								}
+							}
 						}
 					}
 				}
