@@ -2,6 +2,7 @@ package com.cobber.fta.driver;
 
 import java.io.IOException;
 
+import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
@@ -12,14 +13,14 @@ public class Processor {
 	private final DriverOptions options;
 	private final int streamCount;
 
-	Processor(final String[] names, final DriverOptions options) throws IOException {
+	Processor(final String compositeName, final String[] fieldNames, final DriverOptions options) throws IOException {
 		this.options = options;
-		this.streamCount = names.length;
+		this.streamCount = fieldNames.length;
 
 		analyzers = new TextAnalyzer[streamCount];
 
-		for (int i = 0; i < names.length; i++) {
-			analyzers[i] = new TextAnalyzer(names[i], options.resolutionMode);
+		for (int i = 0; i < fieldNames.length; i++) {
+			analyzers[i] = new TextAnalyzer(new AnalyzerContext(fieldNames[i], options.resolutionMode, compositeName, fieldNames));
 			options.apply(analyzers[i]);
 		}
 	}

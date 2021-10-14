@@ -460,3 +460,7 @@
 
 ### 4.6.4
  - BUG: Significant rework of fractional seconds handling to broaden support - see dateBug()
+
+### 4.6.5
+ - ENH: Extend driver to support AnalyzeContext usage
+ - ENH: Add broader range of honorifics (IND. and MISC.)

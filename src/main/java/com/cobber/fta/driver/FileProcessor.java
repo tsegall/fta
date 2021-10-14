@@ -145,7 +145,7 @@ class FileProcessor {
 				if ((options.col == -1 || options.col == i) && options.verbose != 0)
 					System.out.println(header[i]);
 			}
-			processor = new Processor(header, options);
+			processor = new Processor(filename, header, options);
 
 			long thisRecord = 0;
 			String[] row;
