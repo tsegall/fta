@@ -46,4 +46,14 @@ public class LogicalTypeCheckDigitSEDOL extends LogicalTypeCheckDigit {
 	public FTAType getBaseType() {
 		return FTAType.STRING;
 	}
+
+	private final static String[] samples = new String[] {
+			"0078416", "B63H849", "BJVNSS4", "B5M6XQ7", "B082RF1", "B0SWJX3", "3319521", "BLDYK61", "BD6K457", "B19NLV4", "B1XZS82",
+			"B1KJJ40", "3174300", "0673123", "BHJYC05", "BH4HKS3", "0263494", "3091357", "B7T7721", "0870612", "B03MM40",
+	};
+
+	@Override
+	public String nextRandom() {
+		return samples[random.nextInt(samples.length)];
+	}
 }

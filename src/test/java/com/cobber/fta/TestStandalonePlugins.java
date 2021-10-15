@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Locale;
 
 import org.testng.Assert;
@@ -158,93 +159,39 @@ public class TestStandalonePlugins {
 		}
 	}
 
-	public static String allSemanticTypes[] = new String[] {
-			"EMAIL", "URI.URL", "IPADDRESS.IPV4", "IPADDRESS.IPV6", "TELEPHONE", "GUID",
-			"POSTAL_CODE.ZIP5_US", "POSTAL_CODE.POSTAL_CODE_UK", "POSTAL_CODE.POSTAL_CODE_CA", "POSTAL_CODE.POSTAL_CODE_AU",
-			"STREET_ADDRESS_EN", "GENDER.TEXT_<LOCALE>", "COUNTRY.TEXT_EN",
-			"STATE_PROVINCE.PROVINCE_CA", "STATE_PROVINCE.STATE_US", "STATE_PROVINCE.STATE_PROVINCE_NA", "STATE_PROVINCE.STATE_AU",
-			"CURRENCY_CODE.ISO-4217", "COUNTRY.ISO-3166-3", "COUNTRY.ISO-3166-2",
-			"AIRPORT_CODE.IATA", "CITY", "SSN",
-			"NAME.FIRST", "NAME.LAST", "NAME.LAST_FIRST", "NAME.FIRST_LAST",
-			"CREDIT_CARD_TYPE", "LANGUAGE.ISO-639-2", "LANGUAGE.TEXT_EN",
-			"MONTH.ABBR_<LOCALE>", "MONTH.FULL_<LOCALE>", "COORDINATE.LATITUDE_DECIMAL", "COORDINATE.LONGITUDE_DECIMAL", "COORDINATE_PAIR.DECIMAL"
-	};
-
 	@Test
 	public void randomSupport() throws IOException, FTAPluginException {
 		final int SAMPLE_SIZE = 100;
+		final Locale[] locales = new Locale[] {
+				Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB"), Locale.forLanguageTag("en-AU"),
+				Locale.forLanguageTag("nl-NL"), Locale.forLanguageTag("pt-BR"), Locale.forLanguageTag("fr-FR"),
+				Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("it-IT"),
+				Locale.forLanguageTag("jp-JP"),
+		};
 
-		for (int iters = 0; iters < 100; iters++) {
-			for (final String qualifier : allSemanticTypes) {
-				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
-				final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+		for (Locale locale : locales) {
+			// Create an Analyzer to retrieve the Logical Types (magically will be all - since passed in '*')
+			final TextAnalyzer analyzer = new TextAnalyzer("*");
+			// Load the default set of plugins for Logical Type detection (normally done by a call to train())
+			analyzer.registerDefaultPlugins(locale);
+			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
-				// Does it support the nextRandom() interface
-				if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
-					continue;
+			for (int iters = 0; iters < 100; iters++) {
+				for (final LogicalType logicalType : registered) {
 
-				final LogicalTypeCode logical = (LogicalTypeCode)logicalType;
+					// Does it support the nextRandom() interface
+					if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
+						continue;
 
-				final String[] testCases = new String[SAMPLE_SIZE];
-				for (int i = 0; i < SAMPLE_SIZE; i++) {
-					testCases[i] = logical.nextRandom();
-					Assert.assertTrue(logical.isValid(testCases[i]), qualifier + ":" + testCases[i]);
-				}
-				for (int i = 0; i < SAMPLE_SIZE; i++)
-					Assert.assertTrue(testCases[i].matches(logical.getRegExp()), qualifier + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
-			}
-		}
-	}
+					final LogicalTypeCode logical = (LogicalTypeCode)logicalType;
 
-	@Test
-	public void randomSupportIntuitLocale() throws IOException, FTAPluginException {
-		final int SAMPLE_SIZE = 100;
-
-		for (int iters = 0; iters < 100; iters++) {
-			for (final String qualifier : allSemanticTypes) {
-				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(qualifier);
-				final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition);
-
-				// Does it support the nextRandom() interface
-				if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
-					continue;
-
-				final LogicalTypeCode logical = (LogicalTypeCode)logicalType;
-
-				String[] testCases = new String[SAMPLE_SIZE];
-				for (int i = 0; i < SAMPLE_SIZE; i++) {
-					testCases[i] = logical.nextRandom();
-					Assert.assertTrue(logical.isValid(testCases[i]), qualifier + ":" + testCases[i]);
-				}
-				for (int i = 0; i < SAMPLE_SIZE; i++)
-					Assert.assertTrue(testCases[i].matches(logical.getRegExp()), qualifier + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
-			}
-		}
-	}
-
-	@Test
-	public void randomSupportByQualifier() throws IOException, FTAPluginException {
-		final int SAMPLE_SIZE = 100;
-
-		for (int iters = 0; iters < 100; iters++) {
-			for (final String qualifier : allSemanticTypes) {
-				final LogicalType logicalType = LogicalTypeFactory.newInstance(qualifier);
-
-				// Does it support the nextRandom() interface
-				if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
-					continue;
-
-				final LogicalTypeCode logical = (LogicalTypeCode)logicalType;
-
-				final String[] testCases = new String[SAMPLE_SIZE];
-				for (int i = 0; i < SAMPLE_SIZE; i++) {
-					testCases[i] = logical.nextRandom();
-					Assert.assertTrue(logical.isValid(testCases[i]), qualifier + ":" + testCases[i]);
-				}
-				for (int i = 0; i < SAMPLE_SIZE; i++)
-					if (!testCases[i].matches(logical.getRegExp())) {
-						System.err.println(qualifier + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
-					Assert.assertTrue(testCases[i].matches(logical.getRegExp()), qualifier + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
+					final String[] testCases = new String[SAMPLE_SIZE];
+					for (int i = 0; i < SAMPLE_SIZE; i++) {
+						testCases[i] = logical.nextRandom();
+						Assert.assertTrue(logical.isValid(testCases[i]), logicalType.getQualifier() + ":'" + testCases[i] + "'");
+					}
+					for (int i = 0; i < SAMPLE_SIZE; i++)
+						Assert.assertTrue(testCases[i].matches(logical.getRegExp()), logicalType.getQualifier() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
 				}
 			}
 		}

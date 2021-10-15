@@ -77,8 +77,8 @@ The following Metrics are detected:
  * max - The maximum value observed
  * bottomK (Date, Time, Numeric, and String types only) - lowest 10 values
  * topK (Date, Time, Numeric, and String types only) - highest 10 values
- * minLength - The minimum length observed (Includes whitespace)
- * maxLength - The maximum length observed (Includes whitespace)
+ * minLength - The minimum length (in characters) observed (includes whitespace)
+ * maxLength - The maximum length (in characters) observed (includes whitespace)
  * cardinality - The cardinality of the valid set (or MaxCardinality if the set is larger than MaxCardinality)
  * outlierCardinality - The cardinality of the invalid set (or MaxOutlierCardinality if the set is larger than MaxOutlierCardinality)
  * leadingWhiteSpace - Does the observed set have leading white space

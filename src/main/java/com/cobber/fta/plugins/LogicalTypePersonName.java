@@ -44,6 +44,18 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 
 	@Override
 	public String nextRandom() {
+		// We only return names that do not have embedded spaces in them, this makes generating other
+		// samples (e.g. EMAIL, FIRST_LAST much simpler)
+		String ret;
+		do {
+			ret = anyRandom();
+		}
+		while (ret.indexOf(' ') != -1);
+
+		return ret;
+	}
+
+	private String anyRandom() {
 		// No easy way to get a random element from a set, could convert to array but that uses lots of memory,
 		// so simulate randomness by having a number of iterators start at different points in the set
 		if (iterators == null) {

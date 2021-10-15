@@ -46,9 +46,10 @@ public class LogicalTypeJobTitleEN extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		final String[] examples = new String[] {
-				"RED",  "GREEN", "BLUE", "PINK", "BLACK", "WHITE", "ORANGE", "PURPLE",
-				"GREY", "GREEN", "YELLOW", "MAUVE", "CREAM", "BROWN", "SILVER", "GOLD",
-				"PEACH", "OLIVE", "LEMON", "LILAC", "BEIGE", "AMBER", "BURGUNDY"
+				"CTO",  "CEO", "PROJECT MANAGER", "PROGRAM MANAGER", "VP", "VICE PRESIDENT", "COO", "CMO",
+				"DIRECTOR", "MARKETING MANAGER", "EVP", "SVP", "SALES ENGINEER", "SENIOR ENGINEER", "CISO",
+				"CHIEF TECHNOLOGY OFFICER", "CHIEF MARKETING OFFICER",
+				"CHIEF INFORMATION SECURITY OFFICER", "CHIEF EXECUTIVE OFFICER",
 		};
 
 		return examples[random.nextInt(examples.length)];

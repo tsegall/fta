@@ -24,7 +24,7 @@ import com.cobber.fta.PluginDefinition;
  */
 public class LogicalTypeCheckDigitEAN13 extends LogicalTypeCheckDigit {
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.EAN13";
-	public static final String REGEXP = "\\d{13}\\d";
+	public static final String REGEXP = "\\d{13}";
 
 	public LogicalTypeCheckDigitEAN13(final PluginDefinition plugin) {
 		super(plugin, 13);
@@ -39,5 +39,17 @@ public class LogicalTypeCheckDigitEAN13 extends LogicalTypeCheckDigit {
 	@Override
 	public String getQualifier() {
 		return SEMANTIC_TYPE;
+	}
+
+	private final static String[] samples = new String[] {
+			"9780444505156", "4605664000050", "3014260115531", "8020187300016", "8076809513456", "3155250001387",
+			"2151191106847", "1626093139220", "8556467100101", "0922077722381", "3064298186966", "1068035884902",
+			"4709099997098", "2460125680880", "9686595482097", "2455962755150", "1883097580551", "9664864959587",
+			"4632812983156", "8715988259303", "4114932292979", "1635056616685", "1850775082089", "4514120918771"
+	};
+
+	@Override
+	public String nextRandom() {
+		return samples[random.nextInt(samples.length)];
 	}
 }

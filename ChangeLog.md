@@ -464,3 +464,13 @@
 ### 4.6.5
  - ENH: Extend driver to support AnalyzeContext usage
  - ENH: Add broader range of honorifics (IND. and MISC.)
+
+### 4.6.6
+ - ENH: Add support for generating 'random' examples of the CheckDigits (e.g. IBAN and friends)
+ - ENH: nextRandom() on names now only returns names without spaces (somewhat less random :-))
+ - ENH: Improve testing of nextRandom()
+ - BUG: Fix issue in Japanese Gender support
+ - BUG: Fixup typos in name of a couple of Canadian provinces
+ - BUG: Fix US counties names to use simple hyphens
+ - BUG: Fix regular expression returned for a number of Western European countries
+ - BUG: Fix regular expression returned for CHECKDIGIT.EAN13
