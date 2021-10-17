@@ -310,7 +310,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 6.8.3`
+`$ gradle wrapper --gradle-version 6.9.1`
 
 `$ ./gradlew installDist`
 

@@ -20,11 +20,12 @@ import java.util.Map;
 
 import org.apache.commons.validator.routines.InetAddressValidator;
 
+import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.Shapes;
-import com.cobber.fta.AnalysisConfig;
-import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
@@ -93,7 +94,7 @@ public class LogicalTypeIPV6Address extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, String currentRegExp,
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
 			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? null : ".+";
 	}

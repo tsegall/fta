@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
@@ -67,12 +68,16 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 
 	static {
 		allGenderData.put("DE", new GenderData(".*(?i)(Gender|Geschlecht)", "WEIBLICH", "MÄNNLICH", "W", "M"));
-		allGenderData.put("EN", new GenderData(".*(?i)(Gender)", "FEMALE", "MALE", "F", "M"));
+		allGenderData.put("EN", new GenderData(".*(?i)(Gender|sex)", "FEMALE", "MALE", "F", "M"));
 		allGenderData.put("ES", new GenderData(".*(?i)(Gender|Sexo)", "FEMENINO", "MASCULINO", "F", "M"));
 		allGenderData.put("IT", new GenderData(".*(?i)(Gender|genere)", "FEMMINA", "MASCHIO", "F", "M"));
 		allGenderData.put("FR", new GenderData(".*(?i)(Gender|Genre|Sexe)", "FEMME", "HOMME", "F", "H"));
 		allGenderData.put("NL", new GenderData(".*(?i)(Gender|Geslach|Geslacht)", "VROUWELIJK", "MANNELIJK", "V", "M"));
 		allGenderData.put("PT", new GenderData(".*(?i)(Gender|Gênero)", "FEMININO", "MASCULINO", "F", "M"));
+
+		// Belgium covered by DE, FR, and NL
+		// Switzerland covered DE, FR, IT
+		// Austria covered by DE
 	}
 
 	public LogicalTypeGender(final PluginDefinition plugin) throws FileNotFoundException {
@@ -137,13 +142,13 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)
 			return BACKOUT_REGEX;
 
-		final boolean positiveStreamName = dataStreamName.matches(genderData.header);
+		final boolean positiveStreamName = context.getStreamName().matches(genderData.header);
 		if (!positiveStreamName && cardinality.size() - outliers.size() <= 1)
 			return BACKOUT_REGEX;
 

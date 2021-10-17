@@ -129,7 +129,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, String currentRegExp,
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
 			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 
 		String backout = currentRegExp;
@@ -145,7 +145,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		if (defn.headerRegExps != null) {
 			boolean requiredHeaderMissing = false;
 			for (int i = 0; i < defn.headerRegExps.length && !requiredHeaderMissing; i++) {
-				if (defn.headerRegExpConfidence[i] == 100 && !dataStreamName.matches(defn.headerRegExps[i]))
+				if (defn.headerRegExpConfidence[i] == 100 && !context.getStreamName().matches(defn.headerRegExps[i]))
 					requiredHeaderMissing = true;
 			}
 			if (requiredHeaderMissing)

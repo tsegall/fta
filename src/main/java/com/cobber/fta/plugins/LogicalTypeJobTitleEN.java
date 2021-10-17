@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
@@ -119,10 +120,10 @@ public class LogicalTypeJobTitleEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 		int minCardinality = 10;
 		int minSamples = 20;
-		if (getHeaderConfidence(dataStreamName) != 0) {
+		if (getHeaderConfidence(context.getStreamName()) != 0) {
 			minCardinality = 5;
 			minSamples = 5;
 		}

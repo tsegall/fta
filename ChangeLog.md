@@ -474,3 +474,8 @@
  - BUG: Fix US counties names to use simple hyphens
  - BUG: Fix regular expression returned for a number of Western European countries
  - BUG: Fix regular expression returned for CHECKDIGIT.EAN13
+
+### 4.7.0
+ - ENH: Change isValidSet() on plugins to take an AnalyzeContext not just a stream name
+ - NOTE: Bumped to 4.7.0 because preexisting plugins need to be minimally updated
+ - GEN: Bump gradle to 6.9.1

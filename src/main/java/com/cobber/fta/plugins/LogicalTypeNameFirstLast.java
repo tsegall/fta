@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
@@ -159,22 +160,22 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, String currentRegExp,
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
 			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 
 		int minCardinality = 10;
 		int minSamples = 20;
-		if (getHeaderConfidence(dataStreamName) != 0) {
+		if (getHeaderConfidence(context.getStreamName()) != 0) {
 			minCardinality = 5;
 			minSamples = 5;
 		}
 
 		// Reject if there is not a reasonable spread of values
-		if (getHeaderConfidence(dataStreamName) == 0 && cardinality.size() < analysisConfig.maxCardinality && (double)cardinality.size()/matchCount < .2)
+		if (getHeaderConfidence(context.getStreamName()) == 0 && cardinality.size() < analysisConfig.maxCardinality && (double)cardinality.size()/matchCount < .2)
 			return BACKOUT;
 
 		// Reject if there is not a reasonable spread of last or first names
-		if (getHeaderConfidence(dataStreamName) == 0 &&
+		if (getHeaderConfidence(context.getStreamName()) == 0 &&
 				((lastNames.size() < MAX_LAST_NAMES && (double)lastNames.size()/matchCount < .2) ||
 				(firstNames.size() < MAX_FIRST_NAMES && (double)firstNames.size()/matchCount < .2)))
 			return BACKOUT;
@@ -185,7 +186,7 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 		if (realSamples < minSamples)
 			return BACKOUT;
 
-		return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : BACKOUT;
+		return getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0 ? null : BACKOUT;
 	}
 
 	@Override

@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
@@ -142,12 +143,12 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final String dataStreamName, final long matchCount, final long realSamples, String currentRegExp,
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
 			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
 
 		int minCardinality = 8;
 		int minSamples = 10;
-		if (getHeaderConfidence(dataStreamName) != 0) {
+		if (getHeaderConfidence(context.getStreamName()) != 0) {
 			minCardinality = 3;
 			minSamples = 3;
 		}
@@ -158,7 +159,7 @@ public class LogicalTypeNameLastFirst extends LogicalTypeInfinite {
 		if (realSamples < minSamples)
 			return BACKOUT;
 
-		return getConfidence(matchCount, realSamples, dataStreamName) >= getThreshold()/100.0 ? null : BACKOUT;
+		return getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0 ? null : BACKOUT;
 	}
 
 	@Override

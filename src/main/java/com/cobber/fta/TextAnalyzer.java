@@ -134,8 +134,9 @@ public class TextAnalyzer {
 	protected static final int REFLECTION_SAMPLES = 30;
 	private int reflectionSamples = REFLECTION_SAMPLES;
 
-	private String dataStreamName;
-	private DateResolutionMode resolutionMode = DateResolutionMode.None;
+	/** Context provided to this analysis - contains name, DateResolutionMode, ... */
+	private AnalyzerContext context;
+
 	private char localeDecimalSeparator;
 	private char localeGroupingSeparator;
 	private char localeMinusSign;
@@ -283,8 +284,7 @@ public class TextAnalyzer {
 	 * @param context The context used to interpret the stream.
 	 */
 	public TextAnalyzer(final AnalyzerContext context) {
-		this.dataStreamName = context.getStreamName();
-		this.resolutionMode = context.getDateResolutionMode();
+		this.context = context;
 	}
 
 	/**
@@ -322,7 +322,7 @@ public class TextAnalyzer {
 	 * @return The name of the Data Stream.
 	 */
 	public String getStreamName() {
-		return dataStreamName;
+		return context.getStreamName();
 	}
 
 	/**
@@ -865,7 +865,7 @@ public class TextAnalyzer {
 		final String dateFormat = patternInfo.format;
 
 		// Retrieve the (likely cached) DateTimeParserResult for the supplied dateFormat
-		final DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, resolutionMode, locale);
+		final DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, context.getDateResolutionMode(), locale);
 		if (result == null)
 			throw new InternalErrorException("NULL result for " + dateFormat);
 
@@ -961,7 +961,7 @@ public class TextAnalyzer {
 	 */
 	public void registerDefaultPlugins(final Locale locale) {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))) {
-			plugins.registerPlugins(reader, dataStreamName, locale);
+			plugins.registerPlugins(reader, context.getStreamName(), locale);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
 		}
@@ -1042,7 +1042,7 @@ public class TextAnalyzer {
 		knownPatterns.initialize(locale);
 
 		// If Resolution mode is auto then set DayFirst or MonthFirst based on the Locale
-		if (resolutionMode == DateResolutionMode.Auto) {
+		if (context.getDateResolutionMode() == DateResolutionMode.Auto) {
 			final DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 			final String pattern = ((SimpleDateFormat)df).toPattern();
 			final int dayIndex = pattern.indexOf('d');
@@ -1050,10 +1050,10 @@ public class TextAnalyzer {
 			if (dayIndex == -1 || monthIndex == -1)
 				throw new FTAUnsupportedLocaleException("Failed to determine DateResolutionMode for this locale");
 			// We assume that if Day is before Month, then Day is also before Year!
-			resolutionMode = dayIndex < monthIndex ? DateResolutionMode.DayFirst : DateResolutionMode.MonthFirst;
+			context.setDateResolutionMode(dayIndex < monthIndex ? DateResolutionMode.DayFirst : DateResolutionMode.MonthFirst);
 		}
 
-		dateTimeParser = new DateTimeParser(resolutionMode, locale);
+		dateTimeParser = new DateTimeParser(context.getDateResolutionMode(), locale);
 
 		initialized = true;
 	}
@@ -1638,7 +1638,7 @@ public class TextAnalyzer {
 				// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
 				// if there happens to be an issue then we swallow it and will not detect the date/datetime.
 				try {
-					final DateTimeParser det = new DateTimeParser(resolutionMode, locale);
+					final DateTimeParser det = new DateTimeParser(context.getDateResolutionMode(), locale);
 					for (final String sample : raw)
 						det.train(sample);
 
@@ -1660,7 +1660,7 @@ public class TextAnalyzer {
 			int i = 0;
 			double bestConfidence = 0.0;
 			for (final LogicalTypeInfinite logical : infiniteTypes) {
-				if (matchPatternInfo.getBaseType() == logical.getBaseType() && logical.getConfidence(candidateCounts[i], raw.size(), dataStreamName)  >= logical.getThreshold()/100.0) {
+				if (matchPatternInfo.getBaseType() == logical.getBaseType() && logical.getConfidence(candidateCounts[i], raw.size(), context.getStreamName())  >= logical.getThreshold()/100.0) {
 					int count = 0;
 					final PatternInfo candidate = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 					for (final String sample : raw) {
@@ -1682,7 +1682,7 @@ public class TextAnalyzer {
 					}
 
 					// If a reasonable number look genuine then we are convinced
-					final double currentConfidence = logical.getConfidence(count, raw.size(), dataStreamName);
+					final double currentConfidence = logical.getConfidence(count, raw.size(), context.getStreamName());
 					if (currentConfidence > bestConfidence && currentConfidence >= logical.getThreshold()/100.0) {
 						matchPatternInfo = candidate;
 						bestConfidence = currentConfidence;
@@ -2041,7 +2041,7 @@ public class TextAnalyzer {
 			catch (DateTimeParseException reale) {
 				// The real parse threw an Exception, this does not give us enough facts to usefully determine if there are any
 				// improvements to our assumptions we could make to do better, so re-parse and handle our more nuanced exception
-				DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, resolutionMode, locale);
+				DateTimeParserResult result = DateTimeParserResult.asResult(matchPatternInfo.format, context.getDateResolutionMode(), locale);
 				boolean success = false;
 				do {
 					try {
@@ -2095,7 +2095,7 @@ public class TextAnalyzer {
 						if (!updated)
 							break;
 
-						result = DateTimeParserResult.asResult(newFormatString, resolutionMode, locale);
+						result = DateTimeParserResult.asResult(newFormatString, context.getDateResolutionMode(), locale);
 						matchPatternInfo = new PatternInfo(null, result.getRegExp(), matchPatternInfo.getBaseType(), newFormatString, false, false, -1, -1, null, newFormatString);
 					}
 				} while (!success);
@@ -2121,7 +2121,7 @@ public class TextAnalyzer {
 				if (matchPatternInfo.isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
 					final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
-					final String newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, shapes, analysisConfig);
+					final String newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, shapes, analysisConfig);
 					if (newPattern != null)
 						if (FTAType.LONG.equals(matchPatternInfo.getBaseType()) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
@@ -2183,10 +2183,10 @@ public class TextAnalyzer {
 		for (final String elt : minusMatches.keySet())
 			newCardinality.remove(elt);
 
-		if (logical.isValidSet(dataStreamName, validCount, realSamples, matchPatternInfo.regexp, null, newCardinality, newOutliers, shapes, analysisConfig) != null)
+		if (logical.isValidSet(context, validCount, realSamples, matchPatternInfo.regexp, null, newCardinality, newOutliers, shapes, analysisConfig) != null)
 			return new FiniteMatchResult();
 
-		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, dataStreamName), validCount, newOutliers, newCardinality);
+		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context.getStreamName()), validCount, newOutliers, newCardinality);
 	}
 
 	private String lengthQualifier(final int min, final int max) {
@@ -2492,7 +2492,7 @@ public class TextAnalyzer {
 			final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
 
 			String newPattern;
-			if ((newPattern = logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, shapes, analysisConfig)) != null) {
+			if ((newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, shapes, analysisConfig)) != null) {
 				if (FTAType.STRING.equals(logical.getBaseType()) || FTAType.LONG.equals(logical.getBaseType())) {
 					if (FTAType.STRING.equals(logical.getBaseType()))
 						backoutToPattern(realSamples, newPattern);
@@ -2506,7 +2506,7 @@ public class TextAnalyzer {
 			else {
 				// Update our Regular Expression - since it may have changed based on all the data observed
 				matchPatternInfo.regexp = logical.getRegExp();
-				confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+				confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 			}
 		}
 
@@ -2520,7 +2520,7 @@ public class TextAnalyzer {
 			if (groupingSeparators == 0 && minLongNonZero != Long.MAX_VALUE && minLongNonZero > 19000101 && maxLong < 20410101 &&
 					DateTimeParser.plausibleDateCore(false, (int)minLongNonZero%100, ((int)minLongNonZero/100)%100, (int)minLongNonZero/10000, 4)  &&
 					DateTimeParser.plausibleDateCore(false, (int)maxLong%100, ((int)maxLong/100)%100, (int)maxLong/10000, 4)  &&
-					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("date"))) {
+					((realSamples >= reflectionSamples && cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("date"))) {
 				matchPatternInfo = new PatternInfo(null, (minLongNonZero == minLong || shapes.size() == 1) ? "\\d{8}" : "0|\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, false, 8, 8, null, "yyyyMMdd");
 				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 				minLocalDate = LocalDate.parse(String.valueOf(minLongNonZero), dtf);
@@ -2532,7 +2532,7 @@ public class TextAnalyzer {
 						if (!Utils.allZeroes(s))
 							trackDateTime(s, matchPatternInfo, true);
 			} else if (groupingSeparators == 0 && minLongNonZero != Long.MAX_VALUE && minLongNonZero > 1800 && maxLong < 2041 &&
-					((realSamples >= reflectionSamples && cardinality.size() > 10) || dataStreamName.toLowerCase(locale).contains("year") || dataStreamName.toLowerCase(locale).contains("date"))) {
+					((realSamples >= reflectionSamples && cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("year") || context.getStreamName().toLowerCase(locale).contains("date"))) {
 				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{4}" : "0+|\\d{4}", FTAType.LOCALDATE, "yyyy", false, false, 4, 4, null, "yyyy");
 				minLocalDate = LocalDate.of((int)minLongNonZero, 1, 1);
 				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
@@ -2557,9 +2557,9 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (FTAType.LONG.equals(logical.getBaseType()) &&
 							logical.isMatch(matchPatternInfo.regexp) &&
-							logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-						confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 						debug("Type determination - was LONG, matchPatternInfo - %s%n", matchPatternInfo);
 						break;
 					}
@@ -2586,9 +2586,9 @@ public class TextAnalyzer {
 			for (final LogicalTypeRegExp logical : regExpTypes) {
 				if (FTAType.DOUBLE.equals(logical.getBaseType()) &&
 						logical.isMatch(matchPatternInfo.regexp) &&
-						logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+						logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-					confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+					confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 					break;
 				}
 			}
@@ -2614,7 +2614,7 @@ public class TextAnalyzer {
 
 			final LogicalTypeFinite logical = matchFiniteTypes(cardinalityUpper, minKeyLength, maxKeyLength);
 			if (logical != null)
-				confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+				confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 
 			// Fixup any likely enums
 			if (matchPatternInfo.typeQualifier == null && cardinalityUpper.size() < MAX_ENUM_SIZE && outliers.size() != 0 && outliers.size() < 10) {
@@ -2715,9 +2715,9 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (FTAType.STRING.equals(logical.getBaseType()) &&
 							logical.isMatch(matchPatternInfo.regexp) &&
-							logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-						confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 						updated = true;
 						break;
 					}
@@ -2790,9 +2790,9 @@ public class TextAnalyzer {
 					for (final LogicalTypeRegExp logical : regExpTypes) {
 						if (FTAType.STRING.equals(logical.getBaseType()) &&
 								logical.isMatch(matchPatternInfo.regexp) &&
-								logical.isValidSet(dataStreamName, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+								logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 							matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-							confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+							confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 							break;
 						}
 					}
@@ -2807,10 +2807,10 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (FTAType.STRING.equals(logical.getBaseType()) &&
 							logical.isMatch(regExp) &&
-							logical.isValidSet(dataStreamName, bestShape.getValue(), realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+							logical.isValidSet(context, bestShape.getValue(), realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						matchCount = bestShape.getValue();
-						confidence = logical.getConfidence(matchCount, realSamples, dataStreamName);
+						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 						updated = true;
 						break;
 					}
@@ -2880,9 +2880,9 @@ public class TextAnalyzer {
 				factsCore.uniqueness = -1.0;
 		}
 
-		return new TextAnalysisResult(dataStreamName, locale,
+		return new TextAnalysisResult(context.getStreamName(), locale,
 				matchCount, totalCount, sampleCount, nullCount,blankCount,
-				matchPatternInfo, factsCore, facts, confidence, resolutionMode,
+				matchPatternInfo, factsCore, facts, confidence, context.getDateResolutionMode(),
 				analysisConfig, cardinality, outliers, shapes.getShapes());
 	}
 
