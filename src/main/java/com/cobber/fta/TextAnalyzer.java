@@ -221,6 +221,8 @@ public class TextAnalyzer {
 	private long minLong = Long.MAX_VALUE;
 	private long minLongNonZero = Long.MAX_VALUE;
 	private long maxLong = Long.MIN_VALUE;
+	private boolean monotonicIncreasing = true;
+	private boolean monotonicDecreasing = true;
 	private final TopBottomK<Long, Long> tbLong = new TopBottomK<>();
 
 	private String minString;
@@ -705,9 +707,13 @@ public class TextAnalyzer {
 
 			if (l < minLong)
 				minLong = l;
+			else
+				monotonicDecreasing = false;
 
 			if (l > maxLong)
 				maxLong = l;
+			else
+				monotonicIncreasing = false;
 
 			if (analysisConfig.collectStatistics) {
 				// Calculate the mean & standard deviation using Welford's algorithm
@@ -2874,6 +2880,9 @@ public class TextAnalyzer {
 						uniques++;
 				}
 				factsCore.uniqueness = (double)uniques/cardinality.size();
+			}
+			else if (FTAType.LONG.equals(matchPatternInfo.getBaseType()) && (monotonicIncreasing || monotonicDecreasing)) {
+				factsCore.uniqueness = 1.0;
 			}
 			else
 				// -1 indicates we have no perspective on the uniqueness of this field

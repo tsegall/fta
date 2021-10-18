@@ -478,4 +478,7 @@
 ### 4.7.0
  - ENH: Change isValidSet() on plugins to take an AnalyzeContext not just a stream name
  - NOTE: Bumped to 4.7.0 because preexisting plugins need to be minimally updated
- - GEN: Bump gradle to 6.9.1
+
+### 4.7.1
+ - ENH: Add new Semantic type INDUSTRY_EN
+ - ENH: Improve uniqueness detection, if a field is monotonic increasing or monotonic decreasing then its uniquness is 1!

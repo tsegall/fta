@@ -145,6 +145,7 @@ GENDER.TEXT_PT|Gender (Portugese Language)|pt
 GENDER.TEXT_JP|Gender (Japanese Language)|jp
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
+INDUSTRY_EN|Industry Name|en
 IPADDRESS.IPV4|IP V4 Address|*
 IPADDRESS.IPV6|IP V6 Address|*
 JOB_TITLE_EN|Job Title|en

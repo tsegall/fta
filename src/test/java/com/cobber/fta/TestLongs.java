@@ -328,18 +328,61 @@ public class TestLongs {
 		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
 		final int tooBig = analysis.getMaxCardinality();
 
-		for (int i = 0; i < tooBig; i++)
+		for (int i = 10; i < tooBig + 10; i++)
+			analysis.train(String.valueOf(i));
+		analysis.train("1");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), tooBig + 1);
+		Assert.assertEquals(result.getMatchCount(), tooBig + 1);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getUniqueness(), -1.0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void testMonotonicIncreasing() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
+		final int tooBig = 2 * analysis.getMaxCardinality();
+
+		for (int i = 0; i < 2 * tooBig; i++)
 			analysis.train(String.valueOf(i));
 
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), tooBig);
-		Assert.assertEquals(result.getMatchCount(), tooBig);
+		Assert.assertEquals(result.getSampleCount(), 2 * tooBig);
+		Assert.assertEquals(result.getMatchCount(), 2 * tooBig);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getUniqueness(), -1.0);
+		Assert.assertEquals(result.getUniqueness(), 1.0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void testMonotonicDecreasing() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
+		final int tooBig = 2 * analysis.getMaxCardinality();
+
+		for (int i = 2 * tooBig; i > 0; i--)
+			analysis.train(String.valueOf(i));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getSampleCount(), 2 * tooBig);
+		Assert.assertEquals(result.getMatchCount(), 2 * tooBig);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getUniqueness(), 1.0);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}

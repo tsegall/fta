@@ -717,7 +717,6 @@
                 "clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitABA",
                 "priority": 296
         },
-
 	{
 		"qualifier": "JOB_TITLE_EN",
 		"description": "Job Title (English Language)",
@@ -726,5 +725,16 @@
 		"headerRegExpConfidence": [ 90 ],
 		"validLocales": [ "en" ],
 		"priority": 300
+	},
+	{
+		"qualifier": "INDUSTRY_EN",
+		"description": "Industry Name",
+		"headerRegExps": [ ".*(?i)(industry).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"content": "/reference/en_industries.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"validLocales": [ "en" ],
+		"priority": 301
 	}
 ]
