@@ -30,7 +30,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
 /**
- * Plugin to detect Addresses. (English-language only).
+ * Plugin to detect an Address line. (English-language only).
  */
 public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "STREET_ADDRESS_EN";
@@ -45,12 +45,16 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		final String[] streets = new String[] {
-				"RED",  "GREEN", "BLUE", "PINK", "BLACK", "WHITE", "ORANGE", "PURPLE",
-				"GREY", "GREEN", "YELLOW", "MAUVE", "CREAM", "BROWN", "SILVER", "GOLD",
-				"PEACH", "OLIVE", "LEMON", "LILAC", "BEIGE", "AMBER", "BURGUNDY"
+				"Main",  "Lakeside", "Pennsylvania", "Hill", "Croydon", "Buchanan", "Riverside", "Flushing",
+				"Jefferson", "Randolph", "North Point", "Massachusetts", "Meadow", "Central", "Lincoln", "Eight Mile",
+				"4th", "Flower", "High", "3rd", "12th", "D", "Piedmont", "Chaton", "Kenwood", "Sycamore Lake",
+				"Euclid", "Cedarstone", "Carriage", "Isaacs Creek", "Happy Hollow", "Armory", "Bryan", "Charack",
+				"Atha", "Bassel", "Overlook", "Chatham", "Melville", "Stone", "Dawson", "Pringle", "Federation",
+				"Winifred", "Pratt", "Hillview", "Rosemont", "Romines Mill", "School House", "Candlelight"
 		};
+		final String simpleAddressMarkers[] = new String[] { "Street", "St", "Road", "Rd", "Rd.", "Avenue", "Ave", "Terrace", "Drive" };
 
-		return String.valueOf(random.nextInt(1024)) + ' ' + streets[random.nextInt(streets.length)] + ' ' + addressMarkersRef.getAt(random.nextInt(addressMarkers.size()));
+		return String.valueOf(1 + random.nextInt(999)) + ' ' + streets[random.nextInt(streets.length)] + ' ' + simpleAddressMarkers[random.nextInt(simpleAddressMarkers.length)];
 	}
 
 	@Override
@@ -144,6 +148,16 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
-		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
+		return getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0 ? null : ".+";
+	}
+
+	@Override
+	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+		double confidence = (double)matchCount/realSamples;
+		// Boost by up to 10% if we like the header
+		if (getHeaderConfidence(dataStreamName) != 0)
+			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.05), 1.0);
+
+		return confidence;
 	}
 }

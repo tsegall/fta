@@ -64,7 +64,7 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 		return true;
 	}
 
-	protected int getHeaderConfidence(final String dataStreamName) {
+	public int getHeaderConfidence(final String dataStreamName) {
 		if (headerPatterns != null)
 			for (int i = 0; i < headerPatterns.length; i++) {
 				if (headerPatterns[i].matcher(dataStreamName).matches())

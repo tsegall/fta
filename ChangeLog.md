@@ -482,3 +482,10 @@
 ### 4.7.1
  - ENH: Add new Semantic type INDUSTRY_EN
  - ENH: Improve uniqueness detection, if a field is monotonic increasing or monotonic decreasing then its uniquness is 1!
+
+### 4.7.2
+ - ENH: Improve reference list for industries
+ - ENH: Improve random samples for Streets
+ - ENH: Add new Semantic Type - STREET_ADDRESS2_EN (Second line of an address)
+ - ENH: Add 'DISTRICT OF COLUMBIA' as a State name
+ - ENH: Improve name support for Finland, and Norway

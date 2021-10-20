@@ -104,9 +104,20 @@
 	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
+		"headerRegExps": [ ".*(?i)(addr).*" ],
+		"headerRegExpConfidence": [ 95 ],
 		"clazz": "com.cobber.fta.plugins.LogicalTypeAddressEN",
 		"validLocales": [ "en" ],
 		"priority": 70
+	},
+	{
+		"qualifier": "STREET_ADDRESS2_EN",
+		"description": "Street Address - Line 2 (English Language)",
+		"headerRegExps": [ ".*(?i)(addr).*2" ],
+		"headerRegExpConfidence": [ 95 ],
+		"clazz": "com.cobber.fta.plugins.LogicalTypeAddress2EN",
+		"validLocales": [ "en" ],
+		"priority": 71
 	},
 	{
 		"qualifier": "STREET_MARKER_EN",
@@ -117,7 +128,7 @@
 		"content": "/reference/en_street_markers.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 71
+		"priority": 72
 	},
 	{
 		"qualifier": "GENDER.TEXT_<LOCALE>",

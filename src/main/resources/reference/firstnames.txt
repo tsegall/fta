@@ -1,7 +1,22 @@
-#
-# Set of common first names, currently based on US data with the addition of common last names from:
-# Brazil, Germany, France, Portugal, Spain, Mexico, Netherlands, Dominican Republic, Puerto Rico, Guatemala
-#
+#001
+#002 Set of common first names, currently based on US data with the addition of common last names from:
+#003 Brazil, Germany, France, Portugal, Spain, Mexico, Netherlands, Dominican Republic, Puerto Rico, Guatemala, Finland
+#004
+#100
+#101 Copyright 2017-2021 Tim Segall
+#102
+#103 Licensed under the Apache License, Version 2.0 (the "License");
+#104 you may not use this file except in compliance with the License.
+#105 You may obtain a copy of the License at
+#106
+#107 http://www.apache.org/licenses/LICENSE-2.0
+#108
+#109 Unless required by applicable law or agreed to in writing, software
+#110 distributed under the License is distributed on an "AS IS" BASIS,
+#111 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#112 See the License for the specific language governing permissions and
+#113 limitations under the License.
+#114
 AALIYAH
 AARON
 AARÓN
@@ -266,6 +281,7 @@ ANNALISA
 ANNAMAE
 ANNAMARIE
 ANNE
+ANNELI
 ANNELIESE
 ANNEMARIE
 ANNETT
@@ -274,6 +290,7 @@ ANNETTE
 ANNI
 ANNICE
 ANNIE
+ANNIKKI
 ANNIS
 ANNMARIE
 ANOUK
@@ -1697,6 +1714,7 @@ FRIDA
 FRIEDA
 FRIEDO
 FRITZ
+FTAFTAFTA
 FULGENCIO
 FUMIKO
 FYN
@@ -1881,6 +1899,7 @@ HANH
 HANK
 HANNA
 HANNAH
+HANNELE
 HANNELORE
 HANS
 HARLAN
@@ -2017,6 +2036,7 @@ ILIAN
 ILIANA
 ILIAS
 ILIES
+ILMARI
 ILONA
 ILSE
 ILUMINADA
@@ -2396,6 +2416,7 @@ JUDIE
 JUDITH
 JUDSON
 JUDY
+JUHANI
 JULEE
 JULES
 JULI
@@ -2429,6 +2450,7 @@ JUSTIN
 JUSTINA
 JUSTINE
 JUTTA
+KAARINA
 KACEY
 KACI
 KACIE
@@ -2442,6 +2464,7 @@ KAITLYN
 KAJA
 KALA
 KALEO
+KALEVI
 KALEY
 KALI
 KAM
@@ -2861,6 +2884,7 @@ LIDIA
 LIEKE
 LIEN
 LIGIA
+LIISA
 LILA
 LILAS
 LILI
@@ -3265,6 +3289,7 @@ MARIT
 MARITA
 MARITZA
 MARIUS
+MARJATTA
 MARJORIE
 MARJORY
 MARK
@@ -3493,6 +3518,7 @@ MIGUEL
 MIGUEL ÁNGEL
 MIGUELINA
 MIKA
+MIKAEL
 MIKAH
 MIKE
 MIKEL
@@ -3783,6 +3809,7 @@ ODIS
 OFELIA
 OK
 OLA
+OLAVI
 OLEN
 OLETA
 OLGA
@@ -4569,6 +4596,8 @@ TANNA
 TANNER
 TANYA
 TAO
+TAPANI
+TAPIO
 TARA
 TARAH
 TARSHA

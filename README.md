@@ -1,12 +1,15 @@
 # Fast Text Analyzer #
 
-Analyze Text data to determine Base Type and optionally Semantic type information and other key metrics associated with a text stream.
+Analyze Text data to determine Base Type and Semantic type information and other key metrics associated with a text stream.
 A key objective of the analysis is that it should be sufficiently fast to be in-line (e.g. as the
 data is input from some source it should be possible to stream the data through this class without
 undue performance degradation).  See Performance notes below.
 Support for non-English date detection is relatively robust, with the following exceptions:
 * No support for non-Gregorian calendars
 * No support for non-Arabic numerals and limited support for Japanese dates.
+
+Note: Semantic Type detection is typically predicated on valid input data, for example, a field that contains data that looks
+like phone numbers but that are in fact invalid will NOT be detected as a PHONE NUMBER.
 
 Typical usage is:
 ```java
@@ -187,6 +190,7 @@ STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
 STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH,fr-CH,it-CH
 STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH,fr-CH,it-CH
 STREET_ADDRESS_EN|Street Address (English Language)|en
+STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
 STREET_MARKER_EN| Street Suffix (English Language)|en
 TELEPHONE|Telephone Number (Generic)|*
 URI.URL|URL - see RFC 3986|*
