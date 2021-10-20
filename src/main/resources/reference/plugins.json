@@ -2,6 +2,7 @@
 	{
 		"qualifier": "EMAIL",
 		"description": "Email Address",
+		"signature": "+A0AMjgeFlGRlPKsX/iXYmoWpfY=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail",
 		"headerRegExps": [ ".*(?i)(email).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -10,6 +11,7 @@
 	{
 		"qualifier": "URI.URL",
 		"description": "URL - see RFC 3986",
+		"signature": "r+muJMmeRDtmg9qyVbWCOAMusc8=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeURL",
 		"headerRegExps": [ ".*(?i)(url|web).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -18,6 +20,7 @@
 	{
 		"qualifier": "IPADDRESS.IPV4",
 		"description": "IP V4 Address",
+		"signature": "tjKmv3C98nzoxPHtvYb1sp+UQEY=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIPV4Address",
 		"headerRegExps": [ ".*(?i)(ip).*" ],
 		"headerRegExpConfidence": [ 70 ],
@@ -26,6 +29,7 @@
 	{
 		"qualifier": "IPADDRESS.IPV6",
 		"description": "IP V6 Address",
+		"signature": "UCm9KlNKo0Hv4BULLB3qSWbMQHY=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeIPV6Address",
 		"headerRegExps": [ ".*(?i)(ip).*" ],
 		"headerRegExpConfidence": [ 70 ],
@@ -34,6 +38,7 @@
 	{
 		"qualifier": "TELEPHONE",
 		"description": "Telephone Number (Generic)",
+		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypePhoneNumber",
 		"headerRegExps": [ ".*(?i)(phone|fax|mobile|cell|Mobiel).*" ],
 		"headerRegExpConfidence": [ 98 ],
@@ -43,18 +48,21 @@
 	{
 		"qualifier": "GUID",
 		"description": "Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67",
+		"signature": "AtovlR1okrAJUeTCpYUUTXow4yM=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGUID",
 		"priority": 50
 	},
 	{
 		"qualifier": "VIN",
 		"description": "Vehicle Identification Number",
+		"signature": "JLD6IQMMMoQZTZH7OyHsGRuSoTQ=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeVIN",
 		"priority": 51
 	},
 	{
 		"qualifier": "POSTAL_CODE.ZIP5_US",
 		"description": "Postal Code (US)",
+		"signature": "VvLLosjm/N/z7zpF2IDSgpeT02c=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUSZip5",
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"priority": 60
@@ -104,6 +112,7 @@
 	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
+		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
 		"headerRegExps": [ ".*(?i)(addr).*" ],
 		"headerRegExpConfidence": [ 95 ],
 		"clazz": "com.cobber.fta.plugins.LogicalTypeAddressEN",
@@ -112,6 +121,7 @@
 	},
 	{
 		"qualifier": "STREET_ADDRESS2_EN",
+		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
 		"description": "Street Address - Line 2 (English Language)",
 		"headerRegExps": [ ".*(?i)(addr).*2" ],
 		"headerRegExpConfidence": [ 95 ],
@@ -122,6 +132,7 @@
 	{
 		"qualifier": "STREET_MARKER_EN",
 		"description": "Street Marker (English Language)",
+		"signature": "whIM9TwB3ArMA50gXTlOBjNCFJk=",
 		"validLocales": [ "en" ],
 		"headerRegExps": [ ".*(?i)(street).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -140,6 +151,7 @@
 	{
 		"qualifier" : "GENDER.TEXT_JP",
 		"description": "Gender (Japanese Language)",
+		"signature": "fAcvYmYBN4CueIMoAfxH/xDiK/M=",
 		"headerRegExps" : [ "(性|性別)" ],
 		"headerRegExpConfidence" : [ 70 ],
 		"contentType": "inline",
@@ -153,6 +165,7 @@
 	{
 		"qualifier": "NATIONALITY_EN",
 		"description": "Nationality (English Language)",
+		"signature": "FO3IMfeesbLJh6WwceQWPVORcnE=",
 		"validLocales": [ "en" ],
 		"headerRegExps": [ ".*(?i)(nationality).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -164,6 +177,7 @@
 	{
 		"qualifier": "HONORIFIC_EN",
 		"description": "Honorific (English Language)",
+		"signature": "/Di73LZHHGjcJYhigTqSTQrtTvA=",
 		"validLocales": [ "en" ],
 		"headerRegExps": [ ".*(?i)(honorific|title).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -175,6 +189,7 @@
 	{
 		"qualifier": "COUNTRY.TEXT_EN",
 		"description": "Country as a string (English language)",
+		"signature": "T4UZNFT895GsC99J7dOz/ENNYvM=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCountryEN",
 		"validLocales": [ "en" ],
 		"headerRegExps": [ ".*(?i)(country).*" ],
@@ -209,6 +224,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
 		"description": "Canadian Province Code",
+		"signature": "jwzKHMfuq3AO4lEKEm0e/ZmOIRA=",
 		"validLocales": [ "en-US", "en-CA", "es-MX" ],
 		"headerRegExps": [ ".*(?i)(province).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -220,6 +236,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.STATE_MX",
 		"description": "Mexican State Code",
+		"signature": "h565UW3Wl3GYzYAriMJM6T1LsmY=",
 		"validLocales": [ "en-US", "en-CA", "es-MX" ],
 		"headerRegExps": [ ".*(?i)(estado).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -231,6 +248,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.STATE_US",
 		"description": "US State Code",
+		"signature": "JD5jeXHLzGctpqicY44B9iJzyXU=",
 		"validLocales": [ "en-US", "en-CA", "es-MX" ],
 		"headerRegExps": [ ".*(?i)(state).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -251,6 +269,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.STATE_AU",
 		"description": "Australian State Code",
+		"signature": "khHytrFa0Oj4KP/37i2mRhJmliU=",
 		"validLocales": [ "en-AU" ],
 		"headerRegExps": [ ".*(?i)(state).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -309,6 +328,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_US",
 		"description": "US State Name",
+		"signature": "y0oxFvZb1RpG1UVwi/hSCEymwzc=",
 		"validLocales": [ "en-US", "en-CA", "es-MX" ],
 		"headerRegExps": [ ".*(?i)(state).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -321,6 +341,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NAME_NA",
 		"description": "US State Name/Canadian Province Name/Mexican State Name",
+		"signature": "KfDjCnkj/KmZglkvM32W3OBEwxU=",
 		"validLocales": [ "en-US", "en-CA", "es-MX" ],
 		"headerRegExps": [ ".*(?i)(state|province|estado).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -333,6 +354,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_AU",
 		"description": "Australian State Name",
+		"signature": "iNmmCNk8cEQ6mQuhOTxSlO+nvUk=",
 		"validLocales": [ "en-AU" ],
 		"headerRegExps": [ ".*(?i)(state).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -453,6 +475,7 @@
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
 		"description": "Currency as defined by ISO 4217",
+		"signature": "HElKonWFB+FY+MspBKm3eCwwrVo=",
 		"headerRegExps": [ ".*4217.*", ".*(?i)(currency).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"content": "/reference/ISO-4217.csv",
@@ -463,6 +486,7 @@
 	{
 		"qualifier": "CURRENCY.TEXT_EN",
 		"description": "Currency Name",
+		"signature": "hp7SSeC1M4SD1q40lH1wjYzrgV8=",
 		"headerRegExps": [ ".*(?i)(currency).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"content": "/reference/en_currency_full.csv",
@@ -473,6 +497,7 @@
 	{
 		"qualifier": "COUNTRY.ISO-3166-3",
 		"description": "Country as defined by ISO 3166 - Alpha 3",
+		"signature": "WyaPkc1jgevOXlDl5bt1Za4j8ko=",
 		"headerRegExps": [ ".*(?i)(iso|3166).*", ".*(?i)(country).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"content": "/reference/ISO-3166-3.csv",
@@ -483,6 +508,7 @@
 	{
 		"qualifier": "COUNTRY.ISO-3166-2",
 		"description": "Country as defined by ISO 3166 - Alpha 2",
+		"signature": "2ySMIn/48aoAVrw/OwOCKdYI4OE=",
 		"headerRegExps": [ ".*(?i)(iso|3166).*", ".*(?i)(country).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"content": "/reference/ISO-3166-2.csv",
@@ -493,6 +519,7 @@
 	{
 		"qualifier": "CONTINENT.TEXT_EN",
 		"description": "Continent",
+		"signature": "LpGvbcbbeanXoAkIVobKRfMuzcg=",
 		"headerRegExps": [ ".*(?i)(continent|region).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"content": "/reference/en_continent.csv",
@@ -504,6 +531,7 @@
 	{
 		"qualifier": "CONTINENT.CODE_EN",
 		"description": "Continent Code",
+		"signature": "7VSVzDUptpe+9R5UafDWEwLqKs4=",
 		"headerRegExps": [ ".*(?i)(continent|region).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"content": "/reference/en_continent_code.csv",
@@ -515,6 +543,7 @@
 	{
 		"qualifier": "AIRPORT_CODE.IATA",
 		"description": "IATA Airport Code",
+		"signature": "yRx9nzsOl22lQTstXrT43OVBZoU=",
 		"headerRegExps": [ ".*(?i)(iata|air).*" ],
 		"headerRegExpConfidence": [ 100 ],
 		"content": "/reference/IATA.txt",
@@ -525,6 +554,7 @@
 	{
 		"qualifier": "NAME.FIRST",
 		"description": "First Name",
+		"signature": "slggsAEDZ26rz9dqs15eNF23j2w=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
 		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name|voornaam|vnaam).*", "(?i)(first)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
@@ -534,6 +564,7 @@
 	{
 		"qualifier": "NAME.LAST",
 		"description": "Last Name",
+		"signature": "+h9v4tygGZxbEPbJLp5MDezGgME=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
 		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name|sobrenome|nachname|achternaam|anaam).*", "(?i)(last)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
@@ -543,6 +574,7 @@
 	{
 		"qualifier": "NAME.LAST_FIRST",
 		"description": "Merged Name (Last, First)",
+		"signature": "WlXF9TSnYBDQXbOMhceVK9XCxAk=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameLastFirst",
 		"headerRegExps": [ ".*(?i)(name|nome|nom|naam).*" ],
 		"headerRegExpConfidence": [ 60 ],
@@ -552,6 +584,7 @@
 	{
 		"qualifier": "NAME.FIRST_LAST",
 		"description": "Merged Name (First Last)",
+		"signature": "pJJS+kSfyNDRb2T7SXIWhZhlH3c=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameFirstLast",
 		"headerRegExps": [ ".*(?i)(name|nome|nom|naam).*" ],
 		"headerRegExpConfidence": [ 60 ],
@@ -561,6 +594,7 @@
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL",
 		"description": "Latititude (Decimal degrees)",
+		"signature": "5+1TLjdhcG8m3gVn0m/r6uLmh/Q=",
 		"validLocales": [ ],
 		"headerRegExps": [ ".*(?i)(latitude).*|lat" ],
 		"headerRegExpConfidence": [ 100 ],
@@ -575,6 +609,7 @@
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
 		"description": "Longitude (Decimal degrees)",
+		"signature": "nDTXmMjlW1pm2Rav/0mJVPeRvKc=",
 		"headerRegExps": [ ".*(?i)(longitude).*|lon|lng" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
@@ -588,6 +623,7 @@
 	{
 		"qualifier": "COORDINATE_PAIR.DECIMAL",
 		"description": "Coordinate Pair (Decimal degrees)",
+		"signature": "6lVqkPqRAcyOlhHO3ckHttlzBww=",
 		"regExpsToMatch": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+" ],
 		"regExpReturned": "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+",
 		"threshold": 98,
@@ -597,6 +633,7 @@
 	{
 		"qualifier": "CITY",
 		"description": "City/Town",
+		"signature": "mz6raYadjSZxxvo+j66/fQXbhf8=",
 		"headerRegExps": [ "^(?i)(city|town)$|^.*[ _](?i)(city|town)$|^(?i)(city|town)[ _].*$|.*[a-z](City|Town)$" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
@@ -608,6 +645,7 @@
 	{
 		"qualifier": "CREDIT_CARD_TYPE",
 		"description": "Type of Credit CARD - e.g. AMEX, VISA, ...",
+		"signature": "QzgdMpiIKP3sFI8FS6u3taAuRK4=",
 		"headerRegExps": [ ".*(?i)(credit|card).*", ".*(?i)(type).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"content": "/reference/CCType.csv",
@@ -618,6 +656,7 @@
 	{
 		"qualifier": "SSN",
 		"description": "Social Security Number (US)",
+		"signature": "SaJgghJaa44guUQ5oMO6woNkWac=",
 		"headerRegExps": [ ".*(?i)(SSN).*", ".*(?i)(Social).*" ],
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpsToMatch": [ "\\d{3}-\\d{2}-\\d{4}" ],
@@ -630,6 +669,7 @@
 	{
 		"qualifier": "LANGUAGE.ISO-639-2",
 		"description": "Language code - ISO 639, two character",
+		"signature": "oh7DsTF4qDUm+o+JPy7jAIoU+1Y=",
 		"headerRegExps": [ ".*(?i)(language).*",  ".*(?i)(lang).*" ],
 		"headerRegExpConfidence": [ 90, 60 ],
 		"content": "/reference/ISO-639-2.csv",
@@ -640,6 +680,7 @@
 	{
 		"qualifier": "LANGUAGE.TEXT_EN",
 		"description": "Language name, e.g. English, French, ...",
+		"signature": "XCjtEvkiEs1eLR9wqzgkxxgosg0=",
 		"headerRegExps": [ ".*(?i)(language).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"regExpReturned": "[-' \\p{IsAlphabetic}]+",
@@ -652,6 +693,7 @@
 	{
 		"qualifier": "MACADDRESS",
 		"description": "MAC Address",
+		"signature": "QIZNObx4ycNBImDb7esJCP1YrOs=",
 		"headerRegExps": [ ".*(?i)(MAC).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"regExpsToMatch": [ "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}" ],
@@ -663,6 +705,7 @@
 	{
 		"qualifier": "MONTH.DIGITS",
 		"description": "Numeric Month",
+		"signature": "dFlMU1F4av5mccH3zIeKaRe67SY=",
 		"headerRegExps": [ ".*(?i)(month)|(i?)(month).*" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d{1,2}" ],
@@ -676,6 +719,7 @@
 	{
 		"qualifier": "DAY.DIGITS",
 		"description": "Numeric Day of Month",
+		"signature": "1C6IAjixbGXDfrkL4dEndXg65BQ=",
 		"regExpsToMatch": [ "\\d{1,2}" ],
 		"regExpReturned": "\\d|[012]\\d|3[01]",
 		"threshold": 98,
@@ -689,48 +733,56 @@
 	{
 		"qualifier": "CHECKDIGIT.LUHN",
 		"description": "LUHN Checkdigit (Credit Cards, IMEI, etc)",
+		"signature": "ySEbGrpJCO/yoMiVxyK5vi9sBtU=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitLuhn",
 		"priority": 290
 	},
 	{
 		"qualifier": "CHECKDIGIT.CUSIP",
 		"description": "CUSIP - North American Security Identifiers",
+		"signature": "4EK6Y3hBd2en5Hm9EUKnVbrUjlM=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitCUSIP",
 		"priority": 291
 	},
 	{
 		"qualifier": "CHECKDIGIT.SEDOL",
 		"description": "SEDOL - UK Security Identifiers",
+		"signature": "A6zVzMb8GxHKIRvQeHJYY2mUqV0=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitSEDOL",
 		"priority": 292
 	},
 	{
 		"qualifier": "CHECKDIGIT.ISIN",
 		"description": "ISIN - International Securities Identification Number",
+		"signature": "ROIyMHsrinw2O/REk9ClAb0WUEs=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitISIN",
 		"priority": 293
 	},
 	{
 		"qualifier": "CHECKDIGIT.EAN13",
 		"description": "EAN-13 - EAN-13/UPC/ISBN-13 Check digit",
+		"signature": "AP6Bjl97rR4D1ogsqPqXGoD5Dq4=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitEAN13",
 		"priority": 294
 	},
 	{
 		"qualifier": "CHECKDIGIT.IBAN",
 		"description": "IBAN - International Bank Account Number",
+		"signature": "ahEtumk3vTi+ErbmmqrmBN7OeVU=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitIBAN",
 		"priority": 295
 	},
 	{
-                "qualifier": "CHECKDIGIT.ABA",
-                "description": "ABA Number (or Routing Transit Number (RTN))",
-                "clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitABA",
-                "priority": 296
-        },
+		"qualifier": "CHECKDIGIT.ABA",
+		"description": "ABA Number (or Routing Transit Number (RTN))",
+		"signature": "z/uWdWQDM6Ln80wNSIshhGV5et4=",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitABA",
+		"priority": 296
+	},
 	{
 		"qualifier": "JOB_TITLE_EN",
 		"description": "Job Title (English Language)",
+		"signature": "6IKfzTa++cfQDm7aehEqSaJ/rek=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeJobTitleEN",
 		"headerRegExps": [ ".*(?i)(title).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -740,6 +792,7 @@
 	{
 		"qualifier": "INDUSTRY_EN",
 		"description": "Industry Name",
+		"signature": "j2TOVT5j9M0DIQyTrwOdB71iZdA=",
 		"headerRegExps": [ ".*(?i)(industry).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"content": "/reference/en_industries.csv",

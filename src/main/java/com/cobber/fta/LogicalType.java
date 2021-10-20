@@ -15,6 +15,10 @@
  */
 package com.cobber.fta;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -153,6 +157,26 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * @return The underlying type - e.g. STRING, LONG, etc.
 	 */
 	public abstract FTAType getBaseType();
+
+	/**
+	 * A SHA-1 hash that reflects the data stream structure.
+	 * @return A String SHA-1 hash that reflects the structure of the data stream.
+	 */
+	public String getSignature() {
+		String structureSignature = getBaseType() + ":";
+
+			structureSignature += getQualifier();
+
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("SHA-1");
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		}
+
+		final byte[] signature = structureSignature.getBytes(StandardCharsets.UTF_8);
+		return Base64.getEncoder().encodeToString((md.digest(signature)));
+	}
 
 	/**
 	 * Is the supplied String an instance of this logical type?

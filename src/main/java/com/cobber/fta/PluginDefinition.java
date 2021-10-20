@@ -42,6 +42,8 @@ public class PluginDefinition {
 	public String qualifier;
 	/** English language description of the Semantic Type. */
 	public String description;
+	/** Signature (structure) - the MD5 Hash of the Qualifier and the Base Type. */
+	public String signature;
 	/** locales this plugin applies to - empty set, implies all locales.  Can use just language instead of tag, e.g. "en" rather than "en_US". */
 	public String[] validLocales;
 	/** Is this plugin sensitive to the input locale? */

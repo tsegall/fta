@@ -489,3 +489,6 @@
  - ENH: Add new Semantic Type - STREET_ADDRESS2_EN (Second line of an address)
  - ENH: Add 'DISTRICT OF COLUMBIA' as a State name
  - ENH: Improve name support for Finland, and Norway
+
+### 4.7.3
+ - ENH: Improve structure signature access (also cache on plugins file)

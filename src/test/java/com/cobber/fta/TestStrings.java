@@ -732,7 +732,7 @@ public class TestStrings {
 		final TextAnalysisResult result1 = analysis1.getResult();
 		final TextAnalysisResult result2 = analysis2.getResult();
 
-		Assert.assertEquals(result1.getStructureSignature(), TestPlugins.signatures.get(LogicalTypeCountryEN.SEMANTIC_TYPE));
+		Assert.assertEquals(result1.getStructureSignature(), PluginDefinition.findByQualifier("COUNTRY.TEXT_EN").signature);
 		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 		Assert.assertEquals(result1.getTypeQualifier(), result2.getTypeQualifier());

@@ -1,7 +1,7 @@
 # Fast Text Analyzer #
 
 Analyze Text data to determine Base Type and Semantic type information and other key metrics associated with a text stream.
-A key objective of the analysis is that it should be sufficiently fast to be in-line (e.g. as the
+A key objective of the analysis is that it should be sufficiently fast to be inline (e.g. as the
 data is input from some source it should be possible to stream the data through this class without
 undue performance degradation).  See Performance notes below.
 Support for non-English date detection is relatively robust, with the following exceptions:
@@ -9,7 +9,7 @@ Support for non-English date detection is relatively robust, with the following 
 * No support for non-Arabic numerals and limited support for Japanese dates.
 
 Note: Semantic Type detection is typically predicated on valid input data, for example, a field that contains data that looks
-like phone numbers but that are in fact invalid will NOT be detected as a PHONE NUMBER.
+like phone numbers, but that are in fact invalid, will NOT be detected as the semantic type - TELEPHONE.
 
 Typical usage is:
 ```java
@@ -201,7 +201,7 @@ Additional Semantic types can be detected by registering additional plugins (see
 * Finite - captures any finite type (e.g. ISO-3166-2 (Country codes), US States, ...).  Implemented via a supplied list with the valid elements enumerated.
 * RegExp - captures any type that can be expressed via a Regular Expression (e.g. SSN).  Implemented via a set of Regular Expressions used to match against.
 
-Note: The Stream Name can be used to bias detection of the incoming data and/or solely determine the detection.
+Note: The Context (the current Stream Name and other field names) can be used to bias detection of the incoming data and/or solely determine the detection.
 
 ```json
 [
@@ -303,7 +303,7 @@ Given the following three data sets:
 The StructureSignature for all three will be identical as the field will be detected as 'COUNTRY.TEXT_EN', i.e. a Country Name in the English language.  Note this is despite the fact that there is no overlapping data values in the BirthCountry dataset compared to the other data sets.
 The DataSignature will be identical for AccountLocation and PrimaryCountry as the dataset is identical and will differ from the DataSignature for the BirthCountry.
 
-## Validation and Generation ##
+## Validation and Sample Generation ##
 
 FTA can also be used to validate an input stream either based on known Semantic Types or on Semantic Types detected by FTA.  For example, it is possible to retrieve the LogicalType for a known Semantic Type and then invoke the isValid() method.  This is typically only useful for 'Closed' Semantic Types (isClosed() == true), i.e. those for which there is a known constrained set.  A good example of a closed Semantic Type is the Country code as defined by ISO-3166 Alpha 3.  An example where isValid() would be less useful is FIRST_NAME.  For those cases where the Semantic Type is not one of those known to FTA - the result returned will include a Java Regular Expression which can be used to validate new values.  Please refer to the Validation example for further details.
 

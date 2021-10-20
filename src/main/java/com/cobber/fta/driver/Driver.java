@@ -75,12 +75,13 @@ public class Driver {
 				logger.println(" --noLogicalTypes - Do not register any Logical Types");
 				logger.println(" --noStatistics - Do not track statistics");
 				logger.println(" --pluginDefinition - Output the plugin definitions from the training data set");
-				logger.println(" --pluginSamples <PluginName> - Generate <n> samples for the provided Plugin (n based on --records)");
+				logger.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a sigature (record count based on --records)");
 				logger.println(" --pluginThreshold <n> - Set the plugin threshold percentage (0-100) for detection");
 				logger.println(" --pretty - Pretty print analysis");
 				logger.println(" --records <n> - The number of records to analyze");
 				logger.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
 				logger.println(" --samples <n> - Set the size of the sample window");
+				logger.println(" --signature - Output the Sigatture for the supplied pluginName");
 				logger.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
 				logger.println(" --validate - Validate the result of the analysis by reprocessing file against results");
 				logger.println(" --verbose - Output each record as it is processed");
@@ -104,8 +105,8 @@ public class Driver {
 				options.noStatistics = true;
 			else if ("--pluginDefinition".equals(args[idx]))
 				options.pluginDefinition = true;
-			else if ("--pluginSamples".equals(args[idx]))
-				options.pluginSamples = args[++idx];
+			else if ("--pluginName".equals(args[idx]))
+				options.pluginName = args[++idx];
 			else if ("--pluginThreshold".equals(args[idx]))
 				options.pluginThreshold = Integer.valueOf(args[++idx]);
 			else if ("--pretty".equals(args[idx]))
@@ -127,6 +128,8 @@ public class Driver {
 					System.exit(1);
 				}
 			}
+			else if ("--signature".equals(args[idx]))
+				options.signature = true;
 			else if ("--threshold".equals(args[idx]))
 				options.threshold = Integer.valueOf(args[++idx]);
 			else if ("--validate".equals(args[idx]))
@@ -146,27 +149,31 @@ public class Driver {
 			idx++;
 		}
 
-		// Are we generating samples?
-		if (options.pluginSamples != null) {
+		// Are we generating samples or a signature?
+		if (options.pluginName != null) {
 			long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
 			final TextAnalyzer analyzer = getDefaultAnalysis();
 			Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
 			for (LogicalType logical : registered)
-				if (logical.getQualifier().equals(options.pluginSamples)) {
-					if (!(logical instanceof LogicalTypeCode)) {
-						logger.printf("ERROR: Plugin named '%s' does not support nextRandom(), use --help%n", options.pluginSamples);
-						System.exit(1);
+				if (logical.getQualifier().equals(options.pluginName)) {
+					if (options.signature)
+						logger.println(logical.getSignature());
+					else {
+						if (!(logical instanceof LogicalTypeCode)) {
+							logger.printf("ERROR: Plugin named '%s' does not support nextRandom(), use --help%n", options.pluginName);
+							System.exit(1);
+						}
+
+						LogicalTypeCode logicalCode = (LogicalTypeCode)logical;
+						for (long l = 0; l < ouputRecords; l++)
+							logger.println(logicalCode.nextRandom());
 					}
 
-					LogicalTypeCode logicalCode = (LogicalTypeCode)logical;
-
-					for (long l = 0; l < ouputRecords; l++)
-						logger.println(logicalCode.nextRandom());
 					System.exit(0);
 				}
 
-			logger.printf("ERROR: Failed to locate plugin named '%s', use --help%n", options.pluginSamples);
+			logger.printf("ERROR: Failed to locate plugin named '%s', use --help%n", options.pluginName);
 			System.exit(1);
 		}
 
