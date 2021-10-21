@@ -70,6 +70,7 @@
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_UK",
 		"description": "Postal Code (UK)",
+		"signature": "0m+ny+TVuhGGP1RGw3XKoni4Qyo=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeUKPostalCode",
 		"validLocales": [ "en-GB" ,"en-UK" ],
 		"priority": 61
@@ -77,6 +78,7 @@
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_CA",
 		"description": "Postal Code (CA)",
+		"signature": "PJdCrn71buwdG4wyhlOpLSrc1+M=",
 		"validLocales": [ "en-US", "en-CA" ],
 		"headerRegExps": [ ".*(?i)(post).*" ],
 		"headerRegExpConfidence": [ 100 ],
@@ -89,6 +91,7 @@
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_AU",
 		"description": "Postal Code (AU)",
+		"signature": "GGcrawbIPrKWkNlGg2vaccl1MNY=",
 		"validLocales": [ "en-AU" ],
 		"headerRegExps": [ ".*(?i)(post).*" ],
 		"headerRegExpConfidence": [ 100 ],
@@ -100,6 +103,7 @@
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_NL",
 		"description": "Postal Code (NL)",
+		"signature": "zPoRG8ivy1ZRtQmx2dYu/pc6Prk=",
 		"validLocales": [ "nl-NL" ],
 		"headerRegExps": [ ".*(?i)(post).*", ".*(?i)(code).*" ],
 		"headerRegExpConfidence": [ 95, 75 ],
@@ -121,8 +125,8 @@
 	},
 	{
 		"qualifier": "STREET_ADDRESS2_EN",
-		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
 		"description": "Street Address - Line 2 (English Language)",
+		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
 		"headerRegExps": [ ".*(?i)(addr).*2" ],
 		"headerRegExpConfidence": [ 95 ],
 		"clazz": "com.cobber.fta.plugins.LogicalTypeAddress2EN",
@@ -260,6 +264,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NA",
 		"description": "US State Code/Canadian Province Code/Mexican State Code",
+		"signature": "Q00LXfhmPibwrK8HTkzNsRosvzw=",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNAStateProvince",
 		"validLocales": [ "en-US", "en-CA", "es-MX" ],
 		"headerRegExps": [ ".*(?i)(state|province|estado).*" ],
@@ -282,6 +287,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_IT",
 		"description": "Italian Province Code",
+		"signature": "0vMZaBH760lIeD7hdvi7RVIDoVc=",
 		"validLocales": [ "it-IT" ],
 		"headerRegExps": [ ".*(?i)(province).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -293,6 +299,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.CANTON_CH",
 		"description": "Swiss CANTON Code",
+		"signature": "YNu63sC5qbl7DWY0aV4khfLKrXs=",
 		"validLocales": [ "de-CH", "fr-CH" ,"it-CH" ],
 		"headerRegExps": [ ".*(?i)(canton|kanton|cantone).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -304,6 +311,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_CA",
 		"description": "Canadian Province Name",
+		"signature": "hiCNMWvc1MO99KTP8IaH1Fp3s3Y=",
 		"validLocales": [ "en-US", "en-CA", "es-MX" ],
 		"headerRegExps": [ ".*(?i)(province).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -316,6 +324,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_MX",
 		"description": "Mexican State Name",
+		"signature": "f5Bx+omlv1xMG6Oq8XQo5RkrtmU=",
 		"validLocales": [ "en-US", "en-CA", "es-MX" ],
 		"headerRegExps": [ ".*(?i)(estado).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -367,6 +376,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_DE",
 		"description": "German State Name",
+		"signature": "bEx7JkLIUY8fjFyEhsjeJfx2k6o=",
 		"validLocales": [ "de-DE" ],
 		"headerRegExps": [ ".*(?i)(state|staat).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -379,6 +389,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.REGION_NAME_FR",
 		"description": "French Region",
+		"signature": "hiZwJanMwVKNX7yumKr1rNKQNN8=",
 		"validLocales": [ "fr-FR" ],
 		"headerRegExps": [ ".*(?i)(region|région).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -391,6 +402,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.DEPARTMENT_NAME_FR",
 		"description": "French Department",
+		"signature": "oOZtEv/rhMuaXVd2SLFBvR1VShI=",
 		"validLocales": [ "fr-FR" ],
 		"headerRegExps": [ ".*(?i)(department|Département).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -403,6 +415,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_IT",
 		"description": "Italian Province Name",
+		"signature": "veLvb2gbLjr395Sbu+jeP0R9ciQ=",
 		"validLocales": [ "it-IT" ],
 		"headerRegExps": [ ".*(?i)(province).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -415,6 +428,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_ES",
 		"description": "Spanish Province Name",
+		"signature": "w5axJ/mMkNw2fiYY3xw7ZDvRurM=",
 		"validLocales": [ "es-ES" ],
 		"headerRegExps": [ ".*(?i)(province|provincias|provincia).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -427,6 +441,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_NL",
 		"description": "Netherlands Province Name",
+		"signature": "LfF0rgcJobv3P/9fW8+SAzpl//c=",
 		"validLocales": [ "nl-NL" ],
 		"headerRegExps": [ ".*(?i)(province|provincies).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -439,6 +454,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.COUNTY_US",
 		"description": "US County Name",
+		"signature": "NkMoovh9DwxDIeJXza8dsJ4wRzY=",
 		"validLocales": [ "en-US" ],
 		"headerRegExps": [ ".*(?i)(county).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -451,6 +467,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.COUNTY_UK",
 		"description": "United Kingdom County Name",
+		"signature": "ppbqIL83hfnExGV8bdzIoA3hLN8=",
 		"validLocales": [ "en-GB" ,"en-UK" ],
 		"headerRegExps": [ ".*(?i)(county).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -463,6 +480,7 @@
 	{
 		"qualifier": "STATE_PROVINCE.CANTON_NAME_CH",
 		"description": "Swiss CANTON Name",
+		"signature": "s2RWNkJraOojAx4YB3NlVxPjqOY=",
 		"validLocales": [ "de-CH", "fr-CH" ,"it-CH" ],
 		"headerRegExps": [ ".*(?i)(canton|kanton|cantone).*" ],
 		"headerRegExpConfidence": [ 90 ],

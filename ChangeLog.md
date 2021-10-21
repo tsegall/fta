@@ -492,3 +492,6 @@
 
 ### 4.7.3
  - ENH: Improve structure signature access (also cache on plugins file)
+
+### 4.7.4
+ - ENH: Add a set of missing signatures
