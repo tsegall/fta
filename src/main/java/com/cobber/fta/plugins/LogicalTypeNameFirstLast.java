@@ -95,6 +95,7 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	public boolean isValid(final String input) {
 		final String trimmed = input.trim();
 		final int lastSpace = trimmed.lastIndexOf(' ');
+		final int firstSpace = trimmed.indexOf(' ');
 		if (lastSpace == -1)
 			return false;
 
@@ -137,13 +138,14 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 				spaces++;
 				if (spaces == 2)
 					return false;
+				alphas = 0;
 				continue;
 			}
 
 			return false;
 		}
 
-		final String firstName = trimmed.substring(0, lastSpace);
+		final String firstName = trimmed.substring(0, firstSpace);
 		final String lastName = trimmed.substring(lastSpace + 1);
 
 		if (firstNames.size() < MAX_FIRST_NAMES)

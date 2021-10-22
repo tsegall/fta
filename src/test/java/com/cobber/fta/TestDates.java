@@ -455,6 +455,35 @@ public class TestDates {
 	}
 
 	@Test
+	public void basicMYYYY() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("CCEXPIRES", DateResolutionMode.Auto);
+		analysis.setCollectStatistics(false);
+		final String pipedInput = "12/2025|6/2026|9/2026|9/2023|4/2023|2/2023|3/2023|3/2023|3/2026|7/2025|12/2024|4/2026|12/2023|2/2023|9/2024|8/2026|2/2025|2/2022|9/2024|7/2022|" +
+				"11/2025|11/2022|2/2023|9/2024|10/2026|3/2022|8/2023|10/2026|3/2023|8/2026|9/2022|3/2024|10/2023|7/2025|5/2022|11/2026|12/2024|8/2022|10/2023|";
+		final String inputs[] = pipedInput.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getTypeQualifier(), "M/yyyy");
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{1,2}/\\d{4}");
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test
 	public void fixedWidthDay() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);

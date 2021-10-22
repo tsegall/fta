@@ -73,6 +73,11 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 	}
 
 	@Override
+	public boolean acceptsBaseType(FTAType type) {
+		return type == FTAType.STRING || type == FTAType.LONG;
+	}
+
+	@Override
 	public String getRegExp() {
 		return REGEXP;
 	}

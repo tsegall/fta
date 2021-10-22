@@ -1061,24 +1061,24 @@ public class DateTimeParser {
 			return null;
 
 		if (components == 2) {
-			// We only support MM/yyyy, MM-yyyy, yyyy/MM, and yyyy-MM
-			if (compressed.length() != 9)
+			// We only support MM/yyyy, MM-yyyy, yyyy/MM, and yyyy-MM (and their corresponding single month variants)
+			int len = compressed.length();
+			if (len != 9 && len != 6)
 				return null;
 			final int year = compressed.indexOf("d{4}");
 			if (year == -1)
 				return null;
-			final int month = compressed.indexOf("d{2}");
-			if (month == -1)
-				return null;
 
-			final char separator = compressed.charAt(4);
+			final char separator = compressed.charAt(year == 0 ? 4 : year - 1);
 			if (separator != '/' && separator != '-')
 				return null;
 
-			if (year == 5 && month == 0)
+			if (year == 0)
+				compressed = "yyyy" + separator + (len == 9 ? "MM" : "M");
+			else if (year == 2)
+				compressed = "M" + separator + "yyyy";
+			else if (year == 5)
 				compressed = "MM" + separator + "yyyy";
-			else if (year == 0 && month == 5)
-				compressed = "yyyy" + separator + "MM";
 			else
 				return null;
 		}

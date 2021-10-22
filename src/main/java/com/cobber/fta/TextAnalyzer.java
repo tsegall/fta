@@ -729,7 +729,7 @@ public class TextAnalyzer {
 		if (patternInfo.isLogicalType()) {
 			// If it is a registered Infinite Logical Type then validate it
 			final LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
-			if (FTAType.LONG.equals(logical.getBaseType()))
+			if (logical.acceptsBaseType(FTAType.LONG))
 				return logical.isValid(input);
 		}
 
@@ -772,7 +772,7 @@ public class TextAnalyzer {
 		else if (patternInfo.isLogicalType()) {
 			// If it is a registered Infinite Logical Type then validate it
 			final LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
-			if (FTAType.STRING.equals(logical.getBaseType()) && !logical.isValid(rawInput))
+			if (logical.acceptsBaseType(FTAType.STRING) && !logical.isValid(rawInput))
 				return false;
 		}
 
@@ -836,7 +836,7 @@ public class TextAnalyzer {
 		if (patternInfo.isLogicalType()) {
 			// If it is a registered Infinite Logical Type then validate it
 			final LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
-			if (FTAType.DOUBLE.equals(logical.getBaseType()) && !logical.isValid(input))
+			if (logical.acceptsBaseType(FTAType.DOUBLE) && !logical.isValid(input))
 				return false;
 		}
 
@@ -1666,22 +1666,23 @@ public class TextAnalyzer {
 			int i = 0;
 			double bestConfidence = 0.0;
 			for (final LogicalTypeInfinite logical : infiniteTypes) {
-				if (matchPatternInfo.getBaseType() == logical.getBaseType() && logical.getConfidence(candidateCounts[i], raw.size(), context.getStreamName())  >= logical.getThreshold()/100.0) {
+				if (logical.acceptsBaseType(matchPatternInfo.getBaseType()) && logical.getConfidence(candidateCounts[i], raw.size(), context.getStreamName())  >= logical.getThreshold()/100.0) {
 					int count = 0;
 					final PatternInfo candidate = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 					for (final String sample : raw) {
-						if (FTAType.STRING.equals(logical.getBaseType())) {
+						if (logical.acceptsBaseType(FTAType.STRING)) {
 							if (trackString(sample, candidate, false))
 								count++;
 						}
-						else if (FTAType.LONG.equals(logical.getBaseType())) {
+						else if (logical.acceptsBaseType(FTAType.LONG)) {
 							if (trackLong(sample, candidate, false))
 								count++;
 						}
-						else if (FTAType.DOUBLE.equals(logical.getBaseType())) {
+						else if (logical.acceptsBaseType(FTAType.DOUBLE)) {
 							if (trackDouble(sample, candidate, false))
 								count++;
-						} if (candidate.isDateType()) {
+						}
+						else if (candidate.isDateType()) {
 							if (trackDateTime(sample, candidate, false))
 								count++;
 						}
@@ -1700,7 +1701,7 @@ public class TextAnalyzer {
 
 			// Try a regExp match nice and early - we can always back out
 			for (final LogicalTypeRegExp logical : regExpTypes) {
-				if (matchPatternInfo.getBaseType().equals(logical.getBaseType()) &&
+				if (logical.acceptsBaseType(matchPatternInfo.getBaseType()) &&
 						logical.isMatch(matchPatternInfo.regexp)) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 					debug("Type determination - was '%s', matchPatternInfo - %s%n", matchPatternInfo.getBaseType(), matchPatternInfo);
@@ -2499,8 +2500,8 @@ public class TextAnalyzer {
 
 			String newPattern;
 			if ((newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, shapes, analysisConfig)) != null) {
-				if (FTAType.STRING.equals(logical.getBaseType()) || FTAType.LONG.equals(logical.getBaseType())) {
-					if (FTAType.STRING.equals(logical.getBaseType()))
+				if (logical.acceptsBaseType(FTAType.STRING) || logical.acceptsBaseType(FTAType.LONG)) {
+					if (logical.acceptsBaseType(FTAType.STRING))
 						backoutToPattern(realSamples, newPattern);
 					else
 						backoutLogicalLongType(logical, realSamples);
@@ -2561,7 +2562,7 @@ public class TextAnalyzer {
 				matchPatternInfo.regexp = freezeNumeric(matchPatternInfo.regexp);
 
 				for (final LogicalTypeRegExp logical : regExpTypes) {
-					if (FTAType.LONG.equals(logical.getBaseType()) &&
+					if (logical.acceptsBaseType(FTAType.LONG) &&
 							logical.isMatch(matchPatternInfo.regexp) &&
 							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
@@ -2590,7 +2591,7 @@ public class TextAnalyzer {
 				matchPatternInfo = knownPatterns.grouping(matchPatternInfo.regexp);
 
 			for (final LogicalTypeRegExp logical : regExpTypes) {
-				if (FTAType.DOUBLE.equals(logical.getBaseType()) &&
+				if (logical.acceptsBaseType(FTAType.DOUBLE) &&
 						logical.isMatch(matchPatternInfo.regexp) &&
 						logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
@@ -2719,7 +2720,7 @@ public class TextAnalyzer {
 
 			if (!backedOutRegExp)
 				for (final LogicalTypeRegExp logical : regExpTypes) {
-					if (FTAType.STRING.equals(logical.getBaseType()) &&
+					if (logical.acceptsBaseType(FTAType.STRING) &&
 							logical.isMatch(matchPatternInfo.regexp) &&
 							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
@@ -2794,7 +2795,7 @@ public class TextAnalyzer {
 
 					// Now we have mapped to an enum we need to check again if this should be matched to a logical type
 					for (final LogicalTypeRegExp logical : regExpTypes) {
-						if (FTAType.STRING.equals(logical.getBaseType()) &&
+						if (logical.acceptsBaseType(FTAType.STRING) &&
 								logical.isMatch(matchPatternInfo.regexp) &&
 								logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 							matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
@@ -2811,7 +2812,7 @@ public class TextAnalyzer {
 
 				final String regExp = Smashed.smashedAsRegExp(bestShape.getKey().trim());
 				for (final LogicalTypeRegExp logical : regExpTypes) {
-					if (FTAType.STRING.equals(logical.getBaseType()) &&
+					if (logical.acceptsBaseType(FTAType.STRING) &&
 							logical.isMatch(regExp) &&
 							logical.isValidSet(context, bestShape.getValue(), realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);

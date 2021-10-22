@@ -158,6 +158,10 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 */
 	public abstract FTAType getBaseType();
 
+	public boolean acceptsBaseType(FTAType type) {
+		return type == getBaseType();
+	}
+
 	/**
 	 * A SHA-1 hash that reflects the data stream structure.
 	 * @return A String SHA-1 hash that reflects the structure of the data stream.
