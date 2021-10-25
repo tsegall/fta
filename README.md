@@ -145,6 +145,7 @@ GENDER.TEXT_IT|Gender (Italian Language)|it
 GENDER.TEXT_FR|Gender (French Language)|fr
 GENDER.TEXT_NL|Gender (Dutch Language)|nl
 GENDER.TEXT_PT|Gender (Portugese Language)|pt
+GENDER.TEXT_TR|Gender (Turkish Language)|tr
 GENDER.TEXT_JP|Gender (Japanese Language)|jp
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en

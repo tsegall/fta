@@ -500,3 +500,7 @@
  - ENH: Improve detection of Phone Numbers when we have numeric input
  - ENH: Cope with dates of the form M/YYYY as well as MM/YYYY
  - BUG: Fix bad name detection when all names are of the form 'FIRST M. LAST'
+
+### 4.7.6
+ - ENH: Add a couple more street markers
+ - ENH: Add Semantic Types - GENDER.TEXT_TR (Turkey)

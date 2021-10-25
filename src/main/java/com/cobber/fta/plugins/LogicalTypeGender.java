@@ -74,6 +74,7 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 		allGenderData.put("FR", new GenderData(".*(?i)(Gender|Genre|Sexe)", "FEMME", "HOMME", "F", "H"));
 		allGenderData.put("NL", new GenderData(".*(?i)(Gender|Geslach|Geslacht)", "VROUWELIJK", "MANNELIJK", "V", "M"));
 		allGenderData.put("PT", new GenderData(".*(?i)(Gender|Gênero)", "FEMININO", "MASCULINO", "F", "M"));
+		allGenderData.put("TR", new GenderData(".*(?i)(Gender)", "KADIN", "ERKEK", "K", "E"));
 
 		// Belgium covered by DE, FR, and NL
 		// Switzerland covered DE, FR, IT

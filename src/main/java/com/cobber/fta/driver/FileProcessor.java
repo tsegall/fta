@@ -84,6 +84,12 @@ class FileProcessor {
 			parser.beginParsing(in);
 
 			header = parser.getRecordMetadata().headers();
+
+			if (header.length != 4) {
+				logger.printf("ERROR: Expected input with four columns (key,fieldName,fieldValue,fieldCount).  %d field(s) in input.%n", header.length);
+				System.exit(1);
+			}
+
 			numFields = header.length;
 
 			long thisRecord = 0;

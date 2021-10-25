@@ -134,7 +134,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 		if (inputUpper.startsWith("PO BOX"))
 			return true;
 
-		if (!Character.isDigit(inputUpper.charAt(0)) || charCounts[' '] < 3)
+		if (!Character.isDigit(inputUpper.charAt(0)) || charCounts[' '] < 2)
 			return false;
 
 		final String[] words = inputUpper.replace(",", "").split(" ");
