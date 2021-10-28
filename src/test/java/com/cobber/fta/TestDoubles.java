@@ -170,7 +170,7 @@ public class TestDoubles {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -227,20 +227,20 @@ public class TestDoubles {
 		int locked = -1;
 		int index = 0;
 
-		analysis.setDetectWindow(2* TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		for (int i = 0; i <= TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		analysis.setDetectWindow(2* AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		for (int i = 0; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			if (analysis.train(samples[index++]) && locked == -1)
 				locked = index;
 		}
-		for (int i = 0; i < TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		for (int i = 0; i < AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			if (analysis.train(samples[index++]) && locked == -1)
 				locked = index;
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, 2 * TextAnalyzer.DETECT_WINDOW_DEFAULT + 1);
-		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.DETECT_WINDOW_DEFAULT + 1);
+		Assert.assertEquals(locked, 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
+		Assert.assertEquals(result.getSampleCount(), 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
@@ -265,20 +265,20 @@ public class TestDoubles {
 		int locked = -1;
 		int index = 0;
 
-		analysis.setDetectWindow(2* TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		for (int i = 0; i <= TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		analysis.setDetectWindow(2* AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		for (int i = 0; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			if (analysis.train(samples[index++]) && locked == -1)
 				locked = index;
 		}
-		for (int i = 0; i < TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		for (int i = 0; i < AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			if (analysis.train(samples[index++]) && locked == -1)
 				locked = index;
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, 2 * TextAnalyzer.DETECT_WINDOW_DEFAULT + 1);
-		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.DETECT_WINDOW_DEFAULT + 1);
+		Assert.assertEquals(locked, 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
+		Assert.assertEquals(result.getSampleCount(), 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -443,7 +443,7 @@ public class TestDoubles {
 				"-1393.26"
 		};
 		final TextAnalyzer analysis = new TextAnalyzer("CDS Notional:unicode");
-		Assert.assertEquals(analysis.getThreshold(), TextAnalyzer.DETECTION_THRESHOLD_DEFAULT);
+		Assert.assertEquals(analysis.getThreshold(), AnalysisConfig.DETECTION_THRESHOLD_DEFAULT);
 		analysis.setThreshold(96);
 		Assert.assertEquals(analysis.getThreshold(), 96);
 
@@ -469,7 +469,7 @@ public class TestDoubles {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
-		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;
+		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;
 		int locked = -1;
 
 		for (int i = 0; i < nullIterations; i++) {
@@ -488,9 +488,9 @@ public class TestDoubles {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations + 3);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
@@ -505,7 +505,7 @@ public class TestDoubles {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
-		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
+		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
 		int locked = -1;
 		final Locale locale = Locale.forLanguageTag("de-AT");
 		analysis.setLocale(locale);
@@ -529,9 +529,9 @@ public class TestDoubles {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
@@ -702,7 +702,7 @@ public class TestDoubles {
 	public void manyConstantLengthDoublesI18N_2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
-		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
+		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
 		int locked = -1;
 		final Locale locale = Locale.forLanguageTag("de-DE");
 		analysis.setCollectStatistics(false);
@@ -726,9 +726,9 @@ public class TestDoubles {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertEquals(result.getRegExp(), "\\d+|(\\d+)?" + RegExpGenerator.slosh('.') + "\\d+");
@@ -788,7 +788,7 @@ public class TestDoubles {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);

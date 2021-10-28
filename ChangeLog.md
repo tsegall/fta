@@ -504,3 +504,8 @@
 ### 4.7.6
  - ENH: Add a couple more street markers
  - ENH: Add Semantic Types - GENDER.TEXT_TR (Turkey)
+
+### 4.7.7
+ - ENH: Improve the probability of locating a lat/long header
+ - ENH: Change handling of plugin retrieval if no Locale specified (effectively defaulting to English), add TestCase
+ - INT: Move more stuff into AnalysisConfig

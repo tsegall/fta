@@ -680,7 +680,7 @@ public class TestLongs {
 		int samples;
 		int bad = 0;
 
-		for (samples = 0; samples <= TextAnalyzer.DETECT_WINDOW_DEFAULT; samples++) {
+		for (samples = 0; samples <= AnalysisConfig.DETECT_WINDOW_DEFAULT; samples++) {
 			final String input = String.valueOf(random.nextInt(1000000));
 			final int len = input.length();
 			if (len < minLength)
@@ -696,7 +696,7 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), samples + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.LONG);
@@ -713,7 +713,7 @@ public class TestLongs {
 	public void manyConstantLengthLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
-		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;
+		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;
 		int locked = -1;
 
 		for (int i = 0; i < nullIterations; i++) {
@@ -731,9 +731,9 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getRegExp(), "\\d{10}");
@@ -847,9 +847,9 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations + 2);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getBlankCount(), 2);
 		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
@@ -884,7 +884,7 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -1010,7 +1010,7 @@ public class TestLongs {
 	public void manyRandomInts() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int nullIterations = 50;
-		final int iterations = TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
+		final int iterations = AnalysisConfig.MAX_CARDINALITY_DEFAULT + 100;
 		int locked = -1;
 
 		for (int i = 0; i < nullIterations; i++) {
@@ -1023,9 +1023,9 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getConfidence(), 1.0);

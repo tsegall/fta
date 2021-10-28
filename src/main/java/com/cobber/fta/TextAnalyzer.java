@@ -92,41 +92,21 @@ import com.cobber.fta.dates.LocaleInfo;
  * </pre>
  */
 public class TextAnalyzer {
-	/** The default value for the number of samples to collect before making a type determination. */
-	public static final int DETECT_WINDOW_DEFAULT = 20;
-	private int detectWindow = DETECT_WINDOW_DEFAULT;
-
-	/** Should we enable Default Logical Type detection. */
-	private boolean enableDefaultLogicalTypes = true;
-
 	/** Should we attempt to qualifier the size of the returned RexExp. */
 	private boolean lengthQualifier = true;
 
 	/** Plugin Threshold for detection - by default this is unset and sensible defaults are used. */
 	private int pluginThreshold = -1;
 
-	/** The default value for the detection threshold. */
-	public static final int DETECTION_THRESHOLD_DEFAULT = 95;
-	private int threshold = DETECTION_THRESHOLD_DEFAULT;
-
 	/** Enable Numeric widening - i.e. if we see lots of integers then some doubles call it a double. */
 	private boolean numericWidening = true;
 
 	private Locale locale = Locale.getDefault();
 
-	/** The default value for the maximum Cardinality tracked. */
-	public static final int MAX_CARDINALITY_DEFAULT = 12000;
-
 	/** We need to see at least this many samples (all unique) before we will claim this is a possible key. */
 	private static final int MIN_SAMPLES_FOR_KEY = 1000;
 
-	/** The default value for the maximum # of outliers tracked. */
-	public static final int MAX_OUTLIERS_DEFAULT = 50;
-
-	/** The default value for the maximum number of shapes tracked. */
-	public static final int MAX_SHAPES_DEFAULT = 400;
-
-	private AnalysisConfig analysisConfig = new AnalysisConfig(MAX_CARDINALITY_DEFAULT, MAX_OUTLIERS_DEFAULT, MAX_SHAPES_DEFAULT, true, 0);
+	private AnalysisConfig analysisConfig = new AnalysisConfig();
 
 	/** We are prepared to recognize any set of this size as an enum (and give a suitable regular expression). */
 	private static final int MAX_ENUM_SIZE = 40;
@@ -158,7 +138,7 @@ public class TextAnalyzer {
 	// 0: d{4} 1: d{+} 2: [-]d{+}
 	// input "hello world" 0: a{5} a{5} 1: a{+} a{+} 2: a{+}
 
-	private final Shapes shapes = new Shapes(MAX_SHAPES_DEFAULT);
+	private final Shapes shapes = new Shapes(AnalysisConfig.MAX_SHAPES_DEFAULT);
 
 	private final Random random = new Random(271828);
 
@@ -373,7 +353,7 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("Cannot adjust Logical Type detection once training has started");
 
 		final boolean ret = logicalTypeDetection;
-		this.enableDefaultLogicalTypes = logicalTypeDetection;
+		analysisConfig.enableDefaultLogicalTypes = logicalTypeDetection;
 		return ret;
 	}
 
@@ -383,7 +363,7 @@ public class TextAnalyzer {
 	 * @return Whether default Logical Type processing collection is enabled.
 	 */
 	public boolean getDefaultLogicalTypes() {
-		return enableDefaultLogicalTypes;
+		return analysisConfig.enableDefaultLogicalTypes;
 	}
 
 	/**
@@ -398,7 +378,7 @@ public class TextAnalyzer {
 		if (threshold <= 0 || threshold > 100)
 			throw new IllegalArgumentException("Threshold must be between 0 and 100");
 
-		this.threshold = threshold;
+		analysisConfig.threshold = threshold;
 	}
 
 	/**
@@ -407,7 +387,7 @@ public class TextAnalyzer {
 	 * @return The current threshold.
 	 */
 	public int getThreshold() {
-		return threshold;
+		return analysisConfig.threshold;
 	}
 
 	/**
@@ -476,11 +456,11 @@ public class TextAnalyzer {
 	public int setDetectWindow(final int detectWindow) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot change size of detect window once training has started");
-		if (detectWindow < DETECT_WINDOW_DEFAULT)
-			throw new IllegalArgumentException("Cannot set detect window size below " + DETECT_WINDOW_DEFAULT);
+		if (detectWindow < AnalysisConfig.DETECT_WINDOW_DEFAULT)
+			throw new IllegalArgumentException("Cannot set detect window size below " + AnalysisConfig.DETECT_WINDOW_DEFAULT);
 
 		final int ret = detectWindow;
-		this.detectWindow = detectWindow;
+		analysisConfig.detectWindow = detectWindow;
 
 		// Never want the Detect Window to be greater than the Reflection point
 		if (detectWindow >= reflectionSamples)
@@ -495,7 +475,7 @@ public class TextAnalyzer {
 	 * @return The current size of the Detect Window.
 	 */
 	public int getDetectWindow() {
-		return detectWindow;
+		return analysisConfig.detectWindow;
 	}
 
 	/**
@@ -984,11 +964,11 @@ public class TextAnalyzer {
 		if (LocaleInfo.isSupported(locale) != null)
 			throw new FTAUnsupportedLocaleException(LocaleInfo.isSupported(locale));
 
-		raw = new ArrayList<>(detectWindow);
-		detectWindowEscalations = new ArrayList<>(detectWindow);
+		raw = new ArrayList<>(analysisConfig.detectWindow);
+		detectWindowEscalations = new ArrayList<>(analysisConfig.detectWindow);
 
 		// If enabled, load the default set of plugins for Logical Type detection
-		if (enableDefaultLogicalTypes)
+		if (analysisConfig.enableDefaultLogicalTypes)
 			registerDefaultPlugins(locale);
 
 		for (final LogicalType logical : plugins.getRegisteredLogicalTypes()) {
@@ -1635,7 +1615,7 @@ public class TextAnalyzer {
 							&& matchPatternInfo.isNumeric()
 							&& level2patternInfo.isNumeric()
 							&& level2value >= 1.05 * best.getValue())
-					|| (!best.getKey().equals(level2pattern) && (double)best.getValue()/raw.size() < (double)threshold/100
+					|| (!best.getKey().equals(level2pattern) && (double)best.getValue()/raw.size() < (double)analysisConfig.threshold/100
 							&& level2value >= 1.10 * best.getValue()))) {
 				matchPatternInfo = level2patternInfo;
 			}
@@ -1954,7 +1934,7 @@ public class TextAnalyzer {
 		}
 
 		matchCount += otherLongs;
-		if ((double) matchCount / realSamples > threshold/100.0)
+		if ((double) matchCount / realSamples > analysisConfig.threshold/100.0)
 			matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_LONG);
 		else
 			backoutToPatternID(realSamples, KnownPatterns.ID.ID_ANY_VARIABLE);
@@ -1992,7 +1972,7 @@ public class TextAnalyzer {
 			trackLengthAndShape(input, count);
 
 		// If the detect window cache is full and we have not determined a type compute one
-		if ((matchPatternInfo == null || matchPatternInfo.getBaseType() == null) && sampleCount - (nullCount + blankCount) > detectWindow)
+		if ((matchPatternInfo == null || matchPatternInfo.getBaseType() == null) && sampleCount - (nullCount + blankCount) > analysisConfig.detectWindow)
 			determineType();
 
 		if (matchPatternInfo == null || matchPatternInfo.getBaseType() == null)
@@ -2572,8 +2552,8 @@ public class TextAnalyzer {
 					}
 				}
 
-				if (!matchPatternInfo.isLogicalType() && realSamples >= detectWindow &&
-						(confidence < threshold/100.0 ||
+				if (!matchPatternInfo.isLogicalType() && realSamples >= analysisConfig.detectWindow &&
+						(confidence < analysisConfig.threshold/100.0 ||
 								(numericWidening && outliers.size() != 0 && (new OutlierAnalysis(outliers, matchPatternInfo)).doubles == outliers.size()))) {
 					// We thought it was an integer field, but on reflection it does not feel like it
 					conditionalBackoutToPattern(realSamples, matchPatternInfo);
@@ -2897,7 +2877,7 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Access the training set - this will typically be the first {@link #DETECT_WINDOW_DEFAULT} records.
+	 * Access the training set - this will typically be the first {@link AnalysisConfig#DETECT_WINDOW_DEFAULT} records.
 	 *
 	 * @return A List of the raw input strings.
 	 */

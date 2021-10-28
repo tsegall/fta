@@ -371,7 +371,7 @@ public class TextAnalysisResult {
 	 * Note: The cardinality returned is the cardinality of the valid samples.  For example, if a date is invalid it will not
 	 * be included in the cardinality.
 	 * Note: This is not a complete cardinality analysis unless the cardinality of the
-	 * data stream is less than the maximum cardinality (Default: {@value com.cobber.fta.TextAnalyzer#MAX_CARDINALITY_DEFAULT}).
+	 * data stream is less than the maximum cardinality (Default: {@value com.cobber.fta.AnalysisConfig#MAX_CARDINALITY_DEFAULT}).
 	 * See also {@link com.cobber.fta.TextAnalyzer#setMaxCardinality(int) setMaxCardinality()} method in TextAnalyzer.
 	 * @return Count of all blank samples.
 	 */
@@ -392,7 +392,7 @@ public class TextAnalysisResult {
 	 * Get the number of distinct outliers for the current data stream.
 	 * See {@link com.cobber.fta.TextAnalyzer#setMaxOutliers(int) setMaxOutliers()} method in TextAnalyzer.
 	 * Note: This is not a complete outlier analysis unless the outlier count of the
-	 * data stream is less than the maximum outlier count (Default: {@value com.cobber.fta.TextAnalyzer#MAX_OUTLIERS_DEFAULT}).
+	 * data stream is less than the maximum outlier count (Default: {@value com.cobber.fta.AnalysisConfig#MAX_OUTLIERS_DEFAULT}).
 	 * See also {@link com.cobber.fta.TextAnalyzer#setMaxOutliers(int) setMaxOutliers()} method in TextAnalyzer.
 	 * @return Count of the distinct outliers.
 	 */
@@ -412,7 +412,7 @@ public class TextAnalysisResult {
 	/**
 	 * Get the number of distinct shapes for the current data stream.
 	 * Note: This is not a complete shape analysis unless the shape count of the
-	 * data stream is less than the maximum shape count (Default: {@value com.cobber.fta.TextAnalyzer#MAX_SHAPES_DEFAULT}).
+	 * data stream is less than the maximum shape count (Default: {@value com.cobber.fta.AnalysisConfig#MAX_SHAPES_DEFAULT}).
 	 * @return Count of the distinct shapes.
 	 */
 	public int getShapeCount() {

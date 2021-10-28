@@ -149,7 +149,7 @@
 		"qualifier": "GENDER.TEXT_<LOCALE>",
 		"description": "Gender",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGender",
-		"validLocales": [ "de", "en", "es", "it", "fr", "nl", "pt" ],
+		"validLocales": [ "en", "de", "es", "it", "fr", "nl", "pt" ],
 		"priority": 80
 	},
 	{
@@ -576,7 +576,7 @@
 		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
 		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name|voornaam|vnaam).*", "(?i)(first)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
-		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
+		"validLocales": [ "en", "br", "de", "do", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
 		"priority": 170
 	},
 	{
@@ -586,7 +586,7 @@
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
 		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name|sobrenome|nachname|achternaam|anaam).*", "(?i)(last)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
-		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
+		"validLocales": [ "en", "br", "de", "do", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
 		"priority": 171
 	},
 	{
@@ -596,7 +596,7 @@
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameLastFirst",
 		"headerRegExps": [ ".*(?i)(name|nome|nom|naam).*" ],
 		"headerRegExpConfidence": [ 60 ],
-		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
+		"validLocales": [ "en", "br", "de", "do", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
 		"priority": 172
 	},
 	{
@@ -606,7 +606,7 @@
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameFirstLast",
 		"headerRegExps": [ ".*(?i)(name|nome|nom|naam).*" ],
 		"headerRegExpConfidence": [ 60 ],
-		"validLocales": [ "br", "de", "do", "en", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
+		"validLocales": [ "en", "br", "de", "do", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
 		"priority": 173
 	},
 	{
@@ -614,7 +614,7 @@
 		"description": "Latititude (Decimal degrees)",
 		"signature": "5+1TLjdhcG8m3gVn0m/r6uLmh/Q=",
 		"validLocales": [ ],
-		"headerRegExps": [ ".*(?i)(latitude).*|lat" ],
+		"headerRegExps": [ ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|(?i)(lat)" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExpReturned": "[+-]?\\d+\\.\\d+",
@@ -628,7 +628,7 @@
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
 		"description": "Longitude (Decimal degrees)",
 		"signature": "nDTXmMjlW1pm2Rav/0mJVPeRvKc=",
-		"headerRegExps": [ ".*(?i)(longitude).*|lon|lng" ],
+		"headerRegExps": [ ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|lon|lng" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExpReturned": "[+-]?\\d+\\.\\d+",

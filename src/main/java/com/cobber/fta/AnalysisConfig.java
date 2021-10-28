@@ -19,22 +19,43 @@ package com.cobber.fta;
  * Capture how the Analysis is configured.  Attributes on the analysis are typically frozen once training has started.
  */
 public class AnalysisConfig {
-	/** The maximum Cardinality tracked. */
-	public int maxCardinality;
-	/** The maximum number of outliers tracked. */
-	public int maxOutliers;
-	/** The maximum number of shapes tracked. */
-	public int maxShapes;
-	/** Should we collect statistics (min, max, sum) as we parse the data stream. */
-	public boolean collectStatistics;
-	/** Internal-only debugging flag. */
-	public int debug;
+	/** The default value for the maximum Cardinality tracked. */
+	public static final int MAX_CARDINALITY_DEFAULT = 12000;
 
-	AnalysisConfig(int maxCardinality, int maxOutliers, int maxShapes, boolean collectStatistics, int debug) {
-		this.maxCardinality = maxCardinality;
-		this.maxOutliers = maxOutliers;
-		this.maxShapes = maxShapes;
-		this.collectStatistics = collectStatistics;
-		this.debug = debug;
+	/** The default value for the maximum # of outliers tracked. */
+	public static final int MAX_OUTLIERS_DEFAULT = 50;
+
+	/** The default value for the maximum number of shapes tracked. */
+	public static final int MAX_SHAPES_DEFAULT = 400;
+
+	/** The default value for the detection threshold. */
+	public static final int DETECTION_THRESHOLD_DEFAULT = 95;
+
+	/** The default value for the number of samples to collect before making a type determination. */
+	public static final int DETECT_WINDOW_DEFAULT = 20;
+
+	/** The maximum Cardinality tracked. */
+	public int maxCardinality = MAX_CARDINALITY_DEFAULT;
+
+	/** The maximum number of outliers tracked. */
+	public int maxOutliers = MAX_OUTLIERS_DEFAULT;
+
+	/** The maximum number of shapes tracked. */
+	public int maxShapes = MAX_SHAPES_DEFAULT;
+
+	public int threshold = DETECTION_THRESHOLD_DEFAULT;
+
+	public int detectWindow = DETECT_WINDOW_DEFAULT;
+
+	/** Should we collect statistics (min, max, sum) as we parse the data stream. */
+	public boolean collectStatistics = true;
+
+	/** Internal-only debugging flag. */
+	public int debug = 0;
+
+	/** Should we enable Default Logical Type detection. */
+	public boolean enableDefaultLogicalTypes = true;
+
+	AnalysisConfig() {
 	}
 }

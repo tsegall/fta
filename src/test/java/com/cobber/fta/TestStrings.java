@@ -353,7 +353,7 @@ public class TestStrings {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
-		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT;;
+		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
 		final int length = 12;
 		final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		final StringBuilder b = new StringBuilder(length);
@@ -373,9 +373,9 @@ public class TestStrings {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), result.getNullCount());
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
@@ -389,7 +389,7 @@ public class TestStrings {
 		result = analysisBulk.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), sum);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");

@@ -679,7 +679,7 @@ public class DetermineDateTimeFormatTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "MMMM d',' yyyy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -746,7 +746,7 @@ public class DetermineDateTimeFormatTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);

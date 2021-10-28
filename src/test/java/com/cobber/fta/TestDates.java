@@ -71,7 +71,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), records + 1);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{2}");
@@ -1232,7 +1232,7 @@ public class TestDates {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} [\\p{IsAlphabetic}\\.]{3,5} \\d{4}");
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), samples.size());
@@ -1276,7 +1276,7 @@ public class TestDates {
 
 		// Post Java 8 the month abbreviations have changed
 		Assert.assertEquals(result.getRegExp(), TestUtils.getJavaVersion() == 8 ? "\\d{1,2} \\p{IsAlphabetic}{1,4} \\d{4}" : "\\d{1,2} \\p{IsAlphabetic}{3,4} \\d{4}");
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), samples.size());
@@ -1319,7 +1319,7 @@ public class TestDates {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), "\\d{1,2} .{5,8} \\d{4}");
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), samples.size());
@@ -1363,7 +1363,7 @@ public class TestDates {
 
 		// Post Java 8 the month abbreviations now appear with a period when necessary
 		Assert.assertEquals(result.getRegExp(), TestUtils.getJavaVersion() == 8 ? "\\d{1,2} \\p{IsAlphabetic}{3} \\d{4}" : "\\d{1,2} [\\p{IsAlphabetic}\\.]{3,4} \\d{4}");
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "d MMM yyyy");
 		Assert.assertEquals(result.getSampleCount(), samples.size());
@@ -2357,7 +2357,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 		Assert.assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -2396,7 +2396,7 @@ public class TestDates {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
 		Assert.assertEquals(result.getTypeQualifier(), "H:mm:ss.S{1,2}");
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -2533,7 +2533,7 @@ public class TestDates {
 
 				final TextAnalysisResult result = analysis.getResult();
 
-				if (locked != TextAnalyzer.DETECT_WINDOW_DEFAULT) {
+				if (locked != AnalysisConfig.DETECT_WINDOW_DEFAULT) {
 					problems.add(testID + "Locked incorrect: " + locked);
 					countProblems++;
 					continue;

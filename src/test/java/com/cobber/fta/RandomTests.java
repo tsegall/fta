@@ -284,7 +284,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), inputs.length + result.getNullCount());
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
@@ -304,7 +304,7 @@ public class RandomTests {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		int locked = -1;
 
-		for (int i = 0; i < 2 * TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		for (int i = 0; i < 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			if (analysis.train(String.valueOf(i)) && locked == -1)
 				locked = i;
 		}
@@ -315,12 +315,12 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), 2 * TextAnalyzer.DETECT_WINDOW_DEFAULT + 26);
+		Assert.assertEquals(result.getSampleCount(), 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 26);
 		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), 2 * TextAnalyzer.DETECT_WINDOW_DEFAULT + 26);
+		Assert.assertEquals(result.getMatchCount(), 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 26);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{1,2}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -367,7 +367,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -457,7 +457,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -505,7 +505,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -544,7 +544,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -579,7 +579,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -765,7 +765,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_NUMERIC + "{3}" + '|' + KnownPatterns.PATTERN_ALPHA + "{3}");
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -793,7 +793,7 @@ public class RandomTests {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_NUMERIC + "{3}" + '|' + KnownPatterns.PATTERN_ALPHA + "{3}");
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -846,7 +846,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, realSamples >= TextAnalyzer.DETECT_WINDOW_DEFAULT ? TextAnalyzer.DETECT_WINDOW_DEFAULT : -1);
+		Assert.assertEquals(locked, realSamples >= AnalysisConfig.DETECT_WINDOW_DEFAULT ? AnalysisConfig.DETECT_WINDOW_DEFAULT : -1);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		if (inputs.length == empty)
 			Assert.assertEquals(result.getTypeQualifier(), "BLANK");
@@ -1006,7 +1006,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
@@ -1072,7 +1072,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT/4);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT/4);
 		Assert.assertEquals(result.getSampleCount(), 5 * iterations + 1);
 		Assert.assertEquals(result.getMatchCount(), 4 * iterations);
 		Assert.assertEquals(result.getNullCount(), iterations);
@@ -1123,7 +1123,7 @@ public class RandomTests {
 
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getSampleCount(), iterations);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		Assert.assertEquals(result.getConfidence(), 1.0);
@@ -1135,13 +1135,13 @@ public class RandomTests {
 		int locked = -1;
 		int sample = 0;
 
-		analysis.setDetectWindow(2* TextAnalyzer.DETECT_WINDOW_DEFAULT);
-		for (int i = 0; i <= TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		analysis.setDetectWindow(2* AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		for (int i = 0; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			sample++;
 			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
 				locked = sample;
 		}
-		for (int i = 0; i <= TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		for (int i = 0; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			sample++;
 			if (analysis.train(String.valueOf(random.nextDouble())) && locked == -1)
 				locked = sample;
@@ -1149,8 +1149,8 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, 2 * TextAnalyzer.DETECT_WINDOW_DEFAULT + 1);
-		Assert.assertEquals(result.getSampleCount(), 2 * (TextAnalyzer.DETECT_WINDOW_DEFAULT + 1));
+		Assert.assertEquals(locked, 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
+		Assert.assertEquals(result.getSampleCount(), 2 * (AnalysisConfig.DETECT_WINDOW_DEFAULT + 1));
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
@@ -1161,7 +1161,7 @@ public class RandomTests {
 	public void getDetectWindowSize()  throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		Assert.assertEquals(analysis.getDetectWindow(), TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(analysis.getDetectWindow(), AnalysisConfig.DETECT_WINDOW_DEFAULT);
 	}
 
 	@Test
@@ -1169,10 +1169,10 @@ public class RandomTests {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
 		try {
-			analysis.setDetectWindow(TextAnalyzer.DETECT_WINDOW_DEFAULT - 1);
+			analysis.setDetectWindow(AnalysisConfig.DETECT_WINDOW_DEFAULT - 1);
 		}
 		catch (IllegalArgumentException e) {
-			Assert.assertEquals(e.getMessage(), "Cannot set detect window size below " + TextAnalyzer.DETECT_WINDOW_DEFAULT);
+			Assert.assertEquals(e.getMessage(), "Cannot set detect window size below " + AnalysisConfig.DETECT_WINDOW_DEFAULT);
 			return;
 		}
 		Assert.fail("Exception should have been thrown");
@@ -1184,13 +1184,13 @@ public class RandomTests {
 		int locked = -1;
 		int i = 0;
 
-		for (; i <= TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		for (; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
 
 		try {
-			analysis.setDetectWindow(2* TextAnalyzer.DETECT_WINDOW_DEFAULT);
+			analysis.setDetectWindow(2* AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		}
 		catch (IllegalArgumentException e) {
 			Assert.assertEquals(e.getMessage(), "Cannot change size of detect window once training has started");
@@ -1206,7 +1206,7 @@ public class RandomTests {
 		int locked = -1;
 		int i = 0;
 
-		for (; i <= TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		for (; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
@@ -1226,7 +1226,7 @@ public class RandomTests {
 	public void getMaxCardinality() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		Assert.assertEquals(analysis.getMaxCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(analysis.getMaxCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 	}
 
 	@Test
@@ -1249,13 +1249,13 @@ public class RandomTests {
 		int locked = -1;
 		int i = 0;
 
-		for (; i <= TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		for (; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
 
 		try {
-			analysis.setMaxCardinality(2* TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+			analysis.setMaxCardinality(2* AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		}
 		catch (IllegalArgumentException e) {
 			Assert.assertEquals(e.getMessage(), "Cannot change maxCardinality once training has started");
@@ -1268,7 +1268,7 @@ public class RandomTests {
 	public void getOutlierCount() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		Assert.assertEquals(analysis.getMaxOutliers(), TextAnalyzer.MAX_OUTLIERS_DEFAULT);
+		Assert.assertEquals(analysis.getMaxOutliers(), AnalysisConfig.MAX_OUTLIERS_DEFAULT);
 	}
 
 	@Test
@@ -1291,13 +1291,13 @@ public class RandomTests {
 		int locked = -1;
 		int i = 0;
 
-		for (; i <= TextAnalyzer.DETECT_WINDOW_DEFAULT; i++) {
+		for (; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
 
 		try {
-			analysis.setMaxOutliers(2* TextAnalyzer.MAX_OUTLIERS_DEFAULT);
+			analysis.setMaxOutliers(2* AnalysisConfig.MAX_OUTLIERS_DEFAULT);
 		}
 		catch (IllegalArgumentException e) {
 			Assert.assertEquals(e.getMessage(), "Cannot change outlier count once training has started");
@@ -1487,10 +1487,10 @@ public class RandomTests {
 	public void bumpMaxCardinality() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 
-		analysis.setMaxCardinality(2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		analysis.setMaxCardinality(2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 
 		final int nullIterations = 50;
-		final int iterations = 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
+		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 100;
 		int locked = -1;
 
 		for (int i = 0; i < nullIterations; i++) {
@@ -1508,9 +1508,9 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
-		Assert.assertEquals(result.getCardinality(), 2 * TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getNullCount(), nullIterations);
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getRegExp(), "\\d{10}");
@@ -1521,7 +1521,7 @@ public class RandomTests {
 	public void keyFieldLong() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int start = 10000;
-		final int end = start + TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
+		final int end = start + AnalysisConfig.MAX_CARDINALITY_DEFAULT + 100;
 		int locked = -1;
 
 		for (int i = start; i < end; i++) {
@@ -1531,9 +1531,9 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), end - start);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getKeyConfidence(), 0.9);
@@ -1544,7 +1544,7 @@ public class RandomTests {
 	public void defaultMaxOutliers() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
 		final int start = 10000;
-		final int end = start + TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
+		final int end = start + AnalysisConfig.MAX_CARDINALITY_DEFAULT + 100;
 		final int outliers = 15;
 		int locked = -1;
 
@@ -1574,7 +1574,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getOutlierCount(), outliers);
 		Assert.assertEquals(result.getSampleCount(), outliers + end - start);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getKeyConfidence(), 0.9);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)15/result.getSampleCount());
 	}
@@ -1661,9 +1661,9 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), end - start);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d{6}");
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getKeyConfidence(), 0.9);
@@ -1674,7 +1674,7 @@ public class RandomTests {
 	public void notKeyField() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer();
 		final int start = 10000;
-		final int end = start + TextAnalyzer.MAX_CARDINALITY_DEFAULT + 100;
+		final int end = start + AnalysisConfig.MAX_CARDINALITY_DEFAULT + 100;
 
 		int locked = -1;
 
@@ -1687,9 +1687,9 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, TextAnalyzer.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getSampleCount(), 1 + end - start);
-		Assert.assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
+		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getKeyConfidence(), 0.0);
