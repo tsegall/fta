@@ -36,7 +36,7 @@ public class TestStrings {
 
 	@Test
 	public void manyNulls() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("manyNulls");
 		final int iterations = 50;
 
 		for (int i = 0; i < iterations; i++) {
@@ -63,7 +63,7 @@ public class TestStrings {
 
 	@Test
 	public void manyBlanks() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("manyBlanks");
 		final int iterations = 50;
 
 		analysis.train("");
@@ -97,7 +97,7 @@ public class TestStrings {
 
 	@Test
 	public void sameBlanks() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("sameBlanks");
 		final int iterations = 50;
 
 		for (int i = 0; i < iterations; i++) {
@@ -125,7 +125,7 @@ public class TestStrings {
 
 	@Test
 	public void justEmpty() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("justEmpty");
 		final int iterations = 50;
 
 		for (int i = 0; i < iterations; i++) {
@@ -223,7 +223,7 @@ public class TestStrings {
 
 	@Test
 	public void variableLengthString() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("variableLengthString");
 		final String[] inputs = "Hello World|Hello|H|Z|A".split("\\|");
 
 		int locked = -1;
@@ -252,7 +252,7 @@ public class TestStrings {
 	@Test
 	public void variableLengthStringSimpleVsBulk() throws IOException, FTAException {
 		for (int r = 0; r < 100; r++) {
-			final TextAnalyzer analysis = new TextAnalyzer();
+			final TextAnalyzer analysis = new TextAnalyzer("variableLengthStringSimpleVsBulk_1");
 			final String[] inputs = "HelloWorld|Hello|H|Z|A|Do|Not|Ask|What|You|Can|Do".split("\\|");
 
 			final int ITERATIONS = 100;
@@ -284,7 +284,7 @@ public class TestStrings {
 
 			final Map<String,Long> details = result.getCardinalityDetails();
 			details.putAll(result.getOutlierDetails());
-			final TextAnalyzer analysisBulk = new TextAnalyzer();
+			final TextAnalyzer analysisBulk = new TextAnalyzer("variableLengthStringSimpleVsBulk_2");
 			analysisBulk.trainBulk(details);
 			result = analysisBulk.getResult();
 
@@ -350,7 +350,7 @@ public class TestStrings {
 
 	@Test
 	public void manyConstantLengthStrings() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthStrings");
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
 		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
@@ -384,7 +384,7 @@ public class TestStrings {
 		final Map<String,Long> details = result.getCardinalityDetails();
 		details.put(null, result.getNullCount());
 		final long sum = details.values().stream().collect(Collectors.summingLong(Long::longValue));
-		final TextAnalyzer analysisBulk = new TextAnalyzer();
+		final TextAnalyzer analysisBulk = new TextAnalyzer("manyConstantLengthStrings_bulk");
 		analysisBulk.trainBulk(details);
 		result = analysisBulk.getResult();
 
@@ -400,6 +400,7 @@ public class TestStrings {
 	@Test
 	public void constantNoise() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("NOISE");
+		analysis.setTrace("enabled=true");
 		analysis.setCollectStatistics(false);
 		final String[] inputs = new String[] {
 				"3D4657263441283442A1202020202020", "2832412833553D365529202020202020", "2F36423D334229464326202020202020",
@@ -482,7 +483,7 @@ public class TestStrings {
 
 	@Test
 	public void niceEnum() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("niceEnum");
 		analysis.setCollectStatistics(false);
 		final String[] inputs = new String[] { "Corrective", "Discretionary", "Marketing/Retention", "Reactivation(FS Only)", "Undefined" };
 		final int iterations = 10;
@@ -509,7 +510,7 @@ public class TestStrings {
 
 	@Test
 	public void nastyEnum() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("nastyEnum");
 		analysis.setCollectStatistics(false);
 		final String[] inputs = new String[] {
 				"Skipping locale 'hi_IN' as it does not use Arabic numerals.",
@@ -539,7 +540,7 @@ public class TestStrings {
 
 	@Test
 	public void nastyEnumsTwo() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("nastyEnumsTwo");
 		analysis.setCollectStatistics(false);
 		final String[] inputs = new String[] {
 				"Fighter",
@@ -570,7 +571,7 @@ public class TestStrings {
 
 	@Test
 	public void testCompressUSD() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("testCompressUSD");
 		analysis.setCollectStatistics(false);
 		final String[] inputs = new String[] {
 				"$411.00", "$420.00", "$407.00", "$80.00", "$453.00", "$401.00", "$490.00", "$430.00", "$4.00", "$40.00",
@@ -599,7 +600,7 @@ public class TestStrings {
 
 	@Test
 	public void testCompressGBP() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("Premium");
+		final TextAnalyzer analysis = new TextAnalyzer("testCompressGBP");
 		analysis.setCollectStatistics(false);
 		final String[] inputs = new String[] {
 				"£41.99", "£51.99", "£28.56", "£7.82", "£9.78", ""
@@ -629,7 +630,7 @@ public class TestStrings {
 
 	@Test
 	public void testPercent() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("Premium");
+		final TextAnalyzer analysis = new TextAnalyzer("testPercent");
 		Assert.assertTrue(analysis.getCollectStatistics());
 		analysis.setCollectStatistics(false);
 		Assert.assertFalse(analysis.getCollectStatistics());
@@ -661,7 +662,7 @@ public class TestStrings {
 
 	@Test
 	public void testTwoContainedStrings() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("ZipCode");
+		final TextAnalyzer analysis = new TextAnalyzer("testTwoContainedStrings");
 		analysis.setCollectStatistics(false);
 		final String pipedInput = "99501|45011|60632-4069|95111|57105|11953|90034|44023-1023|85013|53207|48180|61109-4069|19014|95111|66218-4069|10011|88011|10025|10011|93012-1023|78204|67410|97754|66204-4069|99708|33196|99712|53711|19132|" +
 				"99501|45011|60632-4069|95111|57105|11953|90034|44023-1023|85013|53207|48180|61109-4069|19014|95111|66218-4069|10011|88011|10025|10011|93012-1023|78204|67410|97754|66204-4069|99708|33196|99712|53711|19132|" +
@@ -741,7 +742,7 @@ public class TestStrings {
 
 	@Test
 	public void testCompressCoordinates() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("Centroid");
+		final TextAnalyzer analysis = new TextAnalyzer("testCompressC_oordinates");
 		analysis.setCollectStatistics(false);
 		final String[] inputs = new String[] {
 				"-69.97345,12.51678", "66.00845,33.83627", "17.53646,12.29118",
@@ -772,7 +773,7 @@ public class TestStrings {
 
 	@Test
 	public void testBugPipe() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("Centroid");
+		final TextAnalyzer analysis = new TextAnalyzer("testBugPipe");
 		analysis.setCollectStatistics(false);
 
 		analysis.train("10010|");
@@ -790,7 +791,7 @@ public class TestStrings {
 
 	@Test
 	public void testTrimmedLength() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("TrimTest");
+		final TextAnalyzer analysis = new TextAnalyzer("testTrimmedLength");
 		analysis.setCollectStatistics(false);
 		final String[] inputs = new String[] {
 				"abc", "abcd ", "abcde  ",
@@ -856,7 +857,7 @@ public class TestStrings {
 
 	@Test
 	public void testStrange() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("TrimTest");
+		final TextAnalyzer analysis = new TextAnalyzer("testStrange");
 		analysis.setCollectStatistics(false);
 		final String[] inputs = new String[] {
 				"PK__3214EC273319DEC5", "PK__3214EC273319DEC5 ", "PK__3214EC273319DEC5",
@@ -882,7 +883,7 @@ public class TestStrings {
 	}
 
 	public void _stringPerf(final boolean statisticsOn) throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("testCompressUSD");
 		if (!statisticsOn) {
 			analysis.setDefaultLogicalTypes(false);
 			analysis.setCollectStatistics(false);

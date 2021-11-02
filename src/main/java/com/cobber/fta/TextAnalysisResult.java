@@ -46,6 +46,8 @@ public class TextAnalysisResult {
 	    CONSUMER
 	}
 
+	private final static ObjectMapper mapper = new ObjectMapper();
+
 	private static final String NOT_ENABLED = "Statistics not enabled.";
 
 	private final String name;
@@ -563,8 +565,6 @@ public class TextAnalysisResult {
 		if (regExp.charAt(0) == '.' && (regExp.length() == 2 || (regExp.length() > 1 && regExp.charAt(1) == '{')))
 			return null;
 
-		final ObjectMapper mapper = new ObjectMapper();
-
 		final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
 		final ObjectNode plugin = mapper.createObjectNode();
 		plugin.put("qualifier", name);
@@ -606,8 +606,6 @@ public class TextAnalysisResult {
 	}
 
 	private String internalAsJSON(final boolean pretty, final int verbose, final SignatureTarget target) {
-		final ObjectMapper mapper = new ObjectMapper();
-
 		final ObjectWriter writer = pretty ? mapper.writerWithDefaultPrettyPrinter() : mapper.writer();
 
 		final ObjectNode analysis = mapper.createObjectNode();

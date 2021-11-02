@@ -43,7 +43,7 @@ public class TestLongs {
 	private static final SecureRandom random = new SecureRandom();
 
 	public void _variableLengthPositiveInteger(final boolean collectStatistics) throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("_variableLengthPositiveInteger");
 		if (!collectStatistics)
 			analysis.setCollectStatistics(false);
 
@@ -86,7 +86,7 @@ public class TestLongs {
 	}
 
 	public void _variableLengthInteger(final boolean collectStatistics) throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("_variableLengthInteger");
 		if (!collectStatistics)
 			analysis.setCollectStatistics(false);
 		final String[] inputs = "-100000|-1000|-100|-10|-3|-2|-1|100|200|300|400|500|600|1000|10000|601|602|6033|604|605|606|607|608|609|610|911|912|913|914|915".split("\\|");
@@ -129,7 +129,7 @@ public class TestLongs {
 
 	@Test
 	public void constantLengthInteger() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("constantLengthInteger");
 		final String[] inputs = "456789|456089|456700|116789|433339|409187".split("\\|");
 		int locked = -1;
 
@@ -156,7 +156,7 @@ public class TestLongs {
 
 	@Test
 	public void trailingMinus() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("trailingMinus");
 		final String[] inputs = "458-|123|901|404|209-|12|0|0|676|1894-|2903-|111-|5234".split("\\|");
 		int locked = -1;
 
@@ -670,7 +670,7 @@ public class TestLongs {
 
 	@Test
 	public void someInts() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("someInts");
 		Assert.assertTrue(analysis.getNumericWidening());
 		analysis.setNumericWidening(false);
 		Assert.assertFalse(analysis.getNumericWidening());
@@ -711,7 +711,7 @@ public class TestLongs {
 
 	@Test
 	public void manyConstantLengthLongs() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthLongs");
 		final int nullIterations = 50;
 		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;
 		int locked = -1;
@@ -830,7 +830,7 @@ public class TestLongs {
 
 	@Test
 	public void manyKnownInts() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("manyKnownInts");
 		final int nullIterations = 50;
 		final int iterations = 100000;
 		int locked = -1;
@@ -986,7 +986,7 @@ public class TestLongs {
 
 	@Test
 	public void justSimple() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("justSimple");
 
 		final int iterations = 100_000_000;
 		final long start = System.currentTimeMillis();
@@ -1008,7 +1008,7 @@ public class TestLongs {
 
 	@Test
 	public void manyRandomInts() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("manyRandomInts");
 		final int nullIterations = 50;
 		final int iterations = AnalysisConfig.MAX_CARDINALITY_DEFAULT + 100;
 		int locked = -1;
@@ -1052,7 +1052,7 @@ public class TestLongs {
 
 	@Test
 	public void noStatistics() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("noStatistics");
 		analysis.setCollectStatistics(false);
 		final String[] samples = new String[10000];
 
@@ -1074,7 +1074,7 @@ public class TestLongs {
 	}
 
 	public void _longPerf(final boolean statisticsOn) throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("_longPerf");
 		if (!statisticsOn) {
 			analysis.setDefaultLogicalTypes(false);
 			analysis.setCollectStatistics(false);

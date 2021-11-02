@@ -40,6 +40,7 @@ public class SingletonSet {
 	private final String commentLeader;
 
 	private final static Map<String, RandomSet<String>> memberCache = new HashMap<>();
+	private final static ObjectMapper mapper = new ObjectMapper();
 
 	/**
 	 * Create a SingletonSet using "#" as the comment character.
@@ -67,7 +68,7 @@ public class SingletonSet {
 			if ("inline".equals(contentType)) {
 				InlineContent inline;
 				try {
-					inline = (new ObjectMapper()).readValue(content, new TypeReference<InlineContent>(){});
+					inline = mapper.readValue(content, new TypeReference<InlineContent>(){});
 				} catch (IOException e) {
 					throw new IllegalArgumentException("Internal error: Issues with 'inline' content: " + content, e);
 				}

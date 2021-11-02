@@ -50,6 +50,7 @@ public abstract class Validation {
 		};
 
 		final TextAnalyzer analysisLT = new TextAnalyzer("Country");
+		analysisLT.setTrace("enabled=true");
 
 		// Train the input
 		for (final String input : inputsLT)

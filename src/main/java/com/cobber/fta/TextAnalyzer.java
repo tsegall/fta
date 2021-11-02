@@ -60,6 +60,7 @@ import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
+import com.cobber.fta.core.TraceException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
@@ -141,6 +142,10 @@ public class TextAnalyzer {
 	private final Shapes shapes = new Shapes(AnalysisConfig.MAX_SHAPES_DEFAULT);
 
 	private final Random random = new Random(271828);
+
+	private Trace traceConfig;
+
+	private int internalErrors;
 
 	/**
 	 * An Escalation contains three regExps in order of increasing genericity.  So for example the following 3 regExps:
@@ -333,6 +338,24 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Set tracing options.
+	 *
+	 * General form of options is &lt;attribute1&gt;=&lt;value1&gt;,&lt;attribute2&gt;=&lt;value2&gt; ...
+	 * Supported attributes are:
+	 *	enabled=true/false,
+	 *	stream=&lt;name of stream&gt; (defaults to all)
+	 *	directory=&lt;directory for trace file&gt; (defaults to java.io.tmpdir)
+	 *	samples=&lt;# samples to trace&gt; (defaults to 1000)
+	 *
+	 * @param traceOptions The trace options.
+	 */
+	public void setTrace(final String traceOptions) {
+		if (traceOptions == null || traceOptions.isEmpty())
+			throw new TraceException("Argument to setTrace must be non-null");
+		analysisConfig.traceOptions = traceOptions;
+	}
+
+	/**
 	 * Indicates whether to collect statistics or not.
 	 *
 	 * @return Whether Statistics collection is enabled.
@@ -442,6 +465,7 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("Cannot adjust Locale once training has started");
 
 		this.locale = locale;
+		analysisConfig.localeTag = locale.toLanguageTag();
 	}
 
     /**
@@ -1041,6 +1065,16 @@ public class TextAnalyzer {
 
 		dateTimeParser = new DateTimeParser(context.getDateResolutionMode(), locale);
 
+		// If no trace options already set then pick them up from the environment (if set)
+		if (analysisConfig.traceOptions == null) {
+			String ftaTrace = System.getenv("FTA_TRACE");
+			if (ftaTrace != null && !ftaTrace.isEmpty())
+				analysisConfig.traceOptions = ftaTrace;
+		}
+
+		if (analysisConfig.traceOptions != null)
+			traceConfig = new Trace(analysisConfig.traceOptions, context,  analysisConfig);
+
 		initialized = true;
 	}
 
@@ -1167,15 +1201,14 @@ public class TextAnalyzer {
 			trainCore(rawInput, trimmed, length, count);
 		}
 		catch (RuntimeException e) {
-			if (analysisConfig.debug != 0) {
-				System.err.println("Internal error: " + e.getMessage());
-				e.printStackTrace();
-			}
+			internalErrors++;
+			if (analysisConfig.debug != 0)
+				throw new InternalErrorException(e.getMessage());
 		}
 	}
 
 	/**
-	 * Train is the core streaming entry point used to supply input to the Text Analyzer.
+	 * Train is the streaming entry point used to supply input to the Text Analyzer.
 	 *
 	 * @param rawInput
 	 *            The raw input as a String
@@ -1189,6 +1222,9 @@ public class TextAnalyzer {
 			initialize();
 			trainingStarted = true;
 		}
+
+		if (traceConfig != null)
+			traceConfig.recordSample(rawInput, sampleCount);
 
 		sampleCount++;
 
@@ -1216,10 +1252,9 @@ public class TextAnalyzer {
 			result = trainCore(rawInput, trimmed, length, 1);
 		}
 		catch (RuntimeException e) {
-			if (analysisConfig.debug != 0) {
-				System.err.println("Internal error: " + e.getMessage());
-				e.printStackTrace();
-			}
+			internalErrors++;
+			if (analysisConfig.debug != 0)
+				throw new InternalErrorException(e.getMessage());
 			return false;
 		}
 		return result;
@@ -2870,10 +2905,15 @@ public class TextAnalyzer {
 				factsCore.uniqueness = -1.0;
 		}
 
-		return new TextAnalysisResult(context.getStreamName(), locale,
+		TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(), locale,
 				matchCount, totalCount, sampleCount, nullCount,blankCount,
 				matchPatternInfo, factsCore, facts, confidence, context.getDateResolutionMode(),
 				analysisConfig, cardinality, outliers, shapes.getShapes());
+
+		if (traceConfig != null)
+			traceConfig.recordResult(result, internalErrors);
+
+		return result;
 	}
 
 	/**

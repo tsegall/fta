@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -151,7 +152,8 @@ class FileProcessor {
 				if ((options.col == -1 || options.col == i) && options.verbose != 0)
 					System.out.println(header[i]);
 			}
-			processor = new Processor(filename, header, options);
+
+			processor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
 
 			long thisRecord = 0;
 			String[] row;

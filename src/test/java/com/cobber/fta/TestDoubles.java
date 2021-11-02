@@ -44,7 +44,7 @@ public class TestDoubles {
 
 	@Test
 	public void positiveDouble() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("positiveDouble");
 		final String[] inputs = "43.80|1.1|0.1|2.03|.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
 
@@ -74,7 +74,7 @@ public class TestDoubles {
 
 	@Test
 	public void tinyDouble() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("tinyDouble");
 		final String input = "0e-17";
 
 		analysis.train(input);
@@ -96,7 +96,7 @@ public class TestDoubles {
 
 	@Test
 	public void positiveDouble2() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("positiveDouble2");
 		final String[] inputs = "43.80|1.1|0.1|2.03|0.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
 
@@ -124,7 +124,7 @@ public class TestDoubles {
 
 	@Test
 	public void negativeDouble() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("negativeDouble");
 		final String[] inputs = "43.80|-1.1|-.1|2.03|.1|-99.23|14.08976|-14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
 
@@ -154,7 +154,7 @@ public class TestDoubles {
 
 	@Test
 	public void basicPromoteToDouble() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("basicPromoteToDouble");
 		final String pipedInut =
 					"8|172.67|22.73|150|30.26|54.55|45.45|433.22|172.73|7.73|" +
 						"218.18|47.27|31.81|22.73|21.43|7.27|26.25|7.27|45.45|80.91|" +
@@ -187,7 +187,7 @@ public class TestDoubles {
 
 	@Test
 	public void trailingMinus() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("trailingMinus");
 		final String[] inputs = "458.00-|123.00|901.21|404.064|209.01-|12.0|0.0|0|676.00|1894.80-|2903.22-|111.14-|5234.00".split("\\|");
 		int locked = -1;
 
@@ -223,7 +223,7 @@ public class TestDoubles {
 				"0.9325644671976738", "0.5373506913452817", "0.21823369307871965", "0.1699104680573703", "0.18275707526552865",
 				"0.24983460286935077", "0.772409965970719", "1.1388812589363528E-4", "0.78120115126727", "0.6386556468768979",
 				"0.8730028156182696", "0.8296568674820993", "0.3250682023283127", "0.7261517112855164", "0.09470135380197953" };
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("floatBug");
 		int locked = -1;
 		int index = 0;
 
@@ -261,7 +261,7 @@ public class TestDoubles {
 				"0.9325644671976738", "0.5373506913452817", "0.21823369307871965", "0.1699104680573703", "0.18275707526552865",
 				"0.24983460286935077", "0.772409965970719", "1.1388812589363528E+4", "0.78120115126727", "0.6386556468768979",
 				"0.8730028156182696", "0.8296568674820993", "0.3250682023283127", "0.7261517112855164", "0.09470135380197953" };
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("signedFloatBug");
 		int locked = -1;
 		int index = 0;
 
@@ -296,7 +296,7 @@ public class TestDoubles {
 				"8", "172.67", "22.73", "150", "30.26", "54.55", "45.45", "433.22", "172.73", "7.73",
 				"218.18", "47.27", "31.81", "22.73", "21.43", "7.27", "26.25", "7.27", "45.45" };
 
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("mixedInput");
 
 		for (final String sample : samples)
 			analysis.train(sample);
@@ -322,7 +322,7 @@ public class TestDoubles {
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E503", "1103E402"
 		};
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("impossibleExponent");
 
 		for (final String sample : samples)
 			analysis.train(sample);
@@ -347,7 +347,7 @@ public class TestDoubles {
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E503", "1103E402"
 		};
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("impossibleExponentNullHeader");
 
 		for (final String sample : samples)
 			analysis.train(sample);
@@ -466,7 +466,7 @@ public class TestDoubles {
 
 	@Test
 	public void manyRandomDoubles() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("manyRandomDoubles");
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
 		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;
@@ -502,7 +502,7 @@ public class TestDoubles {
 
 	@Test
 	public void manyConstantLengthDoublesI18N_1() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthDoublesI18N_1");
 		analysis.setCollectStatistics(false);
 		final int nullIterations = 50;
 		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
@@ -550,7 +550,7 @@ public class TestDoubles {
 
 		};
 		String[] samples = new String[samplesUS.length];
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("manyFrenchDoubles");
 		analysis.setCollectStatistics(false);
 		final Locale locale = Locale.forLanguageTag("fr-FR");
 		analysis.setLocale(locale);
@@ -589,7 +589,7 @@ public class TestDoubles {
 				"", "1.24", "1.83", "-0.23", "1.35", "nan", "1.4", "1.34", "-0.48", "0.6", "1.23",
 				"22.24", "1202.43", "-0.234", "71.45", "3.411", "234.321", "-0.4848", "0.66666", "1.23", "10.0"
 		};
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("doublesWithNan");
 
 		for (final String sample : samples)
 			analysis.train(sample);
@@ -700,7 +700,7 @@ public class TestDoubles {
 	// BUG - In general, even if the locale suggests otherwise we should still cope with 1234.56 as a valid double
 	//@Test
 	public void manyConstantLengthDoublesI18N_2() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthDoublesI18N_2");
 		final int nullIterations = 50;
 		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
 		int locked = -1;
@@ -737,7 +737,7 @@ public class TestDoubles {
 
 	@Test
 	public void testFromFuzz1() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("testFromFuzz1");
 		final String input =
 				"100|-101.0|102|103|104|105|106|107|hello|109|110|111|112|113|114|115|116|117|118|119|";
 		final String inputs[] = input.split("\\|");
@@ -762,7 +762,7 @@ public class TestDoubles {
 
 	@Test
 	public void backoutToDouble() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("backoutToDouble");
 		final String pipedInput =
 				"0|0|0|0|0|0|0|0|0|1|2|3|0|0|0|0|0|" +
 						"0|0|0|0|0.25|0|0|0|0|0|0|0|0|0|0|0|0|" +
@@ -1258,7 +1258,7 @@ public class TestDoubles {
 
 	@Test
 	public void doublesWithSpaces() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("doublesWithSpaces");
 		final String pipedInput =
 				" 0.56000537| 0.4644182| 0.53597438| 0.66897142| 0.58498305| 0.53236401| 0.57459098| 0.66013932| 0.52850509| 0.59274352| 0.63449258|" +
 						" 0.53062689| 0.62101597| 0.54467571| 0.55982822| 0.55236143| 0.52536035| -9999| 0.60300124| 0.56447577| 0.52936405| 0.529791|" +
@@ -1491,7 +1491,7 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 	}
 
 	public void _doublePerf(final boolean statisticsOn) throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("_doublePerfcd ");
 		if (!statisticsOn) {
 			analysis.setDefaultLogicalTypes(false);
 			analysis.setCollectStatistics(false);

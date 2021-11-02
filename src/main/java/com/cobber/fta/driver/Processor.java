@@ -20,8 +20,10 @@ public class Processor {
 		analyzers = new TextAnalyzer[streamCount];
 
 		for (int i = 0; i < fieldNames.length; i++) {
-			analyzers[i] = new TextAnalyzer(new AnalyzerContext(fieldNames[i], options.resolutionMode, compositeName, fieldNames));
-			options.apply(analyzers[i]);
+			if (options.col == -1 || options.col == i) {
+				analyzers[i] = new TextAnalyzer(new AnalyzerContext(fieldNames[i], options.resolutionMode, compositeName, fieldNames));
+				options.apply(analyzers[i]);
+			}
 		}
 	}
 
@@ -30,9 +32,9 @@ public class Processor {
 			if (options.col == -1 || options.col == i) {
 				if (options.verbose != 0)
 					System.out.printf("\"%s\"%n", row[i]);
-				}
-			if (!options.noAnalysis) {
+				if (!options.noAnalysis) {
 					analyzers[i].train(row[i]);
+				}
 			}
 		}
 	}

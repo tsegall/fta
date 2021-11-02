@@ -30,7 +30,7 @@ import com.cobber.fta.plugins.LogicalTypeGender;
 public class TestBulk {
 	@Test
 	public void basicBulk() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("basicBulk");
 
 		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("Male", 2000000L);
@@ -55,8 +55,8 @@ public class TestBulk {
 
 	@Test
 	public void basicBulkSignature() throws IOException, FTAException {
-		final TextAnalyzer analysisBulk = new TextAnalyzer();
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysisBulk = new TextAnalyzer("basicBulkSignature_bulk");
+		final TextAnalyzer analysis = new TextAnalyzer("basicBulkSignature");
 		final long ITERATIONS = 10000;
 
 		final HashMap<String, Long> basic = new HashMap<>();
@@ -89,7 +89,7 @@ public class TestBulk {
 
 	@Test
 	public void basicDistance() throws IOException, FTAException {
-		final TextAnalyzer analysisBulk = new TextAnalyzer();
+		final TextAnalyzer analysisBulk = new TextAnalyzer("basicDistance");
 		final long SAMPLES = 3622;
 
 		final HashMap<String, Long> basic = new HashMap<>();
@@ -135,7 +135,7 @@ public class TestBulk {
 
 	@Test
 	public void justBlanks() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("justBlanks");
 
 		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("", 1000000L);
@@ -156,7 +156,7 @@ public class TestBulk {
 
 	@Test
 	public void dateBug() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer();
+		final TextAnalyzer analysis = new TextAnalyzer("dateBug");
 		final int SAMPLES = 26;
 
 		final HashMap<String, Long> basic = new HashMap<>();

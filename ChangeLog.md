@@ -509,3 +509,12 @@
  - ENH: Improve the probability of locating a lat/long header
  - ENH: Change handling of plugin retrieval if no Locale specified (effectively defaulting to English), add TestCase
  - INT: Move more stuff into AnalysisConfig
+
+### 4.7.8
+ - ENH: Add tracing support - set via environment variable FTA_TRACE or via setTrace(String) e.g. setTrace("stream=COUNTY,samples=10000")
+	Options are:
+		enabled=true/false,
+		stream=<name of stream> (defaults to all)
+		directory=<directory for trace file> (defaults to java.io.tmpdir)
+		samples=<samples to trace> (defults to 1000)
+ - ENH: Cache ObjectMapper to improve performance

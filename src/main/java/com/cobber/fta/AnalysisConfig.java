@@ -47,6 +47,10 @@ public class AnalysisConfig {
 
 	public int detectWindow = DETECT_WINDOW_DEFAULT;
 
+	public String localeTag = null;
+
+	public String traceOptions = null;
+
 	/** Should we collect statistics (min, max, sum) as we parse the data stream. */
 	public boolean collectStatistics = true;
 
