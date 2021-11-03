@@ -127,6 +127,8 @@ CONTINENT.CODE_EN|Continent Code|en
 CONTINENT.TEXT_EN|Continent Name|en
 COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|*
 COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|*
+COORDINATE.LATITUDE_DMS|Latitude (degrees/minutes/seconds)|*
+COORDINATE.LONGITUDE_DMS|Longitude (degrees/minutes/seconds)|*
 COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|*
 COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2|*
 COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|*
@@ -168,7 +170,8 @@ POSTAL_CODE.POSTAL_CODE_AU|Postal Code|en-AU
 POSTAL_CODE.POSTAL_CODE_CA|Postal Code|en-CA
 POSTAL_CODE.POSTAL_CODE_NL|Postal Code|nl-NL
 POSTAL_CODE.POSTAL_CODE_UK|Postal Code|en-UK
-POSTAL_CODE.ZIP5_US|Postal Code|en-US
+POSTAL_CODE.ZIP5_US|Postal Code|en-CA/en-US
+POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA/en-US
 SSN|Social Security Number|en-US
 STATE_PROVINCE.COUNTY_UK|United Kingdom County|en-UK
 STATE_PROVINCE.STATE_AU|Australian State Code|en-AU

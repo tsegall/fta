@@ -15,6 +15,8 @@
  */
 package com.cobber.fta.dates;
 
+import static com.cobber.fta.core.Utils.isNumeric;
+
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -64,17 +66,6 @@ public class LocaleInfo {
 		}
 	}
 
-	private static boolean isNonNumeric(final String input) {
-		if (input == null)
-			return true;
-
-		for (int i = 0; i < input.length(); i++)
-			if (!Character.isDigit(input.charAt(i)))
-				return true;
-
-		return false;
-	}
-
 	private static synchronized void cacheLocaleInfo(final Locale locale) {
 		final String languageTag = locale.toLanguageTag();
 
@@ -117,7 +108,7 @@ public class LocaleInfo {
 			shortMonthsLocale.put(shortMonth, i + 1);
 			if (m[i].length() != shortMonth.length())
 				unsupportedReason.put(languageTag, "Month abbreviation has different length when upshifted: '" + m[i] + "'");
-			if (!isNonNumeric(m[i]))
+			if (isNumeric(m[i]))
 				unsupportedReason.put(languageTag, "Month abbreviation is Numeric.");
 			generator.train(m[i]);
 		}

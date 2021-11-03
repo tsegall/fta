@@ -75,13 +75,13 @@ public class Driver {
 				logger.println(" --noLogicalTypes - Do not register any Logical Types");
 				logger.println(" --noStatistics - Do not track statistics");
 				logger.println(" --pluginDefinition - Output the plugin definitions from the training data set");
-				logger.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a sigature (record count based on --records)");
+				logger.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a signature (record count based on --records)");
 				logger.println(" --pluginThreshold <n> - Set the plugin threshold percentage (0-100) for detection");
 				logger.println(" --pretty - Pretty print analysis");
 				logger.println(" --records <n> - The number of records to analyze");
 				logger.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
 				logger.println(" --samples <n> - Set the size of the sample window");
-				logger.println(" --signature - Output the Sigatture for the supplied pluginName");
+				logger.println(" --signature - Output the Signature for the supplied pluginName");
 				logger.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
 				logger.println(" --validate - Validate the result of the analysis by reprocessing file against results");
 				logger.println(" --verbose - Output each record as it is processed");

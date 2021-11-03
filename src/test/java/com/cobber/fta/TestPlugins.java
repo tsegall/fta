@@ -946,7 +946,7 @@ public class TestPlugins {
 
 	@Test
 	public void basicZip() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicZZiipp");
+		final TextAnalyzer analysis = new TextAnalyzer("basicZ_ip");
 		final String inputs[] = TestUtils.validZips.split("\\|");
 		int locked = -1;
 
@@ -966,7 +966,34 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), inputs.length);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 32);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_CONSTANT);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_ZIP5);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test
+	public void basicZipVariable() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicZ_ipVariable");
+		final String inputs[] = TestUtils.validZips.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			String input = inputs[i].charAt(0) == '0' ? inputs[i].substring(1) : inputs[i];
+			if (analysis.train(input) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US").signature);
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getOutlierCount(), 0);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_VARIABLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1080,7 +1107,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), 4);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_CONSTANT);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_ZIP5);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1264,7 +1291,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), 4);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_CONSTANT);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_ZIP5);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1481,7 +1508,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), copies);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getLeadingZeroCount(), copies);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_CONSTANT);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_ZIP5);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertTrue(sample.matches(result.getRegExp()));
 	}
@@ -2134,7 +2161,7 @@ public class TestPlugins {
 		Assert.assertNull(result.getTypeQualifier());
 		Assert.assertEquals(result.getSampleCount(), end + 1 - start);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_CONSTANT);
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZip5.REGEXP_ZIP5);
 		Assert.assertEquals(result.getMatchCount(), end - start);
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}

@@ -31,18 +31,18 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
 /**
- * Plugin to detect valid US Zip codes.
+ * Plugin to detect valid US Zip plus 4 codes.
  * Note: we used an Infinite :-) Logical Type since the domains is so large.
  */
-public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
-	public static final String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_US";
-	public static final String REGEXP_ZIP5 = "\\d{5}";
-	public static final String REGEXP_VARIABLE = "\\d{3,5}";
-	private int minLength = 5;
+public class LogicalTypeUSZipPlus4 extends LogicalTypeInfinite {
+	public static final String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_PLUS4_US";
+	public static final String REGEXP_ZIP_PLUS4 = "\\d{5}-\\d{4}";
+	public static final String REGEXP_VARIABLE = "\\d{5}(-\\d{4})?";
+	private int minLength = 10;
 	private SingletonSet zipsRef;
 	private Set<String> zips;
 
-	public LogicalTypeUSZip5(final PluginDefinition plugin) {
+	public LogicalTypeUSZipPlus4(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -51,13 +51,13 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 		int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
 				charCounts['5'] + charCounts['6'] + charCounts['7'] + charCounts['8'] + charCounts['9'];
 		final int len = trimmed.length();
-		if (len != 5 && len != 4 && len != 3)
+		if (len != 10 && len != 5)
 			return false;
 
 		if (len == 5)
 			return digits == 5;
 
-		return zips.contains(len == 3 ? "00" + trimmed : "0" + trimmed);
+		return len == 10 && trimmed.charAt(5) == '-' && digits == 9;
 	}
 
 	@Override
@@ -84,31 +84,31 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return minLength == 3 ? REGEXP_VARIABLE : REGEXP_ZIP5;
+		return minLength == 5 ? REGEXP_VARIABLE : REGEXP_ZIP_PLUS4;
 	}
 
 	@Override
 	public FTAType getBaseType() {
-		return FTAType.LONG;
+		return FTAType.STRING;
 	}
 
 	@Override
 	public boolean isValid(String input) {
 		final int len = input.length();
 
-		if (len != 5 && len != 4 && len != 3)
+		if (len != 10 && len != 5)
 			return false;
 
-		if (len < 5) {
-			input = (len == 3 ? "00" : "0") + input;
-			minLength = 3;
-		}
+		if (len == 10)
+			input = input.substring(0, 5);
+		else
+			minLength = 5;
 
 		return zips.contains(input);
 	}
 
 	private String backout() {
-		return KnownPatterns.PATTERN_NUMERIC_VARIABLE;
+		return KnownPatterns.PATTERN_ANY_VARIABLE;
 	}
 
 	@Override

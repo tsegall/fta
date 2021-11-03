@@ -518,3 +518,9 @@
 		directory=<directory for trace file> (defaults to java.io.tmpdir)
 		samples=<samples to trace> (defults to 1000)
  - ENH: Cache ObjectMapper to improve performance
+
+### 4.7.9
+ - ENH: Add Semantic Types - COORDINATE.LATITUDE_DMS, COORDINATE.LONGITUDE_DMS
+ - BUG: Fixed issue where short (i.e. missing leading 0's) Zip codes were not being detected
+ - ENH: Refreshed US Zip list with latest from USPS
+ - ENH: Add Semantic Type - POSTAL_CODE.ZIP5_PLUS4_US

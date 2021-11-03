@@ -30,6 +30,7 @@ import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.plugins.LogicalTypeUSZip5;
+import com.cobber.fta.plugins.LogicalTypeUSZipPlus4;
 
 public class RandomTests {
 	private static final SecureRandom random = new SecureRandom();
@@ -143,9 +144,10 @@ public class RandomTests {
 	@Test
 	public void zip50() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("zip50");
+		analysis.setPluginThreshold(90);
 		int locked = -1;
-		final int COUNT = 50;
-		final int INVALID = 2;
+		final int COUNT = 46;
+		final int INVALID = 3;
 
 		for (int i = 10000; i < 10000 + COUNT; i++) {
 			if (analysis.train(String.valueOf(i)) && locked != -1)
@@ -154,6 +156,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), COUNT);
 		Assert.assertEquals(result.getMatchCount(), COUNT - INVALID);
@@ -161,9 +164,8 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), "\\d{5}");
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertEquals(result.getMinValue(), "10000");
-		Assert.assertEquals(result.getMaxValue(), "10049");
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getConfidence(), 0.96);
+		Assert.assertEquals(result.getMaxValue(), "10045");
+		Assert.assertEquals(result.getConfidence(), 0.9673913043478262);
 
 		for (int i = 10000; i < 10000 + COUNT; i++) {
 			Assert.assertTrue(String.valueOf(i).matches(result.getRegExp()));
@@ -517,12 +519,12 @@ public class RandomTests {
 
 		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertNull(result.getTypeQualifier());
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZipPlus4.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{5}(-\\d{4})?");
+		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZipPlus4.REGEXP_VARIABLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {

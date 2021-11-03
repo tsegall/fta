@@ -154,7 +154,7 @@ public class LogicalTypeAddressEN extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
 		double confidence = (double)matchCount/realSamples;
-		// Boost by up to 10% if we like the header
+		// Boost by up to 5% if we like the header
 		if (getHeaderConfidence(dataStreamName) != 0)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.05), 1.0);
 

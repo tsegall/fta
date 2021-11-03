@@ -78,7 +78,8 @@ public abstract class Utils {
 	}
 
 	/**
-	 * @param input Test if the supplied input is a string of all 0's.
+	 * Test if the supplied input is a string of all 0's.
+	 * @param input String to test.
 	 * @return True if input is a string of 0's.
 	 */
 	public static boolean allZeroes(final String input) {
@@ -87,6 +88,22 @@ public abstract class Utils {
 
 		for (int i = 0; i < input.length(); i++)
 			if (input.charAt(i) != '0')
+				return false;
+
+		return true;
+	}
+
+	/**
+	 * Test if the supplied input is all numeric.
+	 * @param input String to test.
+	 * @return True if the string is all Numeric.
+	 */
+	public static boolean isNumeric(final String input) {
+		if (input == null || input.isEmpty())
+			return false;
+
+		for (int i = 0; i < input.length(); i++)
+			if (!Character.isDigit(input.charAt(i)))
 				return false;
 
 		return true;
