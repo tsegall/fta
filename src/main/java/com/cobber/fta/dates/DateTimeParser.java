@@ -23,15 +23,12 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.MinMax;
@@ -233,11 +230,6 @@ public class DateTimeParser {
 		return ret;
 	}
 
-	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(final Map<K, V> map) {
-		return map.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-	}
-
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
@@ -263,7 +255,7 @@ public class DateTimeParser {
 		else {
 
 			// Sort the results of our training by value so that we consider the most frequent first
-			final Map<String, Integer> byValue = sortByValue(results);
+			final Map<String, Integer> byValue = Utils.sortByValue(results);
 
 			// Iterate through all the results of our training, merging them to produce our best guess
 			for (final Map.Entry<String, Integer> entry : byValue.entrySet()) {
@@ -528,8 +520,100 @@ public class DateTimeParser {
 		if (attempt != null)
 			return attempt;
 
+		if (locale.getLanguage().equals("ja"))
+			return passJapanese(trimmed, matcher, resolutionMode);
+
 		// Third and final pass is brute force by elimination
 		return passThree(trimmed, matcher, resolutionMode);
+	}
+
+	private char japaneseDateTimeMapper(char ch) {
+		switch (ch) {
+		case '年':
+			return 'y';
+		case  '月':
+			return 'M';
+		case '日':
+			return 'd';
+		case '時':
+			return 'H';
+		case '分':
+			return 'm';
+		case '秒':
+			return 's';
+		default:
+			return '¶';
+		}
+	}
+
+	private String passJapanese(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
+		int yearIndex = trimmed.indexOf('年');
+		int hourIndex = trimmed.indexOf('時');
+		if (yearIndex == -1 && hourIndex == -1)
+			return null;
+
+		String input = trimmed;
+		// Only hunt for AM/PM strings if we have seen the Hours character
+		if (hourIndex != -1)
+			for (final String s : LocaleInfo.getAMPMStrings(locale)) {
+				int find = trimmed.indexOf(s);
+				if (find != -1)
+					input = Utils.replaceAt(trimmed, find, s.length(), "a");
+			}
+
+		int len = input.length();
+		char workingOn = '¶';
+		int digits = 0;
+
+		StringBuffer result = new StringBuffer(len);
+		for (int i = len - 1; i >= 0; i--) {
+			char ch = input.charAt(i);
+			if (Character.isDigit(ch))
+				ch = 'd';
+			switch (ch) {
+			// Year
+			case '年':
+			// Month
+			case '月':
+			// Day
+			case '日':
+			// Hour
+			case '時':
+			// Minute
+			case '分':
+			// Second
+			case '秒':
+				if (digits != 0) {
+					result.append(Utils.repeat(workingOn, digits));
+					digits = 0;
+				}
+				result.append(ch);
+				workingOn = japaneseDateTimeMapper(ch);
+				break;
+			case 'd':
+				digits++;
+				break;
+			default:
+				if (digits != 0) {
+					result.append(Utils.repeat(workingOn, digits));
+					digits = 0;
+				}
+				result.append(ch);
+				break;
+			}
+		}
+
+		if (digits != 0) {
+			result.append(Utils.repeat(workingOn, digits));
+			digits = 0;
+		}
+
+		result = result.reverse();
+
+		// So we think we have nailed it - but it only counts if it happily passes a validity check
+		final DateTimeParserResult dtp = DateTimeParserResult.asResult(result.toString(), resolutionMode, locale);
+
+		return (dtp != null && dtp.isValid(trimmed)) ? result.toString() : null;
 	}
 
 	/**
@@ -701,7 +785,6 @@ public class DateTimeParser {
 					break;
 				}
 				// FALL THROUGH
-
 			case '/':
 				if (timeSeen && !timeClosed)
 					return null;

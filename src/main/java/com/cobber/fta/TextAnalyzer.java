@@ -971,7 +971,7 @@ public class TextAnalyzer {
 	 */
 	public void registerDefaultPlugins(final Locale locale) {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))) {
-			plugins.registerPlugins(reader, context.getStreamName(), locale);
+			plugins.registerPluginsInternal(reader, context.getStreamName(), locale);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
 		}
@@ -1011,6 +1011,7 @@ public class TextAnalyzer {
 				logical.setThreshold(pluginThreshold);
 		}
 
+		// Sort each of the plugins based on their priority (lower is referenced first)
 		Collections.sort(infiniteTypes);
 		Collections.sort(finiteTypes);
 		Collections.sort(regExpTypes);
@@ -1656,6 +1657,7 @@ public class TextAnalyzer {
 			}
 
 			if (possibleDateTime != 0 && possibleDateTime + 1 >= raw.size()) {
+
 				// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
 				// if there happens to be an issue then we swallow it and will not detect the date/datetime.
 				try {
@@ -2470,6 +2472,9 @@ public class TextAnalyzer {
 		return best;
 	}
 
+	private int EARLY_LONG_YYYYMMDD = 19000101;
+	private int LATE_LONG_YYYYMMDD = 20410101;
+
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
@@ -2539,7 +2544,7 @@ public class TextAnalyzer {
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG);
 
 			// Sometimes a Long is not a Long but it is really a date
-			if (groupingSeparators == 0 && minLongNonZero != Long.MAX_VALUE && minLongNonZero > 19000101 && maxLong < 20410101 &&
+			if (groupingSeparators == 0 && minLongNonZero != Long.MAX_VALUE && minLongNonZero > EARLY_LONG_YYYYMMDD && maxLong < LATE_LONG_YYYYMMDD &&
 					DateTimeParser.plausibleDateCore(false, (int)minLongNonZero%100, ((int)minLongNonZero/100)%100, (int)minLongNonZero/10000, 4)  &&
 					DateTimeParser.plausibleDateCore(false, (int)maxLong%100, ((int)maxLong/100)%100, (int)maxLong/10000, 4)  &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("date"))) {

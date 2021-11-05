@@ -165,15 +165,15 @@
 		"priority": 80
 	},
 	{
-		"qualifier" : "GENDER.TEXT_JP",
+		"qualifier" : "GENDER.TEXT_JA",
 		"description": "Gender (Japanese Language)",
-		"signature": "fAcvYmYBN4CueIMoAfxH/xDiK/M=",
+		"signature": "Cw4ieuKHMT4qah2mJ9uWUYg+rNk=",
 		"headerRegExps" : [ "(性|性別)" ],
 		"headerRegExpConfidence" : [ 70 ],
 		"contentType": "inline",
 		"content": "{ \"members\": [ \"女性\",\"女\",\"男性\",\"男\",\"その他\" ] }",
 		"regExpReturned" : "(女性|女|男性|男|その他)",
-		"validLocales": [ "jp" ],
+		"validLocales": [ "ja" ],
 		"backout": ".*",
 		"baseType" : "STRING",
 		"priority": 81
@@ -321,6 +321,18 @@
 		"priority": 116
 	},
 	{
+		"qualifier": "STATE_PROVINCE.STATE_BR",
+		"description": "Brazilian State Code",
+		"signature": "5B0N5wsZpS+g/ck2cXCQjtqYwXA=",
+		"validLocales": [ "pt-BR" ],
+		"headerRegExps": [ ".*(?i)(estado|state).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"content": "/reference/br_states.csv",
+		"contentType": "resource",
+		"backout": "\\p{IsAlphabetic}{2}",
+		"priority": 117
+	},
+	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_CA",
 		"description": "Canadian Province Name",
 		"signature": "hiCNMWvc1MO99KTP8IaH1Fp3s3Y=",
@@ -331,7 +343,7 @@
 		"content": "/reference/ca_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 117
+		"priority": 120
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_MX",
@@ -344,7 +356,7 @@
 		"content": "/reference/mx_states_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 118
+		"priority": 121
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_US",
@@ -357,7 +369,7 @@
 		"content": "/reference/us_states_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 119
+		"priority": 122
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NAME_NA",
@@ -370,7 +382,7 @@
 		"content": "/reference/na_states_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 120
+		"priority": 123
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_AU",
@@ -383,7 +395,7 @@
 		"content": "/reference/au_states_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 121
+		"priority": 124
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_DE",
@@ -396,7 +408,7 @@
 		"content": "/reference/de_states_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 122
+		"priority": 125
 	},
 	{
 		"qualifier": "STATE_PROVINCE.REGION_NAME_FR",
@@ -409,7 +421,7 @@
 		"content": "/reference/fr_regions.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 123
+		"priority": 126
 	},
 	{
 		"qualifier": "STATE_PROVINCE.DEPARTMENT_NAME_FR",
@@ -422,7 +434,7 @@
 		"content": "/reference/fr_department.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 124
+		"priority": 127
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_IT",
@@ -435,7 +447,7 @@
 		"content": "/reference/it_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 125
+		"priority": 128
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_ES",
@@ -448,7 +460,7 @@
 		"content": "/reference/es_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 126
+		"priority": 129
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_NL",
@@ -461,7 +473,7 @@
 		"content": "/reference/nl_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[- \\p{IsAlphabetic}]+",
-		"priority": 127
+		"priority": 130
 	},
 	{
 		"qualifier": "STATE_PROVINCE.COUNTY_US",
@@ -474,7 +486,7 @@
 		"content": "/reference/us_counties_full.csv",
 		"contentType": "resource",
 		"backout": "[-,\\.,' \\p{IsAlphabetic}]+",
-		"priority": 128
+		"priority": 131
 	},
 	{
 		"qualifier": "STATE_PROVINCE.COUNTY_UK",
@@ -487,7 +499,7 @@
 		"content": "/reference/gb_counties_full.csv",
 		"contentType": "resource",
 		"backout": "[-,& \\p{IsAlphabetic}]+",
-		"priority": 129
+		"priority": 132
 	},
 	{
 		"qualifier": "STATE_PROVINCE.CANTON_NAME_CH",
@@ -500,7 +512,33 @@
 		"content": "/reference/ch_cantons_full.csv",
 		"contentType": "resource",
 		"backout": "[-\\. \\p{IsAlphabetic}]+",
-		"priority": 130
+		"priority": 133
+	},
+	{
+		"qualifier": "STATE_PROVINCE.STATE_NAME_BR",
+		"description": "Brazilian State Name",
+		"signature": "Av9xqFJX7iwzve2N0bwz5yImxnM=",
+		"validLocales": [ "pt-BR" ],
+		"headerRegExps": [ ".*(?i)(estado|state).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "[-\\. \\p{IsAlphabetic}]+",
+		"content": "/reference/br_states_full.csv",
+		"contentType": "resource",
+		"backout": "[-\\. \\p{IsAlphabetic}]+",
+		"priority": 134
+	},
+	{
+		"qualifier": "STATE_PROVINCE.PREFECTURE_NAME_JA",
+		"description": "Japanese Prefecture Name",
+		"signature": "qUPFgdl8kNvmZ8M55kR4qaFp184=",
+		"validLocales": [ "ja" ],
+		"headerRegExps": [ ".*(?i)(都道府県|todōfuken).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "[-\\. \\p{IsAlphabetic}]+",
+		"content": "/reference/ja_prefectures_full.csv",
+		"contentType": "resource",
+		"backout": "[-\\. \\p{IsAlphabetic}]+",
+		"priority": 135
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
@@ -511,7 +549,7 @@
 		"content": "/reference/ISO-4217.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 135
+		"priority": 138
 	},
 	{
 		"qualifier": "CURRENCY.TEXT_EN",
@@ -522,7 +560,7 @@
 		"content": "/reference/en_currency_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 136
+		"priority": 139
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-3",

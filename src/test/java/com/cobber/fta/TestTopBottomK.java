@@ -29,7 +29,7 @@ import com.cobber.fta.core.FTAPluginException;
 public class TestTopBottomK {
 	private static final SecureRandom random = new SecureRandom();
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicZips() throws IOException {
 		final String[] candidatesZips = TestUtils.validZips.split("\\|");
 		final HashSet<String> topK = new HashSet<>(Arrays.asList(new String[] {
@@ -50,7 +50,7 @@ public class TestTopBottomK {
 	// Need to test the following equivalence classes for size n ...
 	// 0, n - 1, n, n + 1, 2n - 1, 2n, 2n + 1
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicIntegers0() throws IOException {
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
 		final HashSet<Integer> topK = new HashSet<>();
@@ -60,7 +60,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.bottomK(), bottomK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicIntegers9() throws IOException {
 		final int SIZE = 9;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
@@ -84,7 +84,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.bottomK(), bottomK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicIntegers10() throws IOException {
 		final int SIZE = 10;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
@@ -108,7 +108,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.bottomK(), bottomK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicIntegers11() throws IOException {
 		final int SIZE = 11;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
@@ -132,7 +132,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.bottomK(), bottomK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicIntegers19() throws IOException {
 		final int SIZE = 19;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
@@ -156,7 +156,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.topK(), topK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicIntegers20() throws IOException {
 		final int SIZE = 20;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
@@ -180,7 +180,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.topK(), topK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicIntegers21() throws IOException {
 		final int SIZE = 21;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
@@ -204,7 +204,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.topK(), topK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicIntegers100() throws IOException {
 		final int SIZE = 100;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
@@ -228,7 +228,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.bottomK(), bottomK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicIntegers11_size5() throws IOException {
 		final int SIZE = 11;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>(5);
@@ -252,7 +252,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.bottomK(), bottomK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicLongs100() throws IOException {
 		final TopBottomK<Long, Long> t = new TopBottomK<>();
 		final HashSet<Long> topK = new HashSet<>(Arrays.asList(new Long[] {99L, 98L, 97L, 96L, 95L, 94L, 93L, 92L, 91L, 90L} ));
@@ -275,7 +275,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.bottomK(), bottomK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicDoubles100() throws IOException {
 		final TopBottomK<Double, Double> t = new TopBottomK<>();
 		final HashSet<Double> topK = new HashSet<>(Arrays.asList(new Double[] {99.0, 98.0, 97.0, 96.0, 95.0, 94.0, 93.0, 92.0, 91.0, 90.0} ));
@@ -298,7 +298,7 @@ public class TestTopBottomK {
 		Assert.assertEquals(t.bottomK(), bottomK);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicFirstNames() throws IOException, FTAPluginException {
 		final TopBottomK<String, String> t = new TopBottomK<>();
 		final HashSet<String> bottomK = new HashSet<>(Arrays.asList(new String[] {

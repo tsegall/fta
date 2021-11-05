@@ -75,12 +75,12 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void variableLengthPositiveInteger() throws IOException, FTAException {
 		_variableLengthPositiveInteger(true);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void variableLengthPositiveInteger_ns() throws IOException, FTAException {
 		_variableLengthPositiveInteger(false);
 	}
@@ -117,17 +117,17 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void variableLengthInteger() throws IOException, FTAException {
 		_variableLengthInteger(true);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void variableLengthInteger_ns() throws IOException, FTAException {
 		_variableLengthInteger(false);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void constantLengthInteger() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("constantLengthInteger");
 		final String[] inputs = "456789|456089|456700|116789|433339|409187".split("\\|");
@@ -154,7 +154,7 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void trailingMinus() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("trailingMinus");
 		final String[] inputs = "458-|123|901|404|209-|12|0|0|676|1894-|2903-|111-|5234".split("\\|");
@@ -181,7 +181,7 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void leadingZeros() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
 
@@ -257,7 +257,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void leadingZerosWith0() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
 
@@ -281,7 +281,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void testBuggyEAN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
 
@@ -302,7 +302,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void testUniqueness() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
 		final int tooBig = analysis.getMaxCardinality() - 1;
@@ -323,7 +323,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void testUniquenessBlown() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
 		final int tooBig = analysis.getMaxCardinality();
@@ -345,7 +345,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void testMonotonicIncreasing() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
 		final int tooBig = 2 * analysis.getMaxCardinality();
@@ -366,7 +366,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void testMonotonicDecreasing() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
 		final int tooBig = 2 * analysis.getMaxCardinality();
@@ -387,7 +387,8 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
+
 	public void testUniquenessNone() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
 		final int tooBig = analysis.getMaxCardinality() - 1;
@@ -410,7 +411,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void groupingSeparatorLarge() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final int SAMPLE_SIZE = 10000;
@@ -460,7 +461,7 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void groupingSeparatorLargeFRENCH() throws IOException, FTAException {
 		final Locale locales[] = new Locale[] { Locale.GERMAN, Locale.FRANCE };
 		final int SAMPLE_SIZE = 1000;
@@ -524,7 +525,8 @@ public class TestLongs {
 		}
 	}
 
-	// BROKEN @Test
+	// BROKEN @Test(groups = { "all", "longs" })
+
 	public void trailingMinusArEH() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Locale locale = Locale.forLanguageTag("ar-EH");
@@ -556,7 +558,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void localeLongTest() throws IOException, FTAException {
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
@@ -668,7 +670,7 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void someInts() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("someInts");
 		Assert.assertTrue(analysis.getNumericWidening());
@@ -709,7 +711,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)bad/result.getSampleCount());
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void manyConstantLengthLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthLongs");
 		final int nullIterations = 50;
@@ -740,7 +742,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void paddedLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RowID");
 		final String inputs[] = new String[] {
@@ -773,7 +775,7 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void someLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("stringField");
 		analysis.setThreshold(90);
@@ -798,7 +800,7 @@ public class TestLongs {
 	}
 
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void signedLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
 		final String inputs[] = new String[] {
@@ -828,7 +830,7 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void manyKnownInts() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyKnownInts");
 		final int nullIterations = 50;
@@ -859,7 +861,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getMaxValue(), String.valueOf(iterations - 1));
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void groupingSeparator() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final String pipedInput = "3600|7500|3600|3600|800|3600|1200|1200|600|" +
@@ -903,7 +905,7 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void groupingSeparatorSigned() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final int SAMPLE_SIZE = 100;
@@ -964,7 +966,7 @@ public class TestLongs {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void testQualifierNumeric() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Numeric");
 		analysis.setLengthQualifier(false);
@@ -984,7 +986,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getRegExp(), "\\d+");
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void justSimple() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("justSimple");
 
@@ -1006,7 +1008,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void manyRandomInts() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyRandomInts");
 		final int nullIterations = 50;
@@ -1031,7 +1033,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void longToSigned() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("LongToSigned");
 		final int SAMPLE_SIZE = 100;
@@ -1050,7 +1052,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getLeadingZeroCount(), 0);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void noStatistics() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("noStatistics");
 		analysis.setCollectStatistics(false);
@@ -1124,12 +1126,12 @@ public class TestLongs {
 		//   - Count 15141740, duration: 10002ms, ~15,141,740 per second
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void longPerf() throws IOException, FTAException {
 		_longPerf(true);
 	}
 
-	@Test
+	@Test(groups = { "all", "longs" })
 	public void longPerfNoStatistics() throws IOException, FTAException {
 		_longPerf(false);
 	}

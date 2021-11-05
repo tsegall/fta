@@ -38,7 +38,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "4.7.9"
+version = "4.7.10"
 
 repositories {
   mavenCentral()
@@ -46,7 +46,10 @@ repositories {
 
 test {
   // enable TestNG support (default is JUnit)
-  useTestNG()
+  def groups = System.getProperty('groups', 'all')
+  useTestNG() {
+    includeGroups groups
+  }
   dependsOn cleanTest
   testLogging.showStandardStreams = true
 }

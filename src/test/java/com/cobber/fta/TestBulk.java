@@ -28,7 +28,7 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.LogicalTypeGender;
 
 public class TestBulk {
-	@Test
+	@Test(groups = { "all" })
 	public void basicBulk() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBulk");
 
@@ -53,7 +53,7 @@ public class TestBulk {
 		Assert.assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicBulkSignature() throws IOException, FTAException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer("basicBulkSignature_bulk");
 		final TextAnalyzer analysis = new TextAnalyzer("basicBulkSignature");
@@ -87,7 +87,7 @@ public class TestBulk {
 		Assert.assertEquals(resultBulk.getDataSignature(), result.getDataSignature());
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicDistance() throws IOException, FTAException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer("basicDistance");
 		final long SAMPLES = 3622;
@@ -113,7 +113,7 @@ public class TestBulk {
 		Assert.assertEquals(resultBulk.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void basicDate() throws IOException, FTAException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer("ModifiedDate", DateResolutionMode.Auto);
 
@@ -133,7 +133,7 @@ public class TestBulk {
 		Assert.assertEquals(resultBulk.getName(), "ModifiedDate");
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void justBlanks() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("justBlanks");
 
@@ -154,7 +154,7 @@ public class TestBulk {
 		Assert.assertEquals(result.getCardinality(), 0);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void dateBug() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateBug");
 		final int SAMPLES = 26;

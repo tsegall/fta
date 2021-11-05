@@ -36,6 +36,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *  - RegExp - implementation is based on the detection of the supplied RegExp with a provided set of constraints.
  */
 public class PluginDefinition {
+	/** Externally registered plugins can have a priority no lower than this. */
+	public final static int PRIORITY_EXTERNAL = 2000;
+
 	private static List<PluginDefinition> builtinPlugins;
 
 	/** Semantic Type of Plugin (Qualifier). */
@@ -49,7 +52,7 @@ public class PluginDefinition {
 	/** Is this plugin sensitive to the input locale? */
 	public boolean localeSensitive;
 	/** The relative priority of this plugin. */
-	public int priority = 1000;
+	public int priority = PRIORITY_EXTERNAL;
 
 	/** Infinite/Finite plugins: this is the class used to implement. */
 	public String clazz;

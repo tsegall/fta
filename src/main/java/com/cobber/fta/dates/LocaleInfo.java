@@ -15,8 +15,6 @@
  */
 package com.cobber.fta.dates;
 
-import static com.cobber.fta.core.Utils.isNumeric;
-
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -30,6 +28,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.core.Utils;
 
 /*
  * Helper class used to cache Month information across multiple languages.
@@ -76,7 +75,7 @@ public class LocaleInfo {
 		final GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(locale);
 		final int actualMonths = cal.getActualMaximum(Calendar.MONTH);
 
-		final DateFormatSymbols dfs = new DateFormatSymbols(locale);
+		final DateFormatSymbols dfs = DateFormatSymbols.getInstance(locale);
 
 		// Setup the Months
 		final String[] longMonths = dfs.getMonths();
@@ -103,19 +102,26 @@ public class LocaleInfo {
 		final TreeMap<String, Integer> shortMonthsLocale = new TreeMap<>(localeInfo.new LengthComparator());
 		generator = new RegExpGenerator();
 
+		boolean useShortMonths = true;
 		for (int i = 0; i <= actualMonths; i++) {
 			final String shortMonth = m[i].toUpperCase(locale);
 			shortMonthsLocale.put(shortMonth, i + 1);
 			if (m[i].length() != shortMonth.length())
 				unsupportedReason.put(languageTag, "Month abbreviation has different length when upshifted: '" + m[i] + "'");
-			if (isNumeric(m[i]))
-				unsupportedReason.put(languageTag, "Month abbreviation is Numeric.");
+			if (Utils.isNumeric(m[i]))
+				useShortMonths = false;
 			generator.train(m[i]);
 		}
-		shortMonths.put(languageTag, shortMonthsLocale);
-		shortMonthsRegExp.put(languageTag, generator.getResult());
-		final int len = shortMonthsLocale.firstKey().length();
-		shortMonthsLength.put(languageTag, len == shortMonthsLocale.lastKey().length() ? len : -1);
+		if (useShortMonths) {
+			shortMonths.put(languageTag, shortMonthsLocale);
+			shortMonthsRegExp.put(languageTag, generator.getResult());
+			final int len = shortMonthsLocale.firstKey().length();
+			shortMonthsLength.put(languageTag, len == shortMonthsLocale.lastKey().length() ? len : -1);
+		}
+		else {
+			shortMonths.put(languageTag, new TreeMap<>(localeInfo.new LengthComparator()));
+			shortMonthsLength.put(languageTag, -1);
+		}
 
 		// Setup the AM/PM strings
 		final Set<String> ampmStringsLocale = new LinkedHashSet<>();

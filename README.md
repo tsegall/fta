@@ -6,7 +6,7 @@ data is input from some source it should be possible to stream the data through 
 undue performance degradation).  See Performance notes below.
 Support for non-English date detection is relatively robust, with the following exceptions:
 * No support for non-Gregorian calendars
-* No support for non-Arabic numerals and limited support for Japanese dates.
+* No support for non-Arabic numerals
 
 Note: Semantic Type detection is typically predicated on valid input data, for example, a field that contains data that looks
 like phone numbers, but that are in fact invalid, will NOT be detected as the semantic type - TELEPHONE.
@@ -148,7 +148,7 @@ GENDER.TEXT_FR|Gender (French Language)|fr
 GENDER.TEXT_NL|Gender (Dutch Language)|nl
 GENDER.TEXT_PT|Gender (Portugese Language)|pt
 GENDER.TEXT_TR|Gender (Turkish Language)|tr
-GENDER.TEXT_JP|Gender (Japanese Language)|jp
+GENDER.TEXT_JP|Gender (Japanese Language)|ja
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
 INDUSTRY_EN|Industry Name|en
@@ -174,25 +174,29 @@ POSTAL_CODE.ZIP5_US|Postal Code|en-CA/en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA/en-US
 SSN|Social Security Number|en-US
 STATE_PROVINCE.COUNTY_UK|United Kingdom County|en-UK
+STATE_PROVINCE.COUNTY_US|US County|en-US
 STATE_PROVINCE.STATE_AU|Australian State Code|en-AU
-STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA/en-US
-STATE_PROVINCE.STATE_NAME_DE|German State Name|de-DE
+STATE_PROVINCE.STATE_BR|Brazilian State Code|pt-BR
 STATE_PROVINCE.STATE_MX|Mexican State Code|es-MX
-STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA/en-US/es-MX
 STATE_PROVINCE.STATE_US|US State Code|en-CA/en-US
-STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
 STATE_PROVINCE.STATE_NAME_AU|Australian State Name|en-AU
-STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name|en-CA/en-US
+STATE_PROVINCE.STATE_NAME_BR|Brazilian State Name|pt-BR
+STATE_PROVINCE.STATE_NAME_DE|German State Name|de-DE
 STATE_PROVINCE.STATE_NAME_MX|Mexican State Name|es-MX
-STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA/en-US/es-MX
 STATE_PROVINCE.STATE_NAME_US|US State Name|en-CA/en-US
-STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
+STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA/en-US/es-MX
+STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA/en-US
+STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
+STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name|en-CA/en-US
 STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
 STATE_PROVINCE.PROVINCE_NAME_ES|Spanish Province Name|es-ES
 STATE_PROVINCE.PROVINCE_NAME_NL|Dutch Province Name|nl-NL
+STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA/en-US/es-MX
+STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
 STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
 STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH,fr-CH,it-CH
 STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH,fr-CH,it-CH
+STATE_PROVINCE.PREFECTURE_NAME_JP|Japanese Prefecture Name|ja
 STREET_ADDRESS_EN|Street Address (English Language)|en
 STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
 STREET_MARKER_EN| Street Suffix (English Language)|en
@@ -323,8 +327,18 @@ Fastest way to get started is to review the samples provided.
 
 `$ ./gradlew installDist`
 
-## Running Tests - including coverage ##
+## Running Tests ##
+All tests and coverage
+
 `$ ./gradlew test jacocoTestReport`
+
+Just the dates tests
+
+`$ ./gradlew test -Dgroups=dates`
+
+Just one test
+
+`$ ./gradlew test --tests TestDates.localeDateTest`
 
 ## Generate JavaDoc ##
 `$ ./gradlew javadoc`
@@ -340,6 +354,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Releasing a new version ##
 `$ ./gradlew uploadArchives`
+
 Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and follow the instructions!!
 1. login to OSSRH available at https://oss.sonatype.org/
 2. Find and select the latest version in the Staging Repository

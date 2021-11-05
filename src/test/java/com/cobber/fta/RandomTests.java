@@ -35,21 +35,21 @@ import com.cobber.fta.plugins.LogicalTypeUSZipPlus4;
 public class RandomTests {
 	private static final SecureRandom random = new SecureRandom();
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void getReflectionSampleSize() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("getReflectionSampleSize");
 
 		Assert.assertEquals(analysis.getReflectionSampleSize(), TextAnalyzer.REFLECTION_SAMPLES);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void getDefaultLogicalTypesDefault() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("getDefaultLogicalTypesDefault");
 
 		Assert.assertTrue(analysis.getDefaultLogicalTypes());
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setDefaultLogicalTypesTooLate() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setDefaultLogicalTypesTooLate");
 
@@ -65,14 +65,14 @@ public class RandomTests {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setDefaultLogicalTypes() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setDefaultLogicalTypes");
 		analysis.setDefaultLogicalTypes(false);
 		Assert.assertFalse(analysis.getDefaultLogicalTypes());
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void inadequateData() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("inadequateData");
 		final String[] inputs = "47|89|90|91".split("\\|");
@@ -99,7 +99,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void noData() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("noData");
 		final TextAnalysisResult result = analysis.getResult();
@@ -112,7 +112,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getTypeQualifier(), "NULL");
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void rubbish() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("rubbish");
 		final String[] inputs = "47|hello|hello,world|=====47=====|aaaa|0|12|b,b,b,b390|4083|ddd ddd|90|-------|+++++|42987|8901".split("\\|");
@@ -141,7 +141,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void zip50() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("zip50");
 		analysis.setPluginThreshold(90);
@@ -172,7 +172,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void mean100() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("mean100");
 		int locked = -1;
@@ -200,7 +200,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getStandardDeviation(), Double.valueOf(28.86607004772212));
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void limitedData() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("limitedData");
 		final String[] inputs = "12|4|5|".split("\\|");
@@ -229,7 +229,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void debugging() throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("employeeNumber");
 		analysis.setTrace("enabled=true");
@@ -275,7 +275,7 @@ public class RandomTests {
 		Assert.assertEquals(matchCount, result.getMatchCount());
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void testTrim() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testTrim");
 		final String pipedInput = " Hello|  Hello| Hello |  world  |    Hello   |      Hi        |" +
@@ -311,7 +311,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void changeMind() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("changeMind");
 		int locked = -1;
@@ -338,7 +338,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void changeMindMinMax() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("changeMindMinMax");
 		analysis.setThreshold(97);
@@ -400,7 +400,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void testQualifierAlpha() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alpha");
 		final int STRING_LENGTH = 5;
@@ -427,7 +427,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{5}");
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void testQualifierAlphaNumeric() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("AlphaNumeric");
 		analysis.setLengthQualifier(false);
@@ -447,7 +447,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d{5}");
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void change2() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("change2");
 		final String input = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
@@ -484,7 +484,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void mixedZip() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("mixedZip");
 		final String[] inputs = new String[] {
@@ -533,7 +533,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void trailingAM() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("trailingAM");
 		final String inputs[] = new String[] {
@@ -571,7 +571,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void frenchName() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("frenchName");
 		final String pipedInput = "Adrien|Alain|Albert|Alexandre|Alexis|André|Antoine|Arnaud|Arthur|Aurélien|" +
@@ -606,7 +606,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void basicLengthValidationBlanks() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Spaces");
 		final int iters = 30;
@@ -645,7 +645,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void basicLengthValidationString() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Spaces");
 		final int iters = 30;
@@ -685,7 +685,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void variableSpacesFixedLength() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("variableSpacesFixedLength");
 		final String pipedInput = "JMD     |JOD     |JPYP    |KESQ    |KGS     |KHR     |" +
@@ -736,7 +736,7 @@ public class RandomTests {
 			"371|334|438|442|782|715|775|893|314|337|326|781|984|349|534|888|654|841|158|182|" +
 			"098|123|435|000|312|223|343|563|123|";
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void constantLength3_alpha() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("constantLength3_alpha");
 		final String inputs[] = alpha3.split("\\|");
@@ -763,7 +763,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void constantLength3_alnum() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("constantLength3_alnum");
 		final String inputs[] = (alpha3 + number3).split("\\|");
@@ -791,7 +791,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void constantLength3_numal() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("constantLength3_numal");
 		final String inputs[] = (number3 + alpha3).split("\\|");
@@ -889,7 +889,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void basicEnum() throws IOException, FTAException {
 		final String input = "APARTMENT|APARTMENT|DUPLEX|APARTMENT|DUPLEX|CONDO|DUPLEX|CONDO|" +
 				"DUPLEX|DUPLEX|CONDO|CONDO|DUPLEX|DUPLEX|CONDO|APARTMENT|" +
@@ -929,7 +929,7 @@ public class RandomTests {
 		simpleStringTest("basicEnum", input);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void blanksLeft() throws IOException, FTAException {
 		final String[] inputs = new String[] {
 				" D12345",
@@ -941,7 +941,7 @@ public class RandomTests {
 		simpleArrayTest("blanksLeft", inputs);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void blanksInInput() throws IOException, FTAException {
 		final String[] inputs = new String[] {
 				" D12345", "  C123456789",
@@ -953,7 +953,7 @@ public class RandomTests {
 		simpleArrayTest("blanksLeft", inputs);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void allEmpty() throws IOException, FTAException {
 		final String[] inputs = new String[] {
 				"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -963,7 +963,7 @@ public class RandomTests {
 		simpleArrayTest("allEmpty", inputs);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void blanksInField() throws IOException, FTAException {
 		final String[] inputs = new String[] {
 				"-", "-", "", "", "", "", "^^^", "", "", "", "-", "", "", "", "", "", "", "", "",
@@ -976,7 +976,7 @@ public class RandomTests {
 		simpleArrayTest("DataValueFootnoteSymbol", inputs);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void blanksAtEndOfField() throws IOException, FTAException {
 		final String[] inputs = new String[] {
 				"", "Foster Road", "", "Grove Road", "", "Library", "", "Bradgers Hill Road", "", "Tomlinson Avenue", "Wheatfield Road", "Tomlinson Avenue", "",
@@ -994,7 +994,7 @@ public class RandomTests {
 		simpleArrayTest("blanksAtEndOfField", inputs);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void basicPromote() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicPromote");
 		final String pipedInput =
@@ -1033,7 +1033,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void belowDetectWindow() throws IOException, FTAException {
 		final String BAD = "hello";
 		final String[] samples = new String[] {
@@ -1062,7 +1062,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void basicText() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicText");
 		final int iterations = 10000;
@@ -1094,7 +1094,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getOutlierCount(), 1);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void textBlocks() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("textBlocks");
 		final int iterations = 100000;
@@ -1141,7 +1141,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setDetectWindow() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setDetectWindow");
 		int locked = -1;
@@ -1169,14 +1169,14 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void getDetectWindowSize()  throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("getDetectWindowSize");
 
 		Assert.assertEquals(analysis.getDetectWindow(), AnalysisConfig.DETECT_WINDOW_DEFAULT);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setDetectWindowTooSmall() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setDetectWindowTooSmall");
 
@@ -1190,7 +1190,7 @@ public class RandomTests {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setDetectWindowTooLate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setDetectWindowTooLate");
 		int locked = -1;
@@ -1211,7 +1211,7 @@ public class RandomTests {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setLocaleTooLate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setLocaleTooLate");
 		analysis.setTrace("enabled=true");
@@ -1235,14 +1235,14 @@ public class RandomTests {
 	}
 
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void getMaxCardinality() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("getMaxCardinality");
 
 		Assert.assertEquals(analysis.getMaxCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setMaxCardinalityTooSmall() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setMaxCardinalityTooSmall");
 
@@ -1256,7 +1256,7 @@ public class RandomTests {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setMaxCardinalityTooLate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setMaxCardinalityTooLate");
 		int locked = -1;
@@ -1277,14 +1277,14 @@ public class RandomTests {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void getOutlierCount() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("getOutlierCount");
 
 		Assert.assertEquals(analysis.getMaxOutliers(), AnalysisConfig.MAX_OUTLIERS_DEFAULT);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setMaxOutliersTooSmall() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setMaxOutliersTooSmall");
 
@@ -1298,7 +1298,7 @@ public class RandomTests {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setMaxOutliersTooLate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setMaxOutliersTooLate");
 		int locked = -1;
@@ -1319,7 +1319,7 @@ public class RandomTests {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void USPhone() throws IOException, FTAException {
 		String[] samples = new String[1000];
 
@@ -1355,7 +1355,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void USPhone2() throws IOException, FTAException {
 		String[] samples = new String[1000];
 
@@ -1391,7 +1391,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void USPhone3() throws IOException, FTAException {
 		String[] samples = new String[1000];
 
@@ -1427,7 +1427,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void bigExponents() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"5230CGX16431", "3590E094000", "3590E092401", "3590E012300", "66004890064", "020035020", "270000009882", "020035256", "5520WDB48305", "6200600740",
@@ -1460,7 +1460,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void difficultRegExp() throws IOException, FTAException {
 		String[] samples = new String[1000];
 
@@ -1496,7 +1496,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void bumpMaxCardinality() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("bumpMaxCardinality");
 
@@ -1530,7 +1530,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void keyFieldLong() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("keyFieldLong");
 		final int start = 10000;
@@ -1553,7 +1553,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void defaultMaxOutliers() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
 		final int start = 10000;
@@ -1592,7 +1592,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)15/result.getSampleCount());
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void testDataSignature() throws IOException, FTAException {
 		final TextAnalyzer analysis1 = new TextAnalyzer("Anaysis1");
 		final TextAnalyzer analysis2 = new TextAnalyzer("Anaysis2");
@@ -1616,7 +1616,7 @@ public class RandomTests {
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void setMaxOutliers() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
 		final int start = 10000;
@@ -1659,7 +1659,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void keyFieldString() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("keyFieldString");
 		final int start = 100000;
@@ -1683,7 +1683,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void notKeyField() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notKeyField");
 		final int start = 10000;
@@ -1817,7 +1817,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void testThreading() throws IOException, FTAException, FTAException, InterruptedException {
 		final int THREADS = 1000;
 		Thread[] threads = new Thread[THREADS];
@@ -1874,7 +1874,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void testThreadingIssue() throws IOException, FTAException, InterruptedException {
 		final int THREADS = 1000;
 		Thread[] threads = new Thread[THREADS];
@@ -1932,7 +1932,7 @@ public class RandomTests {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all", "random" })
 	public void testLogicalTypeThreading() throws IOException, FTAException, InterruptedException {
 		final int THREADS = 1000;
 		Thread[] threads = new Thread[THREADS];
@@ -1948,7 +1948,7 @@ public class RandomTests {
 				threads[t].join();
 	}
 
-	//@Test
+	//@Test(groups = { "all", "random" })
 	public void fuzzInt() throws IOException, FTAException {
 		final int SAMPLES = 1000;
 		final int errorRate = 1;

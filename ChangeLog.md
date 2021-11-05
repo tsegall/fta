@@ -524,3 +524,10 @@
  - BUG: Fixed issue where short (i.e. missing leading 0's) Zip codes were not being detected
  - ENH: Refreshed US Zip list with latest from USPS
  - ENH: Add Semantic Type - POSTAL_CODE.ZIP5_PLUS4_US
+
+### 4.7.10
+ - ENH: Add Semantic Types - STATE_PROVINCE.STATE_BR, STATE_PROVINCE.STATE_NAME_BR, STATE_PROVINCE.PREFECTURE_NAME_JA
+ - INT: Improve testing infrastructure, so can run particular groups of tests
+ - BUG: Complain if the priority of the user registered plugins overlaps the builtin space (0-2000]
+ - ENH: Improve support for Japanese (dates & times, Gender, Prefectures)
+ - BUG: Switch GENDER_JP to GENDER_JA and correct language (should have been ja not jp)

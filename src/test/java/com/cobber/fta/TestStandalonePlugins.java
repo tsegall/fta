@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 import com.cobber.fta.core.FTAPluginException;
 
 public class TestStandalonePlugins {
-	@Test
+	@Test(groups = { "all" })
 	public void randomIPV4Address() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV4", "com.cobber.fta.plugins.LogicalTypeIPV4Address");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -36,7 +36,7 @@ public class TestStandalonePlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomIPV6Address() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV6", "com.cobber.fta.plugins.LogicalTypeIPV6Address");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -51,7 +51,7 @@ public class TestStandalonePlugins {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomPhoneNumber() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("TELEPHONE", "com.cobber.fta.plugins.LogicalTypePhoneNumber");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -65,7 +65,7 @@ public class TestStandalonePlugins {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomEmail() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("EMAIL", "com.cobber.fta.plugins.LogicalTypeEmail");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -76,7 +76,7 @@ public class TestStandalonePlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomFirst() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("FIRST_NAME", "com.cobber.fta.plugins.LogicalTypeFirstName");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -87,7 +87,7 @@ public class TestStandalonePlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomLast() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("LAST_NAME", "com.cobber.fta.plugins.LogicalTypeLastName");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -101,7 +101,7 @@ public class TestStandalonePlugins {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomURL() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("URL", "com.cobber.fta.plugins.LogicalTypeURL");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -112,7 +112,7 @@ public class TestStandalonePlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomZip() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("ZIP", "com.cobber.fta.plugins.LogicalTypeUSZip5");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -123,7 +123,7 @@ public class TestStandalonePlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomGUID() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("GUID", "com.cobber.fta.plugins.LogicalTypeGUID");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -134,7 +134,7 @@ public class TestStandalonePlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomGender() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("GENDER", "com.cobber.fta.plugins.LogicalTypeGender");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -145,7 +145,7 @@ public class TestStandalonePlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomCountry() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("COUNTRY.TEXT_EN", "com.cobber.fta.plugins.LogicalTypeCountryEN");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
@@ -159,7 +159,7 @@ public class TestStandalonePlugins {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomSupport() throws IOException, FTAPluginException {
 		final int SAMPLE_SIZE = 100;
 		final Locale[] locales = new Locale[] {
@@ -197,7 +197,7 @@ public class TestStandalonePlugins {
 		}
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomCOORDINATE_LATITUDE_DECIMAL() throws IOException, FTAPluginException {
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("COORDINATE.LATITUDE_DECIMAL");
 		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
@@ -213,7 +213,7 @@ public class TestStandalonePlugins {
 			Assert.assertFalse(logical.isValid(sample), sample);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomCOORDINATE_LONGITUDE_DECIMAL() throws IOException, FTAPluginException {
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("COORDINATE.LONGITUDE_DECIMAL");
 		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
@@ -229,7 +229,7 @@ public class TestStandalonePlugins {
 			Assert.assertFalse(logical.isValid(sample), sample);
 	}
 
-	@Test
+	@Test(groups = { "all" })
 	public void randomCITY() throws IOException, FTAPluginException {
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("CITY");
 		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
