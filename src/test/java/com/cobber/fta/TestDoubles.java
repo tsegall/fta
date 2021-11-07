@@ -42,7 +42,7 @@ import com.cobber.fta.core.RegExpGenerator;
 public class TestDoubles {
 	private static final SecureRandom random = new SecureRandom();
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void positiveDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("positiveDouble");
 		final String[] inputs = "43.80|1.1|0.1|2.03|.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
@@ -72,7 +72,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void tinyDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("tinyDouble");
 		final String input = "0e-17";
@@ -94,7 +94,7 @@ public class TestDoubles {
 		Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void positiveDouble2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("positiveDouble2");
 		final String[] inputs = "43.80|1.1|0.1|2.03|0.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
@@ -122,7 +122,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void negativeDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("negativeDouble");
 		final String[] inputs = "43.80|-1.1|-.1|2.03|.1|-99.23|14.08976|-14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
@@ -152,7 +152,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void basicPromoteToDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicPromoteToDouble");
 		final String pipedInut =
@@ -185,7 +185,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void trailingMinus() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("trailingMinus");
 		final String[] inputs = "458.00-|123.00|901.21|404.064|209.01-|12.0|0.0|0|676.00|1894.80-|2903.22-|111.14-|5234.00".split("\\|");
@@ -213,7 +213,7 @@ public class TestDoubles {
 	}
 
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void floatBug() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"352115", "277303", "324576", "818328", "698915", "438223", "104583", "355898", "387829", "130771",
@@ -251,7 +251,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void signedFloatBug() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"352115", "277303", "324576", "818328", "698915", "438223", "104583", "355898", "387829", "130771",
@@ -290,7 +290,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void mixedInput() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"8", "172.67", "22.73", "150", "30.26", "54.55", "45.45", "433.22", "172.73", "7.73",
@@ -316,7 +316,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void impossibleExponent() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",
@@ -341,7 +341,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void impossibleExponentNullHeader() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",
@@ -366,7 +366,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void singleDoubleWithWidening() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
@@ -402,7 +402,7 @@ public class TestDoubles {
 //		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void simpleIntegerWithWidening() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
@@ -435,7 +435,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void lateDouble() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"-10000", "-1000", "-340", "-2500", "-1000", "-2062", "-2500", "-1927", "-2500", "-1927",
@@ -464,7 +464,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void manyRandomDoubles() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyRandomDoubles");
 		analysis.setCollectStatistics(false);
@@ -500,7 +500,7 @@ public class TestDoubles {
 		Assert.assertEquals(outliers.get("Zoomer"), Long.valueOf(1));
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void manyConstantLengthDoublesI18N_1() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthDoublesI18N_1");
 		analysis.setCollectStatistics(false);
@@ -538,7 +538,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void manyFrenchDoubles() throws IOException, FTAException {
 		final String[] samplesUS = new String[] {
 				"54.00", "12719300.00", "4819.00", "262612.00", "141300.00",
@@ -581,7 +581,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void doublesWithNan() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"", "9.04", "nan", "0.92", "0.89", "9.02", "-1.88", "4.84", "", "", "1.24", "1.83", "-0.23", "1.35", "nan",
@@ -608,7 +608,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void dangerousDouble() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
@@ -638,7 +638,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void longWithOutlierPositiveDouble() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
@@ -667,7 +667,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void longWithOutlierNegativeDouble() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
@@ -698,7 +698,7 @@ public class TestDoubles {
 	}
 
 	// BUG - In general, even if the locale suggests otherwise we should still cope with 1234.56 as a valid double
-	//@Test(groups = { "all", "doubles" })
+	//@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void manyConstantLengthDoublesI18N_2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthDoublesI18N_2");
 		final int nullIterations = 50;
@@ -735,7 +735,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void testFromFuzz1() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testFromFuzz1");
 		final String input =
@@ -760,7 +760,7 @@ public class TestDoubles {
 		Assert.assertEquals(result.getMaxValue(), "119.0");
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void backoutToDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("backoutToDouble");
 		final String pipedInput =
@@ -848,7 +848,7 @@ public class TestDoubles {
 		return false;
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void localeNegativeDoubleTest() throws IOException, FTAException {
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
@@ -898,7 +898,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void simpleDoubleExponentTest() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleDoubleExponentTest");
 		analysis.setCollectStatistics(false);
@@ -942,7 +942,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void localeNegativeDoubleExponentTest() throws IOException, FTAException {
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
@@ -1016,7 +1016,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void spacedDoubles() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("AMT");
 		analysis.setCollectStatistics(false);
@@ -1056,7 +1056,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void latitude() throws IOException, FTAException {
 		final TextAnalyzer analysis1 = new TextAnalyzer("LATITUDE");
 		final TextAnalyzer analysis2 = new TextAnalyzer("LATITUDE");
@@ -1124,7 +1124,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void decimalSeparatorTest_Locale() throws IOException, FTAException {
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = new Locale[] { Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("en-US") };
@@ -1165,7 +1165,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void monetaryDecimalSeparatorDefault() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final int SAMPLE_SIZE = 10000;
@@ -1210,7 +1210,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void monetaryDecimalSeparatorFrench() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		analysis.setLocale(Locale.FRENCH);
@@ -1256,7 +1256,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void doublesWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("doublesWithSpaces");
 		final String pipedInput =
@@ -1297,7 +1297,7 @@ public class TestDoubles {
 		}
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void localeDoubleTest() throws IOException, FTAException {
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
@@ -1357,7 +1357,7 @@ public class TestDoubles {
 		}
 	}
 
-@Test(groups = { "all", "doubles" })
+@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 public void localeDoubleES_CO() throws IOException, FTAException {
 	final String[] ugly = {
 			"77.506.942,294", "55.466.183,606", "78.184.714,556", "52.225.004,254",
@@ -1399,7 +1399,7 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 	}
 }
 
-//	@Test(groups = { "all", "doubles" })
+//	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void decimalSeparatorTest_Period() throws IOException, FTAException {
 		final Set<String> failures = new HashSet<>();
 		final int SAMPLE_SIZE = 1000;
@@ -1541,12 +1541,12 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 		//   - Count 44222501, duration: 10003ms, ~4,422,250 per second
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.PERFORMANCE, TestGroups.DOUBLES })
 	public void doublePerf() throws IOException, FTAException {
 		_doublePerf(true);
 	}
 
-	@Test(groups = { "all", "doubles" })
+	@Test(groups = { TestGroups.PERFORMANCE, TestGroups.DOUBLES })
 	public void doublePerfNoStatistics() throws IOException, FTAException {
 		_doublePerf(false);
 	}

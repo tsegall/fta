@@ -34,7 +34,7 @@ import com.cobber.fta.plugins.LogicalTypeCountryEN;
 public class TestStrings {
 	private static final SecureRandom random = new SecureRandom();
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void manyNulls() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyNulls");
 		final int iterations = 50;
@@ -61,7 +61,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getTypeQualifier(), "NULL");
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void manyBlanks() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyBlanks");
 		final int iterations = 50;
@@ -95,7 +95,7 @@ public class TestStrings {
 		Assert.assertTrue("      ".matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void sameBlanks() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("sameBlanks");
 		final int iterations = 50;
@@ -123,7 +123,7 @@ public class TestStrings {
 		Assert.assertTrue("      ".matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void justEmpty() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("justEmpty");
 		final int iterations = 50;
@@ -151,7 +151,7 @@ public class TestStrings {
 		Assert.assertTrue("".matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void whiteSpace() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("field,value");
 		final String pipedInput = "| |  |   |    |     |      |       |        |         |";
@@ -182,7 +182,7 @@ public class TestStrings {
 			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void employeeNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("employeeNumber");
 		final String pipedInput = "||||||||||||||||||||" +
@@ -221,7 +221,7 @@ public class TestStrings {
 		Assert.assertEquals(matchCount, result.getMatchCount());
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void variableLengthString() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("variableLengthString");
 		final String[] inputs = "Hello World|Hello|H|Z|A".split("\\|");
@@ -249,7 +249,7 @@ public class TestStrings {
 			Assert.assertTrue(input.matches(result.getRegExp()), input);
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void variableLengthStringSimpleVsBulk() throws IOException, FTAException {
 		for (int r = 0; r < 100; r++) {
 			final TextAnalyzer analysis = new TextAnalyzer("variableLengthStringSimpleVsBulk_1");
@@ -306,7 +306,7 @@ public class TestStrings {
 		}
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testEnumsWithSpecialChars() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ShipRegion");
 		final String[] inputs = new String[] {
@@ -348,7 +348,7 @@ public class TestStrings {
 //		}
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void manyConstantLengthStrings() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthStrings");
 		analysis.setCollectStatistics(false);
@@ -397,7 +397,7 @@ public class TestStrings {
 
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void constantNoise() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("NOISE");
 		analysis.setTrace("enabled=true");
@@ -438,7 +438,7 @@ public class TestStrings {
 			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testMix() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		final String pipedInput =
@@ -481,7 +481,7 @@ public class TestStrings {
 			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void niceEnum() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("niceEnum");
 		analysis.setCollectStatistics(false);
@@ -508,7 +508,7 @@ public class TestStrings {
 		}
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void nastyEnum() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("nastyEnum");
 		analysis.setCollectStatistics(false);
@@ -538,7 +538,7 @@ public class TestStrings {
 			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void nastyEnumsTwo() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("nastyEnumsTwo");
 		analysis.setCollectStatistics(false);
@@ -569,7 +569,7 @@ public class TestStrings {
 			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testCompressUSD() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCompressUSD");
 		analysis.setCollectStatistics(false);
@@ -598,7 +598,7 @@ public class TestStrings {
 			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testCompressGBP() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCompressGBP");
 		analysis.setCollectStatistics(false);
@@ -628,7 +628,7 @@ public class TestStrings {
 		}
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testPercent() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testPercent");
 		Assert.assertTrue(analysis.getCollectStatistics());
@@ -660,7 +660,7 @@ public class TestStrings {
 		}
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testTwoContainedStrings() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testTwoContainedStrings");
 		analysis.setCollectStatistics(false);
@@ -692,7 +692,7 @@ public class TestStrings {
 		}
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testNonLogicalStructureSignatures() throws IOException, FTAException {
 		final TextAnalyzer analysis1 = new TextAnalyzer("Disposition");
 		final TextAnalyzer analysis2 = new TextAnalyzer("Interaction");
@@ -715,7 +715,7 @@ public class TestStrings {
 		Assert.assertEquals(result1.getRegExp(), "(?i)(DEFERRED|ESCALATED|FOLLOW_UP_REQUIRED|HANDLED|HANDLED_WITH_ISSUES|INVALID_PRODUCT)");
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testLogicalStructureSignatures() throws IOException, FTAException {
 		final TextAnalyzer analysis1 = new TextAnalyzer("Disposition");
 		final TextAnalyzer analysis2 = new TextAnalyzer("Interaction");
@@ -740,7 +740,7 @@ public class TestStrings {
 		Assert.assertEquals(result1.getTypeQualifier(), LogicalTypeCountryEN.SEMANTIC_TYPE);
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testCompressCoordinates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCompressC_oordinates");
 		analysis.setCollectStatistics(false);
@@ -771,7 +771,7 @@ public class TestStrings {
 		}
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testBugPipe() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testBugPipe");
 		analysis.setCollectStatistics(false);
@@ -789,7 +789,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testTrimmedLength() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testTrimmedLength");
 		analysis.setCollectStatistics(false);
@@ -821,7 +821,7 @@ public class TestStrings {
 			Assert.assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testAlphaNumeric() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
@@ -855,7 +855,7 @@ public class TestStrings {
 		}
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testStrange() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testStrange");
 		analysis.setCollectStatistics(false);
@@ -942,12 +942,12 @@ public class TestStrings {
 		//   - Count 27322001, duration: 10003ms, ~2,732,200 per second
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.PERFORMANCE, TestGroups.STRINGS })
 	public void stringPerf() throws IOException, FTAException {
 		_stringPerf(true);
 	}
 
-	@Test(groups = { "all", "strings" })
+	@Test(groups = { TestGroups.PERFORMANCE, TestGroups.STRINGS })
 	public void stringPerfNoStatistics() throws IOException, FTAException {
 		_stringPerf(false);
 	}

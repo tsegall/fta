@@ -18,7 +18,6 @@ package com.cobber.fta;
 import com.cobber.fta.core.RegExpGenerator;
 
 /**
- *
  * Smashed will generate a simplified string, used to determine if all inputs are of the same form.
  *
  * Smashed strings follow the following rules:

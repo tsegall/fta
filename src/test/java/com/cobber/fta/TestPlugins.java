@@ -65,7 +65,7 @@ import com.univocity.parsers.csv.CsvParserSettings;
 public class TestPlugins {
 	private static final SecureRandom random = new SecureRandom();
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderTwoValues() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Male|" +
@@ -97,7 +97,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderTwoValuesMF() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "F|M|M|F|F|M|F|F|M|" +
@@ -129,7 +129,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderThreeValues() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final int UNKNOWNS = 3;
@@ -162,7 +162,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderAllUnknown() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|";
@@ -191,7 +191,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGender() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
@@ -226,7 +226,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderNL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("GESLACH");
 		final int UNKNOWNS = 3;
@@ -256,7 +256,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderDE() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		analysis.setLocale(Locale.forLanguageTag("de-AT"));
@@ -287,7 +287,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPostalCodeNL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("P_PCODE");
 		analysis.setLocale(Locale.forLanguageTag("nl-NL"));
@@ -315,7 +315,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPhoneNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Phone");
 		final String[] inputs = new String[] {
@@ -347,7 +347,7 @@ public class TestPlugins {
 			Assert.assertTrue(input.trim().matches(result.getRegExp()), input);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPhoneNumberUnrecognizedHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BTN");
 		final String[] inputs = new String[] {
@@ -380,7 +380,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void trickyPhoneNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Phone");
 		final String[] inputs = new String[] {
@@ -411,7 +411,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = " Female| MALE|Male| Female|Female|MALE |Female |Female |Unknown |Male |" +
@@ -446,7 +446,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderTriValue() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
@@ -479,7 +479,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderNoDefaults() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		analysis.setDefaultLogicalTypes(false);
@@ -527,7 +527,7 @@ public class TestPlugins {
 
 	};
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegisterFinite() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		analysis.setMaxCardinality(20000);
@@ -569,7 +569,7 @@ public class TestPlugins {
 		Assert.assertEquals(matchCount, result.getMatchCount() + 1);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegisterInfinite() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
 		analysis.setDefaultLogicalTypes(false);
@@ -634,7 +634,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGUID() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("GUID");
 		final String[] inputs = new String[] {
@@ -697,7 +697,7 @@ public class TestPlugins {
 			"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
 			"Tuddenham@lavastorm.com|Williams@lavastorm.com|Wilson@lavastorm.com|";
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicEmail() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicE_mail");
 		analysis.setTrace("samples=10");
@@ -731,7 +731,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void degenerativeEmail() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("degenerativeE_mail");
 		final String pipedInput = validEmails + validEmails + validEmails + validEmails + "ask|not|what|your|country|can|";
@@ -773,7 +773,7 @@ public class TestPlugins {
 			"http://www.sgi.com|http://www.united.com|https://www.hp.com/printers/support|http://www.opinist.com|" +
 			"http://www.java.com|http://www.slashdot.org|http://theregister.co.uk|";
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicURL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicU_RL");
 		final String inputs[] = INPUT_URLS.split("\\|");
@@ -805,7 +805,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void pluginNoLocale() throws IOException, FTAException {
 
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("GENDER.TEXT_<LOCALE>");
@@ -814,7 +814,7 @@ public class TestPlugins {
 		assertTrue(knownLogicalType.isValid("Female"));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicURLResource() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicU_RLResource");
 		final String inputs[] = INPUT_URLS.split("\\|");
@@ -844,7 +844,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicURLMixed() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicURLMixed");
 		final String inputs[] = INPUT_URLS.split("\\|");
@@ -872,7 +872,7 @@ public class TestPlugins {
 			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void backoutURL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("backoutURL");
 		final String inputs[] = INPUT_URLS.split("\\|");
@@ -906,7 +906,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void notEmail() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notEmail");
 		final String pipedInput = "2@3|3@4|b4@5|" +
@@ -944,7 +944,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicZip() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicZ_ip");
 		final String inputs[] = TestUtils.validZips.split("\\|");
@@ -970,7 +970,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicZipVariable() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicZ_ipVariable");
 		final String inputs[] = TestUtils.validZips.split("\\|");
@@ -997,7 +997,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void random3166_2() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("country");
 		analyzer.registerDefaultPlugins(null);
@@ -1009,7 +1009,7 @@ public class TestPlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void random3166_2_noHeader() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("random3166_2_noHeader");
 		analyzer.registerDefaultPlugins(Locale.getDefault());
@@ -1021,7 +1021,7 @@ public class TestPlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void random3166_3() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("country");
 		analyzer.registerDefaultPlugins(null);
@@ -1033,7 +1033,7 @@ public class TestPlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void random4217() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("currency");
 		analyzer.registerDefaultPlugins(null);
@@ -1045,7 +1045,7 @@ public class TestPlugins {
 			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomIATA() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("IATA");
 		analyzer.registerDefaultPlugins(null);
@@ -1058,7 +1058,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegister() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("testRegister");
 		analyzer.registerDefaultPlugins(null);
@@ -1086,7 +1086,7 @@ public class TestPlugins {
 		Assert.assertFalse(logical.isValid(Lemuria));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicZipHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
 		final String inputs[] = new String[] {
@@ -1111,7 +1111,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicLuhn() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("IMEI");
 		final String inputs[] = new String[] {
@@ -1138,7 +1138,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicCUSIP() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 		final String inputs[] = new String[] {
@@ -1164,7 +1164,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicSEDOL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SEDOL");
 		final String inputs[] = new String[] {
@@ -1189,7 +1189,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicUPC() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("UPC");
 		final String inputs[] = new String[] {
@@ -1216,7 +1216,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicISIN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ISIN");
 		final String inputs[] = new String[] {
@@ -1242,7 +1242,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicIPAddress() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
 		final String inputs[] = new String[] {
@@ -1270,7 +1270,7 @@ public class TestPlugins {
 			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicZipHeaderDE() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
 		analysis.setLocale(Locale.forLanguageTag("de-AT"));
@@ -1295,7 +1295,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void zipUnwind() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("zipUnwind");
 		final String pipedInput = "02421|02420|02421|02420|02421|02420|02421|02420|02421|02420|" +
@@ -1378,7 +1378,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount(), matches);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void zipNotReal() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("zipNotReal");
 		final String pipedInput =
@@ -1456,7 +1456,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void sameZip() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("sameZZiiPP");
 		final int copies = 100;
@@ -1484,7 +1484,7 @@ public class TestPlugins {
 		Assert.assertTrue(sample.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void sameZipWithHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ZipCode");
 		final int copies = 100;
@@ -1513,7 +1513,7 @@ public class TestPlugins {
 		Assert.assertTrue(sample.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStateHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingState");
 
@@ -1540,7 +1540,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStateSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
 		final String pipedInput = " AL| AK| AZ| KY| KS| LA| ME| MD| MI| MA| MN| MS|MO |NE| MT| SD|TN | TX| UT| VT| WI|" +
@@ -1579,7 +1579,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStateMX() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Estado");
 
@@ -1608,7 +1608,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicAUStateName() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("State");
 		analysis.setLocale(Locale.forLanguageTag("en-AU"));
@@ -1643,7 +1643,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicNAStateName() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Billing State/Province");
 
@@ -1683,7 +1683,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 0.9696969696969697);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicEmailList() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicE_mailList");
 		final String pipedInput = "Bachmann@lavastorm.com,Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
@@ -1726,7 +1726,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount() - 4, matches);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicEmailListSemicolon() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicE_mailListSemicolon");
 		final String pipedInput = "Bachmann@lavastorm.com;Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
@@ -1761,7 +1761,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicS_tates");
 
@@ -1796,7 +1796,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStatesBelowThreshold() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicS_tatesBelowThreshold");
 
@@ -1828,7 +1828,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStatesWithDash() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicS_tatesWithDash");
 
@@ -1865,7 +1865,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStates100Percent() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicS_tates100Percent");
 
@@ -1902,7 +1902,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void thresholdTooLow() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("thresholdTooLow");
 
@@ -1916,7 +1916,7 @@ public class TestPlugins {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void thresholdTooHigh() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("thresholdTooHigh");
 
@@ -1930,7 +1930,7 @@ public class TestPlugins {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void thresholdPostStart() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("thresholdPostStart");
 
@@ -1960,7 +1960,7 @@ public class TestPlugins {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void pluginThresholdTooLow() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("pluginThresholdTooLow");
 
@@ -1974,7 +1974,7 @@ public class TestPlugins {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void pluginThresholdTooHigh() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("pluginThresholdTooHigh");
 
@@ -1988,7 +1988,7 @@ public class TestPlugins {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void pluginThresholdPostStart() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("pluginThresholdPostStart");
 
@@ -2018,7 +2018,7 @@ public class TestPlugins {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void collectStatisticsPostStart() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("collectStatisticsPostStart");
 
@@ -2045,7 +2045,7 @@ public class TestPlugins {
 		Assert.fail("Exception should have been thrown");
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStatesLower() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicS_tatesLower");
 		final String pipedInput = "al|ak|az|ky|ks|la|me|md|mi|ma|mn|ms|mo|ne|mt|sd|tn|tx|ut|vt|wi|" +
@@ -2080,7 +2080,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicCA() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicCA");
 		final String inputs[] = TestUtils.validCAProvinces.split("\\|");
@@ -2109,7 +2109,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicAU() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicAU");
 		analysis.setDebug(2);
@@ -2140,7 +2140,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void notZipButNumeric() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notZipButNumeric");
 		final int start = 10000;
@@ -2166,7 +2166,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void notZips() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notZips");
 		final int start = 10000;
@@ -2207,7 +2207,7 @@ public class TestPlugins {
 					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
 					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|UNK|Nov|Dez|";
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicMonthAbbrGerman() throws IOException, FTAException {
 
 		if (!TestUtils.isValidLocale("de"))
@@ -2252,7 +2252,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicMonthAbbrBackout() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrBackout");
 		final String inputs[] = TestUtils.months.split("\\|");
@@ -2287,7 +2287,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getMatchCount() - unknownCount, matches);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicMonthAbbrExcessiveBad() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrExcessiveBad");
 		final String inputs[] = TestUtils.months.split("\\|");
@@ -2320,7 +2320,7 @@ public class TestPlugins {
 			Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicMonthAbbr() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbr");
 		final int badCount = 4;
@@ -2374,7 +2374,7 @@ public class TestPlugins {
 		*/
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicMonthAbbrFrench() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrFrench");
 		analysis.setLocale(Locale.FRENCH);
@@ -2409,7 +2409,7 @@ public class TestPlugins {
 			Assert.assertTrue(input.matches(result.getRegExp()), input);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStateLowCard() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
 		final String input = "MA|MI|ME|MO|MS|";
@@ -2444,7 +2444,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)UNKNOWN/result.getSampleCount());
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicISO4127() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CurrencyCode");
 		final String pipedInput = "JMD|JOD|JPY|KES|KGS|KHR|KMF|KPW|KZT|LRD|MKD|MRU|" +
@@ -2482,7 +2482,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicISO3166_3() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("3166 Alpha-3");
 		final String inputs[] = TestUtils.valid3166_3.split("\\|");
@@ -2514,7 +2514,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void possibleSSN() throws IOException, FTAException {
 		String[] samples = new String[1000];
 
@@ -2560,7 +2560,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void notSSN() throws IOException, FTAException {
 		final String pipedInput = "000-00-0000|063-02-3609|527-99-6328|209-50-0139|239-64-4998|" +
 				"210-19-0049|635-31-8665|215-38-8995|209-50-0139|304-88-9478|" +
@@ -2591,7 +2591,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_SSN() throws IOException, FTAException {
 		String[] samples = new String[1000];
 
@@ -2641,7 +2641,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testGenderPT() throws IOException, FTAException {
 		String[] samples = new String[1000];
 
@@ -2680,7 +2680,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testFinitePlugin() throws IOException, FTAException {
 		final InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
@@ -2718,7 +2718,7 @@ public class TestPlugins {
 		Assert.assertEquals(outliers.get("032--45-0981"), Long.valueOf(1));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testFinitePluginBackout() throws IOException, FTAException {
 		final InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
@@ -2753,7 +2753,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getSampleCount(), SAMPLES + 2);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testInfiniteDoublePlugin() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("PERCENTAGES");
 		final int COUNT = 1000;
@@ -2789,7 +2789,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)2/result.getSampleCount());
 	}
 
-	/*@Test(groups = { "all", "plugins" }) - TODO dates do not support Semantic Types :-( */
+	/*@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS }) - TODO dates do not support Semantic Types :-( */
 	public void testInfiniteDateTimePlugin() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("DOB");
 		final int COUNT = 1000;
@@ -2833,7 +2833,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)2/result.getSampleCount());
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testNames() throws IOException, FTAException {
 		final CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);
@@ -2870,7 +2870,7 @@ public class TestPlugins {
 		Assert.assertTrue(logicalFirst.isValid("Harry"));
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testNameHeader() throws IOException, FTAException {
 		final String headersGood[] = new String[] {
 				"FirstName", "First Name", "First_Name", "FIRSTNAME", "FNAME", "FIRST.NAME", "FIRST-NAME", "GIVEN NAME"
@@ -2940,7 +2940,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_CUSIP() throws IOException, FTAException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 		final String[] samples = new String[] {
@@ -2980,7 +2980,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_CUSIP_bulk() throws IOException, FTAException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 		final String[] samples = new String[] {
@@ -3023,7 +3023,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testSignatures() throws IOException, FTAException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 		final String[] samples = new String[] {
@@ -3090,7 +3090,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getStructureSignature(), "Frd1mNXRneO3yWDzQa4eEdRgtJs=");
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_FUND() throws IOException, FTAException {
 		final String FUND_REGEXP = "[\\p{IsAlphabetic}\\d]{10}";
 		final String[] samples = new String[] {
@@ -3136,7 +3136,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_Bug() throws FTAException {
 		final String EXPECTED_REGEXP = "\\p{IsAlphabetic}\\d{10}";
 		final String[] samples = new String[] {
@@ -3179,7 +3179,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicISO3166_2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("3166 Alpha-2");
 		final String inputs[] = TestUtils.valid3166_2.split("\\|");
@@ -3211,7 +3211,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicCountry() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicCountry");
 		final String pipedInput = "Venezuela|USA|Finland|USA|USA|Germany|France|Italy|Mexico|Germany|" +
@@ -3264,7 +3264,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void constantLengthCountry() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("constantLengthCountry");
 		final String[] inputs = new String[] {
@@ -3292,7 +3292,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void thinAddress() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Example_Address");
 		final String[] inputs = new String[] {
@@ -3323,7 +3323,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicCountryHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingCountry");
 		final String[] inputs = new String[] {
@@ -3434,7 +3434,7 @@ public class TestPlugins {
 			"324 North Lancaster Dr.  Wyoming, MI 49509"
 	};
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicUSStreet() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicUSStreet");
 
@@ -3455,7 +3455,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicUSStreet2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicUSStreet2");
 
@@ -3477,7 +3477,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicIBAN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicIBAN");
 		final String[] inputs = new String[] {
@@ -3533,7 +3533,7 @@ public class TestPlugins {
 		}
 	}
 
-	@Test(groups = { "all", "plugins" })
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicABA() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicABA");
 		final String[] inputs = new String[] {

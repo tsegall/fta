@@ -228,7 +228,7 @@ Note: The Context (the current Stream Name and other field names) can be used to
 		"headerRegExpConfidence": [ 100 ],
 	},
 	{
-		"qualifier" : "PLANET_JP",
+		"qualifier" : "PLANET_JA",
 		"description": "Planets in Japanese (Kanji) via an inline list",
 		"headerRegExps" : [ ".*星" ],
 		"headerRegExpConfidence" : [ 70 ],
@@ -236,7 +236,7 @@ Note: The Context (the current Stream Name and other field names) can be used to
 		"content": "{ \"members\": [ \"冥王星\", \"土星\", \"地球\", \"天王星\", \"木星\", \"水星\", \"海王星\", \"火星\", \"金星\" ] }",
 		"regExpReturned" : "(?i)(冥王星|土星|地球|天王星|木星|水星|海王星|火星|金星)",
 		"backout": ".*",
-                "validLocales": [ "jp" ],
+                "validLocales": [ "ja" ],
 		"baseType" : "STRING"
 	},
 ]

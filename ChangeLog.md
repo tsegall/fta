@@ -531,3 +531,7 @@
  - BUG: Complain if the priority of the user registered plugins overlaps the builtin space (0-2000]
  - ENH: Improve support for Japanese (dates & times, Gender, Prefectures)
  - BUG: Switch GENDER_JP to GENDER_JA and correct language (should have been ja not jp)
+
+### 4.7.11
+ - ENH: Split out performance tests
+ - ENH: Improve overall performance by passing around trimmed value

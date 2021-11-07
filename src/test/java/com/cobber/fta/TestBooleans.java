@@ -25,7 +25,7 @@ import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 
 public class TestBooleans {
-	@Test(groups = { "all", "booleans" })
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void onlyTrue() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("onlyTrue");
 
@@ -47,7 +47,7 @@ public class TestBooleans {
 		Assert.assertTrue("true".matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "booleans" })
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void basicBoolean() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBoolean");
 		final String[] inputs = "false|true|TRUE|    false   |FALSE |TRUE|true|false|False|True|false|  FALSE|FALSE|true|TRUE|bogus".split("\\|");
@@ -89,7 +89,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getMatchCount(), matches);
 	}
 
-	@Test(groups = { "all", "booleans" })
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void basicBooleanYesNo() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBooleanYesNo");
 		final String[] inputs = "no|yes|YES|    no   |NO |YES|yes|no|No|Yes|no|  NO|NO|yes|YES|bogus".split("\\|");
@@ -129,7 +129,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getMatchCount(), matches);
 	}
 
-	@Test(groups = { "all", "booleans" })
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void basicBooleanYesNoManySamples() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBooleanYesNoManySamples");
 		final String[] inputs = "no|yes|YES|    no   |NO |YES|yes|no|No|Yes|no|  NO|NO|yes|YES|no|yes|YES|    no   |NO |YES|yes|no|No|Yes|no|  NO|NO|yes|YES|bogus".split("\\|");
@@ -170,7 +170,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getMatchCount(), matches);
 	}
 
-	@Test(groups = { "all", "booleans" })
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void basicBooleanYN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBooleanYN");
 		final String[] inputs = new String[] {
@@ -217,7 +217,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getMatchCount(), matches);
 	}
 
-	@Test(groups = { "all", "booleans" })
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void basicBooleanN_Bad() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBooleanN_Bad");
 		final int countN = 30;
@@ -244,7 +244,7 @@ public class TestBooleans {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { "all", "booleans" })
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void justY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("justY");
 		final int COUNT = 50;
@@ -269,7 +269,7 @@ public class TestBooleans {
 		Assert.assertTrue("y".matches(result.getRegExp()));
 	}
 
-	@Test(groups = { "all", "booleans" })
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void basicPseudoBoolean() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicPseudoBoolean");
 		final String[] inputs = "0|1|1|0|0|1|1|0|0|1|0|0|0|1|1|0|1|1|1|1|0|0|0|0|1|1|1".split("\\|");
@@ -303,7 +303,7 @@ public class TestBooleans {
 		}
 	}
 
-	@Test(groups = { "all", "booleans" })
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void notPseudoBoolean() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notPseudoBoolean");
 		final String[] inputs = "7|1|1|7|7|1|1|7|7|1|7|7|7|1|1|7|1|1|1|1|7|7|7|7|1|1|1".split("\\|");
@@ -337,7 +337,7 @@ public class TestBooleans {
 		}
 	}
 
-	@Test(groups = { "all", "booleans" })
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void basicNotPseudoBoolean() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicNotPseudoBoolean");
 		final String[] inputs = "0|5|5|0|0|5|5|0|0|5|0|0|0|5|5|0|5|5|5|5|0|0|0|0|5|5|5|A".split("\\|");

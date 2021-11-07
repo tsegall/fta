@@ -27,7 +27,7 @@ public class TestShapes {
 	private static String NUMERIC = "0123456789";
 	private static int MAX_SHAPES = 1000;
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void singleAlphaConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
 
@@ -42,7 +42,7 @@ public class TestShapes {
 		Assert.assertEquals(shapes.getRegExp(), "\\p{IsAlphabetic}{9}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void zip() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
 
@@ -62,7 +62,7 @@ public class TestShapes {
 		Assert.assertEquals(shapes.getRegExp(), "\\d{5}(-\\d{4})?");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void doubleAlphaConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
 
@@ -84,7 +84,7 @@ public class TestShapes {
 		Assert.assertEquals(shapes.getRegExp(), "\\p{IsAlphabetic}{7}|\\p{IsAlphabetic}{9}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void multiAlphaConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
 
@@ -101,7 +101,7 @@ public class TestShapes {
 		Assert.assertEquals(shapes.getRegExp(), "\\p{IsAlphabetic}{4,8}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void singleNumericConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
 
@@ -116,7 +116,7 @@ public class TestShapes {
 		Assert.assertEquals(shapes.getRegExp(), "\\d{9}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void doubleNumericConstantLength() throws IOException {
 		final Shapes shapes = new Shapes(MAX_SHAPES);
 

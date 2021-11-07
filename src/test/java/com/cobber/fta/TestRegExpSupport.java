@@ -26,42 +26,42 @@ import org.testng.annotations.Test;
 import com.cobber.fta.core.RegExpGenerator;
 
 public class TestRegExpSupport {
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void phone() throws IOException {
 		Assert.assertEquals(Smashed.smashedAsRegExp("+9 999 999 9999")
 				, "\\+\\d \\d{3} \\d{3} \\d{4}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void simple() throws IOException {
 		Assert.assertEquals(Smashed.smashedAsRegExp("xxx"),
 				"\\p{IsAlphabetic}{3}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void mixedAlpha() throws IOException {
 		Assert.assertEquals(Smashed.smashedAsRegExp("xxXX"),
 				"\\p{IsAlphabetic}{4}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void mac() throws IOException {
 		Assert.assertEquals(Smashed.smashedAsRegExp("HH:HH:HH:HH:HH:HH"),
 				"\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void mix() throws IOException {
 		Assert.assertEquals(Smashed.smashedAsRegExp("99XXXX:99X"),
 				"\\d{2}\\p{IsAlphabetic}{4}:\\d{2}\\p{IsAlphabetic}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void onlyAlpha() throws IOException {
 		Assert.assertEquals(Smashed.smashedAsRegExp("XXXXX"), "\\p{IsAlphabetic}{5}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void mixedZip() throws IOException {
 		final RegExpGenerator gen = new RegExpGenerator();
 
@@ -72,7 +72,7 @@ public class TestRegExpSupport {
 		Assert.assertEquals(gen.getResult(), "[\\p{IsDigit}\\-]{7,9}");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void fromFile15() throws IOException {
 		final RegExpGenerator gen = new RegExpGenerator(15, Locale.getDefault());
 
@@ -86,7 +86,7 @@ public class TestRegExpSupport {
 		Assert.assertEquals(gen.getResult(), "(?i)(AFRICA|ANTARCTICA|ASIA|ASIA PACIFIC|AUSTRALIA/NZ|CARIBBEAN|CENTRAL AMERICA|EUROPE|MIDDLE EAST|NORTH AMERICA|OCEANIA|SOUTH AMERICA|THE CARIBBEAN)");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void fromFile5() throws IOException {
 		final RegExpGenerator gen = new RegExpGenerator(5, Locale.getDefault());
 
@@ -100,7 +100,7 @@ public class TestRegExpSupport {
 		Assert.assertEquals(gen.getResult(), ".+");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void rangeTestAlpha() throws IOException {
 		final RegExpGenerator gen = new RegExpGenerator(30, Locale.getDefault());
 
@@ -111,7 +111,7 @@ public class TestRegExpSupport {
 		Assert.assertEquals(gen.getResult(), "[A-D]");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void rangeTestNumbers() throws IOException {
 		final RegExpGenerator gen = new RegExpGenerator(30, Locale.getDefault());
 
@@ -132,7 +132,7 @@ public class TestRegExpSupport {
 		Assert.assertEquals(gen.getResult(), "[0-9]");
 	}
 
-	@Test(groups = { "all" })
+	@Test(groups = { TestGroups.ALL })
 	public void rangeConstantComponent() throws IOException {
 		final RegExpGenerator gen = new RegExpGenerator(30, Locale.getDefault());
 

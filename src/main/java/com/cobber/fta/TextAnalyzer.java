@@ -648,49 +648,47 @@ public class TextAnalyzer {
 		}
 	}
 
-	private boolean trackLong(final String rawInput, final PatternInfo patternInfo, final boolean register) {
-		final String input = rawInput.trim();
-
+	private boolean trackLong(final String trimmed, final PatternInfo patternInfo, final boolean register) {
 		// Track String facts - just in case we end up backing out.
-		if (minString == null || minString.compareTo(input) > 0)
-			minString = input;
+		if (minString == null || minString.compareTo(trimmed) > 0)
+			minString = trimmed;
 
-		if (maxString == null || maxString.compareTo(input) < 0)
-			maxString = input;
+		if (maxString == null || maxString.compareTo(trimmed) < 0)
+			maxString = trimmed;
 
 		long l;
 
 		// Interpret the String as a long, first attempt uses parseLong which is fast (although not localized), if that fails,
 		// then try using a NumberFormatter which will cope with grouping separators (e.g. 1,000).
-		int digits = input.length();
+		int digits = trimmed.length();
 
 		try {
 			if (patternInfo.id == KnownPatterns.ID.ID_SIGNED_LONG_TRAILING) {
-				digits = input.length();
-				if (digits >= 2 && input.charAt(digits - 1) == '-') {
-					l = -Long.parseLong(input.substring(0, digits - 1));
+				digits = trimmed.length();
+				if (digits >= 2 && trimmed.charAt(digits - 1) == '-') {
+					l = -Long.parseLong(trimmed.substring(0, digits - 1));
 					digits--;
 				}
 				else
-					l = Long.parseLong(input);
+					l = Long.parseLong(trimmed);
 			}
 			else {
-				l = Long.parseLong(input);
-				digits = input.length();
-				final char ch = input.charAt(0);
+				l = Long.parseLong(trimmed);
+				digits = trimmed.length();
+				final char ch = trimmed.charAt(0);
 				if (ch == '-' || ch == '+')
 					digits--;
 			}
 		} catch (NumberFormatException e) {
 			final ParsePosition pos = new ParsePosition(0);
-			final Number n = longFormatter.parse(input, pos);
-			if (n == null || input.length() != pos.getIndex())
+			final Number n = longFormatter.parse(trimmed, pos);
+			if (n == null || trimmed.length() != pos.getIndex())
 				return false;
 			l = n.longValue();
-			if (input.indexOf(localeGroupingSeparator) != -1)
+			if (trimmed.indexOf(localeGroupingSeparator) != -1)
 				groupingSeparators++;
-			digits = input.length();
-			final char ch = input.charAt(0);
+			digits = trimmed.length();
+			final char ch = trimmed.charAt(0);
 			if (hasNegativePrefix && (ch == '-' || ch == '+' || ch == negativePrefix))
 				digits--;
 			if (l < 0 && hasNegativeSuffix)
@@ -698,7 +696,7 @@ public class TextAnalyzer {
 		}
 
 		if (register) {
-			if (input.charAt(0) == '0' && digits != 1)
+			if (trimmed.charAt(0) == '0' && digits != 1)
 				factsCore.leadingZeroCount++;
 
 			if (digits < minTrimmedLength)
@@ -734,14 +732,14 @@ public class TextAnalyzer {
 			// If it is a registered Infinite Logical Type then validate it
 			final LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
 			if (logical.acceptsBaseType(FTAType.LONG))
-				return logical.isValid(input);
+				return logical.isValid(trimmed);
 		}
 
 		return true;
 	}
 
-	private boolean trackBoolean(final String input) {
-		final String trimmedLower = input.trim().toLowerCase(locale);
+	private boolean trackBoolean(final String trimmed) {
+		final String trimmedLower = trimmed.toLowerCase(locale);
 
 		final boolean isTrue = "true".equals(trimmedLower) || "yes".equals(trimmedLower) || "y".equals(trimmedLower);
 		final boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower) || "n".equals(trimmedLower));
@@ -761,11 +759,10 @@ public class TextAnalyzer {
 		return isTrue || isFalse;
 	}
 
-	private boolean trackString(final String rawInput, final PatternInfo patternInfo, final boolean register) {
+	private boolean trackString(final String rawInput, final String trimmed, final PatternInfo patternInfo, final boolean register) {
 		if (register && analysisConfig.debug >= 2 && rawInput.length() > 0 && rawInput.charAt(0) == '¶' && "¶ xyzzy ¶".equals(rawInput))
 			throw new NullPointerException("¶ xyzzy ¶");
 		if (patternInfo.typeQualifier == null) {
-			final String trimmed = rawInput.trim();
 			for (int i = 0; i < trimmed.length(); i++) {
 				if (patternInfo.isAlphabetic() && !Character.isAlphabetic(trimmed.charAt(i)))
 					return false;
@@ -1199,7 +1196,7 @@ public class TextAnalyzer {
 		// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
 		// if there happens to be an issue then we will lose this training event.
 		try {
-			trainCore(rawInput, trimmed, length, count);
+			trainCore(rawInput, trimmed, count);
 		}
 		catch (RuntimeException e) {
 			internalErrors++;
@@ -1250,7 +1247,7 @@ public class TextAnalyzer {
 		// if there happens to be an issue then we will lose this training event.
 		boolean result;
 		try {
-			result = trainCore(rawInput, trimmed, length, 1);
+			result = trainCore(rawInput, trimmed, 1);
 		}
 		catch (RuntimeException e) {
 			internalErrors++;
@@ -1268,15 +1265,17 @@ public class TextAnalyzer {
 		TRAILING_MINUS
 	}
 
-	private boolean trainCore(final String rawInput, final String trimmed, final int length, final long count) {
+	private boolean trainCore(final String rawInput, final String trimmed, final long count) {
 
-		trackResult(rawInput, true, count);
+		trackResult(rawInput, trimmed, true, count);
 
 		// If we have determined a type, no need to further train
 		if (matchPatternInfo != null && matchPatternInfo.getBaseType() != null)
 			return true;
 
 		raw.add(rawInput);
+
+		final int length = trimmed.length();
 
 		final StringBuilder l0 = new StringBuilder(length);
 
@@ -1688,11 +1687,11 @@ public class TextAnalyzer {
 					final PatternInfo candidate = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 					for (final String sample : raw) {
 						if (logical.acceptsBaseType(FTAType.STRING)) {
-							if (trackString(sample, candidate, false))
+							if (trackString(sample, sample.trim(),  candidate, false))
 								count++;
 						}
 						else if (logical.acceptsBaseType(FTAType.LONG)) {
-							if (trackLong(sample, candidate, false))
+							if (trackLong(sample.trim(), candidate, false))
 								count++;
 						}
 						else if (logical.acceptsBaseType(FTAType.DOUBLE)) {
@@ -1727,7 +1726,7 @@ public class TextAnalyzer {
 			}
 
 			for (final String sample : raw)
-				trackResult(sample, false, 1);
+				trackResult(sample, sample.trim(), false, 1);
 		}
 	}
 
@@ -1911,7 +1910,7 @@ public class TextAnalyzer {
 		matchPatternInfo = newPatternInfo;
 
 		for (final String s : cardinality.keySet())
-			trackString(s, newPatternInfo, false);
+			trackString(s, s.trim(), newPatternInfo, false);
 
 		outliers.clear();
 		outliersSmashed.clear();
@@ -1927,7 +1926,7 @@ public class TextAnalyzer {
 		// Need to update stats to reflect any outliers we previously ignored
 		if (matchPatternInfo.getBaseType().equals(FTAType.STRING)) {
 			for (final String s : cardinality.keySet())
-				trackString(s, newPatternInfo, false);
+				trackString(s, s.trim(), newPatternInfo, false);
 		}
 		else if (matchPatternInfo.getBaseType().equals(FTAType.DOUBLE)) {
 			minDouble = minLong;
@@ -1979,15 +1978,16 @@ public class TextAnalyzer {
 
 	// Track basic facts for the field - called for any Valid input
 	private void trackTrimmedLengthAndWhiteSpace(final String input) {
-		final int length = input.length();
 		final int trimmedLength = input.trim().length();
 
 		// Determine if there is leading or trailing White space (if not done previously)
 		if (trimmedLength != 0) {
 			if (!factsCore.leadingWhiteSpace)
 				factsCore.leadingWhiteSpace = input.charAt(0) == ' ' || input.charAt(0) == '\t';
-			if (!factsCore.trailingWhiteSpace)
+			if (!factsCore.trailingWhiteSpace) {
+				final int length = input.length();
 				factsCore.trailingWhiteSpace = input.charAt(length - 1) == ' ' || input.charAt(length - 1) == '\t';
+			}
 		}
 
 		if (trimmedLength < factsCore.minRawLength && trimmedLength < minTrimmedLength)
@@ -2004,7 +2004,7 @@ public class TextAnalyzer {
 	 * Track the supplied raw input, once we have enough samples attempt to determine the type.
 	 * @param input The raw input string
 	 */
-	private void trackResult(final String input, final boolean fromTraining, final long count) {
+	private void trackResult(final String input, final String trimmed, final boolean fromTraining, final long count) {
 		if (fromTraining)
 			trackLengthAndShape(input, count);
 
@@ -2020,7 +2020,7 @@ public class TextAnalyzer {
 
 		switch (matchPatternInfo.getBaseType()) {
 		case BOOLEAN:
-			if (trackBoolean(input)) {
+			if (trackBoolean(trimmed)) {
 				matchCount += count;
 				addValid(input, count);
 				valid = true;
@@ -2028,7 +2028,7 @@ public class TextAnalyzer {
 			break;
 
 		case LONG:
-			if (trackLong(input, matchPatternInfo, true)) {
+			if (trackLong(trimmed, matchPatternInfo, true)) {
 				matchCount += count;
 				addValid(input, count);
 				valid = true;
@@ -2044,7 +2044,7 @@ public class TextAnalyzer {
 			break;
 
 		case STRING:
-			if (trackString(input, matchPatternInfo, true)) {
+			if (trackString(input, trimmed, matchPatternInfo, true)) {
 				matchCount += count;
 				addValid(input, count);
 				valid = true;
