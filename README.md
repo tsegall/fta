@@ -62,12 +62,18 @@ public class DetermineDateFormat {
 ## Metrics ##
 
 In addition to the input/configuration attributes:
- * fieldName - Name of the input stream
+ * streamName - Name of the input stream
  * dateResolutionMode - Mode used to determine how to resolve dates in the absence of adequate data. One of None, DayFirst, MonthFirst, or Auto. 
+ * compositeName - Name of the Composite the Stream is a member of (e.g. Table Name)
+ * compositeStreamNames - Ordered list of the Composite Stream names (including streamName)
  * detectionLocale - Locale used to run the analysis (e.g. "en-US")
  * ftaVersion - Version of FTA used to generate analysis
 
-The following Metrics are detected:
+There are a large number of metrics detected, which vary based on the type of the input stream.
+
+<details>
+<summary><b>Metrics Supported</b></summary>
+
  * sampleCount - Number of samples observed
  * matchCount - Number of samples that match the detected Base (or Semantic) type
  * nullCount - Number of null samples
@@ -106,11 +112,16 @@ The following fields are *not* calculated by FTA (but may be set on the Analyzer
 
 Note 1: this field may be set on the Analyzer - and if so FTA attempts no further analysis.
 
+</details>
+
 ## Semantic Type detection ##
 
 In addition to detecting a set of Base types fta will also, when enabled (default on - setDefaultLogicalTypes(false) to disable) infer Semantic type information along with the Base types.
 
 Detection of some Semantic Types is dependent on the current locale as indicated below:
+
+<details>
+<summary><b>Semantic Types Supported</b></summary>
 
 Semantic Type|Description|Locale|
 ---------|-------------|--------|
@@ -203,6 +214,8 @@ STREET_MARKER_EN| Street Suffix (English Language)|en
 TELEPHONE|Telephone Number (Generic)|*
 URI.URL|URL - see RFC 3986|*
 VIN|Vehicle Identification Number|*
+
+</details>
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
 * Infinite - captures any infinite type (e.g. Even numbers).  Implemented via a Java Class.
@@ -381,7 +394,10 @@ Indicative performance on an Intel 2.6Ghz i7.  The slower number is with Statist
 
 ## Background Reading ##
 
-* https://arxiv.org/pdf/1905.10688.pdf
-* https://congyan.org/autotype.pdf
-* http://webdatacommons.org/webtables/goldstandardV2.html
+* Extracting Syntactic Patterns from Databases (https://arxiv.org/abs/1710.11528v2)
+* Sherlock: A Deep Learning Approach to
+Semantic Data Type Detection (https://arxiv.org/pdf/1905.10688.pdf)
+* Synthesizing Type-Detection Logic for Rich Semantic Data
+Types using Open-source Code (https://congyan.org/autotype.pdf)
+* T2Dv2 Gold Standard for Matching Web Tables to DBpedia (http://webdatacommons.org/webtables/goldstandardV2.html)
 
