@@ -163,10 +163,15 @@ public class TestStandalonePlugins {
 	public void randomSupport() throws IOException, FTAPluginException {
 		final int SAMPLE_SIZE = 100;
 		final Locale[] locales = new Locale[] {
-				Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB"), Locale.forLanguageTag("en-AU"),
-				Locale.forLanguageTag("nl-NL"), Locale.forLanguageTag("pt-BR"), Locale.forLanguageTag("fr-FR"),
-				Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("it-IT"),
+				Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("de-CH"),
+				Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-UK"), Locale.forLanguageTag("en-AU"),
+				Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("es-MX"),
+				Locale.forLanguageTag("fr-CH"), Locale.forLanguageTag("fr-FR"),
+				Locale.forLanguageTag("it-CH"), Locale.forLanguageTag("it-IT"),
 				Locale.forLanguageTag("jp-JP"),
+				Locale.forLanguageTag("nl-NL"),
+				Locale.forLanguageTag("pt-BR"),
+				Locale.forLanguageTag("tr-TR")
 		};
 
 		for (Locale locale : locales) {
@@ -177,21 +182,23 @@ public class TestStandalonePlugins {
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
 			for (int iters = 0; iters < 100; iters++) {
-				for (final LogicalType logicalType : registered) {
+				for (final LogicalType logical : registered) {
 
-					// Does it support the nextRandom() interface
-					if (!LTRandom.class.isAssignableFrom(logicalType.getClass()))
+					String pluginSignature = logical.getPluginDefinition().signature;
+					if (!"[NONE]".equals(pluginSignature) && !logical.getSignature().equals(logical.getPluginDefinition().signature))
+						System.err.printf("WARNING: Signature incorrect for '%s.  LogicalType = '%s', Plugin = '%s'.%n", logical.getQualifier(), logical.getSignature(), logical.getPluginDefinition().signature);
+					Assert.assertTrue("[NONE]".equals(pluginSignature) || logical.getSignature().equals(logical.getPluginDefinition().signature));
+
+					if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
 						continue;
-
-					final LogicalTypeCode logical = (LogicalTypeCode)logicalType;
 
 					final String[] testCases = new String[SAMPLE_SIZE];
 					for (int i = 0; i < SAMPLE_SIZE; i++) {
 						testCases[i] = logical.nextRandom();
-						Assert.assertTrue(logical.isValid(testCases[i]), logicalType.getQualifier() + ":'" + testCases[i] + "'");
+						Assert.assertTrue(logical.isValid(testCases[i]), logical.getQualifier() + ":'" + testCases[i] + "'");
 					}
 					for (int i = 0; i < SAMPLE_SIZE; i++)
-						Assert.assertTrue(testCases[i].matches(logical.getRegExp()), logicalType.getQualifier() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
+						Assert.assertTrue(testCases[i].matches(logical.getRegExp()), logical.getQualifier() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
 				}
 			}
 		}

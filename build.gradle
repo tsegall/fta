@@ -38,7 +38,7 @@ mainClassName = "com.cobber.fta.driver.Driver"
 
 group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "4.7.11"
+version = "4.8.0"
 
 repositories {
   mavenCentral()
@@ -138,6 +138,8 @@ dependencies {
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonDatabindVersion}"
   implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: "${googlePhoneNumberVersion}"
   implementation group: 'org.apache.commons', name: 'commons-text', version: "${commonsTextVersion}"
+  implementation group: 'com.github.krraghavan', name: 'xeger', version: "${xegerVersion}"
+
   testImplementation group: 'org.testng', name: 'testng', version: "${testngVersion}"
 }
 

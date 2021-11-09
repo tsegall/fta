@@ -761,8 +761,8 @@ public class TestStrings {
 		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {

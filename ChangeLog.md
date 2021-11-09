@@ -535,3 +535,11 @@
 ### 4.7.11
  - ENH: Split out performance tests
  - ENH: Improve overall performance by passing around trimmed value
+
+### 4.8.0
+ - ENH: LogicalType now implements LTRandom - so you can also call nextRandom() from RegExp plugins
+ - ENH: Add some Italian first and Last names
+ - ENH: Improve RegExps for COORDINATES, MONTH.DIGITS, DAY.DIGITS
+ - ENH: Support isRegExpComplete from pluginDefinition
+ - INT: Add test to validate signatures in plugin file
+ - BUG: Fix a couplle of signatures

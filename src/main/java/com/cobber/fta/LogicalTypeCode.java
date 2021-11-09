@@ -24,7 +24,7 @@ import com.cobber.fta.core.FTAPluginException;
  * All Logical Types that support the {@link LTRandom} interface should extend this abstract class.  This interface
  * provides a {@link LTRandom#nextRandom} which will create a new valid example of the Semantic Type.
  */
-public abstract class LogicalTypeCode extends LogicalType implements LTRandom {
+public abstract class LogicalTypeCode extends LogicalType {
 	protected SecureRandom random;
 
 	public LogicalTypeCode(final PluginDefinition plugin) {

@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.cobber.fta.LogicalType;
-import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.LogicalTypeRegExp;
@@ -160,14 +159,11 @@ public class Driver {
 					if (options.signature)
 						logger.println(logical.getSignature());
 					else {
-						if (!(logical instanceof LogicalTypeCode)) {
-							logger.printf("ERROR: Plugin named '%s' does not support nextRandom(), use --help%n", options.pluginName);
-							System.exit(1);
-						}
+						if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
+							System.err.printf("Logical Type (%s) does implement LTRandom interface - however samples may not be useful.%n", logical.getQualifier());
 
-						LogicalTypeCode logicalCode = (LogicalTypeCode)logical;
 						for (long l = 0; l < ouputRecords; l++)
-							logger.println(logicalCode.nextRandom());
+							logger.println(logical.nextRandom());
 					}
 
 					System.exit(0);

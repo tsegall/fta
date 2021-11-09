@@ -1113,7 +1113,6 @@ public class TestDoubles {
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 		Assert.assertEquals(result1.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
 		Assert.assertEquals(result1.getDataSignature(), result3.getDataSignature());
-		Assert.assertEquals(result1.getRegExp(), "[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result1.getNullCount(), 0);
 		Assert.assertEquals(result1.getSampleCount(), inputs1.length);
 		Assert.assertEquals(result1.getConfidence(), 1.0);

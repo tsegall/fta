@@ -15,6 +15,8 @@
  */
 package com.cobber.fta;
 
+import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -22,6 +24,9 @@ import java.util.regex.Pattern;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
+import com.cobber.fta.core.Utils;
+
+import nl.flotsam.xeger.Xeger;
 
 public class LogicalTypeRegExp extends LogicalType {
 	private static final String WRONG_TYPE = "LogicalTypeRegExp baseType must be LONG, DOUBLE or STRING, not ";
@@ -32,6 +37,8 @@ public class LogicalTypeRegExp extends LogicalType {
 	private Double maxDouble;
 	private String minString;
 	private String maxString;
+	protected SecureRandom random;
+	private Xeger generator;
 
 	public LogicalTypeRegExp(final PluginDefinition plugin) throws FTAPluginException {
 		super(plugin);
@@ -68,6 +75,9 @@ public class LogicalTypeRegExp extends LogicalType {
 		catch (Exception e) {
 			return false;
 		}
+
+		random = new SecureRandom(new byte[] { 3, 1, 4, 1, 5, 9, 2 });
+
 		return true;
 	}
 
@@ -79,11 +89,6 @@ public class LogicalTypeRegExp extends LogicalType {
 	@Override
 	public String getRegExp() {
 		return defn.regExpReturned;
-	}
-
-	@Override
-	public boolean isRegExpComplete() {
-		return true;
 	}
 
 	@Override
@@ -209,5 +214,35 @@ public class LogicalTypeRegExp extends LogicalType {
 	@Override
 	public boolean isClosed() {
 		return false;
+	}
+
+	private static Map<String, String> toSimplify = new HashMap<>();
+	static {
+		toSimplify.put("\\p{XDigit}", "[0-9A-Fa-f]");
+		// Note: this is not strictly correct - since it will now be restricted to ASCII (but the samples will clearly be a valid subset)
+		toSimplify.put("\\p{IsAlphabetic}", "[A-Za-z]");
+		toSimplify.put("\\d", "[0-9]");
+	}
+
+	private String Simplify(final String re) {
+		String ret = re;
+		for (Map.Entry<String, String> s : toSimplify.entrySet())
+			ret = Utils.replaceAll(ret, s.getKey(), s.getValue());
+
+		return ret;
+	}
+
+	@Override
+	public String nextRandom() {
+		if (generator == null)
+			generator = new Xeger(Simplify(defn.regExpReturned));
+
+        return generator.generate();
+	}
+
+	@Override
+	public void seed(final byte[] seed) {
+
+		random = new SecureRandom(seed);
 	}
 }

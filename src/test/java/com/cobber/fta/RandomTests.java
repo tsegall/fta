@@ -1911,23 +1911,22 @@ public class RandomTests {
 
 		@Override
 		public void run() {
-			LogicalType logicalType = null;
+			LogicalType logical = null;
 			do {
 				final String semanticType = someSemanticTypes[random.nextInt(someSemanticTypes.length)];
 				try {
-					logicalType = LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier(semanticType), Locale.getDefault());
+					logical = LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier(semanticType), Locale.getDefault());
 				} catch (FTAException e) {
 					e.printStackTrace();
 				}
-			} while (!LTRandom.class.isAssignableFrom(logicalType.getClass()));
-
-			final LogicalTypeCode logicalTypeCode = (LogicalTypeCode)logicalType;
+			} while (!(logical instanceof LogicalTypeRegExp) || ((LogicalTypeRegExp)logical).isRegExpComplete());
 
 			for (int i = 0; i < 1000; i++) {
-				final String value = logicalTypeCode.nextRandom();
-				if (!logicalTypeCode.isValid(value))
-					System.err.println("Issue with LogicalType'" + logicalTypeCode.getDescription() + "', value: " + value + "\n");
-				Assert.assertTrue(logicalTypeCode.isValid(value), value);
+				final String value = logical.nextRandom();
+				if (logical.isRegExpComplete() && !logical.isValid(value)) {
+					System.err.println("Issue with LogicalType'" + logical.getDescription() + "', value: " + value + "\n");
+					Assert.assertTrue(logical.isValid(value), value);
+				}
 			}
 		}
 	}

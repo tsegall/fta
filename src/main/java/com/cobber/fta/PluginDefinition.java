@@ -60,6 +60,8 @@ public class PluginDefinition {
 	public String[] regExpsToMatch;
 	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
 	public String regExpReturned;
+	/** Is the returned Regular Expression a complete representation of the Logical Type. */
+	public boolean isRegExpComplete;
 	/** RegExp plugins: a set of strings that match the regExp but are known to be invalid. */
 	public Set<String> invalidList;
 	/** Simple finite plugins: the content with the set of valid elements. */

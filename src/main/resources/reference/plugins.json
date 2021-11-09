@@ -96,6 +96,7 @@
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d" ],
 		"regExpReturned": "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d",
+		"isRegExpComplete": true,
 		"threshold": 95,
 		"baseType": "STRING",
 		"priority": 63
@@ -160,6 +161,7 @@
 	{
 		"qualifier": "GENDER.TEXT_<LOCALE>",
 		"description": "Gender",
+		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGender",
 		"validLocales": [ "en", "de", "es", "it", "fr", "nl", "pt" ],
 		"priority": 80
@@ -216,24 +218,28 @@
 	{
 		"qualifier": "MONTH.ABBR_<LOCALE>",
 		"description": "Month Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthAbbr",
 		"priority": 100
 	},
 	{
 		"qualifier": "MONTH.FULL_<LOCALE>",
 		"description": "Full Month name <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthFull",
 		"priority": 101
 	},
 	{
 		"qualifier": "DOY.ABBR_<LOCALE>",
 		"description": "Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeDOYAbbr",
 		"priority": 102
 	},
 	{
 		"qualifier": "DOY.FULL_<LOCALE>",
 		"description": "Full Day of Week name <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeDOYFull",
 		"priority": 103
 	},
@@ -626,7 +632,7 @@
 		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
 		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name|voornaam|vnaam).*", "(?i)(first)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
-		"validLocales": [ "en", "br", "de", "do", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
+		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 170
 	},
 	{
@@ -636,7 +642,7 @@
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
 		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name|sobrenome|nachname|achternaam|anaam).*", "(?i)(last)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
-		"validLocales": [ "en", "br", "de", "do", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
+		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 171
 	},
 	{
@@ -646,7 +652,7 @@
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameLastFirst",
 		"headerRegExps": [ ".*(?i)(name|nome|nom|naam).*" ],
 		"headerRegExpConfidence": [ 60 ],
-		"validLocales": [ "en", "br", "de", "do", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
+		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 172
 	},
 	{
@@ -656,7 +662,7 @@
 		"clazz": "com.cobber.fta.plugins.LogicalTypeNameFirstLast",
 		"headerRegExps": [ ".*(?i)(name|nome|nom|naam).*" ],
 		"headerRegExpConfidence": [ 60 ],
-		"validLocales": [ "en", "br", "de", "do", "es", "fr", "gt", "mx", "nl", "pr", "pt" ],
+		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 173
 	},
 	{
@@ -667,7 +673,8 @@
 		"headerRegExps": [ ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|(?i)(lat)" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
-		"regExpReturned": "[+-]?\\d+\\.\\d+",
+		"regExpReturned": "([+-]?([0-9]|[0-8][0-9])\\.\\d+)|[+-]?90\\.0+",
+		"isRegExpComplete": true,
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "-90.0",
@@ -682,6 +689,8 @@
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExpReturned": "[+-]?\\d+\\.\\d+",
+		"regExpReturned": "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+)|[+-]?180\\.0+",
+		"isRegExpComplete": true,
 		"threshold": 98,
 		"baseType": "DOUBLE",
 		"minimum": "-180.0",
@@ -692,7 +701,7 @@
 		"qualifier": "COORDINATE.LATITUDE_DMS",
 		"description": "Latitude (degrees/minutes/seconds)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLatitudeDMS",
-		"signature": "DbzARuk/thlR/jm3sj8H3vllZCE=",
+		"signature": "uZncg/K2y6hbc3Wul8IFlpvwEEU=",
 		"headerRegExps": [ ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|(?i)(lat)" ],
 		"headerRegExpConfidence": [ 95 ],
 		"priority": 192
@@ -701,17 +710,18 @@
 		"qualifier": "COORDINATE.LONGITUDE_DMS",
 		"description": "Longitude (degrees/minutes/seconds)",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeLongitudeDMS",
-		"signature": "uZncg/K2y6hbc3Wul8IFlpvwEEU=",
+		"signature": "DbzARuk/thlR/jm3sj8H3vllZCE=",
 		"headerRegExps": [ ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|lon|lng" ],
 		"headerRegExpConfidence": [ 95 ],
 		"priority": 193
 	},
 	{
 		"qualifier": "COORDINATE_PAIR.DECIMAL",
-		"description": "Coordinate Pair (Decimal degrees)",
+		"description": "Coordinate Pair (Lat,Long - Decimal degrees)",
 		"signature": "6lVqkPqRAcyOlhHO3ckHttlzBww=",
 		"regExpsToMatch": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+" ],
-		"regExpReturned": "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+",
+		"regExpReturned": "([+-]?([0-9]|[0-8][0-9])\\.\\d+|[+-]90\\.0+),([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+|[+-]180\\.0+)",
+		"isRegExpComplete": true,
 		"threshold": 98,
 		"baseType": "STRING",
 		"priority": 194
@@ -724,6 +734,7 @@
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 		"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
+		"isRegExpComplete": false,
 		"baseType": "STRING",
 		"validLocales": [ "en" ],
 		"priority": 210
@@ -747,6 +758,7 @@
 		"headerRegExpConfidence": [ 90, 70 ],
 		"regExpsToMatch": [ "\\d{3}-\\d{2}-\\d{4}" ],
 		"regExpReturned": "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}",
+		"isRegExpComplete": false,
 		"validLocales": [ "en-US" ],
 		"threshold": 98,
 		"baseType": "STRING",
@@ -784,6 +796,7 @@
 		"headerRegExpConfidence": [ 90 ],
 		"regExpsToMatch": [ "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}" ],
 		"regExpReturned": "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}",
+		"isRegExpComplete": true,
 		"threshold": 98,
 		"baseType": "STRING",
 		"priority": 260
@@ -795,7 +808,8 @@
 		"headerRegExps": [ ".*(?i)(month)|(i?)(month).*" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d{1,2}" ],
-		"regExpReturned": "\\d|0\\d|1[012]",
+		"regExpReturned": "[1-9]|0[1-9]|1[012]",
+		"isRegExpComplete": true,
 		"threshold": 98,
 		"baseType": "LONG",
 		"minimum": "1",
@@ -807,7 +821,8 @@
 		"description": "Numeric Day of Month",
 		"signature": "1C6IAjixbGXDfrkL4dEndXg65BQ=",
 		"regExpsToMatch": [ "\\d{1,2}" ],
-		"regExpReturned": "\\d|[012]\\d|3[01]",
+		"regExpReturned": "[1-9]|0[1-9]|[12]\\d|3[01]",
+		"isRegExpComplete": true,
 		"threshold": 98,
 		"baseType": "LONG",
 		"minimum": "1",

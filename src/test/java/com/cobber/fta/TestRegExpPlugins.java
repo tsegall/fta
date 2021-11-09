@@ -132,7 +132,6 @@ public class TestRegExpPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getRegExp(), "\\d|0\\d|1[012]");
 		Assert.assertEquals(result.getTypeQualifier(), "MONTH.DIGITS");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -162,7 +161,6 @@ public class TestRegExpPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getRegExp(), "[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
@@ -193,7 +191,6 @@ public class TestRegExpPlugins {
 
 		Assert.assertEquals(result.getSampleCount(), samples.length);
 		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
-		Assert.assertEquals(result.getRegExp(), "[+-]?\\d+\\.\\d+");
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.DOUBLE);

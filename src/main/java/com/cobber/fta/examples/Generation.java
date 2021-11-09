@@ -18,10 +18,9 @@ package com.cobber.fta.examples;
 import java.io.IOException;
 import java.util.Locale;
 
-import com.cobber.fta.LTRandom;
 import com.cobber.fta.LogicalType;
-import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
+import com.cobber.fta.LogicalTypeRegExp;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAException;
 
@@ -31,21 +30,24 @@ import com.cobber.fta.core.FTAException;
 public abstract class Generation {
 
 	public static void main(final String[] args) throws IOException, FTAException {
-		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("EMAIL");
-		final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+		String demos[] = new String[] { "EMAIL", "COORDINATE.LATITUDE_DECIMAL", "CITY" };
 
-		if (!LTRandom.class.isAssignableFrom(logicalType.getClass())) {
-			System.err.println("Logical Type must implement LTRandom interface");
-			System.exit(1);
-		}
+		for (String s: demos) {
+			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(s);
+			final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
-		final LogicalTypeCode logicalTypeCode = (LogicalTypeCode)logicalType;
+			if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete()) {
+				System.err.printf("Logical Type (%s) does implement LTRandom interface - however samples may not be valid.", s);
+				System.exit(1);
+			}
 
-		for (int i = 0; i < 10; i++) {
-			final String value = logicalTypeCode.nextRandom();
-			System.err.println(value);
-			if (!logicalTypeCode.isValid(value))
-				System.err.println("Issue with LogicalType'" + logicalTypeCode.getDescription() + "', value: " + value + "\n");
+			System.err.printf("%n*** Logical Type: '%s' ***%n", s);
+			for (int i = 0; i < 10; i++) {
+				final String value = logical.nextRandom();
+				System.err.println(value);
+				if (!logical.isValid(value))
+					System.err.println("Issue with LogicalType'" + logical.getDescription() + "', value: " + value + "\n");
+			}
 		}
 	}
 }

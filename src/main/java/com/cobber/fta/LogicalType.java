@@ -29,7 +29,7 @@ import com.cobber.fta.core.FTAType;
 /**
  * All Logical Types are derived from this abstract class.
  */
-public abstract class LogicalType implements Comparable<LogicalType> {
+public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	protected PluginDefinition defn;
 	protected Locale locale;
 	protected int priority;
@@ -120,7 +120,9 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * For example, \\d{5} is not for US ZIP codes, whereas (?i)(male|female) could be valid for a Gender.
 	 * @return The Java Regular Expression that most closely matches this Logical Type.
 	 */
-	public abstract boolean isRegExpComplete();
+	public boolean isRegExpComplete() {
+		return defn.isRegExpComplete;
+	}
 
 	/**
 	 * The percentage when we declare success 0 - 100.
@@ -213,4 +215,16 @@ public abstract class LogicalType implements Comparable<LogicalType> {
 	 * @return A boolean indicating if the set is closed.
 	 */
 	public abstract boolean isClosed();
+
+
+
+	/**
+	 * Accessor for the Plugin Definition for this Logical Type.
+	 * @return The Plugin Definition.
+	 */
+	public PluginDefinition getPluginDefinition() {
+		return defn;
+	}
+
+
 }
