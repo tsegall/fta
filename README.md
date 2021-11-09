@@ -218,7 +218,7 @@ VIN|Vehicle Identification Number|*
 </details>
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
-* Infinite - captures any infinite type (e.g. Even numbers).  Implemented via a Java Class.
+* Code - captures any complex type (e.g. Even numbers, Credit Cards numbers).  Implemented via a Java Class.
 * Finite - captures any finite type (e.g. ISO-3166-2 (Country codes), US States, ...).  Implemented via a supplied list with the valid elements enumerated.
 * RegExp - captures any type that can be expressed via a Regular Expression (e.g. SSN).  Implemented via a set of Regular Expressions used to match against.
 
@@ -250,7 +250,6 @@ Note: The Context (the current Stream Name and other field names) can be used to
 		"regExpReturned" : "(?i)(冥王星|土星|地球|天王星|木星|水星|海王星|火星|金星)",
 		"backout": ".*",
                 "validLocales": [ "ja" ],
-		"baseType" : "STRING"
 	},
 ]
 ```
@@ -266,7 +265,8 @@ The mandatory 'qualifier' tag is the name of this Semantic Type.
 
 The mandatory 'threshold' tag is the percentage of valid samples required by this plugin to establish the Stream Data as a a valid instance of this Semantic Type.
 
-The mandatory 'baseType' tag constrains the plugin to streams that are of this Base Type (see discussion above on the valid Base Types).
+The 'baseType' tag constrains the plugin to streams that are of this Base Type (see discussion above on the valid Base Types).
+The baseType is defined by the implementation for all Code Plugins, STRING for all Finite plugins, and must be defined for RegExp plugins.
 
 The optional 'validLocales' tag is used to constrain the plugin to a set of languages or locales.  This is the set of locales where the plugin should be enabled.
 For example, [ "en-US" ,"en-CA" ] indicates that the plugin should be enabled in both the US and Canada, [ "en" ] indicates that the plugin should be enabled in
@@ -303,7 +303,7 @@ Note: The Eegular Expression used to detect a Semantic type may differ from the 
 "\\d{3}-\\d{2}-\\d{4}" is used to detect an SSN but the Regular Expression "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}" is used to validate and is returned.
 - For any fields detected as a known Semantic Type then the outliers are based on the particular Semantic Type, for example if the Semantic Type is
 detected as a US Phone Number then numbers with invalid area codes or invalid area code exchange pairs will be flagged as outliers.
-- For infinite plugins, outliers may be detected based on a statistical analysis. For example if there are 100 valid integers and one 'O' (letter O) then the 'O' would be identified as an outlier.  In other cases, where an enumerated type is detected, for example 100 instances of RED, 100 instances of BLUE, 100 instances of PINK, and one instance of 'P1NK' then the instance of 'P1NK' would be identified as an outlier based on its Levenshtein distance from one of the other elements in the set.
+- For Code plugins, outliers may be detected based on a statistical analysis. For example if there are 100 valid integers and one 'O' (letter O) then the 'O' would be identified as an outlier.  In other cases, where an enumerated type is detected, for example 100 instances of RED, 100 instances of BLUE, 100 instances of PINK, and one instance of 'P1NK' then the instance of 'P1NK' would be identified as an outlier based on its Levenshtein distance from one of the other elements in the set.
 
 ## Regular Expressions ##
 
