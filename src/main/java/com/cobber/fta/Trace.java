@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import com.cobber.fta.core.TraceException;
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
@@ -128,6 +129,33 @@ public class Trace {
 			} catch (IOException e) {
 				throw new TraceException("Cannot write sample to trace file", e);
 			}
+		}
+	}
+
+	/**
+	 * Record the bulk samples.
+	 * @param input The bulk samples
+	 */
+	public void recordBulk(Map<String, Long> input) {
+		if (!enabled)
+			return;
+
+		try {
+			traceWriter.write("\n{\n\"samplesBulk\": [\n");
+			boolean first = true;
+			for (Map.Entry<String, Long> entry : input.entrySet())  {
+				if (first)
+					first = false;
+				else
+					traceWriter.write(",\n");
+
+				traceWriter.write("{ \"value\": \"");
+				traceWriter.write(jsonStringEncoder.quoteAsString(entry.getKey()));
+				traceWriter.write("\", \"count\": " + entry.getValue() + " }");
+			}
+			traceWriter.write("\n]\n}\n");
+		} catch (IOException e) {
+			throw new TraceException("Cannot write bulk samples to trace file", e);
 		}
 	}
 

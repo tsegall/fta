@@ -623,6 +623,15 @@ public class TextAnalyzer {
 		this.totalCount = totalCount;
 	}
 
+	/**
+	 * Sets the maximum length for (only use this if the samples provided to FTA are truncated).
+	 * @param maxRawLength The maximum length observed to date.
+	 * Note: This includes any whitespace.
+	 */
+	public void setMaxLength(int maxRawLength) {
+		factsCore.maxRawLength = maxRawLength;
+	}
+
 	String getRegExp(final KnownPatterns.ID id) {
 		return knownPatterns.getRegExp(id);
 	}
@@ -1134,11 +1143,20 @@ public class TextAnalyzer {
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
 	public void trainBulk(Map<String, Long> observed) throws FTAPluginException, FTAUnsupportedLocaleException {
+		// Initialize if we have not already done so
+		if (!initialized) {
+			initialize();
+			trainingStarted = true;
+		}
+
 		// Sort so we have the most frequent first
 		observed = Utils.sortByValue(observed);
 		Observation[] facts = new Observation[observed.size()];
 		int i = 0;
 		long total = 0;
+
+		if (traceConfig != null)
+			traceConfig.recordBulk(observed);
 
 		// Setup the array of observations and calculate the total number of observations
 		for (final Map.Entry<String, Long> entry : observed.entrySet()) {

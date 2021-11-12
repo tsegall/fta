@@ -31,6 +31,7 @@ public class TestBulk {
 	@Test(groups = { TestGroups.ALL })
 	public void basicBulk() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBulk");
+		analysis.setTrace("enabled=true");
 
 		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("Male", 2000000L);

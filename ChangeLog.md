@@ -546,3 +546,7 @@
 
 ### 4.8.1
  - ENH: Bump google phone number version
+
+### 4.8.2
+ - ENH: Add support for tracing for trainBulk
+ - ENH: Add support to externally set the maxLength of a field (if sending in truncated data to FTA)

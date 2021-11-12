@@ -392,6 +392,20 @@ Indicative performance on an Intel 2.6Ghz i7.  The slower number is with Statist
 * ~3-3 million strings/sec
 * ~10-15 million longs/sec
 
+## BUGS  ##
+
+First step is turn on tracing.  Either using setTrace (see JavaDoc), or via FTA_TRACE.
+
+General form of options is &lt;attribute1&gt;=&lt;value1&gt;,&lt;attribute2&gt;=&lt;value2&gt; ...
+
+Supported attributes are:
+* enabled=true/false
+* stream=&lt;name of stream&gt; (defaults to all)
+* directory=&lt;directory for trace file&gt; (defaults to java.io.tmpdir)
+* samples=&lt;# samples to trace&gt; (defaults to 1000)
+
+This generates a file named &lt;Stream&gt;.fta with the inputs to th analysis for debugging.
+
 ## Background Reading ##
 
 * Extracting Syntactic Patterns from Databases (https://arxiv.org/abs/1710.11528v2)

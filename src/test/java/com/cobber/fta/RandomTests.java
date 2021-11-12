@@ -1594,8 +1594,8 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testDataSignature() throws IOException, FTAException {
-		final TextAnalyzer analysis1 = new TextAnalyzer("Anaysis1");
-		final TextAnalyzer analysis2 = new TextAnalyzer("Anaysis2");
+		final TextAnalyzer analysis1 = new TextAnalyzer("Analysis1");
+		final TextAnalyzer analysis2 = new TextAnalyzer("Analysis2");
 		analysis2.setTotalCount(1000000);
 
 		final int start = 10000;
@@ -1614,6 +1614,20 @@ public class RandomTests {
 
 		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testMaxLength() throws IOException, FTAException {
+		final int MAX_LENGTH = 512;
+		final TextAnalyzer analysis = new TextAnalyzer("maxLength");
+
+		for (int i = 0; i < 1000; i++) {
+			analysis.train("Hello - " + String.valueOf(i));
+		}
+		analysis.setMaxLength(MAX_LENGTH);
+
+		final TextAnalysisResult result = analysis.getResult();
+		Assert.assertEquals(result.getMaxLength(), MAX_LENGTH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
