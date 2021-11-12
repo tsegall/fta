@@ -543,3 +543,6 @@
  - ENH: Support isRegExpComplete from pluginDefinition
  - INT: Add test to validate signatures in plugin file
  - BUG: Fix a couplle of signatures
+
+### 4.8.1
+ - ENH: Bump google phone number version
