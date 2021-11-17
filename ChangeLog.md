@@ -550,3 +550,7 @@
 ### 4.8.2
  - ENH: Add support for tracing for trainBulk
  - ENH: Add support to externally set the maxLength of a field (if sending in truncated data to FTA)
+
+### 4.9.0
+ - ENH: Minor improvements for performance
+ - ENH: Clamp input to 4096 characters (can be widened by invoking setMaxInputLength()) - will change existing signatures unless data is narrower than 4096.

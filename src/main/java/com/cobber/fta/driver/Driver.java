@@ -94,6 +94,8 @@ public class Driver {
 				options.logicalTypes = args[++idx];
 			else if ("--maxCardinality".equals(args[idx]))
 				options.maxCardinality = Integer.valueOf(args[++idx]);
+			else if ("--maxInputLength".equals(args[idx]))
+				options.maxInputLength = Integer.valueOf(args[++idx]);
 			else if ("--maxOutlierCardinality".equals(args[idx]))
 				options.maxOutlierCardinality = Integer.valueOf(args[++idx]);
 			else if ("--noAnalysis".equals(args[idx]))

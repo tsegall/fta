@@ -8,8 +8,10 @@ Support for non-English date detection is relatively robust, with the following 
 * No support for non-Gregorian calendars
 * No support for non-Arabic numerals
 
-Note: Semantic Type detection is typically predicated on valid input data, for example, a field that contains data that looks
-like phone numbers, but that are in fact invalid, will NOT be detected as the semantic type - TELEPHONE.
+Notes:
+* By default analysis is performed on the initial 4096 characters of each record (adjustable via setMaxInputLength())
+* Semantic Type detection is typically predicated on valid input data, for example, a field that contains data that looks
+like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
 
 Typical usage is:
 ```java
@@ -394,7 +396,7 @@ Indicative performance on an Intel 2.6Ghz i7.  The slower number is with Statist
 
 ## BUGS  ##
 
-First step is turn on tracing.  Either using setTrace (see JavaDoc), or via FTA_TRACE.
+First step is turn on tracing.  Either using setTrace (see JavaDoc), or via environment variable FTA_TRACE.
 
 General form of options is &lt;attribute1&gt;=&lt;value1&gt;,&lt;attribute2&gt;=&lt;value2&gt; ...
 
@@ -404,7 +406,11 @@ Supported attributes are:
 * directory=&lt;directory for trace file&gt; (defaults to java.io.tmpdir)
 * samples=&lt;# samples to trace&gt; (defaults to 1000)
 
-This generates a file named &lt;Stream&gt;.fta with the inputs to th analysis for debugging.
+For example:
+
+`$ export FTA_TRACE="enabled=true,director=/tmp,samples=10000"`
+
+This generates a file named &lt;Stream&gt;.fta with the inputs to the analysis for debugging.
 
 ## Background Reading ##
 

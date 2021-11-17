@@ -34,6 +34,9 @@ public class AnalysisConfig {
 	/** The default value for the number of samples to collect before making a type determination. */
 	public static final int DETECT_WINDOW_DEFAULT = 20;
 
+	/** The default value for the maximum length of input to process. */
+	public static final int MAX_INPUT_LENGTH_DEFAULT = 4096;
+
 	/** The maximum Cardinality tracked. */
 	public int maxCardinality = MAX_CARDINALITY_DEFAULT;
 
@@ -46,6 +49,8 @@ public class AnalysisConfig {
 	public int threshold = DETECTION_THRESHOLD_DEFAULT;
 
 	public int detectWindow = DETECT_WINDOW_DEFAULT;
+
+	public int maxInputLength = MAX_INPUT_LENGTH_DEFAULT;
 
 	public String localeTag = null;
 

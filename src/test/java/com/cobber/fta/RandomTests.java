@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.plugins.LogicalTypeUSZip5;
 import com.cobber.fta.plugins.LogicalTypeUSZipPlus4;
 
@@ -1617,17 +1618,44 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
-	public void testMaxLength() throws IOException, FTAException {
-		final int MAX_LENGTH = 512;
+	public void testMaxInputLengthNoOverflow() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("maxLength");
+		final int LONG_TEST = 4100;
+		Assert.assertTrue(LONG_TEST > analysis.getMaxInputLength());
 
-		for (int i = 0; i < 1000; i++) {
-			analysis.train("Hello - " + String.valueOf(i));
+		analysis.setMaxInputLength(5000);
+		Assert.assertTrue(LONG_TEST < analysis.getMaxInputLength());
+
+		final String hello = "Hello";
+		analysis.train(hello);
+		for (int i = 'a'; i < 'a' + 26; i++) {
+			String longString = Utils.repeat((char)i, LONG_TEST);
+			analysis.train(longString);
 		}
-		analysis.setMaxLength(MAX_LENGTH);
 
 		final TextAnalysisResult result = analysis.getResult();
-		Assert.assertEquals(result.getMaxLength(), MAX_LENGTH);
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{" + hello.length() + "," + LONG_TEST + "}");
+		Assert.assertEquals(result.getMinLength(), hello.length());
+		Assert.assertEquals(result.getMaxLength(), LONG_TEST);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testMaxInputLengthOverflow() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("maxLength");
+		final int LONG_TEST = 5000;
+		Assert.assertTrue(LONG_TEST > analysis.getMaxInputLength());
+		final String hello = "Hello";
+
+		analysis.train(hello);
+		for (int i = 'a'; i < 'a' + 26; i++) {
+			String longString = Utils.repeat((char)i, LONG_TEST);
+			analysis.train(longString);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{" + hello.length() + "," + LONG_TEST + "}");
+		Assert.assertEquals(result.getMinLength(), hello.length());
+		Assert.assertEquals(result.getMaxLength(), LONG_TEST);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })

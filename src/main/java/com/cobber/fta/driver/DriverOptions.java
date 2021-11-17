@@ -40,6 +40,7 @@ class DriverOptions {
 	protected int detectWindow = -1;
 	protected Locale locale;
 	protected int maxCardinality = -1;
+	protected int maxInputLength = -1;
 	protected int maxOutlierCardinality = -1;
 	protected int pluginThreshold = -1;
 	protected boolean pretty;
@@ -60,6 +61,8 @@ class DriverOptions {
 			analyzer.setDetectWindow(this.detectWindow);
 		if (this.maxCardinality != -1)
 			analyzer.setMaxCardinality(this.maxCardinality);
+		if (this.maxInputLength != -1)
+			analyzer.setMaxInputLength(this.maxInputLength);
 		if (this.maxOutlierCardinality != -1)
 			analyzer.setMaxOutliers(this.maxOutlierCardinality);
 		if (this.pluginThreshold != -1)

@@ -248,6 +248,9 @@ public class TextAnalyzer {
 	private int minTrimmedLength = Integer.MAX_VALUE;
 	private int maxTrimmedLength = Integer.MIN_VALUE;
 
+	private int minTrimmedLengthNumeric = Integer.MAX_VALUE;
+	private int maxTrimmedLengthNumeric = Integer.MIN_VALUE;
+
 	private int minTrimmedOutlierLength = Integer.MAX_VALUE;
 	private int maxTrimmedOutlierLength = Integer.MIN_VALUE;
 
@@ -579,7 +582,7 @@ public class TextAnalyzer {
 	 * Note: This only impacts simple Numerics/Alphas/AlphaNumerics.
 	 *
 	 * @param newLengthQualifier The new value.
-
+	 *
 	 * @return The previous value of this parameter.
 	 */
 	public boolean setLengthQualifier(final boolean newLengthQualifier) {
@@ -624,12 +627,28 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Sets the maximum length for (only use this if the samples provided to FTA are truncated).
-	 * @param maxRawLength The maximum length observed to date.
-	 * Note: This includes any whitespace.
+	 * Sets the maximum input length for sampling.
+	 * @param maxInputLength The maximum length of samples, any samples longer than this will be truncated to this length.
+	 *
+	 * @return The previous value of this parameter.
 	 */
-	public void setMaxLength(int maxRawLength) {
-		factsCore.maxRawLength = maxRawLength;
+	public int setMaxInputLength(int maxInputLength) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot change maxInputLength once training has started");
+		if (maxInputLength < AnalysisConfig.MAX_INPUT_LENGTH_DEFAULT)
+			throw new IllegalArgumentException("Invalid value for maxInputLength (must be >= " + AnalysisConfig.MAX_INPUT_LENGTH_DEFAULT + ")");
+
+		final int ret = analysisConfig.maxInputLength;
+		analysisConfig.maxInputLength = maxInputLength;
+		return ret;
+	}
+
+	/**
+	 * Gets the current maximum input length for sampling.
+	 * @return The current maximum length before an input sample is truncated.
+	 */
+	public int getMaxInputLength() {
+		return analysisConfig.maxInputLength;
 	}
 
 	String getRegExp(final KnownPatterns.ID id) {
@@ -637,7 +656,7 @@ public class TextAnalyzer {
 	}
 
 	// Track basic facts for the field - called for all input
-	private void trackLengthAndShape(final String input, final long count) {
+	private void trackLengthAndShape(final String input, final String trimmed, final long count) {
 		// We always want to track basic facts for the field
 		final int length = input.length();
 
@@ -646,7 +665,6 @@ public class TextAnalyzer {
 		if (length > factsCore.maxRawLength)
 			factsCore.maxRawLength = length;
 
-		final String trimmed = input.trim();
 		if (trimmed.length() != 0) {
 			if (length != 0 && length < minRawNonBlankLength)
 				minRawNonBlankLength = length;
@@ -708,10 +726,10 @@ public class TextAnalyzer {
 			if (trimmed.charAt(0) == '0' && digits != 1)
 				factsCore.leadingZeroCount++;
 
-			if (digits < minTrimmedLength)
-				minTrimmedLength = digits;
-			if (digits > maxTrimmedLength)
-				maxTrimmedLength = digits;
+			if (digits < minTrimmedLengthNumeric)
+				minTrimmedLengthNumeric = digits;
+			if (digits > maxTrimmedLengthNumeric)
+				maxTrimmedLengthNumeric = digits;
 
 			if (l != 0 && l < minLongNonZero)
 				minLongNonZero = l;
@@ -1207,7 +1225,7 @@ public class TextAnalyzer {
 
 		if (length == 0) {
 			blankCount += count;
-			trackLengthAndShape(rawInput, count);
+			trackLengthAndShape(rawInput, trimmed, count);
 			return;
 		}
 
@@ -1257,7 +1275,7 @@ public class TextAnalyzer {
 
 		if (length == 0) {
 			blankCount++;
-			trackLengthAndShape(rawInput, 1);
+			trackLengthAndShape(rawInput, trimmed, 1);
 			return matchType != null;
 		}
 
@@ -1995,8 +2013,8 @@ public class TextAnalyzer {
 	}
 
 	// Track basic facts for the field - called for any Valid input
-	private void trackTrimmedLengthAndWhiteSpace(final String input) {
-		final int trimmedLength = input.trim().length();
+	private void trackTrimmedLengthAndWhiteSpace(final String input, final String trimmed) {
+		final int trimmedLength = trimmed.length();
 
 		// Determine if there is leading or trailing White space (if not done previously)
 		if (trimmedLength != 0) {
@@ -2008,9 +2026,9 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (trimmedLength < factsCore.minRawLength && trimmedLength < minTrimmedLength)
+		if (trimmedLength < minTrimmedLength)
 			minTrimmedLength = trimmedLength;
-		if (trimmedLength > factsCore.maxRawLength && trimmedLength > maxTrimmedLength)
+		if (trimmedLength > maxTrimmedLength)
 			maxTrimmedLength = trimmedLength;
 
 		// Determine if this is a multi-line field (if not already decided)
@@ -2022,9 +2040,9 @@ public class TextAnalyzer {
 	 * Track the supplied raw input, once we have enough samples attempt to determine the type.
 	 * @param input The raw input string
 	 */
-	private void trackResult(final String input, final String trimmed, final boolean fromTraining, final long count) {
+	private void trackResult(final String rawInput, final String trimmed, final boolean fromTraining, final long count) {
 		if (fromTraining)
-			trackLengthAndShape(input, count);
+			trackLengthAndShape(rawInput, trimmed, count);
 
 		// If the detect window cache is full and we have not determined a type compute one
 		if ((matchPatternInfo == null || matchPatternInfo.getBaseType() == null) && sampleCount - (nullCount + blankCount) > analysisConfig.detectWindow)
@@ -2035,6 +2053,8 @@ public class TextAnalyzer {
 
 		final long realSamples = sampleCount - (nullCount + blankCount);
 		boolean valid = false;
+
+		final String input = rawInput.length() > getMaxInputLength() ? rawInput.substring(0, getMaxInputLength()) : rawInput;
 
 		switch (matchPatternInfo.getBaseType()) {
 		case BOOLEAN:
@@ -2156,7 +2176,7 @@ public class TextAnalyzer {
 		}
 
 		if (valid)
-			trackTrimmedLengthAndWhiteSpace(input);
+			trackTrimmedLengthAndWhiteSpace(rawInput, trimmed);
 		else {
 			outlier(input);
 			if (!matchPatternInfo.isDateType() && outliers.size() == analysisConfig.maxOutliers) {
@@ -2270,7 +2290,7 @@ public class TextAnalyzer {
 		}
 
 		return idx == result.length() ? input :
-			result.replace(idx, idx + 1, lengthQualifier(minTrimmedLength, maxTrimmedLength)).toString();
+			result.replace(idx, idx + 1, lengthQualifier(minTrimmedLengthNumeric, maxTrimmedLengthNumeric)).toString();
 	}
 
 	private FactsTypeBased calculateFacts() {
