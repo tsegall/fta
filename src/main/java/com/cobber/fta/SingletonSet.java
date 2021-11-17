@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,12 +79,12 @@ public class SingletonSet {
 				Reader reader;
 				if ("file".equals(contentType))
 					try {
-						reader = new InputStreamReader(new FileInputStream(content));
+						reader = new InputStreamReader(new FileInputStream(content), StandardCharsets.UTF_8);
 					} catch (FileNotFoundException e) {
 						throw new IllegalArgumentException("Internal error: Issues with 'file' content: " + content, e);
 					}
 				else if ("resource".equals(contentType))
-					reader = new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content));
+					reader = new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content), StandardCharsets.UTF_8);
 				else
 					throw new IllegalArgumentException("Internal error: contentType must be 'inline', 'file' or 'resource'");
 

@@ -554,3 +554,6 @@
 ### 4.9.0
  - ENH: Minor improvements for performance
  - ENH: Clamp input to 4096 characters (can be widened by invoking setMaxInputLength()) - will change existing signatures unless data is narrower than 4096.
+
+### 4.9.1
+ - BUG: Should have specified Charset when reading all reference files!!

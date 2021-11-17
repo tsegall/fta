@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
@@ -2841,7 +2842,7 @@ public class TestPlugins {
 		String[] row;
 		TextAnalyzer[] analysis;
 
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/Names.txt")))) {
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/Names.txt"), StandardCharsets.UTF_8))) {
 
 			final CsvParser parser = new CsvParser(settings);
 			parser.beginParsing(in);

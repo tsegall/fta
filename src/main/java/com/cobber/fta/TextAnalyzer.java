@@ -20,6 +20,7 @@ import static com.cobber.fta.dates.DateTimeParserResult.HOUR_INDEX;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -994,7 +995,7 @@ public class TextAnalyzer {
 	 * Note: If the locale is null it will default to the Default locale.
 	 */
 	public void registerDefaultPlugins(final Locale locale) {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json")))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
 			plugins.registerPluginsInternal(reader, context.getStreamName(), locale);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);

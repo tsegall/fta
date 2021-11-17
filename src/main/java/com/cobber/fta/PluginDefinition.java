@@ -17,6 +17,7 @@ package com.cobber.fta;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -123,7 +124,7 @@ public class PluginDefinition {
 	public static PluginDefinition findByQualifier(final String qualifier) {
 		synchronized (PluginDefinition.class) {
 			if (builtinPlugins == null) {
-				try (BufferedReader JSON = new BufferedReader(new InputStreamReader(PluginDefinition.class.getResourceAsStream("/reference/plugins.json")))) {
+				try (BufferedReader JSON = new BufferedReader(new InputStreamReader(PluginDefinition.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
 					builtinPlugins = (new ObjectMapper()).readValue(JSON, new TypeReference<List<PluginDefinition>>(){});
 				} catch (Exception e) {
 					throw new InternalErrorException("Issues with reference plugins file", e);
