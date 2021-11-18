@@ -294,7 +294,7 @@ The optional 'invalidList' tag is a list of invalid values for this Semantic Typ
 
 The mandatory 'contentType' tag determines how the content is provided (possible values are 'inline', 'resource', or 'file').
 
-The mandatory 'content' tag is either a file reference if the contentType is 'resource' or 'file' or the actual content if the contentType is 'inline'.
+The mandatory 'content' tag is either a file reference if the contentType is 'resource' or 'file' or the actual content if the contentType is 'inline'.  Note: the content is assumed to be UTF-8.
 
 ## Outliers ##
 
@@ -394,7 +394,7 @@ Indicative performance on an Intel 2.6Ghz i7.  The slower number is with Statist
 * ~3-3 million strings/sec
 * ~10-15 million longs/sec
 
-## BUGS  ##
+## Reporting Issues ##
 
 First step is turn on tracing.  Either using setTrace (see JavaDoc), or via environment variable FTA_TRACE.
 
