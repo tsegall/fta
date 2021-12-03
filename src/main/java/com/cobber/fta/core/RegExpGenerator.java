@@ -15,7 +15,9 @@
  */
 package com.cobber.fta.core;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
@@ -44,7 +46,7 @@ import java.util.regex.Pattern;
 public class RegExpGenerator {
 	private int shortest = Integer.MAX_VALUE;
 	private int longest = Integer.MIN_VALUE;
-	private boolean isAlphabetic;
+	private boolean isLetter;
 	private boolean isDigit;
 	private boolean isPeriod;
 	private boolean isSpace;
@@ -93,20 +95,24 @@ public class RegExpGenerator {
 	 */
 	public static String merge(String firstRE, String secondRE) {
 		if (!firstRE.contains(secondRE) && !secondRE.contains(firstRE))
-			return firstRE + '|' + secondRE;
+			return firstRE.compareTo(secondRE) < 0 ? firstRE + '|' + secondRE : secondRE + '|' + firstRE;
 
+		// Switch it so that the firstRE contains the second
 		if (secondRE.contains(firstRE)) {
 			final String save = firstRE;
 			firstRE = secondRE;
 			secondRE = save;
 		}
 
-		// Now we know that the first RE contains the second
+		// Case 1: first starts with second
 		if (firstRE.startsWith(secondRE))
 			return secondRE + '(' + firstRE.substring(secondRE.length()) + ")?";
+
+		// Case 2: first ends with second
 		if (firstRE.endsWith(secondRE))
 			return '(' + firstRE.substring(0, firstRE.length() - secondRE.length()) + ")?" + secondRE;
 
+		// Case 3: first is embedded in second
 		final int start = firstRE.indexOf(secondRE);
 		return firstRE.substring(0, start) + '(' + secondRE + ")?" + firstRE.substring(start + secondRE.length());
 	}
@@ -167,8 +173,8 @@ public class RegExpGenerator {
 
 		for (int i = 0; i < len; i++) {
 			final char ch = input.charAt(i);
-			if (Character.isAlphabetic(ch))
-				isAlphabetic = true;
+			if (Character.isLetter(ch))
+				isLetter = true;
 			else if (Character.isDigit(ch))
 				isDigit = true;
 			else if (ch == '.')
@@ -183,7 +189,7 @@ public class RegExpGenerator {
 				isOther = true;
 		}
 
-		if (isAlphabetic)
+		if (isLetter)
 			classes++;
 		if (isDigit)
 			classes++;
@@ -239,7 +245,7 @@ public class RegExpGenerator {
 
 			// Hoping to output a nice enum like (?i)(SMALL|MEDIUM|LARGE|HUGE), dodge long constant length strings.
 			if (memory.size() <= maxSetSize && !(constantLength && !isSpace && !isOther && !isUnderscore && shortest >= 12)) {
-				if (isAlphabetic)
+				if (isLetter)
 					result.append("(?i)");
 				if (memory.size() != 1)
 					result.append('(');
@@ -258,7 +264,7 @@ public class RegExpGenerator {
 		else {
 			if (maxClasses > 1)
 				result.append('[');
-			if (isAlphabetic)
+			if (isLetter)
 				result.append("\\p{IsAlphabetic}");
 			if (isDigit)
 				result.append("\\p{IsDigit}");
@@ -288,5 +294,33 @@ public class RegExpGenerator {
 	 */
 	public Set<String> getValues() {
 		return memory;
+	}
+
+	private static Map<String, String> toSimplifyFull = new HashMap<>();
+	private static Map<String, String> toSimplifyASCII = new HashMap<>();
+	static {
+		toSimplifyFull.put("\\p{XDigit}", "[0-9A-Fa-f]");
+		toSimplifyFull.put("\\p{IsAlphabetic}", "<L>");
+		toSimplifyFull.put("\\d", "<Nd>");
+
+		toSimplifyASCII.put("\\p{XDigit}", "[0-9A-Fa-f]");
+		toSimplifyASCII.put("\\p{IsAlphabetic}", "[A-Za-z]");
+		toSimplifyASCII.put("\\d", "[0-9]");
+	}
+
+	/**
+	 * Map a set of "well-known" Regexp's to Unicode Character Classes that the Automaton package supports.
+	 * @param regExp A String Java Regular Expression.
+	 * @param onlyASCII If true then generate simple ASCII only regexps, otherwise utilize Unicode Character Classes.
+	 * @return The Automaton friendly RegExp.
+	 */
+	public static String toAutomatonRE(final String regExp, boolean onlyASCII) {
+		Map<String, String> mapping = onlyASCII ? toSimplifyASCII : toSimplifyFull;
+		String ret = regExp;
+
+		for (Map.Entry<String, String> s : mapping.entrySet())
+			ret = Utils.replaceAll(ret, s.getKey(), s.getValue());
+
+		return ret;
 	}
 }

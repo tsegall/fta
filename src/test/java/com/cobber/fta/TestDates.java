@@ -47,7 +47,7 @@ import com.cobber.fta.dates.LocaleInfo;
 import com.cobber.fta.dates.SimpleDateMatcher;
 
 public class TestDates {
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateOutlier() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateOutlier");
 
@@ -86,7 +86,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicAMPMVietname() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
 		final TextAnalyzer analysis = new TextAnalyzer("basicAMPMVietname");
@@ -122,7 +122,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void simpleAMPM() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final TextAnalyzer analysis = new TextAnalyzer("simpleAMPM");
@@ -160,7 +160,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicAMPM_enUS() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final TextAnalyzer analysis = new TextAnalyzer("funnychars___<>:\"/\\|?*___");
@@ -198,7 +198,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicAMPM_enUSNotSimple() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
@@ -238,7 +238,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicAMPM_viVNNotSimple() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
 		final TextAnalyzer analysis = new TextAnalyzer("h:mm a dd/MM/yy", DateResolutionMode.DayFirst);
@@ -274,7 +274,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicAMPMBug() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final TextAnalyzer analysis = new TextAnalyzer("basicAMPMBug");
@@ -300,7 +300,7 @@ public class TestDates {
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), sampleCount);
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{2}:\\d{2} \\p{IsAlphabetic}|\\d:\\d{2} \\p{IsAlphabetic}");
+		Assert.assertEquals(result.getRegExp(), "\\d:\\d{2} \\p{IsAlphabetic}|\\d{2}:\\d{2} \\p{IsAlphabetic}");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
@@ -310,7 +310,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicHHmmddMyy() throws IOException, FTAException {
 		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
 
@@ -348,7 +348,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicResolutionMode() throws IOException, FTAException {
 		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.MonthFirst, DateResolutionMode.Auto };
 
@@ -392,7 +392,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicHHmmddMyyUnresolved() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate");
 		analysis.setCollectStatistics(false);
@@ -425,7 +425,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicHHmmddMyyFalse() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -456,7 +456,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CCEXPIRES", DateResolutionMode.Auto);
 		analysis.setCollectStatistics(false);
@@ -485,7 +485,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void fixedWidthDay() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -515,7 +515,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void withComma() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -546,7 +546,7 @@ public class TestDates {
 	}
 
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void fixedWidthHour() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -583,7 +583,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void fixedWidthDayHour() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -620,7 +620,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void variableHour() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -657,7 +657,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void mixedDateandDateTime() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -686,7 +686,7 @@ public class TestDates {
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void fixedSSS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -714,7 +714,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void twentyRecords() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("FROM_DATE", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -745,7 +745,7 @@ public class TestDates {
 		Assert.assertEquals(matches, result.getMatchCount());
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dMyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.DayFirst);
 		analysis.setCollectStatistics(false);
@@ -777,7 +777,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicMdyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Account_Created", DateResolutionMode.DayFirst);
 		analysis.setCollectStatistics(false);
@@ -831,7 +831,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicDateNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Trade Date", DateResolutionMode.DayFirst);
 		final String pipedInput = "20120202|20120607|20120627|20120627|20120627|20120627|20120627|20120628|20120312|20120201|" +
@@ -886,7 +886,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicddMMyyHHmm() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ddMMyy_HHmm", DateResolutionMode.DayFirst);
 		final String pipedInput =
@@ -921,7 +921,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void mixed_yyyyddMM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("yyyyddMM", DateResolutionMode.DayFirst);
 		final String pipedInput = "1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|2011/31/02|2017/31/12|2016/20/10|1999/15/07|";
@@ -950,7 +950,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void mixed_ddMMyyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ddMMyyyy", DateResolutionMode.DayFirst);
 		final String pipedInput = "06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|31/02/2011|31/12/2017|20/10/2016|15/07/1999|";
@@ -980,7 +980,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicHMM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("H:mm");
 		final String pipedInput = "3:16|3:16|10:16|3:16|10:16|17:16|3:16|10:16|17:16|0:16|3:16|10:16|17:16|0:16|7:16|3:16|10:16|" +
@@ -1011,7 +1011,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicDateDDMMMYYYHHMM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicDateDDMMMYYYHHMM");
 		final String pipedInput =
@@ -1045,7 +1045,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void slashLoop() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("thin", DateResolutionMode.MonthFirst);
 		final String input = "1/1/06 0:00";
@@ -1071,7 +1071,7 @@ public class TestDates {
 		Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicDateDDMMMYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicDateDDMMMYYY");
 		final String[] inputs = "22 Jan 1971|12 Mar 2019|02 Jun 1996|11 Dec 1916|19 Apr 1993|26 Sep 1998|09 Dec 1959|14 Jul 2000|18 Aug 2008".split("\\|");
@@ -1099,7 +1099,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void slashDateDDMMYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("slashDateDDMMYY");
 		analysis.setCollectStatistics(false);
@@ -1129,7 +1129,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void slashDateAmbiguousMMDDYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("thin", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -1155,7 +1155,7 @@ public class TestDates {
 		Assert.assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicTimeHHMMSS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicTimeHHMMSSbasicTimeHHMMSS");
 		analysis.setCollectStatistics(false);
@@ -1182,7 +1182,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicTimeHHMM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicTimeHHMM");
 		analysis.setCollectStatistics(false);
@@ -1209,7 +1209,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicFrenchDate() throws IOException, FTAException {
 
 		final Set<String> samples = new HashSet<>();
@@ -1247,7 +1247,7 @@ public class TestDates {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicBulgarianDate() throws IOException, FTAException {
 
 		final Set<String> samples = new HashSet<>();
@@ -1291,7 +1291,7 @@ public class TestDates {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicCatalanDate() throws IOException, FTAException {
 
 		final Set<String> samples = new HashSet<>();
@@ -1334,7 +1334,7 @@ public class TestDates {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicGermanDate() throws IOException, FTAException {
 
 		final Set<String> samples = new HashSet<>();
@@ -1378,7 +1378,7 @@ public class TestDates {
 			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicLengthValidationDate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Spaces");
 		analysis.setCollectStatistics(false);
@@ -1414,7 +1414,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateTimeYYYYMMDDTHHMMSS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateTimeYYYYMMDDTHHMMSS");
 		analysis.setCollectStatistics(false);
@@ -1451,7 +1451,7 @@ public class TestDates {
 	}
 
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateTimeYYYYMMDDTHHMMssSSSZ() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateTimeYYYYMMDDTHHMMssSSSZ");
 		analysis.setCollectStatistics(false);
@@ -1492,7 +1492,7 @@ public class TestDates {
 		Assert.assertEquals(result.getSampleCount(), 21);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void variableFractionalSeconds() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("variableFractionalSeconds");
 		analysis.setCollectStatistics(false);
@@ -1532,7 +1532,7 @@ public class TestDates {
 		Assert.assertEquals(result.getSampleCount(), 21);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void variableFractionalSecondsWithStats() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("variableFractionalSecondsWithStats");
 		analysis.setCollectStatistics(true);
@@ -1572,7 +1572,7 @@ public class TestDates {
 		Assert.assertEquals(result.getSampleCount(), 21);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateTimeYYYYMMDDTHHMMSSNNNN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ISODate", DateResolutionMode.Auto);
 
@@ -1614,7 +1614,7 @@ public class TestDates {
 		Assert.assertEquals(result.getSampleCount(), 21);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateTimeYYYYMMDDTHHMMSSZ() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateTimeYYYYMMDDTHHMMSSZ");
 		analysis.setCollectStatistics(false);
@@ -1641,7 +1641,7 @@ public class TestDates {
 		Assert.assertEquals(result.getSampleCount(), 7);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateTimeYYYYMMDDTHHMMSSZwithStatistics() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateTimeYYYYMMDDTHHMMSSZwithStatistics");
 
@@ -1669,7 +1669,7 @@ public class TestDates {
 		Assert.assertEquals(result.getSampleCount(), 7);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicMMddyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("DOB");
 		analysis.setCollectStatistics(false);
@@ -1698,7 +1698,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void yyyyMddHHmm() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("yyyyMddHHmm");
 		analysis.setCollectStatistics(false);
@@ -1727,7 +1727,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void H_mm_ss_S_false() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("H_mm_ss_S_false");
 		analysis.setCollectStatistics(false);
@@ -1755,7 +1755,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void H_mm_ss_S_true() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("H_mm_ss_S_true");
 		analysis.setCollectStatistics(true);
@@ -1783,7 +1783,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void k_mm_ss_S_false() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("k_mm_ss_S_false");
 		analysis.setCollectStatistics(false);
@@ -1810,7 +1810,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void k_mm_ss_S_true() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("k_mm_ss_S_true");
 		analysis.setCollectStatistics(true);
@@ -1837,7 +1837,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void Hmmss() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Hmmss");
 		analysis.setCollectStatistics(false);
@@ -1867,7 +1867,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void yyyyMMddHHmmz() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("yyyyMMddHHmmz");
 		analysis.setCollectStatistics(false);
@@ -1896,7 +1896,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateYYYYMMDD() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateYYYYMMDD");
 		analysis.setCollectStatistics(false);
@@ -1923,7 +1923,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateYYYY");
 		analysis.setCollectStatistics(false);
@@ -1974,7 +1974,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateYYYY_with_zeroes() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Date");
 		analysis.setCollectStatistics(true);
@@ -2008,7 +2008,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void randomFormats() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("randomFormats");
 		analysis.setCollectStatistics(false);
@@ -2041,7 +2041,7 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 0.6);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicDateDMMMYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicDateDMMMYY");
 		analysis.setCollectStatistics(false);
@@ -2074,7 +2074,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicUnixDateCommand() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicUnixDateCommand");
 		analysis.setCollectStatistics(false);
@@ -2107,7 +2107,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicMMMM_d_yyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMMMM_d_yyyy");
 		analysis.setCollectStatistics(false);
@@ -2138,7 +2138,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void startsAsTwoDigitDay() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("startsAsTwoDigitDay");
 		analysis.setCollectStatistics(false);
@@ -2174,7 +2174,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void startsAsTwoDigitMonth() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("startsAsTwoDigitMonth");
 		analysis.setCollectStatistics(false);
@@ -2210,7 +2210,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void slashDateYYYYMMDD() throws IOException, FTAException {
 		final TextAnalyzer analysis1 = new TextAnalyzer("slashDateYYYYMMDD");
 		analysis1.setTrace("samples=10");
@@ -2247,7 +2247,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 
 	public void basicDateDDMMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicDateDDMMYYYY");
@@ -2275,7 +2275,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void variableDateDDMMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("variableDateDDMMYYYY");
 		analysis.setCollectStatistics(false);
@@ -2303,7 +2303,7 @@ public class TestDates {
 
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void slashDateDDMMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("slashDateDDMMYYYY");
 		analysis.setCollectStatistics(false);
@@ -2333,7 +2333,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void lenientDates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("INACTIVE DATE");
 		analysis.setCollectStatistics(false);
@@ -2380,7 +2380,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void anotherDateSwitcher() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("INACTIVE DATE");
 		analysis.setCollectStatistics(false);
@@ -2416,7 +2416,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void localeDateTest() throws IOException, FTAException {
 
 //		final Locale[] locales = DateFormat.getAvailableLocales();
@@ -2601,7 +2601,7 @@ public class TestDates {
 		Assert.assertEquals(countProblems, 0);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void novelApproachDateTime() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE");
 		analysis.setCollectStatistics(false);
@@ -2635,7 +2635,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 
 	public void novelApproachDate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
@@ -2670,7 +2670,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicHours24() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RETURN_TIME");
 		analysis.setCollectStatistics(false);
@@ -2702,7 +2702,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicHours24Change() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RETURN_TIME");
 		analysis.setCollectStatistics(false);
@@ -2736,7 +2736,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void timMBug1() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimMeagherBug1");
 		analysis.setCollectStatistics(false);
@@ -2762,7 +2762,7 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - 2));
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void longAsDateWith0() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("stringField:string");
 		analysis.setCollectStatistics(false);
@@ -2797,7 +2797,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dottedDates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dottedDate");
 		analysis.setCollectStatistics(false);
@@ -2832,7 +2832,7 @@ public class TestDates {
 				Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void colonDates_ddMMyyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("colonDate");
 		analysis.setCollectStatistics(false);
@@ -2868,7 +2868,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void colonDates_MMddyyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("colonDates_MMddyyyy");
 		analysis.setCollectStatistics(false);
@@ -2903,7 +2903,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void shortDates_MM_slash_yyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_MM_yyyy");
 		analysis.setCollectStatistics(false);
@@ -2947,7 +2947,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void shortDates_MM_dash_yyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_MM_yyyy");
 		analysis.setCollectStatistics(false);
@@ -2991,7 +2991,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void shortDates_yyyy_slash_MM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_yyyy_MM");
 		analysis.setCollectStatistics(false);
@@ -3035,7 +3035,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void shortDates_yyyy_dash_MM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_yyyy_MM");
 		analysis.setCollectStatistics(false);
@@ -3079,7 +3079,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void doubleStep() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("doubleStep");
 		analysis.setCollectStatistics(false);
@@ -3113,7 +3113,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void quadrupleStep() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("quadrupleStep");
 		analysis.setCollectStatistics(false);
@@ -3149,7 +3149,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void intuitDateddMMyyyyHHmmss() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -3205,7 +3205,7 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void bizarreFractions() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -3245,7 +3245,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void variableLengthFractions() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
@@ -3293,7 +3293,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateIssueAMPM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CREATED_ON");
 		analysis.setCollectStatistics(false);
@@ -3328,7 +3328,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 
 	public void dateSwitcher() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Contract Signed Date");
@@ -3376,7 +3376,7 @@ public class TestDates {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, "dates" })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dqplus() throws IOException, FTAException {
 
 		final String[] tests = new String[] {
@@ -3515,12 +3515,12 @@ public class TestDates {
 		//   - Count 24523501, duration: 10002ms, ~2,452,300 per second
 	}
 
-	@Test(groups = { TestGroups.PERFORMANCE, "dates" })
+	@Test(groups = { TestGroups.PERFORMANCE, TestGroups.DATES })
 	public void dateTimePerf() throws IOException, FTAException {
 		_dateTimePerf(true);
 	}
 
-	@Test(groups = { TestGroups.PERFORMANCE, "dates" })
+	@Test(groups = { TestGroups.PERFORMANCE, TestGroups.DATES })
 	public void dateTimePerfNoStatistics() throws IOException, FTAException {
 		_dateTimePerf(false);
 	}

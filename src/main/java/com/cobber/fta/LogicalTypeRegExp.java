@@ -16,7 +16,6 @@
 package com.cobber.fta;
 
 import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -24,7 +23,8 @@ import java.util.regex.Pattern;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
-import com.cobber.fta.core.Utils;
+import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.token.TokenStreams;
 
 import nl.flotsam.xeger.Xeger;
 
@@ -135,7 +135,7 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	@Override
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
 
 		String backout = currentRegExp;
 
@@ -216,26 +216,10 @@ public class LogicalTypeRegExp extends LogicalType {
 		return false;
 	}
 
-	private static Map<String, String> toSimplify = new HashMap<>();
-	static {
-		toSimplify.put("\\p{XDigit}", "[0-9A-Fa-f]");
-		// Note: this is not strictly correct - since it will now be restricted to ASCII (but the samples will clearly be a valid subset)
-		toSimplify.put("\\p{IsAlphabetic}", "[A-Za-z]");
-		toSimplify.put("\\d", "[0-9]");
-	}
-
-	private String Simplify(final String re) {
-		String ret = re;
-		for (Map.Entry<String, String> s : toSimplify.entrySet())
-			ret = Utils.replaceAll(ret, s.getKey(), s.getValue());
-
-		return ret;
-	}
-
 	@Override
 	public String nextRandom() {
 		if (generator == null)
-			generator = new Xeger(Simplify(defn.regExpReturned));
+			generator = new Xeger(RegExpGenerator.toAutomatonRE(defn.regExpReturned, true));
 
         return generator.generate();
 	}

@@ -11,4 +11,5 @@ public class TestGroups {
 	public static final String PLUGINS = "plugins";
 	public static final String RANDOM = "random";
 	public static final String STRINGS = "strings";
+	public static final String TOKENS = "tokens";
 }

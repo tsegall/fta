@@ -591,7 +591,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\$[+-]?\\d+\\.\\d+");
+		Assert.assertEquals(result.getRegExp(), "\\$\\d+\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs)
@@ -619,7 +619,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 1);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "£[+-]?\\d+\\.\\d+");
+		Assert.assertEquals(result.getRegExp(), "£\\d+\\.\\d+");
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
@@ -748,7 +748,7 @@ public class TestStrings {
 				"-69.97345,12.51678", "66.00845,33.83627", "17.53646,12.29118",
 				"-63.06082,18.22560", "20.05399,41.14258", "20.03715,60.20733"
 		};
-		final int iterations = 1;
+		final int iterations = 3;
 
 		for (int i = 0; i < iterations; i++) {
 			for (final String sample : inputs)

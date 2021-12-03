@@ -23,7 +23,7 @@ import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.Shapes;
+import com.cobber.fta.token.TokenStreams;
 
 /**
  * Plugin to detect Country names. (English-language only).
@@ -38,7 +38,7 @@ public class LogicalTypeCountryEN extends LogicalTypeFiniteSimple {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
 		if (matchCount < 50 && outliers.size() > Math.sqrt(getMembers().size()))
 			return REGEXP;
 

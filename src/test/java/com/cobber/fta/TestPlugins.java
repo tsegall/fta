@@ -31,9 +31,11 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.testng.Assert;
@@ -2192,6 +2194,9 @@ public class TestPlugins {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getMinValue(), "10000");
 		Assert.assertEquals(result.getMaxValue(), "A99998");
+
+		Assert.assertTrue("10000".matches(result.getRegExp()));
+		Assert.assertTrue("A99998".matches(result.getRegExp()));
 	}
 
 	// Set of valid months + 4 x "UNK"
@@ -3031,7 +3036,6 @@ public class TestPlugins {
 				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
 				"G0084W951", "G0129K104", "G0129K904", "G0129K954", "G0132V105", "G0176J109", "G0176J909", "G0176J959", "G01767105", "G01767905",
 				"G01767955", "G0177J108", "G0177J908", "G0177J958", "G02602103", "G02602903", "G02602953", "G0335L102", "G0335L902", "G0335L952"
-
 		};
 
 		final TextAnalyzer preAnalysis = new TextAnalyzer("CUSIP");
@@ -3048,7 +3052,19 @@ public class TestPlugins {
 		Assert.assertEquals(preResult.getNullCount(), 0);
 		Assert.assertEquals(preResult.getType(), FTAType.STRING);
 		Assert.assertEquals(preResult.getConfidence(), 1.0);
+		Assert.assertEquals(preResult.getStructureSignature(), "yW7lIrjlrjF/WZwIInoH/TrmhCw=");
+		Assert.assertEquals(preResult.getShapeCount(), 3);
+		Iterator<Entry<String, Long>> shapes =  preResult.getShapeDetails().entrySet().iterator();
 
+		Map.Entry<String, Long> first = shapes.next();
+		Assert.assertEquals(first.getKey(), "X99999999");
+		Assert.assertEquals(first.getValue().longValue(), 12);
+		Map.Entry<String, Long> second = shapes.next();
+		Assert.assertEquals(second.getKey(), "X99999XX9");
+		Assert.assertEquals(second.getValue().longValue(), 2);
+		Map.Entry<String, Long> third = shapes.next();
+		Assert.assertEquals(third.getKey(), "X9999X999");
+		Assert.assertEquals(third.getValue().longValue(), 16);
 
 		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(preResult.getRegExp()));
@@ -3078,6 +3094,7 @@ public class TestPlugins {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getStructureSignature(), "Frd1mNXRneO3yWDzQa4eEdRgtJs=");
 
 		for (final String sample : samples) {
 			Assert.assertTrue(sample.matches(result.getRegExp()));
@@ -3086,9 +3103,6 @@ public class TestPlugins {
 		// Data Signature is independent of Structure
 		Assert.assertEquals(preResult.getDataSignature(), result.getDataSignature());
 		Assert.assertEquals(preResult.getDataSignature(), "Esgd86eqoOpuaj5oYAmV6oBKQlI=");
-
-		Assert.assertEquals(preResult.getStructureSignature(), "yW7lIrjlrjF/WZwIInoH/TrmhCw=");
-		Assert.assertEquals(result.getStructureSignature(), "Frd1mNXRneO3yWDzQa4eEdRgtJs=");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })

@@ -25,9 +25,9 @@ import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.Shapes;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.token.TokenStreams;
 
 /**
  * Plugin to detect valid check digits.
@@ -78,12 +78,12 @@ public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
 
 		if (cardinality.size() < 20 || (double)matchCount/realSamples < getThreshold()/100.0)
 			return BACKOUT_REGEXP;
 
-		regExp = shapes.getRegExp();
+		regExp = tokenStreams.getRegExp(false);
 		return null;
 	}
 }

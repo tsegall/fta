@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.token.TokenStreams;
 
 /**
  * All Logical Types are derived from this abstract class.
@@ -171,7 +172,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	public String getSignature() {
 		String structureSignature = getBaseType() + ":";
 
-			structureSignature += getQualifier();
+		structureSignature += getQualifier();
 
 		MessageDigest md;
 		try {
@@ -201,11 +202,11 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @param facts Facts (min, max, sum) for the analysis to date (optional - i.e. maybe null)
 	 * @param cardinality Cardinality set, up to the maximum maintained
 	 * @param outliers Outlier set, up to the maximum maintained
-	 * @param shapes Shapes observed
+	 * @param tokenStreams Shapes observed
 	 * @param analysisConfig The Configuration of the current analysis
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract String isValidSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp, FactsTypeBased facts, Map<String, Long> cardinality, Map<String, Long> outliers, Shapes shapes, AnalysisConfig analysisConfig);
+	public abstract String isValidSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp, FactsTypeBased facts, Map<String, Long> cardinality, Map<String, Long> outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig);
 
 	/**
 	 * Does the set of members enumerated reflect the entire set.  For example any of the ISO sets are reference sets and

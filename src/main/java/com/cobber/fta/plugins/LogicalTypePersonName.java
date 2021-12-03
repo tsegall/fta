@@ -23,7 +23,7 @@ import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.Shapes;
+import com.cobber.fta.token.TokenStreams;
 
 public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 	private class Dodge {
@@ -100,7 +100,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 
 	@Override
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples,
-			String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+			String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
 
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 

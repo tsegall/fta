@@ -27,8 +27,8 @@ import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.Shapes;
 import com.cobber.fta.core.FTAPluginException;
+import com.cobber.fta.token.TokenStreams;
 
 public class PluginColor extends LogicalTypeFinite {
 	public static final String SEMANTIC_TYPE_BASE = "COLOR.TEXT_";
@@ -92,7 +92,7 @@ public class PluginColor extends LogicalTypeFinite {
 
 	@Override
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
 		if (outliers.size() > 3)
 			return ".+";
 

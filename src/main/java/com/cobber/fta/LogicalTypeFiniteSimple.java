@@ -22,6 +22,7 @@ import java.util.Set;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.token.TokenStreams;
 
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected String qualifier;
@@ -88,7 +89,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	@Override
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples,
-			String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+			String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 
 		int maxOutliers = 1;

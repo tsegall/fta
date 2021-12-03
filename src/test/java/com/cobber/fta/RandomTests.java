@@ -1064,6 +1064,33 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void regExpIssue() throws IOException, FTAException {
+		final String[] samples = new String[] {
+				"51100", "44087", "05454-876", "69004", "B-6000", "05454-876", "3012", "1204", "08737-363", "5022", "8010",
+				"05022", "50739", "02389-673", "87110", "8010", "S-844 67", "67000", "90110", "80805", "1081", "98124",
+				"90110", "82520", "87110", "01307", "51100", "24100", "05033", "04179", "S-958 22", "60528", "S-958 22",
+				"28001", "28001", "3508", "60528", "01307", "01307", "02389-890", "42100", "EC2 5NT", "05432-043",
+				 "02389-673", "05634-030", "05033", "87110", "51100", "3508"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("ShipPostalCode");
+		for (final String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getShapeCount(), 6);
+
+		for (final String sample : samples) {
+			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void basicText() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicText");
 		final int iterations = 10000;

@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.0.0
+ - ENH: Next gen RegExp support (most signatures are unchanged - but there are some differences), also plugin signatures changed
+
 ### 4.9.2
  - INT: Reverse order of ChangeLog file :-)
 
@@ -10,6 +13,7 @@
 ### 4.9.0
  - ENH: Minor improvements for performance
  - ENH: Clamp input to 4096 characters (can be widened by invoking setMaxInputLength()) - will change existing signatures unless data is narrower than 4096.
+	Note: this also backs out the change in 3.8.2 to optionally externally clamp.
 
 ### 4.8.2
  - ENH: Add support for tracing for trainBulk

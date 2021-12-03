@@ -67,6 +67,8 @@ import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.dates.DateTimeParserResult;
 import com.cobber.fta.dates.LocaleInfo;
+import com.cobber.fta.token.TokenStream;
+import com.cobber.fta.token.TokenStreams;
 
 /**
  * Analyze Text data to determine type information and other key metrics
@@ -140,7 +142,7 @@ public class TextAnalyzer {
 	// 0: d{4} 1: d{+} 2: [-]d{+}
 	// input "hello world" 0: a{5} a{5} 1: a{+} a{+} 2: a{+}
 
-	private final Shapes shapes = new Shapes(AnalysisConfig.MAX_SHAPES_DEFAULT);
+	private final TokenStreams tokenStreams = new TokenStreams(AnalysisConfig.MAX_SHAPES_DEFAULT);
 
 	private final Random random = new Random(271828);
 
@@ -672,7 +674,7 @@ public class TextAnalyzer {
 			if (length > maxRawNonBlankLength)
 				maxRawNonBlankLength = length;
 
-			shapes.track(trimmed, count);
+			tokenStreams.track(trimmed, count);
 		}
 	}
 
@@ -2184,7 +2186,7 @@ public class TextAnalyzer {
 				if (matchPatternInfo.isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
 					final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
-					final String newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, shapes, analysisConfig);
+					final String newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, tokenStreams, analysisConfig);
 					if (newPattern != null)
 						if (FTAType.LONG.equals(matchPatternInfo.getBaseType()) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
@@ -2246,7 +2248,7 @@ public class TextAnalyzer {
 		for (final String elt : minusMatches.keySet())
 			newCardinality.remove(elt);
 
-		if (logical.isValidSet(context, validCount, realSamples, matchPatternInfo.regexp, null, newCardinality, newOutliers, shapes, analysisConfig) != null)
+		if (logical.isValidSet(context, validCount, realSamples, matchPatternInfo.regexp, null, newCardinality, newOutliers, tokenStreams, analysisConfig) != null)
 			return new FiniteMatchResult();
 
 		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context.getStreamName()), validCount, newOutliers, newCardinality);
@@ -2558,7 +2560,7 @@ public class TextAnalyzer {
 			final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
 
 			String newPattern;
-			if ((newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, shapes, analysisConfig)) != null) {
+			if ((newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, tokenStreams, analysisConfig)) != null) {
 				if (logical.acceptsBaseType(FTAType.STRING) || logical.acceptsBaseType(FTAType.LONG)) {
 					if (logical.acceptsBaseType(FTAType.STRING))
 						backoutToPattern(realSamples, newPattern);
@@ -2587,7 +2589,7 @@ public class TextAnalyzer {
 					DateTimeParser.plausibleDateCore(false, (int)minLongNonZero%100, ((int)minLongNonZero/100)%100, (int)minLongNonZero/10000, 4)  &&
 					DateTimeParser.plausibleDateCore(false, (int)maxLong%100, ((int)maxLong/100)%100, (int)maxLong/10000, 4)  &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("date"))) {
-				matchPatternInfo = new PatternInfo(null, (minLongNonZero == minLong || shapes.size() == 1) ? "\\d{8}" : "0|\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, false, 8, 8, null, "yyyyMMdd");
+				matchPatternInfo = new PatternInfo(null, (minLongNonZero == minLong || tokenStreams.size() == 1) ? "\\d{8}" : "0|\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, false, 8, 8, null, "yyyyMMdd");
 				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 				minLocalDate = LocalDate.parse(String.valueOf(minLongNonZero), dtf);
 				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
@@ -2623,7 +2625,7 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.LONG) &&
 							logical.isMatch(matchPatternInfo.regexp) &&
-							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 						debug("Type determination - was LONG, matchPatternInfo - %s%n", matchPatternInfo);
@@ -2652,7 +2654,7 @@ public class TextAnalyzer {
 			for (final LogicalTypeRegExp logical : regExpTypes) {
 				if (logical.acceptsBaseType(FTAType.DOUBLE) &&
 						logical.isMatch(matchPatternInfo.regexp) &&
-						logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+						logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 					confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 					break;
@@ -2769,8 +2771,8 @@ public class TextAnalyzer {
 			boolean updated = false;
 
 			// If we are currently matching everything then flip to a better Regular Expression based on Shape analysis if possible
-			if (matchCount == realSamples) {
-				final String newRegExp = shapes.getRegExp();
+			if (matchCount == realSamples && !tokenStreams.isAnyShape()) {
+				final String newRegExp = tokenStreams.getRegExp(false);
 				if (newRegExp != null) {
 					matchPatternInfo = new PatternInfo(null, newRegExp, FTAType.STRING, matchPatternInfo.typeQualifier, false, false,
 							minTrimmedLength, maxTrimmedLength, null, null);
@@ -2780,8 +2782,8 @@ public class TextAnalyzer {
 			if (!backedOutRegExp)
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.STRING) &&
-							logical.isMatch(matchPatternInfo.regexp) &&
-							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+							(logical.isMatch(matchPatternInfo.regexp) || tokenStreams.matches(logical.getRegExp())) &&
+							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 						updated = true;
@@ -2856,7 +2858,7 @@ public class TextAnalyzer {
 					for (final LogicalTypeRegExp logical : regExpTypes) {
 						if (logical.acceptsBaseType(FTAType.STRING) &&
 								logical.isMatch(matchPatternInfo.regexp) &&
-								logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+								logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 							matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 							confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 							break;
@@ -2866,16 +2868,15 @@ public class TextAnalyzer {
 			}
 
 			// Check to see whether the most common shape matches our regExp and test to see if this valid
-			if (!updated && shapes.size() > 1) {
-				final Map.Entry<String, Long> bestShape = shapes.getBest();
-
-				final String regExp = Smashed.smashedAsRegExp(bestShape.getKey().trim());
+			if (!updated && tokenStreams.size() > 1) {
+				TokenStream best = tokenStreams.getBest();
+				final String regExp = best.getRegExp(false);
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.STRING) &&
 							logical.isMatch(regExp) &&
-							logical.isValidSet(context, bestShape.getValue(), realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, shapes, analysisConfig) == null) {
+							logical.isValidSet(context, best.getOccurrences(), realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-						matchCount = bestShape.getValue();
+						matchCount = best.getOccurrences();
 						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 						updated = true;
 						break;
@@ -2952,7 +2953,7 @@ public class TextAnalyzer {
 		TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(), locale,
 				matchCount, totalCount, sampleCount, nullCount,blankCount,
 				matchPatternInfo, factsCore, facts, confidence, context.getDateResolutionMode(),
-				analysisConfig, cardinality, outliers, shapes.getShapes());
+				analysisConfig, cardinality, outliers, tokenStreams.getShapes());
 
 		if (traceConfig != null)
 			traceConfig.recordResult(result, internalErrors);

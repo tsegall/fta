@@ -24,6 +24,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.token.TokenStreams;
 
 public class PluginBirthDate extends LogicalTypeInfinite {
 	public final static String REGEXP = "\\d{4}/\\d{2}/\\d{2}";
@@ -78,7 +79,7 @@ public class PluginBirthDate extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples,
-			String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, Shapes shapes, AnalysisConfig analysisConfig) {
+			String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

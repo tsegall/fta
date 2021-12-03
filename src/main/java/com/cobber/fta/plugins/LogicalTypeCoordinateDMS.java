@@ -25,9 +25,9 @@ import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.Shapes;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.token.TokenStreams;
 
 public abstract class LogicalTypeCoordinateDMS extends LogicalTypeInfinite {
 	public LogicalTypeCoordinateDMS(final PluginDefinition plugin) {
@@ -142,7 +142,7 @@ public abstract class LogicalTypeCoordinateDMS extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? null : ".+";
 	}
 

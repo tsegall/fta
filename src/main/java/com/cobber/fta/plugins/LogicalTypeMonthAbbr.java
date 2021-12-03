@@ -25,9 +25,9 @@ import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.Shapes;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.dates.LocaleInfo;
+import com.cobber.fta.token.TokenStreams;
 
 /**
  * Plugin to detect Month Abbreviations.
@@ -75,7 +75,7 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final Shapes shapes, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
 		if (outliers.size() > 1)
 			return LocaleInfo.getShortMonthsRegExp(locale);
 
