@@ -387,12 +387,12 @@ Javadoc is automatically updated to reflect the latest release at http://javadoc
 
 ## Performance  ##
 
-Indicative performance on an Intel 2.6Ghz i7.  The slower number is with Statistics enabled.
+Indicative performance on an Intel 2.6Ghz i7.
 
-* ~1-2 million dates/sec
-* ~2-4 million doubles/sec
-* ~3-3 million strings/sec
-* ~10-15 million longs/sec
+* ~0.5 million dates/sec
+* ~0.75 million doubles/sec
+* ~2.4 million strings/sec
+* ~1.4 million longs/sec
 
 ## Reporting Issues ##
 
