@@ -66,7 +66,7 @@ public abstract class Utils {
 	}
 
 	public static String repeat(final char c, final int count) {
-		final StringBuilder s = new StringBuilder(c);
+		final StringBuilder s = new StringBuilder(count);
 		for (int i = 0; i < count; i++)
 			s.append(c);
 		return s.toString();

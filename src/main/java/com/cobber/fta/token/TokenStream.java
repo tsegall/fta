@@ -88,7 +88,7 @@ public class TokenStream {
             return;
         }
 
-		StringBuilder b = new StringBuilder(len);
+		StringBuilder b = new StringBuilder(trimmed);
 		int alphas = 0;
         int digits = 0;
 
@@ -98,17 +98,16 @@ public class TokenStream {
 			char ch = trimmed.charAt(i);
 			if (Character.isAlphabetic(ch)) {
 				tokens[i] = new CharClassToken(Token.Type.ALPHA_CLASS, ch);
-				ch = Token.Type.ALPHA_CLASS.getEncoded();
+				b.setCharAt(i, Token.Type.ALPHA_CLASS.getEncoded());
 				alphas++;
 			}
 			else if (Character.isDigit(ch)) {
 				tokens[i] = new CharClassToken(Token.Type.DIGIT_CLASS, ch);
-				ch = Token.Type.DIGIT_CLASS.getEncoded();
+				b.setCharAt(i, Token.Type.DIGIT_CLASS.getEncoded());
 				digits++;
 			}
 			else
 				tokens[i] = new SimpleToken(ch);
-			b.append(ch);
 		}
 
 		key = b.toString();
@@ -140,6 +139,31 @@ public class TokenStream {
 	    this.isAlphaNumeric = other.isAlphaNumeric;
 	    this.isNumeric = other.isNumeric;
 		this.occurrences = other.occurrences;
+	}
+
+	/**
+	 * Construct the key based on the input.
+	 * @param trimmed The trimmed input.
+	 * @return The TokenStream uncompressed key.
+	 */
+	public static String generateKey(final String trimmed) {
+		final int len = trimmed.length();
+
+
+        if (len > MAX_LENGTH)
+            return "ANY";
+
+		StringBuilder b = new StringBuilder(trimmed);
+
+        for (int i = 0; i < len; i++) {
+			char ch = trimmed.charAt(i);
+			if (Character.isAlphabetic(ch))
+				b.setCharAt(i, Token.Type.ALPHA_CLASS.getEncoded());
+			else if (Character.isDigit(ch))
+				b.setCharAt(i, Token.Type.DIGIT_CLASS.getEncoded());
+		}
+
+		return b.toString();
 	}
 
 	/**

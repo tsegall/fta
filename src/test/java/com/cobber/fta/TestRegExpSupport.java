@@ -25,41 +25,37 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.token.TokenStream;
 
 public class TestRegExpSupport {
 	@Test(groups = { TestGroups.ALL })
 	public void phone() throws IOException {
-		Assert.assertEquals(Smashed.smashedAsRegExp("+9 999 999 9999")
-				, "\\+\\d \\d{3} \\d{3} \\d{4}");
+		TokenStream ts = new TokenStream("+9 999 999 9999", 1);
+		Assert.assertEquals(ts.getRegExp(false), "\\+\\d \\d{3} \\d{3} \\d{4}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void simple() throws IOException {
-		Assert.assertEquals(Smashed.smashedAsRegExp("xxx"),
-				"\\p{IsAlphabetic}{3}");
+		TokenStream ts = new TokenStream("xxx", 1);
+		Assert.assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{3}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void mixedAlpha() throws IOException {
-		Assert.assertEquals(Smashed.smashedAsRegExp("xxXX"),
-				"\\p{IsAlphabetic}{4}");
-	}
-
-	@Test(groups = { TestGroups.ALL })
-	public void mac() throws IOException {
-		Assert.assertEquals(Smashed.smashedAsRegExp("HH:HH:HH:HH:HH:HH"),
-				"\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
+		TokenStream ts = new TokenStream("xxXX", 1);
+		Assert.assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{4}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void mix() throws IOException {
-		Assert.assertEquals(Smashed.smashedAsRegExp("99XXXX:99X"),
-				"\\d{2}\\p{IsAlphabetic}{4}:\\d{2}\\p{IsAlphabetic}");
+		TokenStream ts = new TokenStream("99XXXX:99X", 1);
+		Assert.assertEquals(ts.getRegExp(false), "\\d{2}\\p{IsAlphabetic}{4}:\\d{2}\\p{IsAlphabetic}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void onlyAlpha() throws IOException {
-		Assert.assertEquals(Smashed.smashedAsRegExp("XXXXX"), "\\p{IsAlphabetic}{5}");
+		TokenStream ts = new TokenStream("XXXXX", 1);
+		Assert.assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{5}");
 	}
 
 	@Test(groups = { TestGroups.ALL })

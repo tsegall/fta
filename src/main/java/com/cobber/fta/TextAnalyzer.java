@@ -1794,7 +1794,7 @@ public class TextAnalyzer {
 		if (maxOutlierString == null || maxOutlierString.compareTo(cleaned) < 0)
 			maxOutlierString = cleaned;
 
-		final String smashed = Smashed.smash(input);
+		final String smashed = TokenStream.generateKey(input);
 		Long seen = outliersSmashed.get(smashed);
 		if (seen == null) {
 			if (outliersSmashed.size() < analysisConfig.maxOutliers)

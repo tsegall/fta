@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.0.1
+ - INT: Cleaning up, micro performance improvement
+
 ### 5.0.0
  - ENH: Next gen RegExp support (most signatures are unchanged - but there are some differences), also plugin signatures changed
 

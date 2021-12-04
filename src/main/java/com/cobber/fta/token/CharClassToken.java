@@ -95,9 +95,10 @@ public class CharClassToken extends Token {
 
 	@Override
 	public String getCharacters() {
-		StringBuilder b = new StringBuilder();
+		Set<Character> fullSet = getFullSet();
+		StringBuilder b = new StringBuilder(fullSet.size());
 
-		for (final char c : getFullSet())
+		for (final char c : fullSet)
 			b.append(c);
 
 		return b.toString();
