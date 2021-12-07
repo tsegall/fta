@@ -54,7 +54,7 @@ public class LogicalTypeDOYAbbr extends LogicalTypeFinite {
 	@Override
 	public String nextRandom() {
 		if (daysArray == null)
-			daysArray = days.toArray(new String[days.size()]);
+			daysArray = days.toArray(new String[0]);
 
 		return daysArray[random.nextInt(days.size())];
 	}
@@ -75,7 +75,7 @@ public class LogicalTypeDOYAbbr extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (outliers.size() > 1)
 			return LocaleInfo.getShortWeekdaysRegExp(locale);
 

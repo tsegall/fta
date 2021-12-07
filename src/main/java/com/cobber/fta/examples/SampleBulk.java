@@ -27,9 +27,9 @@ public abstract class SampleBulk {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final HashMap<String, Long> basic = new HashMap<>();
 
-		basic.put("Male", 2000000L);
-		basic.put("Female", 1000000L);
-		basic.put("Unknown", 10000L);
+		basic.put("Male", 2_000_000L);
+		basic.put("Female", 1_000_000L);
+		basic.put("Unknown", 10_000L);
 
 		analysis.trainBulk(basic);
 

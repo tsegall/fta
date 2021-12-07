@@ -51,18 +51,18 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 	private GenderData genderData = null;
 
 	static class GenderData {
-		String header;
-		String feminine;
-		String masculine;
-		String feminine_short;
-		String masculine_short;
+		private String header;
+		private String feminine;
+		private String masculine;
+		private String feminineShort;
+		private String masculineShort;
 
-		GenderData(String header, String feminine, String masculine, String feminine_short, String masculine_short) {
+		GenderData(final String header, final String feminine, final String masculine, final String feminineShort, final String masculineShort) {
 			this.header = header;
 			this.feminine = feminine;
 			this.masculine = masculine;
-			this.feminine_short = feminine_short;
-			this.masculine_short = masculine_short;
+			this.feminineShort = feminineShort;
+			this.masculineShort = masculineShort;
 		}
 	}
 
@@ -100,8 +100,8 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 		opposites = allOpposites.get(language);
 		if (opposites == null) {
 			opposites = new HashMap<>();
-			opposites.put(genderData.feminine_short, genderData.masculine_short);
-			opposites.put(genderData.masculine_short, genderData.feminine_short);
+			opposites.put(genderData.feminineShort, genderData.masculineShort);
+			opposites.put(genderData.masculineShort, genderData.feminineShort);
 			opposites.put(genderData.feminine, genderData.masculine);
 			opposites.put(genderData.masculine, genderData.feminine);
 			allOpposites.put(language, opposites);
@@ -114,15 +114,15 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 
 	@Override
 	public Set<String> getMembers() {
-		String setupLanguage = locale.getLanguage().toUpperCase(Locale.ROOT);
+		final String setupLanguage = locale.getLanguage().toUpperCase(Locale.ROOT);
 		Set<String> languageMembers = allMembers.get(setupLanguage);
 
 		if (languageMembers == null) {
-			GenderData setup = allGenderData.get(setupLanguage);
+			final GenderData setup = allGenderData.get(setupLanguage);
 
 			languageMembers = new HashSet<>();
-			languageMembers.add(setup.feminine_short);
-			languageMembers.add(setup.masculine_short);
+			languageMembers.add(setup.feminineShort);
+			languageMembers.add(setup.masculineShort);
 			languageMembers.add(setup.feminine);
 			languageMembers.add(setup.masculine);
 
@@ -143,7 +143,7 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final FactsTypeBased facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)
@@ -174,13 +174,13 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 			// There is some complexity here due to the facts that 'Male' & 'Female' are good predictors of Gender.
 			// However a field with only 'M' and 'F' in it is not, so in this case we would like an extra hint.
 			if (count == 1) {
-				if (!positiveStreamName && (first.equals(genderData.feminine_short) || first.equals(genderData.masculine_short)))
+				if (!positiveStreamName && (first.equals(genderData.feminineShort) || first.equals(genderData.masculineShort)))
 					return BACKOUT_REGEX;
 				re.train(first);
 				re.train(opposites.get(first));
 			} else if (count == 2) {
 				final String second = iter.next();
-				if (!positiveStreamName && (first.equals(genderData.feminine_short) || first.equals(genderData.masculine_short)) && (second.equals(genderData.feminine_short) || second.equals(genderData.masculine_short)))
+				if (!positiveStreamName && (first.equals(genderData.feminineShort) || first.equals(genderData.masculineShort)) && (second.equals(genderData.feminineShort) || second.equals(genderData.masculineShort)))
 					return BACKOUT_REGEX;
 				if (opposites.get(first).equals(second)) {
 					re.train(first);

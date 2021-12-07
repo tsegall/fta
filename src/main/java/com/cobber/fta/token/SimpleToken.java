@@ -41,11 +41,6 @@ public class SimpleToken extends Token {
 	}
 
 	@Override
-	String getCharacters() {
-		return java.lang.String.valueOf(ch);
-	}
-
-	@Override
 	String getRegExp(final boolean fitted) {
 		return RegExpGenerator.slosh(ch);
 	}

@@ -150,6 +150,8 @@ public class TextAnalyzer {
 
 	private int internalErrors;
 
+	private final String insufficient = "Insufficient digits in input (";
+
 	/**
 	 * An Escalation contains three regExps in order of increasing genericity.  So for example the following 3 regExps:
 	 *
@@ -2118,7 +2120,6 @@ public class TextAnalyzer {
 
 						// If the parse exception is of the form 'Insufficient digits in input (M)' or similar
 						// then worth updating our pattern and retrying.
-						final String insufficient = "Insufficient digits in input (";
 						char ditch = '?';
 						final int find = e.getMessage().indexOf(insufficient);
 						if (find != -1)
@@ -2513,8 +2514,8 @@ public class TextAnalyzer {
 		return best;
 	}
 
-	private int EARLY_LONG_YYYYMMDD = 19000101;
-	private int LATE_LONG_YYYYMMDD = 20410101;
+	private final int EARLY_LONG_YYYYMMDD = 19000101;
+	private final int LATE_LONG_YYYYMMDD = 20410101;
 
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
@@ -2770,7 +2771,7 @@ public class TextAnalyzer {
 		if (FTAType.STRING.equals(matchPatternInfo.getBaseType()) && matchPatternInfo.typeQualifier == null) {
 			boolean updated = false;
 
-			// If we are currently matching everything then flip to a better Regular Expression based on Shape analysis if possible
+			// If we are currently matching everything then flip to a better Regular Expression based on Stream analysis if possible
 			if (matchCount == realSamples && !tokenStreams.isAnyShape()) {
 				final String newRegExp = tokenStreams.getRegExp(false);
 				if (newRegExp != null) {
@@ -2953,7 +2954,7 @@ public class TextAnalyzer {
 		TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(), locale,
 				matchCount, totalCount, sampleCount, nullCount,blankCount,
 				matchPatternInfo, factsCore, facts, confidence, context.getDateResolutionMode(),
-				analysisConfig, cardinality, outliers, tokenStreams.getShapes());
+				analysisConfig, cardinality, outliers, tokenStreams);
 
 		if (traceConfig != null)
 			traceConfig.recordResult(result, internalErrors);

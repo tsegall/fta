@@ -46,7 +46,7 @@ public class LogicalTypeJobTitleEN extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		final String[] examples = new String[] {
+		final String[] examples = {
 				"CTO",  "CEO", "PROJECT MANAGER", "PROGRAM MANAGER", "VP", "VICE PRESIDENT", "COO", "CMO",
 				"DIRECTOR", "MARKETING MANAGER", "EVP", "SVP", "SALES ENGINEER", "SENIOR ENGINEER", "CISO",
 				"CHIEF TECHNOLOGY OFFICER", "CHIEF MARKETING OFFICER",
@@ -99,15 +99,15 @@ public class LogicalTypeJobTitleEN extends LogicalTypeInfinite {
 		if (words.length == 0)
 			return false;
 
-		String firstWord = words[0];
-		int firstWordLength = firstWord.length();
+		final String firstWord = words[0];
+		final int firstWordLength = firstWord.length();
 		if (firstWordLength < 2)
 			return false;
 
 		if (titleStarters.contains(firstWord))
 			return true;
 
-		for (String word : words)
+		for (final String word : words)
 			if (titleHotWords.contains(word))
 				return true;
 
@@ -120,7 +120,8 @@ public class LogicalTypeJobTitleEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		int minCardinality = 10;
 		int minSamples = 20;
 		if (getHeaderConfidence(context.getStreamName()) != 0) {

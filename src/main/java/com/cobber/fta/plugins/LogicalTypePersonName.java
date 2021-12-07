@@ -100,7 +100,7 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 
 	@Override
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples,
-			String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+			final String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 

@@ -37,7 +37,7 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 	public static final String SEMANTIC_TYPE = "TELEPHONE";
 	public static final String REGEXP = ".*";
 	private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-	private static String[] areaCodes = new String[] { "617", "781", "303", "970", "212" };
+	private static String[] areaCodes = { "617", "781", "303", "970", "212" };
 
 	public LogicalTypePhoneNumber(final PluginDefinition plugin) {
 		super(plugin);
@@ -73,7 +73,7 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 	}
 
 	@Override
-	public boolean acceptsBaseType(FTAType type) {
+	public boolean acceptsBaseType(final FTAType type) {
 		return type == FTAType.STRING || type == FTAType.LONG;
 	}
 
@@ -108,7 +108,7 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (getHeaderConfidence(context.getStreamName()) == 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, context.getStreamName()) < getThreshold()/100.0)
 			return REGEXP;
 		return null;

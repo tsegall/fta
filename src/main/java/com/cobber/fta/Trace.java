@@ -39,26 +39,27 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class Trace {
 	private Writer traceWriter;
 	private long traceSampleCount = 1000;
-	private long batchCount = 0;
-	private String streamName;
+	private long batchCount;
 	private boolean enabled = true;
-	private	JsonStringEncoder jsonStringEncoder = JsonStringEncoder.getInstance();
+	private	final JsonStringEncoder jsonStringEncoder = JsonStringEncoder.getInstance();
 
-	public Trace(final String trace, final AnalyzerContext context, AnalysisConfig analysisConfig) {
+	public Trace(final String trace, final AnalyzerContext context, final AnalysisConfig analysisConfig) {
 		final String[] traceSettings = trace.split(",");
 		String traceDirectory = null;
-		for (String traceSetting : traceSettings) {
-			String[] traceComponents = traceSetting.split("=");
+		String streamName = null;
+
+		for (final String traceSetting : traceSettings) {
+			final String[] traceComponents = traceSetting.split("=");
 			switch (traceComponents[0]) {
 			case "enabled":
-				enabled = traceComponents[1].equalsIgnoreCase("true");
+				enabled = "true".equalsIgnoreCase(traceComponents[1]);
 				break;
 			case "stream":
 				streamName = traceComponents[1];
 				break;
 			case "directory":
 				traceDirectory = traceComponents[1];
-				Path validate = Paths.get(traceDirectory);
+				final Path validate = Paths.get(traceDirectory);
 				if (!Files.isDirectory(validate) || !Files.isWritable(validate))
 					throw new TraceException("Supplied directory either does not exist or is not writable");
 				break;
@@ -93,12 +94,12 @@ public class Trace {
 		try {
 			final ObjectNode analysisNode = mapper.createObjectNode();
 			analysisNode.set("analysisConfig", mapper.convertValue(analysisConfig, JsonNode.class));
-			String analysisNodeAsText = mapper.writeValueAsString(analysisNode);
+			final String analysisNodeAsText = mapper.writeValueAsString(analysisNode);
 			traceWriter.write(analysisNodeAsText);
 
 			final ObjectNode contextNode = mapper.createObjectNode();
 			contextNode.set("analyzerContext", mapper.convertValue(context, JsonNode.class));
-			String contextNodeAsText = mapper.writeValueAsString(contextNode);
+			final String contextNodeAsText = mapper.writeValueAsString(contextNode);
 			traceWriter.write(contextNodeAsText);
 			traceWriter.flush();
 		} catch (IOException e) {
@@ -136,14 +137,14 @@ public class Trace {
 	 * Record the bulk samples.
 	 * @param input The bulk samples
 	 */
-	public void recordBulk(Map<String, Long> input) {
+	public void recordBulk(final Map<String, Long> input) {
 		if (!enabled)
 			return;
 
 		try {
 			traceWriter.write("\n{\n\"samplesBulk\": [\n");
 			boolean first = true;
-			for (Map.Entry<String, Long> entry : input.entrySet())  {
+			for (final Map.Entry<String, Long> entry : input.entrySet())  {
 				if (first)
 					first = false;
 				else

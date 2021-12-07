@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.token.TokenStreams;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -46,7 +47,7 @@ public class TextAnalysisResult {
 	    CONSUMER
 	}
 
-	private final static ObjectMapper mapper = new ObjectMapper();
+	private final static ObjectMapper MAPPER = new ObjectMapper();
 
 	private static final String NOT_ENABLED = "Statistics not enabled.";
 
@@ -65,7 +66,7 @@ public class TextAnalysisResult {
 	private final AnalysisConfig analysisConfig;
 	private final Map<String, Long> cardinality;
 	private final Map<String, Long> outliers;
-	private final Map<String, Long> shapes;
+	private final TokenStreams shape;
 
 	/**
 	 * @param name The name of the data stream being analyzed.
@@ -85,16 +86,16 @@ public class TextAnalysisResult {
 	 * @param analysisConfig The Configuration of the current analysis.
 	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
-	 * @param shapes A map of input shapes and the count of occurrences of the these shapes.
+	 * @param tokenStreams A shape analysis of the input stream.
 	 */
-	TextAnalysisResult(final String name, Locale locale, final long matchCount, final long totalCount, final long sampleCount,
+	TextAnalysisResult(final String name, final Locale locale, final long matchCount, final long totalCount, final long sampleCount,
 			final long nullCount, final long blankCount,
 			final PatternInfo patternInfo, final FactsCore factsCore, final FactsTypeBased facts,
 			final double confidence, final DateResolutionMode resolutionMode,
 			final AnalysisConfig analysisConfig,
 			final Map<String, Long> cardinality,
 			final Map<String, Long> outliers,
-			final Map<String, Long> shapes) {
+			final TokenStreams shape) {
 		this.name = name;
 		this.locale = locale;
 		this.matchCount = matchCount;
@@ -110,7 +111,7 @@ public class TextAnalysisResult {
 		this.analysisConfig = analysisConfig;
 		this.cardinality = cardinality;
 		this.outliers = outliers;
-		this.shapes = shapes;
+		this.shape = shape;
 	}
 
 	/**
@@ -418,7 +419,7 @@ public class TextAnalysisResult {
 	 * @return Count of the distinct shapes.
 	 */
 	public int getShapeCount() {
-		return shapes.size();
+		return shape.getShapes().size();
 	}
 
 	/**
@@ -427,7 +428,7 @@ public class TextAnalysisResult {
 	 * @return A Map of shapes and their occurrence frequency of the data stream to date.
 	 */
 	public Map<String, Long> getShapeDetails() {
-		return shapes;
+		return shape.getShapes();
 	}
 
 	/**
@@ -459,7 +460,7 @@ public class TextAnalysisResult {
 		final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<>(
 				new Comparator<Map.Entry<K,V>>() {
 					@Override public int compare(final Map.Entry<K,V> e1, final Map.Entry<K,V> e2) {
-						int res = e2.getValue().compareTo(e1.getValue());
+						final int res = e2.getValue().compareTo(e1.getValue());
 						if (e1.getKey().equals(e2.getKey())) {
 							return res;
 						} else {
@@ -494,8 +495,8 @@ public class TextAnalysisResult {
 
 		if (isLogicalType())
 			structureSignature += getTypeQualifier();
-		else if (!shapes.isEmpty())
-			structureSignature += getRegExp() + shapes.keySet().toString();
+		else if (!shape.getShapes().isEmpty())
+			structureSignature += getRegExp() + shape.getShapes().keySet().toString();
 
 		MessageDigest md;
 		try {
@@ -505,7 +506,7 @@ public class TextAnalysisResult {
 		}
 
 		final byte[] signature = structureSignature.getBytes(StandardCharsets.UTF_8);
-		return Base64.getEncoder().encodeToString((md.digest(signature)));
+		return Base64.getEncoder().encodeToString(md.digest(signature));
 	}
 
 	/**
@@ -565,16 +566,16 @@ public class TextAnalysisResult {
 		if (regExp.charAt(0) == '.' && (regExp.length() == 2 || (regExp.length() > 1 && regExp.charAt(1) == '{')))
 			return null;
 
-		final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
-		final ObjectNode plugin = mapper.createObjectNode();
+		final ObjectWriter writer = MAPPER.writerWithDefaultPrettyPrinter();
+		final ObjectNode plugin = MAPPER.createObjectNode();
 		plugin.put("qualifier", name);
-		ArrayNode arrayNode = mapper.createArrayNode();
+		ArrayNode arrayNode = MAPPER.createArrayNode();
 		arrayNode.add(".*(?i)" + name);
 		plugin.set("headerRegExps", arrayNode);
-		arrayNode = mapper.createArrayNode();
+		arrayNode = MAPPER.createArrayNode();
 		arrayNode.add(70);
 		plugin.set("headerRegExpConfidence", arrayNode);
-		arrayNode = mapper.createArrayNode();
+		arrayNode = MAPPER.createArrayNode();
 		arrayNode.add(getRegExp());
 		plugin.set("regExpsToMatch", arrayNode);
 		plugin.put("regExpReturned", regExp);
@@ -606,9 +607,9 @@ public class TextAnalysisResult {
 	}
 
 	private String internalAsJSON(final boolean pretty, final int verbose, final SignatureTarget target) {
-		final ObjectWriter writer = pretty ? mapper.writerWithDefaultPrettyPrinter() : mapper.writer();
+		final ObjectWriter writer = pretty ? MAPPER.writerWithDefaultPrettyPrinter() : MAPPER.writer();
 
-		final ObjectNode analysis = mapper.createObjectNode();
+		final ObjectNode analysis = MAPPER.createObjectNode();
 		if (target == SignatureTarget.CONSUMER)
 			analysis.put("fieldName", name);
 		analysis.put("totalCount", totalCount);
@@ -618,6 +619,15 @@ public class TextAnalysisResult {
 		analysis.put("blankCount", blankCount);
 		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("regExp", getRegExp());
+//			final ArrayNode regExpStream = analysis.putArray("regExpStream");
+//			final Set<String> streamRegExps = new HashSet<>();
+//			streamRegExps.add(shape.getRegExp(false));
+//			// Only bother to return a fitted result of we have a reasonable number of samples
+//			if (shape.getSamples() > 100)
+//				streamRegExps.add(shape.getRegExp(true));
+//			streamRegExps.remove(getRegExp());
+//			if (!streamRegExps.isEmpty())
+//				outputArray(regExpStream, streamRegExps);
 			analysis.put("confidence", confidence);
 			analysis.put("type", patternInfo.getBaseType().toString());
 
@@ -660,19 +670,19 @@ public class TextAnalysisResult {
 
 		if (!cardinality.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("cardinalityDetail");
-			outputDetails(mapper, detail, cardinality, verbose);
+			outputDetails(MAPPER, detail, cardinality, verbose);
 		}
 
 		analysis.put("outlierCardinality", outliers.size() < analysisConfig.maxOutliers ? outliers.size() : -1);
 		if (!outliers.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("outlierDetail");
-			outputDetails(mapper, detail, outliers, verbose);
+			outputDetails(MAPPER, detail, outliers, verbose);
 		}
 
-		analysis.put("shapesCardinality", (shapes.size() > 0 && shapes.size() < analysisConfig.maxShapes) ? shapes.size() : -1);
-		if (!shapes.isEmpty() && verbose > 0) {
+		analysis.put("shapesCardinality", (shape.getShapes().size() > 0 && shape.getShapes().size() < analysisConfig.maxShapes) ? shape.getShapes().size() : -1);
+		if (!shape.getShapes().isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("shapesDetail");
-			outputDetails(mapper, detail, shapes, verbose);
+			outputDetails(MAPPER, detail, shape.getShapes(), verbose);
 		}
 
 		analysis.put("leadingWhiteSpace", getLeadingWhiteSpace());

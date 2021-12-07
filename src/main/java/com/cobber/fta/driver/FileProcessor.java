@@ -80,7 +80,7 @@ class FileProcessor {
         String name = null;
 		final Map<String, Long> bulkMap = new HashMap<>();
 
-		try (final BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 			final CsvParser parser = new CsvParser(settings);
 			parser.beginParsing(in);
 

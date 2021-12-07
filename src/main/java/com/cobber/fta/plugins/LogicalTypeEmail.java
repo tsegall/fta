@@ -41,7 +41,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	public static final String REGEXP = "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}";
 	private LogicalTypeCode logicalFirst;
 	private LogicalTypeCode logicalLast;
-	private static String[] mailDomains = new String[] {
+	private static String[] mailDomains = {
 			"gmail.com", "hotmail.com", "yahoo.com", "hotmail.com", "aol.com", "msn.com", "comcast.net", "live.com"
 	};
 
@@ -49,7 +49,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 		super(plugin);
 	}
 
-	private boolean isAscii(String input) {
+	private boolean isAscii(final String input) {
 		return StandardCharsets.US_ASCII.newEncoder().canEncode(input);
 	}
 
@@ -73,7 +73,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
+		final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
 		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
 		final PluginDefinition pluginLast = PluginDefinition.findByQualifier("NAME.LAST");
 		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, Locale.getDefault());
@@ -126,7 +126,7 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		return getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0 ? null : ".+";
 	}
 

@@ -41,7 +41,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 	public static final String REGEXP = "([A-Za-z][A-Ha-hK-Yk-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})";
 	private static String[] validPostalCodes = { "XX9X 9XX", "X9X 9XX", "X9 9XX", "X99 9XX", "XX9 9XX", "XX99 9XX" };
 	private static Set<String> validShapes = new HashSet<>();
-	private Pattern validator = Pattern.compile(REGEXP);
+	private final Pattern validator = Pattern.compile(REGEXP);
 
 	static {
 		Collections.addAll(validShapes, validPostalCodes);
@@ -77,10 +77,10 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		String format = validPostalCodes[random.nextInt(validPostalCodes.length)];
-		String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		String restrictedAlphabet = "ABCDEFGHKLMNOPQRSTUVWXY";
-		StringBuilder result = new StringBuilder("");
+		final String format = validPostalCodes[random.nextInt(validPostalCodes.length)];
+		final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		final String restrictedAlphabet = "ABCDEFGHKLMNOPQRSTUVWXY";
+		final StringBuilder result = new StringBuilder("");
 		for (int i = 0; i < format.length(); i++) {
 			switch (format.charAt(i)) {
 			case ' ':

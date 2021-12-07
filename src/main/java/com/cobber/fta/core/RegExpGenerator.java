@@ -218,7 +218,7 @@ public class RegExpGenerator {
 		final StringBuilder result = new StringBuilder();
 
 		if (asSet) {
-			boolean constantLength = shortest == longest;
+			final boolean constantLength = shortest == longest;
 
 			// Generate a Character class if possible - we would rather see [A-G] than A|B|C|D|E|F|G
 			if (memory.size() >= 3 && shortest == 1 && constantLength) {
@@ -315,10 +315,10 @@ public class RegExpGenerator {
 	 * @return The Automaton friendly RegExp.
 	 */
 	public static String toAutomatonRE(final String regExp, boolean onlyASCII) {
-		Map<String, String> mapping = onlyASCII ? toSimplifyASCII : toSimplifyFull;
+		final Map<String, String> mapping = onlyASCII ? toSimplifyASCII : toSimplifyFull;
 		String ret = regExp;
 
-		for (Map.Entry<String, String> s : mapping.entrySet())
+		for (final Map.Entry<String, String> s : mapping.entrySet())
 			ret = Utils.replaceAll(ret, s.getKey(), s.getValue());
 
 		return ret;

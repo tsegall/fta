@@ -43,15 +43,16 @@ public class PatternInfo {
 		ONE_ZERO
 	}
 
+	private final int minLength;
+	private final int maxLength;
+	private final FTAType type;
+	private final boolean isLogicalType;
+
 	public KnownPatterns.ID id;
 	public String regexp;
 	public String generalPattern;
-	private int minLength;
-	private int maxLength;
 	public String format;
-	private FTAType type;
 	public String typeQualifier;
-	private boolean isLogicalType;
 
 	/**
 	 * Construct a new information block for the supplied pattern.
@@ -77,7 +78,7 @@ public class PatternInfo {
 	 *            The Java format specified for a date pattern (optional).
 	 */
 	public PatternInfo(final ID id, final String regexp, final FTAType type, final String typeQualifier,
-			final boolean isLogicalType, boolean isLocaleSensitive, final int minLength, final int maxLength, final String generalPattern, final String format) {
+			final boolean isLogicalType, final boolean isLocaleSensitive, final int minLength, final int maxLength, final String generalPattern, final String format) {
 		this.id = id;
 		this.regexp = regexp;
 		this.type = type;

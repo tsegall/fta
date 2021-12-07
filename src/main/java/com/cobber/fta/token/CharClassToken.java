@@ -17,8 +17,8 @@ package com.cobber.fta.token;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -36,6 +36,8 @@ public class CharClassToken extends Token {
 	private int highASCII = Integer.MIN_VALUE;
 	private int maxSetASCII = -1;
 	private int countNonASCII = 0;
+	private int minObserved = 1;
+	private int maxObserved = 1;
 	private Set<Character> seenNonASCII = new TreeSet<>();
 	private List<CharClassToken> children = null;
 
@@ -70,9 +72,13 @@ public class CharClassToken extends Token {
 		ret.countASCII = this.countASCII;
 		ret.lowASCII = this.lowASCII;
 		ret.highASCII = this.highASCII;
-		System.arraycopy(seenASCII, this.lowASCII, ret.seenASCII, this.lowASCII, (this.highASCII - this.lowASCII) + 1);
+		if (ret.lowASCII != Integer.MAX_VALUE)
+			System.arraycopy(seenASCII, this.lowASCII, ret.seenASCII, this.lowASCII, (this.highASCII - this.lowASCII) + 1);
 		ret.countNonASCII = this.countNonASCII;
 		ret.seenNonASCII = new TreeSet<Character>(this.seenNonASCII);
+		ret.maxSetASCII = this.maxSetASCII;
+		ret.minObserved = this.minObserved;
+		ret.maxObserved = this.maxObserved;
 
 		return ret;
 	}
@@ -93,18 +99,7 @@ public class CharClassToken extends Token {
 		return ret;
 	}
 
-	@Override
-	public String getCharacters() {
-		Set<Character> fullSet = getFullSet();
-		StringBuilder b = new StringBuilder(fullSet.size());
-
-		for (final char c : fullSet)
-			b.append(c);
-
-		return b.toString();
-	}
-
-	public class Range {
+	public class Range implements Comparable<Range> {
 		char min;
 		char max;
 		Range(char ch) {
@@ -118,6 +113,40 @@ public class CharClassToken extends Token {
 		public char getMax() {
 			return max;
 		}
+
+		@Override
+		public String toString() {
+			String ret = String.valueOf(min);
+			if (min != max)
+				ret += "-" + this.max;
+			return ret;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Objects.hash(max, min);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+
+			if (!(o instanceof Range))
+				return false;
+
+			Range other = (Range)o;
+
+			return other != null && this.min == other.min && this.max == other.max;
+		}
+
+		@Override
+		public int compareTo(Range other) {
+			return min - other.min;
+		}
 	}
 
 	/**
@@ -126,7 +155,7 @@ public class CharClassToken extends Token {
 	 * @return A set of Ranges (low-high characters) that represent all the characters in this Character Class.
 	 */
 	public Set<Range> getRanges() {
-		Set<Range> ranges = new HashSet<>();
+		Set<Range> ranges = new TreeSet<>();
 		Range range = null;
 		char last = '¶';
 
@@ -152,18 +181,47 @@ public class CharClassToken extends Token {
 		return ranges;
 	}
 
+	private String getSimpleRegExp(boolean enumerateRanges) {
+		Set<Character> chars = getFullSet();
+		if (chars.size() == 1)
+			return String.valueOf(chars.iterator().next());
+		if (!enumerateRanges)
+			return type.getRegExp();
+
+		String ret = "[";
+		for (Range range : getRanges())
+			ret += range.toString();
+		ret += "]";
+
+		return ret;
+	}
+
 	@Override
 	String getRegExp(final boolean fitted) {
-		int nodeCount = children == null ? 1 : children.size();
-		if (!fitted || (countASCII + countNonASCII) > nodeCount)
+		if (!fitted)
 			return type.getRegExp() + RegExpSplitter.qualify(minObserved, maxObserved);
 
-		List<CharClassToken> nodes = nodeCount == 1 ? Collections.singletonList(this) : children;
-		StringBuilder b = new StringBuilder(nodeCount);
-		for (CharClassToken token : nodes) {
-			for (final char c : token.getFullSet())
-				b.append(c);
-		}
+		StringBuilder b = new StringBuilder();
+
+		CharClassToken lastToken = null;
+		List<CharClassToken> kids = children != null ? children : Collections.singletonList(this);
+		boolean enumerateRanges = false;
+		// Coalesce multiple numerics or alphas into one
+		for (CharClassToken token : kids) {
+			enumerateRanges = Token.Type.DIGIT_CLASS.equals(token.type) && token.countASCII != token.maxSetASCII;
+			if (lastToken == null) {
+				lastToken = token.newInstance();
+				continue;
+			}
+
+			if (token.getSimpleRegExp(enumerateRanges).equals(lastToken.getSimpleRegExp(enumerateRanges)))
+				lastToken.coalesce(token);
+			else {
+				b.append(lastToken.getSimpleRegExp(enumerateRanges) + RegExpSplitter.qualify(lastToken.minObserved, lastToken.maxObserved));
+				lastToken = token.newInstance();
+			}
+        }
+		b.append(lastToken.getSimpleRegExp(enumerateRanges) + RegExpSplitter.qualify(lastToken.minObserved, lastToken.maxObserved));
 
 		return b.toString();
 	}
@@ -171,6 +229,9 @@ public class CharClassToken extends Token {
 	@Override
 	public Token merge(Token o) {
 		CharClassToken other = (CharClassToken)o;
+
+		children = null;
+
 		mergeObservations(other);
 
 		this.minObserved = Math.min(this.minObserved, other.minObserved);

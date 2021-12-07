@@ -46,7 +46,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		if (regexp == null) {
 			final RegExpGenerator gen = new RegExpGenerator(15, Locale.getDefault());
 
-			for (String elt : getMembers())
+			for (final String elt : getMembers())
 			       gen.train(elt);
 
 			regexp = gen.getResult();
@@ -60,7 +60,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	@Override
 	public String nextRandom() {
-		String result = null;
+		String result;
 		do {
 			result = memberSet.getAt(random.nextInt(getMembers().size()));
 		} while ("FTAFTAFTA".equals(result));
@@ -88,8 +88,8 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples,
-			String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 
 		int maxOutliers = 1;

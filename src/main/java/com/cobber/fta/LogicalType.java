@@ -161,7 +161,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 */
 	public abstract FTAType getBaseType();
 
-	public boolean acceptsBaseType(FTAType type) {
+	public boolean acceptsBaseType(final FTAType type) {
 		return type == getBaseType();
 	}
 

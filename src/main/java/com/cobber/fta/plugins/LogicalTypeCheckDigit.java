@@ -36,9 +36,9 @@ public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
 	public static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
 	protected CheckDigit validator;
-	private int length;				/* Length of check digit - -1 indicates variable length */
+	private final int length;				/* Length of check digit - -1 indicates variable length */
 
-	public LogicalTypeCheckDigit(final PluginDefinition plugin, int length) {
+	public LogicalTypeCheckDigit(final PluginDefinition plugin, final int length) {
 		super(plugin);
 		this.length = length;
 	}
@@ -78,7 +78,7 @@ public abstract class LogicalTypeCheckDigit extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		if (cardinality.size() < 20 || (double)matchCount/realSamples < getThreshold()/100.0)
 			return BACKOUT_REGEXP;

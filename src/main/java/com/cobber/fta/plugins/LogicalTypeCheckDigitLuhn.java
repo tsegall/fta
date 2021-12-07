@@ -40,7 +40,7 @@ public class LogicalTypeCheckDigitLuhn extends LogicalTypeCheckDigit {
 		return SEMANTIC_TYPE;
 	}
 
-	private final static String[] samples = new String[] {
+	private final static String[] SAMPLES = {
 			"5336066487174265", "5152085894236419", "6011352181320804", "4040861696988699",
 			"379263518411175", "349635067146996", "4094833846177296", "379798201251917",
 			"6011097612307009", "6011430779457350", "6011790026589879", "375959643587672",
@@ -76,6 +76,6 @@ public class LogicalTypeCheckDigitLuhn extends LogicalTypeCheckDigit {
 
 	@Override
 	public String nextRandom() {
-		return samples[random.nextInt(samples.length)];
+		return SAMPLES[random.nextInt(SAMPLES.length)];
 	}
 }

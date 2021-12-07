@@ -27,7 +27,7 @@ public class Processor {
 		}
 	}
 
-	public void consume(String[] row) throws FTAPluginException, FTAUnsupportedLocaleException {
+	public void consume(final String[] row) throws FTAPluginException, FTAUnsupportedLocaleException {
 		for (int i = 0; i < streamCount; i++) {
 			if (options.col == -1 || options.col == i) {
 				if (options.verbose != 0)
@@ -39,7 +39,7 @@ public class Processor {
 		}
 	}
 
-	public TextAnalysisResult getResult(int stream) throws FTAPluginException, FTAUnsupportedLocaleException {
+	public TextAnalysisResult getResult(final int stream) throws FTAPluginException, FTAUnsupportedLocaleException {
 		return analyzers[stream].getResult();
 	}
 }

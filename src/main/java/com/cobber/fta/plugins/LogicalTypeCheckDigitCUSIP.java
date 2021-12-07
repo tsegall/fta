@@ -46,7 +46,7 @@ public class LogicalTypeCheckDigitCUSIP extends LogicalTypeCheckDigit {
 		return FTAType.STRING;
 	}
 
-	private final static String[] samples = new String[] {
+	private final static String[] SAMPLES = {
 			"000307108", "000307959", "000360206", "000360909", "000360958", "000361105", "000361956", "000375204", "000375907",
 			"000375956", "00081T108", "00081T900", "00081T959", "000868109", "000899104", "00090Q103", "00090Q905", "00090Q954", "000957100", "000957902",
 			"000957951", "001084904", "020002101", "020002903", "020002952", "03842B903", "095229100", "171484900", "238661904", "260003108", "260003900",
@@ -58,6 +58,6 @@ public class LogicalTypeCheckDigitCUSIP extends LogicalTypeCheckDigit {
 
 	@Override
 	public String nextRandom() {
-		return samples[random.nextInt(samples.length)];
+		return SAMPLES[random.nextInt(SAMPLES.length)];
 	}
 }

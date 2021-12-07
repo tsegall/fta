@@ -20,7 +20,7 @@ package com.cobber.fta;
  */
 public class AnalysisConfig {
 	/** The default value for the maximum Cardinality tracked. */
-	public static final int MAX_CARDINALITY_DEFAULT = 12000;
+	public static final int MAX_CARDINALITY_DEFAULT = 12_000;
 
 	/** The default value for the maximum # of outliers tracked. */
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
@@ -52,15 +52,15 @@ public class AnalysisConfig {
 
 	public int maxInputLength = MAX_INPUT_LENGTH_DEFAULT;
 
-	public String localeTag = null;
+	public String localeTag;
 
-	public String traceOptions = null;
+	public String traceOptions;
 
 	/** Should we collect statistics (min, max, sum) as we parse the data stream. */
 	public boolean collectStatistics = true;
 
 	/** Internal-only debugging flag. */
-	public int debug = 0;
+	public int debug;
 
 	/** Should we enable Default Logical Type detection. */
 	public boolean enableDefaultLogicalTypes = true;

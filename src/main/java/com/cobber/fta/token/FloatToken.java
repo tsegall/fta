@@ -40,9 +40,4 @@ public class FloatToken extends Token {
 	int charactersUsed() {
 		return 1;
 	}
-
-	@Override
-	String getCharacters() {
-		return java.lang.String.valueOf(ch);
-	}
 }

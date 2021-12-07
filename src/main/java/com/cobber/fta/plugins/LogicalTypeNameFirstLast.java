@@ -95,7 +95,6 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	public boolean isValid(final String input) {
 		final String trimmed = input.trim();
 		final int lastSpace = trimmed.lastIndexOf(' ');
-		final int firstSpace = trimmed.indexOf(' ');
 		if (lastSpace == -1)
 			return false;
 
@@ -145,6 +144,7 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 			return false;
 		}
 
+		final int firstSpace = trimmed.indexOf(' ');
 		final String firstName = trimmed.substring(0, firstSpace);
 		final String lastName = trimmed.substring(lastSpace + 1);
 
@@ -162,8 +162,8 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		int minCardinality = 10;
 		int minSamples = 20;

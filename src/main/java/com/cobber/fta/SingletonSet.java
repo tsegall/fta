@@ -23,9 +23,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.cobber.fta.core.RandomSet;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,8 +40,8 @@ public class SingletonSet {
 	private final String key;
 	private final String commentLeader;
 
-	private final static Map<String, RandomSet<String>> memberCache = new HashMap<>();
-	private final static ObjectMapper mapper = new ObjectMapper();
+	private final static Map<String, RandomSet<String>> MEMBER_CACHE = new ConcurrentHashMap<>();
+	private final static ObjectMapper MAPPER = new ObjectMapper();
 
 	/**
 	 * Create a SingletonSet using "#" as the comment character.
@@ -60,8 +60,8 @@ public class SingletonSet {
 	}
 
 	public Set<String> getMembers() {
-		synchronized(memberCache) {
-			final Set<String> result = memberCache.get(key);
+		synchronized(MEMBER_CACHE) {
+			final Set<String> result = MEMBER_CACHE.get(key);
 			if (result != null)
 				return result;
 
@@ -69,7 +69,7 @@ public class SingletonSet {
 			if ("inline".equals(contentType)) {
 				InlineContent inline;
 				try {
-					inline = mapper.readValue(content, new TypeReference<InlineContent>(){});
+					inline = MAPPER.readValue(content, new TypeReference<InlineContent>(){});
 				} catch (IOException e) {
 					throw new IllegalArgumentException("Internal error: Issues with 'inline' content: " + content, e);
 				}
@@ -101,13 +101,13 @@ public class SingletonSet {
 				}
 			}
 
-			memberCache.put(key, members);
+			MEMBER_CACHE.put(key, members);
 
 			return members;
 		}
 	}
 
 	public String getAt(final int i) {
-		return memberCache.get(key).get(i);
+		return MEMBER_CACHE.get(key).get(i);
 	}
 }

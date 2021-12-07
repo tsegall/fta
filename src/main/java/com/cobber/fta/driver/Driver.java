@@ -36,7 +36,7 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 public class Driver {
 
-	static DriverOptions options;
+	private static DriverOptions options;
 
 	public static void main(final String[] args) throws IOException {
 		final PrintStream logger = System.err;
@@ -152,11 +152,11 @@ public class Driver {
 
 		// Are we generating samples or a signature?
 		if (options.pluginName != null) {
-			long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
+			final long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
 			final TextAnalyzer analyzer = getDefaultAnalysis();
-			Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
+			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
-			for (LogicalType logical : registered)
+			for (final LogicalType logical : registered)
 				if (logical.getQualifier().equals(options.pluginName)) {
 					if (options.signature)
 						logger.println(logical.getSignature());
@@ -229,7 +229,7 @@ public class Driver {
 				logger.printf("ERROR: Plugin Exception: %s%n", e.getMessage());
 				System.exit(1);
 			} catch (FTAUnsupportedLocaleException e) {
-				Locale activeLocale = options.locale != null ? options.locale : Locale.getDefault();
+				final Locale activeLocale = options.locale != null ? options.locale : Locale.getDefault();
 				logger.printf("ERROR: Unsupported Locale: %s, error: %s%n", activeLocale.toLanguageTag(), e.getMessage());
 				System.exit(1);
 			}

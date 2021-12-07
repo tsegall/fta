@@ -33,7 +33,7 @@ import com.cobber.fta.token.TokenStreams;
 public class LogicalTypeGUID extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "GUID";
 	public static final String REGEXP = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
-	private static final char[] HEX = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
 	public LogicalTypeGUID(final PluginDefinition plugin) {
 		super(plugin);
@@ -108,8 +108,8 @@ public class LogicalTypeGUID extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? null : ".+";
 	}
 }

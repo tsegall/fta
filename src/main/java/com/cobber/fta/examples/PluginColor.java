@@ -32,13 +32,13 @@ import com.cobber.fta.token.TokenStreams;
 
 public class PluginColor extends LogicalTypeFinite {
 	public static final String SEMANTIC_TYPE_BASE = "COLOR.TEXT_";
-	public static final Map<String, Set<String>> members = new HashMap<>();
-	private static String[] colorsEN = new String[] {
+	public static final Map<String, Set<String>> MEMBERS = new HashMap<>();
+	private static String[] colorsEN = {
 			"RED",  "GREEN", "BLUE", "PINK", "BLACK", "WHITE", "ORANGE", "PURPLE",
 			"GREY", "YELLOW", "MAUVE", "CREAM", "BROWN", "SILVER", "GOLD",
 			"PEACH", "OLIVE", "LEMON", "LILAC", "BEIGE", "AMBER", "BURGUNDY"
 	};
-	private static String[] colorsFR = new String[] {
+	private static String[] colorsFR = {
 			"ROUGE", "VERTE", "BLEUE", "ROSE", "NOIRE", "BLANCHE", "ORANGE", "MAUVE",
 			"GRISE", "JAUNE", "MAUVE", "CRÈME", "MARRON", "ARGENT", "OR",
 			"PÊCHE", "OLIVE", "CITRON", "LILAS", "BEIGE", "AMBRE", "BOURGOGNE"
@@ -47,8 +47,8 @@ public class PluginColor extends LogicalTypeFinite {
 	private String language;
 
 	static {
-		members.put("EN", new HashSet<String>(Arrays.asList(colorsEN)));
-		members.put("FR", new HashSet<String>(Arrays.asList(colorsFR)));
+		MEMBERS.put("EN", new HashSet<String>(Arrays.asList(colorsEN)));
+		MEMBERS.put("FR", new HashSet<String>(Arrays.asList(colorsFR)));
 	}
 
 	public PluginColor(final PluginDefinition plugin) throws FTAPluginException {
@@ -67,7 +67,7 @@ public class PluginColor extends LogicalTypeFinite {
 
 	@Override
 	public Set<String> getMembers() {
-		return members.get(language);
+		return MEMBERS.get(language);
 	}
 
 	@Override

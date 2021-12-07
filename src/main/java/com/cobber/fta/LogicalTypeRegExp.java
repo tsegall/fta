@@ -134,10 +134,10 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
-		String backout = currentRegExp;
+		final String backout = currentRegExp;
 
 		// If this plugin insists on a minimum number of samples (validate it)
 		if (realSamples < getMinSamples())

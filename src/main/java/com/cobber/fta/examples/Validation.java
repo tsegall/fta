@@ -44,7 +44,7 @@ public abstract class Validation {
 		//
 		// Example for Logical Types ...
 		//
-		final String[] inputsLT = new String[] {
+		final String[] inputsLT = {
 				"france",  "germany", "poland", "canada", "australia", "belgium", "china", "turkey",
 				"new zealand", "pakistan", "colombia", "portugal", "spain", "estonia", "croatia", "tanzania"
 		};
@@ -66,7 +66,7 @@ public abstract class Validation {
 		}
 
 		// Grab the Logical Type and check it is closed (e.g. a finite set, so for example Countries are good, First names are not)
-		LogicalType logicalType = analysisLT.getPlugins().getRegistered(resultLT.getTypeQualifier());
+		final LogicalType logicalType = analysisLT.getPlugins().getRegistered(resultLT.getTypeQualifier());
 		if (!logicalType.isClosed()) {
 			System.err.println("Logical Type not closed - hence can only use RegExp to validate");
 			System.exit(1);
@@ -79,7 +79,7 @@ public abstract class Validation {
 		//
 		// Example where no Logical Type detected
 		//
-		final String[] inputsRE = new String[] {
+		final String[] inputsRE = {
 				"DAILY",  "WEEKLY", "MONTHLY", "ANUALLY", "BIANNNUALLY", "QUARTERLY", "DAILY", "MONTHLY",
 				"MONTHLY", "WEEKLY", "WEEKLY", "QUARTERLY", "WEEKLY", "DAILY", "croatia", "QUARTERLY",
 				"DAILY",  "WEEKLY", "MONTHLY", "ANUALLY", "BIANNNUALLY", "QUARTERLY", "DAILY", "MONTHLY",

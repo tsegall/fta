@@ -30,9 +30,9 @@ import com.cobber.fta.core.FTAException;
 public abstract class Generation {
 
 	public static void main(final String[] args) throws IOException, FTAException {
-		String demos[] = new String[] { "EMAIL", "COORDINATE.LATITUDE_DECIMAL", "CITY" };
+		final String demos[] = { "EMAIL", "COORDINATE.LATITUDE_DECIMAL", "CITY" };
 
-		for (String s: demos) {
+		for (final String s: demos) {
 			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(s);
 			final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 

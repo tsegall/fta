@@ -46,7 +46,7 @@ public class LogicalTypeCheckDigitIBAN extends LogicalTypeCheckDigit {
 		return FTAType.STRING;
 	}
 
-	private final static String[] samples = new String[] {
+	private final static String[] SAMPLES = {
 			"NL47CITI0080734537", "NL64ABNA0998881740", "NL37ARBN0845390481", "NL65CITC0881228753",
 			"NL37NNBA0477341969", "NL98INGB0618648542", "NL32UBSW0188040064", "NL10BNGH0364982365",
 			"NL20ANDL0731953959", "NL33KABA0404574777", "NL07ABNA0056892195", "NL32BMEU0798878975",
@@ -85,6 +85,6 @@ public class LogicalTypeCheckDigitIBAN extends LogicalTypeCheckDigit {
 
 	@Override
 	public String nextRandom() {
-		return samples[random.nextInt(samples.length)];
+		return SAMPLES[random.nextInt(SAMPLES.length)];
 	}
 }

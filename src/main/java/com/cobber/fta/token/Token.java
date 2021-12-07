@@ -22,8 +22,6 @@ package com.cobber.fta.token;
 public abstract class Token {
 	protected Type type;
 	protected char ch;
-	protected int minObserved = 1;
-	protected int maxObserved = 1;
 
 	public enum Type {
 		/** Simple Character. */
@@ -72,7 +70,6 @@ public abstract class Token {
 
 	abstract Token merge(Token o);
 	abstract int charactersUsed();
-	abstract String getCharacters();
 	abstract Token newInstance();
 
 	/**

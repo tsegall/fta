@@ -26,7 +26,7 @@ import com.cobber.fta.core.FTAException;
 public abstract class SamplePlugin {
 
 	public static void main(final String[] args) throws IOException, FTAException {
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"red",  "red", "blue", "pink", "black", "white", "orange", "purple",
 				"grey", "green", "red", "mauve", "red", "brown", "silver", "gold",
 				"peach", "olive", "lemon", "lilac", "beige", "red", "burgundy", "aquamarine",

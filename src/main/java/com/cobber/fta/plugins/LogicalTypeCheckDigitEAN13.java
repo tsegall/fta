@@ -41,7 +41,7 @@ public class LogicalTypeCheckDigitEAN13 extends LogicalTypeCheckDigit {
 		return SEMANTIC_TYPE;
 	}
 
-	private final static String[] samples = new String[] {
+	private final static String[] SAMPLES = {
 			"9780444505156", "4605664000050", "3014260115531", "8020187300016", "8076809513456", "3155250001387",
 			"2151191106847", "1626093139220", "8556467100101", "0922077722381", "3064298186966", "1068035884902",
 			"4709099997098", "2460125680880", "9686595482097", "2455962755150", "1883097580551", "9664864959587",
@@ -50,6 +50,6 @@ public class LogicalTypeCheckDigitEAN13 extends LogicalTypeCheckDigit {
 
 	@Override
 	public String nextRandom() {
-		return samples[random.nextInt(samples.length)];
+		return SAMPLES[random.nextInt(SAMPLES.length)];
 	}
 }

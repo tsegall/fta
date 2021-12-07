@@ -37,9 +37,4 @@ public class AnyInputToken extends Token {
 	int charactersUsed() {
 		return -1;
 	}
-
-	@Override
-	String getCharacters() {
-		return null;
-	}
 }

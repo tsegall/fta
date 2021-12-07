@@ -29,7 +29,7 @@ public class MinMax implements Comparable<MinMax> {
 	}
 
 	public MinMax(final String text) {
-		int brace = text.indexOf('{');
+		final int brace = text.indexOf('{');
 		if (brace == -1)
 			this.min = this.max = text.length();
 		else {
@@ -78,7 +78,7 @@ public class MinMax implements Comparable<MinMax> {
 		return 6;
 	}
 
-	public String getPattern(char field) {
+	public String getPattern(final char field) {
 		// if min == max then we just repeat the field
 		if (min == max)
 			return Utils.repeat(field, min);

@@ -21,7 +21,7 @@ package com.cobber.fta.core;
 public class FTAUnsupportedLocaleException extends FTAException {
 	private static final long serialVersionUID = 1L;
 
-	public FTAUnsupportedLocaleException(String message) {
+	public FTAUnsupportedLocaleException(final String message) {
 		super(message);
 	}
 

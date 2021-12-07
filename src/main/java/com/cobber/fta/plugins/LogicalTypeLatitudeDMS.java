@@ -21,19 +21,21 @@ import com.cobber.fta.core.FTAType;
 public class LogicalTypeLatitudeDMS extends LogicalTypeCoordinateDMS {
 	public static final String SEMANTIC_TYPE = "COORDINATE.LONGITUDE_DMS";
 	public static final String REGEXP = "(\\d{5,6}|\\d{1,3} \\d{1,2} \\d{1,2} ?)[NnSs]";
-	private final char[] DIRECTION = { 'N', 'S', 'n', 's' };
-	private final int MAX_DEGREES = 90;
+	private static final char[] DIRECTION = { 'N', 'S', 'n', 's' };
+	private static final int MAX_DEGREES = 90;
 
 	public LogicalTypeLatitudeDMS(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
+	protected
 	char[] getDirectionChars() {
 		return DIRECTION;
 	}
 
 	@Override
+	protected
 	int getMaxDegrees() {
 		return MAX_DEGREES;
 	}

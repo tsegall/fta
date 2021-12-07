@@ -28,18 +28,16 @@ import com.cobber.fta.core.RegExpSplitter;
  * This Singleton class captures the sum of all input observed as a set of instances of the TokenStream Class.
  */
 public class TokenStreams {
-	private Map<String, TokenStream> tokenStreams = new HashMap<>();
-	private Map<String, Long> shapes = null;
-	private int maxStreams;
+	private final Map<String, TokenStream> tokenStreams = new HashMap<>();
+	private final int maxStreams;
 	private boolean anyShape;
-	private int totalSamples = 0;
-
+	private int totalSamples;
 
 	/**
 	 * Construct a TokenStreams object with a maximum number of TokenStream instances.
 	 * @param maxStreams The maximum number of TokenStream instances.
 	 */
-	public TokenStreams(int maxStreams) {
+	public TokenStreams(final int maxStreams) {
 		this.maxStreams = maxStreams;
 	}
 
@@ -57,21 +55,21 @@ public class TokenStreams {
 		// If the incoming entry is too long - then ditch what we have and call it a day
 		if (TokenStream.tooLong(trimmed)) {
 			tokenStreams.clear();
-			tokenStreams.put(TokenStream.AnyShape.getKey(), TokenStream.AnyShape);
+			tokenStreams.put(TokenStream.ANYSHAPE.getKey(), TokenStream.ANYSHAPE);
 			anyShape = true;
 			return;
 		}
 
-		TokenStream ts = new TokenStream(trimmed, count);
+		final TokenStream ts = new TokenStream(trimmed, count);
 
-		TokenStream current = tokenStreams.get(ts.getKey());
+		final TokenStream current = tokenStreams.get(ts.getKey());
 		if (current == null)
 			// New Stream found - add it if there is room, otherwise call it a day
 			if (tokenStreams.size() < maxStreams)
 				tokenStreams.put(ts.getKey(), ts);
 			else {
 				tokenStreams.clear();
-				tokenStreams.put(TokenStream.AnyShape.getKey(), TokenStream.AnyShape);
+				tokenStreams.put(TokenStream.ANYSHAPE.getKey(), TokenStream.ANYSHAPE);
 				anyShape = true;
 			}
 		else
@@ -83,11 +81,21 @@ public class TokenStreams {
 	}
 
 	/**
+	 * @return The number of inputs this TokenStream has captured.
+	 */
+	public long getSamples() {
+		return totalSamples;
+	}
+
+	/**
 	 * Get the 'best' Regular Expression we can based on the set of TokenStreams.
 	 * @param fitted If true the Regular Expression should be a 'more closely fitted' Regular Expression.
 	 * @return The 'best' Regular Expression we can based on the set of TokenStreams, or null if nothing clever can be discerned.
 	 */
-	public String getRegExp(boolean fitted) {
+	public String getRegExp(final boolean fitted) {
+		if (tokenStreams.isEmpty())
+			return null;
+
 		if (tokenStreams.size() == 1)
 			return tokenStreams.values().iterator().next().getRegExp(fitted);
 
@@ -103,7 +111,7 @@ public class TokenStreams {
 
 		// Look for multiple constant length strings that are able to be merged (typically by promoting a digit or alpha to an alphadigit
 		TokenStream newStream = null;
-		for (TokenStream tokenStream : tokenStreams.values()) {
+		for (final TokenStream tokenStream : tokenStreams.values()) {
 			if (newStream == null)
 				newStream = new TokenStream(tokenStream);
 			else
@@ -117,7 +125,7 @@ public class TokenStreams {
 		// Check to see if the compressed TokenStreams are all similar
 		TokenStream compressedResult = null;
 		boolean compressedEqual = true;
-		for (TokenStream tokenStream : tokenStreams.values()) {
+		for (final TokenStream tokenStream : tokenStreams.values()) {
 			if (compressedResult == null)
 				compressedResult = new TokenStream(tokenStream);
 			else if (compressedResult.getCompressedKey().equals(tokenStream.getCompressedKey()))
@@ -134,7 +142,7 @@ public class TokenStreams {
 		boolean isAlphaNumeric = true;
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
-		for (TokenStream tokenStream : tokenStreams.values()) {
+		for (final TokenStream tokenStream : tokenStreams.values()) {
 			isAlpha &= tokenStream.isAlpha();
 			isNumeric &= tokenStream.isNumeric();
 			isAlphaNumeric &= (tokenStream.isAlphaNumeric() || tokenStream.isAlpha() || tokenStream.isNumeric());
@@ -168,11 +176,11 @@ public class TokenStreams {
 	 * @param regExp The Regular Expression to match.
 	 * @return True if the TokenStreams match the supplied Regular Expression.
 	 */
-	public boolean matches(String regExp) {
+	public boolean matches(final String regExp) {
 		if (anyShape)
 			return false;
 
-		for (TokenStream tokenStream : tokenStreams.values())
+		for (final TokenStream tokenStream : tokenStreams.values())
 			if (!tokenStream.matches(regExp))
 				return false;
 
@@ -186,9 +194,11 @@ public class TokenStreams {
 	public TokenStream getBest() {
 		TokenStream ret = null;
 		long best = -1;
-		for (TokenStream tokenStream : tokenStreams.values())
-			if (tokenStream.getOccurrences() > best)
+		for (final TokenStream tokenStream : tokenStreams.values())
+			if (tokenStream.getOccurrences() > best) {
 				ret = tokenStream;
+				best = tokenStream.getOccurrences();
+			}
 
 		return ret;
 	}
@@ -198,10 +208,10 @@ public class TokenStreams {
 	 * @return The ordered (by shape) Map of all shapes.
 	 */
 	public Map<String, Long> getShapes() {
-		shapes = new TreeMap<>();
+		final Map<String, Long> shapes = new TreeMap<>();
 
 		if (!anyShape)
-			for (Map.Entry<String, TokenStream> entry : tokenStreams.entrySet())
+			for (final Map.Entry<String, TokenStream> entry : tokenStreams.entrySet())
 				shapes.put(entry.getKey(), entry.getValue().getOccurrences());
 
 		return shapes;

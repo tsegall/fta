@@ -269,11 +269,11 @@ public class SimpleDateMatcher {
 			else {
 				// Look for a localized zone-offset (O), something of the form GMT+8 or GMT+08:00
 				if (word.startsWith("GMT+") || word.startsWith("GMT-")) {
-					String balance = word.substring(4);
-					int offsetLength = balance.length();
+					final String balance = word.substring(4);
+					final int offsetLength = balance.length();
 					if (offsetLength == 0)
 						break;
-					String smashed = TokenStream.generateKey(balance);
+					final String smashed = TokenStream.generateKey(balance);
 					if ("9".equals(smashed) || "99".equals(smashed) || "9:99".equals(smashed)) {
 						input = replaceString(input, len, word, "O");
 						len = input.length();

@@ -34,9 +34,9 @@ public abstract class LogicalTypeCoordinateDMS extends LogicalTypeInfinite {
 		super(plugin);
 	}
 
-	abstract char[] getDirectionChars();
+	protected abstract char[] getDirectionChars();
 
-	abstract int getMaxDegrees();
+	protected abstract int getMaxDegrees();
 
 	@Override
 	public boolean initialize(final Locale locale) throws FTAPluginException {
@@ -70,18 +70,17 @@ public abstract class LogicalTypeCoordinateDMS extends LogicalTypeInfinite {
 		return true;
 	}
 
-	private boolean validDirection(char ch) {
-		char[] directionChars = getDirectionChars();
+	private boolean validDirection(final char ch) {
+		final char[] directionChars = getDirectionChars();
 		return ch == directionChars[0] || ch == directionChars[1] || ch == directionChars[2] || ch == directionChars[3];
 	}
 
-	private boolean CheckDMS(final int degrees, final int minutes, final int seconds) {
+	private boolean checkDMS(final int degrees, final int minutes, final int seconds) {
 		return degrees <= getMaxDegrees() && minutes <= 59 && seconds <= 59;
 	}
 
 	@Override
 	public boolean isValid(final String input) {
-		int len = input.length();
 		final int spaceIndex = input.indexOf(' ');
 		if (spaceIndex != -1) {
 			String[] components = input.split(" ");
@@ -89,7 +88,7 @@ public abstract class LogicalTypeCoordinateDMS extends LogicalTypeInfinite {
 				return false;
 
 			if (components.length == 3) {
-				char ch = components[2].charAt(components[2].length() - 1);
+				final char ch = components[2].charAt(components[2].length() - 1);
 				if (!validDirection(ch))
 					return false;
 				components[2] = components[2].substring(0, components[2].length() - 1);
@@ -101,20 +100,21 @@ public abstract class LogicalTypeCoordinateDMS extends LogicalTypeInfinite {
 			if (!isNumeric(components[0]) || !isNumeric(components[1]) || !isNumeric(components[2]))
 				return false;
 
-			return CheckDMS(Integer.valueOf(components[0]), Integer.valueOf(components[1]), Integer.valueOf(components[2]));
+			return checkDMS(Integer.valueOf(components[0]), Integer.valueOf(components[1]), Integer.valueOf(components[2]));
 		}
 
+		int len = input.length();
 		if (len < 6 || len > 8)
 			return false;
 		if (!validDirection(input.charAt(len - 1)))
 			return false;
-		String DMS = input.substring(0, len - 1);
+		final String DMS = input.substring(0, len - 1);
 		if (!isNumeric(DMS))
 			return false;
 
 		len--;
 
-		return CheckDMS(Integer.valueOf(DMS.substring(0, len - 4)), Integer.valueOf(DMS.substring(len - 4, len - 2)), Integer.valueOf(DMS.substring(len - 2, len)));
+		return checkDMS(Integer.valueOf(DMS.substring(0, len - 4)), Integer.valueOf(DMS.substring(len - 4, len - 2)), Integer.valueOf(DMS.substring(len - 2, len)));
 	}
 
 	@Override
@@ -128,21 +128,21 @@ public abstract class LogicalTypeCoordinateDMS extends LogicalTypeInfinite {
 		if (spaces != 0 && spaces != 2 && spaces != 3)
 			return false;
 
-		char[] directionChars = getDirectionChars();
+		final char[] directionChars = getDirectionChars();
 
 		final int direction = charCounts[directionChars[0]] + charCounts[directionChars[1]] + charCounts[directionChars[2]] + charCounts[directionChars[3]];
 		if (direction != 1)
 			return false;
 
-		int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
+		final int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
 				charCounts['5'] + charCounts['6'] + charCounts['7'] + charCounts['8'] + charCounts['9'];
 
 		return digits + spaces + 1 == len;
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? null : ".+";
 	}
 

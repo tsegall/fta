@@ -37,7 +37,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	public static final String REGEXP_PROTOCOL = "(https?|ftp|file)";
 	public static final String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 	private static UrlValidator validator;
-	private static String[] sitesList = new String[] {
+	private static String[] sitesList = {
 			"www.jnj.com", "http://www.medifast1.com/index.jsp", "graybar.com", "johnsoncontrols.com", "commscope.com", "www.energizer.com", "ashland.com", "hersheys.com", "www.flowserve.com", "www.exxonmobil.com",
 			"pattersoncompanies.com", "www.campbellsoup.com", "mars.com", "www.bjs.com", "conagra.com", "www.lilly.com", "sap.com", "jci.com", "www.dtcc.com", "bakerhughes.com", "www.microsoft.com", "www.jackson.com",
 			"www.chs.net", "www.gallo.com", "www.hormelfoods.com", "perrigo.com", "www.cognizant.com", "www.generalmills.com", "hrblock.com", "www.abbott.com", "www.acuity.com", "www.corning.com", "www.lear.com",
@@ -125,7 +125,7 @@ public class LogicalTypeURL extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		return getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0 ? null : ".+";
 	}
 

@@ -34,16 +34,16 @@ public class LogicalTypeVIN extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "VIN";
 	public static final String REGEXP = "[A-HJ-NPR-Z0-9]{17}";
 
-	private static final boolean[] validCharacter = new boolean[] {
+	private static final boolean[] VALID_CHARACTERS = {
 			true, true, true, true, true, true, true, true, false, true, true, true, true,
 			true, false, true, false, true, true, true, true, true, true, true, true, true
 	};
-	private static String[] wmiNA = new String[] { "1VW", "1ZV", "19U", "2G2", "2HG", "2HK" };
+	private static String[] wmiNA = { "1VW", "1ZV", "19U", "2G2", "2HG", "2HK" };
 	private static String yearCode = "ABCDEFGHJKLMNPRSTVWXY123456789";
-	private static int[] letterValue = new int[] {
+	private static int[] letterValue = {
 			1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3, 4, 5, 0, 7, 0, 9, 2, 3, 4, 5, 6, 7, 8, 9
 	};
-	private static int[] weights = new int[] { 8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2 };
+	private static int[] weights = { 8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2 };
 
 	public LogicalTypeVIN(final PluginDefinition plugin) {
 		super(plugin);
@@ -63,7 +63,7 @@ public class LogicalTypeVIN extends LogicalTypeInfinite {
 		final char[] ret = new char[17];
 
 		// World manufacturer identifier (1-3)
-		String wmi = wmiNA[random.nextInt(wmiNA.length)];
+		final String wmi = wmiNA[random.nextInt(wmiNA.length)];
 		ret[0] = wmi.charAt(0);
 		ret[1] = wmi.charAt(1);
 		ret[2] = wmi.charAt(2);
@@ -91,14 +91,14 @@ public class LogicalTypeVIN extends LogicalTypeInfinite {
 		return String.valueOf(ret);
 	}
 
-	private char generateCheckDigit(char[] VIN) {
+	private char generateCheckDigit(final char[] VIN) {
 		int sum = 0;
 		for (int i = 0; i < 17; i++) {
-			int weight = Character.isDigit(VIN[i]) ? VIN[i] - '0' : letterValue[VIN[i] - 'A'];
+			final int weight = Character.isDigit(VIN[i]) ? VIN[i] - '0' : letterValue[VIN[i] - 'A'];
 			sum += weight * weights[i];
 		}
 
-		int remainder = sum % 11;
+		final int remainder = sum % 11;
 
 		return remainder < 10 ? (char)('0' + remainder) : 'X';
 	}
@@ -125,12 +125,12 @@ public class LogicalTypeVIN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input) {
-		String cleaned = input.trim().replaceAll("-", "").toUpperCase(Locale.ROOT);
+		final String cleaned = input.trim().replaceAll("-", "").toUpperCase(Locale.ROOT);
 		final int len = cleaned.length();
 		if (len != 17)
 			return false;
 
-		char[] asArray = cleaned.toCharArray();
+		final char[] asArray = cleaned.toCharArray();
 
 		boolean northAmerican = false;
 		for (int i = 0; i < len; i++) {
@@ -138,7 +138,7 @@ public class LogicalTypeVIN extends LogicalTypeInfinite {
 			if (i == 0 && ch >= '0' && ch <= '5')
 				northAmerican = true;
 
-			if (!(ch >= '0' && ch <= '9') && !(ch >= 'A' && ch <= 'Z' && validCharacter[ch - 'A']))
+			if (!(ch >= '0' && ch <= '9') && !(ch >= 'A' && ch <= 'Z' && VALID_CHARACTERS[ch - 'A']))
 				return false;
 		}
 
@@ -154,8 +154,8 @@ public class LogicalTypeVIN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? null : ".+";
 	}
 }

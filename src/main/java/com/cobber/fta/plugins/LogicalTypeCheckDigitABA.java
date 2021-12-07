@@ -47,7 +47,7 @@ public class LogicalTypeCheckDigitABA extends LogicalTypeCheckDigit {
 		return FTAType.LONG;
 	}
 
-	private final static String[] samples = new String[] {
+	private final static String[] SAMPLES = {
 			"981140283", "989853459", "892328657", "781258896", "112551654",
 			"438364101", "806651255", "095050162", "505993780", "827776957",
 			"086820709", "609581894", "463724075", "167622596", "355856417",
@@ -58,6 +58,6 @@ public class LogicalTypeCheckDigitABA extends LogicalTypeCheckDigit {
 
 	@Override
 	public String nextRandom() {
-		return samples[random.nextInt(samples.length)];
+		return SAMPLES[random.nextInt(SAMPLES.length)];
 	}
 }

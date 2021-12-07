@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.0.2
+ - INT: Cleaning up.
+
 ### 5.0.1
  - INT: Cleaning up, micro performance improvement
 

@@ -124,13 +124,9 @@ public abstract class Utils {
 		return true;
 	}
 
-	public static String getBaseName(String fileName) {
-	    int index = fileName.lastIndexOf('.');
-	    if (index == -1) {
-	        return fileName;
-	    } else {
-	        return fileName.substring(0, index);
-	    }
+	public static String getBaseName(final String fileName) {
+	    final int index = fileName.lastIndexOf('.');
+        return index == -1 ? fileName : fileName.substring(0, index);
 	}
 
 	private static String version = Utils.class.getPackage().getImplementationVersion();

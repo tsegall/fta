@@ -48,12 +48,12 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
-				charCounts['5'] + charCounts['6'] + charCounts['7'] + charCounts['8'] + charCounts['9'];
 		final int len = trimmed.length();
 		if (len != 5 && len != 4 && len != 3)
 			return false;
 
+		final int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
+				charCounts['5'] + charCounts['6'] + charCounts['7'] + charCounts['8'] + charCounts['9'];
 		if (len == 5)
 			return digits == 5;
 
@@ -112,8 +112,8 @@ public class LogicalTypeUSZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
-		int headerConfidence = getHeaderConfidence(context.getStreamName());
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 		if (headerConfidence == 0 && cardinality.size() < 5)
 			return backout();
 

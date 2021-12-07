@@ -30,7 +30,7 @@ public class TestTokenStreams {
 	private static String NUMERIC = "0123456789";
 	private static int MAX_STREAMS = 1000;
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void singleAlphaConstantLength() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
 
@@ -43,14 +43,15 @@ public class TestTokenStreams {
 		}
 
 		Assert.assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{9}");
+		Assert.assertEquals(tokenStreams.getRegExp(true), "\\p{IsAlphabetic}{9}");
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void zip() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
 
 		final StringBuilder b = new StringBuilder();
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 1000; i++) {
 			for (int j = 0; j < 5; j++)
 				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
 			if (i % 2 == 0) {
@@ -63,9 +64,10 @@ public class TestTokenStreams {
 		}
 
 		Assert.assertEquals(tokenStreams.getRegExp(false), "\\d{5}(-\\d{4})?");
+		Assert.assertEquals(tokenStreams.getRegExp(true), "\\d{5}(-\\d{4})?");
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void doubleAlphaConstantLength() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
 
@@ -85,9 +87,10 @@ public class TestTokenStreams {
 		}
 
 		Assert.assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{7}|\\p{IsAlphabetic}{9}");
+		Assert.assertEquals(tokenStreams.getRegExp(true), "\\p{IsAlphabetic}{7}|\\p{IsAlphabetic}{9}");
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void multiAlphaConstantLength() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
 
@@ -102,9 +105,10 @@ public class TestTokenStreams {
 		}
 
 		Assert.assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{4,8}");
+		Assert.assertEquals(tokenStreams.getRegExp(true), "\\p{IsAlphabetic}{4,8}");
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void singleNumericConstantLength() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
 
@@ -117,9 +121,10 @@ public class TestTokenStreams {
 		}
 
 		Assert.assertEquals(tokenStreams.getRegExp(false), "\\d{9}");
+		Assert.assertEquals(tokenStreams.getRegExp(true), "\\d{9}");
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void doubleNumericConstantLength() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
 
@@ -139,9 +144,10 @@ public class TestTokenStreams {
 		}
 
 		Assert.assertEquals(tokenStreams.getRegExp(false), "\\d{7}|\\d{9}");
+		Assert.assertEquals(tokenStreams.getRegExp(true), "\\d{7}|\\d{9}");
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void adjacentNumericConstantLength() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
 
@@ -168,9 +174,10 @@ public class TestTokenStreams {
 		}
 
 		Assert.assertEquals(tokenStreams.getRegExp(false), "\\d{6,8}");
+		Assert.assertEquals(tokenStreams.getRegExp(true), "\\d{6,8}");
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testGUIDs() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
 		final String[] inputs = new String[] {
@@ -202,9 +209,55 @@ public class TestTokenStreams {
 			tokenStreams.track(input, 1);
 
 		Assert.assertEquals(tokenStreams.getRegExp(false), ".+");
+		Assert.assertEquals(tokenStreams.getRegExp(true), ".+");
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
+	public void testBlank() throws IOException {
+		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
+
+		for (int i = 0; i < 100; i++)
+			tokenStreams.track("", 1);
+
+		Assert.assertEquals(tokenStreams.getRegExp(false), "");
+		Assert.assertEquals(tokenStreams.getRegExp(true), "");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
+	public void testFitted() throws IOException {
+		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
+		final String[] inputs = new String[] {
+				"ICD9-059F80413212",
+				"ICD9-41EAA0EABF49",
+				"ICD9-C3EA2BA35F8B",
+				"ICD9-2DCB30D06683",
+				"ICD9-A7558425FA26",
+				"ICD9-2596BFE66FF7",
+				"ICD9-6846F6692E44",
+				"ICD9-691988220732",
+				"ICD9-32CF23181672",
+				"ICD9-43B774C9FB05",
+				"ICD9-99B869925ACD",
+				"ICD9-A9A4218D43FA",
+				"ICD9-DDE2F2ECF31F",
+				"ICD9-C95255D4C5CC",
+				"ICD9-41B937C628AB",
+				"ICD9-B032BAAB0476",
+				"ICD9-CD57EA5E83EB",
+				"ICD9-7981BA349E7B",
+				"ICD9-7C3136E276C2",
+				"ICD9-8572EBDEFD15",
+				"ICD9-d210209e3fc4"
+		};
+
+		for (String input : inputs)
+			tokenStreams.track(input, 1);
+
+		Assert.assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{3}\\d-[\\p{IsAlphabetic}\\d]{12}");
+		Assert.assertEquals(tokenStreams.getRegExp(true), "ICD9-[\\p{IsAlphabetic}\\d]{12}");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testOverflow() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(20);
 
@@ -212,6 +265,7 @@ public class TestTokenStreams {
 			tokenStreams.track(Utils.repeat('a', i), 1);
 
 		Assert.assertEquals(tokenStreams.getRegExp(false), ".+");
+		Assert.assertEquals(tokenStreams.getRegExp(true), ".+");
 		Assert.assertEquals(tokenStreams.getShapes().size(), 0);
 	}
 }

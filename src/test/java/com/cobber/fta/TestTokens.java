@@ -112,16 +112,21 @@ public class TestTokens {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testMerge() throws IOException, FTAException {
-		TokenStream ts1 = new TokenStream("16789", 1);
-		TokenStream ts2 = new TokenStream("01338", 2);
-		TokenStream ts3 = new TokenStream("22457", 3);
+		TokenStreams ts = new TokenStreams(10);
+		ts.track("16789", 1);
+		ts.track("01338", 2);
+		ts.track("22457", 3);
 
-		ts1.merge(ts2).merge(ts3);
-		Assert.assertEquals(ts1.getOccurrences(), 6);
-		Assert.assertEquals(ts1.getRegExp(false), "\\d{5}");
-		Assert.assertEquals(ts1.getRegExp(true), "\\d{5}");
+		Assert.assertEquals(ts.getSamples(), 6);
+		Assert.assertEquals(ts.getRegExp(false), "\\d{5}");
+		String fittedAnswer = "[0-2][1-26][3-47][358][7-9]";
+		Assert.assertEquals(ts.getRegExp(true), fittedAnswer);
 
-		Token[] tokens = ts1.getTokens();
+		Assert.assertTrue("16789".matches(fittedAnswer));
+		Assert.assertTrue("01338".matches(fittedAnswer));
+		Assert.assertTrue("22457".matches(fittedAnswer));
+
+		Token[] tokens = ts.getBest().getTokens();
 		for (int i = 0; i < tokens.length; i++) {
 			CharClassToken ccToken = (CharClassToken)tokens[i];
 			for (CharClassToken.Range range : ccToken.getRanges()) {
@@ -154,6 +159,7 @@ public class TestTokens {
 		ts.track("Hello", 3);
 
 		Assert.assertEquals(ts.getRegExp(false), ".+");
+		Assert.assertEquals(ts.getRegExp(true), ".+");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -237,17 +243,17 @@ public class TestTokens {
 		for (Map.Entry<String, TokenStream> entry : tokenStreams.getStreams().entrySet()) {
 			if ("XXX9-9999".equals(entry.getKey())) {
 				Assert.assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}{3}\\d-\\d{4}");
-				Assert.assertEquals(entry.getValue().getRegExp(true), "ICD9-\\d{4}");
+				Assert.assertEquals(entry.getValue().getRegExp(true), "ICD9-1[0-9]{2}[02468]");
 				Assert.assertEquals(entry.getValue().getOccurrences(), 500);
 			}
 			else if ("XXX99-9999".equals(entry.getKey())) {
 				Assert.assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}{3}\\d{2}-\\d{4}");
-				Assert.assertEquals(entry.getValue().getRegExp(true), "ICD10-\\d{4}");
+				Assert.assertEquals(entry.getValue().getRegExp(true), "ICD10-1[0-9]{2}[02468]");
 				Assert.assertEquals(entry.getValue().getOccurrences(), 500);
 			}
 			else if ("XXXX-9999".equals(entry.getKey())) {
 				Assert.assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}{4}-\\d{4}");
-				Assert.assertEquals(entry.getValue().getRegExp(true), "INCA-\\d{4}");
+				Assert.assertEquals(entry.getValue().getRegExp(true), "INCA-1[0-9]{2}[02468]");
 				Assert.assertEquals(entry.getValue().getOccurrences(), 500);
 			}
 			else if ("X".equals(entry.getKey())) {

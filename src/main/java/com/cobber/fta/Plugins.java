@@ -36,14 +36,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Plugins {
 	private final Map<String, LogicalType> registered = new HashMap<>();
-	private final static ObjectMapper mapper = new ObjectMapper();
+	private final static ObjectMapper MAPPER = new ObjectMapper();
 
 	public void registerPlugins(final Reader JSON, final String dataStreamName, final Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
-		registerPluginListCore(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, false);
+		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, false);
 	}
 
 	public void registerPlugins(final String JSON, final String dataStreamName, final Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
-		registerPluginListCore(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, false);
+		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, false);
 	}
 
 	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
@@ -51,7 +51,7 @@ public class Plugins {
 	}
 
 	protected void registerPluginsInternal(final Reader JSON, final String dataStreamName, final Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
-		registerPluginListCore(mapper.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, true);
+		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, true);
 	}
 
 	protected void registerPluginListCore(final List<PluginDefinition> plugins, final String dataStreamName, Locale locale, boolean internal) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
@@ -60,11 +60,11 @@ public class Plugins {
 
 		// Only register plugins that are valid for this locale
 		for (final PluginDefinition plugin : plugins) {
-			boolean register = plugin.isSupported(locale);
-
 			if (!internal)
 				if (plugin.priority < PluginDefinition.PRIORITY_EXTERNAL)
 					throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' has invalid priority, priority must be >= " + PluginDefinition.PRIORITY_EXTERNAL);
+
+			boolean register = plugin.isSupported(locale);
 
 			// Check to see if this plugin requires a mandatory hotword (and it is present)
 			if (register) {

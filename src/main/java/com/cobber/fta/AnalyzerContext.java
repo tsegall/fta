@@ -23,19 +23,24 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 public class AnalyzerContext {
 
 	/** The name of the data stream (e.g. the column of the CSV file) */
-	private String streamName;
+	private final String streamName;
 	/** Determines what to do when the Date field is ambiguous (i.e. we cannot determine which of the fields is the day or the month. */
 	private DateResolutionMode dateResolutionMode;
 	/** The name of the composite of which this stream is part of, for example the table name, if we are processing a column. */
-	private String compositeName;
+	private final String compositeName;
 	/** The name of all of the members of the composite (including this stream), for example the column names if we are processing a column of a table. */
-	private String[] compositeStreamNames;
+	private final String[] compositeStreamNames;
 
 	public AnalyzerContext(final String streamName, final DateResolutionMode dateResolutionMode, final String compositeName, final String[] compositeStreamNames) {
 		this.streamName = streamName == null ? "anonymous" : streamName;
 		this.dateResolutionMode = dateResolutionMode == null ? DateResolutionMode.None : dateResolutionMode;
 		this.compositeName = compositeName;
-		this.compositeStreamNames = compositeStreamNames;
+		if (compositeStreamNames == null)
+			this.compositeStreamNames = null;
+		else {
+			this.compositeStreamNames = new String[compositeStreamNames.length];
+			System.arraycopy(compositeStreamNames, 0, this.compositeStreamNames, 0, compositeStreamNames.length);
+		}
 	}
 
 	public String getStreamName() {
@@ -46,7 +51,7 @@ public class AnalyzerContext {
 		return dateResolutionMode;
 	}
 
-	public void setDateResolutionMode(DateResolutionMode dateResolutionMode) {
+	public void setDateResolutionMode(final DateResolutionMode dateResolutionMode) {
 		this.dateResolutionMode = dateResolutionMode;
 	}
 

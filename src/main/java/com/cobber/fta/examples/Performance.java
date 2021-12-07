@@ -29,7 +29,7 @@ public abstract class Performance {
 		analysis.setDefaultLogicalTypes(false);
 		analysis.setCollectStatistics(false);
 
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"11/25/2010 11:13:48 AM",  "9/20/2010 7:30:26 AM", "9/17/2010 2:27:58 PM", "12/14/2010 11:07:17 AM",
 				"10/13/2010 1:17:24 PM", "10/13/2010 1:15:04 PM", "10/13/2010 1:14:04 PM", "10/13/2010 1:13:04 PM",
 				"10/13/2010 1:12:04 PM","11/25/2010 11:13:38 AM", "11/25/2010 11:13:38 AM", "9/20/2010 7:31:26 AM",
