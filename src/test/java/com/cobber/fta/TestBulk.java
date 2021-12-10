@@ -188,7 +188,7 @@ public class TestBulk {
 
 	@Test(groups = { TestGroups.ALL })
 	public void dateField() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("dateBug");
+		final TextAnalyzer analysis = new TextAnalyzer("dateBug", DateResolutionMode.Auto);
 		final int SAMPLES = 40;
 
 		final HashMap<String, Long> basic = new HashMap<>();
@@ -202,11 +202,11 @@ public class TestBulk {
 		final TextAnalysisResult result = analysis.getResult();
 
 		Assert.assertEquals(result.getSampleCount(), SAMPLES);
-//		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
-//		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSSSSS");
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
-//		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
+		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{6}");
 		Assert.assertEquals(result.getMatchCount(), SAMPLES);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getCardinality(), 4);

@@ -699,7 +699,7 @@ public class DateTimeParser {
 			case '9':
 				value = value * 10 + ch - '0';
 				digits++;
-				if (digits > 4)
+				if (digits > 6)
 					return null;
 				break;
 
@@ -816,7 +816,7 @@ public class DateTimeParser {
 				break;
 
 			case '.':
-				// If are not processing the time component
+				// If we are not processing the time component
 				if ((!timeSeen || timeClosed)) {
 					if (dateComponent == 2)
 						return null;
