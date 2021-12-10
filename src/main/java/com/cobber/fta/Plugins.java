@@ -54,7 +54,7 @@ public class Plugins {
 		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, true);
 	}
 
-	protected void registerPluginListCore(final List<PluginDefinition> plugins, final String dataStreamName, Locale locale, boolean internal) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+	protected void registerPluginListCore(final List<PluginDefinition> plugins, final String dataStreamName, Locale locale, final boolean internal) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
 		if (locale == null)
 			locale = Locale.getDefault();
 

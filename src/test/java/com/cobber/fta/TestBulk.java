@@ -185,4 +185,30 @@ public class TestBulk {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getCardinality(), 9);
 	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void dateField() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("dateBug");
+		final int SAMPLES = 40;
+
+		final HashMap<String, Long> basic = new HashMap<>();
+		basic.put("1970-01-01 10:22:45.000000",10L);
+		basic.put("1970-01-01 04:10:32.000000",10L);
+		basic.put("1970-01-01 05:28:44.000000",10L);
+		basic.put("1970-01-01 05:26:45.000000",10L);
+
+		analysis.trainBulk(basic);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), SAMPLES);
+//		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
+//		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+//		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
+		Assert.assertEquals(result.getMatchCount(), SAMPLES);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getCardinality(), 4);
+	}
 }

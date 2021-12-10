@@ -588,6 +588,17 @@
 		"content": "/reference/ISO-3166-2.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
+		"priority": 141
+	},
+	{
+		"qualifier": "TIMEZONE.IANA",
+		"description": "IANA Time Zone (Olson)",
+		"signature": "AYkvNH/jCNxWHK4uLso7vEbNh5U=",
+		"headerRegExps": [ ".*(?i)(zone).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"content": "/reference/timezones.csv",
+		"contentType": "resource",
+		"backout": "[-_/A-Za-z]+",
 		"priority": 142
 	},
 	{

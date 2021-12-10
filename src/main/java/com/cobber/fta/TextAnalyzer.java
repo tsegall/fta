@@ -150,7 +150,7 @@ public class TextAnalyzer {
 
 	private int internalErrors;
 
-	private final String insufficient = "Insufficient digits in input (";
+	private final static String insufficient = "Insufficient digits in input (";
 
 	/**
 	 * An Escalation contains three regExps in order of increasing genericity.  So for example the following 3 regExps:
@@ -637,7 +637,7 @@ public class TextAnalyzer {
 	 *
 	 * @return The previous value of this parameter.
 	 */
-	public int setMaxInputLength(int maxInputLength) {
+	public int setMaxInputLength(final int maxInputLength) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot change maxInputLength once training has started");
 		if (maxInputLength < AnalysisConfig.MAX_INPUT_LENGTH_DEFAULT)
@@ -1610,7 +1610,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	void debug(String format, Object... arguments) {
+	void debug(final String format, final Object... arguments) {
 		if (analysisConfig.debug >= 2)
 			System.err.printf(format, arguments);
 	}
@@ -2514,8 +2514,8 @@ public class TextAnalyzer {
 		return best;
 	}
 
-	private final int EARLY_LONG_YYYYMMDD = 19000101;
-	private final int LATE_LONG_YYYYMMDD = 20410101;
+	private final static int EARLY_LONG_YYYYMMDD = 19000101;
+	private final static int LATE_LONG_YYYYMMDD = 20410101;
 
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
@@ -2636,7 +2636,7 @@ public class TextAnalyzer {
 
 				if (!matchPatternInfo.isLogicalType() && realSamples >= analysisConfig.detectWindow &&
 						(confidence < analysisConfig.threshold/100.0 ||
-								(numericWidening && outliers.size() != 0 && (new OutlierAnalysis(outliers, matchPatternInfo)).doubles == outliers.size()))) {
+								(numericWidening && !outliers.isEmpty() && (new OutlierAnalysis(outliers, matchPatternInfo)).doubles == outliers.size()))) {
 					// We thought it was an integer field, but on reflection it does not feel like it
 					conditionalBackoutToPattern(realSamples, matchPatternInfo);
 					confidence = (double) matchCount / realSamples;
@@ -2686,7 +2686,7 @@ public class TextAnalyzer {
 				confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 
 			// Fixup any likely enums
-			if (matchPatternInfo.typeQualifier == null && cardinalityUpper.size() < MAX_ENUM_SIZE && outliers.size() != 0 && outliers.size() < 10) {
+			if (matchPatternInfo.typeQualifier == null && cardinalityUpper.size() < MAX_ENUM_SIZE && !outliers.isEmpty() && outliers.size() < 10) {
 				boolean updated = false;
 
 				final Set<String> killSet = new HashSet<>();
@@ -2750,7 +2750,7 @@ public class TextAnalyzer {
 			}
 
 			// Need to evaluate if we got the type wrong
-			if (matchPatternInfo.typeQualifier == null && outliers.size() != 0 && matchPatternInfo.isAlphabetic() && realSamples >= reflectionSamples) {
+			if (matchPatternInfo.typeQualifier == null && !outliers.isEmpty() && matchPatternInfo.isAlphabetic() && realSamples >= reflectionSamples) {
 				conditionalBackoutToPattern(realSamples, matchPatternInfo);
 				confidence = (double) matchCount / realSamples;
 
@@ -2932,7 +2932,7 @@ public class TextAnalyzer {
 
 		// Only attempt to do uniqueness if we have not already been told the answer
 		if (factsCore.uniqueness == null) {
-			if (cardinality.size() == 0)
+			if (cardinality.isEmpty())
 				factsCore.uniqueness = 0.0;
 			// Can only generate uniqueness if we have not overflowed Max Cardinality
 			else if (cardinality.size() < analysisConfig.maxCardinality) {
