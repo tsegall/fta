@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.0.6
+ - ENH: Cope with dates with 7 decimals for the seconds.
+
 ### 5.0.5
  - ENH: Cope with dates with 6 decimals for the seconds - e.g. yyyy-MM-dd HH:mm:ss.SSSSSS.
 

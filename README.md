@@ -214,6 +214,7 @@ STREET_ADDRESS_EN|Street Address (English Language)|en
 STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
 STREET_MARKER_EN| Street Suffix (English Language)|en
 TELEPHONE|Telephone Number (Generic)|*
+TIMEZONE.IANA|IANA Time Zone (Olson)|*
 URI.URL|URL - see RFC 3986|*
 VIN|Vehicle Identification Number|*
 

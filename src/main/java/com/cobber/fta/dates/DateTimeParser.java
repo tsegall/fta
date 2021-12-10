@@ -699,7 +699,7 @@ public class DateTimeParser {
 			case '9':
 				value = value * 10 + ch - '0';
 				digits++;
-				if (digits > 6)
+				if (digits > 7)
 					return null;
 				break;
 

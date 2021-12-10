@@ -187,15 +187,15 @@ public class TestBulk {
 	}
 
 	@Test(groups = { TestGroups.ALL })
-	public void dateField() throws IOException, FTAException {
+	public void dateFieldDot6() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateBug", DateResolutionMode.Auto);
 		final int SAMPLES = 40;
 
 		final HashMap<String, Long> basic = new HashMap<>();
-		basic.put("1970-01-01 10:22:45.000000",10L);
-		basic.put("1970-01-01 04:10:32.000000",10L);
-		basic.put("1970-01-01 05:28:44.000000",10L);
-		basic.put("1970-01-01 05:26:45.000000",10L);
+		basic.put("1970-01-01 10:22:45.000000", 10L);
+		basic.put("1970-01-01 04:10:32.000000", 10L);
+		basic.put("1970-01-01 05:28:44.000000", 10L);
+		basic.put("1970-01-01 05:26:45.000000", 10L);
 
 		analysis.trainBulk(basic);
 
@@ -207,6 +207,32 @@ public class TestBulk {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{6}");
+		Assert.assertEquals(result.getMatchCount(), SAMPLES);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getCardinality(), 4);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void dateFieldDot7() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("dateBug", DateResolutionMode.Auto);
+		final int SAMPLES = 40;
+
+		final HashMap<String, Long> basic = new HashMap<>();
+		basic.put("2021-03-16 00:00:00.0000000", 10L);
+		basic.put("2021-07-26 00:00:00.0000000", 10L);
+		basic.put("2020-05-10 00:00:00.0000000", 10L);
+		basic.put("2021-02-08 00:00:00.0000000", 10L);
+
+		analysis.trainBulk(basic);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), SAMPLES);
+		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSSSSSS");
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{7}");
 		Assert.assertEquals(result.getMatchCount(), SAMPLES);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getCardinality(), 4);
