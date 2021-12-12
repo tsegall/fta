@@ -1,14 +1,17 @@
 
 ## Changes ##
 
+### 5.0.8
+ - ENH: Cope with dates with 9 decimals for the fractional seconds.
+
 ### 5.0.7
  - BUG: Cope with null entries in trainBulk when tracing, improve error reporting for rubbish argument to trace.
 
 ### 5.0.6
- - ENH: Cope with dates with 7 decimals for the seconds.
+ - ENH: Cope with dates with 7 decimals for the fractional seconds.
 
 ### 5.0.5
- - ENH: Cope with dates with 6 decimals for the seconds - e.g. yyyy-MM-dd HH:mm:ss.SSSSSS.
+ - ENH: Cope with dates with 6 decimals for the fractional seconds - e.g. yyyy-MM-dd HH:mm:ss.SSSSSS.
 
 ### 5.0.4
  - ENH: missed reference file for IANA Time Zones.
