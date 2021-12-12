@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.0.7
+ - BUG: Cope with null entries in trainBulk when tracing, improve error reporting for rubbish argument to trace.
+
 ### 5.0.6
  - ENH: Cope with dates with 7 decimals for the seconds.
 
@@ -13,7 +16,7 @@
 ### 5.0.3
  - INT: Cleaning up.
  - ENH: Bump google phone number.
- - ENH: Add support for IANA (Olson) Time Zones.
+ - ENH: Add new Semantic Type TIMEZONE.IANA - supports IANA (Olson) Time Zones.
 
 ### 5.0.2
  - INT: Cleaning up.

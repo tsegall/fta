@@ -50,6 +50,8 @@ public class Trace {
 
 		for (final String traceSetting : traceSettings) {
 			final String[] traceComponents = traceSetting.split("=");
+			if (traceComponents.length != 2)
+				throw new TraceException("Trace setting '" + traceSetting + "' is not of the form attribute=value");
 			switch (traceComponents[0]) {
 			case "enabled":
 				enabled = "true".equalsIgnoreCase(traceComponents[1]);
@@ -150,9 +152,15 @@ public class Trace {
 				else
 					traceWriter.write(",\n");
 
-				traceWriter.write("{ \"value\": \"");
-				traceWriter.write(jsonStringEncoder.quoteAsString(entry.getKey()));
-				traceWriter.write("\", \"count\": " + entry.getValue() + " }");
+				traceWriter.write("{ \"value\": ");
+				if (entry.getKey() == null)
+					traceWriter.write("null");
+				else {
+					traceWriter.write("\"");
+					traceWriter.write(jsonStringEncoder.quoteAsString(entry.getKey()));
+					traceWriter.write("\"");
+				}
+				traceWriter.write(", \"count\": " + entry.getValue() + " }");
 			}
 			traceWriter.write("\n]\n}\n");
 		} catch (IOException e) {

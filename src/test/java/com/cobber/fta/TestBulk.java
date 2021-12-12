@@ -188,7 +188,7 @@ public class TestBulk {
 
 	@Test(groups = { TestGroups.ALL })
 	public void dateFieldDot6() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("dateBug", DateResolutionMode.Auto);
+		final TextAnalyzer analysis = new TextAnalyzer("dateFieldDot6", DateResolutionMode.Auto);
 		final int SAMPLES = 40;
 
 		final HashMap<String, Long> basic = new HashMap<>();
@@ -214,14 +214,16 @@ public class TestBulk {
 
 	@Test(groups = { TestGroups.ALL })
 	public void dateFieldDot7() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("dateBug", DateResolutionMode.Auto);
-		final int SAMPLES = 40;
+		final TextAnalyzer analysis = new TextAnalyzer("dateFieldDot7", DateResolutionMode.Auto);
+		analysis.setTrace("enabled=true");
+		final int SAMPLES = 50;
 
 		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("2021-03-16 00:00:00.0000000", 10L);
 		basic.put("2021-07-26 00:00:00.0000000", 10L);
 		basic.put("2020-05-10 00:00:00.0000000", 10L);
 		basic.put("2021-02-08 00:00:00.0000000", 10L);
+		basic.put(null, 10L);
 
 		analysis.trainBulk(basic);
 
@@ -230,10 +232,10 @@ public class TestBulk {
 		Assert.assertEquals(result.getSampleCount(), SAMPLES);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSSSSSS");
-		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getNullCount(), 10);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{7}");
-		Assert.assertEquals(result.getMatchCount(), SAMPLES);
+		Assert.assertEquals(result.getMatchCount(), SAMPLES - result.getNullCount());
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getCardinality(), 4);
 	}
