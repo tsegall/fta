@@ -840,7 +840,37 @@
 		"maximum": "31",
 		"minSamples": 1000,
 		"minMaxPresent": true,
-		"priority": 280
+		"priority": 271
+	},
+	{
+		"qualifier": "EPOCH.MILLISECONDS",
+		"description": "Unix Epoch (Timestamp) - milliseconds",
+		"signature": "viRZbKzQgIqtkppDhoCbAFLXEag=",
+		"headerRegExps": [ ".*(?i)(timestamp)" ],
+		"headerRegExpConfidence": [ 100 ],
+		"regExpsToMatch": [ "\\d{10}" ],
+		"regExpReturned": "\\d{10}",
+		"isRegExpComplete": false,
+		"threshold": 99,
+		"baseType": "LONG",
+		"minimum": "0",
+		"maximum": "1672531199",
+		"priority": 272
+	},
+	{
+		"qualifier": "EPOCH.NANOSECONDS",
+		"description": "Unix Epoch (Timestamp) - nanoseconds",
+		"signature": "J4XCZXZ7BfO/UL8stzuwRwBHFgc=",
+		"headerRegExps": [ ".*(?i)(timestamp)" ],
+		"headerRegExpConfidence": [ 100 ],
+		"regExpsToMatch": [ "\\d{13}" ],
+		"regExpReturned": "\\d{13}",
+		"isRegExpComplete": false,
+		"threshold": 99,
+		"baseType": "LONG",
+		"minimum": "1000000000000",
+		"maximum": "1672531199000",
+		"priority": 273
 	},
 	{
 		"qualifier": "CHECKDIGIT.LUHN",

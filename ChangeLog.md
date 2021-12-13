@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.0.9
+ - ENH: Add new Semantic Types EPOCH.MILLISECONDS, EPOCH.NANOSECONDS
+
 ### 5.0.8
  - ENH: Cope with dates with 9 decimals for the fractional seconds.
 

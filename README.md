@@ -153,6 +153,8 @@ DAY.DIGITS|Day represented as a number (1-31)|*
 DAY.ABBR_&lt;Locale&gt;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
 DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
 EMAIL|Email Address|*
+EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
+EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
 GENDER.TEXT_DE|Gender (German Language)|de
 GENDER.TEXT_EN|Gender (English Language)|en
 GENDER.TEXT_ES|Gender (Spanish Language)|es

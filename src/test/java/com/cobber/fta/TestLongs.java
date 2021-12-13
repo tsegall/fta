@@ -743,6 +743,60 @@ public class TestLongs {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void testEpochMilliseconds() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Timestamp");
+
+		String[] samples = {
+				"1672431100", "1672431101", "1621458902", "1672432103", "1672431104", "1672432105",
+				"1672431206", "1672431107", "1672431108", "1672432009", "1670531110", "1672431111",
+				"1671533412", "1572431113", "1672431114", "1672431115", "1621458916", "1672432117",
+				"1672431118", "1672432119", "1672431220", "1672431121", "1672431122", "1672432023",
+				"1670531124", "1672431125", "1671533426", "1572531127"
+		};
+
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertTrue(result.isLogicalType());
+		Assert.assertEquals(result.getTypeQualifier(), "EPOCH.MILLISECONDS");
+		Assert.assertEquals(result.getRegExp(), "\\d{10}");
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getMatchCount(), samples.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void testEpochNanoseconds() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Timestamp");
+
+		String[] samples = {
+				"1672431100000", "1672431101000", "1621458902000", "1672432103000", "1672431104000", "1672432105000",
+				"1672431206000", "1672431107000", "1672431108000", "1672432009000", "1670531110000", "1672431111000",
+				"1671533412000", "1572431113000", "1672431114000", "1672431115000", "1621458916000", "1672432117000",
+				"1672431118000", "1672432119000", "1672431220000", "1672431121000", "1672431122000", "1672432023000",
+				"1670531124000", "1672431125000", "1671533426000", "1572531127000"
+		};
+
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getType(), FTAType.LONG);
+		Assert.assertTrue(result.isLogicalType());
+		Assert.assertEquals(result.getTypeQualifier(), "EPOCH.NANOSECONDS");
+		Assert.assertEquals(result.getRegExp(), "\\d{13}");
+		Assert.assertEquals(result.getSampleCount(), samples.length);
+		Assert.assertEquals(result.getMatchCount(), samples.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void paddedLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RowID");
 		final String inputs[] = new String[] {
