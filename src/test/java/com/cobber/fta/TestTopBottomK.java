@@ -20,6 +20,8 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -178,6 +180,51 @@ public class TestTopBottomK {
 
 		Assert.assertEquals(t.bottomK(), bottomK);
 		Assert.assertEquals(t.topK(), topK);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void basicBug() throws IOException {
+		final int SIZE = 20;
+		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
+		final HashSet<Integer> topK = new HashSet<>(Arrays.asList(new Integer[] {11, 12, 13, 14, 15, 16, 17, 18, 19, 20} ));
+		final HashSet<Integer> bottomK = new HashSet<>(Arrays.asList(new Integer[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10} ));
+
+		for (int i = 1; i <= SIZE; i++)
+			t.observe(i);
+
+		Assert.assertEquals(t.bottomK(), bottomK);
+		Assert.assertEquals(t.topK(), topK);
+
+		// So sets are equal - but we need also need to check that they are correctly ordered
+		// Should be lowest to highest
+		int current = Integer.MIN_VALUE;
+		for (Integer i : t.bottomK()) {
+			Assert.assertTrue(i >= current);
+			current = i;
+		}
+		current = Integer.MIN_VALUE;
+		// Should be lowest to highest
+		for (Integer i : t.topK()) {
+			Assert.assertTrue(i >= current);
+			current = i;
+		}
+
+		Assert.assertEquals(t.bottomKasString(), new TreeSet<>(t.bottomK().stream().map(x->x.toString()).collect(Collectors.toSet())));
+		Assert.assertEquals(t.topKasString(), new TreeSet<>(t.topK().stream().map(x->x.toString()).collect(Collectors.toSet())));
+
+		// So sets are equal - but we need also need to check that they are correctly ordered
+		// Should be lowest to highest
+		current = Integer.MIN_VALUE;
+		for (String i : t.bottomKasString()) {
+			Assert.assertTrue(Integer.valueOf(i) >= current);
+			current = Integer.valueOf(i);
+		}
+		current = Integer.MAX_VALUE;
+		// Should be highest to lowest
+		for (String i : t.topKasString()) {
+			Assert.assertTrue(Integer.valueOf(i) <= current);
+			current = Integer.valueOf(i);
+		}
 	}
 
 	@Test(groups = { TestGroups.ALL })

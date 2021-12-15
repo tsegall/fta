@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.1.0
+ - BUG: TopK/BottomK ordering is incorrect for non-strings.
+
 ### 5.0.9
  - ENH: Add new Semantic Types EPOCH.MILLISECONDS, EPOCH.NANOSECONDS
 

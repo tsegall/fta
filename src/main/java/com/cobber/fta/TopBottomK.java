@@ -15,12 +15,9 @@
  */
 package com.cobber.fta;
 
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * Class used to track the top and bottom K values.
@@ -81,7 +78,7 @@ public class TopBottomK<T extends Comparable<C>, C> {
 	}
 
 	/**
-	 * Return the top K values (ordered lowest to highest).
+	 * Return the top K values (ordered LOWEST to HIGHEST).
 	 * @return The top K values.
 	 */
 	public SortedSet<T> topK() {
@@ -101,7 +98,7 @@ public class TopBottomK<T extends Comparable<C>, C> {
 	}
 
 	/**
-	 * Return the bottom K values (ordered lowest to highest).
+	 * Return the bottom K values (ordered LOWEST to HIGHEST).
 	 * @return The bottom K values.
 	 */
 	public SortedSet<T> bottomK() {
@@ -121,21 +118,18 @@ public class TopBottomK<T extends Comparable<C>, C> {
 	}
 
 	/**
-	 * Return the top K values as Strings (ordered highest to lowest).
+	 * Return the top K values as Strings (ordered HIGHEST to LOWEST).
 	 * @return The top K values as Strings.
 	 */
 	public SortedSet<String> topKasString() {
-		final TreeSet<String> ret = new TreeSet<>(Collections.reverseOrder());
-		ret.addAll(topK().stream().map(x->x.toString()).collect(Collectors.toSet()));
-
-		return ret;
+		return new PreSortedSet((new TreeSet<>(topK())).descendingSet());
 	}
 
 	/**
-	 * Return the bottom K values as Strings (ordered lowest to highest).
+	 * Return the bottom K values as Strings (ordered LOWEST to HIGHEST).
 	 * @return The bottom K values as Strings.
 	 */
 	public SortedSet<String> bottomKasString() {
-		return new TreeSet<>(bottomK().stream().map(x->x.toString()).collect(Collectors.toSet()));
+		return new PreSortedSet(bottomK());
 	}
 }
