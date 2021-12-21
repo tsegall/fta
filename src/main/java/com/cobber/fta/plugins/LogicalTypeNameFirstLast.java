@@ -25,6 +25,7 @@ import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
+import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
@@ -38,8 +39,8 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "NAME.FIRST_LAST";
 	public static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]* \\p{IsAlphabetic}[- \\p{IsAlphabetic}]*";
 	private static final String BACKOUT = ".+";
-	private LogicalTypeCode logicalFirst;
-	private LogicalTypeCode logicalLast;
+	private LogicalTypeFiniteSimple logicalFirst;
+	private LogicalTypeFiniteSimple logicalLast;
 	private static final int MAX_FIRST_NAMES = 100;
 	private static final int MAX_LAST_NAMES = 100;
 	private Set<String> lastNames;
@@ -54,9 +55,9 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 		super.initialize(locale);
 
 		final PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
-		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
+		logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
 		final PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
-		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, Locale.getDefault());
+		logicalLast = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(pluginLast, Locale.getDefault());
 
 		lastNames = new HashSet<>();
 		firstNames = new HashSet<>();
@@ -153,7 +154,11 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 		if (lastNames.size() < MAX_LAST_NAMES)
 			lastNames.add(lastName);
 
-		return logicalFirst.isValid(firstName) || logicalLast.isValid(lastName);
+		// So if we only have a few names insist it is found, otherwise use the isValid() test
+		if (firstNames.size() < 10 ? logicalFirst.isMember(firstName) : logicalFirst.isValid(firstName))
+			return true;
+
+		return lastNames.size() < 10 ? logicalLast.isMember(lastName) : logicalLast.isValid(lastName);
 	}
 
 	@Override

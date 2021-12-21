@@ -86,7 +86,6 @@ public abstract class LogicalTypePersonName extends LogicalTypeFiniteSimple {
 			return false;
 		if (getMembers().contains(trimmedUpper))
 			return true;
-
 		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
 		for (int i = 0; i < trimmedUpper.length(); i++) {
 			if (!Character.isAlphabetic(trimmedUpper.charAt(i)))

@@ -374,7 +374,7 @@ Just one test
 `$ ./gradlew uploadArchives`
 
 Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and follow the instructions!!
-1. login to OSSRH available at https://oss.sonatype.org/
+1. login to OSSRH available at https://s01.oss.sonatype.org/
 2. Find and select the latest version in the Staging Repository
 3. Close the staging repository (wait until complete)
 4. Release the staging repository

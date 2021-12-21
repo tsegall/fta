@@ -1,4 +1,5 @@
 /*
+
  * Copyright 2017-2021 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -238,5 +239,34 @@ public class TestBulk {
 		Assert.assertEquals(result.getMatchCount(), SAMPLES - result.getNullCount());
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getCardinality(), 4);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void industrySemantic() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("industrySemantic", DateResolutionMode.Auto);
+		analysis.setTrace("enabled=true,samples=1000");
+		final int SAMPLES = 355;
+
+		final HashMap<String, Long> basic = new HashMap<>();
+		basic.put("General Business",200L);
+		basic.put(null,68L);
+		basic.put("Financial Services & Insurance",40L);
+		basic.put("Healthcare Insurance",31L);
+		basic.put("Media & Communication",7L);
+		basic.put("Electricity, Oil & Gas",6L);
+		basic.put("Insurance",3L);
+
+		analysis.trainBulk(basic);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), SAMPLES);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getMatchCount(), SAMPLES - result.getNullCount());
+		Assert.assertEquals(result.getNullCount(), 68);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+		Assert.assertEquals(result.getCardinality(), 6);
+		Assert.assertEquals(result.getTypeQualifier(), "INDUSTRY_EN");
 	}
 }

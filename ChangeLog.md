@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.1.1
+ - BUG: Name matching was a little greedy.
+
 ### 5.1.0
  - BUG: TopK/BottomK ordering is incorrect for non-strings.
 

@@ -58,6 +58,10 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		return memberSet.getMembers();
 	}
 
+	public boolean isMember(final String input) {
+		return getMembers().contains(input.trim().toUpperCase(locale));
+	}
+
 	@Override
 	public String nextRandom() {
 		String result;
