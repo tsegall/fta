@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.1.2
+ - ENH: Improve Industry, TimeZone, and Honorific matching.
+
 ### 5.1.1
  - BUG: Name matching was a little greedy.
 
