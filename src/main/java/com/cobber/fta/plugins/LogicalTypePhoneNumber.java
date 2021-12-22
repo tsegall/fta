@@ -29,6 +29,7 @@ import com.cobber.fta.token.TokenStreams;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 /**
  * Plugin to detect Phone Numbers.
@@ -37,23 +38,42 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 	public static final String SEMANTIC_TYPE = "TELEPHONE";
 	public static final String REGEXP = ".*";
 	private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-	private static String[] areaCodes = { "617", "781", "303", "970", "212" };
 
 	public LogicalTypePhoneNumber(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
+	// Get a random digit string of length len digits, first must not be a zero
+	private String getRandomDigits(final int len) {
+		StringBuilder b = new StringBuilder(len);
+		b.append(random.nextInt(9) + 1);
+		for (int i = 1; i < len; i++)
+			b.append(random.nextInt(10));
+		return b.toString();
+	}
+
 	@Override
 	public String nextRandom() {
-		final String base = "+1" + areaCodes[random.nextInt(areaCodes.length)];
-		while (true) {
-			final StringBuilder result = new StringBuilder(base);
-			for (int i = 0; i < 7; i++)
-				result.append(random.nextInt(10));
-			final String attempt = result.toString();
-			if (isValid(attempt))
-				return attempt;
+		String country = locale.getCountry();
+		PhoneNumber sample = phoneUtil.getExampleNumberForType(country, PhoneNumberUtil.PhoneNumberType.MOBILE);
+		if (sample == null)
+			return null;
+
+		String nationalSignificantNumber = phoneUtil.getNationalSignificantNumber(sample);
+
+		String attempt;
+		Phonenumber.PhoneNumber phoneNumber;
+		do {
+			attempt = getRandomDigits(nationalSignificantNumber.length());
+			try {
+				phoneNumber = phoneUtil.parse(attempt, country);
+			} catch (NumberParseException e) {
+				return null;
+			}
 		}
+		while (!phoneUtil.isValidNumber(phoneNumber));
+
+		return attempt;
 	}
 
 	@Override

@@ -164,7 +164,7 @@ public class TestStandalonePlugins {
 		final int SAMPLE_SIZE = 100;
 		final Locale[] locales = new Locale[] {
 				Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("de-CH"),
-				Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-UK"), Locale.forLanguageTag("en-AU"),
+				Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB"), Locale.forLanguageTag("en-AU"),
 				Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("es-MX"),
 				Locale.forLanguageTag("fr-CH"), Locale.forLanguageTag("fr-FR"),
 				Locale.forLanguageTag("it-CH"), Locale.forLanguageTag("it-IT"),

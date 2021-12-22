@@ -143,6 +143,10 @@ class FileProcessor {
 			parser.beginParsing(in);
 
 			header = parser.getRecordMetadata().headers();
+			if (header == null) {
+				logger.printf("ERROR: Cannot parse header for file '%s'%n", filename);
+				System.exit(1);
+			}
 			numFields = header.length;
 			if (options.col > numFields) {
 				logger.printf("ERROR: Column %d does not exist.  Only %d field(s) in input.%n", options.col, numFields);

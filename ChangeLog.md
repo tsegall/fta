@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.1.3
+ - ENH: Improve PhoneNumber plugin to support example generation for all locales
+
 ### 5.1.2
  - ENH: Improve Industry, TimeZone, and Honorific matching.
 
