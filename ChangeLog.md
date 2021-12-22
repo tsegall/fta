@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.1.4
+ - ENH: Bump Jackson Databind
+
 ### 5.1.3
  - ENH: Improve PhoneNumber plugin to support example generation for all locales
 
