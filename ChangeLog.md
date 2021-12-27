@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 5.1.5
+ - ENH: Bump Google phone number
+ - ENH: Bump Gradle version
+ - ENH: Add support for South African Province Names (STATE_PROVINCE.PROVINCE_ZA, STATE_PROVINCE.PROVINCE_NAME_ZA)
+
 ### 5.1.4
  - ENH: Bump Jackson Databind
 

@@ -339,6 +339,18 @@
 		"priority": 117
 	},
 	{
+		"qualifier": "STATE_PROVINCE.PROVINCE_ZA",
+		"description": "South African Province Code",
+		"signature": "nXFbO6uiHPMEct83mAPMsziYPtI=",
+		"validLocales": [ "en-ZA" ],
+		"headerRegExps": [ ".*(?i)(province).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"content": "/reference/za_provinces.csv",
+		"contentType": "resource",
+		"backout": "\\p{IsAlphabetic}{2}",
+		"priority": 118
+	},
+	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_CA",
 		"description": "Canadian Province Name",
 		"signature": "hiCNMWvc1MO99KTP8IaH1Fp3s3Y=",
@@ -545,6 +557,19 @@
 		"contentType": "resource",
 		"backout": "[-\\. \\p{IsAlphabetic}]+",
 		"priority": 135
+	},
+	{
+		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_ZA",
+		"description": "South African Province Name",
+		"signature": "79CAHTLod2FXV8V4iLZvXQ5r61M=",
+		"validLocales": [ "en-ZA" ],
+		"headerRegExps": [ ".*(?i)(province).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "[ \\p{IsAlphabetic}]+",
+		"content": "/reference/za_provinces_full.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 136
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",

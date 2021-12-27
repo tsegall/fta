@@ -341,7 +341,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 6.9.1`
+`$ gradle wrapper --gradle-version 6.9.2`
 
 `$ ./gradlew installDist`
 
