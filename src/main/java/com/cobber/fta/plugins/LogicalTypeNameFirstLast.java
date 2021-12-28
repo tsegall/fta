@@ -23,7 +23,6 @@ import java.util.Set;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.FactsTypeBased;
-import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.LogicalTypeInfinite;
@@ -54,17 +53,15 @@ public class LogicalTypeNameFirstLast extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		final PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
-		logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
-		final PluginDefinition pluginLast = new PluginDefinition("NAME.LAST", "com.cobber.fta.plugins.LogicalTypeLastName");
-		logicalLast = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(pluginLast, Locale.getDefault());
+		logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), locale);
+		logicalLast = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.LAST"), locale);
 
 		lastNames = new HashSet<>();
 		firstNames = new HashSet<>();
 
 		threshold = 95;
 
-		return true;
+		return logicalFirst.initialize(locale) && logicalLast.initialize(locale);
 	}
 
 	@Override

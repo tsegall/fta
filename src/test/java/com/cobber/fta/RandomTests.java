@@ -1116,7 +1116,7 @@ public class RandomTests {
 		Assert.assertEquals(result.getSampleCount(), 5 * iterations + 1);
 		Assert.assertEquals(result.getMatchCount(), 4 * iterations);
 		Assert.assertEquals(result.getNullCount(), iterations);
-		Assert.assertEquals(result.getCardinality(), 5);
+		Assert.assertEquals(result.getCardinality(), 4);
 		Assert.assertEquals(result.getRegExp(), "(?i)(FICTIONAL|PRIMARY|SECONDARY|TERTIARY)");
 		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getMatchCount() + 1));
 		Assert.assertEquals(result.getOutlierCount(), 1);

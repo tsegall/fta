@@ -74,13 +74,13 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 		super.initialize(locale);
 
 		final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
-		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
+		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, locale);
 		final PluginDefinition pluginLast = PluginDefinition.findByQualifier("NAME.LAST");
-		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, Locale.getDefault());
+		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, locale);
 
 		threshold = 95;
 
-		return true;
+		return logicalFirst.initialize(locale) && logicalLast.initialize(locale);
 	}
 
 	@Override

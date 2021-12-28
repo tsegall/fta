@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 5.1.6
+ - ENH: Add new Semantic Type NAME.MIDDLE, NAME.MIDDLE_INITIAL
+ - ENH: If two Semantic Types are equal in score, then break the tie first with the header, then with the priority
+ - INT: Use PluginDefinition.findByQualifier instead of new PluginDefinition(), initialize plugins
+
 ### 5.1.5
  - ENH: Bump Google phone number
  - ENH: Bump Gradle version

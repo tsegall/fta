@@ -180,6 +180,8 @@ NAME.FIRST|First Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.FIRST_LAST|Merged Name (First Last)|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.LAST|Last Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, nl, pr, pt
+NAME.MIDDLE|Middle Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
+NAME.MIDDLE_INITIAL|Middle Initial|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NATIONALITY_EN|Nationality|en
 POSTAL_CODE.POSTAL_CODE_AU|Postal Code|en-AU
 POSTAL_CODE.POSTAL_CODE_CA|Postal Code|en-CA
@@ -202,10 +204,12 @@ STATE_PROVINCE.STATE_NAME_US|US State Name|en-CA/en-US
 STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA/en-US/es-MX
 STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA/en-US
 STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
+STATE_PROVINCE.PROVINCE_ZA|South African Province Code|en-ZA
 STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name|en-CA/en-US
 STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
 STATE_PROVINCE.PROVINCE_NAME_ES|Spanish Province Name|es-ES
 STATE_PROVINCE.PROVINCE_NAME_NL|Dutch Province Name|nl-NL
+STATE_PROVINCE.PROVINCE_NAME_ZA|South African Province Name|en-ZA
 STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA/en-US/es-MX
 STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
 STATE_PROVINCE.REGION_FR|French Region Name|fr-FR

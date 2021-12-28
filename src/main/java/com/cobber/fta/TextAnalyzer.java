@@ -2480,9 +2480,16 @@ public class TextAnalyzer {
 			if ((!logical.isClosed() || cardinalityUpper.size() <= logical.getSize() + 2 + logical.getSize()/20)) {
 				final FiniteMatchResult result = checkFiniteSet(cardinalityUpper, outliers, logical);
 
-				// Choose the best score, if two scores the same then prefer the logical with the highest priority
-				if (result.matched() && ((result.score > bestScore) ||
-						(bestResult != null && result.score == bestScore && logical.getPriority() < bestResult.logical.getPriority()))) {
+				if (!result.matched() || result.score < bestScore)
+					continue;
+
+				// Choose the best score
+				if (result.score > bestScore ||
+						// If two scores the same then prefer the one with the higher header confidence
+						logical.getHeaderConfidence(context.getStreamName()) > bestResult.logical.getHeaderConfidence(context.getStreamName()) ||
+						// If two scores the same then prefer the logical with the highest priority
+						(logical.getHeaderConfidence(context.getStreamName()) == bestResult.logical.getHeaderConfidence(context.getStreamName()) &&
+						logical.getPriority() < bestResult.logical.getPriority())) {
 					bestResult = result;
 					bestScore = result.score;
 				}
@@ -2839,6 +2846,8 @@ public class TextAnalyzer {
 						for (final Map.Entry<String, Long> elt : sorted.entrySet()) {
 							if (elt.getValue() < 3 && elt.getKey().length() > 3 && distanceLevenshtein(elt.getKey(), cardinalityUpper.keySet()) <= 1) {
 								cardinalityUpper.remove(elt.getKey());
+								cardinality.entrySet()
+								  .removeIf(entry -> entry.getKey().equalsIgnoreCase(elt.getKey()));
 								outliers.put(elt.getKey(), elt.getValue());
 								matchCount -= elt.getValue();
 								confidence = (double) matchCount / realSamples;
@@ -2952,7 +2961,7 @@ public class TextAnalyzer {
 		}
 
 		TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(), locale,
-				matchCount, totalCount, sampleCount, nullCount,blankCount,
+				matchCount, totalCount, sampleCount, nullCount, blankCount,
 				matchPatternInfo, factsCore, facts, confidence, context.getDateResolutionMode(),
 				analysisConfig, cardinality, outliers, tokenStreams);
 

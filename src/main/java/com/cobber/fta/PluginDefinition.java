@@ -91,7 +91,8 @@ public class PluginDefinition {
 	public PluginDefinition() {
 	}
 
-	public PluginDefinition(final String qualifier, final String clazz) {
+	// Only use this for internal testing
+	protected PluginDefinition(final String qualifier, final String clazz) {
 		this.qualifier = qualifier;
 		this.clazz = clazz;
 	}

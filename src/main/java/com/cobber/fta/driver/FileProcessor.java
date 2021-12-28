@@ -105,7 +105,7 @@ class FileProcessor {
 				key = row[0];
 				name = row[1];
 				final String fieldValue = row[2];
-				final Long fieldCount = Long.valueOf(row[3]);
+				final Long fieldCount = Long.valueOf(row[3].trim());
 				if (previousKey == null || !key.equals(previousKey)) {
 					if (!bulkMap.isEmpty()) {
 						analyzer = new TextAnalyzer(previousName);

@@ -702,6 +702,30 @@
 		"priority": 173
 	},
 	{
+		"qualifier": "NAME.MIDDLE",
+		"description": "Middle Name",
+		"signature": "3UGho+Z93uiqi9L8+qjAQ1pb0qQ=",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeMiddleName",
+		"headerRegExps": [ ".*(?i)(middle).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
+		"priority": 174
+	},
+	{
+		"qualifier": "NAME.MIDDLE_INITIAL",
+		"description": "Middle Name",
+		"signature": "5AG+x37vekPMlggzCTebzFWovPc=",
+		"headerRegExps": [ ".*(?i)(middle).*|(?i)(mi)" ],
+		"headerRegExpConfidence": [ 100 ],
+		"regExpsToMatch": [ "\\p{IsAlphabetic}", "\\p{IsAlphabetic}\\." ],
+		"regExpReturned": "\\p{IsAlphabetic}\\.?",
+		"isRegExpComplete": true,
+		"threshold": 98,
+		"baseType": "STRING",
+		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
+		"priority": 175
+	},
+	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL",
 		"description": "Latitude (Decimal degrees)",
 		"signature": "5+1TLjdhcG8m3gVn0m/r6uLmh/Q=",
