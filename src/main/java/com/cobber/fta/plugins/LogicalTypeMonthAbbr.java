@@ -54,7 +54,7 @@ public class LogicalTypeMonthAbbr extends LogicalTypeFinite {
 	@Override
 	public String nextRandom() {
 		if (monthsArray == null)
-			monthsArray = months.toArray(new String[months.size()]);
+			monthsArray = months.toArray(new String[0]);
 
 		return monthsArray[random.nextInt(months.size())];
 	}

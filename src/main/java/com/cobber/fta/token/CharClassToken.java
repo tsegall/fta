@@ -30,18 +30,18 @@ import com.cobber.fta.core.RegExpSplitter;
  * We split the tracking into ASCII and non-ASCII characters to improve performance.
  */
 public class CharClassToken extends Token {
-	private int countASCII = 0;
+	private int countASCII;
 	private boolean[] seenASCII = new boolean[128];
 	private int lowASCII = Integer.MAX_VALUE;
 	private int highASCII = Integer.MIN_VALUE;
 	private int maxSetASCII = -1;
-	private int countNonASCII = 0;
+	private int countNonASCII;
 	private int minObserved = 1;
 	private int maxObserved = 1;
 	private Set<Character> seenNonASCII = new TreeSet<>();
-	private List<CharClassToken> children = null;
+	private List<CharClassToken> children;
 
-	CharClassToken(Token.Type type, char ch) {
+	public CharClassToken(final Token.Type type, final char ch) {
 		super(type);
 
 		if (ch < 128) {
@@ -62,12 +62,12 @@ public class CharClassToken extends Token {
 			maxSetASCII = 62;
 	}
 
-	private CharClassToken(Token.Type type) {
+	private CharClassToken(final Token.Type type) {
 		super(type);
 	}
 
 	@Override
-	CharClassToken newInstance() {
+	public CharClassToken newInstance() {
 		CharClassToken ret = new CharClassToken(this.type);
 		ret.countASCII = this.countASCII;
 		ret.lowASCII = this.lowASCII;
@@ -75,7 +75,7 @@ public class CharClassToken extends Token {
 		if (ret.lowASCII != Integer.MAX_VALUE)
 			System.arraycopy(seenASCII, this.lowASCII, ret.seenASCII, this.lowASCII, (this.highASCII - this.lowASCII) + 1);
 		ret.countNonASCII = this.countNonASCII;
-		ret.seenNonASCII = new TreeSet<Character>(this.seenNonASCII);
+		ret.seenNonASCII = new TreeSet<>(this.seenNonASCII);
 		ret.maxSetASCII = this.maxSetASCII;
 		ret.minObserved = this.minObserved;
 		ret.maxObserved = this.maxObserved;
@@ -100,9 +100,10 @@ public class CharClassToken extends Token {
 	}
 
 	public class Range implements Comparable<Range> {
-		char min;
-		char max;
-		Range(char ch) {
+		private char min;
+		private char max;
+
+		public Range(final char ch) {
 			this.min = ch;
 		}
 
@@ -131,7 +132,7 @@ public class CharClassToken extends Token {
 		}
 
 		@Override
-		public boolean equals(Object o) {
+		public boolean equals(final Object o) {
 			if (o == this)
 				return true;
 
@@ -144,7 +145,7 @@ public class CharClassToken extends Token {
 		}
 
 		@Override
-		public int compareTo(Range other) {
+		public int compareTo(final Range other) {
 			return min - other.min;
 		}
 	}
@@ -181,7 +182,7 @@ public class CharClassToken extends Token {
 		return ranges;
 	}
 
-	private String getSimpleRegExp(boolean enumerateRanges) {
+	private String getSimpleRegExp(final boolean enumerateRanges) {
 		Set<Character> chars = getFullSet();
 		if (chars.size() == 1)
 			return String.valueOf(chars.iterator().next());
@@ -197,14 +198,14 @@ public class CharClassToken extends Token {
 	}
 
 	@Override
-	String getRegExp(final boolean fitted) {
+	public String getRegExp(final boolean fitted) {
 		if (!fitted)
 			return type.getRegExp() + RegExpSplitter.qualify(minObserved, maxObserved);
 
 		StringBuilder b = new StringBuilder();
 
 		CharClassToken lastToken = null;
-		List<CharClassToken> kids = children != null ? children : Collections.singletonList(this);
+		List<CharClassToken> kids = children == null ? Collections.singletonList(this) : children;
 		boolean enumerateRanges = false;
 		// Coalesce multiple numerics or alphas into one
 		for (CharClassToken token : kids) {
@@ -227,7 +228,7 @@ public class CharClassToken extends Token {
 	}
 
 	@Override
-	public Token merge(Token o) {
+	public Token merge(final Token o) {
 		CharClassToken other = (CharClassToken)o;
 
 		children = null;
@@ -246,9 +247,9 @@ public class CharClassToken extends Token {
 	 * @param other The other Token to be coalesced.
 	 * @return The coalesced token.
 	 */
-	public CharClassToken coalesce(CharClassToken other) {
+	public CharClassToken coalesce(final CharClassToken other) {
 		if (children == null) {
-			children = new ArrayList<CharClassToken>();
+			children = new ArrayList<>();
 			children.add(this.newInstance());
 		}
 		children.add(other);
@@ -261,7 +262,7 @@ public class CharClassToken extends Token {
 		return this;
 	}
 
-	private void mergeObservations(CharClassToken other) {
+	private void mergeObservations(final CharClassToken other) {
 		// The only differing types we are prepared to merge is anything to ALPHADIGIT
 		if (!type.equals(other.type) && !type.equals(Token.Type.ALPHADIGIT_CLASS)) {
 			type = Token.Type.ALPHADIGIT_CLASS;

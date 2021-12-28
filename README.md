@@ -383,6 +383,15 @@ Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and f
 3. Close the staging repository (wait until complete)
 4. Release the staging repository
 
+## Executing ##
+Using FTA from the command line, list options:
+
+`$ build/install/fta/bin/fta --help`
+
+Report on a CSV file:
+
+`$ build/install/fta/bin/fta filename.csv`
+
 ## Java code ##
 
 Download the latest jars from the [MVN

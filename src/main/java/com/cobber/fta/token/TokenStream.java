@@ -479,7 +479,7 @@ public class TokenStream {
 
 		switch (token.type) {
 		case SIMPLE:
-			if (transitions.size() == 0)
+			if (transitions.isEmpty())
 				return false;
 			final char ch = token.getCh();
 			for (final Transition transition : transitions)
@@ -491,7 +491,7 @@ public class TokenStream {
 		case ALPHA_CLASS:
 		case DIGIT_CLASS:
 		case ALPHADIGIT_CLASS:
-			if (transitions.size() == 0)
+			if (transitions.isEmpty())
 				return false;
 			Boolean satisfied = null;
 			// We need to make sure that every range has a successful transition, there is no more

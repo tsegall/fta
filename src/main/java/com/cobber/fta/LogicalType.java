@@ -182,7 +182,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 		}
 
 		final byte[] signature = structureSignature.getBytes(StandardCharsets.UTF_8);
-		return Base64.getEncoder().encodeToString((md.digest(signature)));
+		return Base64.getEncoder().encodeToString(md.digest(signature));
 	}
 
 	/**

@@ -54,7 +54,7 @@ public class LogicalTypeDOYFull extends LogicalTypeFinite {
 	@Override
 	public String nextRandom() {
 		if (daysArray == null)
-			daysArray = days.toArray(new String[days.size()]);
+			daysArray = days.toArray(new String[0]);
 
 		return daysArray[random.nextInt(days.size())];
 	}

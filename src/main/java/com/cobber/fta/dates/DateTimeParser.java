@@ -155,11 +155,11 @@ public class DateTimeParser {
 
 		final int fractionOffset = formatString.indexOf("S{");
 		if (fractionOffset != -1) {
-			MinMax minMax = new MinMax(formatString.substring(fractionOffset, formatString.indexOf('}', fractionOffset)));
-			DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
-			.appendPattern(formatString.substring(0, fractionOffset))
-			.appendFraction(ChronoField.MICRO_OF_SECOND, minMax.getMin(), minMax.getMax(), false);
-			int upto = fractionOffset + minMax.getPatternLength();
+			final MinMax minMax = new MinMax(formatString.substring(fractionOffset, formatString.indexOf('}', fractionOffset)));
+			final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
+					.appendPattern(formatString.substring(0, fractionOffset))
+					.appendFraction(ChronoField.MICRO_OF_SECOND, minMax.getMin(), minMax.getMax(), false);
+			final int upto = fractionOffset + minMax.getPatternLength();
 			if (upto < formatString.length())
 				builder.appendPattern(formatString.substring(upto));
 			formatter = builder.toFormatter(locale);
@@ -365,7 +365,7 @@ public class DateTimeParser {
 								final int start = answerResult.dateFieldOffsets[i];
 								final int len = answerResult.dateFieldLengths[i];
 								final String was = answerBuffer.substring(start, start + len);
-								String replacement = null;
+								String replacement;
 								if ("MMM".equals(was))
 									replacement = "MMMM";
 								else if ("??".equals(was) || "HH".equals(was) || "hh".equals(was) || "dd".equals(was)) {
@@ -433,9 +433,8 @@ public class DateTimeParser {
 			return false;
 		if (month == 0 || month > 12)
 			return false;
-		if (day == 0 || day > monthDays[month])
-			return false;
-		return true;
+
+		return day != 0 && day <= monthDays[month];
 	}
 
 	private static String dateFormat(final int[] dateDigits, final char dateSeparator, final DateResolutionMode resolutionMode, final boolean yearKnown, final boolean yearFirst) {
@@ -520,14 +519,14 @@ public class DateTimeParser {
 		if (attempt != null)
 			return attempt;
 
-		if (locale.getLanguage().equals("ja"))
+		if ("ja".equals(locale.getLanguage()))
 			return passJapanese(trimmed, matcher, resolutionMode);
 
 		// Third and final pass is brute force by elimination
 		return passThree(trimmed, matcher, resolutionMode);
 	}
 
-	private char japaneseDateTimeMapper(char ch) {
+	private char japaneseDateTimeMapper(final char ch) {
 		switch (ch) {
 		case '年':
 			return 'y';
@@ -547,8 +546,8 @@ public class DateTimeParser {
 	}
 
 	private String passJapanese(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
-		int yearIndex = trimmed.indexOf('年');
-		int hourIndex = trimmed.indexOf('時');
+		final int yearIndex = trimmed.indexOf('年');
+		final int hourIndex = trimmed.indexOf('時');
 		if (yearIndex == -1 && hourIndex == -1)
 			return null;
 
@@ -556,12 +555,12 @@ public class DateTimeParser {
 		// Only hunt for AM/PM strings if we have seen the Hours character
 		if (hourIndex != -1)
 			for (final String s : LocaleInfo.getAMPMStrings(locale)) {
-				int find = trimmed.indexOf(s);
+				final int find = trimmed.indexOf(s);
 				if (find != -1)
 					input = Utils.replaceAt(trimmed, find, s.length(), "a");
 			}
 
-		int len = input.length();
+		final int len = input.length();
 		char workingOn = '¶';
 		int digits = 0;
 
@@ -603,10 +602,8 @@ public class DateTimeParser {
 			}
 		}
 
-		if (digits != 0) {
+		if (digits != 0)
 			result.append(Utils.repeat(workingOn, digits));
-			digits = 0;
-		}
 
 		result = result.reverse();
 
@@ -966,7 +963,6 @@ public class DateTimeParser {
 			timeDigits[timeComponent] = digits;
 			timePad[timeComponent] = padding;
 			digits = 0;
-			padding = 0;
 		}
 
 		if (digits != 0)
@@ -1145,7 +1141,7 @@ public class DateTimeParser {
 
 		if (components == 2) {
 			// We only support MM/yyyy, MM-yyyy, yyyy/MM, and yyyy-MM (and their corresponding single month variants)
-			int len = compressed.length();
+			final int len = compressed.length();
 			if (len != 9 && len != 6)
 				return null;
 			final int year = compressed.indexOf("d{4}");

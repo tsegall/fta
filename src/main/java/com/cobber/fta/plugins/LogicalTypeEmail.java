@@ -133,9 +133,9 @@ public class LogicalTypeEmail extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
 		final double is = (double)matchCount/realSamples;
-		if (matchCount != realSamples && getHeaderConfidence(dataStreamName) != 0)
-			return is + (1.0 - is)/2;
-		else
+		if (matchCount == realSamples || getHeaderConfidence(dataStreamName) == 0)
 			return is;
+
+		return is + (1.0 - is)/2;
 	}
 }

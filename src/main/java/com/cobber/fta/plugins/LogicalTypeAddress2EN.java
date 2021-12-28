@@ -49,7 +49,7 @@ public class LogicalTypeAddress2EN extends LogicalTypeInfinite {
 		case 1:
 			return "APARTMENT #" + random.nextInt(100);
 		case 2:
-			return "PO BOX " + String.valueOf(1000 + random.nextInt(1000));
+			return "PO BOX " + (1000 + random.nextInt(1000));
 		default:
 			return "";
 		}
@@ -87,10 +87,7 @@ public class LogicalTypeAddress2EN extends LogicalTypeInfinite {
 		final int length = input.length();
 
 		// Attempt to fail fast
-		if (length > 60)
-			return false;
-
-		return true;
+		return length <= 60;
 	}
 
 	@Override
@@ -99,7 +96,7 @@ public class LogicalTypeAddress2EN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (context.getCompositeStreamNames() == null)
 			return ".+";
 

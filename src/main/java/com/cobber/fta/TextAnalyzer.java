@@ -54,6 +54,8 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -151,6 +153,8 @@ public class TextAnalyzer {
 	private int internalErrors;
 
 	private final static String insufficient = "Insufficient digits in input (";
+
+	private Logger logger = null;
 
 	/**
 	 * An Escalation contains three regExps in order of increasing genericity.  So for example the following 3 regExps:
@@ -696,7 +700,6 @@ public class TextAnalyzer {
 
 		try {
 			if (patternInfo.id == KnownPatterns.ID.ID_SIGNED_LONG_TRAILING) {
-				digits = trimmed.length();
 				if (digits >= 2 && trimmed.charAt(digits - 1) == '-') {
 					l = -Long.parseLong(trimmed.substring(0, digits - 1));
 					digits--;
@@ -706,7 +709,6 @@ public class TextAnalyzer {
 			}
 			else {
 				l = Long.parseLong(trimmed);
-				digits = trimmed.length();
 				final char ch = trimmed.charAt(0);
 				if (ch == '-' || ch == '+')
 					digits--;
@@ -1097,7 +1099,7 @@ public class TextAnalyzer {
 
 		// If no trace options already set then pick them up from the environment (if set)
 		if (analysisConfig.traceOptions == null) {
-			String ftaTrace = System.getenv("FTA_TRACE");
+			final String ftaTrace = System.getenv("FTA_TRACE");
 			if (ftaTrace != null && !ftaTrace.isEmpty())
 				analysisConfig.traceOptions = ftaTrace;
 		}
@@ -1611,8 +1613,11 @@ public class TextAnalyzer {
 	}
 
 	void debug(final String format, final Object... arguments) {
-		if (analysisConfig.debug >= 2)
-			System.err.printf(format, arguments);
+		if (analysisConfig.debug >= 2) {
+			if (logger == null)
+				logger = LoggerFactory.getLogger("fta");
+			logger.debug(format, arguments);
+		}
 	}
 
 	/**
@@ -1710,14 +1715,11 @@ public class TextAnalyzer {
 					matchPatternInfo = new PatternInfo(null, result.getRegExp(), result.getType(), formatString, false, false, -1, -1, null, formatString);
 				}
 				catch (RuntimeException e) {
-					if (analysisConfig.debug != 0) {
-						System.err.println("Internal error: " + e.getMessage());
-						e.printStackTrace();
-					}
+				    debug("Internal error: {}", e);
 				}
 			}
 
-			debug("Type determination - initial, matchPatternInfo - %s%n", matchPatternInfo);
+			debug("Type determination - initial, matchPatternInfo - {}", matchPatternInfo);
 
 			// Check to see if it might be one of the known Infinite Logical Types
 			int i = 0;
@@ -1750,7 +1752,7 @@ public class TextAnalyzer {
 					if (currentConfidence > bestConfidence && currentConfidence >= logical.getThreshold()/100.0) {
 						matchPatternInfo = candidate;
 						bestConfidence = currentConfidence;
-						debug("Type determination - infinite type, matchPatternInfo - %s%n", matchPatternInfo);
+						debug("Type determination - infinite type, matchPatternInfo - {}", matchPatternInfo);
 					}
 				}
 				i++;
@@ -1761,7 +1763,7 @@ public class TextAnalyzer {
 				if (logical.acceptsBaseType(matchPatternInfo.getBaseType()) &&
 						logical.isMatch(matchPatternInfo.regexp)) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-					debug("Type determination - was '%s', matchPatternInfo - %s%n", matchPatternInfo.getBaseType(), matchPatternInfo);
+					debug("Type determination - was '{}', matchPatternInfo - {}", matchPatternInfo.getBaseType(), matchPatternInfo);
 					break;
 				}
 			}
@@ -1980,7 +1982,7 @@ public class TextAnalyzer {
 
 		outliers.clear();
 		outliersSmashed.clear();
-		debug("Type determination - backing out, matchPatternInfo - %s%n", matchPatternInfo);
+		debug("Type determination - backing out, matchPatternInfo - {}", matchPatternInfo);
 	}
 
 	/**
@@ -2132,7 +2134,7 @@ public class TextAnalyzer {
 							// S is a special case (unlike H, H, M, d) and is *NOT* handled by the default DateTimeFormatter.ofPattern
 							if (ditch == 'S') {
 								// The input is shorter than we expected so set the minimum length to 1 and then update
-								int len = result.timeFieldLengths[FRACTION_INDEX].getPatternLength();
+								final int len = result.timeFieldLengths[FRACTION_INDEX].getPatternLength();
 								result.timeFieldLengths[FRACTION_INDEX].setMin(1);
 								newFormatString = Utils.replaceAt(matchPatternInfo.format, offset, len,
 										result.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
@@ -2421,8 +2423,8 @@ public class TextAnalyzer {
 	 * Note: The input set is formatted according to the default formatter based on the type.
 	 */
 	private Set<String> alignFormat(final SortedSet<String> toFix, final FTAType type, final DateTimeFormatter dtf) {
-		Set<String> ret = new LinkedHashSet<>();
-		for (String s : toFix) {
+		final Set<String> ret = new LinkedHashSet<>();
+		for (final String s : toFix) {
 			switch (type) {
 			case LOCALDATE:
 				ret.add(LocalDate.parse(s).format(dtf));
@@ -2636,7 +2638,7 @@ public class TextAnalyzer {
 							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
-						debug("Type determination - was LONG, matchPatternInfo - %s%n", matchPatternInfo);
+						debug("Type determination - was LONG, matchPatternInfo - {}", matchPatternInfo);
 						break;
 					}
 				}
@@ -2879,7 +2881,7 @@ public class TextAnalyzer {
 
 			// Check to see whether the most common shape matches our regExp and test to see if this valid
 			if (!updated && tokenStreams.size() > 1) {
-				TokenStream best = tokenStreams.getBest();
+				final TokenStream best = tokenStreams.getBest();
 				final String regExp = best.getRegExp(false);
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.STRING) &&
@@ -2960,7 +2962,7 @@ public class TextAnalyzer {
 				factsCore.uniqueness = -1.0;
 		}
 
-		TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(), locale,
+		final TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(), locale,
 				matchCount, totalCount, sampleCount, nullCount, blankCount,
 				matchPatternInfo, factsCore, facts, confidence, context.getDateResolutionMode(),
 				analysisConfig, cardinality, outliers, tokenStreams);

@@ -24,17 +24,17 @@ public class AnyInputToken extends Token {
 	}
 
 	@Override
-	AnyInputToken newInstance() {
+	public AnyInputToken newInstance() {
 		return new AnyInputToken();
 	}
 
 	@Override
-	Token merge(final Token o) {
+	public Token merge(final Token o) {
 		return this;
 	}
 
 	@Override
-	int charactersUsed() {
+	public int charactersUsed() {
 		return -1;
 	}
 }

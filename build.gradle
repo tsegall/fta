@@ -34,11 +34,13 @@ buildscript {
   }
 }
 
-mainClassName = "com.cobber.fta.driver.Driver"
+application {
+    mainClass = "com.cobber.fta.driver.Driver"
+}
 
-group = "com.cobber.fta"
 archivesBaseName = "fta"
-version = "5.1.6"
+version = "5.1.7"
+group = "com.cobber.fta"
 
 repositories {
   mavenCentral()
@@ -139,8 +141,10 @@ dependencies {
   implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: "${googlePhoneNumberVersion}"
   implementation group: 'org.apache.commons', name: 'commons-text', version: "${commonsTextVersion}"
   implementation group: 'com.github.krraghavan', name: 'xeger', version: "${xegerVersion}"
+  implementation group: 'org.slf4j', name: 'slf4j-api', version: "${slf4jApiVersion}"
 
   testImplementation group: 'org.testng', name: 'testng', version: "${testngVersion}"
+  testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: "${logbackClassicVersion}"
 }
 
 distributions {

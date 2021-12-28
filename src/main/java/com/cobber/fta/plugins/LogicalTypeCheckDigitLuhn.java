@@ -25,21 +25,6 @@ import com.cobber.fta.PluginDefinition;
 public class LogicalTypeCheckDigitLuhn extends LogicalTypeCheckDigit {
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.LUHN";
 
-	public LogicalTypeCheckDigitLuhn(final PluginDefinition plugin) {
-		super(plugin, -1);
-		validator = new LuhnCheckDigit();
-	}
-
-	@Override
-	public boolean isValid(final String input) {
-		return input.length() >= 8 && input.length() < 30 && validator.isValid(input);
-	}
-
-	@Override
-	public String getQualifier() {
-		return SEMANTIC_TYPE;
-	}
-
 	private final static String[] SAMPLES = {
 			"5336066487174265", "5152085894236419", "6011352181320804", "4040861696988699",
 			"379263518411175", "349635067146996", "4094833846177296", "379798201251917",
@@ -73,6 +58,21 @@ public class LogicalTypeCheckDigitLuhn extends LogicalTypeCheckDigit {
 			"5235551440353082", "372400580525824", "3559303162212937", "38878618243393",
 			"343013941571498", "4591487432269328", "5188222030612322", "4826336448831711"
 	};
+
+	public LogicalTypeCheckDigitLuhn(final PluginDefinition plugin) {
+		super(plugin, -1);
+		validator = new LuhnCheckDigit();
+	}
+
+	@Override
+	public boolean isValid(final String input) {
+		return input.length() >= 8 && input.length() < 30 && validator.isValid(input);
+	}
+
+	@Override
+	public String getQualifier() {
+		return SEMANTIC_TYPE;
+	}
 
 	@Override
 	public String nextRandom() {

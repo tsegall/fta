@@ -55,6 +55,9 @@ public class LocaleInfo {
 
 	private static Map<String, String> unsupportedReason = new HashMap<>();
 
+	private LocaleInfo() {
+	}
+
 	class LengthComparator implements Comparator<String> {
 		@Override
 		public int compare(final String str1, final String str2) {

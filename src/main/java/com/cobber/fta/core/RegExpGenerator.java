@@ -314,7 +314,7 @@ public class RegExpGenerator {
 	 * @param onlyASCII If true then generate simple ASCII only regexps, otherwise utilize Unicode Character Classes.
 	 * @return The Automaton friendly RegExp.
 	 */
-	public static String toAutomatonRE(final String regExp, boolean onlyASCII) {
+	public static String toAutomatonRE(final String regExp, final boolean onlyASCII) {
 		final Map<String, String> mapping = onlyASCII ? toSimplifyASCII : toSimplifyFull;
 		String ret = regExp;
 

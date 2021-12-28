@@ -21,27 +21,27 @@ import com.cobber.fta.core.RegExpGenerator;
  * SimpleToken captures a single character (not digits or alphas).
  */
 public class SimpleToken extends Token {
-	SimpleToken(char ch) {
+	public SimpleToken(final char ch) {
 		super(Token.Type.SIMPLE, ch);
 	}
 
 	@Override
-	SimpleToken newInstance() {
+	public SimpleToken newInstance() {
 		return new SimpleToken(ch);
 	}
 
 	@Override
-	Token merge(final Token o) {
+	public Token merge(final Token o) {
 		return this;
 	}
 
 	@Override
-	int charactersUsed() {
+	public int charactersUsed() {
 		return 1;
 	}
 
 	@Override
-	String getRegExp(final boolean fitted) {
+	public String getRegExp(final boolean fitted) {
 		return RegExpGenerator.slosh(ch);
 	}
 }

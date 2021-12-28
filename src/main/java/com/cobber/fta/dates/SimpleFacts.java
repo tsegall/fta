@@ -28,15 +28,15 @@ public class SimpleFacts {
 		this.type = type;
 	}
 
-	String getMatcher() {
+	public String getMatcher() {
 		return matcher;
 	}
 
-	String getFormat() {
+	public String getFormat() {
 		return format;
 	}
 
-	FTAType getType() {
+	public FTAType getType() {
 		return type;
 	}
 }

@@ -51,11 +51,11 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 	private GenderData genderData = null;
 
 	static class GenderData {
-		private String header;
-		private String feminine;
-		private String masculine;
-		private String feminineShort;
-		private String masculineShort;
+		private final String header;
+		private final String feminine;
+		private final String masculine;
+		private final String feminineShort;
+		private final String masculineShort;
 
 		GenderData(final String header, final String feminine, final String masculine, final String feminineShort, final String masculineShort) {
 			this.header = header;

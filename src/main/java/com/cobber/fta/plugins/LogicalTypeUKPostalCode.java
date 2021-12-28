@@ -53,7 +53,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		String c = compressed.toString();
+		final String c = compressed.toString();
 		if (!c.startsWith("\\p{IsAlphabetic}"))
 			return false;
 
@@ -122,7 +122,7 @@ public class LogicalTypeUKPostalCode extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		final String upperDataStreamName = context.getStreamName().toUpperCase(Locale.ROOT);
 		return (cardinality.size() < 5 && !upperDataStreamName.contains("POST")) || (double)matchCount/realSamples < getThreshold()/100.0 ? REGEXP : null;
 	}

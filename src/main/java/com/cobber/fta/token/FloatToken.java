@@ -19,25 +19,25 @@ package com.cobber.fta.token;
  * FloatToken captures a signed or unsigned simple float (&lt;digits&gt;.&lt;digits&gt;).
  */
 public class FloatToken extends Token {
-	private boolean signed;
+	private final boolean signed;
 
-	FloatToken(boolean signed) {
+	public FloatToken(boolean signed) {
 		super(signed ? Token.Type.SIGNED_FLOAT : Token.Type.UNSIGNED_FLOAT);
 		this.signed = signed;
 	}
 
 	@Override
-	FloatToken newInstance() {
+	public FloatToken newInstance() {
 		return new FloatToken(signed);
 	}
 
 	@Override
-	Token merge(final Token o) {
+	public Token merge(final Token o) {
 		return this;
 	}
 
 	@Override
-	int charactersUsed() {
+	public int charactersUsed() {
 		return 1;
 	}
 }

@@ -58,26 +58,26 @@ public abstract class Token {
 		}
 	}
 
-	Token(Type type) {
+	public Token(final Type type) {
 		this.type = type;
 		this.ch = type.encoded;
 	}
 
-	Token(Type type, char ch) {
+	public Token(final Type type, final char ch) {
 		this.type = type;
 		this.ch = ch;
 	}
 
-	abstract Token merge(Token o);
-	abstract int charactersUsed();
-	abstract Token newInstance();
+	abstract public Token merge(Token o);
+	abstract public int charactersUsed();
+	abstract public Token newInstance();
 
 	/**
 	 * Get the Regular Expression for this Token.
 	 * @param fitted If true the Regular Expression should be a 'more closely fitted' Regular Expression.
 	 * @return The Java Regular Expression for this Token.
 	 */
-	String getRegExp(final boolean fitted) {
+	public String getRegExp(final boolean fitted) {
 		return type.getRegExp();
 	}
 

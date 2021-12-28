@@ -45,7 +45,7 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 
 	// Get a random digit string of length len digits, first must not be a zero
 	private String getRandomDigits(final int len) {
-		StringBuilder b = new StringBuilder(len);
+		final StringBuilder b = new StringBuilder(len);
 		b.append(random.nextInt(9) + 1);
 		for (int i = 1; i < len; i++)
 			b.append(random.nextInt(10));
@@ -54,12 +54,12 @@ public class LogicalTypePhoneNumber extends LogicalTypeInfinite  {
 
 	@Override
 	public String nextRandom() {
-		String country = locale.getCountry();
-		PhoneNumber sample = phoneUtil.getExampleNumberForType(country, PhoneNumberUtil.PhoneNumberType.MOBILE);
+		final String country = locale.getCountry();
+		final PhoneNumber sample = phoneUtil.getExampleNumberForType(country, PhoneNumberUtil.PhoneNumberType.MOBILE);
 		if (sample == null)
 			return null;
 
-		String nationalSignificantNumber = phoneUtil.getNationalSignificantNumber(sample);
+		final String nationalSignificantNumber = phoneUtil.getNationalSignificantNumber(sample);
 
 		String attempt;
 		Phonenumber.PhoneNumber phoneNumber;

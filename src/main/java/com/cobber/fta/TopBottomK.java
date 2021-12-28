@@ -122,7 +122,7 @@ public class TopBottomK<T extends Comparable<C>, C> {
 	 * @return The top K values as Strings.
 	 */
 	public SortedSet<String> topKasString() {
-		return new PreSortedSet((new TreeSet<>(topK())).descendingSet());
+		return new PreSortedSet(new TreeSet<>(topK()).descendingSet());
 	}
 
 	/**

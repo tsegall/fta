@@ -54,13 +54,13 @@ public class LogicalTypeIPV4Address extends LogicalTypeInfinite {
 	public String nextRandom() {
 		final StringBuilder ret = new StringBuilder(36);
 
-		ret.append(random.nextInt(256));
-		ret.append('.');
-		ret.append(random.nextInt(256));
-		ret.append('.');
-		ret.append(random.nextInt(256));
-		ret.append('.');
-		ret.append(random.nextInt(256));
+		ret.append(random.nextInt(256))
+			.append('.')
+			.append(random.nextInt(256))
+			.append('.')
+			.append(random.nextInt(256))
+			.append('.')
+			.append(random.nextInt(256));
 
 		return ret.toString();
 	}

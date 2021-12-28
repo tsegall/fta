@@ -26,26 +26,6 @@ import com.cobber.fta.core.FTAType;
 public class LogicalTypeCheckDigitIBAN extends LogicalTypeCheckDigit {
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.IBAN";
 
-	public LogicalTypeCheckDigitIBAN(final PluginDefinition plugin) {
-		super(plugin, -1);
-		validator = new IBANCheckDigit();
-	}
-
-	@Override
-	public String getRegExp() {
-		return "([A-Z]{2}[ \\-]?[0-9]{2})(?=(?:[ \\-]?[A-Z0-9]){9,30}$)((?:[ \\-]?[A-Z0-9]{3,5}){2,7})([ \\-]?[A-Z0-9]{1,3})";
-	}
-
-	@Override
-	public String getQualifier() {
-		return SEMANTIC_TYPE;
-	}
-
-	@Override
-	public FTAType getBaseType() {
-		return FTAType.STRING;
-	}
-
 	private final static String[] SAMPLES = {
 			"NL47CITI0080734537", "NL64ABNA0998881740", "NL37ARBN0845390481", "NL65CITC0881228753",
 			"NL37NNBA0477341969", "NL98INGB0618648542", "NL32UBSW0188040064", "NL10BNGH0364982365",
@@ -82,6 +62,26 @@ public class LogicalTypeCheckDigitIBAN extends LogicalTypeCheckDigit {
 			"TN5904018104004942712345", "TR320010009999901234567890", "UA903052992990004149123456789",
 			"AE460090000000123456789", "GB33BUKB20201555555555", "VG21PACG0000000123456789"
 	};
+
+	public LogicalTypeCheckDigitIBAN(final PluginDefinition plugin) {
+		super(plugin, -1);
+		validator = new IBANCheckDigit();
+	}
+
+	@Override
+	public String getRegExp() {
+		return "([A-Z]{2}[ \\-]?[0-9]{2})(?=(?:[ \\-]?[A-Z0-9]){9,30}$)((?:[ \\-]?[A-Z0-9]{3,5}){2,7})([ \\-]?[A-Z0-9]{1,3})";
+	}
+
+	@Override
+	public String getQualifier() {
+		return SEMANTIC_TYPE;
+	}
+
+	@Override
+	public FTAType getBaseType() {
+		return FTAType.STRING;
+	}
 
 	@Override
 	public String nextRandom() {

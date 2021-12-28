@@ -27,6 +27,15 @@ public class LogicalTypeCheckDigitABA extends LogicalTypeCheckDigit {
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.ABA";
 	public static final String REGEXP = "\\d{9}";
 
+	private final static String[] SAMPLES = {
+			"981140283", "989853459", "892328657", "781258896", "112551654",
+			"438364101", "806651255", "095050162", "505993780", "827776957",
+			"086820709", "609581894", "463724075", "167622596", "355856417",
+			"138265568", "479756862", "779880373", "750997751", "053438344",
+			"199436608", "391657007", "033359472", "465043929", "977684902",
+			"373527896"
+	};
+
 	public LogicalTypeCheckDigitABA(final PluginDefinition plugin) {
 		super(plugin, 9);
 		validator = new ABANumberCheckDigit();
@@ -46,15 +55,6 @@ public class LogicalTypeCheckDigitABA extends LogicalTypeCheckDigit {
 	public FTAType getBaseType() {
 		return FTAType.LONG;
 	}
-
-	private final static String[] SAMPLES = {
-			"981140283", "989853459", "892328657", "781258896", "112551654",
-			"438364101", "806651255", "095050162", "505993780", "827776957",
-			"086820709", "609581894", "463724075", "167622596", "355856417",
-			"138265568", "479756862", "779880373", "750997751", "053438344",
-			"199436608", "391657007", "033359472", "465043929", "977684902",
-			"373527896"
-	};
 
 	@Override
 	public String nextRandom() {

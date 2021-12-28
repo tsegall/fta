@@ -43,7 +43,7 @@ class DriverOptions {
 	protected int maxInputLength = -1;
 	protected int maxOutlierCardinality = -1;
 	protected int pluginThreshold = -1;
-	protected boolean pretty;
+	protected boolean pretty = true;
 	protected boolean pluginDefinition;
 	protected String pluginName;
 	protected DateResolutionMode resolutionMode = DateResolutionMode.Auto;

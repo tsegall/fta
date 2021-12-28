@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 5.1.7
+ - ENH: Switch to sl4j for logging (delay initialization unless debug is on)
+ - INT: Fixes courtesy of PMD
+
 ### 5.1.6
  - ENH: Add new Semantic Type NAME.MIDDLE, NAME.MIDDLE_INITIAL
  - ENH: If two Semantic Types are equal in score, then break the tie first with the header, then with the priority

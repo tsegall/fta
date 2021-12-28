@@ -539,8 +539,8 @@ public class TestLongs {
 				"95","83"
 		};
 
-		final NumberFormat nf = NumberFormat.getNumberInstance(locale);
-		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+//		final NumberFormat nf = NumberFormat.getNumberInstance(locale);
+//		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
 		for (final String sample : samples) {
 			analysis.train(sample);

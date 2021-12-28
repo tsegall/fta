@@ -29,19 +29,20 @@ import java.util.SortedSet;
  */
 public class PreSortedSet extends LinkedHashSet<String> implements SortedSet<String> {
 
-	PreSortedSet(Collection<?> c) {
-		for (Object o : c)
+	PreSortedSet(final Collection<?> c) {
+		super();
+		for (final Object o : c)
 			this.add(o.toString());
 	}
 
 	@Override
 	public String first() {
-		throw new java.lang.UnsupportedOperationException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String last() {
-		throw new java.lang.UnsupportedOperationException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -50,17 +51,17 @@ public class PreSortedSet extends LinkedHashSet<String> implements SortedSet<Str
 	}
 
 	@Override
-	public SortedSet<String> subSet(String fromElement, String toElement) {
-		throw new java.lang.UnsupportedOperationException();
+	public SortedSet<String> subSet(final String fromElement, final String toElement) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public SortedSet<String> headSet(String toElement) {
-		throw new java.lang.UnsupportedOperationException();
+	public SortedSet<String> headSet(final String toElement) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public SortedSet<String> tailSet(String fromElement) {
-		throw new java.lang.UnsupportedOperationException();
+	public SortedSet<String> tailSet(final String fromElement) {
+		throw new UnsupportedOperationException();
 	}
 }

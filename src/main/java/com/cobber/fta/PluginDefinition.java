@@ -126,7 +126,7 @@ public class PluginDefinition {
 		synchronized (PluginDefinition.class) {
 			if (builtinPlugins == null) {
 				try (BufferedReader JSON = new BufferedReader(new InputStreamReader(PluginDefinition.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
-					builtinPlugins = (new ObjectMapper()).readValue(JSON, new TypeReference<List<PluginDefinition>>(){});
+					builtinPlugins = new ObjectMapper().readValue(JSON, new TypeReference<List<PluginDefinition>>(){});
 				} catch (Exception e) {
 					throw new InternalErrorException("Issues with reference plugins file", e);
 				}
