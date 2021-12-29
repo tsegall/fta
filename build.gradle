@@ -39,7 +39,7 @@ application {
 }
 
 archivesBaseName = "fta"
-version = "5.1.7"
+version = "5.1.8"
 group = "com.cobber.fta"
 
 repositories {

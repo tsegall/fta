@@ -825,6 +825,16 @@
 		"priority": 230
 	},
 	{
+		"qualifier": "IDENTITY.SSN_FR",
+		"description": "Social Security Number (France)",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeIdentitySSN_FR",
+		"signature": "XfMSrETk0IIuromCYEfRy+k212s=",
+		"validLocales": [ "fr-FR" ],
+		"headerRegExps": [ ".*(?i)(SSN)" ],
+		"headerRegExpConfidence": [ 95 ],
+		"priority": 231
+	},
+	{
 		"qualifier": "LANGUAGE.ISO-639-2",
 		"description": "Language code - ISO 639, two character",
 		"signature": "oh7DsTF4qDUm+o+JPy7jAIoU+1Y=",

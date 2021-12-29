@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.1.8
+ - ENH: Add new Semantic Type IDENTITY.SSN_FR (locale fr-FR)
+
 ### 5.1.7
  - ENH: Switch to sl4j for logging (delay initialization unless debug is on)
  - INT: Fixes courtesy of PMD

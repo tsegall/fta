@@ -166,6 +166,7 @@ GENDER.TEXT_TR|Gender (Turkish Language)|tr
 GENDER.TEXT_JP|Gender (Japanese Language)|ja
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
+IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 INDUSTRY_EN|Industry Name|en
 IPADDRESS.IPV4|IP V4 Address|*
 IPADDRESS.IPV6|IP V6 Address|*
@@ -189,7 +190,7 @@ POSTAL_CODE.POSTAL_CODE_NL|Postal Code|nl-NL
 POSTAL_CODE.POSTAL_CODE_UK|Postal Code|en-UK
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA/en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA/en-US
-SSN|Social Security Number|en-US
+SSN|Social Security Number (US)|en-US
 STATE_PROVINCE.COUNTY_UK|United Kingdom County|en-UK
 STATE_PROVINCE.COUNTY_US|US County|en-US
 STATE_PROVINCE.STATE_AU|Australian State Code|en-AU
