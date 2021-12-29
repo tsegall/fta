@@ -2,6 +2,9 @@
 ## Changes ##
 
 ### 5.1.8
+ - INT: Back down slf4j to latest stable
+
+### 5.1.8
  - ENH: Add new Semantic Type IDENTITY.SSN_FR (locale fr-FR)
 
 ### 5.1.7
