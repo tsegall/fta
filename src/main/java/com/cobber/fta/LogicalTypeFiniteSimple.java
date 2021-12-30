@@ -24,6 +24,9 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.token.TokenStreams;
 
+/**
+ * All Logical Types that are backed by a simple list typically subclass this abstract class.
+ */
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected String qualifier;
 	protected String regexp;

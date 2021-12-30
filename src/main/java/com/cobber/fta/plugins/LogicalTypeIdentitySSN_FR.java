@@ -40,6 +40,15 @@ public class LogicalTypeIdentitySSN_FR extends LogicalTypeInfinite {
 		super(plugin);
 	}
 
+	private boolean isValidChar(final char ch, final int offset) {
+		if (Character.isDigit(ch))
+			return true;
+		if (offset != 6)
+			return false;
+
+		return ch == 'A' || ch == 'a' || ch == 'B' || ch == 'b';
+	}
+
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		if (trimmed.length() - charCounts[' '] != SSN_LENGTH)
@@ -50,8 +59,7 @@ public class LogicalTypeIdentitySSN_FR extends LogicalTypeInfinite {
 			char ch = trimmed.charAt(i);
 			if (ch == ' ')
 				continue;
-			if (!Character.isDigit(ch) ||
-					(offset == 6 && (ch == 'A' || ch == 'a' || ch == 'B' || ch == 'b')))
+			if (!isValidChar(ch, offset))
 				return false;
 			offset++;
 		}
@@ -70,7 +78,7 @@ public class LogicalTypeIdentitySSN_FR extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		String inseeStr = String.format("%d%02d%02d%02d%03d%03d",
+		final String inseeStr = String.format("%d%02d%02d%02d%03d%03d",
 				random.nextInt(2) + 1,			// Gender
 				random.nextInt(100),			// Birth Year
 				random.nextInt(12) + 1,			// Birth Month
@@ -78,9 +86,9 @@ public class LogicalTypeIdentitySSN_FR extends LogicalTypeInfinite {
 				random.nextInt(990) + 1,		// City (001 - 990)
 				random.nextInt(999) + 1);		// Certificate (001 - 999)
 
-		long insee = Long.parseLong(inseeStr);
+		final long insee = Long.parseLong(inseeStr);
 
-		long check = 97 - insee % 97;
+		final long check = 97 - insee % 97;
 
 		return inseeStr + String.format(" %02d", check);
 	}
@@ -107,36 +115,39 @@ public class LogicalTypeIdentitySSN_FR extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input) {
-		StringBuilder b = new StringBuilder(SSN_LENGTH);
+		final StringBuilder b = new StringBuilder(SSN_LENGTH);
 
+		int offset = 0;
 		for (int i = 0; i < input.length(); i++) {
 			char ch = input.charAt(i);
 			if (ch == ' ')
 				continue;
-			if (!Character.isDigit(ch))
+			if (!isValidChar(ch, offset))
 				return false;
 			b.append(ch);
+			offset++;
 		}
 
 		if (b.length() != SSN_LENGTH)
 			return false;
 
-		char gender = b.charAt(0);					// 0
+		final char gender = b.charAt(0);
 		if (gender != '1' && gender != '7' && gender != '2' && gender != '8')
 			return false;
 
-		String year = b.substring(1, 3);			// 1 (2)
+		// year = b.substring(1, 3);
 
-		long month = Long.parseLong(b.substring(3, 5));
+		final long month = Long.parseLong(b.substring(3, 5));
 		// Birth month (-12) or 20 if not known
 		if ((month < 1 || month > 12) && month != 20)
 			return false;
 
-		String place = b.substring(5, 10);			// 5 (5)
-		char corsica = b.charAt(6);
-		boolean corsicaA = corsica == 'A' || corsica == 'a';
-		boolean corsicaB = corsica == 'B' || corsica == 'b';
-		String departmentStr = b.substring(5,7);
+		// place = b.substring(5, 10);
+
+		final char corsica = b.charAt(6);
+		final boolean corsicaA = corsica == 'A' || corsica == 'a';
+		final boolean corsicaB = corsica == 'B' || corsica == 'b';
+		final String departmentStr = b.substring(5,7);
 		// Department is 1-95 (except 20), + 2A, 2B (Corsica) + 971-976 (Overseas)
 		if (corsicaA || corsicaB) {
 			b.setCharAt(6, '0');
@@ -145,20 +156,21 @@ public class LogicalTypeIdentitySSN_FR extends LogicalTypeInfinite {
 		}
 		else {
 			long department = Long.parseLong(departmentStr);
-			if (department == 0 || department == 20 || department == 96 || department >= 98)
+			if (department == 0 || department == 20 || department == 96 || department == 98)
 				return false;
 			if (department == 97) {
 				department = department * 10 + (b.charAt(7) - '0');
 				if (department < 971 || department > 976)
 					return false;
 			}
+			// Department of 99 - means born overseas, the next three digits are the code for the birth country
 		}
 
-		String certificate = b.substring(10, 13);	// 10 (3)
+		final String certificate = b.substring(10, 13);
 		if ("000".equals(certificate))
 			return false;
 
-		long key = Long.parseLong(b.substring(13, 15));
+		final long key = Long.parseLong(b.substring(13, 15));
 		if (key > 97)
 			return false;
 

@@ -167,6 +167,8 @@ GENDER.TEXT_JP|Gender (Japanese Language)|ja
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
+IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH
+IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number|ja
 INDUSTRY_EN|Industry Name|en
 IPADDRESS.IPV4|IP V4 Address|*
 IPADDRESS.IPV6|IP V6 Address|*
@@ -188,34 +190,34 @@ POSTAL_CODE.POSTAL_CODE_AU|Postal Code|en-AU
 POSTAL_CODE.POSTAL_CODE_CA|Postal Code|en-CA
 POSTAL_CODE.POSTAL_CODE_NL|Postal Code|nl-NL
 POSTAL_CODE.POSTAL_CODE_UK|Postal Code|en-UK
-POSTAL_CODE.ZIP5_US|Postal Code|en-CA/en-US
-POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA/en-US
+POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
+POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US
 STATE_PROVINCE.COUNTY_UK|United Kingdom County|en-UK
 STATE_PROVINCE.COUNTY_US|US County|en-US
 STATE_PROVINCE.STATE_AU|Australian State Code|en-AU
 STATE_PROVINCE.STATE_BR|Brazilian State Code|pt-BR
 STATE_PROVINCE.STATE_MX|Mexican State Code|es-MX
-STATE_PROVINCE.STATE_US|US State Code|en-CA/en-US
+STATE_PROVINCE.STATE_US|US State Code|en-CA, en-US
 STATE_PROVINCE.STATE_NAME_AU|Australian State Name|en-AU
 STATE_PROVINCE.STATE_NAME_BR|Brazilian State Name|pt-BR
 STATE_PROVINCE.STATE_NAME_DE|German State Name|de-DE
 STATE_PROVINCE.STATE_NAME_MX|Mexican State Name|es-MX
-STATE_PROVINCE.STATE_NAME_US|US State Name|en-CA/en-US
-STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA/en-US/es-MX
-STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA/en-US
+STATE_PROVINCE.STATE_NAME_US|US State Name|en-CA, en-US
+STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA, en-US, es-MX
+STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA, en-US
 STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
 STATE_PROVINCE.PROVINCE_ZA|South African Province Code|en-ZA
-STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name|en-CA/en-US
+STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name|en-CA, en-US
 STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
 STATE_PROVINCE.PROVINCE_NAME_ES|Spanish Province Name|es-ES
 STATE_PROVINCE.PROVINCE_NAME_NL|Dutch Province Name|nl-NL
 STATE_PROVINCE.PROVINCE_NAME_ZA|South African Province Name|en-ZA
-STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA/en-US/es-MX
+STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA, en-US, es-MX
 STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
 STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
-STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH,fr-CH,it-CH
-STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH,fr-CH,it-CH
+STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH, fr-CH, it-CH
+STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH, fr-CH, it-CH
 STATE_PROVINCE.PREFECTURE_NAME_JP|Japanese Prefecture Name|ja
 STREET_ADDRESS_EN|Street Address (English Language)|en
 STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en

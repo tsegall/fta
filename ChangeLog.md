@@ -1,7 +1,12 @@
 
 ## Changes ##
 
-### 5.1.8
+### 5.1.10
+ - ENH: Add new Semantic Type IDENTITY.INDIVIDUAL_NUMBER_JA (Individual Number / My Number) (locale ja)
+ - ENH: Add new Semantic Type IDENTITY.SSN_CH (AVH / Sozialversicherungsnummer) (locale de-CH, fr-CH ,it-CH)
+ - BUG: Fix SSN_FR for folks born overseas and those born in Corsica
+
+### 5.1.9
  - INT: Back down slf4j to latest stable
 
 ### 5.1.8

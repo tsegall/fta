@@ -27,6 +27,8 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.plugins.LogicalTypeIdentityIN_JA;
+import com.cobber.fta.plugins.LogicalTypeIdentitySSN_CH;
 import com.cobber.fta.plugins.LogicalTypeIdentitySSN_FR;
 
 public class TestIdentity {
@@ -165,6 +167,7 @@ public class TestIdentity {
 		analysis.setLocale(Locale.forLanguageTag("fr-FR"));
 
 		final String[] inputs = new String[] {
+				"186022A215325 23", "1691099352470 01", "2741147566941 55",
 				"1870364431266 17", "1620750699385 24", "1910926856381 09", "2350193443182 66",
 				"1021130154849 54", "1060633581206 43", "2790148853457 33", "1910585591722 44",
 				"2031245436518 70", "1011076339993 38", "2980845336004 29", "1991181413900 71",
@@ -198,5 +201,81 @@ public class TestIdentity {
 		}
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicIN_JA() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicIN_JA");
+		analysis.setLocale(Locale.forLanguageTag("ja"));
 
+		final String[] inputs = new String[] {
+				"182635424142", "159527866110", "468078079802", "466664186321",
+				"846926702714", "685980008501", "160213060470", "330630040728",
+				"756862498647", "819877682969", "632954948346", "179173299818",
+				"157373192780", "190773997172", "207636877550", "315173957620",
+				"306078820740", "868285059291", "255412548963", "189995188363",
+				"812906182895", "645408744459", "668972804372", "907328637257"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getCardinality(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeIdentityIN_JA.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA").signature);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicSSN_CH() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicSSN_CH");
+		analysis.setLocale(Locale.forLanguageTag("de-CH"));
+
+		final String[] inputs = new String[] {
+				"756.3830.7985.38", "756.9709.5787.13", "756.7932.0847.28", "756.4391.6683.84",
+				"756.8608.5554.50", "756.7755.7020.90", "756.8274.6040.25", "756.4546.3052.49",
+				"756.0087.4496.40", "756.8921.5663.62", "756.3643.3750.32", "756.9704.5745.81",
+				"756.8231.4185.59", "756.5332.8407.84", "756.3740.5065.68", "756.0897.8077.08",
+				"756.9155.5542.00", "756.3226.0924.93", "756.5132.5619.19", "756.1788.1037.25",
+				"756.2753.6875.23", "756.7287.4292.98", "756.2605.0921.61", "756.8724.8722.88"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getCardinality(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeIdentitySSN_CH.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_CH").signature);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+		}
+	}
 }

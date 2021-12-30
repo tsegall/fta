@@ -29,6 +29,8 @@ import com.cobber.fta.token.TokenStreams;
 
 /**
  * All Logical Types are derived from this abstract class.
+ * This LTRandom interface provides a {@link LTRandom#nextRandom} which will create a new valid example of the
+ *  Semantic Type.
  */
 public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	protected PluginDefinition defn;

@@ -835,6 +835,26 @@
 		"priority": 231
 	},
 	{
+		"qualifier": "IDENTITY.INDIVIDUAL_NUMBER_JA",
+		"description": "Individual Number / My Number (Japan)",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeIdentityIN_JA",
+		"signature": "E4/GpH4/SwmWNCLlNswUgL6qWBU=",
+		"validLocales": [ "ja" ],
+		"headerRegExps": [ ".*(?i)(Individual Number|My Number|個人番号|マイナンバー|kojin bangō|mai nambā)" ],
+		"headerRegExpConfidence": [ 95 ],
+		"priority": 232
+	},
+	{
+		"qualifier": "IDENTITY.SSN_CH",
+		"description": "AVH Number / SSN (Switzerland)",
+		"clazz": "com.cobber.fta.plugins.LogicalTypeIdentitySSN_CH",
+		"signature": "JuS68p5mp6n2dvAxNDEuS7S4f9U=",
+		"validLocales": [ "de-CH", "fr-CH" ,"it-CH" ],
+		"headerRegExps": [ ".*(?i)(AVH|SSN|Sozialversicherungsnummer)" ],
+		"headerRegExpConfidence": [ 95 ],
+		"priority": 233
+	},
+	{
 		"qualifier": "LANGUAGE.ISO-639-2",
 		"description": "Language code - ISO 639, two character",
 		"signature": "oh7DsTF4qDUm+o+JPy7jAIoU+1Y=",
