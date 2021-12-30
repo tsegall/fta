@@ -90,8 +90,10 @@ dependencies {
   implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: "${googlePhoneNumberVersion}"
   implementation group: 'org.apache.commons', name: 'commons-text', version: "${commonsTextVersion}"
   implementation group: 'com.github.krraghavan', name: 'xeger', version: "${xegerVersion}"
+  implementation group: 'org.slf4j', name: 'slf4j-api', version: "${slf4jApiVersion}"
 
   testImplementation group: 'org.testng', name: 'testng', version: "${testngVersion}"
+  testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: "${logbackClassicVersion}"
 }
 
 jacocoTestReport {
