@@ -168,7 +168,7 @@ GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH
-IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number|ja
+IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number (Japan)|ja
 INDUSTRY_EN|Industry Name|en
 IPADDRESS.IPV4|IP V4 Address|*
 IPADDRESS.IPV6|IP V6 Address|*
