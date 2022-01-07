@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.1.12
+ - BUG: totalSamples should have been a long.
+
 ### 5.1.11
  - INT: Update copyright year + add a few missing copyrights
  - ENH: Add an example of using the AnalyzerContext

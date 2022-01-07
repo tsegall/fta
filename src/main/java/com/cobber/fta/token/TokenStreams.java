@@ -31,7 +31,7 @@ public class TokenStreams {
 	private final Map<String, TokenStream> tokenStreams = new HashMap<>();
 	private final int maxStreams;
 	private boolean anyShape;
-	private int totalSamples;
+	private long totalSamples;
 
 	/**
 	 * Construct a TokenStreams object with a maximum number of TokenStream instances.
