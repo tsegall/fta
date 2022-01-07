@@ -15,21 +15,27 @@
  */
 package com.cobber.fta.examples;
 
+import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
-public abstract class Trivial {
+public abstract class Contextual {
 
 	public static void main(final String[] args) throws FTAException {
 
-		// Use simple constructor - for more improved detection provide an AnalyzerContext (see Contextual example).
-		final TextAnalyzer analysis = new TextAnalyzer("Age");
+		// Providing a broader context and not just the column name will improve detection in a set of use cases
+		AnalyzerContext context = new AnalyzerContext("MI", DateResolutionMode.None, "ClientDetails", new String[] { "First", "MI", "Last" });
 
-		analysis.train("12");
-		analysis.train("62");
-		analysis.train("21");
-		analysis.train("37");
+		final TextAnalyzer analysis = new TextAnalyzer(context);
+
+		analysis.train("W");
+		analysis.train("B");
+		analysis.train("D");
+		analysis.train("R");
+		analysis.train("E");
+		analysis.train("f");
 
 		final TextAnalysisResult result = analysis.getResult();
 

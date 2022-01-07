@@ -23,6 +23,7 @@ class Trivial {
 
         public static void main(String args[]) throws FTAException {
 
+                // Use simple constructor - for improved detection you can provide an AnalyzerContext (see Contextual example)
                 TextAnalyzer analysis = new TextAnalyzer("Age");
 
                 analysis.train("12");

@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 5.1.11
+ - INT: Update copyright year + add a few missing copyrights
+ - ENH: Add an example of using the AnalyzerContext
+
 ### 5.1.10
  - ENH: Add new Semantic Type IDENTITY.INDIVIDUAL_NUMBER_JA (Individual Number / My Number) (locale ja)
  - ENH: Add new Semantic Type IDENTITY.SSN_CH (AVH / Sozialversicherungsnummer) (locale de-CH, fr-CH ,it-CH)
