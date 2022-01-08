@@ -23,6 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,6 +37,7 @@ import com.cobber.fta.plugins.LogicalTypeUSZipPlus4;
 
 public class RandomTests {
 	private static final SecureRandom random = new SecureRandom();
+	private Logger logger = LoggerFactory.getLogger("fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void getReflectionSampleSize() throws IOException, FTAException {
@@ -1856,7 +1859,7 @@ public class RandomTests {
 			this.stream = stream;
 			this.answer = answer;
 			analysis = new TextAnalyzer("AnalysisThread" + id);
-			//			System.out.printf("Thread %s: created, Stream: type: %s, length: %d\n",
+			//			logger.debug("Thread %s: created, Stream: type: %s, length: %d.",
 			//					this.id, decoder[this.streamType], this.stream.length);
 		}
 
@@ -1882,7 +1885,7 @@ public class RandomTests {
 				e.printStackTrace();
 			}
 
-			//			System.out.printf("Thread %s: exiting, duration %d\n", id, System.currentTimeMillis() - start);
+			// logger.debug("Thread %s: exiting, duration %d.", id, System.currentTimeMillis() - start);
 		}
 	}
 
@@ -2119,7 +2122,7 @@ public class RandomTests {
 				max = String.valueOf(high);
 			}
 
-			System.err.printf("Iter: %d, length: %d, start: %d, sticky: %b, re: %s, floats: %d, firstFloat: %d, strings: %d, errorCase: %s\n",
+			logger.debug("Iter: %d, length: %d, start: %d, sticky: %b, re: %s, floats: %d, firstFloat: %d, strings: %d, errorCase: %s\n",
 					iter, length, low, sticky, re, floats, firstFloat, strings, sticky ? errorCaseDecode[errorCase] : "Variable");
 
 			final TextAnalysisResult result = analysis.getResult();

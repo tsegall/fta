@@ -1458,7 +1458,7 @@ public class TextAnalyzer {
 					candidateCounts[c]++;
 			}
 			catch (Exception e) {
-				System.err.printf("Plugin: %s, issue: %s%n", logical.getQualifier(), e.getMessage());
+				logger.error("Plugin: %s, issue: %s.", logical.getQualifier(), e.getMessage());
 			}
 			c++;
 		}

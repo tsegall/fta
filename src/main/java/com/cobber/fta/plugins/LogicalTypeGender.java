@@ -39,6 +39,7 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 	public static final String SEMANTIC_TYPE = "GENDER.TEXT_";
 	private static final String BACKOUT_REGEX = "\\p{IsAlphabetic}+";
 
+	// Map from ISO language to Gender Data for the language
 	private static Map<String, GenderData> allGenderData = new HashMap<>();
 
 	private static Map<String, Set<String>> allMembers = new HashMap<>();
@@ -67,13 +68,23 @@ public class LogicalTypeGender extends LogicalTypeFinite {
 	}
 
 	static {
+		// German
 		allGenderData.put("DE", new GenderData(".*(?i)(Gender|Geschlecht)", "WEIBLICH", "MÄNNLICH", "W", "M"));
+		// English
 		allGenderData.put("EN", new GenderData(".*(?i)(Gender|sex)", "FEMALE", "MALE", "F", "M"));
+		// Spanish
 		allGenderData.put("ES", new GenderData(".*(?i)(Gender|Sexo)", "FEMENINO", "MASCULINO", "F", "M"));
-		allGenderData.put("IT", new GenderData(".*(?i)(Gender|genere)", "FEMMINA", "MASCHIO", "F", "M"));
+		// French
 		allGenderData.put("FR", new GenderData(".*(?i)(Gender|Genre|Sexe)", "FEMME", "HOMME", "F", "H"));
+		// Italian
+		allGenderData.put("IT", new GenderData(".*(?i)(Gender|genere)", "FEMMINA", "MASCHIO", "F", "M"));
+		// Malaysian
+		allGenderData.put("MS", new GenderData(".*(?i)(Gender|jantina)", "PEREMPUAN", "LELAKI", "P", "L"));
+		// Dutch
 		allGenderData.put("NL", new GenderData(".*(?i)(Gender|Geslach|Geslacht)", "VROUWELIJK", "MANNELIJK", "V", "M"));
+		// Portuguese
 		allGenderData.put("PT", new GenderData(".*(?i)(Gender|Gênero)", "FEMININO", "MASCULINO", "F", "M"));
+		// Turkish
 		allGenderData.put("TR", new GenderData(".*(?i)(Gender)", "KADIN", "ERKEK", "K", "E"));
 
 		// Belgium covered by DE, FR, and NL

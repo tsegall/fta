@@ -519,20 +519,21 @@ public class DateTimeParser {
 		if (attempt != null)
 			return attempt;
 
-		if ("ja".equals(locale.getLanguage()))
-			return passJapanese(trimmed, matcher, resolutionMode);
+		if ("ja".equals(locale.getLanguage()) || "cn".equals(locale.getLanguage()))
+			return passJaCn(trimmed, matcher, resolutionMode);
 
 		// Third and final pass is brute force by elimination
 		return passThree(trimmed, matcher, resolutionMode);
 	}
 
-	private char japaneseDateTimeMapper(final char ch) {
+	private char jaCnDateTimeMapper(final char ch) {
 		switch (ch) {
 		case '年':
 			return 'y';
 		case  '月':
 			return 'M';
 		case '日':
+		case '号':
 			return 'd';
 		case '時':
 			return 'H';
@@ -545,7 +546,7 @@ public class DateTimeParser {
 		}
 	}
 
-	private String passJapanese(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
+	private String passJaCn(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
 		final int yearIndex = trimmed.indexOf('年');
 		final int hourIndex = trimmed.indexOf('時');
 		if (yearIndex == -1 && hourIndex == -1)
@@ -576,6 +577,7 @@ public class DateTimeParser {
 			case '月':
 			// Day
 			case '日':
+			case '号':
 			// Hour
 			case '時':
 			// Minute
@@ -587,7 +589,7 @@ public class DateTimeParser {
 					digits = 0;
 				}
 				result.append(ch);
-				workingOn = japaneseDateTimeMapper(ch);
+				workingOn = jaCnDateTimeMapper(ch);
 				break;
 			case 'd':
 				digits++;

@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,6 +43,7 @@ import com.cobber.fta.core.RegExpSplitter;
 
 public class TestLongs {
 	private static final SecureRandom random = new SecureRandom();
+	private Logger logger = LoggerFactory.getLogger("fta");
 
 	public void _variableLengthPositiveInteger(final boolean collectStatistics) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("_variableLengthPositiveInteger");
@@ -577,19 +580,19 @@ public class TestLongs {
 			final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 
 			if (!simple) {
-				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+				logger.debug("Skipping locale '%s' as it does not use Arabic numerals.", locale);
 				continue;
 			}
 
 			final Calendar cal = GregorianCalendar.getInstance(locale);
 			if (!(cal instanceof GregorianCalendar)) {
-				System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
+				logger.debug("Skipping locale '%s' as it does not use the Gregorian calendar.", locale);
 				continue;
 			}
 
 			String variant = locale.getDisplayVariant();
 			if (variant != null && !variant.isEmpty()) {
-				System.err.printf("Skipping locale '%s' as it has a Variant: '%s'.\n", locale, variant);
+				logger.debug("Skipping locale '%s' as it has a Variant: '%s'.", locale, variant);
 				continue;
 			}
 
@@ -599,14 +602,14 @@ public class TestLongs {
 			final String negSuffix = TestUtils.getNegativeSuffix(locale);
 
 			if (negPrefix.isEmpty() && negSuffix.isEmpty()) {
-				System.err.printf("Skipping locale '%s' as it has empty negPrefix and negSuffix.\n", locale);
+				logger.debug("Skipping locale '%s' as it has empty negPrefix and negSuffix.", locale);
 				continue;
 			}
 
 			final Set<String> samples = new HashSet<>();
 			final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 
-//			System.err.printf("Locale '%s', negPrefix: %s, negSuffix: %s, min: %s, max: %s, absMax:%s.\n",
+//			logger.debuf("Locale '%s', negPrefix: %s, negSuffix: %s, min: %s, max: %s, absMax:%s.",
 //					locale.toLanguageTag(), negPrefix, negSuffix, String.valueOf(min), String.valueOf(max), absMinValue);
 
 			try {
@@ -636,7 +639,7 @@ public class TestLongs {
 				}
 			}
 			catch (FTAUnsupportedLocaleException e) {
-				System.err.printf("Skipping locale '%s' = reason: '%s'.\n", locale, e.getMessage());
+				logger.debug("Skipping locale '%s' = reason: '%s'.", locale, e.getMessage());
 				continue;
 			}
 
@@ -1172,7 +1175,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertNull(result.getTypeQualifier());
-		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
+		logger.info("Count %d, duration: %dms, ~%d per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes
 		//   - Count 109980301, duration: 10003ms, ~10,998,030 per second

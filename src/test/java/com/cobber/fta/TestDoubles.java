@@ -31,6 +31,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,6 +43,7 @@ import com.cobber.fta.core.RegExpGenerator;
 
 public class TestDoubles {
 	private static final SecureRandom random = new SecureRandom();
+	private Logger logger = LoggerFactory.getLogger("fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void positiveDouble() throws IOException, FTAException {
@@ -813,13 +816,13 @@ public class TestDoubles {
 		final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 
 		if (!simple) {
-			System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+			logger.debug("Skipping locale '%s' as it does not use Arabic numerals.", locale);
 			return true;
 		}
 
 		final Calendar cal = GregorianCalendar.getInstance(locale);
 		if (!(cal instanceof GregorianCalendar)) {
-			System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
+			logger.debug("Skipping locale '%s' as it does not use the Gregorian calendar.", locale);
 			return true;
 		}
 
@@ -829,19 +832,19 @@ public class TestDoubles {
 		final String negSuffix = TestUtils.getNegativeSuffix(locale);
 
 		if (negPrefix.isEmpty() && negSuffix.isEmpty()) {
-			System.err.printf("Skipping locale '%s' as it has empty negPrefix and negSuffix.\n", locale);
+			logger.debug("Skipping locale '%s' as it has empty negPrefix and negSuffix.", locale);
 			return true;
 		}
 
 		String variant = locale.getDisplayVariant();
 		if (variant != null && !variant.isEmpty()) {
-			System.err.printf("Skipping locale '%s' as it has a Variant: '%s'.\n", locale, variant);
+			logger.debug("Skipping locale '%s' as it has a Variant: '%s'.", locale, variant);
 			return true;
 		}
 
 		final String getExponentSeparator = formatSymbols.getExponentSeparator();
 		if (getExponentSeparator.length() != 1 || (getExponentSeparator.charAt(0) != 'e' &&  getExponentSeparator.charAt(0) != 'E')) {
-			System.err.printf("Skipping locale '%s' as it uses a non-standard exponentiaion character (%s).\n", locale, getExponentSeparator);
+			logger.debug("Skipping locale '%s' as it uses a non-standard exponentiaion character (%s).", locale, getExponentSeparator);
 			return true;
 		}
 
@@ -876,7 +879,7 @@ public class TestDoubles {
 				}
 			}
 			catch (FTAUnsupportedLocaleException e) {
-				System.err.printf("Skipping locale '%s' = reason: '%s'.\n", locale, e.getMessage());
+				logger.debug("Skipping locale '%s' = reason: '%s'.", locale, e.getMessage());
 				continue;
 			}
 
@@ -953,7 +956,7 @@ public class TestDoubles {
 			analysis.setLocale(locale);
 
 			if ("Arabic".contentEquals(locale.getDisplayLanguage())) {
-				System.err.printf("Skipping Arabic locale '%s' - broken on Java 8.\n", locale.toLanguageTag());
+				logger.debug("Skipping Arabic locale '%s' - broken on Java 8.", locale.toLanguageTag());
 				continue;
 			}
 
@@ -962,7 +965,7 @@ public class TestDoubles {
 
 
 			if ("mk-MK".contentEquals(locale.toLanguageTag())) {
-				System.err.printf("Skipping locale '%s' as it has trailing neg suffix.\n", locale);
+				logger.debug("Skipping locale '%s' as it has trailing neg suffix.", locale);
 				continue;
 			}
 
@@ -971,7 +974,7 @@ public class TestDoubles {
 
 			String grp = RegExpGenerator.slosh(formatSymbols.getGroupingSeparator());
 			String dec = RegExpGenerator.slosh(formatSymbols.getDecimalSeparator());
-			System.err.printf("Locale '%s', grouping: '%s', decimal: '%s', negPrefix: '%s', negSuffix: '%s'.\n",
+			logger.debug("Locale '%s', grouping: '%s', decimal: '%s', negPrefix: '%s', negSuffix: '%s'.",
 					locale, grp, dec, TestUtils.getNegativePrefix(locale), TestUtils.getNegativeSuffix(locale));
 
 			final Set<String> samples = new HashSet<>();
@@ -990,7 +993,7 @@ public class TestDoubles {
 				}
 			}
 			catch (FTAUnsupportedLocaleException e) {
-				System.err.printf("Skipping locale '%s' = reason: '%s'.\n", locale, e.getMessage());
+				logger.debug("Skipping locale '%s' = reason: '%s'.", locale, e.getMessage());
 				continue;
 			}
 
@@ -1010,7 +1013,7 @@ public class TestDoubles {
 
 			for (final String sample : samples) {
 				if (!sample.matches(actualRegExp))
-					System.err.println("Locale: " + locale + " " + sample + " " + actualRegExp);
+					logger.debug("Locale: " + locale + " " + sample + " " + actualRegExp);
 				Assert.assertTrue(sample.matches(actualRegExp), "Locale: " + locale + " " + sample + " " + actualRegExp);
 			}
 		}
@@ -1323,7 +1326,7 @@ public class TestDoubles {
 				}
 			}
 			catch (FTAUnsupportedLocaleException e) {
-				System.err.printf("Skipping locale '%s' = reason: '%s'.\n", locale, e.getMessage());
+				logger.debug("Skipping locale '%s' = reason: '%s'.", locale, e.getMessage());
 				continue;
 			}
 
@@ -1332,7 +1335,7 @@ public class TestDoubles {
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 			final String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
 			final String dec = formatSymbols.getDecimalSeparator() == '.' ? "\\." : "" + formatSymbols.getDecimalSeparator();
-//			System.err.printf("Locale: '%s', grp = '%s',  dec = '%s'.%n", locale, grp, dec);
+//			logger.debug("Locale: '%s', grp = '%s',  dec = '%s'.", locale, grp, dec);
 
 			if (result.getType() == FTAType.STRING) {
 				for (String s : samples)
@@ -1419,17 +1422,17 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 			final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 
 			if (!simple) {
-				System.err.printf("Skipping locale '%s' as it does not use Arabic numerals.\n", locale);
+				logger.debug("Skipping locale '%s' as it does not use Arabic numerals.", locale);
 				continue;
 			}
 
 			final Calendar cal = GregorianCalendar.getInstance(locale);
 			if (!(cal instanceof GregorianCalendar)) {
-				System.err.printf("Skipping locale '%s' as it does not use the Gregorian calendar.\n", locale);
+				logger.debug("Skipping locale '%s' as it does not use the Gregorian calendar.", locale);
 				continue;
 			}
 
-			System.err.printf("Locale '%s', grouping: %s.\n", locale, grp);
+			logger.debug("Locale '%s', grouping: %s.", locale, grp);
 
 			final Set<String> samples = new HashSet<>();
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
@@ -1532,7 +1535,7 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
 		Assert.assertNull(result.getTypeQualifier());
-		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
+		logger.info("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes
 		//   - Count 16248501, duration: 10008ms, ~1,624,850 per second

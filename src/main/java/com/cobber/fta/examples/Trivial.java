@@ -23,7 +23,7 @@ public abstract class Trivial {
 
 	public static void main(final String[] args) throws FTAException {
 
-		// Use simple constructor - for more improved detection provide an AnalyzerContext (see Contextual example).
+		// Use simple constructor - for improved detection you can provide an AnalyzerContext (see Contextual example).
 		final TextAnalyzer analysis = new TextAnalyzer("Age");
 
 		analysis.train("12");

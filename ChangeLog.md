@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 5.1.13
+ - ENH: Add Semantic Types - GENDER.TEXT_MY (Malaysia), GENDER.TEXT_CN (China)
+ - ENH: Limited support for Chinese Dates
+ - INT: printf to log.debug/info/...
+ - INT: upgrade version of TestNG
+
 ### 5.1.12
  - BUG: totalSamples should have been a long.
 

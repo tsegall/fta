@@ -19,12 +19,16 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAPluginException;
 
 public class TestStandalonePlugins {
+	private Logger logger = LoggerFactory.getLogger("fta");
+
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomIPV4Address() throws IOException, FTAPluginException {
 		final PluginDefinition plugin = new PluginDefinition("IPADDRESS.IPV4", "com.cobber.fta.plugins.LogicalTypeIPV4Address");
@@ -186,7 +190,7 @@ public class TestStandalonePlugins {
 
 					String pluginSignature = logical.getPluginDefinition().signature;
 					if (!"[NONE]".equals(pluginSignature) && !logical.getSignature().equals(logical.getPluginDefinition().signature))
-						System.err.printf("WARNING: Signature incorrect for '%s.  LogicalType = '%s', Plugin = '%s'.%n", logical.getQualifier(), logical.getSignature(), logical.getPluginDefinition().signature);
+						logger.warn("WARNING: Signature incorrect for '%s.  LogicalType = '%s', Plugin = '%s'.", logical.getQualifier(), logical.getSignature(), logical.getPluginDefinition().signature);
 					Assert.assertTrue("[NONE]".equals(pluginSignature) || logical.getSignature().equals(logical.getPluginDefinition().signature));
 
 					if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())

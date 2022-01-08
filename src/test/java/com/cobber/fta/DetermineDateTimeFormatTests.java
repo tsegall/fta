@@ -16,7 +16,6 @@
 package com.cobber.fta;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -45,6 +46,7 @@ import com.cobber.fta.dates.DateTimeParserResult;
 
 public class DetermineDateTimeFormatTests {
 	private static final SecureRandom random = new SecureRandom();
+	private Logger logger = LoggerFactory.getLogger("fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void allOptions() {
@@ -1566,7 +1568,7 @@ public class DetermineDateTimeFormatTests {
 	private void dump(final Map<String, Integer> counter) {
 		final Map<String, Integer> byValue = Utils.sortByValue(counter);
 		for (final Map.Entry<String, Integer> entry : byValue.entrySet()) {
-			System.err.printf("'%s' : %d\n", entry.getKey(), entry.getValue());
+			logger.debug("'%s' : %d", entry.getKey(), entry.getValue());
 		}
 	}
 
@@ -1591,7 +1593,6 @@ public class DetermineDateTimeFormatTests {
 		int good = 0;
 		final int iterations = 100000000;
 		final String[] timeZones = TimeZone.getAvailableIDs();
-		final PrintStream logger = System.err;
 
 		for (int iters = 0; iters < iterations; iters++) {
 			final int len = 5 + random.nextInt(15);
@@ -1659,7 +1660,7 @@ public class DetermineDateTimeFormatTests {
 
 			final DateTimeParser det = new DateTimeParser();
 			final String input = s.toString();
-			//System.err.printf("Input ... '%s'\n", input);
+			//logger.debug("Input ... '%s'", input);
 			final String trimmed = input.trim();
 			try {
 				det.train(input);
@@ -1693,20 +1694,20 @@ public class DetermineDateTimeFormatTests {
 							OffsetDateTime.parse(trimmed, formatter);
 					}
 					catch (DateTimeParseException exc) {
-						logger.printf("Java: Struggled with input of the form: '%s'\n", input);
+						logger.error("Java: Struggled with input of the form: '%s'", input);
 					}
 
 				}
 			}
 			catch (Exception e) {
-				logger.printf("Struggled with input of the form: '%s'\n", input);
+				logger.error("Struggled with input of the form: '%s'", input);
 			}
 		}
 
 		dump(formatStrings);
 		dump(types);
 
-		logger.printf("Good %d out of %d (%%%f)\n", good, iterations, 100*((float)good/iterations));
+		logger.error("Good %d out of %d (%%%f)", good, iterations, 100*((float)good/iterations));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1735,7 +1736,6 @@ public class DetermineDateTimeFormatTests {
 	public void testPerf() {
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "01/26/2012 10:42:23 GMT";
-		final PrintStream logger = System.err;
 		det.train(sample);
 		det.train("01/30/2012 10:59:48 GMT");
 		det.train("01/25/2012 16:46:43 GMT");
@@ -1760,7 +1760,7 @@ public class DetermineDateTimeFormatTests {
 			Assert.assertTrue(result.isValid8("01/26/2012 10:42:23 GMT"));
 		}
 		final long done = System.currentTimeMillis();
-		logger.printf("Custom = %dms, Java = %dms\n", doneCustom - start, done - doneCustom);
+		logger.debug("Custom = %dms, Java = %dms.", doneCustom - start, done - doneCustom);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

@@ -163,7 +163,7 @@
 		"description": "Gender",
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.LogicalTypeGender",
-		"validLocales": [ "en", "de", "es", "it", "fr", "nl", "pt" ],
+		"validLocales": [ "en", "de", "es", "it", "fr", "ms", "nl", "pt" ],
 		"priority": 80
 	},
 	{
@@ -179,6 +179,20 @@
 		"backout": ".*",
 		"baseType" : "STRING",
 		"priority": 81
+	},
+	{
+		"qualifier" : "GENDER.TEXT_CN",
+		"description": "Gender (Chinese Language)",
+		"signature": "Cw4ieuKHMT4qah2mJ9uWUYg+rNk=",
+		"headerRegExps" : [ "(性|性別)" ],
+		"headerRegExpConfidence" : [ 70 ],
+		"contentType": "inline",
+		"content": "{ \"members\": [ \"女性\",\"女\",\"男性\",\"男\" ] }",
+		"regExpReturned" : "(女性|女|男性|男)",
+		"validLocales": [ "cn" ],
+		"backout": ".*",
+		"baseType" : "STRING",
+		"priority": 82
 	},
 	{
 		"qualifier": "NATIONALITY_EN",

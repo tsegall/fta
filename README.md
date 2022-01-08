@@ -156,15 +156,17 @@ DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-U
 EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
-GENDER.TEXT_DE|Gender (German Language)|de
-GENDER.TEXT_EN|Gender (English Language)|en
-GENDER.TEXT_ES|Gender (Spanish Language)|es
-GENDER.TEXT_IT|Gender (Italian Language)|it
-GENDER.TEXT_FR|Gender (French Language)|fr
-GENDER.TEXT_NL|Gender (Dutch Language)|nl
-GENDER.TEXT_PT|Gender (Portugese Language)|pt
-GENDER.TEXT_TR|Gender (Turkish Language)|tr
-GENDER.TEXT_JP|Gender (Japanese Language)|ja
+GENDER.TEXT_CN|Gender (Chinese)|cn
+GENDER.TEXT_DE|Gender (German)|de
+GENDER.TEXT_EN|Gender (English)|en
+GENDER.TEXT_ES|Gender (Spanish)|es
+GENDER.TEXT_FR|Gender (French)|fr
+GENDER.TEXT_IT|Gender (Italian)|it
+GENDER.TEXT_MY|Gender (Malaysian)|it
+GENDER.TEXT_NL|Gender (Dutch)|nl
+GENDER.TEXT_PT|Gender (Portugese)|pt
+GENDER.TEXT_TR|Gender (Turkish)|tr
+GENDER.TEXT_JA|Gender (Japanese)|ja
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR

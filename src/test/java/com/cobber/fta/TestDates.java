@@ -35,6 +35,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -47,6 +49,8 @@ import com.cobber.fta.dates.LocaleInfo;
 import com.cobber.fta.dates.SimpleDateMatcher;
 
 public class TestDates {
+	private Logger logger = LoggerFactory.getLogger("fta");
+
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateOutlier() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateOutlier");
@@ -2595,7 +2599,7 @@ public class TestDates {
 			System.err.println(problem);
 		}
 
-		System.err.printf("%d not Gregorian (skipped), %d not Arabic numerals, %d no Month abbr. (skipped), %d locales not supported, %d locales, %d failures (of %d tests)\n",
+		logger.debug("%d not Gregorian (skipped), %d not Arabic numerals, %d no Month abbr. (skipped), %d locales not supported, %d locales, %d failures (of %d tests).",
 				countNotGregorian, countNotArabicNumerals, countNoMonthAbbreviations, countNotSupported, locales.length, countProblems, countTests);
 
 		Assert.assertEquals(countProblems, 0);
@@ -3446,7 +3450,7 @@ public class TestDates {
 				final SimpleResult expected = results.get(dateTimeFormat);
 				final String actual = result.getRegExp();
 				if (!actual.equals(expected.regExp))
-					System.err.printf("Format: '%s', expected: '%s', actual '%s'\n", dateTimeFormat, expected.regExp, actual);
+					logger.debug("Format: '%s', expected: '%s', actual '%s'.", dateTimeFormat, expected.regExp, actual);
 				Assert.assertEquals(result.getConfidence(), 1.0);
 				Assert.assertEquals(result.getType(), expected.type);
 				Assert.assertEquals(result.getTypeQualifier(), expected.typeQualifier);
@@ -3505,7 +3509,7 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss");
-		System.err.printf("Count %d, duration: %dms, ~%d per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
+		logger.info("Count %d, duration: %dms, ~%d per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes
 		//   - Count 9684201, duration: 10004ms, ~968,400 per second
