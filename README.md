@@ -162,13 +162,14 @@ GENDER.TEXT_EN|Gender (English)|en
 GENDER.TEXT_ES|Gender (Spanish)|es
 GENDER.TEXT_FR|Gender (French)|fr
 GENDER.TEXT_IT|Gender (Italian)|it
-GENDER.TEXT_MY|Gender (Malaysian)|it
+GENDER.TEXT_MS|Gender (Malaysian)|ms
 GENDER.TEXT_NL|Gender (Dutch)|nl
 GENDER.TEXT_PT|Gender (Portugese)|pt
 GENDER.TEXT_TR|Gender (Turkish)|tr
 GENDER.TEXT_JA|Gender (Japanese)|ja
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
+IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH
 IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number (Japan)|ja
@@ -251,7 +252,7 @@ Note: The Context (the current Stream Name and other field names) can be used to
 	},
 	{
 		"qualifier": "AIRPORT_CODE.IATA",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeIATA",
+		"clazz": "com.cobber.fta.plugins.IATA",
 		"headerRegExps": [ ".*(?i)(iata|air).*" ],
 		"headerRegExpConfidence": [ 100 ],
 	},

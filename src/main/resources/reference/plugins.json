@@ -3,7 +3,7 @@
 		"qualifier": "EMAIL",
 		"description": "Email Address",
 		"signature": "+A0AMjgeFlGRlPKsX/iXYmoWpfY=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeEmail",
+		"clazz": "com.cobber.fta.plugins.EmailLT",
 		"headerRegExps": [ ".*(?i)(email).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"priority": 10
@@ -12,7 +12,7 @@
 		"qualifier": "URI.URL",
 		"description": "URL - see RFC 3986",
 		"signature": "r+muJMmeRDtmg9qyVbWCOAMusc8=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeURL",
+		"clazz": "com.cobber.fta.plugins.URLLT",
 		"headerRegExps": [ ".*(?i)(url|web).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"priority": 15
@@ -21,7 +21,7 @@
 		"qualifier": "IPADDRESS.IPV4",
 		"description": "IP V4 Address",
 		"signature": "tjKmv3C98nzoxPHtvYb1sp+UQEY=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeIPV4Address",
+		"clazz": "com.cobber.fta.plugins.IPV4Address",
 		"headerRegExps": [ ".*(?i)(ip).*" ],
 		"headerRegExpConfidence": [ 70 ],
 		"priority": 20
@@ -30,7 +30,7 @@
 		"qualifier": "IPADDRESS.IPV6",
 		"description": "IP V6 Address",
 		"signature": "UCm9KlNKo0Hv4BULLB3qSWbMQHY=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeIPV6Address",
+		"clazz": "com.cobber.fta.plugins.IPV6Address",
 		"headerRegExps": [ ".*(?i)(ip).*" ],
 		"headerRegExpConfidence": [ 70 ],
 		"priority": 25
@@ -39,7 +39,7 @@
 		"qualifier": "TELEPHONE",
 		"description": "Telephone Number (Generic)",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypePhoneNumber",
+		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
 		"headerRegExps": [ ".*(?i)(phone|fax|mobile|cell|Mobiel).*" ],
 		"headerRegExpConfidence": [ 98 ],
 		"threshold": 95,
@@ -49,21 +49,21 @@
 		"qualifier": "GUID",
 		"description": "Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67",
 		"signature": "AtovlR1okrAJUeTCpYUUTXow4yM=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeGUID",
+		"clazz": "com.cobber.fta.plugins.GUID",
 		"priority": 50
 	},
 	{
 		"qualifier": "VIN",
 		"description": "Vehicle Identification Number",
 		"signature": "JLD6IQMMMoQZTZH7OyHsGRuSoTQ=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeVIN",
+		"clazz": "com.cobber.fta.plugins.VIN",
 		"priority": 51
 	},
 	{
 		"qualifier": "POSTAL_CODE.ZIP5_US",
 		"description": "Postal Code (US)",
 		"signature": "VvLLosjm/N/z7zpF2IDSgpeT02c=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeUSZip5",
+		"clazz": "com.cobber.fta.plugins.USZip5",
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"headerRegExps": [ ".*(?i)(zip|postalcode|postcode).*" ],
 		"headerRegExpConfidence": [ 95 ],
@@ -73,7 +73,7 @@
 		"qualifier": "POSTAL_CODE.ZIP5_PLUS4_US",
 		"description": "Postal Code + 4 (US)",
 		"signature": "97eQHR8swSv5+VyCVyYDNayMdy4=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeUSZipPlus4",
+		"clazz": "com.cobber.fta.plugins.USZipPlus4",
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"headerRegExps": [ ".*(?i)(zip|postalcode|postcode).*" ],
 		"headerRegExpConfidence": [ 95 ],
@@ -83,7 +83,7 @@
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_UK",
 		"description": "Postal Code (UK)",
 		"signature": "0m+ny+TVuhGGP1RGw3XKoni4Qyo=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeUKPostalCode",
+		"clazz": "com.cobber.fta.plugins.UKPostalCode",
 		"validLocales": [ "en-GB" ,"en-UK" ],
 		"priority": 62
 	},
@@ -132,7 +132,7 @@
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
 		"headerRegExps": [ ".*(?i)(addr).*" ],
 		"headerRegExpConfidence": [ 95 ],
-		"clazz": "com.cobber.fta.plugins.LogicalTypeAddressEN",
+		"clazz": "com.cobber.fta.plugins.AddressEN",
 		"validLocales": [ "en" ],
 		"priority": 70
 	},
@@ -142,7 +142,7 @@
 		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
 		"headerRegExps": [ ".*(?i)(addr).*2" ],
 		"headerRegExpConfidence": [ 95 ],
-		"clazz": "com.cobber.fta.plugins.LogicalTypeAddress2EN",
+		"clazz": "com.cobber.fta.plugins.Address2EN",
 		"validLocales": [ "en" ],
 		"priority": 71
 	},
@@ -162,7 +162,7 @@
 		"qualifier": "GENDER.TEXT_<LOCALE>",
 		"description": "Gender",
 		"signature": "[NONE]",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeGender",
+		"clazz": "com.cobber.fta.plugins.Gender",
 		"validLocales": [ "en", "de", "es", "it", "fr", "ms", "nl", "pt" ],
 		"priority": 80
 	},
@@ -222,7 +222,7 @@
 		"qualifier": "COUNTRY.TEXT_EN",
 		"description": "Country as a string (English language)",
 		"signature": "T4UZNFT895GsC99J7dOz/ENNYvM=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeCountryEN",
+		"clazz": "com.cobber.fta.plugins.CountryEN",
 		"validLocales": [ "en" ],
 		"headerRegExps": [ ".*(?i)(country).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -233,28 +233,28 @@
 		"qualifier": "MONTH.ABBR_<LOCALE>",
 		"description": "Month Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)",
 		"signature": "[NONE]",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthAbbr",
+		"clazz": "com.cobber.fta.plugins.MonthAbbr",
 		"priority": 100
 	},
 	{
 		"qualifier": "MONTH.FULL_<LOCALE>",
 		"description": "Full Month name <LOCALE> = Locale, e.g. en-US for English langauge in US)",
 		"signature": "[NONE]",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeMonthFull",
+		"clazz": "com.cobber.fta.plugins.MonthFull",
 		"priority": 101
 	},
 	{
 		"qualifier": "DOY.ABBR_<LOCALE>",
 		"description": "Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)",
 		"signature": "[NONE]",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeDOYAbbr",
+		"clazz": "com.cobber.fta.plugins.DOYAbbr",
 		"priority": 102
 	},
 	{
 		"qualifier": "DOY.FULL_<LOCALE>",
 		"description": "Full Day of Week name <LOCALE> = Locale, e.g. en-US for English langauge in US)",
 		"signature": "[NONE]",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeDOYFull",
+		"clazz": "com.cobber.fta.plugins.DOYFull",
 		"priority": 103
 	},
 	{
@@ -297,7 +297,7 @@
 		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NA",
 		"description": "US State Code/Canadian Province Code/Mexican State Code",
 		"signature": "Q00LXfhmPibwrK8HTkzNsRosvzw=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeNAStateProvince",
+		"clazz": "com.cobber.fta.plugins.NAStateProvince",
 		"validLocales": [ "en-US", "en-CA", "es-MX" ],
 		"headerRegExps": [ ".*(?i)(state|province|estado).*" ],
 		"headerRegExpConfidence": [ 90 ],
@@ -679,7 +679,7 @@
 		"qualifier": "NAME.FIRST",
 		"description": "First Name",
 		"signature": "slggsAEDZ26rz9dqs15eNF23j2w=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeFirstName",
+		"clazz": "com.cobber.fta.plugins.FirstName",
 		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name|voornaam|vnaam).*", "(?i)(first)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
 		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
@@ -689,7 +689,7 @@
 		"qualifier": "NAME.LAST",
 		"description": "Last Name",
 		"signature": "+h9v4tygGZxbEPbJLp5MDezGgME=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeLastName",
+		"clazz": "com.cobber.fta.plugins.LastName",
 		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name|sobrenome|nachname|achternaam|anaam).*", "(?i)(last)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
 		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
@@ -699,7 +699,7 @@
 		"qualifier": "NAME.LAST_FIRST",
 		"description": "Merged Name (Last, First)",
 		"signature": "WlXF9TSnYBDQXbOMhceVK9XCxAk=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeNameLastFirst",
+		"clazz": "com.cobber.fta.plugins.NameLastFirst",
 		"headerRegExps": [ ".*(?i)(name|nome|nom|naam).*" ],
 		"headerRegExpConfidence": [ 60 ],
 		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
@@ -709,7 +709,7 @@
 		"qualifier": "NAME.FIRST_LAST",
 		"description": "Merged Name (First Last)",
 		"signature": "pJJS+kSfyNDRb2T7SXIWhZhlH3c=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeNameFirstLast",
+		"clazz": "com.cobber.fta.plugins.NameFirstLast",
 		"headerRegExps": [ ".*(?i)(name|nome|nom|naam).*" ],
 		"headerRegExpConfidence": [ 60 ],
 		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
@@ -719,7 +719,7 @@
 		"qualifier": "NAME.MIDDLE",
 		"description": "Middle Name",
 		"signature": "3UGho+Z93uiqi9L8+qjAQ1pb0qQ=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeMiddleName",
+		"clazz": "com.cobber.fta.plugins.MiddleName",
 		"headerRegExps": [ ".*(?i)(middle).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
@@ -774,7 +774,7 @@
 	{
 		"qualifier": "COORDINATE.LATITUDE_DMS",
 		"description": "Latitude (degrees/minutes/seconds)",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeLatitudeDMS",
+		"clazz": "com.cobber.fta.plugins.LatitudeDMS",
 		"signature": "uZncg/K2y6hbc3Wul8IFlpvwEEU=",
 		"headerRegExps": [ ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|(?i)(lat)" ],
 		"headerRegExpConfidence": [ 95 ],
@@ -783,7 +783,7 @@
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DMS",
 		"description": "Longitude (degrees/minutes/seconds)",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeLongitudeDMS",
+		"clazz": "com.cobber.fta.plugins.LongitudeDMS",
 		"signature": "DbzARuk/thlR/jm3sj8H3vllZCE=",
 		"headerRegExps": [ ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|lon|lng" ],
 		"headerRegExpConfidence": [ 95 ],
@@ -841,7 +841,7 @@
 	{
 		"qualifier": "IDENTITY.SSN_FR",
 		"description": "Social Security Number (France)",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeIdentitySSN_FR",
+		"clazz": "com.cobber.fta.plugins.IdentitySSN_FR",
 		"signature": "XfMSrETk0IIuromCYEfRy+k212s=",
 		"validLocales": [ "fr-FR" ],
 		"headerRegExps": [ ".*(?i)(SSN)" ],
@@ -851,7 +851,7 @@
 	{
 		"qualifier": "IDENTITY.INDIVIDUAL_NUMBER_JA",
 		"description": "Individual Number / My Number (Japan)",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeIdentityIN_JA",
+		"clazz": "com.cobber.fta.plugins.IdentityIN_JA",
 		"signature": "E4/GpH4/SwmWNCLlNswUgL6qWBU=",
 		"validLocales": [ "ja" ],
 		"headerRegExps": [ ".*(?i)(Individual Number|My Number|個人番号|マイナンバー|kojin bangō|mai nambā)" ],
@@ -861,12 +861,22 @@
 	{
 		"qualifier": "IDENTITY.SSN_CH",
 		"description": "AVH Number / SSN (Switzerland)",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeIdentitySSN_CH",
+		"clazz": "com.cobber.fta.plugins.IdentitySSN_CH",
 		"signature": "JuS68p5mp6n2dvAxNDEuS7S4f9U=",
 		"validLocales": [ "de-CH", "fr-CH" ,"it-CH" ],
 		"headerRegExps": [ ".*(?i)(AVH|SSN|Sozialversicherungsnummer)" ],
 		"headerRegExpConfidence": [ 95 ],
 		"priority": 233
+	},
+	{
+		"qualifier": "IDENTITY.AADHAR_IN",
+		"description": "Aadhar (India)",
+		"clazz": "com.cobber.fta.plugins.IdentityAadhar_IN",
+		"signature": "Wlco1SWZzWRzZSrYkb7kcQF3O/E=",
+		"validLocales": [ "en-IN" ],
+		"headerRegExps": [ ".*(?i)(Aadhar)" ],
+		"headerRegExpConfidence": [ 95 ],
+		"priority": 234
 	},
 	{
 		"qualifier": "LANGUAGE.ISO-639-2",
@@ -969,56 +979,56 @@
 		"qualifier": "CHECKDIGIT.LUHN",
 		"description": "LUHN Checkdigit (Credit Cards, IMEI, etc)",
 		"signature": "ySEbGrpJCO/yoMiVxyK5vi9sBtU=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitLuhn",
+		"clazz": "com.cobber.fta.plugins.CheckDigitLuhn",
 		"priority": 290
 	},
 	{
 		"qualifier": "CHECKDIGIT.CUSIP",
 		"description": "CUSIP - North American Security Identifiers",
 		"signature": "4EK6Y3hBd2en5Hm9EUKnVbrUjlM=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitCUSIP",
+		"clazz": "com.cobber.fta.plugins.CheckDigitCUSIP",
 		"priority": 291
 	},
 	{
 		"qualifier": "CHECKDIGIT.SEDOL",
 		"description": "SEDOL - UK Security Identifiers",
 		"signature": "A6zVzMb8GxHKIRvQeHJYY2mUqV0=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitSEDOL",
+		"clazz": "com.cobber.fta.plugins.CheckDigitSEDOL",
 		"priority": 292
 	},
 	{
 		"qualifier": "CHECKDIGIT.ISIN",
 		"description": "ISIN - International Securities Identification Number",
 		"signature": "ROIyMHsrinw2O/REk9ClAb0WUEs=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitISIN",
+		"clazz": "com.cobber.fta.plugins.CheckDigitISIN",
 		"priority": 293
 	},
 	{
 		"qualifier": "CHECKDIGIT.EAN13",
 		"description": "EAN-13 - EAN-13/UPC/ISBN-13 Check digit",
 		"signature": "AP6Bjl97rR4D1ogsqPqXGoD5Dq4=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitEAN13",
+		"clazz": "com.cobber.fta.plugins.CheckDigitEAN13",
 		"priority": 294
 	},
 	{
 		"qualifier": "CHECKDIGIT.IBAN",
 		"description": "IBAN - International Bank Account Number",
 		"signature": "ahEtumk3vTi+ErbmmqrmBN7OeVU=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitIBAN",
+		"clazz": "com.cobber.fta.plugins.CheckDigitIBAN",
 		"priority": 295
 	},
 	{
 		"qualifier": "CHECKDIGIT.ABA",
 		"description": "ABA Number (or Routing Transit Number (RTN))",
 		"signature": "z/uWdWQDM6Ln80wNSIshhGV5et4=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeCheckDigitABA",
+		"clazz": "com.cobber.fta.plugins.CheckDigitABA",
 		"priority": 296
 	},
 	{
 		"qualifier": "JOB_TITLE_EN",
 		"description": "Job Title (English Language)",
 		"signature": "6IKfzTa++cfQDm7aehEqSaJ/rek=",
-		"clazz": "com.cobber.fta.plugins.LogicalTypeJobTitleEN",
+		"clazz": "com.cobber.fta.plugins.JobTitleEN",
 		"headerRegExps": [ ".*(?i)(title).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"validLocales": [ "en" ],

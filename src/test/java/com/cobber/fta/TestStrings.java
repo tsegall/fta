@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.plugins.LogicalTypeCountryEN;
+import com.cobber.fta.plugins.CountryEN;
 
 public class TestStrings {
 	private static final SecureRandom random = new SecureRandom();
@@ -740,7 +740,7 @@ public class TestStrings {
 		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 		Assert.assertEquals(result1.getTypeQualifier(), result2.getTypeQualifier());
-		Assert.assertEquals(result1.getTypeQualifier(), LogicalTypeCountryEN.SEMANTIC_TYPE);
+		Assert.assertEquals(result1.getTypeQualifier(), CountryEN.SEMANTIC_TYPE);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })

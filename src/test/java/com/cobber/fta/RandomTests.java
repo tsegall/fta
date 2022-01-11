@@ -32,8 +32,8 @@ import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
-import com.cobber.fta.plugins.LogicalTypeUSZip5;
-import com.cobber.fta.plugins.LogicalTypeUSZipPlus4;
+import com.cobber.fta.plugins.USZip5;
+import com.cobber.fta.plugins.USZipPlus4;
 
 public class RandomTests {
 	private static final SecureRandom random = new SecureRandom();
@@ -160,7 +160,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZip5.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), USZip5.SEMANTIC_TYPE);
 		Assert.assertEquals(locked, -1);
 		Assert.assertEquals(result.getSampleCount(), COUNT);
 		Assert.assertEquals(result.getMatchCount(), COUNT - INVALID);
@@ -523,12 +523,12 @@ public class RandomTests {
 
 		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), LogicalTypeUSZipPlus4.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), USZipPlus4.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getSampleCount(), inputs.length);
 		Assert.assertEquals(result.getOutlierCount(), 0);
 		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
 		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), LogicalTypeUSZipPlus4.REGEXP_VARIABLE);
+		Assert.assertEquals(result.getRegExp(), USZipPlus4.REGEXP_VARIABLE);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {

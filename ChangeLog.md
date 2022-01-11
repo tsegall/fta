@@ -1,8 +1,11 @@
 
 ## Changes ##
 
+### 5.1.14
+ - ENH: Add Semantic Type - IDENTITY.AADHAR_IN (India)
+
 ### 5.1.13
- - ENH: Add Semantic Types - GENDER.TEXT_MY (Malaysia), GENDER.TEXT_CN (China)
+ - ENH: Add Semantic Types - GENDER.TEXT_MS (Malaysia), GENDER.TEXT_CN (China)
  - ENH: Limited support for Chinese Dates
  - INT: printf to log.debug/info/...
  - INT: upgrade version of TestNG

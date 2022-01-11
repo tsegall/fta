@@ -353,8 +353,7 @@ public class TestTopBottomK {
 		final HashSet<String> topK = new HashSet<>(Arrays.asList(new String[] {
 				"ÉLEA", "ÉLIA", "ÉLINA", "ÉLYAS", "ÉLÉA", "ÉLÉNA", "ÉMILIA", "ÉRICA", "ÍRIS", "ÍSIS" } ));
 
-		final PluginDefinition pluginFirst = new PluginDefinition("NAME.FIRST", "com.cobber.fta.plugins.LogicalTypeFirstName");
-		final LogicalTypeCode logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, Locale.getDefault());
+		final LogicalTypeCode logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), Locale.getDefault());
 
 		for (int i = 0; i < 100000; i++)
 			t.observe(logicalFirst.nextRandom());
