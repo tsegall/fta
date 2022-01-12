@@ -841,7 +841,7 @@
 	{
 		"qualifier": "IDENTITY.SSN_FR",
 		"description": "Social Security Number (France)",
-		"clazz": "com.cobber.fta.plugins.IdentitySSN_FR",
+		"clazz": "com.cobber.fta.plugins.identity.SSN_FR",
 		"signature": "XfMSrETk0IIuromCYEfRy+k212s=",
 		"validLocales": [ "fr-FR" ],
 		"headerRegExps": [ ".*(?i)(SSN)" ],
@@ -851,7 +851,7 @@
 	{
 		"qualifier": "IDENTITY.INDIVIDUAL_NUMBER_JA",
 		"description": "Individual Number / My Number (Japan)",
-		"clazz": "com.cobber.fta.plugins.IdentityIN_JA",
+		"clazz": "com.cobber.fta.plugins.identity.IN_JA",
 		"signature": "E4/GpH4/SwmWNCLlNswUgL6qWBU=",
 		"validLocales": [ "ja" ],
 		"headerRegExps": [ ".*(?i)(Individual Number|My Number|個人番号|マイナンバー|kojin bangō|mai nambā)" ],
@@ -861,7 +861,7 @@
 	{
 		"qualifier": "IDENTITY.SSN_CH",
 		"description": "AVH Number / SSN (Switzerland)",
-		"clazz": "com.cobber.fta.plugins.IdentitySSN_CH",
+		"clazz": "com.cobber.fta.plugins.identity.SSN_CH",
 		"signature": "JuS68p5mp6n2dvAxNDEuS7S4f9U=",
 		"validLocales": [ "de-CH", "fr-CH" ,"it-CH" ],
 		"headerRegExps": [ ".*(?i)(AVH|SSN|Sozialversicherungsnummer)" ],
@@ -871,12 +871,22 @@
 	{
 		"qualifier": "IDENTITY.AADHAR_IN",
 		"description": "Aadhar (India)",
-		"clazz": "com.cobber.fta.plugins.IdentityAadhar_IN",
+		"clazz": "com.cobber.fta.plugins.identity.Aadhar_IN",
 		"signature": "Wlco1SWZzWRzZSrYkb7kcQF3O/E=",
 		"validLocales": [ "en-IN" ],
 		"headerRegExps": [ ".*(?i)(Aadhar)" ],
 		"headerRegExpConfidence": [ 95 ],
 		"priority": 234
+	},
+	{
+		"qualifier": "IDENTITY.NHS_UK",
+		"description": "NHS (UK)",
+		"clazz": "com.cobber.fta.plugins.identity.NHS_UK",
+		"signature": "CftIkR8ZKJb0EsTdGaP4WzBW4/c=",
+		"validLocales": [ "en-UK" ],
+		"headerRegExps": [ ".*(?i)(NHS)" ],
+		"headerRegExpConfidence": [ 95 ],
+		"priority": 235
 	},
 	{
 		"qualifier": "LANGUAGE.ISO-639-2",

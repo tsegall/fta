@@ -51,7 +51,7 @@ public class Gender extends LogicalTypeFinite {
 	private String language = null;
 	private GenderData genderData = null;
 
-	static class GenderData {
+	private static class GenderData {
 		private final String header;
 		private final String feminine;
 		private final String masculine;

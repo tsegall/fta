@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.identity;
 
 import java.util.Locale;
 import java.util.Map;
-
-import org.apache.commons.validator.routines.checkdigit.CheckDigit;
-import org.apache.commons.validator.routines.checkdigit.CheckDigitException;
-import org.apache.commons.validator.routines.checkdigit.EAN13CheckDigit;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
@@ -32,32 +28,26 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * Plugin to detect Swiss SSN's (AVH Number/Sozialversicherungsnummer).
+ * Plugin to detect Japanese Individual Number (個人番号, kojin bangō), also known as My Number (マイナンバー, mai nambā).
  */
-public class IdentitySSN_CH extends LogicalTypeInfinite {
-	public static final String SEMANTIC_TYPE = "IDENTITY.SSN_CH";
-	private static final int SSN_LENGTH = 13;
+public class IN_JA extends LogicalTypeInfinite {
+	public static final String SEMANTIC_TYPE = "IDENTITY.INDIVIDUAL_NUMBER_JA";
+	private static final int IN_LENGTH = 12;
 	public static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
-	private CheckDigit validator;
 
-	public IdentitySSN_CH(final PluginDefinition plugin) {
+	public IN_JA(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		if (!trimmed.startsWith("756"))
-			return false;
-
-		if (trimmed.length() - (charCounts[' '] + charCounts['.']) != SSN_LENGTH)
+		if (trimmed.length() - charCounts[' '] != IN_LENGTH)
 			return false;
 
 		for (int i = 0; i < trimmed.length(); i++) {
 			final char ch = trimmed.charAt(i);
-			if (ch == ' ' || ch == '.')
-				continue;
-			if (!Character.isDigit(ch))
+			if (ch != ' ' && !Character.isDigit(ch))
 				return false;
 		}
 
@@ -68,29 +58,29 @@ public class IdentitySSN_CH extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		validator = new EAN13CheckDigit();
-
 		threshold = 98;
 
 		return true;
 	}
 
+	private int calculateCheckDigit(String in) {
+		long mySum = 0;
+		for (int i = 0; i < 5; i++)
+			mySum += (11 - i - 5) * (in.charAt(i) - '0');
+		for (int i = 5; i < in.length(); i++)
+			mySum += (11 - i + 1) * (in.charAt(i) - '0');
+
+		long check = 11 - mySum % 11;
+		if (check > 9)
+			check = 0;
+
+		return (int)check;
+	}
+
 	@Override
 	public String nextRandom() {
-		final String avh = String.format("756%04d%04d%d",
-				random.nextInt(10000),
-				random.nextInt(10000),
-				random.nextInt(10));
-
-		String check = null;
-		try {
-			check = validator.calculate(avh);
-		} catch (CheckDigitException e) {
-			return null;
-		}
-
-		return avh.substring(0, 3) + "." + avh.substring(3, 7) + "." +
-			avh.substring(7, 11) + "." + avh.substring(11) + check;
+		final String in = String.valueOf(random.nextInt(90000) + 10000) + String.format("%06d", random.nextInt(1000000));
+		return in + calculateCheckDigit(in);
 	}
 
 	@Override
@@ -115,25 +105,20 @@ public class IdentitySSN_CH extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input) {
-		final String trimmed = input.trim();
-		if (!trimmed.startsWith("756"))
-			return false;
+		final StringBuilder b = new StringBuilder(IN_LENGTH);
 
-		final StringBuilder b = new StringBuilder(SSN_LENGTH);
-
-		for (int i = 0; i < trimmed.length(); i++) {
-			final char ch = input.charAt(i);
-			if (ch == ' ' || ch == '.')
+		for (int i = 0; i < input.length(); i++) {
+			char ch = input.charAt(i);
+			if (ch == ' ')
 				continue;
 			if (!Character.isDigit(ch))
 				return false;
 			b.append(ch);
 		}
 
-		if (b.length() != SSN_LENGTH)
-			return false;
+		final int check = calculateCheckDigit(b.substring(0, IN_LENGTH - 1));
 
-		return validator.isValid(b.toString());
+		return '0' + check == b.charAt(11);
 	}
 
 	@Override

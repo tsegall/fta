@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * A Utility class with a set of helper functions.
  */
-public abstract class Utils {
+public final class Utils {
 
 	private Utils() {
 		// Never called

@@ -27,9 +27,9 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.plugins.IdentityIN_JA;
-import com.cobber.fta.plugins.IdentitySSN_CH;
-import com.cobber.fta.plugins.IdentitySSN_FR;
+import com.cobber.fta.plugins.identity.IN_JA;
+import com.cobber.fta.plugins.identity.SSN_CH;
+import com.cobber.fta.plugins.identity.SSN_FR;
 
 public class TestIdentity {
 	private static final SecureRandom random = new SecureRandom();
@@ -191,7 +191,7 @@ public class TestIdentity {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), IdentitySSN_FR.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), SSN_FR.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_FR").signature);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -230,7 +230,7 @@ public class TestIdentity {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), IdentityIN_JA.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), IN_JA.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA").signature);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
@@ -269,7 +269,7 @@ public class TestIdentity {
 		Assert.assertEquals(result.getNullCount(), 0);
 		Assert.assertEquals(result.getBlankCount(), 0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), IdentitySSN_CH.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getTypeQualifier(), SSN_CH.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_CH").signature);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 

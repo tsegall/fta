@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.identity;
 
 import java.util.Locale;
 import java.util.Map;
@@ -34,20 +34,24 @@ import com.cobber.fta.token.TokenStreams;
 /**
  * Plugin to detect Indian Aadhar.
  */
-public class IdentityAadhar_IN extends LogicalTypeInfinite {
+public class Aadhar_IN extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "IDENTITY.AADHAR_IN";
 	private static final int ID_LENGTH = 12;
 	public static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
 	private CheckDigit validator;
 
-	public IdentityAadhar_IN(final PluginDefinition plugin) {
+	public Aadhar_IN(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		if (trimmed.length() - (charCounts[' ']) != ID_LENGTH)
+			return false;
+
+		// Currently numbers starting with 0 & 1 are reserved for future use
+		if (trimmed.charAt(0) == '0' || trimmed.charAt(0) == '1')
 			return false;
 
 		for (int i = 0; i < trimmed.length(); i++) {
@@ -76,7 +80,7 @@ public class IdentityAadhar_IN extends LogicalTypeInfinite {
 	public String nextRandom() {
 		final String aadhar = String.format("%04d%04d%03d",
 				2000 + random.nextInt(8000),
-				random.nextInt(10000),
+				random.nextInt(10_000),
 				random.nextInt(1000));
 
 		String check = null;
@@ -113,6 +117,10 @@ public class IdentityAadhar_IN extends LogicalTypeInfinite {
 	@Override
 	public boolean isValid(final String input) {
 		final String trimmed = input.trim();
+
+		// Currently numbers starting with 0 & 1 are reserved for future use
+		if (trimmed.charAt(0) == '0' || trimmed.charAt(0) == '1')
+			return false;
 
 		final StringBuilder b = new StringBuilder(ID_LENGTH);
 

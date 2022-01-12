@@ -1,8 +1,14 @@
 
 ## Changes ##
 
+### 5.1.15
+ - ENH: Add Semantic Type - IDENTITY.NHS_UK (UK)
+ - ENH: Bump Google phone number
+ - INT: Compress Gender in README
+
 ### 5.1.14
  - ENH: Add Semantic Type - IDENTITY.AADHAR_IN (India)
+ - INT: Lots of renaming + newInstance already calls initialize - so don't do it again
 
 ### 5.1.13
  - ENH: Add Semantic Types - GENDER.TEXT_MS (Malaysia), GENDER.TEXT_CN (China)

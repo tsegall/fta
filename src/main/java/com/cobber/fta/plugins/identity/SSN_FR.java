@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.identity;
 
 import java.util.Locale;
 import java.util.Map;
@@ -30,13 +30,13 @@ import com.cobber.fta.token.TokenStreams;
 /**
  * Plugin to detect French SSN's.
  */
-public class IdentitySSN_FR extends LogicalTypeInfinite {
+public class SSN_FR extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "IDENTITY.SSN_FR";
 	private static final int SSN_LENGTH = 15;
 	public static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
 
-	public IdentitySSN_FR(final PluginDefinition plugin) {
+	public SSN_FR(final PluginDefinition plugin) {
 		super(plugin);
 	}
 

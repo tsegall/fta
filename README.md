@@ -160,6 +160,7 @@ GENDER.TEXT_&lt;Language&gt;|Gender|cn, de, en, es, fr, it, ms, nl, pt, tr, ja
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN
+IDENTITY.NHS_UK|NHS Number|en-UK
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH
 IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number (Japan)|ja
@@ -184,8 +185,7 @@ POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|en-AU, en-CA, nl-NL, en-UK
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US
-STATE_PROVINCE.COUNTY_UK|United Kingdom County|en-UK
-STATE_PROVINCE.COUNTY_US|US County|en-US
+STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-UK, en-US
 STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US
 STATE_PROVINCE.STATE_NAME_&lt;Country&gt;|State Name|en-AU, pt-BR, de-DE, es-MX, en-US
 STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA, en-US, es-MX
