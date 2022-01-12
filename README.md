@@ -156,17 +156,7 @@ DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-U
 EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
-GENDER.TEXT_CN|Gender (Chinese)|cn
-GENDER.TEXT_DE|Gender (German)|de
-GENDER.TEXT_EN|Gender (English)|en
-GENDER.TEXT_ES|Gender (Spanish)|es
-GENDER.TEXT_FR|Gender (French)|fr
-GENDER.TEXT_IT|Gender (Italian)|it
-GENDER.TEXT_MS|Gender (Malaysian)|ms
-GENDER.TEXT_NL|Gender (Dutch)|nl
-GENDER.TEXT_PT|Gender (Portugese)|pt
-GENDER.TEXT_TR|Gender (Turkish)|tr
-GENDER.TEXT_JA|Gender (Japanese)|ja
+GENDER.TEXT_&lt;Language&gt;|Gender|cn, de, en, es, fr, it, ms, nl, pt, tr, ja
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN
@@ -190,24 +180,14 @@ NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, nl, pr
 NAME.MIDDLE|Middle Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.MIDDLE_INITIAL|Middle Initial|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NATIONALITY_EN|Nationality|en
-POSTAL_CODE.POSTAL_CODE_AU|Postal Code|en-AU
-POSTAL_CODE.POSTAL_CODE_CA|Postal Code|en-CA
-POSTAL_CODE.POSTAL_CODE_NL|Postal Code|nl-NL
-POSTAL_CODE.POSTAL_CODE_UK|Postal Code|en-UK
+POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|en-AU, en-CA, nl-NL, en-UK
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US
 STATE_PROVINCE.COUNTY_UK|United Kingdom County|en-UK
 STATE_PROVINCE.COUNTY_US|US County|en-US
-STATE_PROVINCE.STATE_AU|Australian State Code|en-AU
-STATE_PROVINCE.STATE_BR|Brazilian State Code|pt-BR
-STATE_PROVINCE.STATE_MX|Mexican State Code|es-MX
-STATE_PROVINCE.STATE_US|US State Code|en-CA, en-US
-STATE_PROVINCE.STATE_NAME_AU|Australian State Name|en-AU
-STATE_PROVINCE.STATE_NAME_BR|Brazilian State Name|pt-BR
-STATE_PROVINCE.STATE_NAME_DE|German State Name|de-DE
-STATE_PROVINCE.STATE_NAME_MX|Mexican State Name|es-MX
-STATE_PROVINCE.STATE_NAME_US|US State Name|en-CA, en-US
+STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US
+STATE_PROVINCE.STATE_NAME_&lt;Country&gt;|State Name|en-AU, pt-BR, de-DE, es-MX, en-US
 STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA, en-US, es-MX
 STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA, en-US
 STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
