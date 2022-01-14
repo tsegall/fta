@@ -775,7 +775,7 @@
 		"qualifier": "COORDINATE.LATITUDE_DMS",
 		"description": "Latitude (degrees/minutes/seconds)",
 		"clazz": "com.cobber.fta.plugins.LatitudeDMS",
-		"signature": "uZncg/K2y6hbc3Wul8IFlpvwEEU=",
+		"signature": "DbzARuk/thlR/jm3sj8H3vllZCE=",
 		"headerRegExps": [ ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|(?i)(lat)" ],
 		"headerRegExpConfidence": [ 95 ],
 		"priority": 192
@@ -784,7 +784,7 @@
 		"qualifier": "COORDINATE.LONGITUDE_DMS",
 		"description": "Longitude (degrees/minutes/seconds)",
 		"clazz": "com.cobber.fta.plugins.LongitudeDMS",
-		"signature": "DbzARuk/thlR/jm3sj8H3vllZCE=",
+		"signature": "uZncg/K2y6hbc3Wul8IFlpvwEEU=",
 		"headerRegExps": [ ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|lon|lng" ],
 		"headerRegExpConfidence": [ 95 ],
 		"priority": 193

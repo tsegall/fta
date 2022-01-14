@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 5.1.16
+ - INT: Add tests for IDENTITY.NHS_UK and IDENTITY.AADHAR_IN
+ - BUG: COORDINATE.LONGITUDE_DMS and COORDINATE.LATITUDE_DMS were reversed
+
 ### 5.1.15
  - ENH: Add Semantic Type - IDENTITY.NHS_UK (UK)
  - ENH: Bump Google phone number

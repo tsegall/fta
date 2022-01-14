@@ -19,7 +19,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAType;
 
 public class LatitudeDMS extends CoordinateDMS {
-	public static final String SEMANTIC_TYPE = "COORDINATE.LONGITUDE_DMS";
+	public static final String SEMANTIC_TYPE = "COORDINATE.LATITUDE_DMS";
 	public static final String REGEXP = "(\\d{5,6}|\\d{1,3} \\d{1,2} \\d{1,2} ?)[NnSs]";
 	private static final char[] DIRECTION = { 'N', 'S', 'n', 's' };
 	private static final int MAX_DEGREES = 90;

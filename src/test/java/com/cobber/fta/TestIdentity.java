@@ -27,7 +27,9 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.plugins.identity.Aadhar_IN;
 import com.cobber.fta.plugins.identity.IN_JA;
+import com.cobber.fta.plugins.identity.NHS_UK;
 import com.cobber.fta.plugins.identity.SSN_CH;
 import com.cobber.fta.plugins.identity.SSN_FR;
 
@@ -271,6 +273,83 @@ public class TestIdentity {
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertEquals(result.getTypeQualifier(), SSN_CH.SEMANTIC_TYPE);
 		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_CH").signature);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicNHS_UK() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicNHS_UK");
+		analysis.setLocale(Locale.forLanguageTag("en-UK"));
+
+		final String[] inputs = new String[] {
+				"603 235 8429", "607 639 9864", "663 217 6682", "740 844 8349", "489 161 1189",
+				"854 106 0098", "726 516 9476", "957 260 2357", "686 273 2757", "896 329 3181",
+				"443 934 8424", "963 033 6693", "805 735 6146", "633 502 1153", "775 663 3911",
+				"405 458 8298", "953 622 6391", "627 075 8319", "808 974 4516", "940 604 2495",
+				"736 088 6082", "820 530 6265", "692 233 6046", "760 019 4724", "998 607 2263"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getCardinality(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), NHS_UK.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.NHS_UK").signature);
+		Assert.assertEquals(result.getConfidence(), 1.0);
+
+
+		for (final String input : inputs) {
+			Assert.assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicAadhar_IN() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicNHS_UK");
+		analysis.setLocale(Locale.forLanguageTag("en-IN"));
+
+		final String[] inputs = new String[] {
+				"6625 7361 2953", "5931 6696 0291", "8248 5984 8175", "3016 4826 5142",
+				"4434 7776 8326", "4824 7928 4386", "4685 4991 7577", "3863 3381 0102",
+				"8015 6866 2992", "9526 2155 7463", "5019 5961 5939", "6329 6296 9460",
+				"2104 0519 0000", "6858 3860 1162", "7401 5528 6218", "6263 2420 8471",
+				"8955 0790 8863", "7313 7946 3468", "9806 9428 4326", "9187 7705 5800",
+				"6138 7065 3258", "8060 0186 2257", "7658 2380 1240", "2768 4014 3753",
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		Assert.assertEquals(result.getSampleCount(), inputs.length);
+		Assert.assertEquals(result.getCardinality(), inputs.length);
+		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		Assert.assertEquals(result.getNullCount(), 0);
+		Assert.assertEquals(result.getBlankCount(), 0);
+		Assert.assertEquals(result.getType(), FTAType.STRING);
+		Assert.assertEquals(result.getTypeQualifier(), Aadhar_IN.SEMANTIC_TYPE);
+		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.AADHAR_IN").signature);
 		Assert.assertEquals(result.getConfidence(), 1.0);
 
 
