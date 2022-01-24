@@ -211,6 +211,14 @@ TIMEZONE.IANA|IANA Time Zone (Olson)|*
 URI.URL|URL - see RFC 3986|*
 VIN|Vehicle Identification Number|*
 
+Note:
+
+Any of the above Semantic Types suffixed with one of the following are locale-sensitive:
+ * &lt;Locale&gt; - replaced by the locale, for example, MONTH.FULL_fr-FR (Month Abbreviation in french French)
+ * &lt;Language&gt; - replaced by the language from the locale, for example, GENDER.TEXT_PT (Gender in Portuguese)
+ * &lt;Country&gt; - replaced by the country from the locale, for example, POSTAL_CODE.POSTAL_CODE_AU (Australian Postal Code)
+
+
 </details>
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
