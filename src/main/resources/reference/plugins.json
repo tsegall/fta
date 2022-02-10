@@ -127,6 +127,22 @@
 		"priority": 65
 	},
 	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_FR",
+		"description": "Postal Code (FR)",
+		"signature": "NBx2UhY9b1E8PKjEPXxorgBew1s=",
+		"clazz": "com.cobber.fta.plugins.PostalCodeFR",
+		"validLocales": [ "fr-FR" ],
+		"priority": 66
+	},
+	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_JA",
+		"description": "Postal Code (JA)",
+		"signature": "90grIf//XH2xAcARIKYJPzmfhJg=",
+		"clazz": "com.cobber.fta.plugins.PostalCodeJA",
+		"validLocales": [ "ja" ],
+		"priority": 67
+	},
+	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
