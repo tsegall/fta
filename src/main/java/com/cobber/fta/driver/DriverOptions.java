@@ -47,6 +47,7 @@ class DriverOptions {
 	protected boolean pluginDefinition;
 	protected String pluginName;
 	protected DateResolutionMode resolutionMode = DateResolutionMode.Auto;
+	protected boolean samples;
 	protected boolean signature;
 	protected int threshold = -1;
 	protected boolean validate;

@@ -2599,7 +2599,7 @@ public class TestDates {
 			System.err.println(problem);
 		}
 
-		logger.debug("%d not Gregorian (skipped), %d not Arabic numerals, %d no Month abbr. (skipped), %d locales not supported, %d locales, %d failures (of %d tests).",
+		logger.debug("{} not Gregorian (skipped), {} not Arabic numerals, {} no Month abbr. (skipped), {} locales not supported, {} locales, {} failures (of {} tests).",
 				countNotGregorian, countNotArabicNumerals, countNoMonthAbbreviations, countNotSupported, locales.length, countProblems, countTests);
 
 		Assert.assertEquals(countProblems, 0);
@@ -3450,7 +3450,7 @@ public class TestDates {
 				final SimpleResult expected = results.get(dateTimeFormat);
 				final String actual = result.getRegExp();
 				if (!actual.equals(expected.regExp))
-					logger.debug("Format: '%s', expected: '%s', actual '%s'.", dateTimeFormat, expected.regExp, actual);
+					logger.debug("Format: '{}', expected: '{}', actual '{}'.", dateTimeFormat, expected.regExp, actual);
 				Assert.assertEquals(result.getConfidence(), 1.0);
 				Assert.assertEquals(result.getType(), expected.type);
 				Assert.assertEquals(result.getTypeQualifier(), expected.typeQualifier);

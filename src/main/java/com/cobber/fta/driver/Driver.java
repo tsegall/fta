@@ -143,6 +143,8 @@ public class Driver {
 					System.exit(1);
 				}
 			}
+			else if ("--samples".equals(args[idx]))
+				options.samples = true;
 			else if ("--signature".equals(args[idx]))
 				options.signature = true;
 			else if ("--threshold".equals(args[idx]))
@@ -164,7 +166,7 @@ public class Driver {
 			idx++;
 		}
 
-		// Are we generating samples or a signature?
+		// Are we generating samples for a specific Semantic Type or a signature?
 		if (options.pluginName != null) {
 			final long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
 			final TextAnalyzer analyzer = getDefaultAnalysis();
@@ -175,6 +177,8 @@ public class Driver {
 					if (options.signature)
 						logger.println(logical.getSignature());
 					else {
+						if (options.samples)
+							logger.println(logical.getQualifier());
 						if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
 							System.err.printf("Logical Type (%s) does implement LTRandom interface - however samples may not be useful.%n", logical.getQualifier());
 
@@ -187,6 +191,26 @@ public class Driver {
 
 			logger.printf("ERROR: Failed to locate plugin named '%s', use --help%n", options.pluginName);
 			System.exit(1);
+		}
+
+		// Are we generating all samples?
+		if (options.samples) {
+			final long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
+			final TextAnalyzer analyzer = getDefaultAnalysis();
+			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
+
+			for (final LogicalType logical : registered) {
+				try (PrintStream results = new PrintStream(logical.getQualifier() + ".csv")) {
+					if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
+						System.err.printf("Logical Type (%s) does implement LTRandom interface - however samples may not be useful.%n", logical.getQualifier());
+
+					// Use the Semantic Type as a header!
+					results.println(logical.getQualifier());
+					for (long l = 0; l < ouputRecords; l++)
+						results.printf("\"%s\"%n", logical.nextRandom());
+				}
+			}
+			System.exit(0);
 		}
 
 		if (helpRequested) {

@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 5.1.18
+ - ENH: Add Semantic Type - IDENTITY.DUNS (Data Universal Numbering System (Dun & Bradstreet))
+ - INT: Add support for generating a set of sample files
+ - INT: Fixup interpolation in debugging.
+
 ### 5.1.17
  - ENH: Add Semantic Type - POSTAL_CODE.POSTAL_CODE_JA, POSTAL_CODE.POSTAL_CODE_FR
 

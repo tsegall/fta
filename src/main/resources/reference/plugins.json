@@ -905,6 +905,18 @@
 		"priority": 235
 	},
 	{
+		"qualifier": "IDENTITY.DUNS",
+		"description": "Data Universal Numbering System (Dun & Bradstreet)",
+		"signature": "DMFnAAIxAV3SYWq07h/9U2S8IVo=",
+		"headerRegExps": [ ".*(DUNS|D-U-N-S).*" ],
+		"headerRegExpConfidence": [ 100 ],
+		"regExpsToMatch": [ "\\d{9}" ],
+		"regExpReturned": "\\d{9}",
+		"isRegExpComplete": false,
+		"baseType": "LONG",
+		"priority": 236
+	},
+	{
 		"qualifier": "LANGUAGE.ISO-639-2",
 		"description": "Language code - ISO 639, two character",
 		"signature": "oh7DsTF4qDUm+o+JPy7jAIoU+1Y=",

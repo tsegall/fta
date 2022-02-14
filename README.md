@@ -160,6 +160,7 @@ GENDER.TEXT_&lt;Language&gt;|Gender|cn, de, en, es, fr, it, ms, nl, pt, tr, ja
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN
+IDENTITY.DUNS|Data Universal Numbering System (Dun & Bradstreet)|*
 IDENTITY.NHS_UK|NHS Number|en-UK
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH

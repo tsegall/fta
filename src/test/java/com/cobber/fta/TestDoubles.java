@@ -816,13 +816,13 @@ public class TestDoubles {
 		final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 
 		if (!simple) {
-			logger.debug("Skipping locale '%s' as it does not use Arabic numerals.", locale);
+			logger.debug("Skipping locale '{}' as it does not use Arabic numerals.", locale);
 			return true;
 		}
 
 		final Calendar cal = GregorianCalendar.getInstance(locale);
 		if (!(cal instanceof GregorianCalendar)) {
-			logger.debug("Skipping locale '%s' as it does not use the Gregorian calendar.", locale);
+			logger.debug("Skipping locale '{}' as it does not use the Gregorian calendar.", locale);
 			return true;
 		}
 
@@ -832,19 +832,19 @@ public class TestDoubles {
 		final String negSuffix = TestUtils.getNegativeSuffix(locale);
 
 		if (negPrefix.isEmpty() && negSuffix.isEmpty()) {
-			logger.debug("Skipping locale '%s' as it has empty negPrefix and negSuffix.", locale);
+			logger.debug("Skipping locale '{}' as it has empty negPrefix and negSuffix.", locale);
 			return true;
 		}
 
 		String variant = locale.getDisplayVariant();
 		if (variant != null && !variant.isEmpty()) {
-			logger.debug("Skipping locale '%s' as it has a Variant: '%s'.", locale, variant);
+			logger.debug("Skipping locale '{}' as it has a Variant: '{}'.", locale, variant);
 			return true;
 		}
 
 		final String getExponentSeparator = formatSymbols.getExponentSeparator();
 		if (getExponentSeparator.length() != 1 || (getExponentSeparator.charAt(0) != 'e' &&  getExponentSeparator.charAt(0) != 'E')) {
-			logger.debug("Skipping locale '%s' as it uses a non-standard exponentiaion character (%s).", locale, getExponentSeparator);
+			logger.debug("Skipping locale '{}' as it uses a non-standard exponentiaion character ({}).", locale, getExponentSeparator);
 			return true;
 		}
 
@@ -879,7 +879,7 @@ public class TestDoubles {
 				}
 			}
 			catch (FTAUnsupportedLocaleException e) {
-				logger.debug("Skipping locale '%s' = reason: '%s'.", locale, e.getMessage());
+				logger.debug("Skipping locale '{}' = reason: '{}'.", locale, e.getMessage());
 				continue;
 			}
 
@@ -956,7 +956,7 @@ public class TestDoubles {
 			analysis.setLocale(locale);
 
 			if ("Arabic".contentEquals(locale.getDisplayLanguage())) {
-				logger.debug("Skipping Arabic locale '%s' - broken on Java 8.", locale.toLanguageTag());
+				logger.debug("Skipping Arabic locale '{}' - broken on Java 8.", locale.toLanguageTag());
 				continue;
 			}
 
@@ -965,7 +965,7 @@ public class TestDoubles {
 
 
 			if ("mk-MK".contentEquals(locale.toLanguageTag())) {
-				logger.debug("Skipping locale '%s' as it has trailing neg suffix.", locale);
+				logger.debug("Skipping locale '{}' as it has trailing neg suffix.", locale);
 				continue;
 			}
 
@@ -974,7 +974,7 @@ public class TestDoubles {
 
 			String grp = RegExpGenerator.slosh(formatSymbols.getGroupingSeparator());
 			String dec = RegExpGenerator.slosh(formatSymbols.getDecimalSeparator());
-			logger.debug("Locale '%s', grouping: '%s', decimal: '%s', negPrefix: '%s', negSuffix: '%s'.",
+			logger.debug("Locale '{}', grouping: '{}', decimal: '{}', negPrefix: '{}', negSuffix: '{}'.",
 					locale, grp, dec, TestUtils.getNegativePrefix(locale), TestUtils.getNegativeSuffix(locale));
 
 			final Set<String> samples = new HashSet<>();
@@ -993,7 +993,7 @@ public class TestDoubles {
 				}
 			}
 			catch (FTAUnsupportedLocaleException e) {
-				logger.debug("Skipping locale '%s' = reason: '%s'.", locale, e.getMessage());
+				logger.debug("Skipping locale '{}' = reason: '{}'.", locale, e.getMessage());
 				continue;
 			}
 
@@ -1326,7 +1326,7 @@ public class TestDoubles {
 				}
 			}
 			catch (FTAUnsupportedLocaleException e) {
-				logger.debug("Skipping locale '%s' = reason: '%s'.", locale, e.getMessage());
+				logger.debug("Skipping locale '{}' = reason: '{}'.", locale, e.getMessage());
 				continue;
 			}
 
@@ -1422,17 +1422,17 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 			final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 
 			if (!simple) {
-				logger.debug("Skipping locale '%s' as it does not use Arabic numerals.", locale);
+				logger.debug("Skipping locale '{}' as it does not use Arabic numerals.", locale);
 				continue;
 			}
 
 			final Calendar cal = GregorianCalendar.getInstance(locale);
 			if (!(cal instanceof GregorianCalendar)) {
-				logger.debug("Skipping locale '%s' as it does not use the Gregorian calendar.", locale);
+				logger.debug("Skipping locale '{}' as it does not use the Gregorian calendar.", locale);
 				continue;
 			}
 
-			logger.debug("Locale '%s', grouping: %s.", locale, grp);
+			logger.debug("Locale '{}', grouping: {}.", locale, grp);
 
 			final Set<String> samples = new HashSet<>();
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
