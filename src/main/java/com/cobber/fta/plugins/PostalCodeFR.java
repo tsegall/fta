@@ -60,8 +60,6 @@ public class PostalCodeFR extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		threshold = 90;
-
 		zipsRef = new SingletonSet("resource", "/reference/fr_postal_code.csv");
 		zips = zipsRef.getMembers();
 

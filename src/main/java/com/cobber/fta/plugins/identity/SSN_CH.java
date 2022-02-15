@@ -70,8 +70,6 @@ public class SSN_CH extends LogicalTypeInfinite {
 
 		validator = new EAN13CheckDigit();
 
-		threshold = 98;
-
 		return true;
 	}
 

@@ -44,8 +44,6 @@ public class MonthFull extends LogicalTypeFinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		threshold = 95;
-
 		months = LocaleInfo.getMonths(locale).keySet();
 
 		return true;

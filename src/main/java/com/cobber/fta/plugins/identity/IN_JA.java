@@ -58,8 +58,6 @@ public class IN_JA extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		threshold = 98;
-
 		return true;
 	}
 

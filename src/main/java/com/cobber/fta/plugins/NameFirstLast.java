@@ -59,8 +59,6 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		lastNames = new HashSet<>();
 		firstNames = new HashSet<>();
 
-		threshold = 95;
-
 		return true;
 	}
 

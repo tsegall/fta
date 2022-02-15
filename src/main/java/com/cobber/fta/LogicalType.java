@@ -228,6 +228,4 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	public PluginDefinition getPluginDefinition() {
 		return defn;
 	}
-
-
 }

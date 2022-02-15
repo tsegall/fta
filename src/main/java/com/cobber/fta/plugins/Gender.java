@@ -118,8 +118,6 @@ public class Gender extends LogicalTypeFinite {
 			allOpposites.put(language, opposites);
 		}
 
-		threshold = 95;
-
 		return true;
 	}
 

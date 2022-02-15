@@ -44,8 +44,6 @@ public class DOYAbbr extends LogicalTypeFinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		threshold = 95;
-
 		days = LocaleInfo.getShortWeekdays(locale);
 
 		return true;

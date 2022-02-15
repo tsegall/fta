@@ -44,8 +44,6 @@ public class DOYFull extends LogicalTypeFinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		threshold = 95;
-
 		days = LocaleInfo.getWeekdays(locale);
 
 		return true;

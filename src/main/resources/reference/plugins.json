@@ -24,6 +24,7 @@
 		"clazz": "com.cobber.fta.plugins.IPV4Address",
 		"headerRegExps": [ ".*(?i)(ip).*" ],
 		"headerRegExpConfidence": [ 70 ],
+		"threshold": 99,
 		"priority": 20
 	},
 	{
@@ -33,6 +34,7 @@
 		"clazz": "com.cobber.fta.plugins.IPV6Address",
 		"headerRegExps": [ ".*(?i)(ip).*" ],
 		"headerRegExpConfidence": [ 70 ],
+		"threshold": 99,
 		"priority": 25
 	},
 	{
@@ -42,7 +44,6 @@
 		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
 		"headerRegExps": [ ".*(?i)(phone|fax|mobile|cell|Mobiel).*" ],
 		"headerRegExpConfidence": [ 98 ],
-		"threshold": 95,
 		"priority": 40
 	},
 	{
@@ -50,6 +51,7 @@
 		"description": "Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67",
 		"signature": "AtovlR1okrAJUeTCpYUUTXow4yM=",
 		"clazz": "com.cobber.fta.plugins.GUID",
+		"threshold": 99,
 		"priority": 50
 	},
 	{
@@ -57,6 +59,7 @@
 		"description": "Vehicle Identification Number",
 		"signature": "JLD6IQMMMoQZTZH7OyHsGRuSoTQ=",
 		"clazz": "com.cobber.fta.plugins.VIN",
+		"threshold": 99,
 		"priority": 51
 	},
 	{
@@ -67,6 +70,7 @@
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"headerRegExps": [ ".*(?i)(zip|postalcode|postcode).*" ],
 		"headerRegExpConfidence": [ 95 ],
+		"threshold": 90,
 		"priority": 60
 	},
 	{
@@ -77,6 +81,7 @@
 		"validLocales": [ "en-US" ,"en-CA" ],
 		"headerRegExps": [ ".*(?i)(zip|postalcode|postcode).*" ],
 		"headerRegExpConfidence": [ 95 ],
+		"threshold": 90,
 		"priority": 61
 	},
 	{
@@ -150,6 +155,7 @@
 		"headerRegExpConfidence": [ 95 ],
 		"clazz": "com.cobber.fta.plugins.AddressEN",
 		"validLocales": [ "en" ],
+		"threshold": 90,
 		"priority": 70
 	},
 	{
@@ -160,6 +166,7 @@
 		"headerRegExpConfidence": [ 95 ],
 		"clazz": "com.cobber.fta.plugins.Address2EN",
 		"validLocales": [ "en" ],
+		"threshold": 90,
 		"priority": 71
 	},
 	{
@@ -247,28 +254,28 @@
 	},
 	{
 		"qualifier": "MONTH.ABBR_<LOCALE>",
-		"description": "Month Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"description": "Month Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.MonthAbbr",
 		"priority": 100
 	},
 	{
 		"qualifier": "MONTH.FULL_<LOCALE>",
-		"description": "Full Month name <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"description": "Full Month name <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.MonthFull",
 		"priority": 101
 	},
 	{
 		"qualifier": "DOY.ABBR_<LOCALE>",
-		"description": "Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"description": "Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.DOYAbbr",
 		"priority": 102
 	},
 	{
 		"qualifier": "DOY.FULL_<LOCALE>",
-		"description": "Full Day of Week name <LOCALE> = Locale, e.g. en-US for English langauge in US)",
+		"description": "Full Day of Week name <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.DOYFull",
 		"priority": 103
@@ -794,6 +801,7 @@
 		"signature": "DbzARuk/thlR/jm3sj8H3vllZCE=",
 		"headerRegExps": [ ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|(?i)(lat)" ],
 		"headerRegExpConfidence": [ 95 ],
+		"threshold": 99,
 		"priority": 192
 	},
 	{
@@ -803,6 +811,7 @@
 		"signature": "uZncg/K2y6hbc3Wul8IFlpvwEEU=",
 		"headerRegExps": [ ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|lon|lng" ],
 		"headerRegExpConfidence": [ 95 ],
+		"threshold": 99,
 		"priority": 193
 	},
 	{
@@ -862,6 +871,7 @@
 		"validLocales": [ "fr-FR" ],
 		"headerRegExps": [ ".*(?i)(SSN)" ],
 		"headerRegExpConfidence": [ 95 ],
+		"threshold": 98,
 		"priority": 231
 	},
 	{
@@ -872,6 +882,7 @@
 		"validLocales": [ "ja" ],
 		"headerRegExps": [ ".*(?i)(Individual Number|My Number|個人番号|マイナンバー|kojin bangō|mai nambā)" ],
 		"headerRegExpConfidence": [ 95 ],
+		"threshold": 98,
 		"priority": 232
 	},
 	{
@@ -882,6 +893,7 @@
 		"validLocales": [ "de-CH", "fr-CH" ,"it-CH" ],
 		"headerRegExps": [ ".*(?i)(AVH|SSN|Sozialversicherungsnummer)" ],
 		"headerRegExpConfidence": [ 95 ],
+		"threshold": 98,
 		"priority": 233
 	},
 	{
@@ -892,6 +904,7 @@
 		"validLocales": [ "en-IN" ],
 		"headerRegExps": [ ".*(?i)(Aadhar)" ],
 		"headerRegExpConfidence": [ 95 ],
+		"threshold": 98,
 		"priority": 234
 	},
 	{
@@ -899,9 +912,10 @@
 		"description": "NHS (UK)",
 		"clazz": "com.cobber.fta.plugins.identity.NHS_UK",
 		"signature": "CftIkR8ZKJb0EsTdGaP4WzBW4/c=",
-		"validLocales": [ "en-UK" ],
+		"validLocales": [ "en-GB", "en-UK" ],
 		"headerRegExps": [ ".*(?i)(NHS)" ],
 		"headerRegExpConfidence": [ 95 ],
+		"threshold": 98,
 		"priority": 235
 	},
 	{
@@ -1070,6 +1084,7 @@
 		"headerRegExps": [ ".*(?i)(title).*" ],
 		"headerRegExpConfidence": [ 90 ],
 		"validLocales": [ "en" ],
+		"threshold": 75,
 		"priority": 300
 	},
 	{

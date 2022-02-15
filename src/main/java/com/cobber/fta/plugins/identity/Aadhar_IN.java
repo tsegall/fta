@@ -71,8 +71,6 @@ public class Aadhar_IN extends LogicalTypeInfinite {
 
 		validator = new VerhoeffCheckDigit();
 
-		threshold = 98;
-
 		return true;
 	}
 

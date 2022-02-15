@@ -60,8 +60,6 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		threshold = 75;
-
 		titleStartersRef = new SingletonSet("resource", "/reference/en_title_starters.csv");
 		titleStarters = titleStartersRef.getMembers();
 		titleHotWordsRef = new SingletonSet("resource", "/reference/en_title_hotwords.csv");

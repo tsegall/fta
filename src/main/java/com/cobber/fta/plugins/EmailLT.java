@@ -78,8 +78,6 @@ public class EmailLT extends LogicalTypeInfinite {
 		final PluginDefinition pluginLast = PluginDefinition.findByQualifier("NAME.LAST");
 		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, locale);
 
-		threshold = 95;
-
 		return true;
 	}
 

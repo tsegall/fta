@@ -42,8 +42,6 @@ public abstract class CoordinateDMS extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		threshold = 99;
-
 		return true;
 	}
 

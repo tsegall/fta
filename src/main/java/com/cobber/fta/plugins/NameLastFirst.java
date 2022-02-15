@@ -51,8 +51,6 @@ public class NameLastFirst extends LogicalTypeInfinite {
 		logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), locale);
 		logicalLast = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.LAST"), locale);
 
-		threshold = 95;
-
 		return true;
 	}
 

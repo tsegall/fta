@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.1.19
+ - ENH: Ensure that all Threshold statements are captured in the plugins file (not the code).  Clarify that the default is 95%.
+
 ### 5.1.18
  - ENH: Add Semantic Type - IDENTITY.DUNS (Data Universal Numbering System (Dun & Bradstreet))
  - INT: Add support for generating a set of sample files

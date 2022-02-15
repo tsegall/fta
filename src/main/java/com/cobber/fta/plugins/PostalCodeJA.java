@@ -68,8 +68,6 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		threshold = 90;
-
 		try (InputStream filterStream = PostalCodeJA.class.getResourceAsStream("/reference/ja_postal_code.bf")) {
 			zipsRef = BloomFilter.readFrom(filterStream, Funnels.integerFunnel());
 		} catch (IOException e) {

@@ -62,7 +62,6 @@ public class Address2EN extends LogicalTypeInfinite {
 		PluginDefinition pluginAddress = PluginDefinition.findByQualifier("STREET_ADDRESS_EN");
 
 		logicalAddressLine1 = LogicalTypeFactory.newInstance(pluginAddress, locale);
-		threshold = 90;
 
 		return true;
 	}

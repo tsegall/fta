@@ -268,7 +268,8 @@ In all cases the plugin definition and locale are passed as arguments.
 
 The mandatory 'qualifier' tag is the name of this Semantic Type.
 
-The mandatory 'threshold' tag is the percentage of valid samples required by this plugin to establish the Stream Data as a a valid instance of this Semantic Type.
+The 'threshold' tag is the percentage of valid samples required by this plugin to establish the Stream Data as a a valid instance of this Semantic Type.
+The threshold will default to 95% if not specified.
 
 The 'baseType' tag constrains the plugin to streams that are of this Base Type (see discussion above on the valid Base Types).
 The baseType is defined by the implementation for all Code Plugins, STRING for all Finite plugins, and must be defined for RegExp plugins.

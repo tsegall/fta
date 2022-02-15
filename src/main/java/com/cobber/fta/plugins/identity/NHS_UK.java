@@ -66,8 +66,6 @@ public class NHS_UK extends LogicalTypeInfinite {
 
 		validator = new NHSCheckDigit();
 
-		threshold = 98;
-
 		return true;
 	}
 

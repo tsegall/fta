@@ -61,8 +61,6 @@ public class AddressEN extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		threshold = 90;
-
 		addressMarkersRef = new SingletonSet("resource", "/reference/en_street_markers.csv");
 		addressMarkers = addressMarkersRef.getMembers();
 
