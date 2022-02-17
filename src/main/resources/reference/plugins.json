@@ -148,6 +148,19 @@
 		"priority": 67
 	},
 	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_PT",
+		"description": "Postal Code (PT)",
+		"signature": "YOwVZiE8O4fMUH/RJ/34zgxi0yg=",
+		"validLocales": [ "pt-PT" ],
+		"headerRegExps": [ ".*(?i)(código|postal).*" ],
+		"headerRegExpConfidence": [ 95 ],
+		"regExpsToMatch": [ "\\d{4}-\\d{3}" ],
+		"regExpReturned": "\\d{4}-\\d{3}",
+		"threshold": 99,
+		"baseType": "STRING",
+		"priority": 68
+	},
+	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
@@ -607,6 +620,19 @@
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 136
+	},
+	{
+		"qualifier": "STATE_PROVINCE.DISTRICT_NAME_PT",
+		"description": "Portuguese District Name",
+		"signature": "zx5UQndn84s9pYXMKYEV/HEuu9U=",
+		"validLocales": [ "pt-PT" ],
+		"headerRegExps": [ ".*(?i)(Distritos|District).*" ],
+		"headerRegExpConfidence": [ 90 ],
+		"regExpReturned": "[ \\p{IsAlphabetic}]+",
+		"content": "/reference/pt_districts_full.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 137
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",

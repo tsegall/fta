@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 5.1.20
+ - ENH: Improve Portuguese support. Add Semantic Type - POSTAL_CODE.POSTAL_CODE_PT, STATE_PROVINCE.DISTRICT_NAME_PT.
+
 ### 5.1.19
  - ENH: Ensure that all Threshold statements are captured in the plugins file (not the code).  Clarify that the default is 95%.
 

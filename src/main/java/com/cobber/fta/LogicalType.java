@@ -119,8 +119,8 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	public abstract String getRegExp();
 
 	/**
-	 * Is the returned Regular Expression a true representation of the Logical Type.
-	 * For example, \\d{5} is not for US ZIP codes, whereas (?i)(male|female) could be valid for a Gender.
+	 * Is the returned Regular Expression a true and complete representation of the Logical Type.
+	 * For example, \\d{5} is not for US ZIP codes (e.g. 00000 is not a valid Zip), whereas (?i)(male|female) could be valid for a Gender.
 	 * @return The Java Regular Expression that most closely matches this Logical Type.
 	 */
 	public boolean isRegExpComplete() {

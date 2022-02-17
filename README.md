@@ -182,11 +182,12 @@ NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, nl, pr
 NAME.MIDDLE|Middle Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.MIDDLE_INITIAL|Middle Initial|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NATIONALITY_EN|Nationality|en
-POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|en-AU, en-CA, nl-NL, en-UK, fr-FR, ja
+POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|en-AU, en-CA, nl-NL, en-UK, fr-FR, ja, pt-PT
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US
 STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-UK, en-US
+STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|pt-PT
 STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US
 STATE_PROVINCE.STATE_NAME_&lt;Country&gt;|State Name|en-AU, pt-BR, de-DE, es-MX, en-US
 STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA, en-US, es-MX
@@ -279,6 +280,8 @@ For example, [ "en-US" ,"en-CA" ] indicates that the plugin should be enabled in
 any locale that uses the English language.
 
 The optional 'headerRegExps' tag is an ordered list of Regular Expression used to match against the Stream Name (if present), along with the parallel list 'headerRegExpConfidence' it controls the use of the Stream Name to match the Semantic Type.  For RegExp plugins the headerRegExps are optional but if present must have a confidence of 100% and will be required to match for the Stream to be declared a match.
+
+The optional 'isRegExpComplete' tag indicates if the returned Regular Expression is a definitive representation of the Logical Type. For example, \\d{5} is not for US ZIP codes as 00000 is not a valid Zip but does match the Regular Expression.
 
 ### RegExp plugins ###
 
