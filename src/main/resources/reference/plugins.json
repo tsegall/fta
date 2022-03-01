@@ -811,7 +811,6 @@
 		"headerRegExps": [ ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|lon|lng" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
-		"regExpReturned": "[+-]?\\d+\\.\\d+",
 		"regExpReturned": "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+)|[+-]?180\\.0+",
 		"isRegExpComplete": true,
 		"threshold": 98,
@@ -863,6 +862,19 @@
 		"baseType": "STRING",
 		"validLocales": [ "en" ],
 		"priority": 210
+	},
+	{
+		"qualifier": "COMPANY_NAME",
+		"description": "Company Name",
+		"signature": "gTynrjgOpvdzfWdVMRddP2Ksv8k=",
+		"headerRegExps": [ "^(?i)(company|company.name)$" ],
+		"headerRegExpConfidence": [ 100 ],
+		"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
+		"regExpReturned": "[-/()',& \\.\\p{IsAlphabetic}\\d]*",
+		"isRegExpComplete": false,
+		"baseType": "STRING",
+		"validLocales": [ "en" ],
+		"priority": 211
 	},
 	{
 		"qualifier": "CREDIT_CARD_TYPE",

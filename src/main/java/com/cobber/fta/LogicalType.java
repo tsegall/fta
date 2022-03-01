@@ -208,7 +208,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @param analysisConfig The Configuration of the current analysis
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract String isValidSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp, FactsTypeBased facts, Map<String, Long> cardinality, Map<String, Long> outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig);
+	public abstract String isValidSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp, Facts facts, Map<String, Long> cardinality, Map<String, Long> outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig);
 
 	/**
 	 * Does the set of members enumerated reflect the entire set.  For example any of the ISO sets are reference sets and

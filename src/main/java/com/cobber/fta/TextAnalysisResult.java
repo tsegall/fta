@@ -60,8 +60,7 @@ public class TextAnalysisResult {
 	private final long blankCount;
 	private final PatternInfo patternInfo;
 	private final double confidence;
-	private final FactsCore factsCore;
-	private final FactsTypeBased facts;
+	private final Facts facts;
 	private final DateResolutionMode resolutionMode;
 	private final AnalysisConfig analysisConfig;
 	private final Map<String, Long> cardinality;
@@ -90,7 +89,7 @@ public class TextAnalysisResult {
 	 */
 	TextAnalysisResult(final String name, final Locale locale, final long matchCount, final long totalCount, final long sampleCount,
 			final long nullCount, final long blankCount,
-			final PatternInfo patternInfo, final FactsCore factsCore, final FactsTypeBased facts,
+			final PatternInfo patternInfo, final Facts facts,
 			final double confidence, final DateResolutionMode resolutionMode,
 			final AnalysisConfig analysisConfig,
 			final Map<String, Long> cardinality,
@@ -105,7 +104,6 @@ public class TextAnalysisResult {
 		this.nullCount = nullCount;
 		this.blankCount = blankCount;
 		this.confidence = confidence;
-		this.factsCore = factsCore;
 		this.facts = facts;
 		this.resolutionMode = resolutionMode;
 		this.analysisConfig = analysisConfig;
@@ -116,7 +114,7 @@ public class TextAnalysisResult {
 
 	/**
 	 * Name of the data stream being analyzed.
-	 * @return Name of data stream..
+	 * @return Name of data stream.
 	 */
 	public String getName() {
 		return name;
@@ -195,7 +193,7 @@ public class TextAnalysisResult {
 	 * @return The minimum length.
 	 */
 	public int getMinLength() {
-		return factsCore.minRawLength;
+		return facts.minRawLength;
 	}
 
 	/**
@@ -204,7 +202,7 @@ public class TextAnalysisResult {
 	 * @return The maximum length.
 	 */
 	public int getMaxLength() {
-		return factsCore.maxRawLength;
+		return facts.maxRawLength;
 	}
 
 	/**
@@ -213,7 +211,7 @@ public class TextAnalysisResult {
 	 * @return The Decimal Separator.
 	 */
 	public char getDecimalSeparator() {
-		return factsCore.decimalSeparator;
+		return facts.decimalSeparator;
 	}
 
 	/**
@@ -274,12 +272,12 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression.
 	 */
 	public String getRegExp() {
-		if (patternInfo.isLogicalType() || (!factsCore.leadingWhiteSpace && !factsCore.trailingWhiteSpace))
+		if (patternInfo.isLogicalType() || (!facts.leadingWhiteSpace && !facts.trailingWhiteSpace))
 			return patternInfo.regexp;
 
 		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
 		String answer = "";
-		if (factsCore.leadingWhiteSpace)
+		if (facts.leadingWhiteSpace)
 			answer = KnownPatterns.PATTERN_WHITESPACE;
 		final boolean optional = patternInfo.regexp.indexOf('|') != -1;
 		if (optional)
@@ -287,7 +285,7 @@ public class TextAnalysisResult {
 		answer += patternInfo.regexp;
 		if (optional)
 			answer += ")";
-		if (factsCore.trailingWhiteSpace)
+		if (facts.trailingWhiteSpace)
 			answer += KnownPatterns.PATTERN_WHITESPACE;
 
 		return answer;
@@ -307,7 +305,7 @@ public class TextAnalysisResult {
 	 * @return True if any elements matched have leading White Space.
 	 */
 	public boolean getLeadingWhiteSpace() {
-		return factsCore.leadingWhiteSpace;
+		return facts.leadingWhiteSpace;
 	}
 
 	/**
@@ -315,7 +313,7 @@ public class TextAnalysisResult {
 	 * @return True if any elements matched have trailing White Space.
 	 */
 	public boolean getTrailingWhiteSpace() {
-		return factsCore.trailingWhiteSpace;
+		return facts.trailingWhiteSpace;
 	}
 
 	/**
@@ -323,7 +321,7 @@ public class TextAnalysisResult {
 	 * @return True if any elements matched are multi-line.
 	 */
 	public boolean getMultiline() {
-		return factsCore.multiline;
+		return facts.multiline;
 	}
 
 	/**
@@ -365,7 +363,7 @@ public class TextAnalysisResult {
 	 * @return Count of all leading zero samples.
 	 */
 	public long getLeadingZeroCount() {
-		return factsCore.leadingZeroCount;
+		return facts.leadingZeroCount;
 	}
 
 	/**
@@ -436,7 +434,7 @@ public class TextAnalysisResult {
 	 * @return A Double (0.0 ... 1.0) representing our confidence that this field is a key.
 	 */
 	public double getKeyConfidence() {
-		return factsCore.keyConfidence;
+		return facts.keyConfidence;
 	}
 
 	/**
@@ -445,7 +443,7 @@ public class TextAnalysisResult {
 	 * @return A Double (0.0 ... 1.0) representing the uniqueness of this field.
 	 */
 	public double getUniqueness() {
-		return factsCore.uniqueness;
+		return facts.uniqueness;
 	}
 
 	/**
@@ -636,7 +634,7 @@ public class TextAnalysisResult {
 		}
 
 		if (FTAType.DOUBLE == patternInfo.getBaseType())
-			analysis.put("decimalSeparator", String.valueOf(factsCore.decimalSeparator));
+			analysis.put("decimalSeparator", String.valueOf(facts.decimalSeparator));
 
 		if (statisticsEnabled()) {
 			if (facts.minValue != null)
@@ -645,8 +643,8 @@ public class TextAnalysisResult {
 				analysis.put("max", facts.maxValue);
 		}
 
-		analysis.put("minLength", factsCore.minRawLength);
-		analysis.put("maxLength", factsCore.maxRawLength);
+		analysis.put("minLength", facts.minRawLength);
+		analysis.put("maxLength", facts.maxRawLength);
 
 		if (statisticsEnabled()) {
 			if (facts.mean != null)
@@ -694,8 +692,8 @@ public class TextAnalysisResult {
 
 		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("logicalType", isLogicalType());
-			analysis.put("keyConfidence", factsCore.keyConfidence);
-			analysis.put("uniqueness", factsCore.uniqueness);
+			analysis.put("keyConfidence", facts.keyConfidence);
+			analysis.put("uniqueness", facts.uniqueness);
 			analysis.put("detectionLocale", locale.toLanguageTag());
 			analysis.put("ftaVersion", Utils.getVersion());
 

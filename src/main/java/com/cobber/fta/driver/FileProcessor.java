@@ -265,17 +265,20 @@ class FileProcessor {
 			}
 		}
 
+	    Runtime instance = Runtime.getRuntime();
+		double usedMemory = (instance.totalMemory() - instance.freeMemory()) / (1024 * 1024);
+		double maxMemory = instance.maxMemory() / (1024 + 1024);
 		final long duration = System.currentTimeMillis() - start;
 		if (options.col == -1) {
 			final double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;
-			logger.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d.%n",
-					filename, typesDetected, numFields, percentage, matchCount, sampleCount);
+			logger.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d, Used Memory: %.2f.%n",
+					filename, typesDetected, numFields, percentage, matchCount, sampleCount, usedMemory);
 		}
 		else {
 			final double confidence = result == null ? 0 : result.getConfidence();
-			logger.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%).%n",
+			logger.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%), Used Memory: %.2f.%n",
 					(typesDetected == 1 ? "yes" : "no"), matchCount,
-					sampleCount, confidence*100);
+					sampleCount, confidence*100, usedMemory);
 		}
 		logger.printf("Execution time: %dms%n", duration);
 	}

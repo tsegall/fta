@@ -138,7 +138,7 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	@Override
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
-			final FactsTypeBased facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		final String backout = currentRegExp;
 

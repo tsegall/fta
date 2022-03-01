@@ -137,6 +137,7 @@ CHECKDIGIT.ISIN|International Securities Identification Number|*
 CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit (and length between 8 and 30 inclusive)|*
 CHECKDIGIT.SEDOL|UK/Ireland Security Identifier|*
 CITY|City/Town|en
+COMPANY_NAME|Company Name|en
 CONTINENT.CODE_EN|Continent Code|en
 CONTINENT.TEXT_EN|Continent Name|en
 COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|*

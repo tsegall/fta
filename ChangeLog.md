@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 5.1.21
+ - ENH: Add Semantic Type - COMPANY_NAME (Header-only detection)
+ - ENH: Bump google phone number.
+
 ### 5.1.20
  - ENH: Improve Portuguese support. Add Semantic Type - POSTAL_CODE.POSTAL_CODE_PT, STATE_PROVINCE.DISTRICT_NAME_PT.
 

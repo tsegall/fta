@@ -32,9 +32,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.time.chrono.ChronoLocalDate;
-import java.time.chrono.ChronoLocalDateTime;
-import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
@@ -45,13 +42,11 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.SortedSet;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.slf4j.Logger;
@@ -203,51 +198,14 @@ public class TextAnalyzer {
 	private boolean trainingStarted;
 	private boolean initialized;
 
-	private final FactsCore factsCore = new FactsCore();
+	private Facts facts;
 
-	private double minDouble = Double.MAX_VALUE;
-	private double maxDouble = -Double.MAX_VALUE;
-	private final TopBottomK<Double, Double> tbDouble = new TopBottomK<>();
-
-	double currentM2 = 0.0;
-	double currentMean = 0.0;
-
-	private long minLong = Long.MAX_VALUE;
 	private long minLongNonZero = Long.MAX_VALUE;
-	private long maxLong = Long.MIN_VALUE;
 	private boolean monotonicIncreasing = true;
 	private boolean monotonicDecreasing = true;
-	private final TopBottomK<Long, Long> tbLong = new TopBottomK<>();
-
-	private String minString;
-	private String maxString;
-	private final TopBottomK<String, String> tbString = new TopBottomK<>();
 
 	private String minOutlierString;
 	private String maxOutlierString;
-
-	private String minBoolean;
-	private String maxBoolean;
-
-	private LocalTime minLocalTime;
-	private LocalTime maxLocalTime;
-	private final TopBottomK<LocalTime, LocalTime> tbLocalTime = new TopBottomK<>();
-
-	private LocalDate minLocalDate;
-	private LocalDate maxLocalDate;
-	private final TopBottomK<LocalDate, ChronoLocalDate> tbLocalDate = new TopBottomK<>();
-
-	private LocalDateTime minLocalDateTime;
-	private LocalDateTime maxLocalDateTime;
-	private final TopBottomK<LocalDateTime, ChronoLocalDateTime<?>> tbLocalDateTime = new TopBottomK<>();
-
-	private ZonedDateTime minZonedDateTime;
-	private ZonedDateTime maxZonedDateTime;
-	private final TopBottomK<ZonedDateTime, ChronoZonedDateTime<?>> tbZonedDateTime = new TopBottomK<>();
-
-	private OffsetDateTime minOffsetDateTime;
-	private OffsetDateTime maxOffsetDateTime;
-	private final TopBottomK<OffsetDateTime, OffsetDateTime> tbOffsetDateTime = new TopBottomK<>();
 
 	// The minimum length (not trimmed) - but must be non-Blank
 	private int minRawNonBlankLength = Integer.MAX_VALUE;
@@ -615,7 +573,7 @@ public class TextAnalyzer {
 	 * @param keyConfidence The new keyConfidence
 	 */
 	public void setKeyConfidence(final double keyConfidence) {
-		factsCore.keyConfidence = keyConfidence;
+		facts.keyConfidence = keyConfidence;
 	}
 
 	/**
@@ -624,7 +582,7 @@ public class TextAnalyzer {
 	 * @param uniqueness The new Uniqueness
 	 */
 	public void setUniqueness(final double uniqueness) {
-		factsCore.uniqueness = uniqueness;
+		facts.uniqueness = uniqueness;
 	}
 
 	/**
@@ -669,10 +627,10 @@ public class TextAnalyzer {
 		// We always want to track basic facts for the field
 		final int length = input.length();
 
-		if (length != 0 && length < factsCore.minRawLength)
-			factsCore.minRawLength = length;
-		if (length > factsCore.maxRawLength)
-			factsCore.maxRawLength = length;
+		if (length != 0 && length < facts.minRawLength)
+			facts.minRawLength = length;
+		if (length > facts.maxRawLength)
+			facts.maxRawLength = length;
 
 		if (trimmed.length() != 0) {
 			if (length != 0 && length < minRawNonBlankLength)
@@ -686,11 +644,11 @@ public class TextAnalyzer {
 
 	private boolean trackLong(final String trimmed, final PatternInfo patternInfo, final boolean register) {
 		// Track String facts - just in case we end up backing out.
-		if (minString == null || minString.compareTo(trimmed) > 0)
-			minString = trimmed;
+		if (facts.minString == null || facts.minString.compareTo(trimmed) > 0)
+			facts.minString = trimmed;
 
-		if (maxString == null || maxString.compareTo(trimmed) < 0)
-			maxString = trimmed;
+		if (facts.maxString == null || facts.maxString.compareTo(trimmed) < 0)
+			facts.maxString = trimmed;
 
 		long l;
 
@@ -731,7 +689,7 @@ public class TextAnalyzer {
 
 		if (register) {
 			if (trimmed.charAt(0) == '0' && digits != 1)
-				factsCore.leadingZeroCount++;
+				facts.leadingZeroCount++;
 
 			if (digits < minTrimmedLengthNumeric)
 				minTrimmedLengthNumeric = digits;
@@ -741,24 +699,24 @@ public class TextAnalyzer {
 			if (l != 0 && l < minLongNonZero)
 				minLongNonZero = l;
 
-			if (l < minLong)
-				minLong = l;
+			if (l < facts.minLong)
+				facts.minLong = l;
 			else
 				monotonicDecreasing = false;
 
-			if (l > maxLong)
-				maxLong = l;
+			if (l > facts.maxLong)
+				facts.maxLong = l;
 			else
 				monotonicIncreasing = false;
 
 			if (analysisConfig.collectStatistics) {
 				// Calculate the mean & standard deviation using Welford's algorithm
-				final double delta = l - currentMean;
+				final double delta = l - facts.currentMean;
 				// matchCount is one low - because we do not 'count' the record until we return from this routine indicating valid
-				currentMean += delta / (matchCount + 1);
-				currentM2 += delta * (l - currentMean);
+				facts.currentMean += delta / (matchCount + 1);
+				facts.currentM2 += delta * (l - facts.currentMean);
 
-				tbLong.observe(l);
+				facts.tbLong.observe(l);
 			}
 		}
 
@@ -779,15 +737,15 @@ public class TextAnalyzer {
 		final boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower) || "n".equals(trimmedLower));
 
 		if (isTrue) {
-			if (minBoolean == null)
-				minBoolean = trimmedLower;
-			if (maxBoolean == null || "false".equals(maxBoolean) || "no".equals(maxBoolean) || "n".equals(maxBoolean))
-				maxBoolean = trimmedLower;
+			if (facts.minBoolean == null)
+				facts.minBoolean = trimmedLower;
+			if (facts.maxBoolean == null || "false".equals(facts.maxBoolean) || "no".equals(facts.maxBoolean) || "n".equals(facts.maxBoolean))
+				facts.maxBoolean = trimmedLower;
 		} else if (isFalse) {
-			if (maxBoolean == null)
-				maxBoolean = trimmedLower;
-			if (minBoolean == null || "true".equals(minBoolean) || "yes".equals(maxBoolean) || "y".equals(maxBoolean))
-				minBoolean = trimmedLower;
+			if (facts.maxBoolean == null)
+				facts.maxBoolean = trimmedLower;
+			if (facts.minBoolean == null || "true".equals(facts.minBoolean) || "yes".equals(facts.maxBoolean) || "y".equals(facts.maxBoolean))
+				facts.minBoolean = trimmedLower;
 		}
 
 		return isTrue || isFalse;
@@ -822,11 +780,11 @@ public class TextAnalyzer {
 		if (matchPatternInfo.getMaxLength() != -1 && len > matchPatternInfo.getMaxLength())
 			return false;
 
-		if (minString == null || minString.compareTo(cleaned) > 0)
-			minString = cleaned;
+		if (facts.minString == null || facts.minString.compareTo(cleaned) > 0)
+			facts.minString = cleaned;
 
-		if (maxString == null || maxString.compareTo(cleaned) < 0)
-			maxString = cleaned;
+		if (facts.maxString == null || facts.maxString.compareTo(cleaned) < 0)
+			facts.maxString = cleaned;
 
 		if (len < minTrimmedLength)
 			minTrimmedLength = len;
@@ -834,7 +792,7 @@ public class TextAnalyzer {
 			maxTrimmedLength = len;
 
 		if (analysisConfig.collectStatistics)
-			tbString.observe(cleaned);
+			facts.tbString.observe(cleaned);
 
 		return true;
 	}
@@ -864,8 +822,8 @@ public class TextAnalyzer {
 			if (input.indexOf(localeGroupingSeparator) != -1)
 				groupingSeparators++;
 			// Make sure to track the decimal separator being used for doubles
-			if (localeDecimalSeparator != '.' && factsCore.decimalSeparator != localeDecimalSeparator && input.indexOf(localeDecimalSeparator) != -1)
-				factsCore.decimalSeparator = localeDecimalSeparator;
+			if (localeDecimalSeparator != '.' && facts.decimalSeparator != localeDecimalSeparator && input.indexOf(localeDecimalSeparator) != -1)
+				facts.decimalSeparator = localeDecimalSeparator;
 		}
 
 		if (patternInfo.isLogicalType()) {
@@ -880,19 +838,19 @@ public class TextAnalyzer {
 			return true;
 
 		if (register && analysisConfig.collectStatistics) {
-			if (d < minDouble)
-				minDouble = d;
+			if (d < facts.minDouble)
+				facts.minDouble = d;
 
-			if (d > maxDouble)
-				maxDouble = d;
+			if (d > facts.maxDouble)
+				facts.maxDouble = d;
 
 			// Calculate the mean & standard deviation using Welford's algorithm
-			final double delta = d - currentMean;
+			final double delta = d - facts.currentMean;
 			// matchCount is one low - because we do not 'count' the record until we return from this routine indicating valid
-			currentMean += delta / (matchCount + 1);
-			currentM2 += delta * (d - currentMean);
+			facts.currentMean += delta / (matchCount + 1);
+			facts.currentM2 += delta * (d - facts.currentMean);
 
-			tbDouble.observe(d);
+			facts.tbDouble.observe(d);
 		}
 
 		return true;
@@ -920,11 +878,11 @@ public class TextAnalyzer {
 		case LOCALTIME:
 			if (register && analysisConfig.collectStatistics) {
 				final LocalTime localTime = LocalTime.parse(trimmed, formatter);
-				if (minLocalTime == null || localTime.compareTo(minLocalTime) < 0)
-					minLocalTime = localTime;
-				if (maxLocalTime == null || localTime.compareTo(maxLocalTime) > 0)
-					maxLocalTime = localTime;
-				tbLocalTime.observe(localTime);
+				if (facts.minLocalTime == null || localTime.compareTo(facts.minLocalTime) < 0)
+					facts.minLocalTime = localTime;
+				if (facts.maxLocalTime == null || localTime.compareTo(facts.maxLocalTime) > 0)
+					facts.maxLocalTime = localTime;
+				facts.tbLocalTime.observe(localTime);
 			}
 			else
 				result.parse(trimmed);
@@ -933,11 +891,11 @@ public class TextAnalyzer {
 		case LOCALDATE:
 			if (register && analysisConfig.collectStatistics) {
 				final LocalDate localDate = LocalDate.parse(trimmed, formatter);
-				if (minLocalDate == null || localDate.compareTo(minLocalDate) < 0)
-					minLocalDate = localDate;
-				if (maxLocalDate == null || localDate.compareTo(maxLocalDate) > 0)
-					maxLocalDate = localDate;
-				tbLocalDate.observe(localDate);
+				if (facts.minLocalDate == null || localDate.compareTo(facts.minLocalDate) < 0)
+					facts.minLocalDate = localDate;
+				if (facts.maxLocalDate == null || localDate.compareTo(facts.maxLocalDate) > 0)
+					facts.maxLocalDate = localDate;
+				facts.tbLocalDate.observe(localDate);
 			}
 			else
 				result.parse(trimmed);
@@ -946,11 +904,11 @@ public class TextAnalyzer {
 		case LOCALDATETIME:
 			if (register && analysisConfig.collectStatistics) {
 				final LocalDateTime localDateTime = LocalDateTime.parse(trimmed, formatter);
-				if (minLocalDateTime == null || localDateTime.compareTo(minLocalDateTime) < 0)
-					minLocalDateTime = localDateTime;
-				if (maxLocalDateTime == null || localDateTime.compareTo(maxLocalDateTime) > 0)
-					maxLocalDateTime = localDateTime;
-				tbLocalDateTime.observe(localDateTime);
+				if (facts.minLocalDateTime == null || localDateTime.compareTo(facts.minLocalDateTime) < 0)
+					facts.minLocalDateTime = localDateTime;
+				if (facts.maxLocalDateTime == null || localDateTime.compareTo(facts.maxLocalDateTime) > 0)
+					facts.maxLocalDateTime = localDateTime;
+				facts.tbLocalDateTime.observe(localDateTime);
 			}
 			else
 				result.parse(trimmed);
@@ -959,11 +917,11 @@ public class TextAnalyzer {
 		case ZONEDDATETIME:
 			if (register && analysisConfig.collectStatistics) {
 				final ZonedDateTime zonedDateTime = ZonedDateTime.parse(trimmed, formatter);
-				if (minZonedDateTime == null || zonedDateTime.compareTo(minZonedDateTime) < 0)
-					minZonedDateTime = zonedDateTime;
-				if (maxZonedDateTime == null || zonedDateTime.compareTo(maxZonedDateTime) > 0)
-					maxZonedDateTime = zonedDateTime;
-				tbZonedDateTime.observe(zonedDateTime);
+				if (facts.minZonedDateTime == null || zonedDateTime.compareTo(facts.minZonedDateTime) < 0)
+					facts.minZonedDateTime = zonedDateTime;
+				if (facts.maxZonedDateTime == null || zonedDateTime.compareTo(facts.maxZonedDateTime) > 0)
+					facts.maxZonedDateTime = zonedDateTime;
+				facts.tbZonedDateTime.observe(zonedDateTime);
 			}
 			else
 				result.parse(trimmed);
@@ -972,11 +930,11 @@ public class TextAnalyzer {
 		case OFFSETDATETIME:
 			if (register && analysisConfig.collectStatistics) {
 				final OffsetDateTime offsetDateTime = OffsetDateTime.parse(trimmed, formatter);
-				if (minOffsetDateTime == null || offsetDateTime.compareTo(minOffsetDateTime) < 0)
-					minOffsetDateTime = offsetDateTime;
-				if (maxOffsetDateTime == null || offsetDateTime.compareTo(maxOffsetDateTime) > 0)
-					maxOffsetDateTime = offsetDateTime;
-				tbOffsetDateTime.observe(offsetDateTime);
+				if (facts.minOffsetDateTime == null || offsetDateTime.compareTo(facts.minOffsetDateTime) < 0)
+					facts.minOffsetDateTime = offsetDateTime;
+				if (facts.maxOffsetDateTime == null || offsetDateTime.compareTo(facts.maxOffsetDateTime) > 0)
+					facts.maxOffsetDateTime = offsetDateTime;
+				facts.tbOffsetDateTime.observe(offsetDateTime);
 			}
 			else
 				result.parse(trimmed);
@@ -1106,6 +1064,9 @@ public class TextAnalyzer {
 
 		if (analysisConfig.traceOptions != null)
 			traceConfig = new Trace(analysisConfig.traceOptions, context,  analysisConfig);
+
+		facts = new Facts(locale, analysisConfig.collectStatistics);
+
 
 		initialized = true;
 	}
@@ -1454,7 +1415,7 @@ public class TextAnalyzer {
 		int c = 0;
 		for (final LogicalTypeInfinite logical : infiniteTypes) {
 			try {
-				if (logical.isCandidate(trimmed, compressedl0, charCounts, lastIndex))
+				if ((matchPatternInfo == null || logical.acceptsBaseType(matchPatternInfo.getBaseType())) && logical.isCandidate(trimmed, compressedl0, charCounts, lastIndex))
 					candidateCounts[c]++;
 			}
 			catch (Exception e) {
@@ -1972,8 +1933,8 @@ public class TextAnalyzer {
 				trackString(s, s.trim(), newPatternInfo, false);
 		}
 		else if (matchPatternInfo.getBaseType().equals(FTAType.DOUBLE)) {
-			minDouble = minLong;
-			maxDouble = maxLong;
+			facts.minDouble = facts.minLong;
+			facts.maxDouble = facts.maxLong;
 			for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
 				for (int i = 0; i < entry.getValue(); i++)
 					trackDouble(entry.getKey(), matchPatternInfo, true);
@@ -2025,11 +1986,11 @@ public class TextAnalyzer {
 
 		// Determine if there is leading or trailing White space (if not done previously)
 		if (trimmedLength != 0) {
-			if (!factsCore.leadingWhiteSpace)
-				factsCore.leadingWhiteSpace = input.charAt(0) == ' ' || input.charAt(0) == '\t';
-			if (!factsCore.trailingWhiteSpace) {
+			if (!facts.leadingWhiteSpace)
+				facts.leadingWhiteSpace = input.charAt(0) == ' ' || input.charAt(0) == '\t';
+			if (!facts.trailingWhiteSpace) {
 				final int length = input.length();
-				factsCore.trailingWhiteSpace = input.charAt(length - 1) == ' ' || input.charAt(length - 1) == '\t';
+				facts.trailingWhiteSpace = input.charAt(length - 1) == ' ' || input.charAt(length - 1) == '\t';
 			}
 		}
 
@@ -2039,8 +2000,8 @@ public class TextAnalyzer {
 			maxTrimmedLength = trimmedLength;
 
 		// Determine if this is a multi-line field (if not already decided)
-		if (!factsCore.multiline)
-			factsCore.multiline = input.indexOf('\n') != -1 || input.indexOf('\r') != -1;
+		if (!facts.multiline)
+			facts.multiline = input.indexOf('\n') != -1 || input.indexOf('\r') != -1;
 	}
 
 	/**
@@ -2299,153 +2260,6 @@ public class TextAnalyzer {
 			result.replace(idx, idx + 1, lengthQualifier(minTrimmedLengthNumeric, maxTrimmedLengthNumeric)).toString();
 	}
 
-	private FactsTypeBased calculateFacts() {
-		final FactsTypeBased ret = new FactsTypeBased();
-
-		// We know the type - so calculate a minimum and maximum value
-		switch (matchPatternInfo.getBaseType()) {
-		case BOOLEAN:
-			ret.minValue = String.valueOf(minBoolean);
-			ret.maxValue = String.valueOf(maxBoolean);
-			break;
-
-		case LONG:
-			ret.minValue = String.valueOf(minLong);
-			ret.maxValue = String.valueOf(maxLong);
-			ret.mean = currentMean;
-			ret.variance = currentM2/matchCount;
-			ret.bottomK = tbLong.bottomKasString();
-			ret.topK = tbLong.topKasString();
-			break;
-
-		case DOUBLE:
-			final NumberFormat formatter = NumberFormat.getInstance(locale);
-			formatter.setMaximumFractionDigits(12);
-			formatter.setMinimumFractionDigits(1);
-			formatter.setGroupingUsed(false);
-
-			ret.minValue = formatter.format(minDouble);
-			ret.maxValue = formatter.format(maxDouble);
-			ret.mean = currentMean;
-			ret.variance = currentM2/matchCount;
-			ret.bottomK = tbDouble.bottomKasString();
-			ret.topK = tbDouble.topKasString();
-			break;
-
-		case STRING:
-			if ("NULL".equals(matchPatternInfo.typeQualifier)) {
-				factsCore.minRawLength = factsCore.maxRawLength = 0;
-			} else if ("BLANK".equals(matchPatternInfo.typeQualifier)) {
-				// If all the fields are blank (i.e. a variable number of spaces) - then we have not saved any of the raw input, so we
-				// need to synthesize the min and max value, as well as the minRawlength if not set.
-				if (factsCore.minRawLength == Integer.MAX_VALUE)
-					factsCore.minRawLength = 0;
-				final StringBuilder s = new StringBuilder(factsCore.maxRawLength);
-				for (int i = 0; i < factsCore.maxRawLength; i++) {
-					if (i == factsCore.minRawLength)
-						ret.minValue = s.toString();
-					s.append(' ');
-				}
-				ret.maxValue = s.toString();
-				if (factsCore.minRawLength == factsCore.maxRawLength)
-					ret.minValue = ret.maxValue;
-			}
-			else {
-				ret.minValue = minString;
-				ret.maxValue = maxString;
-				ret.bottomK = tbString.bottomKasString();
-				ret.topK = tbString.topKasString();
-			}
-			break;
-
-		case LOCALDATE:
-			if (analysisConfig.collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-				ret.minValue = minLocalDate == null ? null : minLocalDate.format(dtf);
-				ret.maxValue = maxLocalDate == null ? null : maxLocalDate.format(dtf);
-				ret.bottomK = alignFormat(tbLocalDate.bottomKasString(), FTAType.LOCALDATE, dtf);
-				ret.topK = alignFormat(tbLocalDate.topKasString(), FTAType.LOCALDATE, dtf);
-			}
-			break;
-
-		case LOCALTIME:
-			if (analysisConfig.collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-				ret.minValue = minLocalTime == null ? null : minLocalTime.format(dtf);
-				ret.maxValue = maxLocalTime == null ? null : maxLocalTime.format(dtf);
-				ret.bottomK = alignFormat(tbLocalTime.bottomKasString(), FTAType.LOCALTIME, dtf);
-				ret.topK = alignFormat(tbLocalTime.topKasString(), FTAType.LOCALTIME, dtf);
-			}
-			break;
-
-		case LOCALDATETIME:
-			if (analysisConfig.collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-				ret.minValue = minLocalDateTime == null ? null : minLocalDateTime.format(dtf);
-				ret.maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(dtf);
-				ret.bottomK = alignFormat(tbLocalDateTime.bottomKasString(), FTAType.LOCALDATETIME, dtf);
-				ret.topK = alignFormat(tbLocalDateTime.topKasString(), FTAType.LOCALDATETIME, dtf);
-			}
-			break;
-
-		case ZONEDDATETIME:
-			if (analysisConfig.collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-				ret.minValue = minZonedDateTime.format(dtf);
-				ret.maxValue = maxZonedDateTime.format(dtf);
-				ret.bottomK = alignFormat(tbZonedDateTime.bottomKasString(), FTAType.ZONEDDATETIME, dtf);
-				ret.topK = alignFormat(tbZonedDateTime.topKasString(), FTAType.ZONEDDATETIME, dtf);
-			}
-			break;
-
-		case OFFSETDATETIME:
-			if (analysisConfig.collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-				ret.minValue = minOffsetDateTime.format(dtf);
-				ret.maxValue = maxOffsetDateTime.format(dtf);
-				ret.bottomK = alignFormat(tbOffsetDateTime.bottomKasString(), FTAType.OFFSETDATETIME, dtf);
-				ret.topK = alignFormat(tbOffsetDateTime.topKasString(), FTAType.OFFSETDATETIME, dtf);
-			}
-			break;
-		}
-
-		return ret;
-	}
-
-	/*
-	 * Return a new Set (in the same order) as the input set but formatted according to the supplied DateTimeFormatter.
-	 * The input set is ordered based on the position on a timeline, not lexigraphically.
-	 * Note: The input set is formatted according to the default formatter based on the type.
-	 */
-	private Set<String> alignFormat(final SortedSet<String> toFix, final FTAType type, final DateTimeFormatter dtf) {
-		final Set<String> ret = new LinkedHashSet<>();
-		for (final String s : toFix) {
-			switch (type) {
-			case LOCALDATE:
-				ret.add(LocalDate.parse(s).format(dtf));
-				break;
-			case LOCALTIME:
-				ret.add(LocalTime.parse(s).format(dtf));
-				break;
-			case LOCALDATETIME:
-				ret.add(LocalDateTime.parse(s).format(dtf));
-				break;
-			case ZONEDDATETIME:
-				ret.add(ZonedDateTime.parse(s).format(dtf));
-				break;
-			case OFFSETDATETIME:
-				ret.add(OffsetDateTime.parse(s).format(dtf));
-				break;
-			}
-		}
-
-		return ret;
-	}
 
 	private class FiniteMatchResult {
 		LogicalTypeFinite logical;
@@ -2591,39 +2405,39 @@ public class TextAnalyzer {
 		Map<String, Long> cardinalityUpper = new HashMap<>();
 
 		if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id || KnownPatterns.ID.ID_SIGNED_LONG == matchPatternInfo.id) {
-			if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id && matchPatternInfo.typeQualifier == null && minLong < 0)
+			if (KnownPatterns.ID.ID_LONG == matchPatternInfo.id && matchPatternInfo.typeQualifier == null && facts.minLong < 0)
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG);
 
 			// Sometimes a Long is not a Long but it is really a date
-			if (groupingSeparators == 0 && minLongNonZero != Long.MAX_VALUE && minLongNonZero > EARLY_LONG_YYYYMMDD && maxLong < LATE_LONG_YYYYMMDD &&
+			if (groupingSeparators == 0 && minLongNonZero != Long.MAX_VALUE && minLongNonZero > EARLY_LONG_YYYYMMDD && facts.maxLong < LATE_LONG_YYYYMMDD &&
 					DateTimeParser.plausibleDateCore(false, (int)minLongNonZero%100, ((int)minLongNonZero/100)%100, (int)minLongNonZero/10000, 4)  &&
-					DateTimeParser.plausibleDateCore(false, (int)maxLong%100, ((int)maxLong/100)%100, (int)maxLong/10000, 4)  &&
+					DateTimeParser.plausibleDateCore(false, (int)facts.maxLong%100, ((int)facts.maxLong/100)%100, (int)facts.maxLong/10000, 4)  &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("date"))) {
-				matchPatternInfo = new PatternInfo(null, (minLongNonZero == minLong || tokenStreams.size() == 1) ? "\\d{8}" : "0|\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, false, 8, 8, null, "yyyyMMdd");
+				matchPatternInfo = new PatternInfo(null, (minLongNonZero == facts.minLong || tokenStreams.size() == 1) ? "\\d{8}" : "0|\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, false, 8, 8, null, "yyyyMMdd");
 				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-				minLocalDate = LocalDate.parse(String.valueOf(minLongNonZero), dtf);
-				maxLocalDate = LocalDate.parse(String.valueOf(maxLong), dtf);
+				facts.minLocalDate = LocalDate.parse(String.valueOf(minLongNonZero), dtf);
+				facts.maxLocalDate = LocalDate.parse(String.valueOf(facts.maxLong), dtf);
 
 				// If we are collecting statistics - we need to generate the topK and bottomK
 				if (analysisConfig.collectStatistics)
 					for (final String s : cardinality.keySet())
 						if (!Utils.allZeroes(s))
 							trackDateTime(s, matchPatternInfo, true);
-			} else if (groupingSeparators == 0 && minLongNonZero != Long.MAX_VALUE && minLongNonZero > 1800 && maxLong < 2041 &&
+			} else if (groupingSeparators == 0 && minLongNonZero != Long.MAX_VALUE && minLongNonZero > 1800 && facts.maxLong < 2041 &&
 					((realSamples >= reflectionSamples && cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("year") || context.getStreamName().toLowerCase(locale).contains("date"))) {
-				matchPatternInfo = new PatternInfo(null, minLongNonZero == minLong ? "\\d{4}" : "0+|\\d{4}", FTAType.LOCALDATE, "yyyy", false, false, 4, 4, null, "yyyy");
-				minLocalDate = LocalDate.of((int)minLongNonZero, 1, 1);
-				maxLocalDate = LocalDate.of((int)maxLong, 1, 1);
+				matchPatternInfo = new PatternInfo(null, minLongNonZero == facts.minLong ? "\\d{4}" : "0+|\\d{4}", FTAType.LOCALDATE, "yyyy", false, false, 4, 4, null, "yyyy");
+				facts.minLocalDate = LocalDate.of((int)minLongNonZero, 1, 1);
+				facts.maxLocalDate = LocalDate.of((int)facts.maxLong, 1, 1);
 
 				// If we are collecting statistics - we need to generate the topK and bottomK
 				if (analysisConfig.collectStatistics)
 					for (final String s : cardinality.keySet())
 						if (Integer.valueOf(s) != 0)
 							trackDateTime(s, matchPatternInfo, true);
-			} else if (cardinality.size() == 2 && minLong == 0 && maxLong == 1) {
+			} else if (cardinality.size() == 2 && facts.minLong == 0 && facts.maxLong == 1) {
 				// boolean by any other name
-				minBoolean = "0";
-				maxBoolean = "1";
+				facts.minBoolean = "0";
+				facts.maxBoolean = "1";
 				matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO);
 			} else {
 				if (groupingSeparators != 0)
@@ -2635,7 +2449,7 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.LONG) &&
 							logical.isMatch(matchPatternInfo.regexp) &&
-							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
+							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 						debug("Type determination - was LONG, matchPatternInfo - {}", matchPatternInfo);
@@ -2655,7 +2469,7 @@ public class TextAnalyzer {
 			backoutToString(realSamples);
 			confidence = (double) matchCount / realSamples;
 		} else if (FTAType.DOUBLE.equals(matchPatternInfo.getBaseType()) && !matchPatternInfo.isLogicalType()) {
-			if (minDouble < 0.0)
+			if (facts.minDouble < 0.0)
 				matchPatternInfo = knownPatterns.negation(matchPatternInfo.regexp);
 
 			if (groupingSeparators != 0)
@@ -2664,7 +2478,7 @@ public class TextAnalyzer {
 			for (final LogicalTypeRegExp logical : regExpTypes) {
 				if (logical.acceptsBaseType(FTAType.DOUBLE) &&
 						logical.isMatch(matchPatternInfo.regexp) &&
-						logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
+						logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 					confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 					break;
@@ -2793,7 +2607,7 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.STRING) &&
 							(logical.isMatch(matchPatternInfo.regexp) || tokenStreams.matches(logical.getRegExp())) &&
-							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
+							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 						updated = true;
@@ -2870,7 +2684,7 @@ public class TextAnalyzer {
 					for (final LogicalTypeRegExp logical : regExpTypes) {
 						if (logical.acceptsBaseType(FTAType.STRING) &&
 								logical.isMatch(matchPatternInfo.regexp) &&
-								logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
+								logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 							matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 							confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 							break;
@@ -2886,7 +2700,7 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.STRING) &&
 							logical.isMatch(regExp) &&
-							logical.isValidSet(context, best.getOccurrences(), realSamples, matchPatternInfo.regexp, calculateFacts(), cardinality, outliers, tokenStreams, analysisConfig) == null) {
+							logical.isValidSet(context, best.getOccurrences(), realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig) == null) {
 						matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						matchCount = best.getOccurrences();
 						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
@@ -2907,34 +2721,32 @@ public class TextAnalyzer {
 
 			// Qualify random string with a min and max length
 			if (!updated && KnownPatterns.PATTERN_ANY_VARIABLE.equals(matchPatternInfo.regexp)) {
-				final String newPattern = KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minRawNonBlankLength, maxRawNonBlankLength, factsCore.leadingWhiteSpace, factsCore.trailingWhiteSpace, factsCore.multiline);
+				final String newPattern = KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minRawNonBlankLength, maxRawNonBlankLength, facts.leadingWhiteSpace, facts.trailingWhiteSpace, facts.multiline);
 				matchPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, matchPatternInfo.typeQualifier, false, false,
-						factsCore.minRawLength, factsCore.maxRawLength, null, null);
+						facts.minRawLength, facts.maxRawLength, null, null);
 				updated = true;
 			}
 		}
 
-		final FactsTypeBased facts = calculateFacts();
-
 		// Only attempt to do key identification if we have not already been told the answer
-		if (factsCore.keyConfidence == null) {
+		if (facts.keyConfidence == null) {
 			// Attempt to identify keys?
-			factsCore.keyConfidence = 0.0;
+			facts.keyConfidence = 0.0;
 			if (sampleCount > MIN_SAMPLES_FOR_KEY && analysisConfig.maxCardinality >= MIN_SAMPLES_FOR_KEY / 2 &&
 					(cardinality.size() == analysisConfig.maxCardinality || cardinality.size() == sampleCount) &&
 					blankCount == 0 && nullCount == 0 &&
 					((matchPatternInfo.typeQualifier != null && matchPatternInfo.typeQualifier.equals("GUID")) ||
 					(matchPatternInfo.typeQualifier == null &&
-					((FTAType.STRING.equals(matchPatternInfo.getBaseType()) && factsCore.minRawLength == factsCore.maxRawLength && factsCore.minRawLength < 32)
+					((FTAType.STRING.equals(matchPatternInfo.getBaseType()) && facts.minRawLength == facts.maxRawLength && facts.minRawLength < 32)
 							|| FTAType.LONG.equals(matchPatternInfo.getBaseType()))))) {
-				factsCore.keyConfidence = 0.9;
+				facts.keyConfidence = 0.9;
 
 				if (cardinality.size() == analysisConfig.maxCardinality)
 					// Might be a key but only iff every element in the cardinality
 					// set only has a count of 1
 					for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
 						if (entry.getValue() != 1) {
-							factsCore.keyConfidence = 0.0;
+							facts.keyConfidence = 0.0;
 							break;
 						}
 					}
@@ -2942,9 +2754,9 @@ public class TextAnalyzer {
 		}
 
 		// Only attempt to do uniqueness if we have not already been told the answer
-		if (factsCore.uniqueness == null) {
+		if (facts.uniqueness == null) {
 			if (cardinality.isEmpty())
-				factsCore.uniqueness = 0.0;
+				facts.uniqueness = 0.0;
 			// Can only generate uniqueness if we have not overflowed Max Cardinality
 			else if (cardinality.size() < analysisConfig.maxCardinality) {
 				int uniques = 0;
@@ -2952,19 +2764,19 @@ public class TextAnalyzer {
 					if (entry.getValue() == 1)
 						uniques++;
 				}
-				factsCore.uniqueness = (double)uniques/cardinality.size();
+				facts.uniqueness = (double)uniques/cardinality.size();
 			}
 			else if (FTAType.LONG.equals(matchPatternInfo.getBaseType()) && (monotonicIncreasing || monotonicDecreasing)) {
-				factsCore.uniqueness = 1.0;
+				facts.uniqueness = 1.0;
 			}
 			else
 				// -1 indicates we have no perspective on the uniqueness of this field
-				factsCore.uniqueness = -1.0;
+				facts.uniqueness = -1.0;
 		}
 
 		final TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(), locale,
 				matchCount, totalCount, sampleCount, nullCount, blankCount,
-				matchPatternInfo, factsCore, facts, confidence, context.getDateResolutionMode(),
+				matchPatternInfo, facts.calculateFacts(matchPatternInfo, matchCount), confidence, context.getDateResolutionMode(),
 				analysisConfig, cardinality, outliers, tokenStreams);
 
 		if (traceConfig != null)
