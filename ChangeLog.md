@@ -1,7 +1,7 @@
 
 ## Changes ##
 
-### 5.1.21
+### 5.1.22
  - ENH: Add Semantic Type - CHECKDIGIT.ISBN
  - ENH: Bump guava.
 
