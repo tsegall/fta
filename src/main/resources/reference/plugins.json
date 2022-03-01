@@ -1115,6 +1115,13 @@
 		"priority": 296
 	},
 	{
+		"qualifier": "CHECKDIGIT.ISBN",
+		"description": "ISBN-13 identifiers (with hyphens)",
+		"signature": "4ZyGddBdufT5msMx8IyO5ZJP30s=",
+		"clazz": "com.cobber.fta.plugins.CheckDigitISBN",
+		"priority": 297
+	},
+	{
 		"qualifier": "JOB_TITLE_EN",
 		"description": "Job Title (English Language)",
 		"signature": "6IKfzTa++cfQDm7aehEqSaJ/rek=",

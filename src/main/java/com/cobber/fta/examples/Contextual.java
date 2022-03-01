@@ -26,7 +26,7 @@ public abstract class Contextual {
 	public static void main(final String[] args) throws FTAException {
 
 		// Providing a broader context and not just the column name will improve detection in a set of use cases
-		AnalyzerContext context = new AnalyzerContext("MI", DateResolutionMode.None, "ClientDetails", new String[] { "First", "MI", "Last" });
+		final AnalyzerContext context = new AnalyzerContext("MI", DateResolutionMode.None, "ClientDetails", new String[] { "First", "MI", "Last" });
 
 		final TextAnalyzer analysis = new TextAnalyzer(context);
 

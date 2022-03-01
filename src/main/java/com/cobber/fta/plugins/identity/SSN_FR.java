@@ -56,7 +56,7 @@ public class SSN_FR extends LogicalTypeInfinite {
 
 		int offset = 0;
 		for (int i = 0; i < trimmed.length(); i++) {
-			char ch = trimmed.charAt(i);
+			final char ch = trimmed.charAt(i);
 			if (ch == ' ')
 				continue;
 			if (!isValidChar(ch, offset))
@@ -117,7 +117,7 @@ public class SSN_FR extends LogicalTypeInfinite {
 
 		int offset = 0;
 		for (int i = 0; i < input.length(); i++) {
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			if (ch == ' ')
 				continue;
 			if (!isValidChar(ch, offset))

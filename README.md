@@ -133,6 +133,7 @@ CHECKDIGIT.ABA|ABA Number (or Routing Transit Number (RTN))|*
 CHECKDIGIT.CUSIP|North American Security Identifier|*
 CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)|*
 CHECKDIGIT.IBAN|International Bank Account Number|*
+CHECKDIGIT.ISBN|ISBN-13 identifiers (with hyphens)|*
 CHECKDIGIT.ISIN|International Securities Identification Number|*
 CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit (and length between 8 and 30 inclusive)|*
 CHECKDIGIT.SEDOL|UK/Ireland Security Identifier|*

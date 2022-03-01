@@ -59,7 +59,7 @@ public class Address2EN extends LogicalTypeInfinite {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		PluginDefinition pluginAddress = PluginDefinition.findByQualifier("STREET_ADDRESS_EN");
+		final PluginDefinition pluginAddress = PluginDefinition.findByQualifier("STREET_ADDRESS_EN");
 
 		logicalAddressLine1 = LogicalTypeFactory.newInstance(pluginAddress, locale);
 

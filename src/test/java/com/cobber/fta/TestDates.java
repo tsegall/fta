@@ -3509,7 +3509,7 @@ public class TestDates {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss");
-		logger.info("Count %d, duration: %dms, ~%d per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
+		logger.info("Count {}, duration: {}ms, ~{} per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes
 		//   - Count 9684201, duration: 10004ms, ~968,400 per second

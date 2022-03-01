@@ -68,7 +68,8 @@ public class CharClassToken extends Token {
 
 	@Override
 	public CharClassToken newInstance() {
-		CharClassToken ret = new CharClassToken(this.type);
+		final CharClassToken ret = new CharClassToken(this.type);
+
 		ret.countASCII = this.countASCII;
 		ret.lowASCII = this.lowASCII;
 		ret.highASCII = this.highASCII;
@@ -89,7 +90,7 @@ public class CharClassToken extends Token {
 	}
 
 	private Set<Character> getFullSet() {
-		Set<Character> ret = new TreeSet<>(seenNonASCII);
+		final Set<Character> ret = new TreeSet<>(seenNonASCII);
 
 		if (countASCII != 0)
 			for (int i = lowASCII; i <= highASCII; i++)
@@ -139,7 +140,7 @@ public class CharClassToken extends Token {
 			if (!(o instanceof Range))
 				return false;
 
-			Range other = (Range)o;
+			final Range other = (Range)o;
 
 			return other != null && this.min == other.min && this.max == other.max;
 		}
@@ -156,7 +157,7 @@ public class CharClassToken extends Token {
 	 * @return A set of Ranges (low-high characters) that represent all the characters in this Character Class.
 	 */
 	public Set<Range> getRanges() {
-		Set<Range> ranges = new TreeSet<>();
+		final Set<Range> ranges = new TreeSet<>();
 		Range range = null;
 		char last = '¶';
 
@@ -183,14 +184,14 @@ public class CharClassToken extends Token {
 	}
 
 	private String getSimpleRegExp(final boolean enumerateRanges) {
-		Set<Character> chars = getFullSet();
+		final Set<Character> chars = getFullSet();
 		if (chars.size() == 1)
 			return String.valueOf(chars.iterator().next());
 		if (!enumerateRanges)
 			return type.getRegExp();
 
 		String ret = "[";
-		for (Range range : getRanges())
+		for (final Range range : getRanges())
 			ret += range.toString();
 		ret += "]";
 
@@ -202,13 +203,13 @@ public class CharClassToken extends Token {
 		if (!fitted)
 			return type.getRegExp() + RegExpSplitter.qualify(minObserved, maxObserved);
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 
 		CharClassToken lastToken = null;
-		List<CharClassToken> kids = children == null ? Collections.singletonList(this) : children;
+		final List<CharClassToken> kids = children == null ? Collections.singletonList(this) : children;
 		boolean enumerateRanges = false;
 		// Coalesce multiple numerics or alphas into one
-		for (CharClassToken token : kids) {
+		for (final CharClassToken token : kids) {
 			enumerateRanges = Token.Type.DIGIT_CLASS.equals(token.type) && token.countASCII != token.maxSetASCII;
 			if (lastToken == null) {
 				lastToken = token.newInstance();
@@ -229,7 +230,7 @@ public class CharClassToken extends Token {
 
 	@Override
 	public Token merge(final Token o) {
-		CharClassToken other = (CharClassToken)o;
+		final CharClassToken other = (CharClassToken)o;
 
 		children = null;
 

@@ -50,10 +50,10 @@ public abstract class CoordinateDMS extends LogicalTypeInfinite {
 		final StringBuilder ret = new StringBuilder(10);
 		final char[] directionChars = getDirectionChars();
 
-		ret.append(random.nextInt(getMaxDegrees()));
-		ret.append(10 + random.nextInt(50));
-		ret.append(10 + random.nextInt(50));
-		ret.append(random.nextInt(2) == 1 ?  directionChars[0] :  directionChars[1]);
+		ret.append(random.nextInt(getMaxDegrees()))
+		.append(10 + random.nextInt(50))
+		.append(10 + random.nextInt(50))
+		.append(random.nextInt(2) == 1 ?  directionChars[0] :  directionChars[1]);
 
 		return ret.toString();
 	}

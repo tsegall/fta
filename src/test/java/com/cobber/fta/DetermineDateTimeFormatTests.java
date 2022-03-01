@@ -1760,7 +1760,7 @@ public class DetermineDateTimeFormatTests {
 			Assert.assertTrue(result.isValid8("01/26/2012 10:42:23 GMT"));
 		}
 		final long done = System.currentTimeMillis();
-		logger.debug("Custom = %dms, Java = %dms.", doneCustom - start, done - doneCustom);
+		logger.debug("Custom = {}ms, Java = {}ms.", doneCustom - start, done - doneCustom);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

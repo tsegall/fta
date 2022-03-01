@@ -265,9 +265,8 @@ class FileProcessor {
 			}
 		}
 
-	    Runtime instance = Runtime.getRuntime();
-		double usedMemory = (instance.totalMemory() - instance.freeMemory()) / (1024 * 1024);
-		double maxMemory = instance.maxMemory() / (1024 + 1024);
+	    final Runtime instance = Runtime.getRuntime();
+		final double usedMemory = (instance.totalMemory() - instance.freeMemory()) / (1024 * 1024);
 		final long duration = System.currentTimeMillis() - start;
 		if (options.col == -1) {
 			final double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;

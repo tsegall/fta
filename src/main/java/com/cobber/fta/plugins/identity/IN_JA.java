@@ -61,7 +61,7 @@ public class IN_JA extends LogicalTypeInfinite {
 		return true;
 	}
 
-	private int calculateCheckDigit(String in) {
+	private int calculateCheckDigit(final String in) {
 		long mySum = 0;
 		for (int i = 0; i < 5; i++)
 			mySum += (11 - i - 5) * (in.charAt(i) - '0');
@@ -106,7 +106,7 @@ public class IN_JA extends LogicalTypeInfinite {
 		final StringBuilder b = new StringBuilder(IN_LENGTH);
 
 		for (int i = 0; i < input.length(); i++) {
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			if (ch == ' ')
 				continue;
 			if (!Character.isDigit(ch))

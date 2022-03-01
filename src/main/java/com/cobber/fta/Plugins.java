@@ -46,7 +46,7 @@ public class Plugins {
 		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, false);
 	}
 
-	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
 		registerPluginListCore(plugins, dataStreamName, locale, false);
 	}
 

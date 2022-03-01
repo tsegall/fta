@@ -1175,7 +1175,7 @@ public class TestLongs {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.LONG);
 		Assert.assertNull(result.getTypeQualifier());
-		logger.info("Count %d, duration: %dms, ~%d per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
+		logger.info("Count {}, duration: {}ms, ~{} per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes
 		//   - Count 109980301, duration: 10003ms, ~10,998,030 per second

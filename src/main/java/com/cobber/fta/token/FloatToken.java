@@ -21,7 +21,7 @@ package com.cobber.fta.token;
 public class FloatToken extends Token {
 	private final boolean signed;
 
-	public FloatToken(boolean signed) {
+	public FloatToken(final boolean signed) {
 		super(signed ? Token.Type.SIGNED_FLOAT : Token.Type.UNSIGNED_FLOAT);
 		this.signed = signed;
 	}

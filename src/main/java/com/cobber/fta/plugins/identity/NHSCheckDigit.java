@@ -42,15 +42,15 @@ public final class NHSCheckDigit extends ModulusCheckDigit  {
 	 * for the specified code
 	 */
 	@Override
-	protected int calculateModulus(String code, boolean includesCheckDigit) throws CheckDigitException {
+	protected int calculateModulus(final String code, final boolean includesCheckDigit) throws CheckDigitException {
 		if (includesCheckDigit) {
-			char checkDigit = code.charAt(code.length()-1); // fetch the last character
+			final char checkDigit = code.charAt(code.length()-1); // fetch the last character
 			if (!Character.isDigit(checkDigit)){
 				throw new CheckDigitException("Invalid checkdigit["+ checkDigit+ "] in " + code);
 			}
 		}
 		for (int i = 0; i < code.length(); i++) {
-			char ch = code.charAt(i);
+			final char ch = code.charAt(i);
 			if (ch < '0' || ch > '9')
 				throw new CheckDigitException("Invalid Character[" +
 						(i + 1) + "] = '" + ch + "'");
@@ -71,8 +71,8 @@ public final class NHSCheckDigit extends ModulusCheckDigit  {
 	 * @return The weighted value of the character.
 	 */
 	@Override
-	protected int weightedValue(int charValue, int leftPos, int rightPos) {
-		int weight = 11 - leftPos;
+	protected int weightedValue(final int charValue, final int leftPos, final int rightPos) {
+		final int weight = 11 - leftPos;
 		return charValue * weight;
 	}
 }

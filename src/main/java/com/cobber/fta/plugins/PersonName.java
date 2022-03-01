@@ -26,10 +26,6 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.token.TokenStreams;
 
 public abstract class PersonName extends LogicalTypeFiniteSimple {
-	private class Dodge {
-		Iterator<String> iter;
-	}
-
 	public static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*";
 	// The threshold we use if we have a strong signal from the header
 	private static final int IDENTIFIED_LOW_THRESHOLD = 40;
@@ -37,6 +33,10 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 	private static final int IDENTIFIED_HIGH_THRESHOLD = 60;
 	private static final int ITERS = 5;
 	private Dodge[] iterators;
+
+	private class Dodge {
+		Iterator<String> iter;
+	}
 
 	public PersonName(final PluginDefinition plugin, final String filename) {
 		super(plugin, REGEXP, ".*", 95);

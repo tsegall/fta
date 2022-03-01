@@ -2,6 +2,10 @@
 ## Changes ##
 
 ### 5.1.21
+ - ENH: Add Semantic Type - CHECKDIGIT.ISBN
+ - ENH: Bump guava.
+
+### 5.1.21
  - ENH: Add Semantic Type - COMPANY_NAME (Header-only detection)
  - ENH: Bump google phone number.
 

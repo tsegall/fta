@@ -87,7 +87,7 @@ public class PostalCodeFR extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input) {
+	public boolean isValid(final String input) {
 		final int len = input.length();
 
 		if (len != 5)

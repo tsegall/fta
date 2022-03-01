@@ -286,12 +286,12 @@ public class Driver {
 		return  analysis;
 	}
 
-	private static void createBloomOutput(String inputName, String outputName) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+	private static void createBloomOutput(final String inputName, final String outputName) throws UnsupportedEncodingException, FileNotFoundException, IOException {
 		int lineCount = 0;
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(inputName)), "UTF-8"))) {
 			String input;
 			while ((input = in.readLine()) != null) {
-				String trimmed = input.trim();
+				final String trimmed = input.trim();
 				if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
 					continue;
 				lineCount++;
@@ -300,12 +300,12 @@ public class Driver {
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(inputName)), "UTF-8"))) {
 			String input;
-			BloomFilter<Integer> filter = BloomFilter.create(
+			final BloomFilter<Integer> filter = BloomFilter.create(
 					  Funnels.integerFunnel(),
 					  lineCount,
 					  0.005);
 			while ((input = in.readLine()) != null) {
-				String trimmed = input.trim();
+				final String trimmed = input.trim();
 				if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
 					continue;
 				filter.put(Integer.valueOf(trimmed));

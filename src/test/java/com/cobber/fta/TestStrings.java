@@ -937,7 +937,7 @@ public class TestStrings {
 		Assert.assertEquals(result.getConfidence(), 1.0);
 		Assert.assertEquals(result.getType(), FTAType.STRING);
 		Assert.assertNull(result.getTypeQualifier());
-		logger.info("Count %d, duration: %dms, ~%d per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
+		logger.info("Count {}, duration: {}ms, ~{} per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes
 		//   - Count 27154301, duration: 10003ms, ~2,715,430 per second
