@@ -170,7 +170,7 @@ public class KnownPatterns {
 		final NumberFormat simple = NumberFormat.getNumberInstance(locale);
 		if (simple instanceof DecimalFormat) {
 			String negPrefix = ((DecimalFormat) simple).getNegativePrefix();
-			String negSuffix = ((DecimalFormat) simple).getNegativeSuffix();
+			final String negSuffix = ((DecimalFormat) simple).getNegativeSuffix();
 
 			// Ignore the LEFT_TO_RIGHT_MARK if it exists
 			if (!negPrefix.isEmpty() && negPrefix.charAt(0) == LEFT_TO_RIGHT_MARK)

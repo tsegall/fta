@@ -109,12 +109,18 @@ public class Facts {
 
 	PatternInfo currentPatternInfo;
 
-	Locale locale;
-	boolean collectStatistics;
+	private Locale locale;
+	private boolean collectStatistics;
 
-	public Facts(Locale locale, boolean collectStatistics) {
+	public void setLocale(Locale locale) {
 		this.locale = locale;
+	}
+
+	public void setCollectStatistics(boolean collectStatistics) {
 		this.collectStatistics = collectStatistics;
+	}
+
+	public Facts() {
 	}
 
 	public Facts calculateFacts(PatternInfo matchPatternInfo, long matchCount) {

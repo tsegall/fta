@@ -83,7 +83,7 @@ public class Gender extends LogicalTypeFinite {
 		// Dutch
 		allGenderData.put("NL", new GenderData(".*(?i)(Gender|Geslach|Geslacht)", "VROUWELIJK", "MANNELIJK", "V", "M"));
 		// Portuguese
-		allGenderData.put("PT", new GenderData(".*(?i)(Gender|Gênero)", "FEMININO", "MASCULINO", "F", "M"));
+		allGenderData.put("PT", new GenderData(".*(?i)(Gender|Gênero)", "FEMININA", "MASCULINO", "F", "M"));
 		// Turkish
 		allGenderData.put("TR", new GenderData(".*(?i)(Gender)", "KADIN", "ERKEK", "K", "E"));
 

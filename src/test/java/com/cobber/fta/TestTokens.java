@@ -15,11 +15,14 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
@@ -34,9 +37,9 @@ public class TestTokens {
 		final String input = "0123456789012345678901234567890";
 
 		TokenStream ts = new TokenStream(input, 1);
-		Assert.assertEquals(ts.getKey(), "ANY");
-		Assert.assertEquals(ts.getOccurrences(), 1);
-		Assert.assertEquals(ts.getRegExp(false), ".+");
+		assertEquals(ts.getKey(), "ANY");
+		assertEquals(ts.getOccurrences(), 1);
+		assertEquals(ts.getRegExp(false), ".+");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -44,11 +47,11 @@ public class TestTokens {
 		final String input = "0";
 
 		TokenStream ts = new TokenStream(input, 1);
-		Assert.assertEquals(ts.getKey(), "9");
-		Assert.assertEquals(ts.getCompressedKey(), "9");
-		Assert.assertEquals(ts.getRegExp(false), "\\d");
-		Assert.assertEquals(ts.getRegExp(true), "0");
-		Assert.assertEquals(ts.getOccurrences(), 1);
+		assertEquals(ts.getKey(), "9");
+		assertEquals(ts.getCompressedKey(), "9");
+		assertEquals(ts.getRegExp(false), "\\d");
+		assertEquals(ts.getRegExp(true), "0");
+		assertEquals(ts.getOccurrences(), 1);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -56,11 +59,11 @@ public class TestTokens {
 		final String input = "01";
 
 		TokenStream ts = new TokenStream(input, 1);
-		Assert.assertEquals(ts.getKey(), "99");
-		Assert.assertEquals(ts.getCompressedKey(), "9");
-		Assert.assertEquals(ts.getRegExp(false), "\\d{2}");
-		Assert.assertEquals(ts.getRegExp(true), "01");
-		Assert.assertEquals(ts.getOccurrences(), 1);
+		assertEquals(ts.getKey(), "99");
+		assertEquals(ts.getCompressedKey(), "9");
+		assertEquals(ts.getRegExp(false), "\\d{2}");
+		assertEquals(ts.getRegExp(true), "01");
+		assertEquals(ts.getOccurrences(), 1);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -68,11 +71,11 @@ public class TestTokens {
 		final String input = "0123456789";
 
 		TokenStream ts = new TokenStream(input, 1);
-		Assert.assertEquals(ts.getKey(), "9999999999");
-		Assert.assertEquals(ts.getCompressedKey(), "9");
-		Assert.assertEquals(ts.getRegExp(false), "\\d{10}");
-		Assert.assertEquals(ts.getRegExp(true), "0123456789");
-		Assert.assertEquals(ts.getOccurrences(), 1);
+		assertEquals(ts.getKey(), "9999999999");
+		assertEquals(ts.getCompressedKey(), "9");
+		assertEquals(ts.getRegExp(false), "\\d{10}");
+		assertEquals(ts.getRegExp(true), "0123456789");
+		assertEquals(ts.getOccurrences(), 1);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -80,11 +83,11 @@ public class TestTokens {
 		final String input = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 		TokenStream ts = new TokenStream(input, 1);
-		Assert.assertEquals(ts.getKey(), "XXXXXXXXXXXXXXXXXXXXXXXXXX");
-		Assert.assertEquals(ts.getCompressedKey(), "X");
+		assertEquals(ts.getKey(), "XXXXXXXXXXXXXXXXXXXXXXXXXX");
+		assertEquals(ts.getCompressedKey(), "X");
 
-		Assert.assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{26}");
-		Assert.assertEquals(ts.getRegExp(true), "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{26}");
+		assertEquals(ts.getRegExp(true), "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -92,9 +95,9 @@ public class TestTokens {
 		final String input = "abcdefghijklmnopqrstuvwxyz";
 
 		TokenStream ts = new TokenStream(input, 1);
-		Assert.assertEquals(ts.getKey(), "XXXXXXXXXXXXXXXXXXXXXXXXXX");
-		Assert.assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{26}");
-		Assert.assertEquals(ts.getRegExp(true), "abcdefghijklmnopqrstuvwxyz");
+		assertEquals(ts.getKey(), "XXXXXXXXXXXXXXXXXXXXXXXXXX");
+		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{26}");
+		assertEquals(ts.getRegExp(true), "abcdefghijklmnopqrstuvwxyz");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -102,14 +105,14 @@ public class TestTokens {
 		final String input = "München";
 
 		TokenStream ts = new TokenStream(input, 1);
-		Assert.assertEquals(ts.getKey(), "XXXXXXX");
-		Assert.assertEquals(ts.getCompressedKey(), "X");
-		Assert.assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{7}");
-		Assert.assertEquals(ts.getRegExp(true), "München");
+		assertEquals(ts.getKey(), "XXXXXXX");
+		assertEquals(ts.getCompressedKey(), "X");
+		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{7}");
+		assertEquals(ts.getRegExp(true), "München");
 		for (Token token : ts.getTokens()) {
 			if (token instanceof CharClassToken) {
 				CharClassToken ccToken = (CharClassToken)token;
-				Assert.assertEquals(ccToken.getRanges().size(), 1);
+				assertEquals(ccToken.getRanges().size(), 1);
 			}
 		}
 	}
@@ -119,10 +122,10 @@ public class TestTokens {
 		final String input = "+-=?#$";
 
 		TokenStream ts = new TokenStream(input, 1);
-		Assert.assertEquals(ts.getKey(), "+-=?#$");
-		Assert.assertEquals(ts.getCompressedKey(), "+-=?#$");
-		Assert.assertEquals(ts.getRegExp(false), "\\+-=?#\\$");
-		Assert.assertEquals(ts.getRegExp(true), "\\+-=?#\\$");
+		assertEquals(ts.getKey(), "+-=?#$");
+		assertEquals(ts.getCompressedKey(), "+-=?#$");
+		assertEquals(ts.getRegExp(false), "\\+-=?#\\$");
+		assertEquals(ts.getRegExp(true), "\\+-=?#\\$");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -132,34 +135,34 @@ public class TestTokens {
 		ts.track("01338", 2);
 		ts.track("22457", 3);
 
-		Assert.assertEquals(ts.getSamples(), 6);
-		Assert.assertEquals(ts.getRegExp(false), "\\d{5}");
+		assertEquals(ts.getSamples(), 6);
+		assertEquals(ts.getRegExp(false), "\\d{5}");
 		String fittedAnswer = "[0-2][1-26][3-47][358][7-9]";
-		Assert.assertEquals(ts.getRegExp(true), fittedAnswer);
+		assertEquals(ts.getRegExp(true), fittedAnswer);
 
-		Assert.assertTrue("16789".matches(fittedAnswer));
-		Assert.assertTrue("01338".matches(fittedAnswer));
-		Assert.assertTrue("22457".matches(fittedAnswer));
+		assertTrue("16789".matches(fittedAnswer));
+		assertTrue("01338".matches(fittedAnswer));
+		assertTrue("22457".matches(fittedAnswer));
 
 		Token[] tokens = ts.getBest().getTokens();
 		for (int i = 0; i < tokens.length; i++) {
 			CharClassToken ccToken = (CharClassToken)tokens[i];
 			for (CharClassToken.Range range : ccToken.getRanges()) {
 				if (i == 0) {
-					Assert.assertEquals(ccToken.getRanges().size(), 1);
-					Assert.assertEquals(range.getMin(), '0');
-					Assert.assertEquals(range.getMax(), '2');
+					assertEquals(ccToken.getRanges().size(), 1);
+					assertEquals(range.getMin(), '0');
+					assertEquals(range.getMax(), '2');
 				}
 				else if (i == 1)
-					Assert.assertEquals(ccToken.getRanges().size(), 2);
+					assertEquals(ccToken.getRanges().size(), 2);
 				else if (i == 2)
-					Assert.assertEquals(ccToken.getRanges().size(), 2);
+					assertEquals(ccToken.getRanges().size(), 2);
 				else if (i == 3)
-					Assert.assertEquals(ccToken.getRanges().size(), 3);
+					assertEquals(ccToken.getRanges().size(), 3);
 				else if (i == 4) {
-					Assert.assertEquals(ccToken.getRanges().size(), 1);
-					Assert.assertEquals(range.getMin(), '7');
-					Assert.assertEquals(range.getMax(), '9');
+					assertEquals(ccToken.getRanges().size(), 1);
+					assertEquals(range.getMin(), '7');
+					assertEquals(range.getMax(), '9');
 				}
 			}
 		}
@@ -173,8 +176,8 @@ public class TestTokens {
 		ts.track("mxewys ramyc mhfxuwnt i ypesjme zoxayy", 3);
 		ts.track("Hello", 3);
 
-		Assert.assertEquals(ts.getRegExp(false), ".+");
-		Assert.assertEquals(ts.getRegExp(true), ".+");
+		assertEquals(ts.getRegExp(false), ".+");
+		assertEquals(ts.getRegExp(true), ".+");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -186,9 +189,9 @@ public class TestTokens {
 		ts.track("09:19:88:07:04:00", 1);
 		ts.track("09:04:08:11:01:22", 1);
 
-		Assert.assertEquals(ts.size(), 1);
+		assertEquals(ts.size(), 1);
 		TokenStream tokenStream = ts.getStreams().values().iterator().next();
-		Assert.assertTrue(tokenStream.matches("[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"));
+		assertTrue(tokenStream.matches("[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -200,7 +203,7 @@ public class TestTokens {
 		ts.track("09:19:88:07:04:00", 1);
 		ts.track("09:04:08:11:01:22", 1);
 
-		Assert.assertEquals(ts.size(), 2);
+		assertEquals(ts.size(), 2);
 
 		int matches = 0;
 
@@ -208,7 +211,7 @@ public class TestTokens {
 			if (entry.getValue().matches("[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"))
 				matches++;
 		}
-		Assert.assertEquals(matches, 1);
+		assertEquals(matches, 1);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -221,9 +224,9 @@ public class TestTokens {
 		ts.track("00:04:08:1E:01:DD", 1);
 
 		for (Map.Entry<String, TokenStream> entry : ts.getStreams().entrySet())
-			Assert.assertTrue(entry.getValue().matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}"));
+			assertTrue(entry.getValue().matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}"));
 
-		Assert.assertTrue(ts.matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}"));
+		assertTrue(ts.matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -235,7 +238,7 @@ public class TestTokens {
 		ts.track("00:19:8c:0F:04:00", 1);
 		ts.track("00:04:08:1E:01:GG", 1);
 
-		Assert.assertFalse(ts.matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}"));
+		assertFalse(ts.matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -253,28 +256,28 @@ public class TestTokens {
 			}
 		}
 
-		Assert.assertEquals(tokenStreams.size(), 4);
+		assertEquals(tokenStreams.size(), 4);
 
 		for (Map.Entry<String, TokenStream> entry : tokenStreams.getStreams().entrySet()) {
 			if ("XXX9-9999".equals(entry.getKey())) {
-				Assert.assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}{3}\\d-\\d{4}");
-				Assert.assertEquals(entry.getValue().getRegExp(true), "ICD9-1[0-9]{2}[02468]");
-				Assert.assertEquals(entry.getValue().getOccurrences(), 500);
+				assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}{3}\\d-\\d{4}");
+				assertEquals(entry.getValue().getRegExp(true), "ICD9-1[0-9]{2}[02468]");
+				assertEquals(entry.getValue().getOccurrences(), 500);
 			}
 			else if ("XXX99-9999".equals(entry.getKey())) {
-				Assert.assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}{3}\\d{2}-\\d{4}");
-				Assert.assertEquals(entry.getValue().getRegExp(true), "ICD10-1[0-9]{2}[02468]");
-				Assert.assertEquals(entry.getValue().getOccurrences(), 500);
+				assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}{3}\\d{2}-\\d{4}");
+				assertEquals(entry.getValue().getRegExp(true), "ICD10-1[0-9]{2}[02468]");
+				assertEquals(entry.getValue().getOccurrences(), 500);
 			}
 			else if ("XXXX-9999".equals(entry.getKey())) {
-				Assert.assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}{4}-\\d{4}");
-				Assert.assertEquals(entry.getValue().getRegExp(true), "INCA-1[0-9]{2}[02468]");
-				Assert.assertEquals(entry.getValue().getOccurrences(), 500);
+				assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}{4}-\\d{4}");
+				assertEquals(entry.getValue().getRegExp(true), "INCA-1[0-9]{2}[02468]");
+				assertEquals(entry.getValue().getOccurrences(), 500);
 			}
 			else if ("X".equals(entry.getKey())) {
-				Assert.assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}");
-				Assert.assertEquals(entry.getValue().getRegExp(true), "\\p{IsAlphabetic}");
-				Assert.assertEquals(entry.getValue().getOccurrences(), 1500);
+				assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}");
+				assertEquals(entry.getValue().getRegExp(true), "\\p{IsAlphabetic}");
+				assertEquals(entry.getValue().getOccurrences(), 1500);
 			}
 		}
 	}

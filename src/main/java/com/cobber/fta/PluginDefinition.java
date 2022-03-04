@@ -98,7 +98,7 @@ public class PluginDefinition {
 	}
 
 	public PluginDefinition(final String qualifier, final String description, final String regExpReturned, final String[] regExpsToMatch, final String[] invalidList,
-			final String content, final String contentType, final String backout, final String[] validLocales, boolean localeSensitive,
+			final String content, final String contentType, final String backout, final String[] validLocales, final boolean localeSensitive,
 			final String[] headerRegExps, final int[] headerRegExpConfidence, final int threshold, final FTAType  baseType) {
 		this.qualifier = qualifier;
 		this.description = description;

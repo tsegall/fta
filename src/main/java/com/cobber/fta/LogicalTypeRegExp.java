@@ -147,7 +147,7 @@ public class LogicalTypeRegExp extends LogicalType {
 			return backout;
 
 		// Plugins can insist that the maximum and minimum values be present in the observed set.
-		if (getMinMaxPresent() && (cardinality.get(defn.minimum) == null || cardinality.get(defn.maximum) == null))
+		if (isMinMaxPresent() && (cardinality.get(defn.minimum) == null || cardinality.get(defn.maximum) == null))
 			return backout;
 
 		if (defn.headerRegExps != null) {
@@ -210,7 +210,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		return defn.minSamples;
 	}
 
-	public boolean getMinMaxPresent() {
+	public boolean isMinMaxPresent() {
 		return defn.minMaxPresent;
 	}
 

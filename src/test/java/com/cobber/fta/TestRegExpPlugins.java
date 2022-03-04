@@ -15,12 +15,15 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
@@ -47,16 +50,16 @@ public class TestRegExpPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getRegExp(), "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
-		Assert.assertEquals(result.getTypeQualifier(), "MACADDRESS");
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getRegExp(), "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
+		assertEquals(result.getTypeQualifier(), "MACADDRESS");
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples)
-			Assert.assertTrue(sample.matches(result.getRegExp()));
+			assertTrue(sample.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -75,16 +78,16 @@ public class TestRegExpPlugins {
 		}
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
-		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}", result.getRegExp());
-		Assert.assertEquals(result.getTypeQualifier(), "SSN");
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
+		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}", result.getRegExp());
+		assertEquals(result.getTypeQualifier(), "SSN");
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()));
+			assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -103,16 +106,16 @@ public class TestRegExpPlugins {
 		}
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), SAMPLE_COUNT);
-		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}", result.getRegExp());
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), SAMPLE_COUNT);
+		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}", result.getRegExp());
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()));
+			assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -131,15 +134,15 @@ public class TestRegExpPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getTypeQualifier(), "MONTH.DIGITS");
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getTypeQualifier(), "MONTH.DIGITS");
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()));
+			assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -160,15 +163,15 @@ public class TestRegExpPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()));
+			assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -189,15 +192,15 @@ public class TestRegExpPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.DOUBLE);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()));
+			assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -243,15 +246,15 @@ public class TestRegExpPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getTypeQualifier(), "CITY");
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getTypeQualifier(), "CITY");
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()), sample);
+			assertTrue(sample.matches(result.getRegExp()), sample);
 		}
 	}
 }

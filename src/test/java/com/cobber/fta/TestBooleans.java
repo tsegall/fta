@@ -15,10 +15,14 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Map;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
@@ -33,18 +37,18 @@ public class TestBooleans {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 1);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), 1);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_TRUE_FALSE));
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
-		Assert.assertEquals(result.getMinLength(), 4);
-		Assert.assertEquals(result.getMaxLength(), 4);
-		Assert.assertEquals(result.getMinValue(), "true");
-		Assert.assertEquals(result.getMaxValue(), "true");
-		Assert.assertTrue("true".matches(result.getRegExp()));
+		assertEquals(result.getSampleCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_TRUE_FALSE));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+		assertEquals(result.getMinLength(), 4);
+		assertEquals(result.getMaxLength(), 4);
+		assertEquals(result.getMinValue(), "true");
+		assertEquals(result.getMaxValue(), "true");
+		assertTrue("true".matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
@@ -63,22 +67,22 @@ public class TestBooleans {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), inputs.length + NULL_COUNT);
-		Assert.assertEquals(result.getOutlierCount(), 1);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
-		Assert.assertEquals(result.getNullCount(), NULL_COUNT);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
+		assertEquals(locked, -1);
+		assertEquals(result.getSampleCount(), inputs.length + NULL_COUNT);
+		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getNullCount(), NULL_COUNT);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
 				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_TRUE_FALSE) + ")" +
 				KnownPatterns.PATTERN_WHITESPACE);
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - NULL_COUNT));
-		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
-		Assert.assertEquals(result.getTypeQualifier(), "TRUE_FALSE");
-		Assert.assertEquals(result.getMinLength(), 4);
-		Assert.assertEquals(result.getMaxLength(), 12);
-		Assert.assertEquals(result.getMinValue(), "false");
-		Assert.assertEquals(result.getMaxValue(), "true");
-		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
+		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - NULL_COUNT));
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+		assertEquals(result.getTypeQualifier(), "TRUE_FALSE");
+		assertEquals(result.getMinLength(), 4);
+		assertEquals(result.getMaxLength(), 12);
+		assertEquals(result.getMinValue(), "false");
+		assertEquals(result.getMaxValue(), "true");
+		assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
 
@@ -86,7 +90,7 @@ public class TestBooleans {
 			if (input.matches(result.getRegExp()))
 				matches++;
 		}
-		Assert.assertEquals(result.getMatchCount(), matches);
+		assertEquals(result.getMatchCount(), matches);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
@@ -104,29 +108,29 @@ public class TestBooleans {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
-		Assert.assertEquals(result.getOutlierCount(), 1);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
-		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
+		assertEquals(locked, -1);
+		assertEquals(result.getSampleCount(), inputs.length + 2);
+		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
 				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO) + ")" +
 				KnownPatterns.PATTERN_WHITESPACE);
-		Assert.assertEquals(result.getConfidence(), .9375);
-		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
-		Assert.assertEquals(result.getTypeQualifier(), "YES_NO");
-		Assert.assertEquals(result.getMinLength(), 2);
-		Assert.assertEquals(result.getMaxLength(), 9);
-		Assert.assertEquals(result.getMinValue(), "no");
-		Assert.assertEquals(result.getMaxValue(), "yes");
-		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
+		assertEquals(result.getConfidence(), .9375);
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+		assertEquals(result.getTypeQualifier(), "YES_NO");
+		assertEquals(result.getMinLength(), 2);
+		assertEquals(result.getMaxLength(), 9);
+		assertEquals(result.getMinValue(), "no");
+		assertEquals(result.getMaxValue(), "yes");
+		assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
 		for (final String input : inputs) {
 			if (input.trim().matches(result.getRegExp()))
 					matches++;
 		}
-		Assert.assertEquals(result.getMatchCount(), matches);
+		assertEquals(result.getMatchCount(), matches);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
@@ -145,29 +149,29 @@ public class TestBooleans {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertNotEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), inputs.length + NULL_COUNT);
-		Assert.assertEquals(result.getOutlierCount(), 1);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
-		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
+		assertNotEquals(locked, -1);
+		assertEquals(result.getSampleCount(), inputs.length + NULL_COUNT);
+		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
 				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO) + ")" +
 				KnownPatterns.PATTERN_WHITESPACE);
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - NULL_COUNT));
-		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
-		Assert.assertEquals(result.getTypeQualifier(), "YES_NO");
-		Assert.assertEquals(result.getMinLength(), 2);
-		Assert.assertEquals(result.getMaxLength(), 9);
-		Assert.assertEquals(result.getMinValue(), "no");
-		Assert.assertEquals(result.getMaxValue(), "yes");
-		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
+		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - NULL_COUNT));
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+		assertEquals(result.getTypeQualifier(), "YES_NO");
+		assertEquals(result.getMinLength(), 2);
+		assertEquals(result.getMaxLength(), 9);
+		assertEquals(result.getMinValue(), "no");
+		assertEquals(result.getMaxValue(), "yes");
+		assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
 		for (final String input : inputs) {
 			if (input.matches(result.getRegExp()))
 				matches++;
 		}
-		Assert.assertEquals(result.getMatchCount(), matches);
+		assertEquals(result.getMatchCount(), matches);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
@@ -194,27 +198,27 @@ public class TestBooleans {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertNotEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount() - result.getBlankCount());
-		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_Y_N));
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
-		Assert.assertEquals(result.getTypeQualifier(), "Y_N");
-		Assert.assertEquals(result.getMinLength(), 1);
-		Assert.assertEquals(result.getMaxLength(), 1);
-		Assert.assertEquals(result.getMinValue(), "n");
-		Assert.assertEquals(result.getMaxValue(), "y");
-		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
+		assertNotEquals(locked, -1);
+		assertEquals(result.getSampleCount(), inputs.length + 2);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount() - result.getBlankCount());
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_Y_N));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+		assertEquals(result.getTypeQualifier(), "Y_N");
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 1);
+		assertEquals(result.getMinValue(), "n");
+		assertEquals(result.getMaxValue(), "y");
+		assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
 		for (final String input : inputs) {
 			if (input.trim().matches(result.getRegExp()))
 					matches++;
 		}
-		Assert.assertEquals(result.getMatchCount(), matches);
+		assertEquals(result.getMatchCount(), matches);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
@@ -230,18 +234,18 @@ public class TestBooleans {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), countN + countC);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), countN + countC);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getMinLength(), 1);
-		Assert.assertEquals(result.getMaxLength(), 1);
-		Assert.assertEquals(result.getMinValue(), "C");
-		Assert.assertEquals(result.getMaxValue(), "N");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), countN + countC);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), countN + countC);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 1);
+		assertEquals(result.getMinValue(), "C");
+		assertEquals(result.getMaxValue(), "N");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
@@ -254,19 +258,19 @@ public class TestBooleans {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), COUNT);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), COUNT);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getMinLength(), 1);
-		Assert.assertEquals(result.getMaxLength(), 1);
-		Assert.assertEquals(result.getMinValue(), "y");
-		Assert.assertEquals(result.getMaxValue(), "y");
-		Assert.assertTrue("y".matches(result.getRegExp()));
+		assertEquals(result.getSampleCount(), COUNT);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), COUNT);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 1);
+		assertEquals(result.getMinValue(), "y");
+		assertEquals(result.getMaxValue(), "y");
+		assertTrue("y".matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
@@ -284,22 +288,22 @@ public class TestBooleans {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
-		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO));
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.BOOLEAN);
-		Assert.assertEquals(result.getMinLength(), 1);
-		Assert.assertEquals(result.getMaxLength(), 1);
-		Assert.assertEquals(result.getMinValue(), "0");
-		Assert.assertEquals(result.getMaxValue(), "1");
-		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getSampleCount(), inputs.length + 2);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 1);
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getMaxValue(), "1");
+		assertTrue(inputs[0].matches(result.getRegExp()));
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -318,22 +322,22 @@ public class TestBooleans {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
-		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "\\d");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getMinLength(), 1);
-		Assert.assertEquals(result.getMaxLength(), 1);
-		Assert.assertEquals(result.getMinValue(), "1");
-		Assert.assertEquals(result.getMaxValue(), "7");
-		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getSampleCount(), inputs.length + 2);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getRegExp(), "\\d");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 1);
+		assertEquals(result.getMinValue(), "1");
+		assertEquals(result.getMaxValue(), "7");
+		assertTrue(inputs[0].matches(result.getRegExp()));
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -352,25 +356,25 @@ public class TestBooleans {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), inputs.length + 2);
-		Assert.assertEquals(result.getOutlierCount(), 1);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
-		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "\\d");
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getCardinality(), 2);
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getSampleCount(), inputs.length + 2);
+		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getRegExp(), "\\d");
+		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getCardinality(), 2);
 		final Map<String, Long> details = result.getCardinalityDetails();
-		Assert.assertEquals(details.get("0"), Long.valueOf(13));
-		Assert.assertEquals(details.get("5"), Long.valueOf(14));
-		Assert.assertTrue(inputs[0].matches(result.getRegExp()));
+		assertEquals(details.get("0"), Long.valueOf(13));
+		assertEquals(details.get("5"), Long.valueOf(14));
+		assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
 		for (final String input : inputs) {
 			if (input.matches(result.getRegExp()))
 					matches++;
 		}
-		Assert.assertEquals(result.getMatchCount(), matches);
+		assertEquals(result.getMatchCount(), matches);
 	}
 }

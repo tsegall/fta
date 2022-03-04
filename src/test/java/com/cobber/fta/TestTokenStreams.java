@@ -15,10 +15,11 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+
 import java.io.IOException;
 import java.security.SecureRandom;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.Utils;
@@ -42,8 +43,8 @@ public class TestTokenStreams {
 			b.setLength(0);
 		}
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{9}");
-		Assert.assertEquals(tokenStreams.getRegExp(true), "\\p{IsAlphabetic}{9}");
+		assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{9}");
+		assertEquals(tokenStreams.getRegExp(true), "\\p{IsAlphabetic}{9}");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -63,8 +64,8 @@ public class TestTokenStreams {
 			b.setLength(0);
 		}
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), "\\d{5}(-\\d{4})?");
-		Assert.assertEquals(tokenStreams.getRegExp(true), "\\d{5}(-\\d{4})?");
+		assertEquals(tokenStreams.getRegExp(false), "\\d{5}(-\\d{4})?");
+		assertEquals(tokenStreams.getRegExp(true), "\\d{5}(-\\d{4})?");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -86,8 +87,8 @@ public class TestTokenStreams {
 			b.setLength(0);
 		}
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{7}|\\p{IsAlphabetic}{9}");
-		Assert.assertEquals(tokenStreams.getRegExp(true), "\\p{IsAlphabetic}{7}|\\p{IsAlphabetic}{9}");
+		assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{7}|\\p{IsAlphabetic}{9}");
+		assertEquals(tokenStreams.getRegExp(true), "\\p{IsAlphabetic}{7}|\\p{IsAlphabetic}{9}");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -104,8 +105,8 @@ public class TestTokenStreams {
 			}
 		}
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{4,8}");
-		Assert.assertEquals(tokenStreams.getRegExp(true), "\\p{IsAlphabetic}{4,8}");
+		assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{4,8}");
+		assertEquals(tokenStreams.getRegExp(true), "\\p{IsAlphabetic}{4,8}");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -120,8 +121,8 @@ public class TestTokenStreams {
 			b.setLength(0);
 		}
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), "\\d{9}");
-		Assert.assertEquals(tokenStreams.getRegExp(true), "\\d{9}");
+		assertEquals(tokenStreams.getRegExp(false), "\\d{9}");
+		assertEquals(tokenStreams.getRegExp(true), "\\d{9}");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -143,8 +144,8 @@ public class TestTokenStreams {
 			b.setLength(0);
 		}
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), "\\d{7}|\\d{9}");
-		Assert.assertEquals(tokenStreams.getRegExp(true), "\\d{7}|\\d{9}");
+		assertEquals(tokenStreams.getRegExp(false), "\\d{7}|\\d{9}");
+		assertEquals(tokenStreams.getRegExp(true), "\\d{7}|\\d{9}");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -173,8 +174,8 @@ public class TestTokenStreams {
 			b.setLength(0);
 		}
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), "\\d{6,8}");
-		Assert.assertEquals(tokenStreams.getRegExp(true), "\\d{6,8}");
+		assertEquals(tokenStreams.getRegExp(false), "\\d{6,8}");
+		assertEquals(tokenStreams.getRegExp(true), "\\d{6,8}");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -208,8 +209,8 @@ public class TestTokenStreams {
 		for (String input : inputs)
 			tokenStreams.track(input, 1);
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), ".+");
-		Assert.assertEquals(tokenStreams.getRegExp(true), ".+");
+		assertEquals(tokenStreams.getRegExp(false), ".+");
+		assertEquals(tokenStreams.getRegExp(true), ".+");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -219,8 +220,8 @@ public class TestTokenStreams {
 		for (int i = 0; i < 100; i++)
 			tokenStreams.track("", 1);
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), "");
-		Assert.assertEquals(tokenStreams.getRegExp(true), "");
+		assertEquals(tokenStreams.getRegExp(false), "");
+		assertEquals(tokenStreams.getRegExp(true), "");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -253,8 +254,8 @@ public class TestTokenStreams {
 		for (String input : inputs)
 			tokenStreams.track(input, 1);
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{3}\\d-[\\p{IsAlphabetic}\\d]{12}");
-		Assert.assertEquals(tokenStreams.getRegExp(true), "ICD9-[\\p{IsAlphabetic}\\d]{12}");
+		assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{3}\\d-[\\p{IsAlphabetic}\\d]{12}");
+		assertEquals(tokenStreams.getRegExp(true), "ICD9-[\\p{IsAlphabetic}\\d]{12}");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -264,8 +265,8 @@ public class TestTokenStreams {
 		for (int i = 0; i <= 30; i++)
 			tokenStreams.track(Utils.repeat('a', i), 1);
 
-		Assert.assertEquals(tokenStreams.getRegExp(false), ".+");
-		Assert.assertEquals(tokenStreams.getRegExp(true), ".+");
-		Assert.assertEquals(tokenStreams.getShapes().size(), 0);
+		assertEquals(tokenStreams.getRegExp(false), ".+");
+		assertEquals(tokenStreams.getRegExp(true), ".+");
+		assertEquals(tokenStreams.getShapes().size(), 0);
 	}
 }

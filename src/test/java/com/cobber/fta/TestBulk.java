@@ -15,11 +15,13 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
@@ -41,17 +43,44 @@ public class TestBulk {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 4000000);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(),  Gender.SEMANTIC_TYPE + "EN");
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 1000000L);
-		Assert.assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE)");
-		Assert.assertEquals(result.getMatchCount(), 3000000);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), 4000000);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(),  Gender.SEMANTIC_TYPE + "EN");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 1000000L);
+		assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE)");
+		assertEquals(result.getMatchCount(), 3000000);
+		assertEquals(result.getConfidence(), 1.0);
 		final Map<String, Long> details = result.getCardinalityDetails();
-		Assert.assertEquals(details.get("MALE"), Long.valueOf(2000000));
-		Assert.assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
+		assertEquals(details.get("MALE"), Long.valueOf(2000000));
+		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void basicBulkFromDB() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicBulk");
+		analysis.setKeyConfidence(1.0);
+		analysis.setTotalCount(4_000_000L);
+
+		final HashMap<String, Long> basic = new HashMap<>();
+		basic.put("Male", 2_000_000L);
+		basic.put("Female", 1_000_000L);
+		basic.put("", 1_000_000L);
+		analysis.trainBulk(basic);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), 4000000);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(),  Gender.SEMANTIC_TYPE + "EN");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 1000000L);
+		assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE)");
+		assertEquals(result.getMatchCount(), 3000000);
+		assertEquals(result.getConfidence(), 1.0);
+		final Map<String, Long> details = result.getCardinalityDetails();
+		assertEquals(details.get("MALE"), Long.valueOf(2000000));
+		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -73,19 +102,19 @@ public class TestBulk {
 		}
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(resultBulk.getSampleCount(), 3 * ITERATIONS);
-		Assert.assertEquals(resultBulk.getType(), FTAType.STRING);
-		Assert.assertEquals(resultBulk.getTypeQualifier(),  Gender.SEMANTIC_TYPE + "EN");
-		Assert.assertEquals(resultBulk.getNullCount(), 0);
-		Assert.assertEquals(resultBulk.getRegExp(), "(?i)(FEMALE|MALE)");
-		Assert.assertEquals(resultBulk.getMatchCount(), 3 * ITERATIONS);
-		Assert.assertEquals(resultBulk.getConfidence(), 1.0);
+		assertEquals(resultBulk.getSampleCount(), 3 * ITERATIONS);
+		assertEquals(resultBulk.getType(), FTAType.STRING);
+		assertEquals(resultBulk.getTypeQualifier(),  Gender.SEMANTIC_TYPE + "EN");
+		assertEquals(resultBulk.getNullCount(), 0);
+		assertEquals(resultBulk.getRegExp(), "(?i)(FEMALE|MALE)");
+		assertEquals(resultBulk.getMatchCount(), 3 * ITERATIONS);
+		assertEquals(resultBulk.getConfidence(), 1.0);
 		final Map<String, Long> details = resultBulk.getCardinalityDetails();
-		Assert.assertEquals(details.get("MALE"), Long.valueOf(2 * ITERATIONS));
-		Assert.assertEquals(details.get("FEMALE"), Long.valueOf(ITERATIONS));
+		assertEquals(details.get("MALE"), Long.valueOf(2 * ITERATIONS));
+		assertEquals(details.get("FEMALE"), Long.valueOf(ITERATIONS));
 
-		Assert.assertEquals(resultBulk.getStructureSignature(), result.getStructureSignature());
-		Assert.assertEquals(resultBulk.getDataSignature(), result.getDataSignature());
+		assertEquals(resultBulk.getStructureSignature(), result.getStructureSignature());
+		assertEquals(resultBulk.getDataSignature(), result.getDataSignature());
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -105,13 +134,13 @@ public class TestBulk {
 		analysisBulk.trainBulk(basic);
 		final TextAnalysisResult resultBulk = analysisBulk.getResult();
 
-		Assert.assertEquals(resultBulk.getSampleCount(), SAMPLES);
-		Assert.assertEquals(resultBulk.getType(), FTAType.STRING);
-		Assert.assertNull(resultBulk.getTypeQualifier());
-		Assert.assertEquals(resultBulk.getNullCount(), 0);
-		Assert.assertEquals(resultBulk.getRegExp(), "(?i)(DISCONNECT|DISCONNECT FRACTIONAL|DISCONNECT OTHER|DISCONNECT STILL BILLING|INSTALL FRACTIONAL|INSTALL FRACTIONAL RERATE|RE-RATES|RUN RATE)");
-		Assert.assertEquals(resultBulk.getMatchCount(), SAMPLES);
-		Assert.assertEquals(resultBulk.getConfidence(), 1.0);
+		assertEquals(resultBulk.getSampleCount(), SAMPLES);
+		assertEquals(resultBulk.getType(), FTAType.STRING);
+		assertNull(resultBulk.getTypeQualifier());
+		assertEquals(resultBulk.getNullCount(), 0);
+		assertEquals(resultBulk.getRegExp(), "(?i)(DISCONNECT|DISCONNECT FRACTIONAL|DISCONNECT OTHER|DISCONNECT STILL BILLING|INSTALL FRACTIONAL|INSTALL FRACTIONAL RERATE|RE-RATES|RUN RATE)");
+		assertEquals(resultBulk.getMatchCount(), SAMPLES);
+		assertEquals(resultBulk.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -124,14 +153,14 @@ public class TestBulk {
 		analysisBulk.trainBulk(basic);
 		final TextAnalysisResult resultBulk = analysisBulk.getResult();
 
-		Assert.assertEquals(resultBulk.getSampleCount(), 109);
-		Assert.assertEquals(resultBulk.getType(), FTAType.LOCALDATETIME);
-		Assert.assertEquals(resultBulk.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss");
-		Assert.assertEquals(resultBulk.getNullCount(), 0);
-		Assert.assertEquals(resultBulk.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
-		Assert.assertEquals(resultBulk.getMatchCount(), 109);
-		Assert.assertEquals(resultBulk.getConfidence(), 1.0);
-		Assert.assertEquals(resultBulk.getName(), "ModifiedDate");
+		assertEquals(resultBulk.getSampleCount(), 109);
+		assertEquals(resultBulk.getType(), FTAType.LOCALDATETIME);
+		assertEquals(resultBulk.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss");
+		assertEquals(resultBulk.getNullCount(), 0);
+		assertEquals(resultBulk.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
+		assertEquals(resultBulk.getMatchCount(), 109);
+		assertEquals(resultBulk.getConfidence(), 1.0);
+		assertEquals(resultBulk.getName(), "ModifiedDate");
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -144,15 +173,15 @@ public class TestBulk {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 1000000);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 1000000);
-		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
-		Assert.assertEquals(result.getMatchCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getCardinality(), 0);
+		assertEquals(result.getSampleCount(), 1000000);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "BLANK");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 1000000);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getMatchCount(), 0);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getCardinality(), 0);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -175,15 +204,15 @@ public class TestBulk {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), SAMPLES);
-		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
-		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
-		Assert.assertEquals(result.getMatchCount(), SAMPLES);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getCardinality(), 9);
+		assertEquals(result.getSampleCount(), SAMPLES);
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
+		assertEquals(result.getMatchCount(), SAMPLES);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getCardinality(), 9);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -201,15 +230,15 @@ public class TestBulk {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), SAMPLES);
-		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
-		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSSSSS");
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{6}");
-		Assert.assertEquals(result.getMatchCount(), SAMPLES);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getCardinality(), 4);
+		assertEquals(result.getSampleCount(), SAMPLES);
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSSSSS");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{6}");
+		assertEquals(result.getMatchCount(), SAMPLES);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getCardinality(), 4);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -229,15 +258,15 @@ public class TestBulk {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), SAMPLES);
-		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
-		Assert.assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSSSSSS");
-		Assert.assertEquals(result.getNullCount(), 10);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{7}");
-		Assert.assertEquals(result.getMatchCount(), SAMPLES - result.getNullCount());
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getCardinality(), 4);
+		assertEquals(result.getSampleCount(), SAMPLES);
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSSSSSS");
+		assertEquals(result.getNullCount(), 10);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{7}");
+		assertEquals(result.getMatchCount(), SAMPLES - result.getNullCount());
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getCardinality(), 4);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -259,13 +288,13 @@ public class TestBulk {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), SAMPLES);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getMatchCount(), SAMPLES - result.getNullCount());
-		Assert.assertEquals(result.getNullCount(), 68);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getCardinality(), 6);
-		Assert.assertEquals(result.getTypeQualifier(), "INDUSTRY_EN");
+		assertEquals(result.getSampleCount(), SAMPLES);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getMatchCount(), SAMPLES - result.getNullCount());
+		assertEquals(result.getNullCount(), 68);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getCardinality(), 6);
+		assertEquals(result.getTypeQualifier(), "INDUSTRY_EN");
 	}
 }

@@ -15,6 +15,10 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -22,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
@@ -66,19 +69,19 @@ public class TestIdentity {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getMatchCount(), samples.length - 2);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}");
-		Assert.assertTrue(result.isLogicalType());
-		Assert.assertEquals(result.getTypeQualifier(), "SSN");
-		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("SSN").signature);
-		Assert.assertEquals(result.getConfidence(), 0.998);
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getMatchCount(), samples.length - 2);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}");
+		assertTrue(result.isLogicalType());
+		assertEquals(result.getTypeQualifier(), "SSN");
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("SSN").signature);
+		assertEquals(result.getConfidence(), 0.998);
 
 		for (int l = 1; l < samples.length - 1; l++) {
-			Assert.assertTrue(samples[l].matches(result.getRegExp()));
+			assertTrue(samples[l].matches(result.getRegExp()));
 		}
 	}
 
@@ -99,17 +102,17 @@ public class TestIdentity {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getMatchCount(), samples.length);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
-		Assert.assertFalse(result.isLogicalType());
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getMatchCount(), samples.length);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
+		assertFalse(result.isLogicalType());
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (int l = 0; l < samples.length; l++) {
-			Assert.assertTrue(samples[l].matches(result.getRegExp()));
+			assertTrue(samples[l].matches(result.getRegExp()));
 		}
 	}
 
@@ -146,20 +149,20 @@ public class TestIdentity {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
-		Assert.assertEquals(result.getTypeQualifier(), "SSN");
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
-		Assert.assertEquals(result.getOutlierCount(), 1);
-		Assert.assertEquals(result.getSampleCount(), samples.length + 1);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
+		assertEquals(result.getTypeQualifier(), "SSN");
+		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getSampleCount(), samples.length + 1);
 		final Map<String, Long> outliers = result.getOutlierDetails();
-		Assert.assertEquals(outliers.size(), 1);
-		Assert.assertEquals(outliers.get("032--45-0981"), Long.valueOf(1));
+		assertEquals(outliers.size(), 1);
+		assertEquals(outliers.get("032--45-0981"), Long.valueOf(1));
 
 		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()));
+			assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -187,19 +190,19 @@ public class TestIdentity {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getCardinality(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), SSN_FR.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_FR").signature);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getCardinality(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), SSN_FR.SEMANTIC_TYPE);
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_FR").signature);
+		assertEquals(result.getConfidence(), 1.0);
 
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -226,19 +229,19 @@ public class TestIdentity {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getCardinality(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), IN_JA.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA").signature);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getCardinality(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), IN_JA.SEMANTIC_TYPE);
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA").signature);
+		assertEquals(result.getConfidence(), 1.0);
 
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -265,19 +268,19 @@ public class TestIdentity {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getCardinality(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), SSN_CH.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_CH").signature);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getCardinality(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), SSN_CH.SEMANTIC_TYPE);
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_CH").signature);
+		assertEquals(result.getConfidence(), 1.0);
 
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -303,19 +306,19 @@ public class TestIdentity {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getCardinality(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), NHS_UK.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.NHS_UK").signature);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getCardinality(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), NHS_UK.SEMANTIC_TYPE);
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.NHS_UK").signature);
+		assertEquals(result.getConfidence(), 1.0);
 
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -342,19 +345,19 @@ public class TestIdentity {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getCardinality(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), Aadhar_IN.SEMANTIC_TYPE);
-		Assert.assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.AADHAR_IN").signature);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getCardinality(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), Aadhar_IN.SEMANTIC_TYPE);
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.AADHAR_IN").signature);
+		assertEquals(result.getConfidence(), 1.0);
 
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 }

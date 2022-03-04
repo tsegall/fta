@@ -15,10 +15,12 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.List;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
@@ -52,34 +54,34 @@ public class TestAutomaton {
 	public void testSimple() throws IOException, FTAException {
 		Automaton automaton = new RegExp("[0-9]:").toAutomaton();
 		String input = "7:";
-		Assert.assertTrue(plausible(input, automaton.getInitialState()));
+		assertTrue(plausible(input, automaton.getInitialState()));
 	}
 
 	@Test(groups = { TestGroups.ALL, "automaton" })
 	public void testExcess() throws IOException, FTAException {
 		Automaton automaton = new RegExp("[0-9]:").toAutomaton();
 		String input = "7: ";
-		Assert.assertFalse(plausible(input, automaton.getInitialState()));
+		assertFalse(plausible(input, automaton.getInitialState()));
 	}
 
 	@Test(groups = { TestGroups.ALL, "automaton" })
 	public void testCounting() throws IOException, FTAException {
 		Automaton automaton = new RegExp("[0-9]{2,3}").toAutomaton();
 		String input = "79";
-		Assert.assertTrue(plausible(input, automaton.getInitialState()));
+		assertTrue(plausible(input, automaton.getInitialState()));
 	}
 
 	@Test(groups = { TestGroups.ALL, "automaton" })
 	public void testCountingExcess() throws IOException, FTAException {
 		Automaton automaton = new RegExp("[0-9]{2,3}").toAutomaton();
 		String input = "7979";
-		Assert.assertFalse(plausible(input, automaton.getInitialState()));
+		assertFalse(plausible(input, automaton.getInitialState()));
 	}
 
 	@Test(groups = { TestGroups.ALL, "automaton" })
 	public void testTwoBranch() throws IOException, FTAException {
 		Automaton automaton = new RegExp("([0-6]=)|([7-9]:)").toAutomaton();
 		String input = "7:";
-		Assert.assertTrue(plausible(input, automaton.getInitialState()));
+		assertTrue(plausible(input, automaton.getInitialState()));
 	}
 }

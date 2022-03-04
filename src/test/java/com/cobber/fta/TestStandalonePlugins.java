@@ -15,13 +15,15 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAPluginException;
@@ -33,23 +35,23 @@ public class TestStandalonePlugins {
 	public void randomIPV4Address() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("IPADDRESS.IPV4"), Locale.getDefault());
 
-		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++)
-			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+			assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomIPV6Address() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("IPADDRESS.IPV6"), Locale.getDefault());
 
-		Assert.assertTrue(logical.isValid("::"), "::");
-		Assert.assertTrue(logical.isValid("::1"), "::1");
-		Assert.assertTrue("::".matches(logical.getRegExp()), "::");
-		Assert.assertTrue("::1".matches(logical.getRegExp()), "::1");
+		assertTrue(logical.isValid("::"), "::");
+		assertTrue(logical.isValid("::1"), "::1");
+		assertTrue("::".matches(logical.getRegExp()), "::");
+		assertTrue("::1".matches(logical.getRegExp()), "::1");
 		for (int i = 0; i < 100; i++) {
 			final String sample = logical.nextRandom();
-			Assert.assertTrue(sample.matches(logical.getRegExp()), sample);
+			assertTrue(sample.matches(logical.getRegExp()), sample);
 		}
 	}
 
@@ -57,12 +59,12 @@ public class TestStandalonePlugins {
 	public void randomPhoneNumber() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("TELEPHONE"), Locale.getDefault());
 
-		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++) {
 			final String sample = logical.nextRandom();
-			Assert.assertTrue(sample.matches(logical.getRegExp()));
-			Assert.assertTrue(logical.isValid(sample), sample);
+			assertTrue(sample.matches(logical.getRegExp()));
+			assertTrue(logical.isValid(sample), sample);
 		}
 	}
 
@@ -70,32 +72,32 @@ public class TestStandalonePlugins {
 	public void randomEmail() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("EMAIL"), Locale.getDefault());
 
-		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++)
-			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+			assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomFirst() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), Locale.getDefault());
 
-		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++)
-			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+			assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomLast() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.LAST"), Locale.getDefault());
 
-		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++) {
 			final String example = logical.nextRandom();
-			Assert.assertTrue(example.matches(logical.getRegExp()));
-			Assert.assertTrue(logical.isValid(example));
+			assertTrue(example.matches(logical.getRegExp()));
+			assertTrue(logical.isValid(example));
 		}
 	}
 
@@ -103,30 +105,30 @@ public class TestStandalonePlugins {
 	public void randomURL() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("URI.URL"), Locale.getDefault());
 
-		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++)
-			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+			assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomZip() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US"), Locale.getDefault());
 
-		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++)
-			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+			assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomGUID() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("GUID"), Locale.getDefault());
 
-		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++)
-			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+			assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -134,22 +136,22 @@ public class TestStandalonePlugins {
 		final PluginDefinition plugin = new PluginDefinition("GENDER", "com.cobber.fta.plugins.Gender");
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, Locale.getDefault());
 
-		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++)
-			Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+			assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomCountry() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("COUNTRY.TEXT_EN"), Locale.getDefault());
 
-		Assert.assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++) {
 			final String example = logical.nextRandom();
-			Assert.assertTrue(example.matches(logical.getRegExp()));
-			Assert.assertTrue(logical.isValid(example.toLowerCase(Locale.ENGLISH)), example);
+			assertTrue(example.matches(logical.getRegExp()));
+			assertTrue(logical.isValid(example.toLowerCase(Locale.ENGLISH)), example);
 		}
 	}
 
@@ -181,7 +183,7 @@ public class TestStandalonePlugins {
 					String pluginSignature = logical.getPluginDefinition().signature;
 					if (!"[NONE]".equals(pluginSignature) && !logical.getSignature().equals(logical.getPluginDefinition().signature))
 						logger.warn("WARNING: Signature incorrect for '%s.  LogicalType = '%s', Plugin = '%s'.", logical.getQualifier(), logical.getSignature(), logical.getPluginDefinition().signature);
-					Assert.assertTrue("[NONE]".equals(pluginSignature) || logical.getSignature().equals(logical.getPluginDefinition().signature));
+					assertTrue("[NONE]".equals(pluginSignature) || logical.getSignature().equals(logical.getPluginDefinition().signature));
 
 					if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
 						continue;
@@ -189,10 +191,10 @@ public class TestStandalonePlugins {
 					final String[] testCases = new String[SAMPLE_SIZE];
 					for (int i = 0; i < SAMPLE_SIZE; i++) {
 						testCases[i] = logical.nextRandom();
-						Assert.assertTrue(logical.isValid(testCases[i]), logical.getQualifier() + ":'" + testCases[i] + "'");
+						assertTrue(logical.isValid(testCases[i]), logical.getQualifier() + ":'" + testCases[i] + "'");
 					}
 					for (int i = 0; i < SAMPLE_SIZE; i++)
-						Assert.assertTrue(testCases[i].matches(logical.getRegExp()), logical.getQualifier() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
+						assertTrue(testCases[i].matches(logical.getRegExp()), logical.getQualifier() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
 				}
 			}
 		}
@@ -206,12 +208,12 @@ public class TestStandalonePlugins {
 		final String[] validSamples = new String[] { "12.43", "13.49", "90.0", "-69.4", "-90.0" };
 
 		for (final String sample : validSamples)
-			Assert.assertTrue(logical.isValid(sample), sample);
+			assertTrue(logical.isValid(sample), sample);
 
 		final String[] invalidSamples = new String[] { "91.0", "-90.2" };
 
 		for (final String sample : invalidSamples)
-			Assert.assertFalse(logical.isValid(sample), sample);
+			assertFalse(logical.isValid(sample), sample);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -222,12 +224,12 @@ public class TestStandalonePlugins {
 		final String[] validSamples = new String[] { "12.43", "13.49", "180.0", "90.0", "-69.4", "-90.0", "-170.0",  };
 
 		for (final String sample : validSamples)
-			Assert.assertTrue(logical.isValid(sample), sample);
+			assertTrue(logical.isValid(sample), sample);
 
 		final String[] invalidSamples = new String[] { "181.0", "-190.2" };
 
 		for (final String sample : invalidSamples)
-			Assert.assertFalse(logical.isValid(sample), sample);
+			assertFalse(logical.isValid(sample), sample);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -243,11 +245,11 @@ public class TestStandalonePlugins {
 		};
 
 		for (final String sample : validSamples)
-			Assert.assertTrue(logical.isValid(sample), sample);
+			assertTrue(logical.isValid(sample), sample);
 
 		final String[] invalidSamples = new String[] { "2001Olypics" };
 
 		for (final String sample : invalidSamples)
-			Assert.assertFalse(logical.isValid(sample), sample);
+			assertFalse(logical.isValid(sample), sample);
 	}
 }

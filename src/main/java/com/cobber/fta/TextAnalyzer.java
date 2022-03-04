@@ -242,6 +242,7 @@ public class TextAnalyzer {
 	 */
 	public TextAnalyzer(final AnalyzerContext context) {
 		this.context = context;
+		this.facts = new Facts();
 	}
 
 	/**
@@ -1065,8 +1066,8 @@ public class TextAnalyzer {
 		if (analysisConfig.traceOptions != null)
 			traceConfig = new Trace(analysisConfig.traceOptions, context,  analysisConfig);
 
-		facts = new Facts(locale, analysisConfig.collectStatistics);
-
+		this.facts.setCollectStatistics(analysisConfig.collectStatistics);
+		this.facts.setLocale(this.locale);
 
 		initialized = true;
 	}

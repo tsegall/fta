@@ -15,6 +15,11 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -32,7 +37,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
@@ -61,20 +65,20 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,7}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{1,7}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
 		if (collectStatistics) {
-			Assert.assertEquals(result.getMinValue(), "0");
-			Assert.assertEquals(result.getMaxValue(), "4499045");
+			assertEquals(result.getMinValue(), "0");
+			assertEquals(result.getMaxValue(), "4499045");
 		}
-		Assert.assertEquals(result.getMinLength(), 1);
-		Assert.assertEquals(result.getMaxLength(), 7);
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 7);
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -103,20 +107,20 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "[+-]?\\d{1,6}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[+-]?\\d{1,6}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "SIGNED");
 		if (collectStatistics) {
-			Assert.assertEquals(result.getMinValue(), "-100000");
-			Assert.assertEquals(result.getMaxValue(), "10000");
+			assertEquals(result.getMinValue(), "-100000");
+			assertEquals(result.getMaxValue(), "10000");
 		}
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -143,17 +147,17 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{6}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getMinValue(), "116789");
-		Assert.assertEquals(result.getMaxValue(), "456789");
+		assertEquals(locked, -1);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{6}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getMinValue(), "116789");
+		assertEquals(result.getMaxValue(), "456789");
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -170,17 +174,17 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, -1);
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d+-?");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getMinValue(), "-2903");
-		Assert.assertEquals(result.getMaxValue(), "5234");
+		assertEquals(locked, -1);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d+-?");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getMinValue(), "-2903");
+		assertEquals(result.getMaxValue(), "5234");
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -250,14 +254,14 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), 59);
-		Assert.assertEquals(result.getMatchCount(), 59);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 59);
-		Assert.assertEquals(result.getRegExp(), "\\d{9}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), 59);
+		assertEquals(result.getMatchCount(), 59);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 59);
+		assertEquals(result.getRegExp(), "\\d{9}");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -274,14 +278,14 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), 7);
-		Assert.assertEquals(result.getMatchCount(), 7);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,2}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), 7);
+		assertEquals(result.getMatchCount(), 7);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{1,2}");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -295,14 +299,14 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), 30);
-		Assert.assertEquals(result.getMatchCount(), 6);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{2}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), 30);
+		assertEquals(result.getMatchCount(), 6);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{2}");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -315,15 +319,15 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), tooBig);
-		Assert.assertEquals(result.getMatchCount(), tooBig);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getUniqueness(), 1.0);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), tooBig);
+		assertEquals(result.getMatchCount(), tooBig);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getUniqueness(), 1.0);
+		assertEquals(result.getRegExp(), "\\d{1,5}");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -337,15 +341,15 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), tooBig + 1);
-		Assert.assertEquals(result.getMatchCount(), tooBig + 1);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getUniqueness(), -1.0);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), tooBig + 1);
+		assertEquals(result.getMatchCount(), tooBig + 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getUniqueness(), -1.0);
+		assertEquals(result.getRegExp(), "\\d{1,5}");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -358,15 +362,15 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), 2 * tooBig);
-		Assert.assertEquals(result.getMatchCount(), 2 * tooBig);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getUniqueness(), 1.0);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), 2 * tooBig);
+		assertEquals(result.getMatchCount(), 2 * tooBig);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getUniqueness(), 1.0);
+		assertEquals(result.getRegExp(), "\\d{1,5}");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -379,19 +383,18 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), 2 * tooBig);
-		Assert.assertEquals(result.getMatchCount(), 2 * tooBig);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getUniqueness(), 1.0);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), 2 * tooBig);
+		assertEquals(result.getMatchCount(), 2 * tooBig);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getUniqueness(), 1.0);
+		assertEquals(result.getRegExp(), "\\d{1,5}");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
-
 	public void testUniquenessNone() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
 		final int tooBig = analysis.getMaxCardinality() - 1;
@@ -403,15 +406,15 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), tooBig * 2);
-		Assert.assertEquals(result.getMatchCount(), tooBig * 2);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getUniqueness(), 0.0);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), tooBig * 2);
+		assertEquals(result.getMatchCount(), tooBig * 2);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getUniqueness(), 0.0);
+		assertEquals(result.getRegExp(), "\\d{1,5}");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -441,14 +444,14 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
-		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
-		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getMinValue(), String.valueOf(min));
-		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "GROUPING");
+		assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+		assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getMinValue(), String.valueOf(min));
+		assertEquals(result.getMaxValue(), String.valueOf(max));
 		String regExp = "[\\d,]{";
 		if (minValue.length() == maxValue.length())
 			regExp += minValue.length();
@@ -456,11 +459,11 @@ public class TestLongs {
 			regExp += minValue.length() + "," + maxValue.length();
 		}
 		regExp += "}";
-		Assert.assertEquals(result.getRegExp(), regExp);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getRegExp(), regExp);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(regExp), sample);
+			assertTrue(sample.matches(regExp), sample);
 		}
 	}
 
@@ -506,24 +509,24 @@ public class TestLongs {
 
 			final TextAnalysisResult result = analysis.getResult();
 
-			Assert.assertEquals(result.getType(), FTAType.LONG);
-			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toString());
-			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
-			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
-			Assert.assertEquals(result.getNullCount(), 0);
-			Assert.assertEquals(result.getLeadingZeroCount(), 0);
-			Assert.assertEquals(result.getMinValue(), String.valueOf(min));
-			Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
+			assertEquals(result.getType(), FTAType.LONG);
+			assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toString());
+			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+			assertEquals(result.getNullCount(), 0);
+			assertEquals(result.getLeadingZeroCount(), 0);
+			assertEquals(result.getMinValue(), String.valueOf(min));
+			assertEquals(result.getMaxValue(), String.valueOf(max));
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
 			String regExp = "[+-]?[\\d" + RegExpGenerator.slosh(formatSymbols.getGroupingSeparator()) + "]";
-			int minLength = minValue.charAt(0) == '-' ? minValue.length() - 1 : minValue.length();
+			final int minLength = minValue.charAt(0) == '-' ? minValue.length() - 1 : minValue.length();
 			regExp += RegExpSplitter.qualify(minLength, maxValue.length());
-			Assert.assertEquals(result.getRegExp(), regExp);
-			Assert.assertEquals(result.getConfidence(), 1.0);
+			assertEquals(result.getRegExp(), regExp);
+			assertEquals(result.getConfidence(), 1.0);
 
 			for (final String sample : samples) {
-				Assert.assertTrue(sample.matches(regExp), sample);
+				assertTrue(sample.matches(regExp), sample);
 			}
 		}
 	}
@@ -535,7 +538,7 @@ public class TestLongs {
 		final Locale locale = Locale.forLanguageTag("ar-EH");
 		analysis.setLocale(locale);
 
-		String[] samples = {
+		final String[] samples = {
 				"1", "2", "3", "4", "5", "6", "7", "8", "9",
 				"1000-", "12", "13", "156", "209", "22012-", "40",
 				"489", "932", "98", "12", "333304", "2", "12", "178",
@@ -552,13 +555,13 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
-		Assert.assertEquals(result.getRegExp(), "[\\d,]{21,25}[+-]?");
-		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getMatchCount(), samples.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+		assertEquals(result.getRegExp(), "[\\d,]{21,25}[+-]?");
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getMatchCount(), samples.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -590,9 +593,9 @@ public class TestLongs {
 				continue;
 			}
 
-			String variant = locale.getDisplayVariant();
+			final String variant = locale.getDisplayVariant();
 			if (variant != null && !variant.isEmpty()) {
-				logger.debug("Skipping locale '{}' as it has a Variant: '%s'.", locale, variant);
+				logger.debug("Skipping locale '{}' as it has a Variant: '{}'.", locale, variant);
 				continue;
 			}
 
@@ -646,14 +649,14 @@ public class TestLongs {
 			final TextAnalysisResult result = analysis.getResult();
 
 
-			Assert.assertEquals(result.getType(), FTAType.LONG);
-			Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toLanguageTag());
-			Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
-			Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
-			Assert.assertEquals(result.getNullCount(), 0);
-			Assert.assertEquals(result.getMinValue(), String.valueOf(min));
-			Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
-			Assert.assertEquals(result.getLeadingZeroCount(), 0);
+			assertEquals(result.getType(), FTAType.LONG);
+			assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toLanguageTag());
+			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+			assertEquals(result.getNullCount(), 0);
+			assertEquals(result.getMinValue(), String.valueOf(min));
+			assertEquals(result.getMaxValue(), String.valueOf(max));
+			assertEquals(result.getLeadingZeroCount(), 0);
 
 			String regExp = "";
 			if (!negPrefix.isEmpty())
@@ -662,13 +665,13 @@ public class TestLongs {
 			regExp += RegExpSplitter.qualify(absMinValue.length(), absMaxValue.length());
 			if (!negSuffix.isEmpty())
 				regExp += negSuffix;
-			Assert.assertEquals(result.getDecimalSeparator(), '.');
+			assertEquals(result.getDecimalSeparator(), '.');
 
-			Assert.assertEquals(result.getRegExp(), regExp, locale.toLanguageTag());
-			Assert.assertEquals(result.getConfidence(), 1.0);
+			assertEquals(result.getRegExp(), regExp, locale.toLanguageTag());
+			assertEquals(result.getConfidence(), 1.0);
 
 			for (final String sample : samples) {
-				Assert.assertTrue(sample.matches(regExp), sample + " " + regExp);
+				assertTrue(sample.matches(regExp), sample + " " + regExp);
 			}
 		}
 	}
@@ -676,9 +679,9 @@ public class TestLongs {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void someInts() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("someInts");
-		Assert.assertTrue(analysis.getNumericWidening());
+		assertTrue(analysis.getNumericWidening());
 		analysis.setNumericWidening(false);
-		Assert.assertFalse(analysis.getNumericWidening());
+		assertFalse(analysis.getNumericWidening());
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
 		int locked = -1;
@@ -701,17 +704,17 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), samples + 1);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getSampleCount(), samples + 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
 		String pattern = "\\d{" + minLength;
 		if (maxLength != minLength) {
 			pattern += "," + maxLength;
 		}
 		pattern += "}";
-		Assert.assertEquals(result.getRegExp(), pattern);
-		Assert.assertEquals(result.getConfidence(), 1 - (double)bad/result.getSampleCount());
+		assertEquals(result.getRegExp(), pattern);
+		assertEquals(result.getConfidence(), 1 - (double)bad/result.getSampleCount());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -736,20 +739,20 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
-		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getNullCount(), nullIterations);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getRegExp(), "\\d{10}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getSampleCount(), iterations + nullIterations);
+		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
+		assertEquals(result.getNullCount(), nullIterations);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getRegExp(), "\\d{10}");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testEpochMilliseconds() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Timestamp");
 
-		String[] samples = {
+		final String[] samples = {
 				"1672431100", "1672431101", "1621458902", "1672432103", "1672431104", "1672432105",
 				"1672431206", "1672431107", "1672431108", "1672432009", "1670531110", "1672431111",
 				"1671533412", "1572431113", "1672431114", "1672431115", "1621458916", "1672432117",
@@ -762,21 +765,21 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertTrue(result.isLogicalType());
-		Assert.assertEquals(result.getTypeQualifier(), "EPOCH.MILLISECONDS");
-		Assert.assertEquals(result.getRegExp(), "\\d{10}");
-		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getMatchCount(), samples.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertTrue(result.isLogicalType());
+		assertEquals(result.getTypeQualifier(), "EPOCH.MILLISECONDS");
+		assertEquals(result.getRegExp(), "\\d{10}");
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getMatchCount(), samples.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testEpochNanoseconds() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Timestamp");
 
-		String[] samples = {
+		final String[] samples = {
 				"1672431100000", "1672431101000", "1621458902000", "1672432103000", "1672431104000", "1672432105000",
 				"1672431206000", "1672431107000", "1672431108000", "1672432009000", "1670531110000", "1672431111000",
 				"1671533412000", "1572431113000", "1672431114000", "1672431115000", "1621458916000", "1672432117000",
@@ -789,14 +792,14 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertTrue(result.isLogicalType());
-		Assert.assertEquals(result.getTypeQualifier(), "EPOCH.NANOSECONDS");
-		Assert.assertEquals(result.getRegExp(), "\\d{13}");
-		Assert.assertEquals(result.getSampleCount(), samples.length);
-		Assert.assertEquals(result.getMatchCount(), samples.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertTrue(result.isLogicalType());
+		assertEquals(result.getTypeQualifier(), "EPOCH.NANOSECONDS");
+		assertEquals(result.getRegExp(), "\\d{13}");
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getMatchCount(), samples.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -816,19 +819,19 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getMinValue(), "0");
-		Assert.assertEquals(result.getMaxValue(), "29");
-		Assert.assertEquals(result.getMean(), Double.valueOf(14.5));
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "\\d{1,2}");
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getMaxValue(), "29");
+		assertEquals(result.getMean(), Double.valueOf(14.5));
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "\\d{1,2}");
 
 		for (int i = 0; i < inputs.length; i++) {
-			Assert.assertTrue(inputs[i].matches(result.getRegExp()));
+			assertTrue(inputs[i].matches(result.getRegExp()));
 		}
 	}
 
@@ -847,13 +850,13 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getRegExp(), "\\d{1,4}");
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getConfidence(), 0.9166666666666666);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - 2);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getRegExp(), "\\d{1,4}");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getConfidence(), 0.9166666666666666);
+		assertEquals(result.getMatchCount(), inputs.length - 2);
 	}
 
 
@@ -874,16 +877,16 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
-		Assert.assertEquals(result.getRegExp(), "[+-]?\\d{1,10}");
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getRegExp(), "[+-]?\\d{1,10}");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -906,16 +909,16 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations + 2);
-		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getNullCount(), nullIterations);
-		Assert.assertEquals(result.getBlankCount(), 2);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,5}");
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getMinValue(), "0");
-		Assert.assertEquals(result.getMaxValue(), String.valueOf(iterations - 1));
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getSampleCount(), iterations + nullIterations + 2);
+		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
+		assertEquals(result.getNullCount(), nullIterations);
+		assertEquals(result.getBlankCount(), 2);
+		assertEquals(result.getRegExp(), "\\d{1,5}");
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getMaxValue(), String.valueOf(iterations - 1));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -943,22 +946,22 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "GROUPING");
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "[\\d,]{3,6}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getMinValue(), "200");
-		Assert.assertEquals(result.getMaxValue(), "13000");
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "GROUPING");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getRegExp(), "[\\d,]{3,6}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "200");
+		assertEquals(result.getMaxValue(), "13000");
 
 		final String regExp = result.getRegExp();
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp), input);
+			assertTrue(input.matches(regExp), input);
 		}
 	}
 
@@ -1000,14 +1003,14 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
-		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE);
-		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
-		Assert.assertEquals(result.getMinValue(), String.valueOf(min));
-		Assert.assertEquals(result.getMaxValue(), String.valueOf(max));
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+		assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+		assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getMinValue(), String.valueOf(min));
+		assertEquals(result.getMaxValue(), String.valueOf(max));
 		String regExp = "[+-]?[\\d,]{";
 		if (minValue.length() == maxValue.length())
 			regExp += minValue.length();
@@ -1015,11 +1018,11 @@ public class TestLongs {
 			regExp += minValue.length() + "," + maxValue.length();
 		}
 		regExp += "}";
-		Assert.assertEquals(result.getRegExp(), regExp);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getRegExp(), regExp);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(regExp), sample);
+			assertTrue(sample.matches(regExp), sample);
 		}
 	}
 
@@ -1040,7 +1043,7 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getRegExp(), "\\d+");
+		assertEquals(result.getRegExp(), "\\d+");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1060,9 +1063,9 @@ public class TestLongs {
 		final long elapsed = System.currentTimeMillis() - start;
 		System.err.println("Duration: " + elapsed);
 
-		Assert.assertEquals(result.getSampleCount(), iterations);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), iterations);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1082,12 +1085,12 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
-		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getNullCount(), nullIterations);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getSampleCount(), iterations + nullIterations);
+		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
+		assertEquals(result.getNullCount(), nullIterations);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1101,12 +1104,12 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertEquals(result.getTypeQualifier(), "SIGNED");
-		Assert.assertEquals(result.getSampleCount(), SAMPLE_SIZE + 1);
-		Assert.assertEquals(result.getMatchCount(), SAMPLE_SIZE + 1);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getSampleCount(), SAMPLE_SIZE + 1);
+		assertEquals(result.getMatchCount(), SAMPLE_SIZE + 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1122,14 +1125,14 @@ public class TestLongs {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), iters);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMaxLength(), 8);
-		Assert.assertEquals(result.getRegExp(), "\\d{" + result.getMinLength() + ",8}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), iters);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMaxLength(), 8);
+		assertEquals(result.getRegExp(), "\\d{" + result.getMinLength() + ",8}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
 	}
 
 	public void _longPerf(final boolean statisticsOn) throws IOException, FTAException {
@@ -1167,14 +1170,14 @@ public class TestLongs {
 		if (bw != null)
 			bw.close();
 
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), iters + 1);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMaxLength(), 8);
-		Assert.assertEquals(result.getRegExp(), "\\d{" + result.getMinLength() + ",8}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.LONG);
-		Assert.assertNull(result.getTypeQualifier());
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), iters + 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMaxLength(), 8);
+		assertEquals(result.getRegExp(), "\\d{" + result.getMinLength() + ",8}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
 		logger.info("Count {}, duration: {}ms, ~{} per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes

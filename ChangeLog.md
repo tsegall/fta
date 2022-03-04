@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 5.1.23
+ - BUG: Fix NPE when using FTA from DBProfiler (also added test case)
+ - INT: Cleaning imports
+ - ENH: Broaden set of recognized languages
+
 ### 5.1.22
  - ENH: Add Semantic Type - CHECKDIGIT.ISBN
  - ENH: Bump guava.

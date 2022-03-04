@@ -15,6 +15,12 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
@@ -48,20 +53,20 @@ public class TestStrings {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), iterations);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), 0);
-		Assert.assertEquals(result.getNullCount(), iterations);
-		Assert.assertEquals(result.getMinLength(), 0);
-		Assert.assertEquals(result.getMaxLength(), 0);
-		Assert.assertEquals(result.getMinValue(), null);
-		Assert.assertEquals(result.getMaxValue(), null);
-		Assert.assertEquals(result.getNullCount(), iterations);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_NULL));
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "NULL");
+		assertEquals(result.getSampleCount(), iterations);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), 0);
+		assertEquals(result.getNullCount(), iterations);
+		assertEquals(result.getMinLength(), 0);
+		assertEquals(result.getMaxLength(), 0);
+		assertEquals(result.getMinValue(), null);
+		assertEquals(result.getMaxValue(), null);
+		assertEquals(result.getNullCount(), iterations);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_NULL));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "NULL");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -78,24 +83,24 @@ public class TestStrings {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 3 * iterations + 1);
-		Assert.assertEquals(result.getMaxLength(), 6);
-		Assert.assertEquals(result.getMinLength(), 1);
-		Assert.assertEquals(result.getMaxValue(), "      ");
-		Assert.assertEquals(result.getMinValue(), " ");
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 3 * iterations + 1);
-		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
+		assertEquals(result.getSampleCount(), 3 * iterations + 1);
+		assertEquals(result.getMaxLength(), 6);
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxValue(), "      ");
+		assertEquals(result.getMinValue(), " ");
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMatchCount(), 0);
+		assertEquals(result.getBlankCount(), 3 * iterations + 1);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "BLANK");
 
-		Assert.assertTrue("".matches(result.getRegExp()));
-		Assert.assertTrue(" ".matches(result.getRegExp()));
-		Assert.assertTrue("  ".matches(result.getRegExp()));
-		Assert.assertTrue("      ".matches(result.getRegExp()));
+		assertTrue("".matches(result.getRegExp()));
+		assertTrue(" ".matches(result.getRegExp()));
+		assertTrue("  ".matches(result.getRegExp()));
+		assertTrue("      ".matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -109,21 +114,21 @@ public class TestStrings {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), iterations);
-		Assert.assertEquals(result.getMaxLength(), 6);
-		Assert.assertEquals(result.getMinLength(), 6);
-		Assert.assertEquals(result.getMaxValue(), "      ");
-		Assert.assertEquals(result.getMinValue(), "      ");
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), iterations);
-		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
+		assertEquals(result.getSampleCount(), iterations);
+		assertEquals(result.getMaxLength(), 6);
+		assertEquals(result.getMinLength(), 6);
+		assertEquals(result.getMaxValue(), "      ");
+		assertEquals(result.getMinValue(), "      ");
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMatchCount(), 0);
+		assertEquals(result.getBlankCount(), iterations);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "BLANK");
 
-		Assert.assertTrue("      ".matches(result.getRegExp()));
+		assertTrue("      ".matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -137,21 +142,21 @@ public class TestStrings {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), iterations);
-		Assert.assertEquals(result.getTypeQualifier(), "BLANK");
-		Assert.assertEquals(result.getMaxLength(), 0);
-		Assert.assertEquals(result.getMinLength(), 0);
-		Assert.assertEquals(result.getMaxValue(), "");
-		Assert.assertEquals(result.getMinValue(), "");
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), iterations);
-		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSampleCount(), iterations);
+		assertEquals(result.getTypeQualifier(), "BLANK");
+		assertEquals(result.getMaxLength(), 0);
+		assertEquals(result.getMinLength(), 0);
+		assertEquals(result.getMaxValue(), "");
+		assertEquals(result.getMinValue(), "");
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMatchCount(), 0);
+		assertEquals(result.getBlankCount(), iterations);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.STRING);
 
-		Assert.assertTrue("".matches(result.getRegExp()));
+		assertTrue("".matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -170,19 +175,19 @@ public class TestStrings {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getTypeQualifier(), "BLANKORNULL");
-		Assert.assertEquals(result.getSampleCount(), 22);
-		Assert.assertEquals(result.getMatchCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 2);
-		Assert.assertEquals(result.getMinLength(), 1);
-		Assert.assertEquals(result.getMaxLength(), 9);
-		Assert.assertEquals(result.getBlankCount(), 20);
-		Assert.assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "BLANKORNULL");
+		assertEquals(result.getSampleCount(), 22);
+		assertEquals(result.getMatchCount(), 0);
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 9);
+		assertEquals(result.getBlankCount(), 20);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs)
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -204,24 +209,24 @@ public class TestStrings {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMinLength(), 2);
-		Assert.assertEquals(result.getMaxLength(), 9);
-		Assert.assertEquals(result.getBlankCount(), 32);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{2,9}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getName(), "employeeNumber");
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMinLength(), 2);
+		assertEquals(result.getMaxLength(), 9);
+		assertEquals(result.getBlankCount(), 32);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{2,9}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getName(), "employeeNumber");
 
 		int matchCount = 0;
 		for (final String input : inputs) {
 			if (input.matches(result.getRegExp()))
 				matchCount++;
 		}
-		Assert.assertEquals(matchCount, result.getMatchCount());
+		assertEquals(matchCount, result.getMatchCount());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -238,18 +243,18 @@ public class TestStrings {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.freezeANY(1, 11, 1, 11, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getMinValue(), "A");
-		Assert.assertEquals(result.getMaxValue(), "Z");
-		Assert.assertEquals(result.getMinLength(), 1);
-		Assert.assertEquals(result.getMaxLength(), 11);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), KnownPatterns.freezeANY(1, 11, 1, 11, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getMinValue(), "A");
+		assertEquals(result.getMaxValue(), "Z");
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 11);
 
 		for (final String input : inputs)
-			Assert.assertTrue(input.matches(result.getRegExp()), input);
+			assertTrue(input.matches(result.getRegExp()), input);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -271,19 +276,19 @@ public class TestStrings {
 
 			TextAnalysisResult result = analysis.getResult();
 
-			Assert.assertEquals(result.getSampleCount(), inputs.length * ITERATIONS);
-			Assert.assertEquals(result.getNullCount(), 0);
-			Assert.assertEquals(result.getRegExp(), "(?i)(A|ASK|CAN|DO|H|HELLO|HELLOWORLD|NOT|WHAT|YOU|Z)");
-			Assert.assertEquals(result.getMatchCount(), inputs.length * ITERATIONS);
-			Assert.assertEquals(result.getConfidence(), 1.0);
-			Assert.assertEquals(result.getType(), FTAType.STRING);
-			Assert.assertEquals(result.getMinValue(), "A");
-			Assert.assertEquals(result.getMaxValue(), "Z");
-			Assert.assertEquals(result.getMinLength(), 1);
-			Assert.assertEquals(result.getMaxLength(), 10);
+			assertEquals(result.getSampleCount(), inputs.length * ITERATIONS);
+			assertEquals(result.getNullCount(), 0);
+			assertEquals(result.getRegExp(), "(?i)(A|ASK|CAN|DO|H|HELLO|HELLOWORLD|NOT|WHAT|YOU|Z)");
+			assertEquals(result.getMatchCount(), inputs.length * ITERATIONS);
+			assertEquals(result.getConfidence(), 1.0);
+			assertEquals(result.getType(), FTAType.STRING);
+			assertEquals(result.getMinValue(), "A");
+			assertEquals(result.getMaxValue(), "Z");
+			assertEquals(result.getMinLength(), 1);
+			assertEquals(result.getMaxLength(), 10);
 
 			for (final String input : inputs)
-				Assert.assertTrue(input.matches(result.getRegExp()));
+				assertTrue(input.matches(result.getRegExp()));
 
 			final Map<String,Long> details = result.getCardinalityDetails();
 			details.putAll(result.getOutlierDetails());
@@ -291,21 +296,21 @@ public class TestStrings {
 			analysisBulk.trainBulk(details);
 			result = analysisBulk.getResult();
 
-			Assert.assertEquals(result.getSampleCount(), inputs.length * ITERATIONS);
-			Assert.assertEquals(result.getNullCount(), 0);
+			assertEquals(result.getSampleCount(), inputs.length * ITERATIONS);
+			assertEquals(result.getNullCount(), 0);
 			if (!result.getRegExp().equals("(?i)(A|ASK|CAN|DO|H|HELLO|HELLOWORLD|NOT|WHAT|YOU|Z)")) {
 					for (Map.Entry<String, Long> entry : result.getShapeDetails().entrySet())
 						logger.debug("%s: %d", entry.getKey(), entry.getValue());
 					for (Map.Entry<String, Long> entry : result.getCardinalityDetails().entrySet())
 						logger.debug("%s: %d", entry.getKey(), entry.getValue());
 			}
-			Assert.assertEquals(result.getMatchCount(), inputs.length * ITERATIONS);
-			Assert.assertEquals(result.getConfidence(), 1.0);
-			Assert.assertEquals(result.getType(), FTAType.STRING);
-			Assert.assertEquals(result.getMinValue(), "A");
-			Assert.assertEquals(result.getMaxValue(), "Z");
-			Assert.assertEquals(result.getMinLength(), 1);
-			Assert.assertEquals(result.getMaxLength(), 10);
+			assertEquals(result.getMatchCount(), inputs.length * ITERATIONS);
+			assertEquals(result.getConfidence(), 1.0);
+			assertEquals(result.getType(), FTAType.STRING);
+			assertEquals(result.getMinValue(), "A");
+			assertEquals(result.getMaxValue(), "Z");
+			assertEquals(result.getMinLength(), 1);
+			assertEquals(result.getMaxLength(), 10);
 		}
 	}
 
@@ -334,20 +339,20 @@ public class TestStrings {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "(?i)(AK|BC|CO\\. CORK|DF|ESSEX|ID|ISLE OF WIGHT|LARA|NM|NUEVA ESPARTA|OR|QUÉBEC|RJ|SP|TÁCHIRA|WA|WY)");
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getMinValue(), "AK");
-		Assert.assertEquals(result.getMaxValue(), "WY");
-		Assert.assertEquals(result.getMinLength(), 2);
-		Assert.assertEquals(result.getMaxLength(), 13);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "(?i)(AK|BC|CO\\. CORK|DF|ESSEX|ID|ISLE OF WIGHT|LARA|NM|NUEVA ESPARTA|OR|QUÉBEC|RJ|SP|TÁCHIRA|WA|WY)");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getMinValue(), "AK");
+		assertEquals(result.getMaxValue(), "WY");
+		assertEquals(result.getMinLength(), 2);
+		assertEquals(result.getMaxLength(), 13);
 
 // BUG/TODO
 //		for (int i = 0; i < inputs.length; i++) {
-//			Assert.assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+//			assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
 //		}
 	}
 
@@ -376,13 +381,13 @@ public class TestStrings {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getSampleCount(), iterations + nullIterations);
-		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getNullCount(), result.getNullCount());
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getSampleCount(), iterations + nullIterations);
+		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
+		assertEquals(result.getNullCount(), result.getNullCount());
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
+		assertEquals(result.getConfidence(), 1.0);
 
 		final Map<String,Long> details = result.getCardinalityDetails();
 		details.put(null, result.getNullCount());
@@ -391,12 +396,12 @@ public class TestStrings {
 		analysisBulk.trainBulk(details);
 		result = analysisBulk.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), sum);
-		Assert.assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
-		Assert.assertEquals(result.getNullCount(), nullIterations);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), sum);
+		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
+		assertEquals(result.getNullCount(), nullIterations);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
+		assertEquals(result.getConfidence(), 1.0);
 
 	}
 
@@ -430,15 +435,15 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{32}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{32}");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs)
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -467,21 +472,21 @@ public class TestStrings {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{9}");
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMinLength(), 9);
-		Assert.assertEquals(result.getMaxLength(), 9);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertNull(result.getMean());
-		Assert.assertNull(result.getStandardDeviation());
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{9}");
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMinLength(), 9);
+		assertEquals(result.getMaxLength(), 9);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.getMean());
+		assertNull(result.getStandardDeviation());
 
 		for (final String input : inputs)
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -499,15 +504,15 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "(?i)(CORRECTIVE|DISCRETIONARY|MARKETING/RETENTION|\\QREACTIVATION(FS ONLY)\\E|UNDEFINED)");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "(?i)(CORRECTIVE|DISCRETIONARY|MARKETING/RETENTION|\\QREACTIVATION(FS ONLY)\\E|UNDEFINED)");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -530,15 +535,15 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), ".{54,84}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), ".{54,84}");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs)
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -561,15 +566,15 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "(?i)(FIGHTER|FIGHTER; WANNABE|HATES FIGHTING|NOT A FIGHTER|WOULD LIKE TO BE A FIGHTER)");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "(?i)(FIGHTER|FIGHTER; WANNABE|HATES FIGHTING|NOT A FIGHTER|WOULD LIKE TO BE A FIGHTER)");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs)
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -590,15 +595,15 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\$\\d+\\.\\d+");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "\\$\\d+\\.\\d+");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs)
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -618,25 +623,25 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 1);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "£\\d+\\.\\d+");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 1);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "£\\d+\\.\\d+");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
-				Assert.assertTrue(input.matches(result.getRegExp()), result.getRegExp());
+				assertTrue(input.matches(result.getRegExp()), result.getRegExp());
 		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testPercent() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testPercent");
-		Assert.assertTrue(analysis.getCollectStatistics());
+		assertTrue(analysis.getCollectStatistics());
 		analysis.setCollectStatistics(false);
-		Assert.assertFalse(analysis.getCollectStatistics());
+		assertFalse(analysis.getCollectStatistics());
 		final String pipedInput =
 				"14%|27%|11%|26%|29%|25%|21%|25%|21%|0%|4%|14%|25%|17%|26%|20%|20%|6%|25%|10%|1%|25%|21%|22%|9%|6%|17%|15%|2%|25%|5%|15%|22%|5%|10%|14%|24%|9%|13%|6%|22%|7%|14%|25%|1%|6%|3%|10%|11%|23%|3%|18%|4%|5%|29%|5%|9%|4%|22%|26%|10%|27%|8%|6%|15%|3%|19%|7%|11%|22%|16%|23%|18%|8%|13%|11%|27%|5%|20%|10%|11%|20%|19%|9%|30%|12%|22%|10%|11%|5%|30%|8%|24%|22%|10%|9%|11%|2%|2%|26%|23%|0%|8%|18%|23%|18%|27%|23%|12%|11%|24%|25%|6%|9%|5%|6%|20%|15%|8%|12%|1%|20%|2%|10%|12%|7%|20%|29%|25%|15%|13%|28%|30%|2%|29%|27%|24%|18%|18%|21%|20%|20%|25%|28%|13%|2%|17%|27%|5%|8%|27%|15%|26%|0%|24%|23%|8%|9%|14%|9%|13%|23%|16%|4%|1%|25%|26%|25%|7%|20%|9%|24%|19%|0%|30%|25%|16%|13%|16%|0%|17%|22%|26%|24%|9%|19%|29%|5%|11%|27%|1%|15%|21%|8%|2%|3%|30%|5%|7%|16%|18%|6%|25%|21%|11%|9%|18%|19%|2%|22%|27%|8%|26%|21%|14%|13%|29%|29%|9%|8%|23%|26%|23%|22%|4%|13%|28%|17%|27%|30%|11%|4%|12%|20%|29%|2%|28%|12%|28%|17%|18%|11%|12%|9%|2%|2%|30%|18%|9%|10%|19%|20%|14%|3%|24%|4%|10%|21%|25%|2%|21%|6%|18%|27%|6%|11%|13%|19%|9%|9%|7%|23%|18%|24%|26%|23%|8%|26%|21%|13%|28%|7%|22%|30%|16%|17%|14%|27%|24%|12%|16%|11%|15%|23%|4%|26%|15%|24%|2%|29%|16%|25%|26%|10%|18%|12%|1%|9%|13%|27%|27%|2%|9%|1%|11%|30%|30%|4%|2%|3%|0%|30%|26%|2%|10%|15%|9%|6%|26%|10%|20%|23%|21%|28%|0%|14%|5%|18%|22%|17%|20%|2%|26%|21%|0%|5%|9%|7%|25%|22%|27%|29%|17%|26%|17%|26%|6%|10%|10%|4%|25%|11%|29%|19%|23%|14%|1%|10%|26%|23%|20%|7%|28%|10%|25%|14%|17%|30%|11%|13%|3%|7%|5%|19%|30%|13%|14%|11%|4%|7%|18%|24%|26%|10%|22%|9%|24%|12%|5%|2%|4%|10%|21%|30%|9%|17%|4%|15%|15%|29%|10%|6%|27%|18%|7%|7%|24%|3%|10%|7%|5%|1%|8%|8%|17%|19%|24%|11%|24%|19%|22%|26%|17%|21%|17%|13%|24%|20%|1%|0%|10%|12%|29%|7%|4%|20%|10%|30%|15%|8%|28%|4%|11%|21%|22%|25%|12%|19%|27%|16%|25%|1%|29%|26%|21%|8%|2%|7%|13%|18%|25%|3%|18%|25%|0%|5%|29%|11%|23%|30%|19%|10%|0%|23%|22%|2%|5%|16%|30%|24%|26%|12%|28%|16%|4%|4%|0%|14%|30%|1%|7%|5%|24%|30%|26%|17%|9%|20%|10%|19%|24%|12%|24%|23%|13%|22%|8%|3%|29%|18%|24%|15%|13%|21%|3%|1%|18%|30%|2%|20%|3%|17%|9%|12%|5%|23%|18%|2%|18%|12%|9%|10%|22%|12%|13%|27%|28%|21%|1%|22%|9%|4%|11%|4%|12%|0%|11%|13%|17%|13%|13%|9%|5%|12%|18%|3%|9%|18%|11%|22%|21%|30%|28%|13%|25%|4%|3%|3%|8%|9%|3%|24%|15%|10%|7%|4%|17%|0%|25%|20%|11%|22%|18%|23%|0%|7%|4%|7%|13%|21%|22%|28%|11%|2%|5%|23%|11%|23%|11%|28%|8%|7%|14%|6%|27%|10%|28%|27%|21%|12%|13%|18%|7%|0%|2%|14%|11%|22%|0%|20%|26%|4%|5%|3%|12%|12%|4%|8%|20%|14%|22%|19%|21%|5%|3%|27%|20%|9%|30%|25%|17%|24%|7%|5%|15%|12%|13%|25%|1%|15%|7%|10%|26%|5%|7%|19%|17%|16%|25%|26%|29%|10%|21%|21%|10%|22%|4%|24%|5%|12%|29%|10%|29%|26%|9%|8%|12%|2%|6%|6%|25%|7%|26%|4%|21%|27%|13%|29%|19%|5%|8%|13%|16%|18%|26%|16%|29%|17%|17%|22%|20%|23%|9%|25%|20%|7%|19%|24%|8%|5%|27%|2%|14%|18%|25%|0%|20%|13%|11%|14%|12%|30%|15%|28%|22%|10%|22%|16%|10%|10%|12%|21%|13%|17%|20%|21%|14%|19%|8%|20%|10%|27%|1%|24%|24%|6%|8%|24%|1%|0%|15%|17%|20%|18%|16%|5%|23%|24%|24%|2%|8%|22%|21%|17%|23%|28%|14%|11%|3%|19%|6%|24%|27%|10%|5%|24%|16%|23%|4%|13%|3%|22%|11%|20%|5%|20%|13%|4%|28%|1%|19%|18%|16%|11%|13%|6%|28%|1%|9%|7%|13%|28%|17%|2%|7%|22%|26%|14%|15%|27%|17%|26%|5%|24%|16%|4%|22%|26%|6%|22%|15%|9%|23%|16%|28%|28%|22%|17%|5%|2%|20%|21%|5%|5%|8%|13%|20%|4%|17%|6%|15%|8%|14%|28%|14%|10%|15%|13%|3%|26%|27%|25%|25%|22%|22%|6%|6%|1%|17%|17%|26%|5%|4%|5%|4%|1%|13%|22%|12%|24%|27%|13%|7%|17%|29%|16%|10%|15%|25%|29%|3%|8%|16%|10%|2%|12%|0%|3%|4%|12%|29%|2%|6%|14%|6%|2%|3%|5%|1%|28%|24%|25%|9%|18%|18%|11%|0%|20%|30%|14%|1%|3%|15%|23%|3%|5%|19%|17%|6%|18%|16%|19%|29%|0%|15%|4%|12%|25%|26%|7%|4%|28%|1%|12%|12%|0%|8%|12%|22%|4%|23%|11%|19%|8%|0%|0%|22%|7%|22%|10%|25%|2%|5%|11%|18%|9%|1%|10%|9%|24%|4%|26%|23%|17%|16%|20%|20%|4%|1%|9%|2%|29%|28%|12%|5%|27%|15%|21%|11%|14%|19%|27%|11%|29%|26%|10%|28%|25%|4%|6%|11%|11%|23%|21%|28%|25%|14%|23%|19%|12%|24%|23%|3%|28%|22%|20%|6%|9%|22%|12%|2%|22%|20%|10%|12%|21%|9%|4%|28%|15%|0%|28%|6%|0%|16%|14%|21%|17%|4%|26%|26%|5%|5%|10%|26%|0%|15%|10%|6%|0%|14%|25%|27%|29%|2%|26%|13%|19%|10%|14%|20%|6%|30%|19%|9%|2%|5%|23%|1%|22%|26%|3%|25%|27%|1%|24%|10%|2%|14%|19%|23%|10%|15%|20%|25%|0%|5%|19%|0%|5%|23%|28%|5%|27%|9%|14%|5%|1%|15%|";
 		final String inputs[] = pipedInput.split("\\|");
@@ -650,16 +655,16 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\d%|\\d{2}%");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "\\d%|\\d{2}%");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
-				Assert.assertTrue(input.matches(result.getRegExp()), result.getRegExp());
+				assertTrue(input.matches(result.getRegExp()), result.getRegExp());
 		}
 	}
 
@@ -681,17 +686,17 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getShapeCount(), 2);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\d{5}(-\\d{4})?");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getShapeCount(), 2);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "\\d{5}(-\\d{4})?");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
-				Assert.assertTrue(input.matches(result.getRegExp()), result.getRegExp());
+				assertTrue(input.matches(result.getRegExp()), result.getRegExp());
 		}
 	}
 
@@ -712,10 +717,10 @@ public class TestStrings {
 
 		final TextAnalysisResult result1 = analysis1.getResult();
 		final TextAnalysisResult result2 = analysis2.getResult();
-		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
-		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
-		Assert.assertEquals(result1.getRegExp(), result2.getRegExp());
-		Assert.assertEquals(result1.getRegExp(), "(?i)(DEFERRED|ESCALATED|FOLLOW_UP_REQUIRED|HANDLED|HANDLED_WITH_ISSUES|INVALID_PRODUCT)");
+		assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
+		assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
+		assertEquals(result1.getRegExp(), result2.getRegExp());
+		assertEquals(result1.getRegExp(), "(?i)(DEFERRED|ESCALATED|FOLLOW_UP_REQUIRED|HANDLED|HANDLED_WITH_ISSUES|INVALID_PRODUCT)");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -736,11 +741,11 @@ public class TestStrings {
 		final TextAnalysisResult result1 = analysis1.getResult();
 		final TextAnalysisResult result2 = analysis2.getResult();
 
-		Assert.assertEquals(result1.getStructureSignature(), PluginDefinition.findByQualifier("COUNTRY.TEXT_EN").signature);
-		Assert.assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
-		Assert.assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
-		Assert.assertEquals(result1.getTypeQualifier(), result2.getTypeQualifier());
-		Assert.assertEquals(result1.getTypeQualifier(), CountryEN.SEMANTIC_TYPE);
+		assertEquals(result1.getStructureSignature(), PluginDefinition.findByQualifier("COUNTRY.TEXT_EN").signature);
+		assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
+		assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
+		assertEquals(result1.getTypeQualifier(), result2.getTypeQualifier());
+		assertEquals(result1.getTypeQualifier(), CountryEN.SEMANTIC_TYPE);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -761,16 +766,16 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length * iterations);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
-				Assert.assertTrue(input.matches(result.getRegExp()), result.getRegExp());
+				assertTrue(input.matches(result.getRegExp()), result.getRegExp());
 		}
 	}
 
@@ -784,12 +789,12 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), 1);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\d{5}\\|");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "\\d{5}\\|");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -811,17 +816,17 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3,17}[ 	]*");
-		Assert.assertEquals(result.getMinLength(), 3);
-		Assert.assertEquals(result.getMaxLength(), 22);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3,17}[ 	]*");
+		assertEquals(result.getMinLength(), 3);
+		assertEquals(result.getMaxLength(), 22);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : inputs)
-			Assert.assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
+			assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -845,16 +850,16 @@ public class TestStrings {
 		analysis.train("N/A");
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
-		Assert.assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{4}");
-		Assert.assertNull(result.getTypeQualifier());
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
+		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{4}");
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		for (final String sample : samples) {
-			Assert.assertTrue(sample.matches(result.getRegExp()));
+			assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -872,17 +877,17 @@ public class TestStrings {
 		TextAnalysisResult result = analysis.getResult();
 		result = analysis.getResult();
 
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getBlankCount(), 0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}__\\d{4}\\p{IsAlphabetic}{2}\\d{6}\\p{IsAlphabetic}{3}\\d[ 	]*");
-		Assert.assertEquals(result.getMinLength(), 20);
-		Assert.assertEquals(result.getMaxLength(), 21);
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}__\\d{4}\\p{IsAlphabetic}{2}\\d{6}\\p{IsAlphabetic}{3}\\d[ 	]*");
+		assertEquals(result.getMinLength(), 20);
+		assertEquals(result.getMaxLength(), 21);
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : inputs)
-			Assert.assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
+			assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
 	}
 
 	public void _stringPerf(final boolean statisticsOn) throws IOException, FTAException {
@@ -928,15 +933,15 @@ public class TestStrings {
 		if (bw != null)
 			bw.close();
 
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), iters + 1);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getMinLength(), 1);
-		Assert.assertEquals(result.getMaxLength(), 52);
-		Assert.assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{1,52}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
-		Assert.assertEquals(result.getType(), FTAType.STRING);
-		Assert.assertNull(result.getTypeQualifier());
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), iters + 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 52);
+		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{1,52}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
 		logger.info("Count {}, duration: {}ms, ~{} per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes

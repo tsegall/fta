@@ -15,13 +15,14 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.RegExpGenerator;
@@ -31,31 +32,31 @@ public class TestRegExpSupport {
 	@Test(groups = { TestGroups.ALL })
 	public void phone() throws IOException {
 		TokenStream ts = new TokenStream("+9 999 999 9999", 1);
-		Assert.assertEquals(ts.getRegExp(false), "\\+\\d \\d{3} \\d{3} \\d{4}");
+		assertEquals(ts.getRegExp(false), "\\+\\d \\d{3} \\d{3} \\d{4}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void simple() throws IOException {
 		TokenStream ts = new TokenStream("xxx", 1);
-		Assert.assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{3}");
+		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{3}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void mixedAlpha() throws IOException {
 		TokenStream ts = new TokenStream("xxXX", 1);
-		Assert.assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{4}");
+		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{4}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void mix() throws IOException {
 		TokenStream ts = new TokenStream("99XXXX:99X", 1);
-		Assert.assertEquals(ts.getRegExp(false), "\\d{2}\\p{IsAlphabetic}{4}:\\d{2}\\p{IsAlphabetic}");
+		assertEquals(ts.getRegExp(false), "\\d{2}\\p{IsAlphabetic}{4}:\\d{2}\\p{IsAlphabetic}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void onlyAlpha() throws IOException {
 		TokenStream ts = new TokenStream("XXXXX", 1);
-		Assert.assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{5}");
+		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{5}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -66,7 +67,7 @@ public class TestRegExpSupport {
 		gen.train("1-1-11-11");
 		gen.train("1-1-11-1");
 		gen.train("1-1-1-1");
-		Assert.assertEquals(gen.getResult(), "[\\p{IsDigit}\\-]{7,9}");
+		assertEquals(gen.getResult(), "[\\p{IsDigit}\\-]{7,9}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -80,7 +81,7 @@ public class TestRegExpSupport {
 		    }
 		}
 
-		Assert.assertEquals(gen.getResult(), "(?i)(AFRICA|ANTARCTICA|ASIA|ASIA PACIFIC|AUSTRALIA/NZ|CARIBBEAN|CENTRAL AMERICA|EUROPE|MIDDLE EAST|NORTH AMERICA|OCEANIA|SOUTH AMERICA|THE CARIBBEAN)");
+		assertEquals(gen.getResult(), "(?i)(AFRICA|ANTARCTICA|ASIA|ASIA PACIFIC|AUSTRALIA/NZ|CARIBBEAN|CENTRAL AMERICA|EUROPE|MIDDLE EAST|NORTH AMERICA|OCEANIA|SOUTH AMERICA|THE CARIBBEAN)");
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -94,7 +95,7 @@ public class TestRegExpSupport {
 		    }
 		}
 
-		Assert.assertEquals(gen.getResult(), ".+");
+		assertEquals(gen.getResult(), ".+");
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -105,7 +106,7 @@ public class TestRegExpSupport {
 		gen.train("B");
 		gen.train("C");
 		gen.train("D");
-		Assert.assertEquals(gen.getResult(), "[A-D]");
+		assertEquals(gen.getResult(), "[A-D]");
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -126,7 +127,7 @@ public class TestRegExpSupport {
 		gen.train("3");
 		gen.train("4");
 		gen.train("5");
-		Assert.assertEquals(gen.getResult(), "[0-9]");
+		assertEquals(gen.getResult(), "[0-9]");
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -147,6 +148,6 @@ public class TestRegExpSupport {
 		gen.train("AXP343456");
 		gen.train("AXP000345");
 		gen.train("AXP990213");
-		Assert.assertEquals(gen.getResult(), "(?i)(AXP000345|AXP093633|AXP098637|AXP109005|AXP109785|AXP111185|AXP166778|AXP223785|AXP343456|AXP347885|AXP356785|AXP371295|AXP734377|AXP990213)");
+		assertEquals(gen.getResult(), "(?i)(AXP000345|AXP093633|AXP098637|AXP109005|AXP109785|AXP111185|AXP166778|AXP223785|AXP343456|AXP347885|AXP356785|AXP371295|AXP734377|AXP990213)");
 	}
 }

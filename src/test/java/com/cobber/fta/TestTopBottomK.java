@@ -15,6 +15,9 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -23,7 +26,6 @@ import java.util.Locale;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAPluginException;
@@ -45,8 +47,8 @@ public class TestTopBottomK {
 			t.observe(s);
 		}
 
-		Assert.assertEquals(t.topK(), topK);
-		Assert.assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
 	}
 
 	// Need to test the following equivalence classes for size n ...
@@ -58,8 +60,8 @@ public class TestTopBottomK {
 		final HashSet<Integer> topK = new HashSet<>();
 		final HashSet<Integer> bottomK = new HashSet<>();
 
-		Assert.assertEquals(t.topK(), topK);
-		Assert.assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -82,8 +84,8 @@ public class TestTopBottomK {
 			t.observe(r);
 		}
 
-		Assert.assertEquals(t.topK(), topK);
-		Assert.assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -106,8 +108,8 @@ public class TestTopBottomK {
 			t.observe(r);
 		}
 
-		Assert.assertEquals(t.topK(), topK);
-		Assert.assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -130,8 +132,8 @@ public class TestTopBottomK {
 			t.observe(r);
 		}
 
-		Assert.assertEquals(t.topK(), topK);
-		Assert.assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -154,8 +156,8 @@ public class TestTopBottomK {
 			t.observe(r);
 		}
 
-		Assert.assertEquals(t.bottomK(), bottomK);
-		Assert.assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -178,8 +180,8 @@ public class TestTopBottomK {
 			t.observe(r);
 		}
 
-		Assert.assertEquals(t.bottomK(), bottomK);
-		Assert.assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -192,37 +194,37 @@ public class TestTopBottomK {
 		for (int i = 1; i <= SIZE; i++)
 			t.observe(i);
 
-		Assert.assertEquals(t.bottomK(), bottomK);
-		Assert.assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
 
 		// So sets are equal - but we need also need to check that they are correctly ordered
 		// Should be lowest to highest
 		int current = Integer.MIN_VALUE;
 		for (Integer i : t.bottomK()) {
-			Assert.assertTrue(i >= current);
+			assertTrue(i >= current);
 			current = i;
 		}
 		current = Integer.MIN_VALUE;
 		// Should be lowest to highest
 		for (Integer i : t.topK()) {
-			Assert.assertTrue(i >= current);
+			assertTrue(i >= current);
 			current = i;
 		}
 
-		Assert.assertEquals(t.bottomKasString(), new TreeSet<>(t.bottomK().stream().map(x->x.toString()).collect(Collectors.toSet())));
-		Assert.assertEquals(t.topKasString(), new TreeSet<>(t.topK().stream().map(x->x.toString()).collect(Collectors.toSet())));
+		assertEquals(t.bottomKasString(), new TreeSet<>(t.bottomK().stream().map(x->x.toString()).collect(Collectors.toSet())));
+		assertEquals(t.topKasString(), new TreeSet<>(t.topK().stream().map(x->x.toString()).collect(Collectors.toSet())));
 
 		// So sets are equal - but we need also need to check that they are correctly ordered
 		// Should be lowest to highest
 		current = Integer.MIN_VALUE;
 		for (String i : t.bottomKasString()) {
-			Assert.assertTrue(Integer.valueOf(i) >= current);
+			assertTrue(Integer.valueOf(i) >= current);
 			current = Integer.valueOf(i);
 		}
 		current = Integer.MAX_VALUE;
 		// Should be highest to lowest
 		for (String i : t.topKasString()) {
-			Assert.assertTrue(Integer.valueOf(i) <= current);
+			assertTrue(Integer.valueOf(i) <= current);
 			current = Integer.valueOf(i);
 		}
 	}
@@ -247,8 +249,8 @@ public class TestTopBottomK {
 			t.observe(r);
 		}
 
-		Assert.assertEquals(t.bottomK(), bottomK);
-		Assert.assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -271,8 +273,8 @@ public class TestTopBottomK {
 			t.observe(r);
 		}
 
-		Assert.assertEquals(t.topK(), topK);
-		Assert.assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -295,8 +297,8 @@ public class TestTopBottomK {
 			t.observe(r);
 		}
 
-		Assert.assertEquals(t.topK(), topK);
-		Assert.assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -318,8 +320,8 @@ public class TestTopBottomK {
 			t.observe((long)r);
 		}
 
-		Assert.assertEquals(t.topK(), topK);
-		Assert.assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -341,8 +343,8 @@ public class TestTopBottomK {
 			t.observe((double)r);
 		}
 
-		Assert.assertEquals(t.topK(), topK);
-		Assert.assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -358,7 +360,7 @@ public class TestTopBottomK {
 		for (int i = 0; i < 100000; i++)
 			t.observe(logicalFirst.nextRandom());
 
-		Assert.assertEquals(t.topK(), topK);
-		Assert.assertEquals(t.bottomK(), bottomK);
+		assertEquals(t.topK(), topK);
+		assertEquals(t.bottomK(), bottomK);
 	}
 }

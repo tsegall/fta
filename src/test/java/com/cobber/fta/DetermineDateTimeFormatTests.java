@@ -15,6 +15,13 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
+
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
@@ -34,7 +41,6 @@ import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
@@ -72,7 +78,7 @@ public class DetermineDateTimeFormatTests {
 						"August 8, 2017|August 18 2017|December 9 2017|January-14-2017|February-4-2017|";
 
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-		Assert.assertEquals(dtp.determineFormatString("9:57"), "H:mm");
+		assertEquals(dtp.determineFormatString("9:57"), "H:mm");
 		final String inputs[] = pipedInput.split("\\|");
 		final String fmts[] = new String[inputs.length];
 		String text;
@@ -90,7 +96,7 @@ public class DetermineDateTimeFormatTests {
 		// Work out headers and which columns we want.
 		for (int i = 0; i < inputs.length; i++) {
 			fmts[i] = dtp.determineFormatString(inputs[i]);
-			Assert.assertNotNull(fmts[i], inputs[i]);
+			assertNotNull(fmts[i], inputs[i]);
 
 			final String header = fmts[i].replace(':', '_').replace('\'', '_');
 
@@ -143,62 +149,62 @@ public class DetermineDateTimeFormatTests {
 						answer.append('\n');
 				}
 				catch (DateTimeParseException exc) {
-					Assert.fail("Failure");
+					fail("Failure");
 				}
 			}
 		}
-		Assert.assertEquals(dtp.determineFormatString("9:57"), "H:mm");
+		assertEquals(dtp.determineFormatString("9:57"), "H:mm");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitTimeOnly() {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertNull(dtp.determineFormatString("12:02:1"));
-		Assert.assertEquals(dtp.determineFormatString("9:57"), "H:mm");
-		Assert.assertEquals(dtp.determineFormatString("12:57"), "HH:mm");
-		Assert.assertEquals(dtp.determineFormatString("8:57:02"), "H:mm:ss");
-		Assert.assertEquals(dtp.determineFormatString("12:57:02"), "HH:mm:ss");
-		Assert.assertNull(dtp.determineFormatString(":57:02"));
-		Assert.assertNull(dtp.determineFormatString("123:02"));
-		Assert.assertNull(dtp.determineFormatString("12:023"));
-		Assert.assertNull(dtp.determineFormatString("12:023:12"));
-		Assert.assertNull(dtp.determineFormatString("12:0"));
-		Assert.assertNull(dtp.determineFormatString("12:02:12:14"));
-		Assert.assertNull(dtp.determineFormatString("12:02:124"));
-		Assert.assertNull(dtp.determineFormatString("12:02:"));
-		Assert.assertNull(dtp.determineFormatString("12::02"));
+		assertNull(dtp.determineFormatString("12:02:1"));
+		assertEquals(dtp.determineFormatString("9:57"), "H:mm");
+		assertEquals(dtp.determineFormatString("12:57"), "HH:mm");
+		assertEquals(dtp.determineFormatString("8:57:02"), "H:mm:ss");
+		assertEquals(dtp.determineFormatString("12:57:02"), "HH:mm:ss");
+		assertNull(dtp.determineFormatString(":57:02"));
+		assertNull(dtp.determineFormatString("123:02"));
+		assertNull(dtp.determineFormatString("12:023"));
+		assertNull(dtp.determineFormatString("12:023:12"));
+		assertNull(dtp.determineFormatString("12:0"));
+		assertNull(dtp.determineFormatString("12:02:12:14"));
+		assertNull(dtp.determineFormatString("12:02:124"));
+		assertNull(dtp.determineFormatString("12:02:"));
+		assertNull(dtp.determineFormatString("12::02"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitDateOnlySlash() {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("2/12/98"), "?/??/yy");
-		Assert.assertEquals(dtp.determineFormatString("2/2/02"), "?/?/yy");
-		Assert.assertNull(dtp.determineFormatString("2/31/02"));
-		Assert.assertEquals(dtp.determineFormatString("31/02/02"), "??/??/??");
-		Assert.assertEquals(dtp.determineFormatString("12/12/98"), "??/??/yy");
-		Assert.assertEquals(dtp.determineFormatString("14/12/98"), "dd/MM/yy");
-		Assert.assertEquals(dtp.determineFormatString("12/14/98"), "MM/dd/yy");
-		Assert.assertEquals(dtp.determineFormatString("12/12/2012"), "??/??/yyyy");
-		Assert.assertEquals(dtp.determineFormatString("20/12/2012"), "dd/MM/yyyy");
-		Assert.assertEquals(dtp.determineFormatString("11/15/2012"), "MM/dd/yyyy");
-		Assert.assertEquals(dtp.determineFormatString("2012/12/13"), "yyyy/MM/dd");
-		Assert.assertNull(dtp.determineFormatString("/57/02"));
-		Assert.assertNull(dtp.determineFormatString("123/02"));
-		Assert.assertNull(dtp.determineFormatString("12/023"));
-		Assert.assertNull(dtp.determineFormatString("12/0"));
-		Assert.assertNull(dtp.determineFormatString("12/02/1"));
-		Assert.assertNull(dtp.determineFormatString("12/023/12"));
-		Assert.assertNull(dtp.determineFormatString("12/02/"));
-		Assert.assertNull(dtp.determineFormatString("12/02-99"));
+		assertEquals(dtp.determineFormatString("2/12/98"), "?/??/yy");
+		assertEquals(dtp.determineFormatString("2/2/02"), "?/?/yy");
+		assertNull(dtp.determineFormatString("2/31/02"));
+		assertEquals(dtp.determineFormatString("31/02/02"), "??/??/??");
+		assertEquals(dtp.determineFormatString("12/12/98"), "??/??/yy");
+		assertEquals(dtp.determineFormatString("14/12/98"), "dd/MM/yy");
+		assertEquals(dtp.determineFormatString("12/14/98"), "MM/dd/yy");
+		assertEquals(dtp.determineFormatString("12/12/2012"), "??/??/yyyy");
+		assertEquals(dtp.determineFormatString("20/12/2012"), "dd/MM/yyyy");
+		assertEquals(dtp.determineFormatString("11/15/2012"), "MM/dd/yyyy");
+		assertEquals(dtp.determineFormatString("2012/12/13"), "yyyy/MM/dd");
+		assertNull(dtp.determineFormatString("/57/02"));
+		assertNull(dtp.determineFormatString("123/02"));
+		assertNull(dtp.determineFormatString("12/023"));
+		assertNull(dtp.determineFormatString("12/0"));
+		assertNull(dtp.determineFormatString("12/02/1"));
+		assertNull(dtp.determineFormatString("12/023/12"));
+		assertNull(dtp.determineFormatString("12/02/"));
+		assertNull(dtp.determineFormatString("12/02-99"));
 	}
 
 	/*
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testSpaces() {
-		Assert.assertEquals(DateTimeParser.parse("2018 12 24"), "yyyy MM dd");
+		assertEquals(DateTimeParser.parse("2018 12 24"), "yyyy MM dd");
 	}
 	 */
 
@@ -206,21 +212,21 @@ public class DetermineDateTimeFormatTests {
 	public void intuitDateOnlyDash() {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("2-12-98"), "?-??-yy");
-		Assert.assertEquals(dtp.determineFormatString("12-12-98"), "??-??-yy");
-		Assert.assertEquals(dtp.determineFormatString("14-12-98"), "dd-MM-yy");
-		Assert.assertEquals(dtp.determineFormatString("12-14-98"), "MM-dd-yy");
-		Assert.assertEquals(dtp.determineFormatString("12-12-2012"), "??-??-yyyy");
-		Assert.assertEquals(dtp.determineFormatString("2012-12-13"), "yyyy-MM-dd");
-		Assert.assertEquals(dtp.determineFormatString("2012-13-12"), "yyyy-dd-MM");
-		Assert.assertNull(dtp.determineFormatString("20120-12-12"));
+		assertEquals(dtp.determineFormatString("2-12-98"), "?-??-yy");
+		assertEquals(dtp.determineFormatString("12-12-98"), "??-??-yy");
+		assertEquals(dtp.determineFormatString("14-12-98"), "dd-MM-yy");
+		assertEquals(dtp.determineFormatString("12-14-98"), "MM-dd-yy");
+		assertEquals(dtp.determineFormatString("12-12-2012"), "??-??-yyyy");
+		assertEquals(dtp.determineFormatString("2012-12-13"), "yyyy-MM-dd");
+		assertEquals(dtp.determineFormatString("2012-13-12"), "yyyy-dd-MM");
+		assertNull(dtp.determineFormatString("20120-12-12"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuit8601DD() {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("2004-01-01T00:00:00+05"), "yyyy-MM-dd'T'HH:mm:ssx");
+		assertEquals(dtp.determineFormatString("2004-01-01T00:00:00+05"), "yyyy-MM-dd'T'HH:mm:ssx");
 
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "2004-01-01T00:00:00+05";
@@ -228,21 +234,21 @@ public class DetermineDateTimeFormatTests {
 		det.train("      ");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd'T'HH:mm:ssx");
+		assertEquals(result.getFormatString(), "yyyy-MM-dd'T'HH:mm:ssx");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-+][0-9]{2}([0-9]{2})?");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-+][0-9]{2}([0-9]{2})?");
+		assertTrue(sample.matches(regExp));
 
-		Assert.assertTrue(result.isValid("2004-01-01T00:00:00+05"));
-		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+08"));
-		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+0830"));
-		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+?08"));
+		assertTrue(result.isValid("2004-01-01T00:00:00+05"));
+		assertTrue(result.isValid("2012-03-04T19:22:10+08"));
+		assertTrue(result.isValid("2012-03-04T19:22:10+0830"));
+		assertFalse(result.isValid("2012-03-04T19:22:10+?08"));
 
-		Assert.assertTrue(result.isValid8("2004-01-01T00:00:00+05"));
-		Assert.assertTrue(result.isValid8("2012-03-04T19:22:10+08"));
-		Assert.assertTrue(result.isValid8("2012-03-04T19:22:10+0830"));
-		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+?08"));
+		assertTrue(result.isValid8("2004-01-01T00:00:00+05"));
+		assertTrue(result.isValid8("2012-03-04T19:22:10+08"));
+		assertTrue(result.isValid8("2012-03-04T19:22:10+0830"));
+		assertFalse(result.isValid8("2012-03-04T19:22:10+?08"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -261,12 +267,12 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParserResult result = det.getResult();
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "HH:mm dd/M/yy");
+		assertEquals(formatString, "HH:mm dd/M/yy");
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp));
+			assertTrue(input.matches(regExp));
 		}
 	}
 
@@ -283,12 +289,12 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParserResult result = det.getResult();
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "yyyy-MM-dd'T'HH:mm:ssxx");
+		assertEquals(formatString, "yyyy-MM-dd'T'HH:mm:ssxx");
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp));
+			assertTrue(input.matches(regExp));
 		}
 	}
 
@@ -305,55 +311,55 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParserResult result = det.getResult();
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "M/dd/yy");
+		assertEquals(formatString, "M/dd/yy");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuit8601DDDDDD() {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("2004-01-01T00:00:00+05:00:00"), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
+		assertEquals(dtp.determineFormatString("2004-01-01T00:00:00+05:00:00"), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
 
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "2004-01-01T00:00:00+05:00:00";
 		det.train(sample);
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
+		assertEquals(result.getFormatString(), "yyyy-MM-dd'T'HH:mm:ssxxxxx");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-+][0-9]{2}:[0-9]{2}(:[0-9]{2})?");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-+][0-9]{2}:[0-9]{2}(:[0-9]{2})?");
+		assertTrue(sample.matches(regExp));
 
-		Assert.assertTrue(result.isValid("2004-01-01T00:00:00+05:00:00"));
-		Assert.assertTrue(result.isValid("2012-03-04T19:22:10+08:00:00"));
-		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+08:00:0"));
-		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+O8:00:00"));
-		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+08:60:00"));
-		Assert.assertFalse(result.isValid("2012-03-04T19:22:10+08:00:60"));
+		assertTrue(result.isValid("2004-01-01T00:00:00+05:00:00"));
+		assertTrue(result.isValid("2012-03-04T19:22:10+08:00:00"));
+		assertFalse(result.isValid("2012-03-04T19:22:10+08:00:0"));
+		assertFalse(result.isValid("2012-03-04T19:22:10+O8:00:00"));
+		assertFalse(result.isValid("2012-03-04T19:22:10+08:60:00"));
+		assertFalse(result.isValid("2012-03-04T19:22:10+08:00:60"));
 
-		Assert.assertTrue(result.isValid8("2004-01-01T00:00:00+05:00:00"));
-		Assert.assertTrue(result.isValid8("2012-03-04T19:22:10+08:00:00"));
-		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+08:00:0"));
-		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+O8:00:00"));
-		Assert.assertFalse(result.isValid8("2012-03-04T19:22:10+08:00:60"));
+		assertTrue(result.isValid8("2004-01-01T00:00:00+05:00:00"));
+		assertTrue(result.isValid8("2012-03-04T19:22:10+08:00:00"));
+		assertFalse(result.isValid8("2012-03-04T19:22:10+08:00:0"));
+		assertFalse(result.isValid8("2012-03-04T19:22:10+O8:00:00"));
+		assertFalse(result.isValid8("2012-03-04T19:22:10+08:00:60"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void fullMonths() {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("25 July 2018"), "dd MMMM yyyy");
-		Assert.assertEquals(dtp.determineFormatString("25-July-2018"), "dd-MMMM-yyyy");
-		Assert.assertEquals(dtp.determineFormatString("7 June 2017"), "d MMMM yyyy");
-		Assert.assertEquals(dtp.determineFormatString("7-June-2017"), "d-MMMM-yyyy");
+		assertEquals(dtp.determineFormatString("25 July 2018"), "dd MMMM yyyy");
+		assertEquals(dtp.determineFormatString("25-July-2018"), "dd-MMMM-yyyy");
+		assertEquals(dtp.determineFormatString("7 June 2017"), "d MMMM yyyy");
+		assertEquals(dtp.determineFormatString("7-June-2017"), "d-MMMM-yyyy");
 
-		Assert.assertEquals(dtp.determineFormatString("June 23, 2017"), "MMMM dd',' yyyy");
-		Assert.assertEquals(dtp.determineFormatString("August 8, 2017"), "MMMM d',' yyyy");
-		Assert.assertEquals(dtp.determineFormatString("August 18 2017"), "MMMM dd yyyy");
-		Assert.assertEquals(dtp.determineFormatString("December 9 2017"), "MMMM d yyyy");
-		Assert.assertEquals(dtp.determineFormatString("January-14-2017"), "MMMM-dd-yyyy");
-		Assert.assertEquals(dtp.determineFormatString("February-4-2017"), "MMMM-d-yyyy");
+		assertEquals(dtp.determineFormatString("June 23, 2017"), "MMMM dd',' yyyy");
+		assertEquals(dtp.determineFormatString("August 8, 2017"), "MMMM d',' yyyy");
+		assertEquals(dtp.determineFormatString("August 18 2017"), "MMMM dd yyyy");
+		assertEquals(dtp.determineFormatString("December 9 2017"), "MMMM d yyyy");
+		assertEquals(dtp.determineFormatString("January-14-2017"), "MMMM-dd-yyyy");
+		assertEquals(dtp.determineFormatString("February-4-2017"), "MMMM-d-yyyy");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -371,12 +377,12 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "yyyy-MM-dd HH:mm z");
+		assertEquals(formatString, "yyyy-MM-dd HH:mm z");
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp));
+			assertTrue(input.matches(regExp));
 		}
 	}
 
@@ -394,12 +400,12 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "dd/M/yy");
+		assertEquals(formatString, "dd/M/yy");
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp));
+			assertTrue(input.matches(regExp));
 		}
 	}
 
@@ -417,12 +423,12 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "dd_MM_yyyy");
+		assertEquals(formatString, "dd_MM_yyyy");
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp));
+			assertTrue(input.matches(regExp));
 		}
 	}
 
@@ -441,14 +447,14 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "EEE MMM ppd HH:mm:ss z yyyy");
+		assertEquals(formatString, "EEE MMM ppd HH:mm:ss z yyyy");
 
 		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getFormatString(), Locale.getDefault());
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp));
+			assertTrue(input.matches(regExp));
 			ZonedDateTime.parse(input, formatter);
 		}
 	}
@@ -458,7 +464,7 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParser det = new DateTimeParser();
 		det.train("Wed Apr 21 08:10:38 GMT+8 2021");
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss O yyyy");
+		assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss O yyyy");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -466,7 +472,7 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParser det = new DateTimeParser();
 		det.train("Wed Apr 21 08:10:38 GMT-07:00 2021");
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss OOOO yyyy");
+		assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss OOOO yyyy");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -485,12 +491,12 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "H:mm");
+		assertEquals(formatString, "H:mm");
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp));
+			assertTrue(input.matches(regExp));
 		}
 	}
 
@@ -512,12 +518,12 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "d MMMM yyyy");
+		assertEquals(formatString, "d MMMM yyyy");
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp));
+			assertTrue(input.matches(regExp));
 		}
 	}
 
@@ -525,7 +531,7 @@ public class DetermineDateTimeFormatTests {
 	public void basicAMPM() {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("09/Mar/17 3:14 PM"), "dd/MMM/yy h:mm a");
+		assertEquals(dtp.determineFormatString("09/Mar/17 3:14 PM"), "dd/MMM/yy h:mm a");
 
 		final String pipedInput = "09/Mar/17 3:14 PM|09/Mar/17 11:36 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 9:12 AM|09/Mar/17 8:14 AM|" +
 				"09/Mar/17 7:02 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|09/Mar/17 6:59 AM|" +
@@ -544,18 +550,18 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "dd/MMM/yy h:mm a");
+		assertEquals(formatString, "dd/MMM/yy h:mm a");
 
-		Assert.assertTrue(result.isValid("09/Mar/17 3:14 AM"));
-		Assert.assertTrue(result.isValid8("09/Mar/17 3:14 AM"));
-		Assert.assertTrue(result.isValid("09/Mar/17 3:14 PM"));
-		Assert.assertTrue(result.isValid8("09/Mar/17 3:14 PM"));
-		Assert.assertFalse(result.isValid("09/Mar/17 3:14"));
+		assertTrue(result.isValid("09/Mar/17 3:14 AM"));
+		assertTrue(result.isValid8("09/Mar/17 3:14 AM"));
+		assertTrue(result.isValid("09/Mar/17 3:14 PM"));
+		assertTrue(result.isValid8("09/Mar/17 3:14 PM"));
+		assertFalse(result.isValid("09/Mar/17 3:14"));
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp));
+			assertTrue(input.matches(regExp));
 		}
 	}
 
@@ -564,7 +570,7 @@ public class DetermineDateTimeFormatTests {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("09/thg 3/17 3:14 SA"), "dd/MMM/yy h:mm a");
+		assertEquals(dtp.determineFormatString("09/thg 3/17 3:14 SA"), "dd/MMM/yy h:mm a");
 
 		final String pipedInput = "09/thg 3/17 3:14 CH|09/thg 3/17 11:36 SA|09/thg 3/17 9:12 SA|09/thg 3/17 9:12 SA|09/thg 3/17 9:12 SA|09/thg 3/17 8:14 SA|" +
 				"09/thg 3/17 7:02 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|09/thg 3/17 6:59 SA|" +
@@ -583,17 +589,17 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "dd/MMM/yy h:mm a");
+		assertEquals(formatString, "dd/MMM/yy h:mm a");
 
-		Assert.assertTrue(result.isValid("09/thg 3/17 3:14 SA"));
-		Assert.assertTrue(result.isValid8("09/Mar/17 3:14 CH"));
-		Assert.assertTrue(result.isValid("09/Mar/17 3:14 SA"));
-		Assert.assertTrue(result.isValid8("09/Mar/17 3:14 SA"));
+		assertTrue(result.isValid("09/thg 3/17 3:14 SA"));
+		assertTrue(result.isValid8("09/Mar/17 3:14 CH"));
+		assertTrue(result.isValid("09/Mar/17 3:14 SA"));
+		assertTrue(result.isValid8("09/Mar/17 3:14 SA"));
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp));
+			assertTrue(input.matches(regExp));
 		}
 	}
 
@@ -616,17 +622,17 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "hh:mm:ss a");
+		assertEquals(formatString, "hh:mm:ss a");
 
-		Assert.assertTrue(result.isValid("03:14:12 AM"));
-		Assert.assertTrue(result.isValid8("03:14:12 AM"));
-		Assert.assertTrue(result.isValid("03:14:12 PM"));
-		Assert.assertTrue(result.isValid8("03:14:12 PM"));
+		assertTrue(result.isValid("03:14:12 AM"));
+		assertTrue(result.isValid8("03:14:12 AM"));
+		assertTrue(result.isValid("03:14:12 PM"));
+		assertTrue(result.isValid8("03:14:12 PM"));
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp), input);
+			assertTrue(input.matches(regExp), input);
 		}
 	}
 
@@ -650,18 +656,18 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "hh:mm:ssa");
+		assertEquals(formatString, "hh:mm:ssa");
 
-		Assert.assertTrue(result.isValid("03:14:12am"));
-		Assert.assertTrue(result.isValid("03:14:12pm"));
+		assertTrue(result.isValid("03:14:12am"));
+		assertTrue(result.isValid("03:14:12pm"));
 		// It hurts but there is no way to specify am/pm (lowercase) as valid without constructing your own formatter
-		// Assert.assertTrue(result.isValid8("03:14:12am"));
-		// Assert.assertTrue(result.isValid8("03:14:12pm"));
+		// assertTrue(result.isValid8("03:14:12am"));
+		// assertTrue(result.isValid8("03:14:12pm"));
 
 		final String regExp = result.getRegExp();
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(regExp), input);
+			assertTrue(input.matches(regExp), input);
 		}
 	}
 
@@ -682,18 +688,18 @@ public class DetermineDateTimeFormatTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
-		Assert.assertEquals(result.getTypeQualifier(), "MMMM d',' yyyy");
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{1,2}, \\d{4}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeQualifier(), "MMMM d',' yyyy");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{1,2}, \\d{4}");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -711,7 +717,7 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "yyyy/dd/MM");
+		assertEquals(formatString, "yyyy/dd/MM");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -728,7 +734,7 @@ public class DetermineDateTimeFormatTests {
 
 		final String formatString = result.getFormatString();
 
-		Assert.assertEquals(formatString, "yyyy/dd/MM");
+		assertEquals(formatString, "yyyy/dd/MM");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -749,18 +755,18 @@ public class DetermineDateTimeFormatTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		Assert.assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
-		Assert.assertEquals(result.getTypeQualifier(), "d MMMM yyyy");
-		Assert.assertEquals(result.getSampleCount(), inputs.length);
-		Assert.assertEquals(result.getOutlierCount(), 0);
-		Assert.assertEquals(result.getMatchCount(), inputs.length);
-		Assert.assertEquals(result.getNullCount(), 0);
-		Assert.assertEquals(result.getRegExp(), "\\d{1,2} " + KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{4}");
-		Assert.assertEquals(result.getConfidence(), 1.0);
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeQualifier(), "d MMMM yyyy");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{1,2} " + KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{4}");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
-			Assert.assertTrue(input.matches(result.getRegExp()));
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -775,11 +781,11 @@ public class DetermineDateTimeFormatTests {
 		final String formatString = result.getFormatString();
 		final FTAType type = result.getType();
 
-		Assert.assertEquals(formatString, "MMM d',' yyyy");
+		assertEquals(formatString, "MMM d',' yyyy");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3} \\d{1,2}, \\d{4}");
-		Assert.assertTrue(trimmed.matches(regExp));
+		assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3} \\d{1,2}, \\d{4}");
+		assertTrue(trimmed.matches(regExp));
 
 		try {
 			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
@@ -795,33 +801,33 @@ public class DetermineDateTimeFormatTests {
 				OffsetDateTime.parse(trimmed, formatter);
 		}
 		catch (DateTimeParseException exc) {
-			Assert.fail("Java Should have successfully parsed: " + trimmed);
+			fail("Java Should have successfully parsed: " + trimmed);
 		}
 
 		try {
 			result.parse(trimmed);
 		}
 		catch (DateTimeParseException e) {
-			Assert.fail("Should have successfully parsed: " + trimmed);
+			fail("Should have successfully parsed: " + trimmed);
 		}
 
-		Assert.assertTrue(result.isValid8("Jun 30, 2023"));
-		Assert.assertTrue(result.isValid("Jun 30, 2023"));
-		Assert.assertFalse(result.isValid8("Jun 30 2023"));
-		Assert.assertFalse(result.isValid("Jun 30 2023"));
-		Assert.assertFalse(result.isValid("Jun 32, 2023"));
-		Assert.assertFalse(result.isValid8("Jun 32, 2023"));
-		Assert.assertFalse(result.isValid("Jun 30; 2023"));
-		Assert.assertFalse(result.isValid8("Jun 30; 2023"));
+		assertTrue(result.isValid8("Jun 30, 2023"));
+		assertTrue(result.isValid("Jun 30, 2023"));
+		assertFalse(result.isValid8("Jun 30 2023"));
+		assertFalse(result.isValid("Jun 30 2023"));
+		assertFalse(result.isValid("Jun 32, 2023"));
+		assertFalse(result.isValid8("Jun 32, 2023"));
+		assertFalse(result.isValid("Jun 30; 2023"));
+		assertFalse(result.isValid8("Jun 30; 2023"));
 		// Invalid but not detected!!
-		Assert.assertTrue(result.isValid("Jun 31, 2023"));
-		Assert.assertTrue(result.isValid8("Jun 31, 2023"));
+		assertTrue(result.isValid("Jun 31, 2023"));
+		assertTrue(result.isValid8("Jun 31, 2023"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testAsResult() {
-		Assert.assertNull(DateTimeParserResult.asResult("yyyy-MM-ddTHH:m:ssx", DateResolutionMode.None, Locale.getDefault()));
-		Assert.assertNull(DateTimeParserResult.asResult("yyyy-MM-ddTHH:mm:sx", DateResolutionMode.None, Locale.getDefault()));
+		assertNull(DateTimeParserResult.asResult("yyyy-MM-ddTHH:m:ssx", DateResolutionMode.None, Locale.getDefault()));
+		assertNull(DateTimeParserResult.asResult("yyyy-MM-ddTHH:mm:sx", DateResolutionMode.None, Locale.getDefault()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -832,96 +838,96 @@ public class DetermineDateTimeFormatTests {
 			result.parse("2018/01/31 05:O5");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Expecting digit");
-			Assert.assertEquals(e.getErrorIndex(), 14);
+			assertEquals(e.getMessage(), "Expecting digit");
+			assertEquals(e.getErrorIndex(), 14);
 		}
 
 		try {
 			result.parse("2018/01/31 05:5");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Expecting digit, end of input");
-			Assert.assertEquals(e.getErrorIndex(), 15);
+			assertEquals(e.getMessage(), "Expecting digit, end of input");
+			assertEquals(e.getErrorIndex(), 15);
 		}
 
 		try {
 			result.parse("2018/12/24 09:");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Expecting digit, end of input");
-			Assert.assertEquals(e.getErrorIndex(), 14);
+			assertEquals(e.getMessage(), "Expecting digit, end of input");
+			assertEquals(e.getErrorIndex(), 14);
 		}
 
 		try {
 			result.parse("2018/1/24 09:00");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Insufficient digits in input (M)");
-			Assert.assertEquals(e.getErrorIndex(), 6);
+			assertEquals(e.getMessage(), "Insufficient digits in input (M)");
+			assertEquals(e.getErrorIndex(), 6);
 		}
 
 		try {
 			result.parse("2018/11/4 09:00");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Expecting digit");
-			Assert.assertEquals(e.getErrorIndex(), 9);
+			assertEquals(e.getMessage(), "Expecting digit");
+			assertEquals(e.getErrorIndex(), 9);
 		}
 
 		try {
 			result.parse("2018/11/O4 09:00");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Expecting digit");
-			Assert.assertEquals(e.getErrorIndex(), 8);
+			assertEquals(e.getMessage(), "Expecting digit");
+			assertEquals(e.getErrorIndex(), 8);
 		}
 
 		try {
 			result.parse("2018/00/24 05:59");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "0 value illegal for day/month");
-			Assert.assertEquals(e.getErrorIndex(), 7);
+			assertEquals(e.getMessage(), "0 value illegal for day/month");
+			assertEquals(e.getErrorIndex(), 7);
 		}
 
 		try {
 			result.parse("2018/13/24 05:59");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Value too large for day/month");
-			Assert.assertEquals(e.getErrorIndex(), 6);
+			assertEquals(e.getMessage(), "Value too large for day/month");
+			assertEquals(e.getErrorIndex(), 6);
 		}
 
 		try {
 			result.parse("2018/01/00 05:59");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "0 value illegal for day/month");
-			Assert.assertEquals(e.getErrorIndex(), 10);
+			assertEquals(e.getMessage(), "0 value illegal for day/month");
+			assertEquals(e.getErrorIndex(), 10);
 		}
 
 		try {
 			result.parse("2018/01/32 05:59");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Value too large for day/month");
-			Assert.assertEquals(e.getErrorIndex(), 9);
+			assertEquals(e.getMessage(), "Value too large for day/month");
+			assertEquals(e.getErrorIndex(), 9);
 		}
 
 		try {
 			result.parse("2018/01/22 05:59 pm");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Expecting end of input, extraneous input found, last token (MINS_2)");
-			Assert.assertEquals(e.getErrorIndex(), 16);
+			assertEquals(e.getMessage(), "Expecting end of input, extraneous input found, last token (MINS_2)");
+			assertEquals(e.getErrorIndex(), 16);
 		}
 
 		try {
 			result.parse("201/01/22 05:59 pm");
 		}
 		catch (DateTimeParseException e) {
-			Assert.assertEquals(e.getMessage(), "Expecting digit");
-			Assert.assertEquals(e.getErrorIndex(), 3);
+			assertEquals(e.getMessage(), "Expecting digit");
+			assertEquals(e.getErrorIndex(), 3);
 		}
 	}
 
@@ -929,65 +935,65 @@ public class DetermineDateTimeFormatTests {
 	public void intuitDateTime() {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("  2/12/98 9:57    "), "?/??/yy H:mm");
-		Assert.assertNull(dtp.determineFormatString("0¶¶¶¶¶"));
-		Assert.assertNull(dtp.determineFormatString("2/12/98 :57"));
-		Assert.assertNull(dtp.determineFormatString("2/12/98 9:5"));
-		Assert.assertNull(dtp.determineFormatString("2/12/98 9:55:5"));
-		Assert.assertEquals(dtp.determineFormatString("2/13/98 9:57"), "M/dd/yy H:mm");
-		Assert.assertEquals(dtp.determineFormatString("13/12/98 12:57"), "dd/MM/yy HH:mm");
-		Assert.assertEquals(dtp.determineFormatString("12/12/2012 8:57:02"), "??/??/yyyy H:mm:ss");
-		Assert.assertEquals(dtp.determineFormatString("12/12/2012 8:57:02 GMT"), "??/??/yyyy H:mm:ss z");
-		Assert.assertEquals(dtp.determineFormatString("13/12/2012 8:57:02"), "dd/MM/yyyy H:mm:ss");
-		Assert.assertEquals(dtp.determineFormatString("2012/12/13 12:57:02"), "yyyy/MM/dd HH:mm:ss");
+		assertEquals(dtp.determineFormatString("  2/12/98 9:57    "), "?/??/yy H:mm");
+		assertNull(dtp.determineFormatString("0¶¶¶¶¶"));
+		assertNull(dtp.determineFormatString("2/12/98 :57"));
+		assertNull(dtp.determineFormatString("2/12/98 9:5"));
+		assertNull(dtp.determineFormatString("2/12/98 9:55:5"));
+		assertEquals(dtp.determineFormatString("2/13/98 9:57"), "M/dd/yy H:mm");
+		assertEquals(dtp.determineFormatString("13/12/98 12:57"), "dd/MM/yy HH:mm");
+		assertEquals(dtp.determineFormatString("12/12/2012 8:57:02"), "??/??/yyyy H:mm:ss");
+		assertEquals(dtp.determineFormatString("12/12/2012 8:57:02 GMT"), "??/??/yyyy H:mm:ss z");
+		assertEquals(dtp.determineFormatString("13/12/2012 8:57:02"), "dd/MM/yyyy H:mm:ss");
+		assertEquals(dtp.determineFormatString("2012/12/13 12:57:02"), "yyyy/MM/dd HH:mm:ss");
 
 		DateTimeParserResult result;
 		final DateTimeParser detUnspecified = new DateTimeParser();
 		detUnspecified.train("12/12/2012 8:57:02 GMT");
 
 		result = detUnspecified.getResult();
-		Assert.assertEquals(result.getFormatString(), "??/??/yyyy H:mm:ss z");
+		assertEquals(result.getFormatString(), "??/??/yyyy H:mm:ss z");
 
 		final DateTimeParser detDayFirst = new DateTimeParser(DateResolutionMode.DayFirst);
 		detDayFirst.train("12/12/2012 8:57:02 GMT");
 
 		result = detDayFirst.getResult();
-		Assert.assertEquals(result.getFormatString(), "dd/MM/yyyy H:mm:ss z");
+		assertEquals(result.getFormatString(), "dd/MM/yyyy H:mm:ss z");
 
 		final DateTimeParser detMonthFirst = new DateTimeParser(DateResolutionMode.MonthFirst);
 		final String sample = "12/12/2012 8:57:02 GMT";
 		detMonthFirst.train(sample);
 
 		result = detMonthFirst.getResult();
-		Assert.assertEquals(result.getFormatString(), "MM/dd/yyyy H:mm:ss z");
+		assertEquals(result.getFormatString(), "MM/dd/yyyy H:mm:ss z");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} .*");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{2}/\\d{2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} .*");
+		assertTrue(sample.matches(regExp));
 
-		Assert.assertTrue(result.isValid("12/12/2012 8:57:02 GMT"));
-		Assert.assertFalse(result.isValid("12/12/2012 8:57:02 GM"));
-		Assert.assertFalse(result.isValid("12/12/2012 8:57:02 GMZ"));
-		Assert.assertFalse(result.isValid("1O/12/2012 8:57:02 GMT"));
-		Assert.assertFalse(result.isValid("10/1O/2012 8:57:02 GMT"));
-		Assert.assertFalse(result.isValid("1/0/2012 8:57:02 GMT"));
-		Assert.assertFalse(result.isValid("1/O/2012 8:57:02 GMT"));
-		Assert.assertFalse(result.isValid("2/12/1998 :57"));
-		Assert.assertFalse(result.isValid("2/12/1998 9:5"));
-		Assert.assertFalse(result.isValid("2/12/1998 9:"));
-		Assert.assertFalse(result.isValid("2/12/1998 9:55:5"));
+		assertTrue(result.isValid("12/12/2012 8:57:02 GMT"));
+		assertFalse(result.isValid("12/12/2012 8:57:02 GM"));
+		assertFalse(result.isValid("12/12/2012 8:57:02 GMZ"));
+		assertFalse(result.isValid("1O/12/2012 8:57:02 GMT"));
+		assertFalse(result.isValid("10/1O/2012 8:57:02 GMT"));
+		assertFalse(result.isValid("1/0/2012 8:57:02 GMT"));
+		assertFalse(result.isValid("1/O/2012 8:57:02 GMT"));
+		assertFalse(result.isValid("2/12/1998 :57"));
+		assertFalse(result.isValid("2/12/1998 9:5"));
+		assertFalse(result.isValid("2/12/1998 9:"));
+		assertFalse(result.isValid("2/12/1998 9:55:5"));
 
-		Assert.assertTrue(result.isValid8("12/12/2012 8:57:02 GMT"));
-		Assert.assertFalse(result.isValid8("12/12/2012 8:57:02 GM"));
-		Assert.assertFalse(result.isValid8("12/12/2012 8:57:02 GMZ"));
-		Assert.assertFalse(result.isValid8("1O/12/2012 8:57:02 GMT"));
-		Assert.assertFalse(result.isValid8("10/1O/2012 8:57:02 GMT"));
-		Assert.assertFalse(result.isValid8("1/0/2012 8:57:02 GMT"));
-		Assert.assertFalse(result.isValid8("1/O/2012 8:57:02 GMT"));
-		Assert.assertFalse(result.isValid8("2/12/1998 :57"));
-		Assert.assertFalse(result.isValid8("2/12/1998 9:5"));
-		Assert.assertFalse(result.isValid8("2/12/1998 9:"));
-		Assert.assertFalse(result.isValid8("2/12/1998 9:55:5"));
+		assertTrue(result.isValid8("12/12/2012 8:57:02 GMT"));
+		assertFalse(result.isValid8("12/12/2012 8:57:02 GM"));
+		assertFalse(result.isValid8("12/12/2012 8:57:02 GMZ"));
+		assertFalse(result.isValid8("1O/12/2012 8:57:02 GMT"));
+		assertFalse(result.isValid8("10/1O/2012 8:57:02 GMT"));
+		assertFalse(result.isValid8("1/0/2012 8:57:02 GMT"));
+		assertFalse(result.isValid8("1/O/2012 8:57:02 GMT"));
+		assertFalse(result.isValid8("2/12/1998 :57"));
+		assertFalse(result.isValid8("2/12/1998 9:5"));
+		assertFalse(result.isValid8("2/12/1998 9:"));
+		assertFalse(result.isValid8("2/12/1998 9:55:5"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1017,21 +1023,21 @@ public class DetermineDateTimeFormatTests {
 		det.train("20180211T192111Z");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyyMMdd'T'HHmmss'Z'");
+		assertEquals(result.getFormatString(), "yyyyMMdd'T'HHmmss'Z'");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{8}T\\d{6}Z");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{8}T\\d{6}Z");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("20000610T020000Z"));
-		Assert.assertFalse(result.isValid("20000610T020060Z"));
-		Assert.assertFalse(result.isValid("20000610T026000Z"));
-		Assert.assertFalse(result.isValid("20000610T250000Z"));
+		assertTrue(result.isValid("20000610T020000Z"));
+		assertFalse(result.isValid("20000610T020060Z"));
+		assertFalse(result.isValid("20000610T026000Z"));
+		assertFalse(result.isValid("20000610T250000Z"));
 
-		Assert.assertTrue(result.isValid8("20000610T020000Z"));
-		Assert.assertFalse(result.isValid8("20000610T020060Z"));
-		Assert.assertFalse(result.isValid8("20000610T026000Z"));
-		Assert.assertFalse(result.isValid8("20000610T250000Z"));
+		assertTrue(result.isValid8("20000610T020000Z"));
+		assertFalse(result.isValid8("20000610T020060Z"));
+		assertFalse(result.isValid8("20000610T026000Z"));
+		assertFalse(result.isValid8("20000610T250000Z"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1061,21 +1067,21 @@ public class DetermineDateTimeFormatTests {
 		det.train("20180211T192111");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyyMMdd'T'HHmmss");
+		assertEquals(result.getFormatString(), "yyyyMMdd'T'HHmmss");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{8}T\\d{6}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{8}T\\d{6}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("20000610T020000"));
-		Assert.assertFalse(result.isValid("20000610T020060"));
-		Assert.assertFalse(result.isValid("20000610T026000"));
-		Assert.assertFalse(result.isValid("20000610T250000"));
+		assertTrue(result.isValid("20000610T020000"));
+		assertFalse(result.isValid("20000610T020060"));
+		assertFalse(result.isValid("20000610T026000"));
+		assertFalse(result.isValid("20000610T250000"));
 
-		Assert.assertTrue(result.isValid8("20000610T020000"));
-		Assert.assertFalse(result.isValid8("20000610T020060"));
-		Assert.assertFalse(result.isValid8("20000610T026000"));
-		Assert.assertFalse(result.isValid8("20000610T250000"));
+		assertTrue(result.isValid8("20000610T020000"));
+		assertFalse(result.isValid8("20000610T020060"));
+		assertFalse(result.isValid8("20000610T026000"));
+		assertFalse(result.isValid8("20000610T250000"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1115,21 +1121,21 @@ public class DetermineDateTimeFormatTests {
 		det.train("March-20-1927");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "MMMM-d-yyyy");
+		assertEquals(result.getFormatString(), "MMMM-d-yyyy");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3,9}-\\d{1,2}-\\d{4}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3,9}-\\d{1,2}-\\d{4}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("April-1-1939"));
-		Assert.assertFalse(result.isValid("April-32-1940"));
-		Assert.assertFalse(result.isValid("Sep-12-1959"));
-		Assert.assertFalse(result.isValid("May-12-69"));
+		assertTrue(result.isValid("April-1-1939"));
+		assertFalse(result.isValid("April-32-1940"));
+		assertFalse(result.isValid("Sep-12-1959"));
+		assertFalse(result.isValid("May-12-69"));
 
-		Assert.assertTrue(result.isValid8("April-1-1939"));
-		Assert.assertFalse(result.isValid8("April-32-1940"));
-		Assert.assertFalse(result.isValid8("Sep-12-1959"));
-		Assert.assertFalse(result.isValid8("May-12-69"));
+		assertTrue(result.isValid8("April-1-1939"));
+		assertFalse(result.isValid8("April-32-1940"));
+		assertFalse(result.isValid8("Sep-12-1959"));
+		assertFalse(result.isValid8("May-12-69"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1159,21 +1165,21 @@ public class DetermineDateTimeFormatTests {
 		det.train("2018-02-11 19:21:11-0500");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ssxx");
+		assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ssxx");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}[-+][0-9]{4}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}[-+][0-9]{4}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("2000-06-10 02:00:00-0400"));
-		Assert.assertFalse(result.isValid("2000-06-10 02:00:60-0400"));
-		Assert.assertFalse(result.isValid("2000-06-10 02:60:00-0400"));
-		Assert.assertFalse(result.isValid("2000-06-10 25:00:00-0400"));
+		assertTrue(result.isValid("2000-06-10 02:00:00-0400"));
+		assertFalse(result.isValid("2000-06-10 02:00:60-0400"));
+		assertFalse(result.isValid("2000-06-10 02:60:00-0400"));
+		assertFalse(result.isValid("2000-06-10 25:00:00-0400"));
 
-		Assert.assertTrue(result.isValid8("2000-06-10 02:00:00-0400"));
-		Assert.assertFalse(result.isValid8("2000-06-10 02:00:60-0400"));
-		Assert.assertFalse(result.isValid8("2000-06-10 02:60:00-0400"));
-		Assert.assertFalse(result.isValid8("2000-06-10 25:00:00-0400"));
+		assertTrue(result.isValid8("2000-06-10 02:00:00-0400"));
+		assertFalse(result.isValid8("2000-06-10 02:00:60-0400"));
+		assertFalse(result.isValid8("2000-06-10 02:60:00-0400"));
+		assertFalse(result.isValid8("2000-06-10 25:00:00-0400"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1203,28 +1209,28 @@ public class DetermineDateTimeFormatTests {
 		det.train("2018-02-11 19:21:11");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ss");
+		assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ss");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("2000-06-10 02:00:00"));
-		Assert.assertFalse(result.isValid("2000-06-10 02:00:60"));
-		Assert.assertFalse(result.isValid("2000-06-10 02:60:00"));
-		Assert.assertFalse(result.isValid("2000-06-10 25:00:00"));
+		assertTrue(result.isValid("2000-06-10 02:00:00"));
+		assertFalse(result.isValid("2000-06-10 02:00:60"));
+		assertFalse(result.isValid("2000-06-10 02:60:00"));
+		assertFalse(result.isValid("2000-06-10 25:00:00"));
 
-		Assert.assertTrue(result.isValid8("2000-06-10 02:00:00"));
-		Assert.assertFalse(result.isValid8("2000-06-10 02:00:60"));
-		Assert.assertFalse(result.isValid8("2000-06-10 02:60:00"));
-		Assert.assertFalse(result.isValid8("2000-06-10 25:00:00"));
+		assertTrue(result.isValid8("2000-06-10 02:00:00"));
+		assertFalse(result.isValid8("2000-06-10 02:00:60"));
+		assertFalse(result.isValid8("2000-06-10 02:60:00"));
+		assertFalse(result.isValid8("2000-06-10 25:00:00"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitAlmostISO3() {
 		final DateTimeParser det = new DateTimeParser(DateResolutionMode.MonthFirst);
 		final String sample = "2004-01-01 12:35:41.0";
-		Assert.assertEquals(det.determineFormatString(sample), "yyyy-MM-dd HH:mm:ss.S");
+		assertEquals(det.determineFormatString(sample), "yyyy-MM-dd HH:mm:ss.S");
 
 		det.train(sample);
 		det.train("2004-01-01 02:00:00.0");
@@ -1248,21 +1254,21 @@ public class DetermineDateTimeFormatTests {
 		det.train("2018-02-11 19:21:11.0");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
+		assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("2000-06-10 02:00:00.0"));
-		Assert.assertFalse(result.isValid("2000-06-10 02:00:60.0"));
-		Assert.assertFalse(result.isValid("2000-06-10 02:60:00.0"));
-		Assert.assertFalse(result.isValid("2000-06-10 25:00:00.0"));
+		assertTrue(result.isValid("2000-06-10 02:00:00.0"));
+		assertFalse(result.isValid("2000-06-10 02:00:60.0"));
+		assertFalse(result.isValid("2000-06-10 02:60:00.0"));
+		assertFalse(result.isValid("2000-06-10 25:00:00.0"));
 
-		Assert.assertTrue(result.isValid8("2000-06-10 02:00:00.0"));
-		Assert.assertFalse(result.isValid8("2000-06-10 02:00:60.0"));
-		Assert.assertFalse(result.isValid8("2000-06-10 02:60:00.0"));
-		Assert.assertFalse(result.isValid8("2000-06-10 25:00:00.0"));
+		assertTrue(result.isValid8("2000-06-10 02:00:00.0"));
+		assertFalse(result.isValid8("2000-06-10 02:00:60.0"));
+		assertFalse(result.isValid8("2000-06-10 02:60:00.0"));
+		assertFalse(result.isValid8("2000-06-10 25:00:00.0"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1271,7 +1277,7 @@ public class DetermineDateTimeFormatTests {
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
-			Assert.assertEquals(det.getType(), FTAType.LOCALDATE);
+			assertEquals(det.getType(), FTAType.LOCALDATE);
 		}
 	}
 
@@ -1281,7 +1287,7 @@ public class DetermineDateTimeFormatTests {
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
-			Assert.assertEquals(det.getType(), FTAType.LOCALTIME);
+			assertEquals(det.getType(), FTAType.LOCALTIME);
 		}
 	}
 
@@ -1291,7 +1297,7 @@ public class DetermineDateTimeFormatTests {
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
-			Assert.assertEquals(det.getType(), FTAType.LOCALDATETIME);
+			assertEquals(det.getType(), FTAType.LOCALDATETIME);
 		}
 	}
 
@@ -1301,7 +1307,7 @@ public class DetermineDateTimeFormatTests {
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
-			Assert.assertEquals(det.getType(), FTAType.OFFSETDATETIME);
+			assertEquals(det.getType(), FTAType.OFFSETDATETIME);
 		}
 	}
 
@@ -1311,7 +1317,7 @@ public class DetermineDateTimeFormatTests {
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
-			Assert.assertEquals(det.getType(), FTAType.ZONEDDATETIME);
+			assertEquals(det.getType(), FTAType.ZONEDDATETIME);
 		}
 	}
 
@@ -1321,7 +1327,7 @@ public class DetermineDateTimeFormatTests {
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
-			Assert.assertEquals(det.getType(), FTAType.LOCALDATE, test);
+			assertEquals(det.getType(), FTAType.LOCALDATE, test);
 		}
 	}
 
@@ -1329,7 +1335,7 @@ public class DetermineDateTimeFormatTests {
 	public void intuitAlmostISO4() {
 		final DateTimeParser det = new DateTimeParser(DateResolutionMode.MonthFirst);
 		final String sample = "2004-01-01 12:35:41.999";
-		Assert.assertEquals(det.determineFormatString(sample), "yyyy-MM-dd HH:mm:ss.SSS");
+		assertEquals(det.determineFormatString(sample), "yyyy-MM-dd HH:mm:ss.SSS");
 
 		det.train(sample);
 		det.train("2004-01-01 02:00:00.000");
@@ -1353,83 +1359,83 @@ public class DetermineDateTimeFormatTests {
 		det.train("2018-02-11 19:21:11.000");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ss.SSS");
+		assertEquals(result.getFormatString(), "yyyy-MM-dd HH:mm:ss.SSS");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("2000-06-10 02:00:00.000"));
-		Assert.assertFalse(result.isValid("2000-06-10 02:00:60.990"));
-		Assert.assertFalse(result.isValid("2000-06-10 02:60:00.009"));
-		Assert.assertFalse(result.isValid("2000-06-10 02:60:00.00"));
-		Assert.assertFalse(result.isValid("2000-06-10 25:00:00.008"));
+		assertTrue(result.isValid("2000-06-10 02:00:00.000"));
+		assertFalse(result.isValid("2000-06-10 02:00:60.990"));
+		assertFalse(result.isValid("2000-06-10 02:60:00.009"));
+		assertFalse(result.isValid("2000-06-10 02:60:00.00"));
+		assertFalse(result.isValid("2000-06-10 25:00:00.008"));
 
-		Assert.assertTrue(result.isValid8("2000-06-10 02:00:00.000"));
-		Assert.assertFalse(result.isValid8("2000-06-10 02:00:60.990"));
-		Assert.assertFalse(result.isValid8("2000-06-10 02:60:00.009"));
-		Assert.assertFalse(result.isValid8("2000-06-10 02:60:00.00"));
-		Assert.assertFalse(result.isValid8("2000-06-10 25:00:00.008"));
+		assertTrue(result.isValid8("2000-06-10 02:00:00.000"));
+		assertFalse(result.isValid8("2000-06-10 02:00:60.990"));
+		assertFalse(result.isValid8("2000-06-10 02:60:00.009"));
+		assertFalse(result.isValid8("2000-06-10 02:60:00.00"));
+		assertFalse(result.isValid8("2000-06-10 25:00:00.008"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitTimeDate() {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("9:57 2/13/98"), "H:mm M/dd/yy");
-		Assert.assertEquals(dtp.determineFormatString("9:57 2/12/98"), "H:mm ?/??/yy");
-		Assert.assertEquals(dtp.determineFormatString("12:57 13/12/98"), "HH:mm dd/MM/yy");
-		Assert.assertEquals(dtp.determineFormatString("8:57:02 12/12/2012"), "H:mm:ss ??/??/yyyy");
-		Assert.assertEquals(dtp.determineFormatString("12:57:02 2012/12/18"), "HH:mm:ss yyyy/MM/dd");
+		assertEquals(dtp.determineFormatString("9:57 2/13/98"), "H:mm M/dd/yy");
+		assertEquals(dtp.determineFormatString("9:57 2/12/98"), "H:mm ?/??/yy");
+		assertEquals(dtp.determineFormatString("12:57 13/12/98"), "HH:mm dd/MM/yy");
+		assertEquals(dtp.determineFormatString("8:57:02 12/12/2012"), "H:mm:ss ??/??/yyyy");
+		assertEquals(dtp.determineFormatString("12:57:02 2012/12/18"), "HH:mm:ss yyyy/MM/dd");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void parseddMMMyyyy() {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("12-May-14"), "dd-MMM-yy");
-		Assert.assertEquals(dtp.determineFormatString("2-Jan-2017"), "d-MMM-yyyy");
-		Assert.assertEquals(dtp.determineFormatString("21 Jan 2017"), "dd MMM yyyy");
-		Assert.assertEquals(dtp.determineFormatString("8 Dec 1993"), "d MMM yyyy");
-		Assert.assertEquals(dtp.determineFormatString("25-Dec-2017"), "dd-MMM-yyyy");
-		Assert.assertNull(dtp.determineFormatString("21-Jam-2017"));
+		assertEquals(dtp.determineFormatString("12-May-14"), "dd-MMM-yy");
+		assertEquals(dtp.determineFormatString("2-Jan-2017"), "d-MMM-yyyy");
+		assertEquals(dtp.determineFormatString("21 Jan 2017"), "dd MMM yyyy");
+		assertEquals(dtp.determineFormatString("8 Dec 1993"), "d MMM yyyy");
+		assertEquals(dtp.determineFormatString("25-Dec-2017"), "dd-MMM-yyyy");
+		assertNull(dtp.determineFormatString("21-Jam-2017"));
 
 		final DateTimeParser det = new DateTimeParser();
 		final String sample = "2 Jan 2017";
 		det.train(sample);
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "d MMM yyyy");
+		assertEquals(result.getFormatString(), "d MMM yyyy");
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{1,2} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{4}");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{1,2} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{4}");
+		assertTrue(sample.matches(regExp));
 
-		Assert.assertTrue(result.isValid("20 Jun 2017"));
-		Assert.assertTrue(result.isValid("1 Jun 2017"));
-		Assert.assertFalse(result.isValid("20 0c"));
-		Assert.assertFalse(result.isValid(""));
-		Assert.assertFalse(result.isValid("1"));
-		Assert.assertFalse(result.isValid("20 0ct 2018"));
-		Assert.assertFalse(result.isValid("32 Oct 2018"));
-		Assert.assertFalse(result.isValid("32 Och 2018"));
-		Assert.assertFalse(result.isValid("31 Oct 201"));
+		assertTrue(result.isValid("20 Jun 2017"));
+		assertTrue(result.isValid("1 Jun 2017"));
+		assertFalse(result.isValid("20 0c"));
+		assertFalse(result.isValid(""));
+		assertFalse(result.isValid("1"));
+		assertFalse(result.isValid("20 0ct 2018"));
+		assertFalse(result.isValid("32 Oct 2018"));
+		assertFalse(result.isValid("32 Och 2018"));
+		assertFalse(result.isValid("31 Oct 201"));
 
-		Assert.assertTrue(result.isValid8("20 Jun 2017"));
-		Assert.assertTrue(result.isValid8("1 Jun 2017"));
-		Assert.assertFalse(result.isValid8("20 0c"));
-		Assert.assertFalse(result.isValid8(""));
-		Assert.assertFalse(result.isValid8("1"));
-		Assert.assertFalse(result.isValid8("20 0ct 2018"));
-		Assert.assertFalse(result.isValid8("32 Oct 2018"));
-		Assert.assertFalse(result.isValid8("32 Och 2018"));
-		Assert.assertFalse(result.isValid8("31 Oct 201"));
+		assertTrue(result.isValid8("20 Jun 2017"));
+		assertTrue(result.isValid8("1 Jun 2017"));
+		assertFalse(result.isValid8("20 0c"));
+		assertFalse(result.isValid8(""));
+		assertFalse(result.isValid8("1"));
+		assertFalse(result.isValid8("20 0ct 2018"));
+		assertFalse(result.isValid8("32 Oct 2018"));
+		assertFalse(result.isValid8("32 Och 2018"));
+		assertFalse(result.isValid8("31 Oct 201"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitTimeDateWithTimeZone() {
 		final DateTimeParser dtp = new DateTimeParser(null, Locale.getDefault());
 
-		Assert.assertEquals(dtp.determineFormatString("01/30/2012 10:59:48 GMT"), "MM/dd/yyyy HH:mm:ss z");
+		assertEquals(dtp.determineFormatString("01/30/2012 10:59:48 GMT"), "MM/dd/yyyy HH:mm:ss z");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1444,11 +1450,11 @@ public class DetermineDateTimeFormatTests {
 		det.train("02/O2/99");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "MM/dd/yy");
-		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getFormatString(), "MM/dd/yy");
+		assertEquals(result.getType(), FTAType.LOCALDATE);
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
+		assertTrue(sample.matches(regExp));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1460,20 +1466,20 @@ public class DetermineDateTimeFormatTests {
 		det.train("2012/10/32");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy/MM/dd");
+		assertEquals(result.getFormatString(), "yyyy/MM/dd");
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4}/\\d{2}/\\d{2}");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{4}/\\d{2}/\\d{2}");
+		assertTrue(sample.matches(regExp));
 
-		Assert.assertTrue(result.isValid("2012/12/12"));
-		Assert.assertFalse(result.isValid("2012/10/32"));
-		Assert.assertFalse(result.isValid("20121/10/32"));
-		Assert.assertFalse(result.isValid("201/10/32"));
+		assertTrue(result.isValid("2012/12/12"));
+		assertFalse(result.isValid("2012/10/32"));
+		assertFalse(result.isValid("20121/10/32"));
+		assertFalse(result.isValid("201/10/32"));
 
-		Assert.assertTrue(result.isValid8("2012/12/12"));
-		Assert.assertFalse(result.isValid8("2012/10/32"));
-		Assert.assertFalse(result.isValid8("20121/10/32"));
-		Assert.assertFalse(result.isValid8("201/10/32"));
+		assertTrue(result.isValid8("2012/12/12"));
+		assertFalse(result.isValid8("2012/10/32"));
+		assertFalse(result.isValid8("20121/10/32"));
+		assertFalse(result.isValid8("201/10/32"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1485,14 +1491,14 @@ public class DetermineDateTimeFormatTests {
 		det.train("2012/10/32 10:10:10.2");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy/MM/dd HH:mm:ss.S");
+		assertEquals(result.getFormatString(), "yyyy/MM/dd HH:mm:ss.S");
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d");
+		assertTrue(sample.matches(regExp));
 
-		Assert.assertTrue(result.isValid(sample));
+		assertTrue(result.isValid(sample));
 
-		Assert.assertTrue(result.isValid8(sample));
+		assertTrue(result.isValid8(sample));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1502,11 +1508,11 @@ public class DetermineDateTimeFormatTests {
 		det.train(sample);
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yyyy M d");
-		Assert.assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getFormatString(), "yyyy M d");
+		assertEquals(result.getType(), FTAType.LOCALDATE);
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{4} \\d{1,2} \\d{1,2}");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{4} \\d{1,2} \\d{1,2}");
+		assertTrue(sample.matches(regExp));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1516,11 +1522,11 @@ public class DetermineDateTimeFormatTests {
 		det.train(sample);
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "H:mm ?/?/yy");
-		Assert.assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getFormatString(), "H:mm ?/?/yy");
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{1,2}:\\d{2} \\d{1,2}/\\d{1,2}/\\d{2}");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{1,2}:\\d{2} \\d{1,2}/\\d{1,2}/\\d{2}");
+		assertTrue(sample.matches(regExp));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1535,7 +1541,7 @@ public class DetermineDateTimeFormatTests {
 			final DateTimeParser det = new DateTimeParser();
 			det.train(testCase);
 			final DateTimeParserResult result = det.getResult();
-			Assert.assertNull(result, testCase);
+			assertNull(result, testCase);
 		}
 	}
 
@@ -1549,12 +1555,12 @@ public class DetermineDateTimeFormatTests {
 		det.train(sampleThree);
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "H:mm");
-		Assert.assertEquals(result.getType(), FTAType.LOCALTIME);
+		assertEquals(result.getFormatString(), "H:mm");
+		assertEquals(result.getType(), FTAType.LOCALTIME);
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{1,2}:\\d{2}");
-		Assert.assertTrue(sampleOne.matches(regExp));
-		Assert.assertTrue(sampleThree.matches(regExp));
+		assertEquals(regExp, "\\d{1,2}:\\d{2}");
+		assertTrue(sampleOne.matches(regExp));
+		assertTrue(sampleThree.matches(regExp));
 	}
 
 	private void add(final Map<String, Integer> counter, final String key) {
@@ -1580,10 +1586,10 @@ public class DetermineDateTimeFormatTests {
 
 		final DateTimeParserResult result = det.getResult();
 		final String formatString = result.getFormatString();
-		Assert.assertEquals(formatString, "H:mm:ss ??/M/??");
+		assertEquals(formatString, "H:mm:ss ??/M/??");
 
 		final String regExp = result.getRegExp();
-		Assert.assertTrue(input.matches(regExp), "input: '" + input + "', RE: '" + regExp + "'");
+		assertTrue(input.matches(regExp), "input: '" + input + "', RE: '" + regExp + "'");
 	}
 
 	//@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1671,7 +1677,7 @@ public class DetermineDateTimeFormatTests {
 					final String formatString = result.getFormatString();
 
 					final String regExp = result.getRegExp();
-					Assert.assertTrue(trimmed.matches(regExp), "input: '" + trimmed + "', RE: '" + regExp + "'");
+					assertTrue(trimmed.matches(regExp), "input: '" + trimmed + "', RE: '" + regExp + "'");
 
 					final FTAType type = result.getType();
 					add(formatStrings, formatString);
@@ -1721,15 +1727,15 @@ public class DetermineDateTimeFormatTests {
 		det.train("01/24/2012 16:53:04 GMT");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "MM/dd/yyyy HH:mm:ss z");
-		Assert.assertEquals(result.getType(), FTAType.ZONEDDATETIME);
+		assertEquals(result.getFormatString(), "MM/dd/yyyy HH:mm:ss z");
+		assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
+		assertTrue(sample.matches(regExp));
 
-		Assert.assertTrue(result.isValid("01/26/2012 10:42:23 GMT"));
-		Assert.assertTrue(result.isValid8("01/26/2012 10:42:23 GMT"));
+		assertTrue(result.isValid("01/26/2012 10:42:23 GMT"));
+		assertTrue(result.isValid8("01/26/2012 10:42:23 GMT"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1743,21 +1749,21 @@ public class DetermineDateTimeFormatTests {
 		det.train("01/24/2012 16:53:04 GMT");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "MM/dd/yyyy HH:mm:ss z");
-		Assert.assertEquals(result.getType(), FTAType.ZONEDDATETIME);
+		assertEquals(result.getFormatString(), "MM/dd/yyyy HH:mm:ss z");
+		assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
+		assertTrue(sample.matches(regExp));
 
 		final int iterations = 10000000;
 		final long start = System.currentTimeMillis();
 		for (int i = 0; i < iterations; i++) {
-			Assert.assertTrue(result.isValid("01/26/2012 10:42:23 GMT"));
+			assertTrue(result.isValid("01/26/2012 10:42:23 GMT"));
 		}
 		final long doneCustom = System.currentTimeMillis();
 		for (int i = 0; i < iterations; i++) {
-			Assert.assertTrue(result.isValid8("01/26/2012 10:42:23 GMT"));
+			assertTrue(result.isValid8("01/26/2012 10:42:23 GMT"));
 		}
 		final long done = System.currentTimeMillis();
 		logger.debug("Custom = {}ms, Java = {}ms.", doneCustom - start, done - doneCustom);
@@ -1771,11 +1777,11 @@ public class DetermineDateTimeFormatTests {
 		detPrime.train(sample);
 
 		final DateTimeParserResult resultPrime = detPrime.getResult();
-		Assert.assertEquals(resultPrime.getFormatString(), "MM/dd/yy");
+		assertEquals(resultPrime.getFormatString(), "MM/dd/yy");
 
 		String regExp = resultPrime.getRegExp();
-		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
-		Assert.assertTrue(sample.matches(regExp));
+		assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
+		assertTrue(sample.matches(regExp));
 
 		final DateTimeParser det = new DateTimeParser();
 		sample = " 04/03/13";
@@ -1789,11 +1795,11 @@ public class DetermineDateTimeFormatTests {
 		det.train(" 10/03/13");
 
 		DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "??/??/??");
+		assertEquals(result.getFormatString(), "??/??/??");
 
 		regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
+		assertTrue(sample.trim().matches(regExp));
 
 		// Force to be day first
 		final DateTimeParser detDayFirst = new DateTimeParser(DateResolutionMode.DayFirst);
@@ -1808,18 +1814,18 @@ public class DetermineDateTimeFormatTests {
 		detDayFirst.train(" 10/03/13");
 
 		result = detDayFirst.getResult();
-		Assert.assertEquals(result.getFormatString(), "dd/MM/yy");
+		assertEquals(result.getFormatString(), "dd/MM/yy");
 
 		regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("31/12/12"));
-		Assert.assertFalse(result.isValid("12/31/12"));
-		Assert.assertFalse(result.isValid("2012/12/12"));
-		Assert.assertTrue(result.isValid8("31/12/12"));
-		Assert.assertFalse(result.isValid8("12/31/12"));
-		Assert.assertFalse(result.isValid8("2012/12/12"));
+		assertTrue(result.isValid("31/12/12"));
+		assertFalse(result.isValid("12/31/12"));
+		assertFalse(result.isValid("2012/12/12"));
+		assertTrue(result.isValid8("31/12/12"));
+		assertFalse(result.isValid8("12/31/12"));
+		assertFalse(result.isValid8("2012/12/12"));
 
 		// Force to be month first
 		final DateTimeParser detMonthFirst = new DateTimeParser(DateResolutionMode.MonthFirst);
@@ -1834,18 +1840,18 @@ public class DetermineDateTimeFormatTests {
 		detMonthFirst.train(" 10/03/13");
 
 		result = detMonthFirst.getResult();
-		Assert.assertEquals(result.getFormatString(), "MM/dd/yy");
+		assertEquals(result.getFormatString(), "MM/dd/yy");
 
 		regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertFalse(result.isValid("31/12/12"));
-		Assert.assertTrue(result.isValid("12/31/12"));
-		Assert.assertFalse(result.isValid("2012/12/12"));
-		Assert.assertFalse(result.isValid8("31/12/12"));
-		Assert.assertTrue(result.isValid8("12/31/12"));
-		Assert.assertFalse(result.isValid8("2012/12/12"));
+		assertFalse(result.isValid("31/12/12"));
+		assertTrue(result.isValid("12/31/12"));
+		assertFalse(result.isValid("2012/12/12"));
+		assertFalse(result.isValid8("31/12/12"));
+		assertTrue(result.isValid8("12/31/12"));
+		assertFalse(result.isValid8("2012/12/12"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1865,23 +1871,23 @@ public class DetermineDateTimeFormatTests {
 		}
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "MM/dd/yy");
+		assertEquals(result.getFormatString(), "MM/dd/yy");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("12/12/12"));
-		Assert.assertFalse(result.isValid("1/1/1"));
-		Assert.assertFalse(result.isValid("123/1/1"));
-		Assert.assertFalse(result.isValid("1/123/1"));
-		Assert.assertFalse(result.isValid("1/1/123"));
+		assertTrue(result.isValid("12/12/12"));
+		assertFalse(result.isValid("1/1/1"));
+		assertFalse(result.isValid("123/1/1"));
+		assertFalse(result.isValid("1/123/1"));
+		assertFalse(result.isValid("1/1/123"));
 
-		Assert.assertTrue(result.isValid8("12/12/12"));
-		Assert.assertFalse(result.isValid8("1/1/1"));
-		Assert.assertFalse(result.isValid8("123/1/1"));
-		Assert.assertFalse(result.isValid8("1/123/1"));
-		Assert.assertFalse(result.isValid8("1/1/123"));
+		assertTrue(result.isValid8("12/12/12"));
+		assertFalse(result.isValid8("1/1/1"));
+		assertFalse(result.isValid8("123/1/1"));
+		assertFalse(result.isValid8("1/123/1"));
+		assertFalse(result.isValid8("1/1/123"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1900,11 +1906,11 @@ public class DetermineDateTimeFormatTests {
 		det.train("19/7/2012 17:49:53");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "d/M/yyyy HH:mm:ss");
+		assertEquals(result.getFormatString(), "d/M/yyyy HH:mm:ss");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}");
+		assertTrue(sample.trim().matches(regExp));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1921,25 +1927,25 @@ public class DetermineDateTimeFormatTests {
 		det.train("10/03/13");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "yy/MM/dd");
+		assertEquals(result.getFormatString(), "yy/MM/dd");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{2}/\\d{2}/\\d{2}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("12/12/12"));
-		Assert.assertFalse(result.isValid("12/13/12"));
-		Assert.assertFalse(result.isValid("1/1/1"));
-		Assert.assertFalse(result.isValid("123/1/1"));
-		Assert.assertFalse(result.isValid("1/123/1"));
-		Assert.assertFalse(result.isValid("1/1/123"));
+		assertTrue(result.isValid("12/12/12"));
+		assertFalse(result.isValid("12/13/12"));
+		assertFalse(result.isValid("1/1/1"));
+		assertFalse(result.isValid("123/1/1"));
+		assertFalse(result.isValid("1/123/1"));
+		assertFalse(result.isValid("1/1/123"));
 
-		Assert.assertTrue(result.isValid8("12/12/12"));
-		Assert.assertFalse(result.isValid8("12/13/12"));
-		Assert.assertFalse(result.isValid8("1/1/1"));
-		Assert.assertFalse(result.isValid8("123/1/1"));
-		Assert.assertFalse(result.isValid8("1/123/1"));
-		Assert.assertFalse(result.isValid8("1/1/123"));
+		assertTrue(result.isValid8("12/12/12"));
+		assertFalse(result.isValid8("12/13/12"));
+		assertFalse(result.isValid8("1/1/1"));
+		assertFalse(result.isValid8("123/1/1"));
+		assertFalse(result.isValid8("1/123/1"));
+		assertFalse(result.isValid8("1/1/123"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1950,17 +1956,17 @@ public class DetermineDateTimeFormatTests {
 		det.train("10-Jan-14");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "d-MMM-yy");
+		assertEquals(result.getFormatString(), "d-MMM-yy");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{1,2}-" + KnownPatterns.PATTERN_ALPHA + "{3}-\\d{2}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{1,2}-" + KnownPatterns.PATTERN_ALPHA + "{3}-\\d{2}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("1-Jan-14"));
-		Assert.assertTrue(result.isValid("10-Jan-14"));
+		assertTrue(result.isValid("1-Jan-14"));
+		assertTrue(result.isValid("10-Jan-14"));
 
-		Assert.assertTrue(result.isValid8("1-Jan-14"));
-		Assert.assertTrue(result.isValid8("10-Jan-14"));
+		assertTrue(result.isValid8("1-Jan-14"));
+		assertTrue(result.isValid8("10-Jan-14"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1978,13 +1984,13 @@ public class DetermineDateTimeFormatTests {
 		}
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss z yyyy");
+		assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss z yyyy");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{2} \\d{2}:\\d{2}:\\d{2} .* \\d{4}");
-		Assert.assertTrue(d.toString().matches(regExp));
-		Assert.assertTrue(result.isValid8(d.toString()));
-		Assert.assertTrue(result.isValid(d.toString()));
+		assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{2} \\d{2}:\\d{2}:\\d{2} .* \\d{4}");
+		assertTrue(d.toString().matches(regExp));
+		assertTrue(result.isValid8(d.toString()));
+		assertTrue(result.isValid(d.toString()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1996,25 +2002,25 @@ public class DetermineDateTimeFormatTests {
 		det.train("8:03:59");
 
 		final DateTimeParserResult result = det.getResult();
-		Assert.assertEquals(result.getFormatString(), "H:mm:ss");
+		assertEquals(result.getFormatString(), "H:mm:ss");
 
 		final String regExp = result.getRegExp();
-		Assert.assertEquals(regExp, "\\d{1,2}:\\d{2}:\\d{2}");
-		Assert.assertTrue(sample.trim().matches(regExp));
+		assertEquals(regExp, "\\d{1,2}:\\d{2}:\\d{2}");
+		assertTrue(sample.trim().matches(regExp));
 
-		Assert.assertTrue(result.isValid("12:57:03"));
-		Assert.assertTrue(result.isValid("8:03:59"));
-		Assert.assertFalse(result.isValid("8:03:599"));
-		Assert.assertFalse(result.isValid("118:03:59"));
-		Assert.assertFalse(result.isValid("118:3:59"));
-		Assert.assertFalse(result.isValid("118:333:59"));
+		assertTrue(result.isValid("12:57:03"));
+		assertTrue(result.isValid("8:03:59"));
+		assertFalse(result.isValid("8:03:599"));
+		assertFalse(result.isValid("118:03:59"));
+		assertFalse(result.isValid("118:3:59"));
+		assertFalse(result.isValid("118:333:59"));
 
-		Assert.assertTrue(result.isValid8("12:57:03"));
-		Assert.assertTrue(result.isValid8("8:03:59"));
-		Assert.assertFalse(result.isValid8("8:03:599"));
-		Assert.assertFalse(result.isValid8("118:03:59"));
-		Assert.assertFalse(result.isValid8("118:3:59"));
-		Assert.assertFalse(result.isValid8("118:333:59"));
+		assertTrue(result.isValid8("12:57:03"));
+		assertTrue(result.isValid8("8:03:59"));
+		assertFalse(result.isValid8("8:03:599"));
+		assertFalse(result.isValid8("118:03:59"));
+		assertFalse(result.isValid8("118:3:59"));
+		assertFalse(result.isValid8("118:333:59"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -2029,46 +2035,46 @@ public class DetermineDateTimeFormatTests {
 			final DateTimeParserResult result = det.getResult();
 			if (!"k:mm:ss".equals(result.getFormatString()))
 				System.err.println("i = " + i);
-			Assert.assertEquals(result.getFormatString(), "k:mm:ss", result.getFormatString());
+			assertEquals(result.getFormatString(), "k:mm:ss", result.getFormatString());
 
 			final String regExp = result.getRegExp();
-			Assert.assertEquals(regExp, "\\d{1,2}:\\d{2}:\\d{2}");
-			Assert.assertTrue(sample.trim().matches(regExp));
+			assertEquals(regExp, "\\d{1,2}:\\d{2}:\\d{2}");
+			assertTrue(sample.trim().matches(regExp));
 
-			Assert.assertTrue(result.isValid("12:57:03"));
-			Assert.assertTrue(result.isValid("8:03:59"));
-			Assert.assertFalse(result.isValid("8:03:599"));
-			Assert.assertFalse(result.isValid("118:03:59"));
-			Assert.assertFalse(result.isValid("118:3:59"));
-			Assert.assertFalse(result.isValid("118:333:59"));
+			assertTrue(result.isValid("12:57:03"));
+			assertTrue(result.isValid("8:03:59"));
+			assertFalse(result.isValid("8:03:599"));
+			assertFalse(result.isValid("118:03:59"));
+			assertFalse(result.isValid("118:3:59"));
+			assertFalse(result.isValid("118:333:59"));
 
-			Assert.assertTrue(result.isValid8("12:57:03"));
-			Assert.assertTrue(result.isValid8("8:03:59"));
-			Assert.assertFalse(result.isValid8("8:03:599"));
-			Assert.assertFalse(result.isValid8("118:03:59"));
-			Assert.assertFalse(result.isValid8("118:3:59"));
-			Assert.assertFalse(result.isValid8("118:333:59"));
+			assertTrue(result.isValid8("12:57:03"));
+			assertTrue(result.isValid8("8:03:59"));
+			assertFalse(result.isValid8("8:03:599"));
+			assertFalse(result.isValid8("118:03:59"));
+			assertFalse(result.isValid8("118:3:59"));
+			assertFalse(result.isValid8("118:333:59"));
 		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void check23() {
 		DateTimeParserResult result = DateTimeParserResult.asResult("yyyy-MM-dd HH:mm:ss.S{2,3}", DateResolutionMode.MonthFirst, Locale.US);
-		Assert.assertEquals(result.timeFieldLengths[3].getMin(), 2);
-		Assert.assertEquals(result.timeFieldLengths[3].getMax(), 3);
+		assertEquals(result.timeFieldLengths[3].getMin(), 2);
+		assertEquals(result.timeFieldLengths[3].getMax(), 3);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void check11() {
 		DateTimeParserResult result = DateTimeParserResult.asResult("H:mm:ss.S", DateResolutionMode.MonthFirst, Locale.US);
-		Assert.assertEquals(result.timeFieldLengths[3].getMin(), 1);
-		Assert.assertEquals(result.timeFieldLengths[3].getMax(), 1);
+		assertEquals(result.timeFieldLengths[3].getMin(), 1);
+		assertEquals(result.timeFieldLengths[3].getMax(), 1);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void checkembedded11() {
 		DateTimeParserResult result = DateTimeParserResult.asResult("yyyy-MM-dd'T'HH:mm:ss.Sxxx", DateResolutionMode.MonthFirst, Locale.US);
-		Assert.assertEquals(result.timeFieldLengths[3].getMin(), 1);
-		Assert.assertEquals(result.timeFieldLengths[3].getMax(), 1);
+		assertEquals(result.timeFieldLengths[3].getMin(), 1);
+		assertEquals(result.timeFieldLengths[3].getMax(), 1);
 	}
 }
