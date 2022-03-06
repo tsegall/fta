@@ -27,10 +27,11 @@ if (JavaVersion.current().java9Compatible) {
 buildscript {
   repositories {
     jcenter()
+    gradlePluginPortal()
   }
 
   dependencies {
-    classpath "com.github.ben-manes:gradle-versions-plugin:0.36.0"
+    classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
   }
 }
 
@@ -39,7 +40,7 @@ application {
 }
 
 archivesBaseName = "fta"
-version = "5.1.23"
+version = "5.1.24"
 group = "com.cobber.fta"
 
 repositories {

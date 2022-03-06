@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 5.1.24
+ - ENH: Add a little more leniency for finite types (especially larger ones)
+ - INT: Bump plugins-version, improve Date example
+
 ### 5.1.23
  - BUG: Fix NPE when using FTA from DBProfiler (also added test case)
  - INT: Cleaning imports

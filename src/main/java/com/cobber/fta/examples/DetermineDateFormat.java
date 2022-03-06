@@ -15,6 +15,8 @@
  */
 package com.cobber.fta.examples;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import com.cobber.fta.dates.DateTimeParser;
@@ -25,11 +27,25 @@ public abstract class DetermineDateFormat {
 	public static void main(final String[] args) {
 		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.MonthFirst, Locale.ENGLISH);
 
-		System.err.println(dtp.determineFormatString("26 July 2012"));
-		System.err.println(dtp.determineFormatString("March 9 2012"));
+		// Determine the DataTimeFormatter for the following examples
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("26 July 2012"));
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("March 9 2012"));
 		// Note: Detected as MM/dd/yyyy despite being ambiguous as we indicated MonthFirst above when insufficient data
-		System.err.println(dtp.determineFormatString("07/04/2012"));
-		System.err.println(dtp.determineFormatString("2012 March 20"));
-		System.err.println(dtp.determineFormatString("2012/04/09 18:24:12"));
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("07/04/2012"));
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("2012 March 20"));
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("2012/04/09 18:24:12"));
+
+		// Determine format of the input below and then parse it
+		String input = "Wed Mar 04 05:09:06 GMT-06:00 2009";
+
+		String formatString = dtp.determineFormatString(input);
+
+		// Grab the DateTimeFormatter from fta as this creates a case-insensitive parser and it supports a slightly wider set set of formats
+		// For example, "yyyy" does not work out of the box if you use DateTimeFormatter.ofPattern
+		DateTimeFormatter formatter = DateTimeParser.ofPattern(formatString);
+
+		OffsetDateTime parsedDate = OffsetDateTime.parse(input, formatter);
+
+		System.err.printf("Format is: '%s', Date is: '%s'%n", formatString, parsedDate.toString());
 	}
 }

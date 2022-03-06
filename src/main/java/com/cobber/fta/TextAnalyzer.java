@@ -1066,6 +1066,7 @@ public class TextAnalyzer {
 		if (analysisConfig.traceOptions != null)
 			traceConfig = new Trace(analysisConfig.traceOptions, context,  analysisConfig);
 
+		// Now that we have initialized these facts cannot change, so set them on the Facts object
 		this.facts.setCollectStatistics(analysisConfig.collectStatistics);
 		this.facts.setLocale(this.locale);
 

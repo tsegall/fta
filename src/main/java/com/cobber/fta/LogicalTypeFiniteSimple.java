@@ -98,14 +98,15 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
+		final int baseOutliers = ((100 - getThreshold()) * getSize())/100;
 
-		int maxOutliers = 1;
-		int minCardinality = Math.min(getMembers().size(), 4);
+		int maxOutliers = Math.max(1, baseOutliers / 2);
+		int minCardinality = Math.min(getSize(), 4);
 		int minSamples = 20;
 		if (headerConfidence != 0) {
 			minCardinality = 1;
 			minSamples = 4;
-			maxOutliers =  headerConfidence < 90 ? 4 : getSize() / 2;
+			maxOutliers =  headerConfidence < 90 ? Math.max(4, baseOutliers) : getSize() / 2;
 		}
 
 		if (outliers.size() > maxOutliers)
