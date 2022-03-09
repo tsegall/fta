@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 6.0.1
+ - INT: No longer need build7.gradle 
+
 ### 6.0.0
  - ENH: Split into fta-core (date-detection) and fta-types (Semantic Types)
  - ENH: Bump jackson
