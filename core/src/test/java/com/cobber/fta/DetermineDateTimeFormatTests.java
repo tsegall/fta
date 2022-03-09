@@ -672,38 +672,6 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
-	public void basicMMMdcommayyyy() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicMMMdcommayyyy");
-		final String pipedInput = "August 20, 2017|August 20, 2017|July 22, 2017|August 5, 2017|July 22, 2017|June 23, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
-				"May 25, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 25, 2017|April 26, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
-				"May 25, 2017|April 26, 2017|March 28, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 25, 2017|April 26, 2017|March 28, 2017|" +
-				"February 27, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 15, 2017|";
-		final String inputs[] = pipedInput.split("\\|");
-		int locked = -1;
-
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertEquals(result.getTypeQualifier(), "MMMM d',' yyyy");
-		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 0);
-		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{1,2}, \\d{4}");
-		assertEquals(result.getConfidence(), 1.0);
-
-		for (final String input : inputs) {
-			assertTrue(input.matches(result.getRegExp()));
-		}
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicyyyyddMM() throws IOException {
 		final String pipedInput = "2011/28/02|2017/31/12|2016/20/10|1999/15/07|2017/31/12|2016/20/10|1999/15/07|2017/31/12|2017/31/12|2016/20/10|1999/15/07|2017/30/12|2017/21/12|2016/20/10|1999/15/07|2017/11/12|2012/31/12|2010/31/12|2016/20/10|1999/15/07|";
 		final String inputs[] = pipedInput.split("\\|");
@@ -735,39 +703,6 @@ public class DetermineDateTimeFormatTests {
 		final String formatString = result.getFormatString();
 
 		assertEquals(formatString, "yyyy/dd/MM");
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
-	public void basicDDMMMMYYYY() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicDDMMMMYYYY");
-		final String pipedInput = "25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
-				"25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
-				"25 July 2018|12 August 1984|10 May 2000|1 April 1970|16 July 1934|06 July 1961|" +
-				"25 July 2018|13 August 1984|10 January 2000|1 May 1970|16 July 1934|06 July 1961|" +
-				"25 July 2018|12 November 1984|10 October 2000|1 January 1970|16 June 1934|06 July 1961|";
-		final String inputs[] = pipedInput.split("\\|");
-		int locked = -1;
-
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertEquals(result.getTypeQualifier(), "d MMMM yyyy");
-		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 0);
-		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "\\d{1,2} " + KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{4}");
-		assertEquals(result.getConfidence(), 1.0);
-
-		for (final String input : inputs) {
-			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

@@ -46,9 +46,6 @@ import dk.brics.automaton.Transition;
  * the knowledge exists to return ICD9-\d{4} and NOT simply \p{isAlphabetic}{3}\d-\d{4}.
  */
 public class TokenStream {
-	/* Any input whose input is longer than this is deemed to be too long to be interesting. */
-	public final static int MAX_LENGTH = 30;
-
 	/* The set of uncompressed tokens. */
 	private Token[] tokens;
 	private String key;
@@ -69,7 +66,7 @@ public class TokenStream {
 	private long occurrences;
 
 	/** The TokenStream that represents any input that is too long. */
-	public final static TokenStream ANYSHAPE = new TokenStream(Utils.repeat('x', MAX_LENGTH + 1), 1);
+	public final static TokenStream ANYSHAPE = new TokenStream(Utils.repeat('x', Token.MAX_LENGTH + 1), 1);
 
 	/**
 	 * Construct a new TokenStream based on the input.
@@ -81,7 +78,7 @@ public class TokenStream {
 
 		this.occurrences = occurrences;
 
-		if (len > MAX_LENGTH) {
+		if (len > Token.MAX_LENGTH) {
 			key = "ANY";
 			tokens = new Token[1];
 			tokens[0] = new AnyInputToken();
@@ -143,37 +140,12 @@ public class TokenStream {
 	}
 
 	/**
-	 * Construct the key based on the input.
-	 * @param trimmed The trimmed input.
-	 * @return The TokenStream uncompressed key.
-	 */
-	public static String generateKey(final String trimmed) {
-		final int len = trimmed.length();
-
-
-		if (len > MAX_LENGTH)
-			return "ANY";
-
-		final StringBuilder b = new StringBuilder(trimmed);
-
-		for (int i = 0; i < len; i++) {
-			final char ch = trimmed.charAt(i);
-			if (Character.isAlphabetic(ch))
-				b.setCharAt(i, Token.Type.ALPHA_CLASS.getEncoded());
-			else if (Character.isDigit(ch))
-				b.setCharAt(i, Token.Type.DIGIT_CLASS.getEncoded());
-		}
-
-		return b.toString();
-	}
-
-	/**
 	 * Is the input too long?
 	 * @param trimmed The trimmed input.
 	 * @return True if the input is too long.
 	 */
 	public static boolean tooLong(final String trimmed) {
-		return trimmed.length() > MAX_LENGTH;
+		return trimmed.length() > Token.MAX_LENGTH;
 	}
 
 	/**

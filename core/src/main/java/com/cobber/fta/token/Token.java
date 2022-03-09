@@ -20,6 +20,9 @@ package com.cobber.fta.token;
  * Regular Expressions.
  */
 public abstract class Token {
+	/* Any input whose input is longer than this is deemed to be too long to be interesting. */
+	public final static int MAX_LENGTH = 30;
+
 	protected Type type;
 	protected char ch;
 
@@ -91,5 +94,30 @@ public abstract class Token {
 
 	public char getCh() {
 		return ch;
+	}
+
+	/**
+	 * Construct the key based on the input.
+	 * @param trimmed The trimmed input.
+	 * @return The TokenStream uncompressed key.
+	 */
+	public static String generateKey(final String trimmed) {
+		final int len = trimmed.length();
+
+
+		if (len > MAX_LENGTH)
+			return "ANY";
+
+		final StringBuilder b = new StringBuilder(trimmed);
+
+		for (int i = 0; i < len; i++) {
+			final char ch = trimmed.charAt(i);
+			if (Character.isAlphabetic(ch))
+				b.setCharAt(i, Token.Type.ALPHA_CLASS.getEncoded());
+			else if (Character.isDigit(ch))
+				b.setCharAt(i, Token.Type.DIGIT_CLASS.getEncoded());
+		}
+
+		return b.toString();
 	}
 }

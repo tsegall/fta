@@ -1,0 +1,39 @@
+apply plugin: 'application'
+
+jar {
+    archiveBaseName = 'fta'
+}
+
+tasks.distZip.enabled = false
+tasks.distTar.enabled = false
+
+project.tasks.named("installDist") {
+	duplicatesStrategy = 'exclude'
+}
+
+application {
+    mainClass = "com.cobber.fta.driver.Driver"
+}
+
+distributions {
+    main {
+        distributionBaseName = 'fta'
+    }
+}
+
+dependencies {
+	implementation project(':core')
+
+	implementation group: 'com.univocity', name: 'univocity-parsers', version: "${univocityVersion}"
+	implementation group: 'com.sun.mail', name: 'javax.mail', version: "${javaxMailApiVersion}"
+	implementation group: 'commons-validator', name: 'commons-validator', version: "${commonsValidatorVersion}"
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonDatabindVersion}"
+	implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: "${googlePhoneNumberVersion}"
+	implementation group: 'org.apache.commons', name: 'commons-text', version: "${commonsTextVersion}"
+	implementation group: 'com.github.krraghavan', name: 'xeger', version: "${xegerVersion}"
+	implementation group: 'org.slf4j', name: 'slf4j-api', version: "${slf4jApiVersion}"
+	implementation group: 'com.google.guava', name: 'guava', version: "${guavaVersion}"
+
+	testImplementation group: 'org.testng', name: 'testng', version: "${testngVersion}"
+	testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: "${logbackClassicVersion}"
+}

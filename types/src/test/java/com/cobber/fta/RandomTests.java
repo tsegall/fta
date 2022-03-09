@@ -40,6 +40,7 @@ import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.plugins.USZip5;
 import com.cobber.fta.plugins.USZipPlus4;
+import com.cobber.fta.TestGroups;
 
 public class RandomTests {
 	private static final SecureRandom random = new SecureRandom();

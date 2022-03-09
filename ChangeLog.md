@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 6.0.0
+ - ENH: Split into fta-core (date-detection) and fta-types (Semantic Types)
+ - ENH: Bump jackson
+ - INT: Bump gradle to 7.X (finally)
+
 ### 5.1.24
  - ENH: Add a little more leniency for finite types (especially larger ones)
  - INT: Bump plugins-version, improve Date example

@@ -64,6 +64,7 @@ import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.dates.DateTimeParserResult;
 import com.cobber.fta.dates.LocaleInfo;
+import com.cobber.fta.token.Token;
 import com.cobber.fta.token.TokenStream;
 import com.cobber.fta.token.TokenStreams;
 
@@ -1761,7 +1762,7 @@ public class TextAnalyzer {
 		if (maxOutlierString == null || maxOutlierString.compareTo(cleaned) < 0)
 			maxOutlierString = cleaned;
 
-		final String smashed = TokenStream.generateKey(input);
+		final String smashed = Token.generateKey(input);
 		Long seen = outliersSmashed.get(smashed);
 		if (seen == null) {
 			if (outliersSmashed.size() < analysisConfig.maxOutliers)

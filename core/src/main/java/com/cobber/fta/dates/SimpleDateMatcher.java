@@ -23,7 +23,7 @@ import java.util.Set;
 
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
-import com.cobber.fta.token.TokenStream;
+import com.cobber.fta.token.Token;
 
 /**
  * Helper class to manage several of the fixed length date inputs.
@@ -273,7 +273,7 @@ public class SimpleDateMatcher {
 					final int offsetLength = balance.length();
 					if (offsetLength == 0)
 						break;
-					final String smashed = TokenStream.generateKey(balance);
+					final String smashed = Token.generateKey(balance);
 					if ("9".equals(smashed) || "99".equals(smashed) || "9:99".equals(smashed)) {
 						input = replaceString(input, len, word, "O");
 						len = input.length();

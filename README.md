@@ -43,24 +43,43 @@ class Trivial {
 If you are solely interested in determining the format of a date, then the following example is a good starting point:
 
 ```java
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import com.cobber.fta.DateTimeParser;
-import com.cobber.fta.DateTimeParser.DateResolutionMode;
 
-public class DetermineDateFormat {
+import com.cobber.fta.dates.DateTimeParser;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
-	public static void main(String[] args) {
-		DateTimeParser dtp = new DateTimeParser(DateResolutionMode.MonthFirst, Locale.ENGLISH);
+public abstract class DetermineDateFormat {
 
-		System.err.println(dtp.determineFormatString("26 July 2012"));
-		System.err.println(dtp.determineFormatString("March 9 2012"));
+	public static void main(final String[] args) {
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.MonthFirst, Locale.ENGLISH);
+
+		// Determine the DataTimeFormatter for the following examples
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("26 July 2012"));
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("March 9 2012"));
 		// Note: Detected as MM/dd/yyyy despite being ambiguous as we indicated MonthFirst above when insufficient data
-		System.err.println(dtp.determineFormatString("07/04/2012"));
-		System.err.println(dtp.determineFormatString("2012 March 20"));
-		System.err.println(dtp.determineFormatString("2012/04/09 18:24:12"));
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("07/04/2012"));
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("2012 March 20"));
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("2012/04/09 18:24:12"));
+
+		// Determine format of the input below and then parse it
+		String input = "Wed Mar 04 05:09:06 GMT-06:00 2009";
+
+		String formatString = dtp.determineFormatString(input);
+
+		// Grab the DateTimeFormatter from fta as this creates a case-insensitive parser and it supports a slightly wider set set of formats
+		// For example, "yyyy" does not work out of the box if you use DateTimeFormatter.ofPattern
+		DateTimeFormatter formatter = DateTimeParser.ofPattern(formatString);
+
+		OffsetDateTime parsedDate = OffsetDateTime.parse(input, formatter);
+
+		System.err.printf("Format is: '%s', Date is: '%s'%n", formatString, parsedDate.toString());
 	}
 }
 ```
+
+Note: For Date Format determination you only need fta-core.jar.
 
 ## Metrics ##
 
@@ -347,7 +366,7 @@ Fastest way to get started is to review the samples provided.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 6.9.2`
+`$ gradle wrapper --gradle-version 7.4`
 
 `$ ./gradlew installDist`
 
@@ -362,7 +381,7 @@ Just the dates tests
 
 Just one test
 
-`$ ./gradlew test --tests TestDates.localeDateTest`
+`$ ./gradlew types:test --tests TestDates.localeDateTest`
 
 ## Generate JavaDoc ##
 `$ ./gradlew javadoc`
@@ -377,7 +396,7 @@ Just one test
 `$ ./gradlew eclipse`
 
 ## Releasing a new version ##
-`$ ./gradlew uploadArchives`
+`$ ./gradlew publishMavenJavaPublicationToOssrhRepository`
 
 Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and follow the instructions!!
 1. login to OSSRH available at https://s01.oss.sonatype.org/

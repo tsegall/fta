@@ -1,171 +1,135 @@
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'java'
-apply plugin: 'java-library-distribution'
-apply plugin: 'application'
-apply plugin: 'eclipse'
-apply plugin: 'jacoco'
+def configureVersions() {
+	def versions = new Properties()
+	versions.load(new FileInputStream("$project.rootDir/versions.properties"))
+	versions.each { prop -> project.ext.set(prop.key, prop.value) }
+}
+
 apply plugin: "com.github.ben-manes.versions"
 
-configureVersions()
-
-def configureVersions() {
-  def versions = new Properties()
-  versions.load(new FileInputStream("$project.rootDir/versions.properties"))
-  versions.each { prop -> project.ext.set(prop.key, prop.value) }
-}
-
-// We should always build a Java 8 compatible library
-if (JavaVersion.current().java9Compatible) {
-  project.afterEvaluate {
-    tasks.withType(JavaCompile) {
-      options.compilerArgs.addAll(['--release', 8])
-    }
-  }
-}
-
 buildscript {
-  repositories {
-    jcenter()
-    gradlePluginPortal()
-  }
+	repositories {
+		gradlePluginPortal()
+	}
 
-  dependencies {
-    classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
-  }
+	dependencies {
+		classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
+	}
 }
 
-application {
-    mainClass = "com.cobber.fta.driver.Driver"
-}
+subprojects {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+	}
 
-archivesBaseName = "fta"
-version = "5.1.24"
-group = "com.cobber.fta"
+	// We should always build a Java 8 compatible library
+	if (JavaVersion.current().java9Compatible) {
+		project.afterEvaluate {
+			tasks.withType(JavaCompile) {
+				options.compilerArgs.addAll(['--release', 8])
+			}
+		}
+	}
 
-repositories {
-  mavenCentral()
-}
+	apply plugin: "java"
+	apply plugin: 'eclipse'
+	apply plugin: 'jacoco'
+	apply plugin: 'java-library-distribution'
+	apply plugin: 'jacoco'
+	apply plugin: 'signing'
+	apply plugin: 'maven-publish'
 
-test {
-  // enable TestNG support (default is JUnit)
-  def groups = System.getProperty('groups', 'all')
-  useTestNG() {
-    includeGroups groups
-  }
-  dependsOn cleanTest
-  testLogging.showStandardStreams = true
-}
+	configureVersions()
 
-tasks.withType(JavaCompile) {
-  options.encoding = 'UTF-8'
-}
+	version = "6.0.0"
+	group = "com.cobber.fta"
 
-tasks.withType(Test) {
-  systemProperty "file.encoding", "UTF-8"
-}
+	java {
+		withSourcesJar()
+		withJavadocJar()
+	}
 
-javadoc.options.encoding = 'UTF-8'
+	artifacts {
+		archives javadocJar, sourcesJar
+	}
 
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
+	jar {
+		manifest {
+			attributes(
+				'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+				'Implementation-Version': archiveVersion
+			)
+		}
+	}
 
-artifacts {
-  archives javadocJar, sourcesJar
-}
+	test {
+		// enable TestNG support (default is JUnit)
+		def groups = System.getProperty('groups', 'all')
+			useTestNG() {
+				includeGroups groups
+			}
+		dependsOn cleanTest
+		testLogging.showStandardStreams = true
+	}
 
-signing {
-    sign configurations.archives
-}
+	publishing {
+		repositories {
+			maven {
+				name = "ossrh"
+				url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+				credentials {
+					username = findProperty('ossrhUsername')
+					password = findProperty('ossrhPassword')
+				}
+			}
+		}
 
-jar {
-    manifest {
-        attributes(
-            'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
-	    'Implementation-Version': "${version}"
-        )
-    }
-}
+		publications {
+			mavenJava(MavenPublication) {
+			    switch(artifactId) {
+				case 'core':
+					artifactId = 'fta-core'
+					break
+				case 'types':
+					artifactId = 'fta'
+					break
+				default:
+					break
+				}
+				from components.java
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+				pom {
+					name = 'Fast Text Analyzer'
+					packaging = 'jar'
+					description = 'Analyze Text data to determine simple type and Semantic type information as well as other key metrics associated with a text stream.'
+					url = 'https://github.com/tsegall/fta'
 
-      repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
+					scm {
+					    connection = 'scm:git:https://github.com/tsegall/fta.git'
+					    developerConnection = 'scm:git:https://github.com/tsegall/fta.git'
+					    url = 'https://github.com/tsegall/fta.git'
+					}
 
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
+				licenses {
+					license {
+						name = 'The Apache License, Version 2.0'
+						url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
 
-      pom.project {
-        name 'Fast Text Analyzer'
-        packaging 'jar'
-        // optionally artifactId can be defined here 
-        description 'Analyze Text data to determine simple type and Semantic type information as well as other key metrics associated with a text stream.'
-        url 'https://github.com/tsegall/fta'
+				developers {
+					developer {
+						id = 'tsegall'
+						name = 'Tim Segall'
+						email = 'xtim@cobber.com'
+					}
+				}
+			    }
+			}
+		}
+	}
 
-        scm {
-          connection 'scm:git:https://github.com/tsegall/fta.git'
-          developerConnection 'scm:git:https://github.com/tsegall/fta.git'
-          url 'https://github.com/tsegall/fta.git'
-        }
-
-        licenses {
-          license {
-            name 'The Apache License, Version 2.0'
-            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-          }
-        }
-
-        developers {
-          developer {
-            id 'tsegall'
-            name 'Tim Segall'
-            email 'xtim@cobber.com'
-          }
-        }
-      }
-    }
-  }
-}
-
-dependencies {
-  implementation group: 'com.univocity', name: 'univocity-parsers', version: "${univocityVersion}"
-  implementation group: 'com.sun.mail', name: 'javax.mail', version: "${javaxMailApiVersion}"
-  implementation group: 'commons-validator', name: 'commons-validator', version: "${commonsValidatorVersion}"
-  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonDatabindVersion}"
-  implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: "${googlePhoneNumberVersion}"
-  implementation group: 'org.apache.commons', name: 'commons-text', version: "${commonsTextVersion}"
-  implementation group: 'com.github.krraghavan', name: 'xeger', version: "${xegerVersion}"
-  implementation group: 'org.slf4j', name: 'slf4j-api', version: "${slf4jApiVersion}"
-  implementation group: 'com.google.guava', name: 'guava', version: "${guavaVersion}"
-
-  testImplementation group: 'org.testng', name: 'testng', version: "${testngVersion}"
-  testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: "${logbackClassicVersion}"
-}
-
-distributions {
-    main {
-        distributionBaseName = 'fta'
-    }
-}
-
-jacocoTestReport {
-    group = "Reporting"
-    reports {
-        xml.enabled true
-        csv.enabled false
-        html.destination file("${buildDir}/reports/coverage")
-    }
-    afterEvaluate {
-        classDirectories.from = files(classDirectories.files.collect {
-            fileTree(dir: it,
-                    exclude: ['**/Driver**'])
-        })
-    }
+	signing {
+		sign publishing.publications.mavenJava
+	}
 }
