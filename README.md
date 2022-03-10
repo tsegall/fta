@@ -359,7 +359,7 @@ The DataSignature will be identical for AccountLocation and PrimaryCountry as th
 
 **Data Signature** - Base 64 encoded version of a JSON structure which includes the following attributes: totalCount, sampleCount, matchCount, nullCount, blankCount, minLength, maxLength, cardinality, cardinalityDetail, outlierCardinality, outliertyDetail, shapesCardinality, shapesDetail, leadingWhiteSpace trailingWhiteSpace, multiline
 
-Additionally:
+Additional attributes captured in JSON structure:
 - Included if statistics are enabled: min, max, mean, standardDeviation, topK, bottomK
 - Included if Base Type == Double: decimalSeparator
 - Included if Base Type is Numeric: leadingZeroCount
