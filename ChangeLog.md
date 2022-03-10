@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 6.0.2
+ - ENH: Bump google phone number.
+ - INT: Fixup minor issues in README & document Signature details
+
 ### 6.0.1
  - INT: No longer need build7.gradle 
 

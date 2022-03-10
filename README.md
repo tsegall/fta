@@ -374,11 +374,11 @@ In addition to validating a data Stream, FTA can also be used to generate a synt
 
 ## Getting Starting ##
 
-Fastest way to get started is to review the samples provided.
+Fastest way to get started is to review the examples included.
 
 ## Building ##
 
-`$ gradle wrapper --gradle-version 7.4`
+`$ gradle wrapper --gradle-version 7.4.1`
 
 `$ ./gradlew installDist`
 
@@ -419,11 +419,11 @@ Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and f
 ## Executing ##
 Using FTA from the command line, list options:
 
-`$ build/install/fta/bin/fta --help`
+`$ types/build/install/fta/bin/types --help`
 
 Report on a CSV file:
 
-`$ build/install/fta/bin/fta filename.csv`
+`$ types/build/install/fta/bin/types filename.csv`
 
 ## Java code ##
 
