@@ -457,7 +457,7 @@ Supported attributes are:
 
 For example:
 
-`$ export FTA_TRACE="enabled=true,director=/tmp,samples=10000"`
+`$ export FTA_TRACE="enabled=true,directory=/tmp,samples=10000"`
 
 This generates a file named &lt;Stream&gt;.fta with the inputs to the analysis for debugging.
 
