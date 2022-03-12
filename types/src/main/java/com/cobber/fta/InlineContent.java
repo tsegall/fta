@@ -15,12 +15,18 @@
  */
 package com.cobber.fta;
 
+/**
+ * Used to capture the members for a small set of items - which are defined inline.
+ */
 public class InlineContent {
 	public String[] members;
 
 	InlineContent() {
 	}
 
+	/**
+	 * @param members The set of Strings that define the Inline Content.
+	 */
 	public InlineContent(final String[] members) {
 		this.members = members;
 	}

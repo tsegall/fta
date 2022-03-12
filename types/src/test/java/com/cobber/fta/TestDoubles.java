@@ -1263,6 +1263,80 @@ public class TestDoubles {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void doublesWithGroupingAndExponent() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("doublesWithGroupingAndExponent");
+		analysis.setDebug(2);
+		final String[] inputs = {
+				"5,000,000E12", "2,000,000E11", "6,000,000E21", "1,000,000E12", "2,000,000E11", "6,000,000E4",
+				"5,000,000E12", "2,000,000E11", "3,000,000E4", "7,000,000E12", "2,000,000E11", "6,000,000E4",
+				"1,000,000E12", "2,000,000E11", "3,000,000E21", "5,000,000E12", "2,000,000E11", "3,000,000E2",
+				"1,000,000E12", "2,000,000E11", "3,000,000E4", "7,000,000E12", "2,000,000E11", "6,000,000E2",
+				"7,000,000E12", "2,000,000E11", "3,000,000E21", "5,000,000E12", "2,000,000E11", "3,000,000E4",
+				"1,000,000E12", "2,000,000E11", "6,000,000E4", "1,000,000E12", "2,000,000E11", "6,000,000E2"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked != -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "GROUPING");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT_GROUPING));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "300000000.0");
+		assertEquals(result.getMaxValue(), "6000000000000000000000000000.0");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void signedDoublesWithGroupingAndExponent() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("signedDoublesWithGroupingAndExponent");
+		analysis.setDebug(2);
+		final String[] inputs = {
+				"-5,000,000E12", "2,000,000E11", "6,000,000E21", "1,000,000E12", "2,000,000E11", "6,000,000E4",
+				"5,000,000E12", "-2,000,000E11", "3,000,000E4", "7,000,000E12", "2,000,000E11", "6,000,000E4",
+				"1,000,000E12", "2,000,000E11", "-3,000,000E21", "-5,000,000E12", "-2,000,000E11", "3,000,000E2",
+				"1,000,000E12", "2,000,000E11", "3,000,000E4", "7,000,000E12", "2,000,000E11", "6,000,000E2",
+				"7,000,000E12", "2,000,000E11", "3,000,000E21", "5,000,000E12", "2,000,000E11", "3,000,000E-4",
+				"1,000,000E12", "2,000,000E11", "6,000,000E4", "1,000,000E12", "-2,000,000E11", "-6,000,000E2"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked != -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "-3000000000000000000000000000.0");
+		assertEquals(result.getMaxValue(), "6000000000000000000000000000.0");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void doublesWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("doublesWithSpaces");
 		final String pipedInput =
