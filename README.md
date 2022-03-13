@@ -461,6 +461,10 @@ For example:
 
 This generates a file named &lt;Stream&gt;.fta with the inputs to the analysis for debugging.
 
+You can replay the trace file (assuming a local build) using:
+
+`$ types/build/install/fta/bin/types --replay <Stream>.fta`
+
 ## Background Reading ##
 
 * Extracting Syntactic Patterns from Databases (https://arxiv.org/abs/1710.11528v2)

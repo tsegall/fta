@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 6.0.4
+ - ENH: Add support for replaying FTA trace files.
+
 ### 6.0.3
  - BUG: Handle grouping in doubles with Exponents (may never be seen but should not crash)
 

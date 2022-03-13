@@ -23,13 +23,16 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 public class AnalyzerContext {
 
 	/** The name of the data stream (e.g. the column of the CSV file) */
-	private final String streamName;
+	private String streamName;
 	/** Determines what to do when the Date field is ambiguous (i.e. we cannot determine which of the fields is the day or the month. */
 	private DateResolutionMode dateResolutionMode;
 	/** The name of the composite of which this stream is part of, for example the table name, if we are processing a column. */
-	private final String compositeName;
+	private String compositeName;
 	/** The name of all of the members of the composite (including this stream), for example the column names if we are processing a column of a table. */
-	private final String[] compositeStreamNames;
+	private String[] compositeStreamNames;
+
+	AnalyzerContext() {
+	}
 
 	public AnalyzerContext(final String streamName, final DateResolutionMode dateResolutionMode, final String compositeName, final String[] compositeStreamNames) {
 		this.streamName = streamName == null ? "anonymous" : streamName;

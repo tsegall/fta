@@ -1,9 +1,6 @@
 # Merge sharded analyses
 Option to merge profile results (e.g. given two profiles from sharded sources - produce a single profile result).
 
-# Split jars so date detection is lightweight
-Split fta.jar into two so date analysis can be performed with limited dependencies.
-
 # DataSet attributes
  - Identify recency fields (e.g. tlm_dt)
  - Identify reference/lookup tables
@@ -29,6 +26,9 @@ Split fta.jar into two so date analysis can be performed with limited dependenci
  - Add Japanese Postal Code support
  - ...
 
-# Internal
+# Support Trace Replay (DONE)
  - Support replay via .fta files
+
+# Split jars so date detection is lightweight (DONE)
+ - Split fta.jar into two so date analysis can be performed with limited dependencies.
 

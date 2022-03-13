@@ -51,6 +51,7 @@ public class Driver {
 	public static void main(final String[] args) throws IOException {
 		final PrintStream logger = System.err;
 		boolean helpRequested = false;
+		String replayFile = null;
 
 		options = new DriverOptions();
 		int idx = 0;
@@ -128,6 +129,8 @@ public class Driver {
 				options.pretty = false;
 			else if ("--records".equals(args[idx]))
 				options.recordsToProcess = Long.valueOf(args[++idx]);
+			else if ("--replay".equals(args[idx]))
+				replayFile = args[++idx];
 			else if ("--resolutionMode".equals(args[idx])) {
 				final String mode = args[++idx];
 				if ("DayFirst".equals(mode))
@@ -164,6 +167,12 @@ public class Driver {
 				System.exit(1);
 			}
 			idx++;
+		}
+
+		// Are we are replaying a trace file?
+		if (replayFile != null) {
+			Replay.replay(replayFile, options);
+			System.exit(0);
 		}
 
 		// Are we generating samples for a specific Semantic Type or a signature?
