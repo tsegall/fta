@@ -38,33 +38,110 @@ public class AnalysisConfig {
 	public static final int MAX_INPUT_LENGTH_DEFAULT = 4096;
 
 	/** The maximum Cardinality tracked. */
-	public int maxCardinality = MAX_CARDINALITY_DEFAULT;
+	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
 
 	/** The maximum number of outliers tracked. */
-	public int maxOutliers = MAX_OUTLIERS_DEFAULT;
+	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
 
 	/** The maximum number of shapes tracked. */
-	public int maxShapes = MAX_SHAPES_DEFAULT;
+	protected int maxShapes = MAX_SHAPES_DEFAULT;
 
-	public int threshold = DETECTION_THRESHOLD_DEFAULT;
+	private int threshold = DETECTION_THRESHOLD_DEFAULT;
 
-	public int detectWindow = DETECT_WINDOW_DEFAULT;
+	private int detectWindow = DETECT_WINDOW_DEFAULT;
 
-	public int maxInputLength = MAX_INPUT_LENGTH_DEFAULT;
+	/** The maximum input length. */
+	private int maxInputLength = MAX_INPUT_LENGTH_DEFAULT;
 
-	public String localeTag;
+	/** The current Locale tag - null if not set. */
+	private String localeTag;
 
-	public String traceOptions;
+	/** The current tracing options. */
+	protected String traceOptions;
 
 	/** Should we collect statistics (min, max, sum) as we parse the data stream. */
-	public boolean collectStatistics = true;
+	private boolean collectStatistics = true;
 
 	/** Internal-only debugging flag. */
-	public int debug;
+	protected int debug;
 
 	/** Should we enable Default Logical Type detection. */
-	public boolean enableDefaultLogicalTypes = true;
+	private boolean enableDefaultLogicalTypes = true;
 
 	AnalysisConfig() {
+	}
+
+	public boolean isCollectStatistics() {
+		return collectStatistics;
+	}
+
+	public void setCollectStatistics(boolean collectStatistics) {
+		this.collectStatistics = collectStatistics;
+	}
+
+	public boolean isEnableDefaultLogicalTypes() {
+		return enableDefaultLogicalTypes;
+	}
+
+	public void setEnableDefaultLogicalTypes(boolean enableDefaultLogicalTypes) {
+		this.enableDefaultLogicalTypes = enableDefaultLogicalTypes;
+	}
+
+	public int getDetectWindow() {
+		return detectWindow;
+	}
+
+	public int setDetectWindow(int detectWindow) {
+		final int ret = this.detectWindow;
+		this.detectWindow = detectWindow;
+		return ret;
+	}
+
+	public int getMaxCardinality() {
+		return maxCardinality;
+	}
+
+	public int setMaxCardinality(int maxCardinality) {
+		final int ret = this.maxCardinality;
+		this.maxCardinality = maxCardinality;
+		return ret;
+	}
+
+	public int getMaxInputLength() {
+		return maxInputLength;
+	}
+
+	public int setMaxInputLength(int maxInputLength) {
+		final int ret = this.maxInputLength;
+		this.maxInputLength = maxInputLength;
+		return ret;
+	}
+
+	public int getMaxOutliers() {
+		return maxOutliers;
+	}
+
+	public int setMaxOutliers(int maxOutliers) {
+		final int ret = this.maxOutliers;
+		this.maxOutliers = maxOutliers;
+		return ret;
+	}
+
+	public int getThreshold() {
+		return threshold;
+	}
+
+	public int setThreshold(int threshold) {
+		final int ret = this.threshold;
+		this.threshold = threshold;
+		return ret;
+	}
+
+	public String getLocaleTag() {
+		return localeTag;
+	}
+
+	public void setLocaleTag(String localeTag) {
+		this.localeTag = localeTag;
 	}
 }

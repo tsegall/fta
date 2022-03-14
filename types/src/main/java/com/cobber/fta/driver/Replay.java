@@ -85,17 +85,17 @@ public class Replay {
 			TextAnalyzer analyzer = new TextAnalyzer(analyzerContext);
 
 			// Apply the Config we retrieved from the Trace file
-			analyzer.setCollectStatistics(analysisConfig.collectStatistics);
-			analyzer.setDefaultLogicalTypes(analysisConfig.enableDefaultLogicalTypes);
-			analyzer.setDetectWindow(analysisConfig.detectWindow);
-			analyzer.setMaxCardinality(analysisConfig.maxCardinality);
-			analyzer.setMaxInputLength(analysisConfig.maxInputLength);
-			analyzer.setMaxOutliers(analysisConfig.maxOutliers);
-			analyzer.setPluginThreshold(analysisConfig.threshold);
-			analyzer.setDetectWindow(analysisConfig.detectWindow);
+			analyzer.setCollectStatistics(analysisConfig.isCollectStatistics());
+			analyzer.setDefaultLogicalTypes(analysisConfig.isEnableDefaultLogicalTypes());
+			analyzer.setDetectWindow(analysisConfig.getDetectWindow());
+			analyzer.setMaxCardinality(analysisConfig.getMaxCardinality());
+			analyzer.setMaxInputLength(analysisConfig.getMaxInputLength());
+			analyzer.setMaxOutliers(analysisConfig.getMaxOutliers());
+			analyzer.setPluginThreshold(analysisConfig.getThreshold());
+			analyzer.setDetectWindow(analysisConfig.getDetectWindow());
 			analyzer.setDebug(options.debug);
-			if (analysisConfig.localeTag != null)
-				analyzer.setLocale(Locale.forLanguageTag(analysisConfig.localeTag));
+			if (analysisConfig.getLocaleTag() != null)
+				analyzer.setLocale(Locale.forLanguageTag(analysisConfig.getLocaleTag()));
 
 			TextAnalysisResult result = bulkMode ?
 				processBulk(analyzer, samplesWrapper.samplesBulk, options) :

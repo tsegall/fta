@@ -247,7 +247,8 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Construct a Text Analyzer for the named data stream.  Note: The resolution mode will be 'None'.
+	 * Construct a Text Analyzer for the named data stream.
+	 * <p>Note: The DateResolutionMode mode will be 'None'.
 	 *
 	 * @param name The name of the data stream (e.g. the column of the CSV file)
 	 */
@@ -256,7 +257,8 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Construct an anonymous Text Analyzer for a data stream.  Note: The resolution mode will be 'None'.
+	 * Construct an anonymous Text Analyzer for a data stream.
+	 * <p>Note: The DateResolutionMode mode will be 'None'.
 	 */
 	public TextAnalyzer() {
 		this(new AnalyzerContext(null, DateResolutionMode.None, null, null));
@@ -296,7 +298,7 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("Cannot adjust statistics collection once training has started");
 
 		final boolean ret = collectStatistics;
-		analysisConfig.collectStatistics = collectStatistics;
+		analysisConfig.setCollectStatistics(collectStatistics);
 		return ret;
 	}
 
@@ -314,10 +316,12 @@ public class TextAnalyzer {
 	 *
 	 * General form of options is &lt;attribute1&gt;=&lt;value1&gt;,&lt;attribute2&gt;=&lt;value2&gt; ...
 	 * Supported attributes are:
-	 *	enabled=true/false,
-	 *	stream=&lt;name of stream&gt; (defaults to all)
-	 *	directory=&lt;directory for trace file&gt; (defaults to java.io.tmpdir)
-	 *	samples=&lt;# samples to trace&gt; (defaults to 1000)
+	 * <ul>
+	 * <li>enabled=true/false,
+	 * <li>stream=&lt;name of stream&gt; (defaults to all)
+	 * <li>directory=&lt;directory for trace file&gt; (defaults to java.io.tmpdir)
+	 * <li>samples=&lt;# samples to trace&gt; (defaults to 1000)
+	 * </ul>
 	 *
 	 * @param traceOptions The trace options.
 	 */
@@ -333,7 +337,7 @@ public class TextAnalyzer {
 	 * @return Whether Statistics collection is enabled.
 	 */
 	public boolean getCollectStatistics() {
-		return analysisConfig.collectStatistics;
+		return analysisConfig.isCollectStatistics();
 	}
 
 	/**
@@ -348,7 +352,7 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("Cannot adjust Logical Type detection once training has started");
 
 		final boolean ret = logicalTypeDetection;
-		analysisConfig.enableDefaultLogicalTypes = logicalTypeDetection;
+		analysisConfig.setEnableDefaultLogicalTypes(logicalTypeDetection);
 		return ret;
 	}
 
@@ -358,7 +362,7 @@ public class TextAnalyzer {
 	 * @return Whether default Logical Type processing collection is enabled.
 	 */
 	public boolean getDefaultLogicalTypes() {
-		return analysisConfig.enableDefaultLogicalTypes;
+		return analysisConfig.isEnableDefaultLogicalTypes();
 	}
 
 	/**
@@ -373,7 +377,7 @@ public class TextAnalyzer {
 		if (threshold <= 0 || threshold > 100)
 			throw new IllegalArgumentException("Threshold must be between 0 and 100");
 
-		analysisConfig.threshold = threshold;
+		analysisConfig.setThreshold(threshold);
 	}
 
 	/**
@@ -382,7 +386,7 @@ public class TextAnalyzer {
 	 * @return The current threshold.
 	 */
 	public int getThreshold() {
-		return analysisConfig.threshold;
+		return analysisConfig.getThreshold();
 	}
 
 	/**
@@ -411,7 +415,8 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * If true enable Numeric widening - i.e. if we see lots of integers then some doubles call it a double.
+	 * If true enable Numeric widening - that is, if we see lots of integers then some doubles call it a double.
+	 * <p>Note: Defaults to true.
 	 * @param numericWidening The new value for numericWidening.
 	 */
 	public void setNumericWidening(final boolean numericWidening) {
@@ -429,21 +434,23 @@ public class TextAnalyzer {
 
 	/**
 	 * Override the default Locale.
+	 * <p>Note: There is no support for Locales that do not use the Gregorian Calendar.
+	 *
 	 * @param locale The new Locale used to determine separators in numbers, date processing, default plugins, etc.
-	 * Note: There is no support for Locales that do not use the Gregorian Calendar.
 	 */
 	public void setLocale(final Locale locale) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot adjust Locale once training has started");
 
 		this.locale = locale;
-		analysisConfig.localeTag = locale.toLanguageTag();
+		analysisConfig.setLocaleTag(locale.toLanguageTag());
 	}
 
     /**
-     * Set the size of the Detect Window (i.e. number of samples) to collect before attempting to determine the
-     * type. Note: It is not possible to change the Sample Size once training
-     * has started.
+     * Set the size of the Detect Window (that is, number of samples) to collect before attempting to determine the
+     * type.
+	 * Default is {@link AnalysisConfig#DETECT_WINDOW_DEFAULT}.
+     * <p> Note: It is not possible to change the Sample Size once training has started.
      *
      * @param detectWindow
      *            The number of samples to collect
@@ -456,7 +463,7 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("Cannot set detect window size below " + AnalysisConfig.DETECT_WINDOW_DEFAULT);
 
 		final int ret = detectWindow;
-		analysisConfig.detectWindow = detectWindow;
+		analysisConfig.setDetectWindow(detectWindow);
 
 		// Never want the Detect Window to be greater than the Reflection point
 		if (detectWindow >= reflectionSamples)
@@ -471,7 +478,7 @@ public class TextAnalyzer {
 	 * @return The current size of the Detect Window.
 	 */
 	public int getDetectWindow() {
-		return analysisConfig.detectWindow;
+		return analysisConfig.getDetectWindow();
 	}
 
 	/**
@@ -486,9 +493,13 @@ public class TextAnalyzer {
 
 	/**
 	 * Set the maximum cardinality that will be tracked.
+	 * Default is {@link AnalysisConfig#MAX_CARDINALITY_DEFAULT}.
+	 * <p>
 	 * Note:
-	 *  - The Cardinality must be larger than the Cardinality of the largest Finite Logical type.
-	 *  - It is not possible to change the cardinality once training has started.
+	 * <ul>
+	 * <li>The Cardinality must be larger than the Cardinality of the largest Finite Logical type.
+	 * <li>It is not possible to change the cardinality once training has started.
+	 * </ul>
 	 *
 	 * @param newCardinality
 	 *            The maximum Cardinality that will be tracked (0 implies no tracking)
@@ -500,9 +511,7 @@ public class TextAnalyzer {
 		if (newCardinality < 0)
 			throw new IllegalArgumentException("Invalid value for maxCardinality " + newCardinality);
 
-		final int ret = analysisConfig.maxCardinality;
-		analysisConfig.maxCardinality = newCardinality;
-		return ret;
+		return analysisConfig.setMaxCardinality(newCardinality);
 	}
 
 	/**
@@ -512,12 +521,13 @@ public class TextAnalyzer {
 	 * @return The maximum cardinality.
 	 */
 	public int getMaxCardinality() {
-		return analysisConfig.maxCardinality;
+		return analysisConfig.getMaxCardinality();
 	}
 
 	/**
-	 * Set the maximum number of outliers that will be tracked. Note: It is not
-	 * possible to change the outlier count once training has started.
+	 * Set the maximum number of outliers that will be tracked.
+	 * Default is {@link AnalysisConfig#MAX_OUTLIERS_DEFAULT}.
+	 * <p>Note: It is not possible to change the outlier count once training has started.
 	 *
 	 * @param newMaxOutliers
 	 *            The maximum number of outliers that will be tracked (0 implies
@@ -530,9 +540,7 @@ public class TextAnalyzer {
 		if (newMaxOutliers < 0)
 			throw new IllegalArgumentException("Invalid value for outlier count " + newMaxOutliers);
 
-		final int ret = analysisConfig.maxOutliers;
-		analysisConfig.maxOutliers = newMaxOutliers;
-		return ret;
+		return analysisConfig.setMaxOutliers(newMaxOutliers);
 	}
 
 	/**
@@ -542,13 +550,13 @@ public class TextAnalyzer {
 	 * @return The maximum cardinality.
 	 */
 	public int getMaxOutliers() {
-		return analysisConfig.maxOutliers;
+		return analysisConfig.getMaxOutliers();
 	}
 
 	/**
 	 * Indicate whether we should qualify the size of the RegExp.
 	 * For example "\d{3,6}" vs. "\d+"
-	 * Note: This only impacts simple Numerics/Alphas/AlphaNumerics.
+	 * <p>Note: This only impacts simple Numerics/Alphas/AlphaNumerics.
 	 *
 	 * @param newLengthQualifier The new value.
 	 *
@@ -571,7 +579,7 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Set the Key Confidence - this is typically used where we have an external source that indicated definitively that this is a key.
+	 * Set the Key Confidence - typically used where there is an external source that indicated definitively that this is a key.
 	 * @param keyConfidence The new keyConfidence
 	 */
 	public void setKeyConfidence(final double keyConfidence) {
@@ -579,7 +587,7 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Set the Uniqueness - this is typically used where we have an external source that has visibility into the entire data set and
+	 * Set the Uniqueness - typically used where there is an external source that has visibility into the entire data set and
 	 * 'knows' the uniqueness of the set as a whole.
 	 * @param uniqueness The new Uniqueness
 	 */
@@ -597,6 +605,7 @@ public class TextAnalyzer {
 
 	/**
 	 * Sets the maximum input length for sampling.
+	 * Default is {@link AnalysisConfig#MAX_INPUT_LENGTH_DEFAULT}.
 	 * @param maxInputLength The maximum length of samples, any samples longer than this will be truncated to this length.
 	 *
 	 * @return The previous value of this parameter.
@@ -607,9 +616,7 @@ public class TextAnalyzer {
 		if (maxInputLength < AnalysisConfig.MAX_INPUT_LENGTH_DEFAULT)
 			throw new IllegalArgumentException("Invalid value for maxInputLength (must be >= " + AnalysisConfig.MAX_INPUT_LENGTH_DEFAULT + ")");
 
-		final int ret = analysisConfig.maxInputLength;
-		analysisConfig.maxInputLength = maxInputLength;
-		return ret;
+		return analysisConfig.setMaxInputLength(maxInputLength);
 	}
 
 	/**
@@ -617,7 +624,7 @@ public class TextAnalyzer {
 	 * @return The current maximum length before an input sample is truncated.
 	 */
 	public int getMaxInputLength() {
-		return analysisConfig.maxInputLength;
+		return analysisConfig.getMaxInputLength();
 	}
 
 	String getRegExp(final KnownPatterns.ID id) {
@@ -711,7 +718,7 @@ public class TextAnalyzer {
 			else
 				monotonicIncreasing = false;
 
-			if (analysisConfig.collectStatistics) {
+			if (analysisConfig.isCollectStatistics()) {
 				// Calculate the mean & standard deviation using Welford's algorithm
 				final double delta = l - facts.currentMean;
 				// matchCount is one low - because we do not 'count' the record until we return from this routine indicating valid
@@ -793,7 +800,7 @@ public class TextAnalyzer {
 		if (len > maxTrimmedLength)
 			maxTrimmedLength = len;
 
-		if (analysisConfig.collectStatistics)
+		if (analysisConfig.isCollectStatistics())
 			facts.tbString.observe(cleaned);
 
 		return true;
@@ -839,7 +846,7 @@ public class TextAnalyzer {
 		if (Double.isNaN(d) || Double.isInfinite(d))
 			return true;
 
-		if (register && analysisConfig.collectStatistics) {
+		if (register && analysisConfig.isCollectStatistics()) {
 			if (d < facts.minDouble)
 				facts.minDouble = d;
 
@@ -878,7 +885,7 @@ public class TextAnalyzer {
 		// significantly faster than the parse on LocalTime/LocalDate/LocalDateTime/...
 		switch (result.getType()) {
 		case LOCALTIME:
-			if (register && analysisConfig.collectStatistics) {
+			if (register && analysisConfig.isCollectStatistics()) {
 				final LocalTime localTime = LocalTime.parse(trimmed, formatter);
 				if (facts.minLocalTime == null || localTime.compareTo(facts.minLocalTime) < 0)
 					facts.minLocalTime = localTime;
@@ -891,7 +898,7 @@ public class TextAnalyzer {
 			break;
 
 		case LOCALDATE:
-			if (register && analysisConfig.collectStatistics) {
+			if (register && analysisConfig.isCollectStatistics()) {
 				final LocalDate localDate = LocalDate.parse(trimmed, formatter);
 				if (facts.minLocalDate == null || localDate.compareTo(facts.minLocalDate) < 0)
 					facts.minLocalDate = localDate;
@@ -904,7 +911,7 @@ public class TextAnalyzer {
 			break;
 
 		case LOCALDATETIME:
-			if (register && analysisConfig.collectStatistics) {
+			if (register && analysisConfig.isCollectStatistics()) {
 				final LocalDateTime localDateTime = LocalDateTime.parse(trimmed, formatter);
 				if (facts.minLocalDateTime == null || localDateTime.compareTo(facts.minLocalDateTime) < 0)
 					facts.minLocalDateTime = localDateTime;
@@ -917,7 +924,7 @@ public class TextAnalyzer {
 			break;
 
 		case ZONEDDATETIME:
-			if (register && analysisConfig.collectStatistics) {
+			if (register && analysisConfig.isCollectStatistics()) {
 				final ZonedDateTime zonedDateTime = ZonedDateTime.parse(trimmed, formatter);
 				if (facts.minZonedDateTime == null || zonedDateTime.compareTo(facts.minZonedDateTime) < 0)
 					facts.minZonedDateTime = zonedDateTime;
@@ -930,7 +937,7 @@ public class TextAnalyzer {
 			break;
 
 		case OFFSETDATETIME:
-			if (register && analysisConfig.collectStatistics) {
+			if (register && analysisConfig.isCollectStatistics()) {
 				final OffsetDateTime offsetDateTime = OffsetDateTime.parse(trimmed, formatter);
 				if (facts.minOffsetDateTime == null || offsetDateTime.compareTo(facts.minOffsetDateTime) < 0)
 					facts.minOffsetDateTime = offsetDateTime;
@@ -955,10 +962,10 @@ public class TextAnalyzer {
 
 	/**
 	 * Register the default set of plugins for Logical Type detection.
+	 * <p>Note: If the locale is null it will default to the Default locale.
 	 *
 	 * @param locale The Locale used for analysis, the will impact both the set of plugins registered as well as the behavior of the individual plugins
 	 *
-	 * Note: If the locale is null it will default to the Default locale.
 	 */
 	public void registerDefaultPlugins(final Locale locale) {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
@@ -979,11 +986,11 @@ public class TextAnalyzer {
 		if (LocaleInfo.isSupported(locale) != null)
 			throw new FTAUnsupportedLocaleException(LocaleInfo.isSupported(locale));
 
-		raw = new ArrayList<>(analysisConfig.detectWindow);
-		detectWindowEscalations = new ArrayList<>(analysisConfig.detectWindow);
+		raw = new ArrayList<>(analysisConfig.getDetectWindow());
+		detectWindowEscalations = new ArrayList<>(analysisConfig.getDetectWindow());
 
 		// If enabled, load the default set of plugins for Logical Type detection
-		if (analysisConfig.enableDefaultLogicalTypes)
+		if (analysisConfig.isEnableDefaultLogicalTypes())
 			registerDefaultPlugins(locale);
 
 		for (final LogicalType logical : plugins.getRegisteredLogicalTypes()) {
@@ -1068,7 +1075,7 @@ public class TextAnalyzer {
 			traceConfig = new Trace(analysisConfig.traceOptions, context,  analysisConfig);
 
 		// Now that we have initialized these facts cannot change, so set them on the Facts object
-		this.facts.setCollectStatistics(analysisConfig.collectStatistics);
+		this.facts.setCollectStatistics(analysisConfig.isCollectStatistics());
 		this.facts.setLocale(this.locale);
 
 		initialized = true;
@@ -1660,7 +1667,7 @@ public class TextAnalyzer {
 							&& matchPatternInfo.isNumeric()
 							&& level2patternInfo.isNumeric()
 							&& level2value >= 1.05 * best.getValue())
-					|| (!best.getKey().equals(level2pattern) && (double)best.getValue()/raw.size() < (double)analysisConfig.threshold/100
+					|| (!best.getKey().equals(level2pattern) && (double)best.getValue()/raw.size() < (double)analysisConfig.getThreshold()/100
 							&& level2value >= 1.10 * best.getValue()))) {
 				matchPatternInfo = level2patternInfo;
 			}
@@ -1740,7 +1747,7 @@ public class TextAnalyzer {
 	private void addValid(final String input, final long count) {
 		final Long seen = cardinality.get(input);
 		if (seen == null) {
-			if (cardinality.size() < analysisConfig.maxCardinality)
+			if (cardinality.size() < analysisConfig.getMaxCardinality())
 				cardinality.put(input, count);
 		}
 		else
@@ -1765,7 +1772,7 @@ public class TextAnalyzer {
 		final String smashed = Token.generateKey(input);
 		Long seen = outliersSmashed.get(smashed);
 		if (seen == null) {
-			if (outliersSmashed.size() < analysisConfig.maxOutliers)
+			if (outliersSmashed.size() < analysisConfig.getMaxOutliers())
 				outliersSmashed.put(smashed, 1L);
 		} else {
 			outliersSmashed.put(smashed, seen + 1);
@@ -1773,7 +1780,7 @@ public class TextAnalyzer {
 
 		seen = outliers.get(input);
 		if (seen == null) {
-			if (outliers.size() < analysisConfig.maxOutliers)
+			if (outliers.size() < analysisConfig.getMaxOutliers())
 				outliers.put(input, 1L);
 		} else {
 			outliers.put(input, seen + 1);
@@ -1852,14 +1859,14 @@ public class TextAnalyzer {
 		final long badCharacters = current.isAlphabetic() ? analysis.digits : analysis.alphas;
 		// If we are currently Alphabetic and the only errors are digits then convert to AlphaNumeric
 		if (badCharacters != 0 && analysis.spaces == 0 && analysis.other == 0 && current.isAlphabetic()) {
-			if (outliers.size() == analysisConfig.maxOutliers || analysis.digits > .01 * realSamples) {
+			if (outliers.size() == analysisConfig.getMaxOutliers() || analysis.digits > .01 * realSamples) {
 				backoutToPatternID(realSamples, KnownPatterns.ID.ID_ALPHANUMERIC_VARIABLE);
 				return true;
 			}
 		}
 		// If we are currently Numeric and the only errors are alpha then convert to AlphaNumeric
 		else if (badCharacters != 0 && analysis.spaces == 0 && analysis.other == 0 && FTAType.LONG.equals(current.getBaseType())) {
-			if (outliers.size() == analysisConfig.maxOutliers || analysis.alphas > .01 * realSamples) {
+			if (outliers.size() == analysisConfig.getMaxOutliers() || analysis.alphas > .01 * realSamples) {
 				backoutToPattern(realSamples, KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE);
 				return true;
 			}
@@ -1874,7 +1881,7 @@ public class TextAnalyzer {
 			backoutToPatternID(realSamples, id);
 			return true;
 		}
-		else if ((realSamples > reflectionSamples && outliers.size() == analysisConfig.maxOutliers)
+		else if ((realSamples > reflectionSamples && outliers.size() == analysisConfig.getMaxOutliers())
 					|| (badCharacters + analysis.nonAlphaNumeric) > .01 * realSamples) {
 				backoutToPattern(realSamples, KnownPatterns.PATTERN_ANY_VARIABLE);
 				return true;
@@ -1969,7 +1976,7 @@ public class TextAnalyzer {
 			}
 
 			if (isLong) {
-				if (cardinality.size() < analysisConfig.maxCardinality)
+				if (cardinality.size() < analysisConfig.getMaxCardinality())
 					cardinality.put(entry.getKey(), entry.getValue());
 				outliers.remove(entry.getKey(), entry.getValue());
 				otherLongs += entry.getValue();
@@ -1977,7 +1984,7 @@ public class TextAnalyzer {
 		}
 
 		matchCount += otherLongs;
-		if ((double) matchCount / realSamples > analysisConfig.threshold/100.0)
+		if ((double) matchCount / realSamples > analysisConfig.getThreshold()/100.0)
 			matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_LONG);
 		else
 			backoutToPatternID(realSamples, KnownPatterns.ID.ID_ANY_VARIABLE);
@@ -2016,7 +2023,7 @@ public class TextAnalyzer {
 			trackLengthAndShape(rawInput, trimmed, count);
 
 		// If the detect window cache is full and we have not determined a type compute one
-		if ((matchPatternInfo == null || matchPatternInfo.getBaseType() == null) && sampleCount - (nullCount + blankCount) > analysisConfig.detectWindow)
+		if ((matchPatternInfo == null || matchPatternInfo.getBaseType() == null) && sampleCount - (nullCount + blankCount) > analysisConfig.getDetectWindow())
 			determineType();
 
 		if (matchPatternInfo == null || matchPatternInfo.getBaseType() == null)
@@ -2149,7 +2156,7 @@ public class TextAnalyzer {
 			trackTrimmedLengthAndWhiteSpace(rawInput, trimmed);
 		else {
 			outlier(input);
-			if (!matchPatternInfo.isDateType() && outliers.size() == analysisConfig.maxOutliers) {
+			if (!matchPatternInfo.isDateType() && outliers.size() == analysisConfig.getMaxOutliers()) {
 				if (matchPatternInfo.isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
 					final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
@@ -2325,7 +2332,13 @@ public class TextAnalyzer {
 		return bestResult.logical;
 	}
 
-	public static int distanceLevenshtein(final String source, final Set<String> universe) {
+	/**
+	 * Calculate the Levenshtein distance of the source string from the 'closest' string from the provided universe.
+	 * @param source The source string to test.
+	 * @param universe The universe of strings to test for distance
+	 * @return The Levenshtein distance from the best match.
+	 */
+	protected static int distanceLevenshtein(final String source, final Set<String> universe) {
 		final LevenshteinDistance distance = new LevenshteinDistance();
 
 		Integer best = Integer.MAX_VALUE;
@@ -2422,7 +2435,7 @@ public class TextAnalyzer {
 				facts.maxLocalDate = LocalDate.parse(String.valueOf(facts.maxLong), dtf);
 
 				// If we are collecting statistics - we need to generate the topK and bottomK
-				if (analysisConfig.collectStatistics)
+				if (analysisConfig.isCollectStatistics())
 					for (final String s : cardinality.keySet())
 						if (!Utils.allZeroes(s))
 							trackDateTime(s, matchPatternInfo, true);
@@ -2433,7 +2446,7 @@ public class TextAnalyzer {
 				facts.maxLocalDate = LocalDate.of((int)facts.maxLong, 1, 1);
 
 				// If we are collecting statistics - we need to generate the topK and bottomK
-				if (analysisConfig.collectStatistics)
+				if (analysisConfig.isCollectStatistics())
 					for (final String s : cardinality.keySet())
 						if (Integer.valueOf(s) != 0)
 							trackDateTime(s, matchPatternInfo, true);
@@ -2460,8 +2473,8 @@ public class TextAnalyzer {
 					}
 				}
 
-				if (!matchPatternInfo.isLogicalType() && realSamples >= analysisConfig.detectWindow &&
-						(confidence < analysisConfig.threshold/100.0 ||
+				if (!matchPatternInfo.isLogicalType() && realSamples >= analysisConfig.getDetectWindow() &&
+						(confidence < analysisConfig.getThreshold()/100.0 ||
 								(numericWidening && !outliers.isEmpty() && (new OutlierAnalysis(outliers, matchPatternInfo)).doubles == outliers.size()))) {
 					// We thought it was an integer field, but on reflection it does not feel like it
 					conditionalBackoutToPattern(realSamples, matchPatternInfo);
@@ -2735,8 +2748,8 @@ public class TextAnalyzer {
 		if (facts.keyConfidence == null) {
 			// Attempt to identify keys?
 			facts.keyConfidence = 0.0;
-			if (sampleCount > MIN_SAMPLES_FOR_KEY && analysisConfig.maxCardinality >= MIN_SAMPLES_FOR_KEY / 2 &&
-					(cardinality.size() == analysisConfig.maxCardinality || cardinality.size() == sampleCount) &&
+			if (sampleCount > MIN_SAMPLES_FOR_KEY && analysisConfig.getMaxCardinality() >= MIN_SAMPLES_FOR_KEY / 2 &&
+					(cardinality.size() == analysisConfig.getMaxCardinality() || cardinality.size() == sampleCount) &&
 					blankCount == 0 && nullCount == 0 &&
 					((matchPatternInfo.typeQualifier != null && matchPatternInfo.typeQualifier.equals("GUID")) ||
 					(matchPatternInfo.typeQualifier == null &&
@@ -2744,7 +2757,7 @@ public class TextAnalyzer {
 							|| FTAType.LONG.equals(matchPatternInfo.getBaseType()))))) {
 				facts.keyConfidence = 0.9;
 
-				if (cardinality.size() == analysisConfig.maxCardinality)
+				if (cardinality.size() == analysisConfig.getMaxCardinality())
 					// Might be a key but only iff every element in the cardinality
 					// set only has a count of 1
 					for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
@@ -2761,7 +2774,7 @@ public class TextAnalyzer {
 			if (cardinality.isEmpty())
 				facts.uniqueness = 0.0;
 			// Can only generate uniqueness if we have not overflowed Max Cardinality
-			else if (cardinality.size() < analysisConfig.maxCardinality) {
+			else if (cardinality.size() < analysisConfig.getMaxCardinality()) {
 				int uniques = 0;
 				for (final Map.Entry<String, Long> entry : cardinality.entrySet()) {
 					if (entry.getValue() == 1)

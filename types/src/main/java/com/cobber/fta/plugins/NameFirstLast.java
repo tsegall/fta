@@ -173,7 +173,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		}
 
 		// Reject if there is not a reasonable spread of values
-		if (getHeaderConfidence(context.getStreamName()) == 0 && cardinality.size() < analysisConfig.maxCardinality && (double)cardinality.size()/matchCount < .2)
+		if (getHeaderConfidence(context.getStreamName()) == 0 && cardinality.size() < analysisConfig.getMaxCardinality() && (double)cardinality.size()/matchCount < .2)
 			return BACKOUT;
 
 		// Reject if there is not a reasonable spread of last or first names

@@ -172,7 +172,7 @@ public class TextAnalysisResult {
 	 * @return The minimum value as a String.
 	 */
 	public String getMinValue() {
-		if (!analysisConfig.collectStatistics)
+		if (!analysisConfig.isCollectStatistics())
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.minValue;
 	}
@@ -182,7 +182,7 @@ public class TextAnalysisResult {
 	 * @return The maximum value as a String.
 	 */
 	public String getMaxValue() {
-		if (!analysisConfig.collectStatistics)
+		if (!analysisConfig.isCollectStatistics())
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.maxValue;
 	}
@@ -227,7 +227,7 @@ public class TextAnalysisResult {
 	 * @return The mean.
 	 */
 	public Double getMean() {
-		if (!analysisConfig.collectStatistics)
+		if (!analysisConfig.isCollectStatistics())
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.mean;
 	}
@@ -237,7 +237,7 @@ public class TextAnalysisResult {
 	 * @return The Standard Deviation.
 	 */
 	public Double getStandardDeviation() {
-		if (!analysisConfig.collectStatistics)
+		if (!analysisConfig.isCollectStatistics())
 			throw new IllegalArgumentException(NOT_ENABLED);
 
 
@@ -249,7 +249,7 @@ public class TextAnalysisResult {
 	 * @return The top K values (default: 10).
 	 */
 	public Set<String> getTopK() {
-		if (!analysisConfig.collectStatistics)
+		if (!analysisConfig.isCollectStatistics())
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.topK;
 	}
@@ -259,7 +259,7 @@ public class TextAnalysisResult {
 	 * @return The bottom K values (default: 10).
 	 */
 	public Set<String> getBottomK() {
-		if (!analysisConfig.collectStatistics)
+		if (!analysisConfig.isCollectStatistics())
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.bottomK;
 	}
@@ -451,7 +451,7 @@ public class TextAnalysisResult {
 	 * @return True if statistics were collected.
 	 */
 	public boolean statisticsEnabled() {
-		return analysisConfig.collectStatistics;
+		return analysisConfig.isCollectStatistics();
 	}
 
 	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
@@ -664,14 +664,14 @@ public class TextAnalysisResult {
 		if (patternInfo.isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
-		analysis.put("cardinality", cardinality.size() < analysisConfig.maxCardinality ? cardinality.size() : -1);
+		analysis.put("cardinality", cardinality.size() < analysisConfig.getMaxCardinality() ? cardinality.size() : -1);
 
 		if (!cardinality.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("cardinalityDetail");
 			outputDetails(MAPPER, detail, cardinality, verbose);
 		}
 
-		analysis.put("outlierCardinality", outliers.size() < analysisConfig.maxOutliers ? outliers.size() : -1);
+		analysis.put("outlierCardinality", outliers.size() < analysisConfig.getMaxOutliers() ? outliers.size() : -1);
 		if (!outliers.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("outlierDetail");
 			outputDetails(MAPPER, detail, outliers, verbose);

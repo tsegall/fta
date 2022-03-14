@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 6.0.5
+ - ENH: Improve JavaDoc
+
 ### 6.0.4
  - ENH: Add support for replaying FTA trace files.
 
