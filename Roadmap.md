@@ -10,11 +10,12 @@ Option to merge profile results (e.g. given two profiles from sharded sources - 
 	 - Address Line 1, Address Line2, Zip, State, Country into Full Address
 
 # Field attributes
-- Improve PII detection (e.g. DOB, Age, ...)
+ - Improve PII detection (e.g. DOB, Age, ...)
  - Improve Semantic Type detection (e.g. Age field as AGE, Description fields)
  - Outlier detection in numeric fields
  - Data distribution (e.g. Normal, uniform, ...)
  - Improved anomaly detection (see https://www.sciencedirect.com/science/article/pii/S0925231217309864)
+ - Add Filename detection
 
 # Broaden Identities supported
  - Chinese SSN

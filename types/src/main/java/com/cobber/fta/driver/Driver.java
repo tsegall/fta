@@ -84,6 +84,7 @@ public class Driver {
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				logger.println(" --logicalType <JSON representation of Logical Types> - Can be inline or as a File");
 				logger.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
+				logger.println(" --maxInputLength <n> - Set the Maximum Input length supported");
 				logger.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
 				logger.println(" --noAnalysis - Do not do analysis");
 				logger.println(" --noLogicalTypes - Do not register any Logical Types");
@@ -93,6 +94,7 @@ public class Driver {
 				logger.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a signature (record count based on --records)");
 				logger.println(" --pluginThreshold <n> - Set the plugin threshold percentage (0-100) for detection");
 				logger.println(" --records <n> - The number of records to analyze");
+				logger.println(" --replay <file>.fta - Replay the FTA trace file");
 				logger.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
 				logger.println(" --samples <n> - Set the size of the sample window");
 				logger.println(" --signature - Output the Signature for the supplied pluginName");
@@ -117,6 +119,8 @@ public class Driver {
 				options.noAnalysis = true;
 			else if ("--noLogicalTypes".equals(args[idx]))
 				options.noLogicalTypes = true;
+			else if ("--noPretty".equals(args[idx]))
+				options.pretty = false;
 			else if ("--noStatistics".equals(args[idx]))
 				options.noStatistics = true;
 			else if ("--pluginDefinition".equals(args[idx]))
@@ -125,8 +129,6 @@ public class Driver {
 				options.pluginName = args[++idx];
 			else if ("--pluginThreshold".equals(args[idx]))
 				options.pluginThreshold = Integer.valueOf(args[++idx]);
-			else if ("--noPretty".equals(args[idx]))
-				options.pretty = false;
 			else if ("--records".equals(args[idx]))
 				options.recordsToProcess = Long.valueOf(args[++idx]);
 			else if ("--replay".equals(args[idx]))

@@ -37,6 +37,9 @@ public class AnalysisConfig {
 	/** The default value for the maximum length of input to process. */
 	public static final int MAX_INPUT_LENGTH_DEFAULT = 4096;
 
+	/** The minimum value for the maximum length of input to process. */
+	public static final int MAX_INPUT_LENGTH_MINIMUM = 64;
+
 	/** The maximum Cardinality tracked. */
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
 

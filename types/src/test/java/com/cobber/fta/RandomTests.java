@@ -40,7 +40,6 @@ import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.plugins.USZip5;
 import com.cobber.fta.plugins.USZipPlus4;
-import com.cobber.fta.TestGroups;
 
 public class RandomTests {
 	private static final SecureRandom random = new SecureRandom();
@@ -1352,6 +1351,27 @@ public class RandomTests {
 		}
 		catch (IllegalArgumentException e) {
 			assertEquals(e.getMessage(), "Cannot change outlier count once training has started");
+			return;
+		}
+		fail("Exception should have been thrown");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void setMaxInputLengthTooLate() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("setMaxInputLengthTooLate");
+		int locked = -1;
+		int i = 0;
+
+		for (; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
+			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+				locked = i;
+		}
+
+		try {
+			analysis.setMaxInputLength(8000);
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(e.getMessage(), "Cannot change maxInputLength once training has started");
 			return;
 		}
 		fail("Exception should have been thrown");

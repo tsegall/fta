@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 6.0.6
+ - ENH: Bump slf4j-api
+ - BUG: Fix issue where setMaxInputLength could only be increased not decreased
+
 ### 6.0.5
  - ENH: Improve JavaDoc
 

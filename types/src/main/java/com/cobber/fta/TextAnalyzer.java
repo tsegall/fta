@@ -613,9 +613,8 @@ public class TextAnalyzer {
 	public int setMaxInputLength(final int maxInputLength) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot change maxInputLength once training has started");
-		if (maxInputLength < AnalysisConfig.MAX_INPUT_LENGTH_DEFAULT)
-			throw new IllegalArgumentException("Invalid value for maxInputLength (must be >= " + AnalysisConfig.MAX_INPUT_LENGTH_DEFAULT + ")");
-
+		if (maxInputLength < AnalysisConfig.MAX_INPUT_LENGTH_MINIMUM)
+			throw new IllegalArgumentException("Invalid value for maxInputLength (must be >= " + AnalysisConfig.MAX_INPUT_LENGTH_MINIMUM + ")");
 		return analysisConfig.setMaxInputLength(maxInputLength);
 	}
 
@@ -627,7 +626,7 @@ public class TextAnalyzer {
 		return analysisConfig.getMaxInputLength();
 	}
 
-	String getRegExp(final KnownPatterns.ID id) {
+	protected String getRegExp(final KnownPatterns.ID id) {
 		return knownPatterns.getRegExp(id);
 	}
 
