@@ -222,7 +222,7 @@ public class TestDoubles {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void floatBug() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"352115", "277303", "324576", "818328", "698915", "438223", "104583", "355898", "387829", "130771",
 				"246823", "833969", "380632", "467021", "869890", "15191", "463747", "847192", "706545", "895018",
 				"311867",
@@ -260,7 +260,7 @@ public class TestDoubles {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void signedFloatBug() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"352115", "277303", "324576", "818328", "698915", "438223", "104583", "355898", "387829", "130771",
 				"246823", "833969", "380632", "467021", "869890", "15191", "463747", "847192", "706545", "895018",
 				"311867",
@@ -299,7 +299,7 @@ public class TestDoubles {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void mixedInput() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"8", "172.67", "22.73", "150", "30.26", "54.55", "45.45", "433.22", "172.73", "7.73",
 				"218.18", "47.27", "31.81", "22.73", "21.43", "7.27", "26.25", "7.27", "45.45" };
 
@@ -325,7 +325,7 @@ public class TestDoubles {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void impossibleExponent() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E503", "1103E402"
 		};
@@ -350,7 +350,7 @@ public class TestDoubles {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void impossibleExponentNullHeader() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E533", "1103E402",
 				"1001E803", "3232E103", "1333E303", "1444E773", "8888E603", "1099E503", "1000E401", "1000E404", "1220E503", "1103E402"
 		};
@@ -375,7 +375,7 @@ public class TestDoubles {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void singleDoubleWithWidening() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
@@ -411,7 +411,7 @@ public class TestDoubles {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void simpleIntegerWithWidening() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
 				"0", "", "0", "0", "0", "", "0", "0", "0", "",
@@ -444,7 +444,7 @@ public class TestDoubles {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void lateDouble() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"-10000", "-1000", "-340", "-2500", "-1000", "-2062", "-2500", "-1927", "-2500", "-1927",
 				"-1000", "-2062", "-2000", "-8000", "-8000", "-15000", "-2500", "-15000", "-5000", "-1000",
 				"-1393.26"
@@ -547,7 +547,7 @@ public class TestDoubles {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void manyFrenchDoubles() throws IOException, FTAException {
-		final String[] samplesUS = new String[] {
+		final String[] samplesUS = {
 				"54.00", "12719300.00", "4819.00", "262612.00", "141300.00",
 				"44876900.00", "681023.00", "460198.00", "1123220.00", "18300.00",
 				"166658.00", "114656.00", "61461.00", "263058.00", "23747.00",
@@ -590,7 +590,7 @@ public class TestDoubles {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void doublesWithNan() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"", "9.04", "nan", "0.92", "0.89", "9.02", "-1.88", "4.84", "", "", "1.24", "1.83", "-0.23", "1.35", "nan",
 				"1.4", "1.34", "-0.48", "0.6", "1.23", "", "9.04", "nan", "0.92", "0.89", "9.02", "-1.88", "4.84", "",
 				"", "1.24", "1.83", "-0.23", "1.35", "nan", "1.4", "1.34", "-0.48", "0.6", "1.23",
@@ -816,7 +816,7 @@ public class TestDoubles {
 		}
 	}
 
-	boolean isTooHard(Locale locale) {
+	boolean isTooHard(final Locale locale) {
 		final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 
 		if (!simple) {
@@ -1027,7 +1027,7 @@ public class TestDoubles {
 	public void spacedDoubles() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("AMT");
 		analysis.setCollectStatistics(false);
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				" 000000512.80", "-000000512.80", "-000000006.96", "-000000206.43", "-000000078.40", " 000000000.03", "-000000000.03", "-000000010.60", " 000000244.87", " 000000917.60",
 				" 000000150.00", " 000000024.00", " 000000035.00", " 000000150.00", " 000000035.00", " 000000010.00", " 000000035.00", " 000000035.00", " 000000035.00", " 000000002.80",
 				" 000000024.00", " 000000008.40", " 000000005.60", " 000000005.60", " 000000005.60", " 000000035.00", " 000000005.60", " 000000005.60", " 000000919.52", "-000000919.52",
@@ -1074,21 +1074,21 @@ public class TestDoubles {
 		analysis2.setDebug(2);
 		analysis3.setCollectStatistics(false);
 		analysis3.setDebug(2);
-		final String inputs1[] = new String[] {
+		final String inputs1[] = {
 				"-89.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
 				"-69.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
 				"-49.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
 				"-29.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
 				"9.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
 		};
-		final String inputs2[] = new String[] {
+		final String inputs2[] = {
 				"29.00", "-88.80", "-87.96", "-86.43", "-85.40", "24.03", "-83.03", "-82.60", "-81.87", "-80.60",
 				"49.00", "-88.80", "-87.96", "-86.43", "-85.40", "44.03", "-83.03", "-82.60", "-81.87", "-80.60",
 				"69.00", "-88.80", "-87.96", "-86.43", "-85.40", "64.03", "-83.03", "-82.60", "-81.87", "-80.60",
 				"89.00", "88.80", "87.96", "86.43", "85.40", "4.03", "83.03", "82.60", "81.87", "80.60",
 		};
 		// Same as inputs1 but sorted - should have same dataSignature
-		final String inputs3[] = new String[] {
+		final String inputs3[] = {
 				"-89.00", "-88.80", "-88.80", "-88.80", "-88.80", "-88.80", "-87.96", "-87.96", "-87.96", "-87.96",
 				"-87.96", "-86.43", "-86.43", "-86.43", "-86.43", "-86.43", "-85.40", "-85.40", "-85.40", "-85.40",
 				"-85.40", "-83.03", "-83.03", "-83.03", "-83.03", "-83.03", "-82.60", "-82.60", "-82.60", "-82.60",
@@ -1133,7 +1133,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void decimalSeparatorTest_Locale() throws IOException, FTAException {
 		final int SAMPLE_SIZE = 1000;
-		final Locale[] locales = new Locale[] { Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("en-US") };
+		final Locale[] locales = { Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("en-US") };
 
 		for (final Locale locale : locales) {
 			final TextAnalyzer analysis = new TextAnalyzer("DecimalSeparator");

@@ -91,7 +91,7 @@ public class TestUtils {
 			"MAR|NER|PAN|REU|VCT|SXM|SDN|TLS|TKM|TCA|TUV|" +
 			"UGA|UKR|ARE|GBR|UMI|USA|URY|VNM|";
 
-	protected final static String validUSStreets[] = new String[] {
+	protected final static String validUSStreets[] = {
 			"9885 Princeton Court",
 			"11 San Pablo Rd.",
 			"365 3rd St.",
@@ -212,7 +212,7 @@ public class TestUtils {
 	}
 
 	static int getJavaVersion() {
-		String javaVersion = System.getProperty("java.specification.version");
+		final String javaVersion = System.getProperty("java.specification.version");
 		if ("1.8".equals(javaVersion))
 			return 8;
 

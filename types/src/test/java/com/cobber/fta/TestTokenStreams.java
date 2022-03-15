@@ -181,7 +181,7 @@ public class TestTokenStreams {
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testGUIDs() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"DAA3EDDE-5BCF-4D2A-8FB0-E120089343AF",
 				"B0613BE8-88AF-4591-A9A0-059F80413212",
 				"063BB913-7287-4A8A-B3DF-41EAA0EABF49",
@@ -206,7 +206,7 @@ public class TestTokenStreams {
 				"51e55fd6-74ca-4b1d-b5fd-d210209e3fc4"
 		};
 
-		for (String input : inputs)
+		for (final String input : inputs)
 			tokenStreams.track(input, 1);
 
 		assertEquals(tokenStreams.getRegExp(false), ".+");
@@ -227,7 +227,7 @@ public class TestTokenStreams {
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testFitted() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"ICD9-059F80413212",
 				"ICD9-41EAA0EABF49",
 				"ICD9-C3EA2BA35F8B",
@@ -251,7 +251,7 @@ public class TestTokenStreams {
 				"ICD9-d210209e3fc4"
 		};
 
-		for (String input : inputs)
+		for (final String input : inputs)
 			tokenStreams.track(input, 1);
 
 		assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{3}\\d-[\\p{IsAlphabetic}\\d]{12}");

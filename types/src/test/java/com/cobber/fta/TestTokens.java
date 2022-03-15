@@ -36,7 +36,7 @@ public class TestTokens {
 	public void tooLong() throws IOException, FTAException {
 		final String input = "0123456789012345678901234567890";
 
-		TokenStream ts = new TokenStream(input, 1);
+		final TokenStream ts = new TokenStream(input, 1);
 		assertEquals(ts.getKey(), "ANY");
 		assertEquals(ts.getOccurrences(), 1);
 		assertEquals(ts.getRegExp(false), ".+");
@@ -46,7 +46,7 @@ public class TestTokens {
 	public void oneDigit() throws IOException, FTAException {
 		final String input = "0";
 
-		TokenStream ts = new TokenStream(input, 1);
+		final TokenStream ts = new TokenStream(input, 1);
 		assertEquals(ts.getKey(), "9");
 		assertEquals(ts.getCompressedKey(), "9");
 		assertEquals(ts.getRegExp(false), "\\d");
@@ -58,7 +58,7 @@ public class TestTokens {
 	public void twoDigits() throws IOException, FTAException {
 		final String input = "01";
 
-		TokenStream ts = new TokenStream(input, 1);
+		final TokenStream ts = new TokenStream(input, 1);
 		assertEquals(ts.getKey(), "99");
 		assertEquals(ts.getCompressedKey(), "9");
 		assertEquals(ts.getRegExp(false), "\\d{2}");
@@ -70,7 +70,7 @@ public class TestTokens {
 	public void justDigits() throws IOException, FTAException {
 		final String input = "0123456789";
 
-		TokenStream ts = new TokenStream(input, 1);
+		final TokenStream ts = new TokenStream(input, 1);
 		assertEquals(ts.getKey(), "9999999999");
 		assertEquals(ts.getCompressedKey(), "9");
 		assertEquals(ts.getRegExp(false), "\\d{10}");
@@ -82,7 +82,7 @@ public class TestTokens {
 	public void simpleUpper() throws IOException, FTAException {
 		final String input = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-		TokenStream ts = new TokenStream(input, 1);
+		final TokenStream ts = new TokenStream(input, 1);
 		assertEquals(ts.getKey(), "XXXXXXXXXXXXXXXXXXXXXXXXXX");
 		assertEquals(ts.getCompressedKey(), "X");
 
@@ -94,7 +94,7 @@ public class TestTokens {
 	public void simpleLower() throws IOException, FTAException {
 		final String input = "abcdefghijklmnopqrstuvwxyz";
 
-		TokenStream ts = new TokenStream(input, 1);
+		final TokenStream ts = new TokenStream(input, 1);
 		assertEquals(ts.getKey(), "XXXXXXXXXXXXXXXXXXXXXXXXXX");
 		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{26}");
 		assertEquals(ts.getRegExp(true), "abcdefghijklmnopqrstuvwxyz");
@@ -104,14 +104,14 @@ public class TestTokens {
 	public void nonASCII() throws IOException, FTAException {
 		final String input = "München";
 
-		TokenStream ts = new TokenStream(input, 1);
+		final TokenStream ts = new TokenStream(input, 1);
 		assertEquals(ts.getKey(), "XXXXXXX");
 		assertEquals(ts.getCompressedKey(), "X");
 		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{7}");
 		assertEquals(ts.getRegExp(true), "München");
-		for (Token token : ts.getTokens()) {
+		for (final Token token : ts.getTokens()) {
 			if (token instanceof CharClassToken) {
-				CharClassToken ccToken = (CharClassToken)token;
+				final CharClassToken ccToken = (CharClassToken)token;
 				assertEquals(ccToken.getRanges().size(), 1);
 			}
 		}
@@ -121,7 +121,7 @@ public class TestTokens {
 	public void randomStuff() throws IOException, FTAException {
 		final String input = "+-=?#$";
 
-		TokenStream ts = new TokenStream(input, 1);
+		final TokenStream ts = new TokenStream(input, 1);
 		assertEquals(ts.getKey(), "+-=?#$");
 		assertEquals(ts.getCompressedKey(), "+-=?#$");
 		assertEquals(ts.getRegExp(false), "\\+-=?#\\$");
@@ -130,24 +130,24 @@ public class TestTokens {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testMerge() throws IOException, FTAException {
-		TokenStreams ts = new TokenStreams(10);
+		final TokenStreams ts = new TokenStreams(10);
 		ts.track("16789", 1);
 		ts.track("01338", 2);
 		ts.track("22457", 3);
 
 		assertEquals(ts.getSamples(), 6);
 		assertEquals(ts.getRegExp(false), "\\d{5}");
-		String fittedAnswer = "[0-2][1-26][3-47][358][7-9]";
+		final String fittedAnswer = "[0-2][1-26][3-47][358][7-9]";
 		assertEquals(ts.getRegExp(true), fittedAnswer);
 
 		assertTrue("16789".matches(fittedAnswer));
 		assertTrue("01338".matches(fittedAnswer));
 		assertTrue("22457".matches(fittedAnswer));
 
-		Token[] tokens = ts.getBest().getTokens();
+		final Token[] tokens = ts.getBest().getTokens();
 		for (int i = 0; i < tokens.length; i++) {
-			CharClassToken ccToken = (CharClassToken)tokens[i];
-			for (CharClassToken.Range range : ccToken.getRanges()) {
+			final CharClassToken ccToken = (CharClassToken)tokens[i];
+			for (final CharClassToken.Range range : ccToken.getRanges()) {
 				if (i == 0) {
 					assertEquals(ccToken.getRanges().size(), 1);
 					assertEquals(range.getMin(), '0');
@@ -170,7 +170,7 @@ public class TestTokens {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testWords() throws IOException, FTAException {
-		TokenStreams ts = new TokenStreams(10);
+		final TokenStreams ts = new TokenStreams(10);
 		ts.track("uvuck qdtxnz pkaow nu q fdvhuykn okb ar kjdw upfl cxchmna nilb fvtuoqhy", 1);
 		ts.track("rtifwhajt ozcjr qmje x mrtklqjhn pfqzdcosa xbhqerf odl xwcxsqua scyptz qv otvif v h hlqfbjl", 2);
 		ts.track("mxewys ramyc mhfxuwnt i ypesjme zoxayy", 3);
@@ -182,7 +182,7 @@ public class TestTokens {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testNumeric() throws IOException, FTAException {
-		TokenStreams ts = new TokenStreams(10);
+		final TokenStreams ts = new TokenStreams(10);
 		ts.track("09:09:08:07:04:05", 1);
 		ts.track("09:09:08:07:04:60", 1);
 		ts.track("89:39:33:17:04:44", 1);
@@ -190,13 +190,13 @@ public class TestTokens {
 		ts.track("09:04:08:11:01:22", 1);
 
 		assertEquals(ts.size(), 1);
-		TokenStream tokenStream = ts.getStreams().values().iterator().next();
+		final TokenStream tokenStream = ts.getStreams().values().iterator().next();
 		assertTrue(tokenStream.matches("[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testNotAllNumeric() throws IOException, FTAException {
-		TokenStreams ts = new TokenStreams(10);
+		final TokenStreams ts = new TokenStreams(10);
 		ts.track("09:09:08:07:04:05", 1);
 		ts.track("09:09:08:07:04:60", 1);
 		ts.track("89:39:3A:17:04:44", 1);
@@ -207,7 +207,7 @@ public class TestTokens {
 
 		int matches = 0;
 
-		for (Map.Entry<String, TokenStream> entry : ts.getStreams().entrySet()) {
+		for (final Map.Entry<String, TokenStream> entry : ts.getStreams().entrySet()) {
 			if (entry.getValue().matches("[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"))
 				matches++;
 		}
@@ -216,14 +216,14 @@ public class TestTokens {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testHex() throws IOException, FTAException {
-		TokenStreams ts = new TokenStreams(10);
+		final TokenStreams ts = new TokenStreams(10);
 		ts.track("09:09:08:07:04:05", 1);
 		ts.track("00:a9:b8:07:04:60", 1);
 		ts.track("00:39:33:17:04:44", 1);
 		ts.track("00:19:8c:0F:04:00", 1);
 		ts.track("00:04:08:1E:01:DD", 1);
 
-		for (Map.Entry<String, TokenStream> entry : ts.getStreams().entrySet())
+		for (final Map.Entry<String, TokenStream> entry : ts.getStreams().entrySet())
 			assertTrue(entry.getValue().matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}"));
 
 		assertTrue(ts.matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}"));
@@ -231,7 +231,7 @@ public class TestTokens {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testNonHex() throws IOException, FTAException {
-		TokenStreams ts = new TokenStreams(10);
+		final TokenStreams ts = new TokenStreams(10);
 		ts.track("09:09:08:07:04:05", 1);
 		ts.track("00:a9:b8:07:04:60", 1);
 		ts.track("00:39:33:17:04:44", 1);
@@ -244,13 +244,13 @@ public class TestTokens {
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testShapes() throws IOException, FTAException {
 		final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		String[] prefixes = new String[] { "INCA-", "ICD9-", "ICD10-" };
-		Random r = new Random();
-		TokenStreams tokenStreams = new TokenStreams(10);
+		final String[] prefixes = { "INCA-", "ICD9-", "ICD10-" };
+		final Random r = new Random();
+		final TokenStreams tokenStreams = new TokenStreams(10);
 
-		for (String prefix : prefixes) {
+		for (final String prefix : prefixes) {
 			for (int i = 1000; i < 2000; i++) {
-				String sample = i%2 == 0 ? prefix + String.valueOf(i) : String.valueOf(alpha.charAt(r.nextInt(alpha.length())));
+				final String sample = i%2 == 0 ? prefix + String.valueOf(i) : String.valueOf(alpha.charAt(r.nextInt(alpha.length())));
 
 				tokenStreams.track(sample, 1);
 			}
@@ -258,7 +258,7 @@ public class TestTokens {
 
 		assertEquals(tokenStreams.size(), 4);
 
-		for (Map.Entry<String, TokenStream> entry : tokenStreams.getStreams().entrySet()) {
+		for (final Map.Entry<String, TokenStream> entry : tokenStreams.getStreams().entrySet()) {
 			if ("XXX9-9999".equals(entry.getKey())) {
 				assertEquals(entry.getValue().getRegExp(false), "\\p{IsAlphabetic}{3}\\d-\\d{4}");
 				assertEquals(entry.getValue().getRegExp(true), "ICD9-1[0-9]{2}[02468]");

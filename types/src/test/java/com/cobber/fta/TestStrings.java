@@ -317,7 +317,7 @@ public class TestStrings {
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testEnumsWithSpecialChars() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ShipRegion");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 			"RJ", "SP", "Táchira", "RJ", "NM", "DF", "WA", "WY", "NM", "Lara",
 			"RJ", "SP", "RJ", "SP", "NM", "Lara", "Co. Cork", "RJ", "AK", "OR",
 			"Co. Cork", "OR", "NM", "Isle of Wight", "NM", "OR", "Isle of Wight", "ID", "WY", "Lara",
@@ -410,7 +410,7 @@ public class TestStrings {
 		final TextAnalyzer analysis = new TextAnalyzer("NOISE");
 		analysis.setTrace("enabled=true");
 		analysis.setCollectStatistics(false);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"3D4657263441283442A1202020202020", "2832412833553D365529202020202020", "2F36423D334229464326202020202020",
 				"2832432834432F3359A1202020202020", "2832432834432F335A24202020202020", "28324328344325304325202020202020",
 				"28324328344325304328202020202020", "3F3056254644A146423F202020202020", "3D46572534563D344424202020202020",
@@ -493,7 +493,7 @@ public class TestStrings {
 	public void niceEnum() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("niceEnum");
 		analysis.setCollectStatistics(false);
-		final String[] inputs = new String[] { "Corrective", "Discretionary", "Marketing/Retention", "Reactivation(FS Only)", "Undefined" };
+		final String[] inputs = { "Corrective", "Discretionary", "Marketing/Retention", "Reactivation(FS Only)", "Undefined" };
 		final int iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
@@ -520,7 +520,7 @@ public class TestStrings {
 	public void nastyEnum() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("nastyEnum");
 		analysis.setCollectStatistics(false);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"Skipping locale 'hi_IN' as it does not use Arabic numerals.",
 				"Skipping locale 'th_TH_TH_#u-nu-thai' as it does not use Arabic numerals.",
 				"Skipping locale 'ja_JP_JP_#u-ca-japanese' as it does not use the Gregorian calendar.",
@@ -550,7 +550,7 @@ public class TestStrings {
 	public void nastyEnumsTwo() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("nastyEnumsTwo");
 		analysis.setCollectStatistics(false);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"Fighter",
 				"Not a Fighter",
 				"Would like to be a Fighter",
@@ -581,7 +581,7 @@ public class TestStrings {
 	public void testCompressUSD() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCompressUSD");
 		analysis.setCollectStatistics(false);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"$411.00", "$420.00", "$407.00", "$80.00", "$453.00", "$401.00", "$490.00", "$430.00", "$4.00", "$40.00",
 				"$830.00", "$411.00", "$420.00", "$407.00", "$80.00", "$453.00", "$401.00", "$490.00", "$430.00", "$4.00"
 		};
@@ -610,7 +610,7 @@ public class TestStrings {
 	public void testCompressGBP() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCompressGBP");
 		analysis.setCollectStatistics(false);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"£41.99", "£51.99", "£28.56", "£7.82", "£9.78", ""
 		};
 		final int iterations = 1;
@@ -752,9 +752,49 @@ public class TestStrings {
 	public void testCompressCoordinates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCompressC_oordinates");
 		analysis.setCollectStatistics(false);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"-69.97345,12.51678", "66.00845,33.83627", "17.53646,12.29118",
 				"-63.06082,18.22560", "20.05399,41.14258", "20.03715,60.20733"
+		};
+		final int iterations = 3;
+
+		for (int i = 0; i < iterations; i++) {
+			for (final String sample : inputs)
+				analysis.train(sample);
+		}
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			if (input.length() != 0)
+				assertTrue(input.matches(result.getRegExp()), result.getRegExp());
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
+	public void testCompressCoordinates2() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testCompressC_oordinates2");
+		analysis.setCollectStatistics(false);
+		final String[] inputs = {
+				"-38.3,142.4", "33.749,-84.4124",
+				"36.6666,-119.834", "42.0834,-71.0184",
+				"3.4195,99.1654", "38.4199,-117.122",
+				"59.6167,16.55", "42.8198,-83.2366",
+				"4.2884,98.0429", "39.0667,-83.0666",
+				"28.95,77.2167", "7.16667,126.333",
+				"28.0222,-81.7329", "19.4,-101.267",
+				"29.2947,117.208", "6.32649,99.8432",
+				"36.4643,-82.586", "-33.9622,18.4135",
+				"40.754,-79.8101", "56.1,34.1",
+				"-20.0637,30.8277"
 		};
 		final int iterations = 3;
 
@@ -801,7 +841,7 @@ public class TestStrings {
 	public void testTrimmedLength() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testTrimmedLength");
 		analysis.setCollectStatistics(false);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"abc", "abcd ", "abcde  ",
 				"abcdef   ", "abcdefg    ", "abcdefgh     ",
 				"mno", "mnop ", "mnopq  ",
@@ -867,7 +907,7 @@ public class TestStrings {
 	public void testStrange() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testStrange");
 		analysis.setCollectStatistics(false);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"PK__3214EC273319DEC5", "PK__3214EC273319DEC5 ", "PK__3214EC273319DEC5",
 		};
 

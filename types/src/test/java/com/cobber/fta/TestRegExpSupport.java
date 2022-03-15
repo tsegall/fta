@@ -31,31 +31,31 @@ import com.cobber.fta.token.TokenStream;
 public class TestRegExpSupport {
 	@Test(groups = { TestGroups.ALL })
 	public void phone() throws IOException {
-		TokenStream ts = new TokenStream("+9 999 999 9999", 1);
+		final TokenStream ts = new TokenStream("+9 999 999 9999", 1);
 		assertEquals(ts.getRegExp(false), "\\+\\d \\d{3} \\d{3} \\d{4}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void simple() throws IOException {
-		TokenStream ts = new TokenStream("xxx", 1);
+		final TokenStream ts = new TokenStream("xxx", 1);
 		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{3}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void mixedAlpha() throws IOException {
-		TokenStream ts = new TokenStream("xxXX", 1);
+		final TokenStream ts = new TokenStream("xxXX", 1);
 		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{4}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void mix() throws IOException {
-		TokenStream ts = new TokenStream("99XXXX:99X", 1);
+		final TokenStream ts = new TokenStream("99XXXX:99X", 1);
 		assertEquals(ts.getRegExp(false), "\\d{2}\\p{IsAlphabetic}{4}:\\d{2}\\p{IsAlphabetic}");
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void onlyAlpha() throws IOException {
-		TokenStream ts = new TokenStream("XXXXX", 1);
+		final TokenStream ts = new TokenStream("XXXXX", 1);
 		assertEquals(ts.getRegExp(false), "\\p{IsAlphabetic}{5}");
 	}
 

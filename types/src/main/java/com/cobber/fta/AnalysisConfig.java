@@ -47,7 +47,7 @@ public class AnalysisConfig {
 	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
 
 	/** The maximum number of shapes tracked. */
-	protected int maxShapes = MAX_SHAPES_DEFAULT;
+	private int maxShapes = MAX_SHAPES_DEFAULT;
 
 	private int threshold = DETECTION_THRESHOLD_DEFAULT;
 
@@ -60,13 +60,13 @@ public class AnalysisConfig {
 	private String localeTag;
 
 	/** The current tracing options. */
-	protected String traceOptions;
+	private String traceOptions;
 
 	/** Should we collect statistics (min, max, sum) as we parse the data stream. */
 	private boolean collectStatistics = true;
 
 	/** Internal-only debugging flag. */
-	protected int debug;
+	private int debug;
 
 	/** Should we enable Default Logical Type detection. */
 	private boolean enableDefaultLogicalTypes = true;
@@ -146,5 +146,31 @@ public class AnalysisConfig {
 
 	public void setLocaleTag(String localeTag) {
 		this.localeTag = localeTag;
+	}
+
+	public int getMaxShapes() {
+		return maxShapes;
+	}
+
+	public int setMaxShapes(int maxShapes) {
+		final int ret = this.maxShapes;
+		this.maxShapes = maxShapes;
+		return ret;
+	}
+
+	public String getTraceOptions() {
+		return traceOptions;
+	}
+
+	public void setTraceOptions(String traceOptions) {
+		this.traceOptions = traceOptions;
+	}
+
+	public int getDebug() {
+		return debug;
+	}
+
+	public void setDebug(int debug) {
+		this.debug = debug;
 	}
 }

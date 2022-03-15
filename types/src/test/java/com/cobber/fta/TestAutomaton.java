@@ -39,7 +39,7 @@ public class TestAutomaton {
 		if (input.isEmpty() && state.isAccept())
 			return true;
 
-		if (transitions.size() == 0)
+		if (transitions.isEmpty())
             return input.isEmpty();
 
 		char ch = input.charAt(0);

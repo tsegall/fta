@@ -308,7 +308,7 @@ public class TextAnalyzer {
 	 * @param debug The debug level.
 	 */
 	public void setDebug(final int debug) {
-		analysisConfig.debug = debug;
+		analysisConfig.setDebug(debug);
 	}
 
 	/**
@@ -328,7 +328,7 @@ public class TextAnalyzer {
 	public void setTrace(final String traceOptions) {
 		if (traceOptions == null || traceOptions.isEmpty())
 			throw new TraceException("Argument to setTrace must be non-null");
-		analysisConfig.traceOptions = traceOptions;
+		analysisConfig.setTraceOptions(traceOptions);
 	}
 
 	/**
@@ -760,7 +760,7 @@ public class TextAnalyzer {
 	}
 
 	private boolean trackString(final String rawInput, final String trimmed, final PatternInfo patternInfo, final boolean register) {
-		if (register && analysisConfig.debug >= 2 && rawInput.length() > 0 && rawInput.charAt(0) == '¶' && "¶ xyzzy ¶".equals(rawInput))
+		if (register && analysisConfig.getDebug() >= 2 && rawInput.length() > 0 && rawInput.charAt(0) == '¶' && "¶ xyzzy ¶".equals(rawInput))
 			throw new NullPointerException("¶ xyzzy ¶");
 		if (patternInfo.typeQualifier == null) {
 			for (int i = 0; i < trimmed.length(); i++) {
@@ -1064,14 +1064,14 @@ public class TextAnalyzer {
 		dateTimeParser = new DateTimeParser(context.getDateResolutionMode(), locale);
 
 		// If no trace options already set then pick them up from the environment (if set)
-		if (analysisConfig.traceOptions == null) {
+		if (analysisConfig.getTraceOptions() == null) {
 			final String ftaTrace = System.getenv("FTA_TRACE");
 			if (ftaTrace != null && !ftaTrace.isEmpty())
-				analysisConfig.traceOptions = ftaTrace;
+				analysisConfig.setTraceOptions(ftaTrace);
 		}
 
-		if (analysisConfig.traceOptions != null)
-			traceConfig = new Trace(analysisConfig.traceOptions, context,  analysisConfig);
+		if (analysisConfig.getTraceOptions() != null)
+			traceConfig = new Trace(analysisConfig.getTraceOptions(), context,  analysisConfig);
 
 		// Now that we have initialized these facts cannot change, so set them on the Facts object
 		this.facts.setCollectStatistics(analysisConfig.isCollectStatistics());
@@ -1213,8 +1213,8 @@ public class TextAnalyzer {
 		}
 		catch (RuntimeException e) {
 			internalErrors++;
-			if (analysisConfig.debug != 0)
-				throw new InternalErrorException(e.getMessage());
+			if (analysisConfig.getDebug() != 0)
+				throw new InternalErrorException(e.getMessage(), e);
 		}
 	}
 
@@ -1264,8 +1264,8 @@ public class TextAnalyzer {
 		}
 		catch (RuntimeException e) {
 			internalErrors++;
-			if (analysisConfig.debug != 0)
-				throw new InternalErrorException(e.getMessage());
+			if (analysisConfig.getDebug() != 0)
+				throw new InternalErrorException(e.getMessage(), e);
 			return false;
 		}
 		return result;
@@ -1583,7 +1583,7 @@ public class TextAnalyzer {
 	}
 
 	void debug(final String format, final Object... arguments) {
-		if (analysisConfig.debug >= 2) {
+		if (analysisConfig.getDebug() >= 2) {
 			if (logger == null)
 				logger = LoggerFactory.getLogger("fta");
 			logger.debug(format, arguments);

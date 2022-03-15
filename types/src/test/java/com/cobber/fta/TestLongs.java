@@ -469,7 +469,7 @@ public class TestLongs {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void groupingSeparatorLargeFRENCH() throws IOException, FTAException {
-		final Locale locales[] = new Locale[] { Locale.GERMAN, Locale.FRANCE };
+		final Locale locales[] = { Locale.GERMAN, Locale.FRANCE };
 		final int SAMPLE_SIZE = 1000;
 		final Set<String> samples = new HashSet<>();
 
@@ -805,7 +805,7 @@ public class TestLongs {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void paddedLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RowID");
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"    0", "    1", "    2", "    3", "    4", "    5", "    6", "    7", "    8", "    9",
 				"    10", "    11", "    12", "    13", "    14", "    15", "    16", "    17", "    18", "    19",
 				"    20", "    21", "    22", "    23", "    24", "    25", "    26", "    27", "    28", "    29"
@@ -839,7 +839,7 @@ public class TestLongs {
 	public void someLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("stringField");
 		analysis.setThreshold(90);
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"12", "baz", "boo", "1234", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "10" };
 		int locked = -1;
 
@@ -863,7 +863,7 @@ public class TestLongs {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void signedLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"+400089", "2000931", "-3287392873", "-327398267", "-34", "56", "93823908", "34567", "-757363", "0",
 				"4345689", "2333931", "4457892873", "+398267", "-3334464", "78912356", "93823908", "34567", "-757363", "0",
 				"489", "931", "-3287373", "-398267", "-234534", "565656", "23908", "7734567", "-99757363", "0"

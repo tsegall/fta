@@ -210,7 +210,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicAMPM_enUSNotSimple() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
-		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
+		final DateResolutionMode[] cases = { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
 
 		for (final DateResolutionMode resolutionMode : cases) {
 			final TextAnalyzer analysis = new TextAnalyzer("h:mm a dd/MM/yy", resolutionMode);
@@ -321,7 +321,7 @@ public class TestDates {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicHHmmddMyy() throws IOException, FTAException {
-		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
+		final DateResolutionMode[] cases = { DateResolutionMode.DayFirst, DateResolutionMode.Auto };
 
 		final Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
 		for (final Locale locale : locales) {
@@ -359,9 +359,9 @@ public class TestDates {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicResolutionMode() throws IOException, FTAException {
-		final DateResolutionMode[] cases = new DateResolutionMode[] { DateResolutionMode.DayFirst, DateResolutionMode.MonthFirst, DateResolutionMode.Auto };
+		final DateResolutionMode[] cases = { DateResolutionMode.DayFirst, DateResolutionMode.MonthFirst, DateResolutionMode.Auto };
 
-		final Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
+		final Locale[] locales = { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB") };
 		for (final Locale locale : locales) {
 			for (final DateResolutionMode resolutionMode : cases) {
 				final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", resolutionMode);
@@ -2021,7 +2021,7 @@ public class TestDates {
 	public void randomFormats() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("randomFormats");
 		analysis.setCollectStatistics(false);
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"2019-01-01",
 				"3/3/2013",
 				"2018-12-31",
@@ -2346,7 +2346,7 @@ public class TestDates {
 	public void lenientDates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("INACTIVE DATE");
 		analysis.setCollectStatistics(false);
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"26/01/2018", "06/01/2018", "00/00/0000", "06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018", "00/00/0000", "00/00/0000", "06/01/2018",
 				"06/01/2018", "06/01/2018", "00/00/0000", "06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018", "00/00/0000",
 				"06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018", "06/01/2018",
@@ -2393,7 +2393,7 @@ public class TestDates {
 	public void anotherDateSwitcher() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("INACTIVE DATE");
 		analysis.setCollectStatistics(false);
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"7:11:41.00", "7:11:47.00", "7:11:51.00", "7:11:58.00", "8:11:07.00", "8:11:10.00", "8:11:11.00", "8:11:16.00",
 				"8:11:22.00", "8:11:25.00", "8:11:27.00", "8:11:32.00", "8:11:32.00", "8:11:39.00", "8:11:41.00", "8:11:50.00",
 				"8:11:51.00", "8:11:55.00", "8:11:55.00", "8:11:59.00", "9:11:01.00", "9:11:07.00", "9:11:13.00", "9:11:40.00",
@@ -2614,7 +2614,7 @@ public class TestDates {
 	public void novelApproachDateTime() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE");
 		analysis.setCollectStatistics(false);
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"04OCT2012:16:27:03", "04OCT2012:16:27:03", "04OCT2012:16:27:03", "04OCT2012:16:27:03", "04OCT2012:16:27:03", "04OCT2012:16:27:03", "03DEC2012:16:23:30", "03DEC2012:16:23:30", "03DEC2012:16:33:46", "03DEC2012:16:57:14",
 				"05DEC2012:11:31:06", "03DEC2012:16:23:30", "03DEC2012:16:23:30", "03DEC2012:16:33:46", "03DEC2012:16:57:14", "05DEC2012:11:31:06", "03DEC2012:16:23:30", "03DEC2012:16:23:30", "03DEC2012:16:23:30", "03DEC2012:16:23:30",
 				"03DEC2012:16:23:30", "03DEC2012:16:23:30", "03DEC2012:16:33:46", "03DEC2012:16:33:46", "03DEC2012:16:33:46", "03DEC2012:16:57:14", "03DEC2012:16:57:14", "03DEC2012:16:57:14", "05DEC2012:11:31:06", "05DEC2012:11:31:06",
@@ -2649,7 +2649,7 @@ public class TestDates {
 	public void novelApproachDate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
 		analysis.setCollectStatistics(false);
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"04OCT2012", "04OCT2012", "04OCT2012", "04OCT2012", "04OCT2012", "04OCT2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012",
 				"05DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "05DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012",
 				"03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "03DEC2012", "05DEC2012", "05DEC2012",
@@ -2683,7 +2683,7 @@ public class TestDates {
 	public void basicHours24() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RETURN_TIME");
 		analysis.setCollectStatistics(false);
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"19:40:03", "21:30:30", "18:00:00", "17:54:00", "10:03:03", "09:09:30", "07:00:00", "21:30:30", "22:30:05", "20:08:08",
 				"17:40:23", "20:10:30", "18:00:00", "11:24:00", "11:04:03", "08:09:30", "07:00:05", "13:30:30", "22:30:05", "20:08:08",
 				"15:40:23", "19:10:30", "14:00:00", "13:14:00", "12:03:03", "09:09:30", "07:00:00", "21:30:30", "22:30:05", "20:08:08",
@@ -2715,7 +2715,7 @@ public class TestDates {
 	public void basicHours24Change() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RETURN_TIME");
 		analysis.setCollectStatistics(false);
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"19:40:03", "21:30:30", "18:00:00", "17:54:00", "10:03:03", "19:09:30", "17:00:00", "21:30:30", "22:30:05", "20:08:08",
 				"17:40:23", "20:10:30", "18:00:00", "11:24:00", "11:04:03", "18:09:30", "17:00:05", "13:30:30", "22:30:05", "20:08:08",
 				"15:40:23", "19:10:30", "14:00:00", "13:14:00", "12:03:03", "19:09:30", "17:00:00", "21:30:30", "22:30:05", "20:08:08",
@@ -2776,7 +2776,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("stringField:string");
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"20180112", "20171201", "19980605", "19990605", "20000605", "20010605", "20020605", "20030605", "20040605", "20050605",
 				"20060605", "20070605", "20080605", "20090605", "20100605", "20110605", "20120605", "20130605", "20140605", "20150605",
 				"20160605", "20170605", "20180605", "20190605", "20200605", "20210605", "20220605", "20230605", "20240605", "20250605",
@@ -2811,7 +2811,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("dottedDate");
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"1.1.2011", "1.1.2012", "1.1.2013", "1.1.2014", "1.1.2015", "1.1.2016", "1.10.2011", "1.10.2012", "1.10.2013", "1.10.2014",
 				"1.10.2015", "1.11.2011", "1.11.2012", "1.15.2013", "1.11.2014", "1.11.2015", "1.12.2011", "1.12.2012", "1.12.2013", "1.12.2014",
 				"9.6.2014", "9.6.2015", "9.6.2016", "9.7.2011", "9.7.2012", "9.7.2013", "9.7.2014", "9.7.2015", "9.7.2016", "9.8.2011",
@@ -2846,7 +2846,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("colonDate");
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"16:08:2014", "16:05:2018", "15:08:2013", "16:08:2043", "15:08:2043",
 				"16:08:2013", "15:08:2043", "16:08:2003", "14:08:2043", "16:08:2013",
 				"14:08:2043", "16:08:2003", "14:05:2043", "16:05:2013", "14:05:2003",
@@ -2882,7 +2882,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("colonDates_MMddyyyy");
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"08:16:2014", "05:16:2018", "08:15:2013", "08:16:2043", "08:15:2043", "08:16:2013",
 				"08:15:2043", "08:16:2003", "08:14:2043", "08:16:2013", "08:14:2043", "08:16:2003",
 				"05:14:2043", "05:16:2013", "05:14:2003", "05:16:2043", "05:14:2043", "05:16:2013",
@@ -2917,7 +2917,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_MM_yyyy");
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"08/2014", "05/2018", "08/2013", "08/2043", "08/2043", "08/2013",
 				"08/2043", "08/2003", "08/2043", "08/2013", "08/2043", "08/2003",
 				"05/2043", "05/2013", "05/2003", "05/2043", "05/2043", "05/2013",
@@ -2961,7 +2961,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_MM_yyyy");
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"08-2014", "05-2018", "08-2013", "08-2043", "08-2043", "08-2013",
 				"08-2043", "08-2003", "08-2043", "08-2013", "08-2043", "08-2003",
 				"05-2043", "05-2013", "05-2003", "05-2043", "05-2043", "05-2013",
@@ -3005,7 +3005,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_yyyy_MM");
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"2014/08", "2018/11", "2013/11", "2043/08", "2043/01", "2013/03",
 				"2043/03", "2003/11", "2043/03", "2013/04", "2043/03", "2003/01",
 				"2043/08", "2013/08", "2003/03", "2043/04", "2043/03", "2013/01",
@@ -3049,7 +3049,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("shortDates_yyyy_MM");
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"2014-08", "2018-05", "2013-07", "2043-09", "2043-11", "2013-09",
 				"2043-09", "2003-01", "2043-09", "2013-11", "2043-11", "2003-02",
 				"2043-01", "2013-02", "2003-02", "2043-05", "2043-02", "2013-11",
@@ -3093,7 +3093,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("doubleStep");
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"30.12.2011", "28.11.2012", "21.12.2013", "22.10.2014", "23.11.2015", "24.12.2016", "25.10.2011", "26.10.2012", "27.10.2013", "28.10.2014",
 				"20.12.2011", "18.11.2012", "11.12.2013", "12.10.2014", "13.11.2015", "14.12.2016", "15.10.2011", "16.10.2012", "17.10.2013", "18.10.2014",
 				"1.1.2015"
@@ -3127,7 +3127,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("quadrupleStep");
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"30.12.2011 16:40:00.100", "28.11.2012 16:40:00.101", "21.12.2013 16:40:00.102", "22.10.2014 16:40:00.103", "23.11.2015 16:40:00.104",
 				"24.12.2016 16:40:00.105", "25.10.2011 16:40:00.106", "26.10.2012 16:40:00.107", "27.10.2013 16:40:00.108", "28.10.2014 16:40:00.109",
 				"20.12.2011 16:40:00.110", "18.11.2012 16:40:00.111", "11.12.2013 16:40:00.112", "12.10.2014 16:40:00.113", "13.11.2015 16:40:00.114",
@@ -3219,7 +3219,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 			"2017-10-01 00:00:01,189", "2017-10-01 00:00:02,926", "2017-10-01 00:00:03,285", "", "2017-10-01 00:00:26,263", "2017-10-01 00:00:26,427", "2017-10-01 00:00:26,430", "2017-10-01 00:00:26,659",
 			"2017-10-01 00:00:26,742", "2017-10-01 00:00:27,001", "2017-10-01 00:00:27,004", "2017-10-01 00:00:27,376", "2017-10-01 00:00:28,194", "2017-10-01 00:00:28,218", "2017-10-01 00:00:28,799",
 			"2017-10-01 00:00:29,771", "2017-10-01 00:00:30,015", "2017-10-01 00:00:30,586", "2017-10-01 00:00:30,875", "2017-10-01 00:00:31,042", "2017-10-01 00:00:31,138", "2017-10-01 00:00:31,428",
@@ -3259,7 +3259,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"2017-10-01 00:00:00.913", "2017-10-01 00:00:01.862", "2017-10-01 00:00:01.666", "2017-10-01 00:00:03.286", "2017-10-01 00:00:26.079", "2017-10-01 00:00:26.165",
 				"2017-10-01 00:00:26.429", "2017-10-01 00:00:26.265", "2017-10-01 00:00:26.461", "2017-10-01 00:00:26.743", "2017-10-01 00:00:27.003", "2017-10-01 00:00:27.005",
 				"2017-10-01 00:00:27.687", "2017-10-01 00:00:28.217", "2017-10-01 00:00:28.641", "2017-10-01 00:00:29.68", "2017-10-01 00:00:29.778", "2017-10-01 00:00:30.415",
@@ -3306,7 +3306,7 @@ public class TestDates {
 	public void dateIssueAMPM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CREATED_ON");
 		analysis.setCollectStatistics(false);
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"11/25/2010 11:13:38 AM",  "9/20/2010 7:31:26 AM", "9/17/2010 2:37:58 PM", "12/14/2010 11:08:17 AM",
 				"10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM", "10/13/2010 1:17:04 PM",
 				"10/13/2010 1:17:04 PM","11/25/2010 11:13:38 AM", "11/25/2010 11:13:38 AM", "9/20/2010 7:31:26 AM",
@@ -3342,7 +3342,7 @@ public class TestDates {
 	public void dateSwitcher() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Contract Signed Date");
 		analysis.setCollectStatistics(false);
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"3/14/2012", "3/14/2012", "6/30/2011", "3/14/2012", "3/14/2012", "3/14/2012",
 				"3/14/2012", "3/14/2012", "3/14/2012", "3/14/2012", "3/14/2012", "3/14/2012",
 				"3/14/2012", "6/30/2011", "6/30/2011", "6/30/2011", "6/30/2011", "6/30/2011",
@@ -3388,7 +3388,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dqplus() throws IOException, FTAException {
 
-		final String[] tests = new String[] {
+		final String[] tests = {
 			"MM/dd/yyyy", "MMM d yyyy", "M/dd/yyyy", "MM/dd/yy",
 			"dd-MMM-yy", "dd-MMM-yyyy",
 		    "MMMM dd, yyyy", "yyyy-MM-dd", "EEEE, MMMM, dd, yyyy",
@@ -3523,7 +3523,7 @@ public class TestDates {
 		// No Parsing!
 		//   - Count 24523501, duration: 10002ms, ~2,452,300 per second
 	}
- 
+
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicMMMdcommayyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMMMdcommayyyy");

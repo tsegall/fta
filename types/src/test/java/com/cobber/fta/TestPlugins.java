@@ -325,7 +325,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPhoneNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Phone");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"+1 339 223 3709", "(650) 867-3450", "+44 191 4956203", "(650) 450-8810", "(512) 757-6000", "(336) 222-7000", "(014) 427-4427",
 				"(785) 241-6200", "(312) 596-1000", "(503) 421-7800", "(520) 773-9050", "+1 617 875 9183", "(212) 842-5500", "(415) 901-7000",
 				"+1 781 820 1290", "508.822.8383", "617-426-1400", "+1 781-219-3635"
@@ -357,7 +357,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPhoneNumberUnrecognizedHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BTN");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"+1 339 223 3709", "(650) 867-3450", "+44 191 4956203", "(650) 450-8810", "(512) 757-6000", "(336) 222-7000", "(014) 427-4427",
 				"(785) 241-6200", "(312) 596-1000", "(503) 421-7800", "(520) 773-9050", "+1 617 875 9183", "(212) 842-5500", "(415) 901-7000",
 				"+1 781 820 1290", "508.822.8383", "617-426-1400", "+1 781-219-3635", "339.201.9591", "1-800-873-4779",
@@ -390,7 +390,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void trickyPhoneNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Phone");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"617.875.9182", "7818609182", "+13392237279", "+13392237280", "7818201295", "617.875.9183",
 				"7818609182", "+13392237271", "+13392237281", "7818201295", "617.875.9184", "7818609182",
 				"+13392237272", "+13392237283", "7818201295", "617.875.9185", "7818609182", "+13392237278",
@@ -518,7 +518,7 @@ public class TestPlugins {
 		}
 	}
 
-	private final String[] validCUSIPs = new String[] {
+	private final String[] validCUSIPs = {
 			"000307108", "000307908", "000307958", "000360206", "000360906", "000360956", "000361105", "000361905", "000361955", "000375204", "000375904",
 			"000375954", "00081T108", "00081T908", "00081T958", "000868109", "000899104", "00090Q103", "00090Q903", "00090Q953", "000957100", "000957900",
 			"000957950", "001084902", "020002101", "020002901", "020002951", "03842B901", "095229100", "171484908", "238661902", "260003108", "260003908",
@@ -644,7 +644,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGUID() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("GUID");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"DAA3EDDE-5BCF-4D2A-8FB0-E120089343AF",
 				"B0613BE8-88AF-4591-A9A0-059F80413212",
 				"063BB913-7287-4A8A-B3DF-41EAA0EABF49",
@@ -1096,7 +1096,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicZipHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 			"", "", "", "", "", "", "", "", "", "27215", "75251", "66045", "", "",
 			"", "", "", "", "94087", "", "", "", "", "", "", "", "", "", "", ""
 		};
@@ -1121,7 +1121,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicLuhn() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("IMEI");
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"518328079297586", "494238109049246", "497201528898871", "916790719773953", "991640416096547", "517179040180885", "496180503928286",
 				"512689883394604", "496164591404293", "545307005094090", "359268076686757", "451386551229690", "010396357738673", "541276254953906",
 				"447222295078647", "357859215957307", "867490245465674", "537397059073660", "301312941350311", "861927543064002", "446773324240112",
@@ -1148,7 +1148,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicCUSIP() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"B38564108", "B38564900", "B38564959", "C15396AB7", "D18190898", "D18190906", "D18190955", "F21107101", "F21107903", "F21107952",
 				"G0083D112", "G00748122", "G0083D104", "G0083D112", "G0083D120", "G0084W101", "G0084W903", "G0084W952", "G01125106", "G01125908",
 				"G01125957", "G0120M109", "G0120M117", "G0120M125", "G0120M133", "G0132V105", "G0176J109", "G01767105", "G0232J101", "G0232J119", "G0232J127"
@@ -1174,7 +1174,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicSEDOL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SEDOL");
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"0078416", "B63H849", "BJVNSS4", "B5M6XQ7", "B082RF1", "B0SWJX3", "3319521", "BLDYK61", "BD6K457", "B19NLV4", "B1XZS82",
 				"B1KJJ40", "3174300", "0673123", "BHJYC05", "BH4HKS3", "0263494", "3091357", "B7T7721", "0870612", "B03MM40",
 		};
@@ -1199,7 +1199,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicUPC() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("UPC");
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"9780444505156", "4605664000050", "3014260115531", "8020187300016", "8076809513456", "3155250001387",
 				"2151191106847", "1626093139220", "8556467100101", "0922077722381", "3064298186966", "1068035884902",
 				"4709099997098", "2460125680880", "9686595482097", "2455962755150", "1883097580551", "9664864959587",
@@ -1226,7 +1226,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicISIN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ISIN");
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"GB0000784164", "GB00B63H8491", "JE00BJVNSS43", "ES0177542018", "GB00B082RF11", "GB00B0SWJX34", "GB0033195214",
 				"GB00BLDYK618", "GB00BD6K4575", "GB00B19NLV48", "GB00B1XZS820", "GB00B1KJJ408", "GB0031743007", "GB0006731235",
 				"GB00BHJYC057", "GB00BH4HKS39", "GB0002634946", "GB0030913577", "GB00B7T77214", "GB0008706128", "GB00B03MM408"
@@ -1252,7 +1252,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
  	public void basicISBN() throws IOException, FTAException {
  		final TextAnalyzer analysis = new TextAnalyzer("ISBN");
- 		final String inputs[] = new String[] {
+ 		final String inputs[] = {
  				"978-1-83790-353-5", "978-1-921048-91-3", "978-0-315-09943-2", "978-0-535-98831-8", "978-0-451-05990-1", "978-1-58120-222-9",
  				"978-1-64072-519-5", "978-1-218-87051-7", "978-1-05-073878-5", "978-0-06-877239-2", "978-0-7528-6694-9", "978-1-247-67895-5",
  				"978-0-348-29489-7", "978-0-11-949459-4", "978-1-80795-326-3", "978-0-355-05307-4", "978-1-249-01060-9", "978-1-74928-734-1",
@@ -1281,7 +1281,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicIPAddress() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 			"8.8.8.8", "4.4.4.4", "1.1.1.1", "172.217.4.196", "192.168.86.1", "64.68.200.46", "23.45.133.21",
 			"15.73.4.77"
 		};
@@ -1310,7 +1310,7 @@ public class TestPlugins {
 	public void basicZipHeaderDE() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
 		analysis.setLocale(Locale.forLanguageTag("de-AT"));
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 			"", "", "", "", "", "", "", "", "", "27215", "75251", "66045", "", "",
 			"", "", "", "", "94087", "", "", "", "", "", "", "", "", "", "", ""
 		};
@@ -1553,7 +1553,7 @@ public class TestPlugins {
 	public void basicStateHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingState");
 
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"NY", "CA", "CA", "", "", "CA", "UK", "TX", "NC", "", "", "", "", "", "MA",
 				"", "KS", "IL", "OR", "AZ", "NY", "CA", "CA", "MA", "MI", "ME", "", "", "", "",
 				"", "KS", "IL", "OR", "AZ", "NY", "CA", "CA", "MA", "MI", "ME", "", "", "", ""
@@ -1619,7 +1619,7 @@ public class TestPlugins {
 	public void basicStateMX() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Estado");
 
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"SLP", "SON", "TAB", "TAM", "TLA", "VER", "YUC", "ZAC",
 				"AGU", "BCN", "BCS", "CAM", "CHH", "CHP", "CMX", "COA",
 				"COL", "DUR", "GRO", "GUA", "HID", "JAL", "MEX", "MIC",
@@ -1649,7 +1649,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("State");
 		analysis.setLocale(Locale.forLanguageTag("en-AU"));
 
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"Victoria", "New South Wales", "South Australia", "Tasmania", "Western Australia", "New South Wales", "Northern Territory", "Tasmania",
 				"Northern Territory", "Australian Capital Territory", "Victoria", "Western Australia", "Western Australia", "Northern Territory", "Australian Capital Territory", "New South Wales",
 				"Northern Territory", "South Australia", "Western Australia", "Queensland", "Northern Territory", "South Australia", "Australian Capital Territory", "Tasmania",
@@ -1683,7 +1683,7 @@ public class TestPlugins {
 	public void basicNAStateName() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Billing State/Province");
 
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"ST", "ST", "NY", "IN", "IN", "Georgia", "WI", "WI", "WI", "WI", "WI", "WI", "WI",
 				"WI", "WI", "WI", "WI", "WI", "WI", "WI", "WI", "WI", "WI", "WI", "Ohio", "Ohio", "Ohio",
 				"Ohio", "Ohio", "Ohio", "WI", "Ohio", "Ohio", "Ohio", "Ohio", "Ohio", "Massachusetts",
@@ -3247,7 +3247,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicCountryHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingCountry");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"", "", "", "", "", "", "", "", "", "USA", "France", "USA",
 				"", "", "", "", "US", "", "", "", "", "", "", "", "", "", "", "", "", ""
 		};
@@ -3268,7 +3268,7 @@ public class TestPlugins {
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
-	private final String validUSStreets2[] = new String[] {
+	private final String validUSStreets2[] = {
 			"6649 N Blue Gum St",
 			"4 B Blue Ridge Blvd",
 			"8 W Cerritos Ave #54",
@@ -3320,7 +3320,7 @@ public class TestPlugins {
 			"762 S Main St",
 	};
 
-	private final String validUSAddresses[] = new String[] {
+	private final String validUSAddresses[] = {
 			"9885 Princeton Court Shakopee, MN 55379",
 			"11 San Pablo Rd.  Nottingham, MD 21236",
 			"",
@@ -3401,7 +3401,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicIBAN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicIBAN");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"AD1400080001001234567890", "AT483200000012345864", "AZ96AZEJ00000000001234567890",
 				"BH02CITI00001077181611", "BY86AKBB10100000002966000000", "BE71096123456769",
 				"BA393385804800211234", "BR1500000000000010932840814P2", "BG18RZBB91550123456789",
@@ -3457,7 +3457,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicABA() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicABA");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"981140283", "989853459", "892328657", "781258896", "112551654", "438364101", "806651255", "095050162", "505993780", "827776957", "086820709", "609581894", "463724075",
 				 "167622596", "355856417", "138265568", "479756862", "779880373", "750997751", "053438344", "199436608", "391657007", "033359472", "465043929", "977684902", "373527896"
 		};

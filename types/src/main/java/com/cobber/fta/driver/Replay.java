@@ -93,9 +93,11 @@ public class Replay {
 			analyzer.setMaxOutliers(analysisConfig.getMaxOutliers());
 			analyzer.setPluginThreshold(analysisConfig.getThreshold());
 			analyzer.setDetectWindow(analysisConfig.getDetectWindow());
-			analyzer.setDebug(options.debug);
+			analyzer.setDefaultLogicalTypes(analysisConfig.isEnableDefaultLogicalTypes());
 			if (analysisConfig.getLocaleTag() != null)
 				analyzer.setLocale(Locale.forLanguageTag(analysisConfig.getLocaleTag()));
+
+			analyzer.setDebug(options.debug);
 
 			TextAnalysisResult result = bulkMode ?
 				processBulk(analyzer, samplesWrapper.samplesBulk, options) :

@@ -34,7 +34,7 @@ public class TestRegExpPlugins {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpLogicalType_MAC() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"00:0a:95:9d:68:16", "00:0a:94:77:68:16", "00:0a:95:9d:68:16", "00:0a:90:9d:68:16",
 				"00:0a:95:9d:68:16", "00:0a:93:8a:68:16", "00:0a:95:9d:60:16", "00:0e:95:9d:68:16",
 				"00:0a:95:9d:68:16", "00:0a:95:9d:68:16", "00:0a:95:9d:61:16", "00:0e:92:9d:68:16",
@@ -121,7 +121,7 @@ public class TestRegExpPlugins {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpLogicalType_Month() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"1", "3", "4", "7", "11", "4", "5", "6", "7", "12", "2",
 				"3", "5", "6", "10", "11", "10", "3", "5", "2", "1", "12",
 				"10", "9", "8", "4", "7" ,"6"
@@ -148,7 +148,7 @@ public class TestRegExpPlugins {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testLatitudeSigned() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"51.5", "39.195", "46.18806", "-36.1333333", "33.52056", "39.79", "40.69361", "36.34333", "32.0666667", "48.8833333", "40.71417",
 				"51.45", "29.42389", "43.69556", "40.03222", "53.6772222", "45.4166667", "17.3833333", "51.52721", "40.76083", "53.5", "51.8630556",
 				"-26.1666667", "32.64", "62.9", "29.61944", "40.71417", "51.52721", "40.61278", "37.22667", "40.71417", "25.77389",
@@ -177,7 +177,7 @@ public class TestRegExpPlugins {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testLatitudeUnsigned() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"51.5", "39.195", "46.18806", "36.1333333", "33.52056", "39.79", "40.69361", "36.34333", "32.0666667", "48.8833333", "40.71417",
 				"51.45", "29.42389", "43.69556", "40.03222", "53.6772222", "45.4166667", "17.3833333", "51.52721", "40.76083", "53.5", "51.8630556",
 				"26.1666667", "32.64", "62.9", "29.61944", "40.71417", "51.52721", "40.61278", "37.22667", "40.71417", "25.77389",
@@ -206,7 +206,7 @@ public class TestRegExpPlugins {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testCity() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"Abbott Park", "Akron", "Alberta", "Allentown", "Allison Park", "Alpharetta", "Alsip", "Alviso", "Andover", "Annapolis Junction",
 				"Arlington", "Atlanta", "Austin", "Avon Lake", "Baltimore", "Battle Creek", "Beaverton", "Bella Vista", "Bellaire", "Bellevue",
 				"Benton Harbor", "Berkeley Heights", "Bethel", "Bethesda", "Bethesday", "Beverly Hills", "Birmingham", "Bloomington", "Boston", "Brentwood",

@@ -677,7 +677,7 @@ public class TextAnalysisResult {
 			outputDetails(MAPPER, detail, outliers, verbose);
 		}
 
-		analysis.put("shapesCardinality", (shape.getShapes().size() > 0 && shape.getShapes().size() < analysisConfig.maxShapes) ? shape.getShapes().size() : -1);
+		analysis.put("shapesCardinality", (shape.getShapes().size() > 0 && shape.getShapes().size() < analysisConfig.getMaxShapes()) ? shape.getShapes().size() : -1);
 		if (!shape.getShapes().isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("shapesDetail");
 			outputDetails(MAPPER, detail, shape.getShapes(), verbose);

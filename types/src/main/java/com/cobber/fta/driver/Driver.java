@@ -78,6 +78,7 @@ public class Driver {
 				logger.println(" --bulk - Enable bulk mode");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
+				logger.println(" --debug <n> - Set the debug level to <n>");
 				logger.println(" --delimiter <ch> - Set the delimiter to the charactere <ch>");
 				logger.println(" --detectWindow <n> - Set the size of the detect window to <n>");
 				logger.println(" --help - Print this help");

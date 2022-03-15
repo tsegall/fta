@@ -94,6 +94,10 @@ public class LogicalTypeRegExp extends LogicalType {
 		return defn.regExpReturned;
 	}
 
+	public String[] getRegExpToMatch() {
+		return defn.regExpsToMatch == null ? new String[] { defn.regExpReturned } : defn.regExpsToMatch;
+	}
+
 	@Override
 	public FTAType getBaseType() {
 		return defn.baseType;

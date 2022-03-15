@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 6.0.7
+ - BUG: Fix replay
+ - INT: Cleaning code, noqualifier option to JavaDoc
+ - ENH: Tweak longitude, latitude header match string
+
 ### 6.0.6
  - ENH: Bump slf4j-api
  - BUG: Fix issue where setMaxInputLength could only be increased not decreased

@@ -48,7 +48,7 @@ public class TestIdentity {
 		int i = 1;
 		while (i < samples.length - 1) {
 			b.setLength(0);
-			int component = random.nextInt(899) + 1;
+			final int component = random.nextInt(899) + 1;
 			if (component == 666)
 				continue;
 			b.append(String.format("%03d", component));
@@ -171,7 +171,7 @@ public class TestIdentity {
 		final TextAnalyzer analysis = new TextAnalyzer("basicSSN_FR");
 		analysis.setLocale(Locale.forLanguageTag("fr-FR"));
 
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"186022A215325 23", "1691099352470 01", "2741147566941 55",
 				"1870364431266 17", "1620750699385 24", "1910926856381 09", "2350193443182 66",
 				"1021130154849 54", "1060633581206 43", "2790148853457 33", "1910585591722 44",
@@ -211,7 +211,7 @@ public class TestIdentity {
 		final TextAnalyzer analysis = new TextAnalyzer("basicIN_JA");
 		analysis.setLocale(Locale.forLanguageTag("ja"));
 
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"182635424142", "159527866110", "468078079802", "466664186321",
 				"846926702714", "685980008501", "160213060470", "330630040728",
 				"756862498647", "819877682969", "632954948346", "179173299818",
@@ -250,7 +250,7 @@ public class TestIdentity {
 		final TextAnalyzer analysis = new TextAnalyzer("basicSSN_CH");
 		analysis.setLocale(Locale.forLanguageTag("de-CH"));
 
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"756.3830.7985.38", "756.9709.5787.13", "756.7932.0847.28", "756.4391.6683.84",
 				"756.8608.5554.50", "756.7755.7020.90", "756.8274.6040.25", "756.4546.3052.49",
 				"756.0087.4496.40", "756.8921.5663.62", "756.3643.3750.32", "756.9704.5745.81",
@@ -289,7 +289,7 @@ public class TestIdentity {
 		final TextAnalyzer analysis = new TextAnalyzer("basicNHS_UK");
 		analysis.setLocale(Locale.forLanguageTag("en-UK"));
 
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"603 235 8429", "607 639 9864", "663 217 6682", "740 844 8349", "489 161 1189",
 				"854 106 0098", "726 516 9476", "957 260 2357", "686 273 2757", "896 329 3181",
 				"443 934 8424", "963 033 6693", "805 735 6146", "633 502 1153", "775 663 3911",
@@ -327,7 +327,7 @@ public class TestIdentity {
 		final TextAnalyzer analysis = new TextAnalyzer("basicNHS_UK");
 		analysis.setLocale(Locale.forLanguageTag("en-IN"));
 
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"6625 7361 2953", "5931 6696 0291", "8248 5984 8175", "3016 4826 5142",
 				"4434 7776 8326", "4824 7928 4386", "4685 4991 7577", "3863 3381 0102",
 				"8015 6866 2992", "9526 2155 7463", "5019 5961 5939", "6329 6296 9460",

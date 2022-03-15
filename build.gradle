@@ -41,7 +41,7 @@ subprojects {
 
 	configureVersions()
 
-	version = "6.0.6"
+	version = "6.0.7"
 	group = "com.cobber.fta"
 
 	java {
@@ -61,6 +61,11 @@ subprojects {
 			)
 		}
 	}
+
+	javadoc {
+		options.noQualifiers 'java.lang:java.util'
+	}
+
 
 	test {
 		// enable TestNG support (default is JUnit)

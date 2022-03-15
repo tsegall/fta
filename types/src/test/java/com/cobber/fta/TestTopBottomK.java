@@ -200,13 +200,13 @@ public class TestTopBottomK {
 		// So sets are equal - but we need also need to check that they are correctly ordered
 		// Should be lowest to highest
 		int current = Integer.MIN_VALUE;
-		for (Integer i : t.bottomK()) {
+		for (final Integer i : t.bottomK()) {
 			assertTrue(i >= current);
 			current = i;
 		}
 		current = Integer.MIN_VALUE;
 		// Should be lowest to highest
-		for (Integer i : t.topK()) {
+		for (final Integer i : t.topK()) {
 			assertTrue(i >= current);
 			current = i;
 		}
@@ -217,13 +217,13 @@ public class TestTopBottomK {
 		// So sets are equal - but we need also need to check that they are correctly ordered
 		// Should be lowest to highest
 		current = Integer.MIN_VALUE;
-		for (String i : t.bottomKasString()) {
+		for (final String i : t.bottomKasString()) {
 			assertTrue(Integer.valueOf(i) >= current);
 			current = Integer.valueOf(i);
 		}
 		current = Integer.MAX_VALUE;
 		// Should be highest to lowest
-		for (String i : t.topKasString()) {
+		for (final String i : t.topKasString()) {
 			assertTrue(Integer.valueOf(i) <= current);
 			current = Integer.valueOf(i);
 		}

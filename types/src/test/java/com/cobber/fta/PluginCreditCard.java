@@ -75,7 +75,7 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 
 	@Override
 	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples,
-			String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig) {
+			final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
 	}
 }

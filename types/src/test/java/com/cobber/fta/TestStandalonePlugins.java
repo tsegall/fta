@@ -205,12 +205,12 @@ public class TestStandalonePlugins {
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("COORDINATE.LATITUDE_DECIMAL");
 		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
-		final String[] validSamples = new String[] { "12.43", "13.49", "90.0", "-69.4", "-90.0" };
+		final String[] validSamples = { "12.43", "13.49", "90.0", "-69.4", "-90.0" };
 
 		for (final String sample : validSamples)
 			assertTrue(logical.isValid(sample), sample);
 
-		final String[] invalidSamples = new String[] { "91.0", "-90.2" };
+		final String[] invalidSamples = { "91.0", "-90.2" };
 
 		for (final String sample : invalidSamples)
 			assertFalse(logical.isValid(sample), sample);
@@ -221,12 +221,12 @@ public class TestStandalonePlugins {
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("COORDINATE.LONGITUDE_DECIMAL");
 		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
-		final String[] validSamples = new String[] { "12.43", "13.49", "180.0", "90.0", "-69.4", "-90.0", "-170.0",  };
+		final String[] validSamples = { "12.43", "13.49", "180.0", "90.0", "-69.4", "-90.0", "-170.0",  };
 
 		for (final String sample : validSamples)
 			assertTrue(logical.isValid(sample), sample);
 
-		final String[] invalidSamples = new String[] { "181.0", "-190.2" };
+		final String[] invalidSamples = { "181.0", "-190.2" };
 
 		for (final String sample : invalidSamples)
 			assertFalse(logical.isValid(sample), sample);
@@ -237,7 +237,7 @@ public class TestStandalonePlugins {
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("CITY");
 		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
-		final String[] validSamples = new String[] {
+		final String[] validSamples = {
 				"Milton Keynes", "Tokyo", "Delhi", "Shanghai", "Sao Paulo", "Mexico City", "Cairo", "Dhaka",
 				"Mumbai", "Beijing","Osaka", "Karachi", "Chongqing", "Buenos Aires", "Istanbul", "Kolkata",
 				"Lagos", "Manila", "Tianjin","Rio De Janeiro", "Malmö", "St. Louis", "Saint-Georges", "Saint-Jean-sur-Richelieu",

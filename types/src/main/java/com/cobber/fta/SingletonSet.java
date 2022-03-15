@@ -52,6 +52,12 @@ public class SingletonSet {
 		this(contentType, content, "#");
 	}
 
+	/**
+	 * Create a SingletonSet.
+	 * @param contentType One of 'inline', 'file' or 'resource'.
+	 * @param content Either the content (for type 'inline') or the name of a file or resource.
+	 * @param commentLeader Use the supplied String as the comment leader.
+	 */
 	public SingletonSet(final String contentType, final String content, final String commentLeader) {
 		this.contentType = contentType;
 		this.content = content;
@@ -59,6 +65,10 @@ public class SingletonSet {
 		this.commentLeader = commentLeader;
 	}
 
+	/**
+	 * Accessor for the members of the Set.
+	 * @return The members of this Set.
+	 */
 	public Set<String> getMembers() {
 		synchronized(MEMBER_CACHE) {
 			final Set<String> result = MEMBER_CACHE.get(key);
