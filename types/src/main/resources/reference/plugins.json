@@ -793,7 +793,7 @@
 		"description": "Latitude (Decimal degrees)",
 		"signature": "5+1TLjdhcG8m3gVn0m/r6uLmh/Q=",
 		"validLocales": [ ],
-		"headerRegExps": [ ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]?).*|(?i)(lat)" ],
+		"headerRegExps": [ ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*(?i)[^\\p{IsAlphabetic}]lat|(?i)(lat)" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExpReturned": "([+-]?([0-9]|[0-8][0-9])\\.\\d+)|[+-]?90\\.0+",
@@ -808,7 +808,7 @@
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
 		"description": "Longitude (Decimal degrees)",
 		"signature": "nDTXmMjlW1pm2Rav/0mJVPeRvKc=",
-		"headerRegExps": [ ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]?).*|lon|lng" ],
+		"headerRegExps": [ ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|.*(?i)[^\\p{IsAlphabetic}]long|(?i)(lon|lng)" ],
 		"headerRegExpConfidence": [ 100 ],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExpReturned": "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+)|[+-]?180\\.0+",
@@ -1143,5 +1143,17 @@
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"validLocales": [ "en" ],
 		"priority": 301
+	},
+	{
+		"qualifier": "FREE_TEXT",
+		"description": "Free Text field - e.g. Description, Notes, Comments, ...",
+		"clazz": "com.cobber.fta.plugins.FreeText",
+		"signature": "7WbjWLZJ8Zdm+U8po/igrvDH3yE=",
+		"headerRegExps": [ ".*(?i)(description|notes|comments|reason).*|.*(?i)(desc)" ],
+		"headerRegExpConfidence": [ 100 ],
+		"threshold": 70,
+		"baseType": "STRING",
+		"validLocales": [ "en" ],
+		"priority": 390
 	}
 ]

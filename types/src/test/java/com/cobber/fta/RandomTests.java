@@ -38,6 +38,7 @@ import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
+import com.cobber.fta.plugins.FreeText;
 import com.cobber.fta.plugins.USZip5;
 import com.cobber.fta.plugins.USZipPlus4;
 
@@ -1808,6 +1809,106 @@ public class RandomTests {
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void freeText() throws IOException, FTAException {
+		final String[] samples = new String[] {
+				"The main issue I have is that it did not arrive correctly calibrated.",
+				"This was the most reasonably priced 4’ digital level I could find.",
+				"I have been using a couple of this product for about two years and am glad I purchased it. I don't know how accurate the other brands are but this one is accurate enough for my purpose.",
+				"This level arrived well packaged and quickly, and seems like it would last just fine on a normal job site.",
+				"Light didn’t and still doesn’t work.",
+				"Great little level. I love how it has its own carrying case that’s actually useful.",
+				"I bought this level for the sole purpose of helping me to determine track grades on my HO scale model train layout.",
+				"It is definitely worth every penny as far as I am concerned & certainly is a great product for its cost.",
+				"nds. I appreciate the batteries as an addition but if you don’t get a decent commercial battery you will run into what some of have run into.",
+				"This is the first digital level I have ever bought, and I look forward to using it on a number of projects where eyeballing just isn’t quite good enough."
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("Description");
+		for (final String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), FreeText.SEMANTIC_TYPE);
+		assertEquals(result.getRegExp(), ".{36,185}");
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String sample : samples) {
+			assertTrue(sample.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void freeTextLowCardinality() throws IOException, FTAException {
+		final String[] samples = new String[] {
+				"Divorced - separated",
+				"Divorced - not separated",
+				"Married - sharing a house",
+				"Single - living alone",
+				"Surviving spouse",
+				"Widower - husband died",
+				"Widower - wife died"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("Marital Description");
+		for (final String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), FreeText.SEMANTIC_TYPE);
+		assertEquals(result.getRegExp(), ".{16,25}");
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String sample : samples) {
+			assertTrue(sample.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void freeTextLowCardinalityMultiples() throws IOException, FTAException {
+		final String[] samples = new String[] {
+				"Divorced - separated",
+				"Divorced - not separated",
+				"Married - sharing a house",
+				"Single - living alone",
+				"Surviving spouse",
+				"Widower - husband died",
+				"Widower - wife died"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("Marital Description");
+		for (int i = 0; i < 100; i++)
+			for (final String sample : samples) {
+				analysis.train(sample);
+			}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length * 100);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getRegExp(), "(?i)(DIVORCED - NOT SEPARATED|DIVORCED - SEPARATED|MARRIED - SHARING A HOUSE|SINGLE - LIVING ALONE|SURVIVING SPOUSE|WIDOWER - HUSBAND DIED|WIDOWER - WIFE DIED)");
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String sample : samples) {
+			assertTrue(sample.matches(result.getRegExp()));
+		}
+	}
+
 	public String[] decoder = new String[] {
 			"Integer", "Boolean", "Long", "Double", "Date",
 			"ISO-3166-3", "ISO-3166-2", "ZIP", "US_STATE", "CA_PROVINCE",
@@ -1908,7 +2009,6 @@ public class RandomTests {
 				assertEquals(result.getMinValue(), answer.getMinValue());
 				assertEquals(result.getMaxValue(), answer.getMaxValue());
 			} catch (FTAException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

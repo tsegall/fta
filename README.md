@@ -177,6 +177,7 @@ DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-U
 EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
+FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|en
 GENDER.TEXT_&lt;Language&gt;|Gender|cn, de, en, es, fr, it, ms, nl, pt, tr, ja
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
@@ -424,6 +425,10 @@ Using FTA from the command line, list options:
 Report on a CSV file:
 
 `$ types/build/install/fta/bin/types filename.csv`
+
+Generate a set of samples:
+
+`$ types/build/install/fta/bin/types --pluginName FREE_TEXT --records 1000`
 
 ## Java code ##
 

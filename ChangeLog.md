@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 6.0.8
+ - ENH: Add Semantic Type (FREE_TEXT) - captures Descriptions, Notes, Comments, ...
+
 ### 6.0.7
  - BUG: Fix replay
  - INT: Cleaning code, noqualifier option to JavaDoc

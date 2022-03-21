@@ -2159,7 +2159,7 @@ public class TextAnalyzer {
 				if (matchPatternInfo.isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
 					final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
-					final String newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, tokenStreams, analysisConfig);
+					final String newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig);
 					if (newPattern != null)
 						if (FTAType.LONG.equals(matchPatternInfo.getBaseType()) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
@@ -2399,7 +2399,7 @@ public class TextAnalyzer {
 			final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
 
 			String newPattern;
-			if ((newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, null, cardinality, outliers, tokenStreams, analysisConfig)) != null) {
+			if ((newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig)) != null) {
 				if (logical.acceptsBaseType(FTAType.STRING) || logical.acceptsBaseType(FTAType.LONG)) {
 					if (logical.acceptsBaseType(FTAType.STRING))
 						backoutToPattern(realSamples, newPattern);

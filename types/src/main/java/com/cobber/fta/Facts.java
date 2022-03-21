@@ -38,9 +38,9 @@ import com.cobber.fta.dates.DateTimeParser;
  */
 public class Facts {
 	/** The minimum length (not trimmed) - Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
-	protected int minRawLength = Integer.MAX_VALUE;
+	public int minRawLength = Integer.MAX_VALUE;
 	/** The maximum length (not trimmed) - Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
-	protected int maxRawLength = Integer.MIN_VALUE;
+	public int maxRawLength = Integer.MIN_VALUE;
 	/** Are any elements multi-line? */
 	protected boolean multiline;
 	/** Do any elements have leading White Space? */
