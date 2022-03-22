@@ -32,10 +32,24 @@ public class TestText {
 
 		TextProcessor.TextResult result = processor.analyze("The quick brown fox jumped over the lazy dog");
 
+		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 9);
 		assertEquals(result.getAlphas(), 36);
 		assertEquals(result.getSpaces(), 8);
 		assertEquals(result.getPunctuation(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void example() throws IOException, FTAException {
+		TextProcessor processor = new TextProcessor(Locale.getDefault());
+
+		TextProcessor.TextResult result = processor.analyze("I.e. is an abbreviation for the phrase id est, which means \"that is.\" I.e. is used to restate something said previously in order to clarify its meaning. E.g. is short for exempli gratia, which means \"for example.\" E.g. is used before an item or list of items that serve as examples for the previous statement.");
+
+		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
+		assertEquals(result.getWords(), 23);
+		assertEquals(result.getAlphas(), 91);
+		assertEquals(result.getSpaces(), 21);
+		assertEquals(result.getPunctuation(), 8);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
@@ -44,6 +58,7 @@ public class TestText {
 
 		TextProcessor.TextResult result = processor.analyze("Off with their heads!");
 
+		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 4);
 		assertEquals(result.getAlphas(), 17);
 		assertEquals(result.getSpaces(), 3);
@@ -56,6 +71,7 @@ public class TestText {
 
 		TextProcessor.TextResult result = processor.analyze("Why, sometimes I've believed as many as six impossible things before breakfast.");
 
+		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 12);
 		assertEquals(result.getAlphas(), 65);
 		assertEquals(result.getSpaces(), 11);
@@ -68,6 +84,7 @@ public class TestText {
 
 		TextProcessor.TextResult result = processor.analyze("It's no use going back to yesterday,  because I was a different person then.");
 
+		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 14);
 		assertEquals(result.getAlphas(), 59);
 		assertEquals(result.getSpaces(), 14);
@@ -80,6 +97,7 @@ public class TestText {
 
 		TextProcessor.TextResult result = processor.analyze("It would have made a dreadfully ugly child; but it makes rather a handsome pig.");
 
+		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 15);
 		assertEquals(result.getAlphas(), 63);
 		assertEquals(result.getSpaces(), 14);
@@ -92,6 +110,7 @@ public class TestText {
 
 		TextProcessor.TextResult result = processor.analyze("'And what is the use of a book,' thought Alice, 'without pictures or conversation?'");
 
+		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 14);
 		assertEquals(result.getAlphas(), 63);
 		assertEquals(result.getSpaces(), 13);
@@ -104,6 +123,7 @@ public class TestText {
 
 		TextProcessor.TextResult result = processor.analyze("'Who in the world am I?' Ah, that's the great puzzle!");
 
+		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 11);
 		assertEquals(result.getAlphas(), 37);
 		assertEquals(result.getSpaces(), 10);

@@ -34,6 +34,8 @@ public class VIN extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "VIN";
 	public static final String REGEXP = "[A-HJ-NPR-Z0-9]{17}";
 
+	private static final int VIN_LENGTH = 17;
+
 	private static final boolean[] VALID_CHARACTERS = {
 			true, true, true, true, true, true, true, true, false, true, true, true, true,
 			true, false, true, false, true, true, true, true, true, true, true, true, true
@@ -125,7 +127,7 @@ public class VIN extends LogicalTypeInfinite {
 	public boolean isValid(final String input) {
 		final String cleaned = input.trim().replaceAll("-", "").toUpperCase(Locale.ROOT);
 		final int len = cleaned.length();
-		if (len != 17)
+		if (len != VIN_LENGTH)
 			return false;
 
 		final char[] asArray = cleaned.toCharArray();

@@ -30,7 +30,7 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.Gender;
 
 public class TestBulk {
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void basicBulk() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBulk");
 		analysis.setTrace("enabled=true");
@@ -56,7 +56,7 @@ public class TestBulk {
 		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void basicBulkFromDB() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBulk");
 		analysis.setKeyConfidence(1.0);
@@ -83,7 +83,7 @@ public class TestBulk {
 		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void basicBulkSignature() throws IOException, FTAException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer("basicBulkSignature_bulk");
 		final TextAnalyzer analysis = new TextAnalyzer("basicBulkSignature");
@@ -117,7 +117,7 @@ public class TestBulk {
 		assertEquals(resultBulk.getDataSignature(), result.getDataSignature());
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void basicDistance() throws IOException, FTAException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer("basicDistance");
 		final long SAMPLES = 3622;
@@ -143,7 +143,7 @@ public class TestBulk {
 		assertEquals(resultBulk.getConfidence(), 1.0);
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void basicDate() throws IOException, FTAException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer("ModifiedDate", DateResolutionMode.Auto);
 
@@ -163,7 +163,7 @@ public class TestBulk {
 		assertEquals(resultBulk.getName(), "ModifiedDate");
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void justBlanks() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("justBlanks");
 
@@ -184,7 +184,7 @@ public class TestBulk {
 		assertEquals(result.getCardinality(), 0);
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void dateBug() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateBug");
 		final int SAMPLES = 26;
@@ -215,7 +215,7 @@ public class TestBulk {
 		assertEquals(result.getCardinality(), 9);
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void dateFieldDot6() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateFieldDot6", DateResolutionMode.Auto);
 		final int SAMPLES = 40;
@@ -241,7 +241,7 @@ public class TestBulk {
 		assertEquals(result.getCardinality(), 4);
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void dateFieldDot7() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateFieldDot7", DateResolutionMode.Auto);
 		analysis.setTrace("enabled=true");
@@ -269,20 +269,20 @@ public class TestBulk {
 		assertEquals(result.getCardinality(), 4);
 	}
 
-	@Test(groups = { TestGroups.ALL })
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void industrySemantic() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("industrySemantic", DateResolutionMode.Auto);
 		analysis.setTrace("enabled=true,samples=1000");
 		final int SAMPLES = 355;
 
 		final HashMap<String, Long> basic = new HashMap<>();
-		basic.put("General Business",200L);
-		basic.put(null,68L);
-		basic.put("Financial Services & Insurance",40L);
-		basic.put("Healthcare Insurance",31L);
-		basic.put("Media & Communication",7L);
-		basic.put("Electricity, Oil & Gas",6L);
-		basic.put("Insurance",3L);
+		basic.put("General Business", 200L);
+		basic.put(null, 68L);
+		basic.put("Financial Services & Insurance", 40L);
+		basic.put("Healthcare Insurance", 31L);
+		basic.put("Media & Communication", 7L);
+		basic.put("Electricity, Oil & Gas", 6L);
+		basic.put("Insurance", 3L);
 
 		analysis.trainBulk(basic);
 

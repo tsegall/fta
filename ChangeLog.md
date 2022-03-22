@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 6.0.9
+ - INT: Cleaning up FREE_TEXT stuff (would like to run it without mandatory headers)
+
 ### 6.0.8
  - ENH: Add Semantic Type (FREE_TEXT) - captures Descriptions, Notes, Comments, ...
 

@@ -107,7 +107,7 @@ public class Facts {
 	/** The bottom 10  values. */
 	protected Set<String> bottomK;
 
-	PatternInfo currentPatternInfo;
+	private PatternInfo currentPatternInfo;
 
 	private Locale locale;
 	private boolean collectStatistics;
@@ -118,9 +118,6 @@ public class Facts {
 
 	public void setCollectStatistics(boolean collectStatistics) {
 		this.collectStatistics = collectStatistics;
-	}
-
-	public Facts() {
 	}
 
 	public Facts calculateFacts(PatternInfo matchPatternInfo, long matchCount) {

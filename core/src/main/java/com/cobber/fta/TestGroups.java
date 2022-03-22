@@ -18,6 +18,7 @@ package com.cobber.fta;
 public class TestGroups {
 	public static final String ALL = "all";
 	public static final String BOOLEANS = "booleans";
+	public static final String BULK = "bulk";
 	public static final String DATES = "dates";
 	public static final String DATETIME = "datetime";
 	public static final String DOUBLES = "doubles";

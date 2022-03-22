@@ -35,7 +35,7 @@ import com.cobber.fta.token.TokenStreams;
 /**
  * Plugin to detect free text - for example, Comments, Descriptions, Notes, ....
  */
-public class FreeText extends LogicalTypeInfinite{
+public class FreeText extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "FREE_TEXT";
 	public static final String REGEXP = ".+";
 
@@ -64,7 +64,7 @@ public class FreeText extends LogicalTypeInfinite{
 		pronouns[2] = "They";
 
 		for (int i = 3; i < 100; i++) {
-			String name = logicalFirst.nextRandom();
+			final String name = logicalFirst.nextRandom();
 			pronouns[i] = String.valueOf(name.charAt(0));
 			if (name.length() > 1)
 				pronouns[i] += name.substring(1).toLowerCase(Locale.ROOT);
@@ -104,11 +104,11 @@ public class FreeText extends LogicalTypeInfinite{
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		return isText(trimmed);
 	}
 
-	private boolean isText(String trimmed) {
+	private boolean isText(final String trimmed) {
 		return processor.analyze(trimmed).getDetermination() == TextProcessor.Determination.OK;
 	}
 
@@ -128,19 +128,24 @@ public class FreeText extends LogicalTypeInfinite{
 	}
 
 	@Override
-	public boolean isValid(String input) {
-		return input == null ? false : isText(input.trim());
+	public boolean isValid(final String input) {
+		return input != null && isText(input.trim());
 	}
 
 	@Override
-	public String isValidSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp,
-			Facts facts, Map<String, Long> cardinality, Map<String, Long> outliers, TokenStreams tokenStreams,
-			AnalysisConfig analysisConfig) {
+	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams,
+			final AnalysisConfig analysisConfig) {
 		// If we are below the threshold or the cardinality (and uniqueness are low) reject
 		if ((double)matchCount/realSamples < getThreshold()/100.0 ||
 				(cardinality.size() < 20 && cardinality.size()*3 < realSamples))
 			return REGEXP;
 
+//		if (getHeaderConfidence(context.getStreamName()) != 0) {
+//			minCardinality = 5;
+//			minSamples = 5;
+//		}
+//
 		if (facts != null)
 			regExp = KnownPatterns.PATTERN_ANY + RegExpSplitter.qualify(facts.minRawLength, facts.maxRawLength);
 
@@ -149,8 +154,6 @@ public class FreeText extends LogicalTypeInfinite{
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
-		double confidence = (double)matchCount/realSamples;
-
-		return confidence;
+		return (double)matchCount/realSamples;
 	}
 }

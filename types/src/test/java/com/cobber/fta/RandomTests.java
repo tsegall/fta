@@ -1820,7 +1820,7 @@ public class RandomTests {
 				"Great little level. I love how it has its own carrying case that’s actually useful.",
 				"I bought this level for the sole purpose of helping me to determine track grades on my HO scale model train layout.",
 				"It is definitely worth every penny as far as I am concerned & certainly is a great product for its cost.",
-				"nds. I appreciate the batteries as an addition but if you don’t get a decent commercial battery you will run into what some of have run into.",
+				"I appreciate the batteries as an addition but if you don’t get a decent commercial battery you will run into what some of have run into.",
 				"This is the first digital level I have ever bought, and I look forward to using it on a number of projects where eyeballing just isn’t quite good enough."
 		};
 

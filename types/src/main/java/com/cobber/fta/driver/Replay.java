@@ -33,21 +33,28 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Simple class used to support replaying a FTA trace file.
+ */
 public class Replay {
-	static class AnalysisConfigWrapper {
+
+	private Replay() {
+	}
+
+	private static class AnalysisConfigWrapper {
 		public AnalysisConfig analysisConfig;
 	}
 
-	static class AnalyzerContextWrapper {
+	private static class AnalyzerContextWrapper {
 		public AnalyzerContext analyzerContext;
 	}
 
-	static class BulkEntry {
+	private static class BulkEntry {
 		public String value;
 		public long count;
 	}
 
-	static class SamplesWrapper {
+	private static class SamplesWrapper {
 		public BulkEntry[] samplesBulk;
 		public String[] samples;
 	}
@@ -63,7 +70,7 @@ public class Replay {
 	 * @param replayFile The name of the FTA trace file.
 	 * @param options The command line options (e.g. --verbose, --debug, ...)
 	 */
-	static void replay(String replayFile, DriverOptions options) {
+	static void replay(final String replayFile, final DriverOptions options) {
 		final ObjectMapper mapper = new ObjectMapper();
 		try (final InputStream in = new FileInputStream(replayFile); JsonParser parser = new JsonFactory().createParser(in)) {
 			final AnalysisConfigWrapper configWrapper = mapper.readValue(parser, AnalysisConfigWrapper.class);
@@ -82,7 +89,7 @@ public class Replay {
 			final boolean bulkMode = samplesWrapper.samplesBulk != null;
 
 			// Create a TextAnalyzer using the Context retrieved from the Trace file
-			TextAnalyzer analyzer = new TextAnalyzer(analyzerContext);
+			final TextAnalyzer analyzer = new TextAnalyzer(analyzerContext);
 
 			// Apply the Config we retrieved from the Trace file
 			analyzer.setCollectStatistics(analysisConfig.isCollectStatistics());
@@ -99,7 +106,7 @@ public class Replay {
 
 			analyzer.setDebug(options.debug);
 
-			TextAnalysisResult result = bulkMode ?
+			final TextAnalysisResult result = bulkMode ?
 				processBulk(analyzer, samplesWrapper.samplesBulk, options) :
 				process(analyzer, samplesWrapper.samples, options);
 
@@ -114,9 +121,9 @@ public class Replay {
 		}
 	}
 
-	static TextAnalysisResult processBulk(TextAnalyzer analyzer, BulkEntry[] samples, DriverOptions options) {
+	static TextAnalysisResult processBulk(final TextAnalyzer analyzer, final BulkEntry[] samples, final DriverOptions options) {
 		final Map<String, Long> observed = new HashMap<>();
-		for (BulkEntry sample : samples)
+		for (final BulkEntry sample : samples)
 			observed.put(sample.value, sample.count);
 
 		try {
@@ -128,9 +135,9 @@ public class Replay {
 		}
 	}
 
-	static TextAnalysisResult process(TextAnalyzer analyzer, String[] samples, DriverOptions options) {
+	static TextAnalysisResult process(final TextAnalyzer analyzer, final String[] samples, final DriverOptions options) {
 		try {
-			for (String sample : samples)
+			for (final String sample : samples)
 				analyzer.train(sample);
 			return analyzer.getResult();
 		} catch (FTAPluginException | FTAUnsupportedLocaleException e) {
