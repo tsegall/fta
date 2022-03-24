@@ -36,11 +36,17 @@ import com.cobber.fta.token.TokenStreams;
  * Note: we used an Infinite :-) Logical Type since the domains is so large.
  */
 public class PostalCodeFR extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_FR";
-	public static final String REGEXP_POSTAL_CODE = "\\d{5}";
+
+	private static final String REGEXP_POSTAL_CODE = "\\d{5}";
 	private SingletonSet zipsRef;
 	private Set<String> zips;
 
+	/**
+	 * Construct a French Postal code plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public PostalCodeFR(final PluginDefinition plugin) {
 		super(plugin);
 	}

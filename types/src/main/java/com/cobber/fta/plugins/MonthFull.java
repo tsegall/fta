@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins;
 
-import java.io.FileNotFoundException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +36,11 @@ public class MonthFull extends LogicalTypeFinite {
 	private Set<String> months;
 	private String[] monthsArray;
 
-	public MonthFull(final PluginDefinition plugin) throws FileNotFoundException {
+	/**
+	 * Construct a plugin to detect Month full names based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
+	public MonthFull(final PluginDefinition plugin) {
 		super(plugin);
 	}
 

@@ -44,6 +44,10 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	  return Integer.compare(priority, other.priority);
 	}
 
+	/**
+	 * LogicalType constructor.
+	 * @param plugin The definition of this plugin.
+	 */
 	public LogicalType(final PluginDefinition plugin) {
 		this.defn = plugin;
 		this.priority = plugin.priority;
@@ -71,6 +75,11 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 		return true;
 	}
 
+	/**
+	 * Determine the confidence that the name of the data stream is likely a valid header for this Semantic Type.
+	 * @param dataStreamName The name of this data stream
+	 * @return An integer between 0 and 100 reflecting the confidence that this stream name is a valid header.
+	 */
 	public int getHeaderConfidence(final String dataStreamName) {
 		if (headerPatterns != null)
 			for (int i = 0; i < headerPatterns.length; i++) {

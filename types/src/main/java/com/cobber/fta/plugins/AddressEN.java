@@ -22,7 +22,6 @@ import java.util.Set;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -35,11 +34,17 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect an Address line. (English-language only).
  */
 public class AddressEN extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "STREET_ADDRESS_EN";
+
 	private boolean multiline;
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
 
+	/**
+	 * Construct a plugin to detect an Address based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public AddressEN(final PluginDefinition plugin) {
 		super(plugin);
 	}

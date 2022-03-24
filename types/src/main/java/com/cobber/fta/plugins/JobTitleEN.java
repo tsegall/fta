@@ -22,7 +22,6 @@ import java.util.Set;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -35,13 +34,22 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Job Titles. (English-language only).
  */
 public class JobTitleEN extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "JOB_TITLE_EN";
+
+	/** The Regular Express for this Semantic type. */
+	public static final String REGEXP = ".+";
+
 	private static final String BACKOUT = ".+";
 	private SingletonSet titleStartersRef;
 	private Set<String> titleStarters;
 	private SingletonSet titleHotWordsRef;
 	private Set<String> titleHotWords;
 
+	/**
+	 * Construct a Job Title plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public JobTitleEN(final PluginDefinition plugin) {
 		super(plugin);
 	}
@@ -77,7 +85,7 @@ public class JobTitleEN extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return ".+";
+		return REGEXP;
 	}
 
 	@Override

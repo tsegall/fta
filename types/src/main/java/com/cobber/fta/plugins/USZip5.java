@@ -29,6 +29,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -36,6 +37,7 @@ import com.cobber.fta.token.TokenStreams;
  * Note: we used an Infinite :-) Logical Type since the domains is so large.
  */
 public class USZip5 extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_US";
 	public static final String REGEXP_ZIP5 = "\\d{5}";
 	public static final String REGEXP_VARIABLE = "\\d{3,5}";
@@ -43,6 +45,10 @@ public class USZip5 extends LogicalTypeInfinite {
 	private SingletonSet zipsRef;
 	private Set<String> zips;
 
+	/**
+	 * Construct a US ZIP (See also @link USZipPlus4) plugin based on the Plugin Definition.{@link DateTimeParser}
+	 * @param plugin The definition of this plugin.
+	 */
 	public USZip5(final PluginDefinition plugin) {
 		super(plugin);
 	}

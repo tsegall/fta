@@ -37,8 +37,11 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect free text - for example, Comments, Descriptions, Notes, ....
  */
 public class FreeText extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "FREE_TEXT";
-	public static final String REGEXP = ".+";
+
+	/** The Regular Express for this Semantic type. */
+	private static final String REGEXP = ".+";
 
 	private String regExp = REGEXP;
 
@@ -51,6 +54,10 @@ public class FreeText extends LogicalTypeInfinite {
 			"bicycle", "motorbike", "car", "raspberry", "train", "plane" };
 	private TextProcessor processor;
 
+	/**
+	 * Construct a plugin to detect free-form text based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public FreeText(final PluginDefinition plugin) {
 		super(plugin);
 	}

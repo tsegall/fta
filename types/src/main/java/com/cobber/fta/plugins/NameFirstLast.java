@@ -36,8 +36,11 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect '&lt;First Name&gt; &lt;Last Name&gt;'.
  */
 public class NameFirstLast extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "NAME.FIRST_LAST";
-	public static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]* \\p{IsAlphabetic}[- \\p{IsAlphabetic}]*";
+
+	/** The Regular Express for this Semantic type. */
+	private static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]* \\p{IsAlphabetic}[- \\p{IsAlphabetic}]*";
 	private static final String BACKOUT = ".+";
 	private LogicalTypeFiniteSimple logicalFirst;
 	private LogicalTypeFiniteSimple logicalLast;
@@ -46,6 +49,10 @@ public class NameFirstLast extends LogicalTypeInfinite {
 	private Set<String> lastNames;
 	private Set<String> firstNames;
 
+	/**
+	 * Construct a plugin to detect First name followed by Last name based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public NameFirstLast(final PluginDefinition plugin) {
 		super(plugin);
 	}

@@ -21,7 +21,6 @@ import java.util.Map;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -33,7 +32,10 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Vehicle Identification Numbers (VINs).
  */
 public class VIN extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "VIN";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = "[A-HJ-NPR-Z0-9]{17}";
 
 	private static final int VIN_LENGTH = 17;
@@ -49,6 +51,10 @@ public class VIN extends LogicalTypeInfinite {
 	};
 	private static int[] weights = { 8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2 };
 
+	/**
+	 * Construct a VIN plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public VIN(final PluginDefinition plugin) {
 		super(plugin);
 	}

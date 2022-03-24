@@ -4,5 +4,6 @@ jar {
 
 dependencies {
         testImplementation group: 'org.testng', name: 'testng', version: "${testngVersion}"
+	testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: "${logbackClassicVersion}"
 }
 

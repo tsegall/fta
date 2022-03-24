@@ -23,6 +23,7 @@ import com.cobber.fta.PluginDefinition;
  * Plugin to detect valid Luhn check digits (typically Credit Cards or IMEI Numbers).
  */
 public class CheckDigitLuhn extends CheckDigitLT {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.LUHN";
 
 	private final static String[] SAMPLES = {
@@ -59,6 +60,10 @@ public class CheckDigitLuhn extends CheckDigitLT {
 			"343013941571498", "4591487432269328", "5188222030612322", "4826336448831711"
 	};
 
+	/**
+	 * Construct a plugin to detect Luhn Check Digits based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public CheckDigitLuhn(final PluginDefinition plugin) {
 		super(plugin, -1);
 		validator = new LuhnCheckDigit();

@@ -267,7 +267,4 @@ public class Facts {
 
 		return ret;
 	}
-
-
-
 }

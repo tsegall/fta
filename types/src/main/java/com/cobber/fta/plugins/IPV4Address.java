@@ -23,7 +23,6 @@ import org.apache.commons.validator.routines.InetAddressValidator;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -31,14 +30,26 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
 
+/**
+ * Plugin to detect IPV4 addresses.
+ */
 public class IPV4Address extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "IPADDRESS.IPV4";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+
 	private static InetAddressValidator validator;
+
 	static {
 		validator = InetAddressValidator.getInstance();
 	}
 
+	/**
+	 * Construct an IPV4 Address plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public IPV4Address(final PluginDefinition plugin) {
 		super(plugin);
 	}

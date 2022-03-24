@@ -18,12 +18,22 @@ package com.cobber.fta.plugins;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAType;
 
+/**
+ * Plugin to detect a Latitude as Degrees, minutes, and seconds.
+ */
 public class LatitudeDMS extends CoordinateDMS {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "COORDINATE.LATITUDE_DMS";
-	public static final String REGEXP = "(\\d{5,6}|\\d{1,3} \\d{1,2} \\d{1,2} ?)[NnSs]";
+
+	/** The Regular Express for this Semantic type. */
+	private static final String REGEXP = "(\\d{5,6}|\\d{1,3} \\d{1,2} \\d{1,2} ?)[NnSs]";
 	private static final char[] DIRECTION = { 'N', 'S', 'n', 's' };
 	private static final int MAX_DEGREES = 90;
 
+	/**
+	 * Construct a Latitude plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public LatitudeDMS(final PluginDefinition plugin) {
 		super(plugin);
 	}

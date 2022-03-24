@@ -24,7 +24,10 @@ import com.cobber.fta.core.FTAType;
  * Plugin to detect valid International Securities Identification Number.
  */
 public class CheckDigitISIN extends CheckDigitLT {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.ISIN";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = "\\p{IsAlphabetic}\\p{IsAlphabetic}[\\p{IsAlphabetic}\\d]{9}\\d";
 
 	private final static String[] SAMPLES = {
@@ -33,6 +36,10 @@ public class CheckDigitISIN extends CheckDigitLT {
 			"GB00BHJYC057", "GB00BH4HKS39", "GB0002634946", "GB0030913577", "GB00B7T77214", "GB0008706128", "GB00B03MM408"
 	};
 
+	/**
+	 * Construct a plugin to detect ISINs (International Securities Identification Number) based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public CheckDigitISIN(final PluginDefinition plugin) {
 		super(plugin, 12);
 		validator = new ISINCheckDigit();

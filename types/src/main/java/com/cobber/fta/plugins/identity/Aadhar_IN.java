@@ -36,12 +36,18 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Indian Aadhar.
  */
 public class Aadhar_IN extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "IDENTITY.AADHAR_IN";
+
 	private static final int ID_LENGTH = 12;
-	public static final String BACKOUT_REGEXP = ".*";
+	private static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
 	private CheckDigit validator;
 
+	/**
+	 * Construct a plugin to detect an Indian Aadhar based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public Aadhar_IN(final PluginDefinition plugin) {
 		super(plugin);
 	}

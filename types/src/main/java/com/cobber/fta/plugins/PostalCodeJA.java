@@ -37,8 +37,13 @@ import com.google.common.hash.Funnels;
  * Plugin to detect valid Japanese Postal Codes.
  */
 public class PostalCodeJA extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_JA";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP_POSTAL_CODE = "\\d{3}-\\d{4}";
+
+	/** The Regular Express for this Semantic type. */
 	private BloomFilter<Integer> zipsRef;
 	private static final String examples[] = {
 			"004-0063", "004-0064", "004-0065", "004-0068", "004-0069", "004-0071", "004-0072", "004-0073", "014-0051", "014-0052", "018-4271",
@@ -56,6 +61,10 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 			"959-1717", "960-0808", "963-7716", "968-0412", "969-6506", "981-2116", "986-1335", "989-6436", "997-0055", "999-8211"
 	};
 
+	/**
+	 * Construct a Japanese Postal code plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public PostalCodeJA(final PluginDefinition plugin) {
 		super(plugin);
 	}

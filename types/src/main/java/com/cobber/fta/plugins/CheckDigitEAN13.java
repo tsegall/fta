@@ -23,7 +23,10 @@ import com.cobber.fta.PluginDefinition;
  * Plugin to detect valid EAN-13 (UPC, ISBN-13) identifiers.
  */
 public class CheckDigitEAN13 extends CheckDigitLT {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.EAN13";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = "\\d{13}";
 
 	private final static String[] SAMPLES = {
@@ -33,6 +36,10 @@ public class CheckDigitEAN13 extends CheckDigitLT {
 			"4632812983156", "8715988259303", "4114932292979", "1635056616685", "1850775082089", "4514120918771"
 	};
 
+	/**
+	 * Construct a plugin to detect EANs (European Article Number) based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public CheckDigitEAN13(final PluginDefinition plugin) {
 		super(plugin, 13);
 		validator = new EAN13CheckDigit();

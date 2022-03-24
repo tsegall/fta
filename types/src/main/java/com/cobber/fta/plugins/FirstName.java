@@ -15,14 +15,20 @@
  */
 package com.cobber.fta.plugins;
 
-import java.io.FileNotFoundException;
-
 import com.cobber.fta.PluginDefinition;
 
+/**
+ * Plugin to detect an individuals First Name.
+ */
 public class FirstName extends PersonName {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "NAME.FIRST";
 
-	public FirstName(final PluginDefinition plugin) throws FileNotFoundException {
+	/**
+	 * Construct a First Name plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
+	public FirstName(final PluginDefinition plugin) {
 		super(plugin, "firstnames.txt");
 	}
 }

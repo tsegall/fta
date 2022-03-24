@@ -15,14 +15,12 @@
  */
 package com.cobber.fta.plugins;
 
-import java.io.FileNotFoundException;
 import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginAnalysis;
@@ -34,11 +32,17 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect a middle name.
  */
 public class MiddleName extends FirstName {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "NAME.MIDDLE";
+
 	private LogicalTypeFiniteSimple logicalFirst;
 	private LogicalTypeFiniteSimple logicalLast;
 
-	public MiddleName(final PluginDefinition plugin) throws FileNotFoundException {
+	/**
+	 * Construct a Middle Name plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
+	public MiddleName(final PluginDefinition plugin) {
 		super(plugin);
 	}
 

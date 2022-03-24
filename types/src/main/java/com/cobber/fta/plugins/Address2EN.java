@@ -21,7 +21,6 @@ import java.util.Map;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
@@ -35,10 +34,15 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect the second line of an Address. (English-language only).
  */
 public class Address2EN extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "STREET_ADDRESS2_EN";
 
 	private LogicalType logicalAddressLine1;
 
+	/**
+	 * Construct a plugin to detect the second line of an Address based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public Address2EN(final PluginDefinition plugin) {
 		super(plugin);
 	}

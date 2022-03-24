@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 7.0.1
+ - BUG: Fixup plugin.json (qualifier was DOY.FULL_<LOCALE> but was actually returning DAY.FULL_<LOCALE>)
+ - BUG: Fixup plugin.json (qualifier was DOY.ABBR_<LOCALE> but was actually returning DAY.ABBR_<LOCALE>)
+ - ENH: Improve JavaDoc
+
 ### 7.0.0
  - ENH: Major version change as Plugin interface has changed (only impacts Plugin authors).
  - BUG: Fix issue related to outlier counting when using Bulk mode

@@ -15,7 +15,6 @@
  */
 package com.cobber.fta;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
@@ -146,7 +145,6 @@ public class Plugins {
 	 * @param plugin The Plugin Definition for a simple file-based Logical Type
 	 * @param locale The current Locale
 	 * @throws FTAPluginException
-	 * @throws FileNotFoundException
 	 */
 	private void registerLogicalTypeFiniteSet(final PluginDefinition plugin, final Locale locale) throws FTAPluginException {
 		registerLogicalType(new LogicalTypeFiniteSimpleExternal(plugin), locale);

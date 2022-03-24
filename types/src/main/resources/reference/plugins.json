@@ -280,17 +280,17 @@
 		"priority": 101
 	},
 	{
-		"qualifier": "DOY.ABBR_<LOCALE>",
+		"qualifier": "DAY.ABBR_<LOCALE>",
 		"description": "Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"signature": "[NONE]",
-		"clazz": "com.cobber.fta.plugins.DOYAbbr",
+		"clazz": "com.cobber.fta.plugins.DOWAbbr",
 		"priority": 102
 	},
 	{
-		"qualifier": "DOY.FULL_<LOCALE>",
+		"qualifier": "DAY.FULL_<LOCALE>",
 		"description": "Full Day of Week name <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"signature": "[NONE]",
-		"clazz": "com.cobber.fta.plugins.DOYFull",
+		"clazz": "com.cobber.fta.plugins.DOWFull",
 		"priority": 103
 	},
 	{

@@ -24,7 +24,10 @@ import com.cobber.fta.core.FTAType;
  * Plugin to detect valid SEDOL identifiers.
  */
 public class CheckDigitSEDOL extends CheckDigitLT {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.SEDOL";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = "[\\p{IsAlphabetic}\\d]{6}\\d";
 
 	private final static String[] SAMPLES = {
@@ -32,6 +35,10 @@ public class CheckDigitSEDOL extends CheckDigitLT {
 			"B1KJJ40", "3174300", "0673123", "BHJYC05", "BH4HKS3", "0263494", "3091357", "B7T7721", "0870612", "B03MM40",
 	};
 
+	/**
+	 * Construct a plugin to detect SEDOLs (Stock Exchange Daily Official List) based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public CheckDigitSEDOL(final PluginDefinition plugin) {
 		super(plugin, 7);
 		validator = new SedolCheckDigit();

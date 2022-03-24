@@ -25,7 +25,6 @@ import javax.mail.internet.InternetAddress;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
@@ -39,14 +38,22 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Email Addresses.
  */
 public class EmailLT extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "EMAIL";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}";
+
 	private LogicalTypeCode logicalFirst;
 	private LogicalTypeCode logicalLast;
 	private static String[] mailDomains = {
 			"gmail.com", "hotmail.com", "yahoo.com", "hotmail.com", "aol.com", "msn.com", "comcast.net", "live.com"
 	};
 
+	/**
+	 * Construct a plugin to detect Email addresses based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public EmailLT(final PluginDefinition plugin) {
 		super(plugin);
 	}

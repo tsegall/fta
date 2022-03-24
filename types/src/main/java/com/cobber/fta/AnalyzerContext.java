@@ -46,22 +46,42 @@ public class AnalyzerContext {
 		}
 	}
 
+	/**
+	 * Retrieve the stream name from the Context.
+	 * @return The String name of this data stream.
+	 */
 	public String getStreamName() {
 		return streamName;
 	}
 
+	/**
+	 * Retrieve the DateResolutionMode from the Context.
+	 * @return The DateResolution mode of this analysis.
+	 */
 	public DateResolutionMode getDateResolutionMode() {
 		return dateResolutionMode;
 	}
 
+	/**
+	 * Set the DateResolutionMode on the Context.
+	 * @param dateResolutionMode The new DateResolutionMode.
+	 */
 	public void setDateResolutionMode(final DateResolutionMode dateResolutionMode) {
 		this.dateResolutionMode = dateResolutionMode;
 	}
 
+	/**
+	 * Retrieve the composite name (the enclosing object - for example, table or filename) from the Context.
+	 * @return The String name of this composite stream.
+	 */
 	public String getCompositeName() {
 		return compositeName;
 	}
 
+	/**
+	 * Retrieve the names of all the fields on the enclosing object (for example, table columns or file headers) from the Context.
+	 * @return The String array with the names of all the elements on this composite.
+	 */
 	public String[] getCompositeStreamNames() {
 		return compositeStreamNames;
 	}

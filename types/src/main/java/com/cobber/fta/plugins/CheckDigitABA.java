@@ -24,8 +24,11 @@ import com.cobber.fta.core.FTAType;
  * Plugin to detect valid ABA Number (or Routing Transit Number (RTN)).
  */
 public class CheckDigitABA extends CheckDigitLT {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.ABA";
-	public static final String REGEXP = "\\d{9}";
+
+	/** The Regular Express for this Semantic type. */
+	private static final String REGEXP = "\\d{9}";
 
 	private final static String[] SAMPLES = {
 			"981140283", "989853459", "892328657", "781258896", "112551654",
@@ -36,6 +39,10 @@ public class CheckDigitABA extends CheckDigitLT {
 			"373527896"
 	};
 
+	/**
+	 * Construct a plugin to detect ABA numbers based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public CheckDigitABA(final PluginDefinition plugin) {
 		super(plugin, 9);
 		validator = new ABANumberCheckDigit();

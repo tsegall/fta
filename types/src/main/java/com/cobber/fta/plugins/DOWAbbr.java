@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins;
 
-import java.io.FileNotFoundException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -33,11 +32,15 @@ import com.cobber.fta.token.TokenStreams;
 /**
  * Plugin to detect Day of Week Abbreviations.
  */
-public class DOYAbbr extends LogicalTypeFinite {
+public class DOWAbbr extends LogicalTypeFinite {
 	private Set<String> days;
 	private String[] daysArray;
 
-	public DOYAbbr(final PluginDefinition plugin) throws FileNotFoundException {
+	/**
+	 * Construct a plugin to detect Day of Week names (See also @link DOWFull) based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
+	public DOWAbbr(final PluginDefinition plugin) {
 		super(plugin);
 	}
 

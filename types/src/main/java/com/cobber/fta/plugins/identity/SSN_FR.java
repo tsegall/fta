@@ -32,11 +32,17 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect French SSN's.
  */
 public class SSN_FR extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "IDENTITY.SSN_FR";
+
 	private static final int SSN_LENGTH = 15;
-	public static final String BACKOUT_REGEXP = ".*";
+	private static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
 
+	/**
+	 * Construct a plugin to detect French SSN's based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public SSN_FR(final PluginDefinition plugin) {
 		super(plugin);
 	}

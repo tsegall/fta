@@ -35,12 +35,18 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect UK NHS numbers.
  */
 public class NHS_UK extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "IDENTITY.NHS_UK";
+
 	private static final int LENGTH = 10;
-	public static final String BACKOUT_REGEXP = ".*";
+	private static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
 	private CheckDigit validator;
 
+	/**
+	 * Construct a plugin to detect UK NHS numbers based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public NHS_UK(final PluginDefinition plugin) {
 		super(plugin);
 	}

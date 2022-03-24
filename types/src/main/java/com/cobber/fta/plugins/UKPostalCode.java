@@ -38,8 +38,12 @@ import com.cobber.fta.token.TokenStreams;
  * Note: we used an Infinite :-) Logical Type since the domain is so large.
  */
 public class UKPostalCode extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_UK";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = "([A-Za-z][A-Ha-hK-Yk-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})";
+
 	private static String[] validPostalCodes = { "XX9X 9XX", "X9X 9XX", "X9 9XX", "X99 9XX", "XX9 9XX", "XX99 9XX" };
 	private static Set<String> validShapes = new HashSet<>();
 	private final Pattern validator = Pattern.compile(REGEXP);
@@ -48,6 +52,10 @@ public class UKPostalCode extends LogicalTypeInfinite {
 		Collections.addAll(validShapes, validPostalCodes);
 	}
 
+	/**
+	 * Construct a UK Postal code plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public UKPostalCode(final PluginDefinition plugin) {
 		super(plugin);
 	}

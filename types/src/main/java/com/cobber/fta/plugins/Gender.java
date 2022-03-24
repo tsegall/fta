@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,7 +36,9 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Gender.
  */
 public class Gender extends LogicalTypeFinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "GENDER.TEXT_";
+
 	private static final String BACKOUT_REGEX = "\\p{IsAlphabetic}+";
 
 	// Map from ISO language to Gender Data for the language
@@ -93,7 +94,11 @@ public class Gender extends LogicalTypeFinite {
 		// Austria covered by DE
 	}
 
-	public Gender(final PluginDefinition plugin) throws FileNotFoundException {
+	/**
+	 * Construct a Gender plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
+	public Gender(final PluginDefinition plugin) {
 		super(plugin);
 	}
 

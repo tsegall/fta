@@ -377,13 +377,14 @@ In addition to validating a data Stream, FTA can also be used to generate a synt
 
 Fastest way to get started is to review the examples included.
 
-## Building ##
+## Releasing a new version ##
 
+### Compile ###
 `$ gradle wrapper --gradle-version 7.4.1`
 
-`$ ./gradlew installDist`
+`$ ./gradlew clean build installDist`
 
-## Running Tests ##
+### Running Tests ###
 All tests and coverage
 
 `$ ./gradlew test jacocoTestReport`
@@ -396,19 +397,19 @@ Just one test
 
 `$ ./gradlew types:test --tests TestDates.localeDateTest`
 
-## Generate JavaDoc ##
+### Generate JavaDoc ###
 `$ ./gradlew javadoc`
 
-## Check Dependencies ##
+### Check Dependencies ###
 `$ ./gradlew dependencyUpdates`
 
-## Everything ...
+### Everything ... ###
 `$ ./gradlew clean installDist test jacocoTestReport javadoc`
 
-## Setup eclipse project ##
+### Setup eclipse project ###
 `$ ./gradlew eclipse`
 
-## Releasing a new version ##
+### Releasing a new version ###
 `$ ./gradlew publishMavenJavaPublicationToOssrhRepository`
 
 Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and follow the instructions!!
@@ -417,7 +418,7 @@ Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and f
 3. Close the staging repository (wait until complete)
 4. Release the staging repository
 
-## Executing ##
+### Executing ###
 Using FTA from the command line, list options:
 
 `$ types/build/install/fta/bin/types --help`

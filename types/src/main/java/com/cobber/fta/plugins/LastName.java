@@ -15,12 +15,17 @@
  */
 package com.cobber.fta.plugins;
 
-import java.io.FileNotFoundException;
-
 import com.cobber.fta.PluginDefinition;
 
+/**
+ * Plugin to detect an individuals Last Name.
+ */
 public class LastName extends PersonName {
-	public LastName(final PluginDefinition plugin) throws FileNotFoundException {
+	/**
+	 * Construct a Last Name plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
+	public LastName(final PluginDefinition plugin) {
 		super(plugin, "lastnames.txt");
 	}
 }

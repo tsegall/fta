@@ -36,10 +36,19 @@ import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
  * Plugin to detect Phone Numbers.
  */
 public class PhoneNumberLT extends LogicalTypeInfinite  {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "TELEPHONE";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = ".*";
+
+	/** The Regular Express for this Semantic type. */
 	private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
+	/**
+	 * Construct a Phone Number plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public PhoneNumberLT(final PluginDefinition plugin) {
 		super(plugin);
 	}

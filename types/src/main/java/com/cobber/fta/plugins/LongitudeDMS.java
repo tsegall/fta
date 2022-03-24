@@ -18,12 +18,22 @@ package com.cobber.fta.plugins;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAType;
 
+/**
+ * Plugin to detect a Longitude as Degrees, minutes, and seconds.
+ */
 public class LongitudeDMS extends CoordinateDMS {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "COORDINATE.LONGITUDE_DMS";
-	public static final String REGEXP = "(\\d{5,7}|\\d{1,2} \\d{1,2} \\d{1,2} ?)[EeWw]";
+
+	/** The Regular Express for this Semantic type. */
+	private static final String REGEXP = "(\\d{5,7}|\\d{1,2} \\d{1,2} \\d{1,2} ?)[EeWw]";
 	private static final char[] DIRECTION = { 'E', 'W', 'e', 'w' };
 	private static final int MAX_DEGREES = 180;
 
+	/**
+	 * Construct a Longitude plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public LongitudeDMS(final PluginDefinition plugin) {
 		super(plugin);
 	}

@@ -31,8 +31,12 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect ISBN-13 identifiers (with hyphens).
  */
 public class CheckDigitISBN extends CheckDigitLT {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.ISBN";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = "[-\\d]{17}";
+
 	private static final int DIGIT_LENGTH = 13;
 
 	private final static String[] SAMPLES = {
@@ -47,6 +51,10 @@ public class CheckDigitISBN extends CheckDigitLT {
 			"978-1-943295-43-2", "978-1-223-27773-8", "978-0-8443-7911-1", "978-0-567-26806-8", "978-0-632-67115-1", "978-0-11-767044-0"
 	};
 
+	/**
+	 * Construct a plugin to detect ISBNs (International Standard Book Numbers) with hyphens based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public CheckDigitISBN(final PluginDefinition plugin) {
 		super(plugin, DIGIT_LENGTH);
 		validator = new EAN13CheckDigit();

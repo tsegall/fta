@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins;
 
-import java.io.FileNotFoundException;
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
@@ -30,10 +29,17 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Country names. (English-language only).
  */
 public class CountryEN extends LogicalTypeFiniteSimple {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "COUNTRY.TEXT_EN";
-	public static final String REGEXP = ".+";
 
-	public CountryEN(final PluginDefinition plugin) throws FileNotFoundException {
+	/** The Regular Express for this Semantic type. */
+	private static final String REGEXP = ".+";
+
+	/**
+	 * Construct a plugin to detect Country names based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
+	public CountryEN(final PluginDefinition plugin) {
 		super(plugin, REGEXP, "\\p{IsAlphabetic}{2}", plugin.threshold);
 		setContent("resource", "/reference/en_countries.csv");
 	}

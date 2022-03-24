@@ -23,7 +23,6 @@ import org.apache.commons.validator.routines.UrlValidator;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -35,6 +34,7 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect URLs.
  */
 public class URLLT extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "URI.URL";
 	public static final String REGEXP_PROTOCOL = "(https?|ftp|file)";
 	public static final String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
@@ -53,9 +53,14 @@ public class URLLT extends LogicalTypeInfinite {
 	static {
 		validator = UrlValidator.getInstance();
 	}
+
 	// Count of items with protocol specified (e.g. http://) at index 0 and no protocol index 1
 	private int[] protocol = new int[2];
 
+	/**
+	 * Construct a URL plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public URLLT(final PluginDefinition plugin) {
 		super(plugin);
 	}

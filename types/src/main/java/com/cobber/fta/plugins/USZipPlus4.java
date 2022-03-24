@@ -36,6 +36,7 @@ import com.cobber.fta.token.TokenStreams;
  * Note: we used an Infinite :-) Logical Type since the domains is so large.
  */
 public class USZipPlus4 extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_PLUS4_US";
 	public static final String REGEXP_ZIP_PLUS4 = "\\d{5}-\\d{4}";
 	public static final String REGEXP_VARIABLE = "\\d{5}(-\\d{4})?";
@@ -43,6 +44,10 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	private SingletonSet zipsRef;
 	private Set<String> zips;
 
+	/**
+	 * Construct a ZIP+4 (See also @link USZip) plugin based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public USZipPlus4(final PluginDefinition plugin) {
 		super(plugin);
 	}

@@ -24,7 +24,11 @@ import com.cobber.fta.core.FTAType;
  * Plugin to detect valid International Bank Account Numbers (IBAN) .
  */
 public class CheckDigitIBAN extends CheckDigitLT {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.IBAN";
+
+	/** The Regular Express for this Semantic type. */
+	public static final String REGEXP = "([A-Z]{2}[ \\-]?[0-9]{2})(?=(?:[ \\-]?[A-Z0-9]){9,30}$)((?:[ \\-]?[A-Z0-9]{3,5}){2,7})([ \\-]?[A-Z0-9]{1,3})";
 
 	private final static String[] SAMPLES = {
 			"NL47CITI0080734537", "NL64ABNA0998881740", "NL37ARBN0845390481", "NL65CITC0881228753",
@@ -63,6 +67,10 @@ public class CheckDigitIBAN extends CheckDigitLT {
 			"AE460090000000123456789", "GB33BUKB20201555555555", "VG21PACG0000000123456789"
 	};
 
+	/**
+	 * Construct a plugin to detect IBANs (International Bank Account Numbers) based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public CheckDigitIBAN(final PluginDefinition plugin) {
 		super(plugin, -1);
 		validator = new IBANCheckDigit();
@@ -70,7 +78,7 @@ public class CheckDigitIBAN extends CheckDigitLT {
 
 	@Override
 	public String getRegExp() {
-		return "([A-Z]{2}[ \\-]?[0-9]{2})(?=(?:[ \\-]?[A-Z0-9]){9,30}$)((?:[ \\-]?[A-Z0-9]{3,5}){2,7})([ \\-]?[A-Z0-9]{1,3})";
+		return REGEXP;
 	}
 
 	@Override

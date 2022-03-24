@@ -21,7 +21,6 @@ import java.util.Map;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -30,13 +29,21 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * Plugin to detect GUIDs.
+ * Plugin to detect GUIDs (with hyphens).
  */
 public class GUID extends LogicalTypeInfinite {
+	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "GUID";
+
+	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
+
 	private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
+	/**
+	 * Construct a plugin to detect GUIDs (Gloabally Unique Identifiers) based on the Plugin Definition.
+	 * @param plugin The definition of this plugin.
+	 */
 	public GUID(final PluginDefinition plugin) {
 		super(plugin);
 	}
