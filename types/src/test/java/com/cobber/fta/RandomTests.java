@@ -1406,6 +1406,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
 		assertEquals(result.getRegExp(), "\\+\\d \\d{3} \\d{3} \\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -1442,6 +1443,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
 		assertEquals(result.getRegExp(), "\\d\\.\\d{3}\\.\\d{3}\\.\\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -1478,6 +1480,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
 		assertEquals(result.getRegExp(), "\\(\\d{3}\\) \\d{3} \\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 

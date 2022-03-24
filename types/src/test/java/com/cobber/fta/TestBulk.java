@@ -273,6 +273,7 @@ public class TestBulk {
 	public void industrySemantic() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("industrySemantic", DateResolutionMode.Auto);
 		analysis.setTrace("enabled=true,samples=1000");
+		analysis.setDebug(2);
 		final int SAMPLES = 355;
 
 		final HashMap<String, Long> basic = new HashMap<>();
@@ -296,5 +297,99 @@ public class TestBulk {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 6);
 		assertEquals(result.getTypeQualifier(), "INDUSTRY_EN");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
+	public void countryBaseLine() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("country", DateResolutionMode.Auto);
+		analysis.setTrace("enabled=true,samples=1000");
+		analysis.setDebug(2);
+		final int GOOD_SAMPLES = 400;
+		final int BAD_SAMPLES = 6;
+
+		final HashMap<String, Long> basic = new HashMap<>();
+		basic.put("AMERICAN SAMOA", 20L);
+		basic.put("BRITISH VIRGIN ISLANDS", 20L);
+		basic.put("FALKLAND ISLANDS", 20L);
+		basic.put("HONG KONG", 20L);
+		basic.put("NEW ZEALAND", 20L);
+		basic.put("NORTH KOREA", 20L);
+		basic.put("PAPUA NEW GUINEA", 20L);
+		basic.put("PUERTO RICO", 20L);
+		basic.put("SAINT LUCIA", 20L);
+		basic.put("SOUTH AFRICA", 20L);
+		basic.put("SOUTH KOREA", 20L);
+		basic.put("UNITED KINGDOM", 20L);
+		basic.put("UNITED STATES OF AMERICA", 20L);
+		basic.put("UNITED ARAB EMIRATES", 20L);
+		basic.put("TRINIDAD AND TOBAGO", 20L);
+		basic.put("VATICAN CITY", 20L);
+		basic.put("VIET NAM", 20L);
+		basic.put("WEST BANK", 20L);
+		basic.put("WESTERN SAHARA", 20L);
+		basic.put("VIRGIN ISLANDS", 20L);
+
+		basic.put("Rubbish that looks like text.", 2L);
+		basic.put("Garbage, and other recyclables.", 2L);
+		basic.put("Trash, not to be recycled.", 2L);
+
+		analysis.trainBulk(basic);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), GOOD_SAMPLES + BAD_SAMPLES);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "COUNTRY.TEXT_EN");
+		assertEquals(result.getMatchCount(), GOOD_SAMPLES);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getCardinality(), 20);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
+	public void countryOutliers() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("country", DateResolutionMode.Auto);
+		analysis.setTrace("enabled=true,samples=1000");
+		analysis.setDebug(2);
+		final int GOOD_SAMPLES = 400;
+		final int BAD_SAMPLES = 90;
+
+		final HashMap<String, Long> basic = new HashMap<>();
+		basic.put("AMERICAN SAMOA", 20L);
+		basic.put("BRITISH VIRGIN ISLANDS", 20L);
+		basic.put("FALKLAND ISLANDS", 20L);
+		basic.put("HONG KONG", 20L);
+		basic.put("NEW ZEALAND", 20L);
+		basic.put("NORTH KOREA", 20L);
+		basic.put("PAPUA NEW GUINEA", 20L);
+		basic.put("PUERTO RICO", 20L);
+		basic.put("SAINT LUCIA", 20L);
+		basic.put("SOUTH AFRICA", 20L);
+		basic.put("SOUTH KOREA", 20L);
+		basic.put("UNITED KINGDOM", 20L);
+		basic.put("UNITED STATES OF AMERICA", 20L);
+		basic.put("UNITED ARAB EMIRATES", 20L);
+		basic.put("TRINIDAD AND TOBAGO", 20L);
+		basic.put("VATICAN CITY", 20L);
+		basic.put("VIET NAM", 20L);
+		basic.put("WEST BANK", 20L);
+		basic.put("WESTERN SAHARA", 20L);
+		basic.put("VIRGIN ISLANDS", 20L);
+
+		basic.put("Rubbish that looks like text.", 30L);
+		basic.put("Garbage, and other recyclables.", 30L);
+		basic.put("Trash, not to be recycled.", 30L);
+
+		analysis.trainBulk(basic);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), GOOD_SAMPLES + BAD_SAMPLES);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getMatchCount(), GOOD_SAMPLES + BAD_SAMPLES);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getCardinality(), 23);
+		assertNull(result.getTypeQualifier());
 	}
 }

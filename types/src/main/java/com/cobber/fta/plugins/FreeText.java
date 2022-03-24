@@ -25,6 +25,7 @@ import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -133,27 +134,28 @@ public class FreeText extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams,
 			final AnalysisConfig analysisConfig) {
 		// If we are below the threshold or the cardinality (and uniqueness are low) reject
 		if ((double)matchCount/realSamples < getThreshold()/100.0 ||
 				(cardinality.size() < 20 && cardinality.size()*3 < realSamples))
-			return REGEXP;
+			return new PluginAnalysis(REGEXP);
 
-//		if (getHeaderConfidence(context.getStreamName()) != 0) {
-//			minCardinality = 5;
-//			minSamples = 5;
-//		}
-//
 		if (facts != null)
 			regExp = KnownPatterns.PATTERN_ANY + RegExpSplitter.qualify(facts.minRawLength, facts.maxRawLength);
 
-		return null;
+		return PluginAnalysis.OK;
 	}
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
-		return (double)matchCount/realSamples;
+		double confidence = (double)matchCount/realSamples;
+
+		if (getHeaderConfidence(dataStreamName) != 0)
+			return confidence;
+
+		// Header is not recognized so return the lowest threshold we would accept
+		return (double)defn.threshold/100;
 	}
 }

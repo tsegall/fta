@@ -24,6 +24,7 @@ import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.LogicalTypeFinite;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.dates.LocaleInfo;
@@ -73,10 +74,13 @@ public class MonthAbbr extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (outliers.size() > 1)
-			return LocaleInfo.getShortMonthsRegExp(locale);
+			return new PluginAnalysis(LocaleInfo.getShortMonthsRegExp(locale));
 
-		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : LocaleInfo.getShortMonthsRegExp(locale);
+		if ((double)matchCount / realSamples >= getThreshold()/100.0)
+			return PluginAnalysis.OK;
+
+		return new PluginAnalysis(LocaleInfo.getShortMonthsRegExp(locale));
 	}
 }

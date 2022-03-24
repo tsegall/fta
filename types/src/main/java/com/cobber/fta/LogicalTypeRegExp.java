@@ -141,18 +141,18 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		final String backout = currentRegExp;
 
 		// If this plugin insists on a minimum number of samples (validate it)
 		if (realSamples < getMinSamples())
-			return backout;
+			return new PluginAnalysis(backout);
 
 		// Plugins can insist that the maximum and minimum values be present in the observed set.
 		if (isMinMaxPresent() && (cardinality.get(defn.minimum) == null || cardinality.get(defn.maximum) == null))
-			return backout;
+			return new PluginAnalysis(backout);;
 
 		if (defn.headerRegExps != null) {
 			boolean requiredHeaderMissing = false;
@@ -161,7 +161,7 @@ public class LogicalTypeRegExp extends LogicalType {
 					requiredHeaderMissing = true;
 			}
 			if (requiredHeaderMissing)
-				return backout;
+				return new PluginAnalysis(backout);;
 		}
 
 		if (facts != null) {
@@ -169,19 +169,19 @@ public class LogicalTypeRegExp extends LogicalType {
 			case LONG:
 				if ((minLong != null && Long.parseLong(facts.minValue) < minLong) ||
 						(maxLong != null && Long.parseLong(facts.maxValue) > maxLong))
-					return backout;
+					return new PluginAnalysis(backout);;
 				break;
 
 			case DOUBLE:
 				if ((minDouble != null && Double.parseDouble(facts.minValue) < minDouble) ||
 						(maxDouble != null && Double.parseDouble(facts.maxValue) > maxDouble))
-					return backout;
+					return new PluginAnalysis(backout);;
 				break;
 
 			case STRING:
 				if ((minString != null && facts.minValue.compareTo(minString) < 0) ||
 						(maxString != null && facts.maxValue.compareTo(maxString) > 0))
-					return backout;
+					return new PluginAnalysis(backout);;
 				break;
 
 			default:
@@ -189,7 +189,10 @@ public class LogicalTypeRegExp extends LogicalType {
 			}
 		}
 
-		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : backout;
+		if ((double)matchCount / realSamples >= getThreshold()/100.0)
+			return PluginAnalysis.OK;
+
+		return new PluginAnalysis(backout);
 	}
 
 	public boolean isMatch(final String regExp) {

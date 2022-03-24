@@ -102,7 +102,7 @@ public class TextProcessor {
 		allConfigData.put("EN", new TextConfig(
 				20,				// antidisestablishmentarianism is 28 (there are longer), so we choose something that is reasonable
 				3.0, 9.0,		// Average word length in English is ~5, so choose a reasonable lower and upper bound
-				40,				// The percentage of 'alpha' characters that we expect to be present
+				30,				// The percentage of 'alpha' characters that we expect to be present
 				80,				// The percentage of 'reasonable' characters that we expect to be present
 				120,			// Only analyze the first <n> characters
 				".!?",			// Sentence Break characters
@@ -203,7 +203,7 @@ public class TextProcessor {
 			return ret;
 		}
 
-		if (len > 20 && ret.alphas * 100/idx < config.getAlphaPercentage()) {
+		if (ret.alphas * 100/idx < config.getAlphaPercentage()) {
 			ret.determination = Determination.PERCENT_TOO_LOW;
 			return ret;
 		}

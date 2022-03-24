@@ -78,8 +78,8 @@ public class PluginBirthDate extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples,
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
 			final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
+		return (double)matchCount/realSamples >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 }

@@ -195,8 +195,9 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	public abstract boolean isValid(final String input);
 
 	/**
-	 * Given the data to date as embodied by the arguments return null if we think this is an instance
-	 * of this logical type, if not return a new suitable pattern.
+	 * Given the data to date as embodied by the arguments return an analysis. If we think this is an instance
+	 * of this logical type then valid will be true , if invalid then valid will be false and a new Pattern will be returned.
+	 *
 	 * @param context The context used to interpret the Data Stream (for example, stream name, date resolution mode, etc)
 	 * @param matchCount Number of samples that match so far (as determined by isValid()
 	 * @param realSamples Number of real (i.e. non-blank and non-null) samples that we have processed so far.
@@ -208,7 +209,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @param analysisConfig The Configuration of the current analysis
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract String isValidSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp, Facts facts, Map<String, Long> cardinality, Map<String, Long> outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig);
+	public abstract PluginAnalysis analyzeSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp, Facts facts, Map<String, Long> cardinality, Map<String, Long> outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig);
 
 	/**
 	 * Does the set of members enumerated reflect the entire set.  For example any of the ISO sets are reference sets and
@@ -218,8 +219,6 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @return A boolean indicating if the set is closed.
 	 */
 	public abstract boolean isClosed();
-
-
 
 	/**
 	 * Accessor for the Plugin Definition for this Logical Type.

@@ -25,6 +25,7 @@ import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -112,12 +113,15 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 		if (headerConfidence == 0 && cardinality.size() < 5)
-			return backout();
+			return new PluginAnalysis(backout());
 
-		return getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0 ? null : backout();
+		if (getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0)
+			return PluginAnalysis.OK;
+
+		return new PluginAnalysis(backout());
 	}
 
 	@Override

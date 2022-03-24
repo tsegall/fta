@@ -22,7 +22,9 @@ import java.util.Set;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
@@ -118,7 +120,7 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		int minCardinality = 10;
 		int minSamples = 20;
@@ -128,11 +130,14 @@ public class JobTitleEN extends LogicalTypeInfinite {
 		}
 
 		if (cardinality.size() < minCardinality)
-			return BACKOUT;
+			return new PluginAnalysis(BACKOUT);
 
 		if (realSamples < minSamples)
-			return BACKOUT;
+			return new PluginAnalysis(BACKOUT);
 
-		return (double)matchCount/realSamples >= getThreshold()/100.0 ? null : ".+";
+		if ((double)matchCount/realSamples >= getThreshold()/100.0)
+			return PluginAnalysis.OK;
+
+		return PluginAnalysis.SIMPLE_NOT_OK;
 	}
 }

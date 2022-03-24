@@ -22,6 +22,7 @@ import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.LogicalTypeFiniteSimple;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.token.TokenStreams;
 
@@ -33,20 +34,23 @@ public class CountryEN extends LogicalTypeFiniteSimple {
 	public static final String REGEXP = ".+";
 
 	public CountryEN(final PluginDefinition plugin) throws FileNotFoundException {
-		super(plugin, REGEXP, "\\p{IsAlphabetic}{2}", 95);
+		super(plugin, REGEXP, "\\p{IsAlphabetic}{2}", plugin.threshold);
 		setContent("resource", "/reference/en_countries.csv");
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (matchCount < 50 && outliers.size() > Math.sqrt(getMembers().size()))
-			return REGEXP;
+			return new PluginAnalysis(REGEXP);
 
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 
 		if (headerConfidence == 0 && (realSamples < 10 || cardinality.size() == 1))
-			return REGEXP;
+			return new PluginAnalysis(REGEXP);
 
-		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : REGEXP;
+		if ((double)matchCount / realSamples >= getThreshold()/100.0)
+			return PluginAnalysis.OK;
+
+		return new PluginAnalysis(REGEXP);
 	}
 }

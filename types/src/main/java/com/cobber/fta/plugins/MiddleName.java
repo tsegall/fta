@@ -22,8 +22,10 @@ import java.util.Map;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeFiniteSimple;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.token.TokenStreams;
@@ -55,9 +57,9 @@ public class MiddleName extends FirstName {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (context.getCompositeStreamNames() == null)
-			return ".+";
+			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Find the index of the First & Last Name fields and of the current field
 		int first = -1;
@@ -73,8 +75,11 @@ public class MiddleName extends FirstName {
 		}
 
 		// We want to see fields we recognize as first and last names and a header that looks reasonable and a set of names that look good
-		return first != -1 && last != -1 && current > first &&
+		if (first != -1 && last != -1 && current > first &&
 				getHeaderConfidence(context.getStreamName()) >= 90 &&
-				super.isValidSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig) == null ? null : ".+";
+				super.analyzeSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig).isValid())
+			return PluginAnalysis.OK;
+
+		return PluginAnalysis.SIMPLE_NOT_OK;
 	}
 }

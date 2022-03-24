@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 7.0.0
+ - ENH: Major version change as Plugin interface has changed (only impacts Plugin authors).
+ - BUG: Fix issue related to outlier counting when using Bulk mode
+ - BUG: COUNTRY_EN plugin was not honoring threshold from plugins file
+
 ### 6.0.9
  - INT: Cleaning up FREE_TEXT stuff (would like to run it without mandatory headers)
 

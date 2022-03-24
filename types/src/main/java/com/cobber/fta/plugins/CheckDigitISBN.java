@@ -22,6 +22,7 @@ import org.apache.commons.validator.routines.checkdigit.EAN13CheckDigit;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
@@ -113,12 +114,12 @@ public class CheckDigitISBN extends CheckDigitLT {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		if (cardinality.size() < 20 || (double)matchCount/realSamples < getThreshold()/100.0)
-			return BACKOUT_REGEXP;
+			return new PluginAnalysis(BACKOUT_REGEXP);
 
-		return null;
+		return PluginAnalysis.OK;
 	}
 
 	@Override

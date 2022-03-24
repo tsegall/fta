@@ -21,9 +21,11 @@ import java.util.Map;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -95,9 +97,9 @@ public class Address2EN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (context.getCompositeStreamNames() == null)
-			return ".+";
+			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Find the index of the Address Line 1 field and of the current field
 		int line1 = -1;
@@ -109,7 +111,10 @@ public class Address2EN extends LogicalTypeInfinite {
 				current = i;
 		}
 
-		return (line1 != -1 && current == line1 + 1 && getHeaderConfidence(context.getStreamName()) > 90) ? null : ".+";
+		if (line1 != -1 && current == line1 + 1 && getHeaderConfidence(context.getStreamName()) > 90)
+			return PluginAnalysis.OK;
+
+		return PluginAnalysis.SIMPLE_NOT_OK;
 	}
 
 	@Override

@@ -22,6 +22,7 @@ import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.LogicalTypeFiniteSimple;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.token.TokenStreams;
 
@@ -39,7 +40,7 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 	}
 
 	public PersonName(final PluginDefinition plugin, final String filename) {
-		super(plugin, REGEXP, ".*", 95);
+		super(plugin, REGEXP, ".*", plugin.threshold);
 		setContent("resource", "/reference/" + filename);
 	}
 
@@ -98,13 +99,13 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples,
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
 			final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 
 		if (headerConfidence >= 90 && (double)matchCount / realSamples >= (double)IDENTIFIED_LOW_THRESHOLD/100)
-			return null;
+			return PluginAnalysis.OK;
 
 		int minCardinality = 10;
 		int minSamples = 20;
@@ -114,15 +115,16 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 		}
 
 		if (cardinality.size() < minCardinality)
-			return backout;
+			return new PluginAnalysis(backout);
 
 		if (realSamples < minSamples)
-			return backout;
+			return new PluginAnalysis(backout);
 
-		if (headerConfidence >= 50 && (double)matchCount / realSamples >= (double)IDENTIFIED_HIGH_THRESHOLD/100)
-			return null;
+		if ((headerConfidence >= 50 && (double)matchCount / realSamples >= (double)IDENTIFIED_HIGH_THRESHOLD/100) ||
+			((double)matchCount / realSamples >= getThreshold()/100.0))
+			return PluginAnalysis.OK;
 
-		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : backout;
+		return new PluginAnalysis(backout);
 	}
 
 	@Override

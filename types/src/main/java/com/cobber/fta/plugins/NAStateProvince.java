@@ -29,7 +29,7 @@ public class NAStateProvince extends LogicalTypeFiniteSimple {
 
 	public NAStateProvince(final PluginDefinition plugin) throws FileNotFoundException {
 		super(plugin, REGEXP,
-				"\\p{IsAlphabetic}{2}", 95);
+				"\\p{IsAlphabetic}{2}", plugin.threshold);
 		setContent("resource", "/reference/na_states_provinces.csv");
 	}
 }

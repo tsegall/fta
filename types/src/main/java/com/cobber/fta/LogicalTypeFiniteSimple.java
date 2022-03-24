@@ -95,7 +95,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 		final int baseOutliers = ((100 - getThreshold()) * getSize())/100;
@@ -110,12 +110,15 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		}
 
 		if (outliers.size() > maxOutliers)
-			return backout;
+			return new PluginAnalysis(backout);
 		if (cardinality.size() < minCardinality)
-			return backout;
+			return new PluginAnalysis(backout);
 		if (realSamples < minSamples)
-			return backout;
+			return new PluginAnalysis(backout);
 
-		return (double)matchCount / realSamples >= getThreshold()/100.0 ? null : backout;
+		if ((double)matchCount / realSamples >= getThreshold()/100.0)
+			return PluginAnalysis.OK;
+
+		return new PluginAnalysis(backout);
 	}
 }

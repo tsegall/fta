@@ -1753,7 +1753,7 @@ public class TextAnalyzer {
 			cardinality.put(input, seen + count);
 	}
 
-	private int outlier(final String input) {
+	private int outlier(final String input, final long count) {
 		final String cleaned = input.trim();
 		final int trimmedLength = cleaned.length();
 
@@ -1772,17 +1772,17 @@ public class TextAnalyzer {
 		Long seen = outliersSmashed.get(smashed);
 		if (seen == null) {
 			if (outliersSmashed.size() < analysisConfig.getMaxOutliers())
-				outliersSmashed.put(smashed, 1L);
+				outliersSmashed.put(smashed, count);
 		} else {
-			outliersSmashed.put(smashed, seen + 1);
+			outliersSmashed.put(smashed, seen + count);
 		}
 
 		seen = outliers.get(input);
 		if (seen == null) {
 			if (outliers.size() < analysisConfig.getMaxOutliers())
-				outliers.put(input, 1L);
+				outliers.put(input, count);
 		} else {
-			outliers.put(input, seen + 1);
+			outliers.put(input, seen + count);
 		}
 
 		return outliers.size();
@@ -2154,17 +2154,17 @@ public class TextAnalyzer {
 		if (valid)
 			trackTrimmedLengthAndWhiteSpace(rawInput, trimmed);
 		else {
-			outlier(input);
+			outlier(input, count);
 			if (!matchPatternInfo.isDateType() && outliers.size() == analysisConfig.getMaxOutliers()) {
 				if (matchPatternInfo.isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
 					final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
-					final String newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig);
-					if (newPattern != null)
+					final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig);
+					if (!pluginAnalysis.isValid())
 						if (FTAType.LONG.equals(matchPatternInfo.getBaseType()) && matchPatternInfo.typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
 						else if (FTAType.STRING.equals(matchPatternInfo.getBaseType()) && matchPatternInfo.typeQualifier != null)
-							backoutToPattern(realSamples, newPattern);
+							backoutToPattern(realSamples, pluginAnalysis.getNewPattern());
 				}
 				else {
 
@@ -2221,7 +2221,8 @@ public class TextAnalyzer {
 		for (final String elt : minusMatches.keySet())
 			newCardinality.remove(elt);
 
-		if (logical.isValidSet(context, validCount, realSamples, matchPatternInfo.regexp, null, newCardinality, newOutliers, tokenStreams, analysisConfig) != null)
+
+		if (!logical.analyzeSet(context, validCount, realSamples, matchPatternInfo.regexp, null, newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
 			return new FiniteMatchResult();
 
 		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context.getStreamName()), validCount, newOutliers, newCardinality);
@@ -2297,9 +2298,9 @@ public class TextAnalyzer {
 		}
 	}
 
-	private LogicalTypeFinite matchFiniteTypes(final Map<String, Long> cardinalityUpper, final int minKeyLength, final int maxKeyLength) {
+	private LogicalTypeFinite matchFiniteTypes(final Map<String, Long> cardinalityUpper, final int minKeyLength, final int maxKeyLength, final double scoreToBeat) {
 		FiniteMatchResult bestResult = null;
-		double bestScore = -1.0;
+		double bestScore = scoreToBeat;
 
 		for (final LogicalTypeFinite logical : finiteTypes)
 			if ((!logical.isClosed() || cardinalityUpper.size() <= logical.getSize() + 2 + logical.getSize()/20)) {
@@ -2310,6 +2311,9 @@ public class TextAnalyzer {
 
 				// Choose the best score
 				if (result.score > bestScore ||
+						// If bestResult is null then this finite match has matched an incoming score to beat,
+						// we prefer finite matches to infinite matches if scores are equal
+						bestResult == null ||
 						// If two scores the same then prefer the one with the higher header confidence
 						logical.getHeaderConfidence(context.getStreamName()) > bestResult.logical.getHeaderConfidence(context.getStreamName()) ||
 						// If two scores the same then prefer the logical with the highest priority
@@ -2398,11 +2402,11 @@ public class TextAnalyzer {
 		if (matchPatternInfo.isLogicalType()) {
 			final LogicalType logical = plugins.getRegistered(matchPatternInfo.typeQualifier);
 
-			String newPattern;
-			if ((newPattern = logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig)) != null) {
+			final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig);
+			if (!pluginAnalysis.isValid()) {
 				if (logical.acceptsBaseType(FTAType.STRING) || logical.acceptsBaseType(FTAType.LONG)) {
 					if (logical.acceptsBaseType(FTAType.STRING))
-						backoutToPattern(realSamples, newPattern);
+						backoutToPattern(realSamples, pluginAnalysis.getNewPattern());
 					else
 						backoutLogicalLongType(logical, realSamples);
 					confidence = (double) matchCount / realSamples;
@@ -2464,7 +2468,7 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.LONG) &&
 							logical.isMatch(matchPatternInfo.regexp) &&
-							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig) == null) {
+							logical.analyzeSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig).isValid()) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 						debug("Type determination - was LONG, matchPatternInfo - {}", matchPatternInfo);
@@ -2493,13 +2497,13 @@ public class TextAnalyzer {
 			for (final LogicalTypeRegExp logical : regExpTypes) {
 				if (logical.acceptsBaseType(FTAType.DOUBLE) &&
 						logical.isMatch(matchPatternInfo.regexp) &&
-						logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig) == null) {
+						logical.analyzeSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig).isValid()) {
 					matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 					confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 					break;
 				}
 			}
-		} else if (FTAType.STRING.equals(matchPatternInfo.getBaseType()) && !matchPatternInfo.isLogicalType()) {
+		} else if (FTAType.STRING.equals(matchPatternInfo.getBaseType())) {
 			// Build Cardinality map ignoring case (and white space)
 			int minKeyLength = Integer.MAX_VALUE;
 			int maxKeyLength = 0;
@@ -2519,7 +2523,10 @@ public class TextAnalyzer {
 			// Sort the results so that we consider the most frequent first (we will hopefully fail faster)
 			cardinalityUpper = Utils.sortByValue(cardinalityUpper);
 
-			final LogicalTypeFinite logical = matchFiniteTypes(cardinalityUpper, minKeyLength, maxKeyLength);
+			double scoreToBeat = matchPatternInfo.isLogicalType() ? confidence : -1.0;
+
+			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
+			final LogicalTypeFinite logical = matchFiniteTypes(cardinalityUpper, minKeyLength, maxKeyLength, scoreToBeat);
 			if (logical != null)
 				confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 
@@ -2622,7 +2629,7 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.STRING) &&
 							(logical.isMatch(matchPatternInfo.regexp) || tokenStreams.matches(logical.getRegExp())) &&
-							logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig) == null) {
+							logical.analyzeSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig).isValid()) {
 						matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 						updated = true;
@@ -2699,7 +2706,7 @@ public class TextAnalyzer {
 					for (final LogicalTypeRegExp logical : regExpTypes) {
 						if (logical.acceptsBaseType(FTAType.STRING) &&
 								logical.isMatch(matchPatternInfo.regexp) &&
-								logical.isValidSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig) == null) {
+								logical.analyzeSet(context, matchCount, realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig).isValid()) {
 							matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 							confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());
 							break;
@@ -2715,7 +2722,7 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.STRING) &&
 							logical.isMatch(regExp) &&
-							logical.isValidSet(context, best.getOccurrences(), realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig) == null) {
+							logical.analyzeSet(context, best.getOccurrences(), realSamples, matchPatternInfo.regexp, facts.calculateFacts(matchPatternInfo, matchCount), cardinality, outliers, tokenStreams, analysisConfig).isValid()) {
 						matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						matchCount = best.getOccurrences();
 						confidence = logical.getConfidence(matchCount, realSamples, context.getStreamName());

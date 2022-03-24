@@ -25,6 +25,7 @@ import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.LogicalTypeInfinite;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -140,7 +141,7 @@ public class NameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		int minCardinality = 8;
@@ -151,12 +152,15 @@ public class NameLastFirst extends LogicalTypeInfinite {
 		}
 
 		if (cardinality.size() < minCardinality)
-			return BACKOUT;
+			return new PluginAnalysis(BACKOUT);
 
 		if (realSamples < minSamples)
-			return BACKOUT;
+			return new PluginAnalysis(BACKOUT);
 
-		return getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0 ? null : BACKOUT;
+		if (getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0)
+			return PluginAnalysis.OK;
+
+		return new PluginAnalysis(BACKOUT);
 	}
 
 	@Override

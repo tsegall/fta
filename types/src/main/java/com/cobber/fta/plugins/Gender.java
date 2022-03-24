@@ -27,6 +27,7 @@ import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.LogicalTypeFinite;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.RegExpGenerator;
@@ -152,15 +153,15 @@ public class Gender extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String isValidSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
 		if (outliers.size() > 1)
-			return BACKOUT_REGEX;
+			return new PluginAnalysis(BACKOUT_REGEX);
 
 		final boolean positiveStreamName = context.getStreamName().matches(genderData.header);
 		if (!positiveStreamName && cardinality.size() - outliers.size() <= 1)
-			return BACKOUT_REGEX;
+			return new PluginAnalysis(BACKOUT_REGEX);
 
 		String outlier;
 		if (!outliers.isEmpty()) {
@@ -184,13 +185,13 @@ public class Gender extends LogicalTypeFinite {
 			// However a field with only 'M' and 'F' in it is not, so in this case we would like an extra hint.
 			if (count == 1) {
 				if (!positiveStreamName && (first.equals(genderData.feminineShort) || first.equals(genderData.masculineShort)))
-					return BACKOUT_REGEX;
+					return new PluginAnalysis(BACKOUT_REGEX);
 				re.train(first);
 				re.train(opposites.get(first));
 			} else if (count == 2) {
 				final String second = iter.next();
 				if (!positiveStreamName && (first.equals(genderData.feminineShort) || first.equals(genderData.masculineShort)) && (second.equals(genderData.feminineShort) || second.equals(genderData.masculineShort)))
-					return BACKOUT_REGEX;
+					return new PluginAnalysis(BACKOUT_REGEX);
 				if (opposites.get(first).equals(second)) {
 					re.train(first);
 					re.train(second);
@@ -205,9 +206,9 @@ public class Gender extends LogicalTypeFinite {
 			if (!outliers.isEmpty())
 				re.train(outliers.keySet().iterator().next());
 			happyRegex = re.getResult();
-			return null;
+			return PluginAnalysis.OK;
 		}
 
-		return BACKOUT_REGEX;
+		return new PluginAnalysis(BACKOUT_REGEX);
 	}
 }
