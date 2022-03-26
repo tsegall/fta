@@ -305,14 +305,14 @@ public class TestDates {
 		}
 		final TextAnalysisResult result = analysis.getResult();
 
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
 		assertEquals(result.getSampleCount(), sampleCount);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), sampleCount);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d:\\d{2} \\p{IsAlphabetic}|\\d{2}:\\d{2} \\p{IsAlphabetic}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
 
 		for (final String sample : samples) {
 			assertTrue(sample.matches(result.getRegExp()), sample);
@@ -3453,7 +3453,11 @@ public class TestDates {
 
 			if (result.getTypeQualifier() != null) {
 				final SimpleResult expected = results.get(dateTimeFormat);
+				if (expected == null)
+					fail("expected is null");
 				final String actual = result.getRegExp();
+				if (actual == null)
+					fail("actual is null");
 				if (!actual.equals(expected.regExp))
 					logger.debug("Format: '{}', expected: '{}', actual '{}'.", dateTimeFormat, expected.regExp, actual);
 				assertEquals(result.getConfidence(), 1.0);

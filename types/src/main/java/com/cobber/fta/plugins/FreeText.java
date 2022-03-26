@@ -160,9 +160,9 @@ public class FreeText extends LogicalTypeInfinite {
 		double confidence = (double)matchCount/realSamples;
 
 		if (getHeaderConfidence(dataStreamName) != 0)
-			return confidence;
+			return Math.min(1.2 * confidence, 1.0);
 
 		// Header is not recognized so return the lowest threshold we would accept
-		return (double)defn.threshold/100;
+		return Math.min((double)defn.threshold/100, confidence);
 	}
 }

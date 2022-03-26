@@ -129,4 +129,85 @@ public class TestText {
 		assertEquals(result.getSpaces(), 10);
 		assertEquals(result.getPunctuation(), 6);
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void singleWord() throws IOException, FTAException {
+		TextProcessor processor = new TextProcessor(Locale.getDefault());
+
+		TextProcessor.TextResult result = processor.analyze("F944277490");
+
+		assertEquals(result.getDetermination(), TextProcessor.Determination.SINGLE_WORD);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void noRealWords() throws IOException, FTAException {
+		TextProcessor processor = new TextProcessor(Locale.getDefault());
+
+		TextProcessor.TextResult result = processor.analyze("F944277490 PAGE X1233456");
+
+		assertEquals(result.getDetermination(), TextProcessor.Determination.PERCENT_TOO_LOW);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void tooLong() throws IOException, FTAException {
+		TextProcessor processor = new TextProcessor(Locale.getDefault());
+
+		TextProcessor.TextResult result = processor.analyze("Sometimes antidisestablishmentarianism is just too long to be real.");
+
+		assertEquals(result.getDetermination(), TextProcessor.Determination.TOO_LONG);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void sentenceTooShort() throws IOException, FTAException {
+		TextProcessor processor = new TextProcessor(Locale.getDefault());
+
+		TextProcessor.TextResult result = processor.analyze("Stop!");
+
+		assertEquals(result.getDetermination(), TextProcessor.Determination.SENTENCE_TOO_SHORT);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void averageLow() throws IOException, FTAException {
+		TextProcessor processor = new TextProcessor(Locale.getDefault());
+
+		TextProcessor.TextResult result = processor.analyze("I am a very tiny tract of land.");
+
+		assertEquals(result.getDetermination(), TextProcessor.Determination.BAD_AVERAGE_LENGTH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void averageHigh() throws IOException, FTAException {
+		TextProcessor processor = new TextProcessor(Locale.getDefault());
+
+		TextProcessor.TextResult result = processor.analyze("Tergiversation - definition: equivocation, circumlocution, prevarication.");
+
+		assertEquals(result.getDetermination(), TextProcessor.Determination.BAD_AVERAGE_LENGTH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void randomNoise() throws IOException, FTAException {
+		TextProcessor processor = new TextProcessor(Locale.getDefault());
+
+		TextProcessor.TextResult result = processor.analyze("=aaaaaaa= =bbbbbbbb= =ccccccc= =dddddddd= =eeeeeeee=.");
+
+		assertEquals(result.getDetermination(), TextProcessor.Determination.NOT_ENOUGH_REAL_WORDS);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void hyphens() throws IOException, FTAException {
+		TextProcessor processor = new TextProcessor(Locale.getDefault());
+
+		TextProcessor.TextResult result = processor.analyze("Netex - LocalTails-Unmatched");
+
+		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void addresses() throws IOException, FTAException {
+		TextProcessor processor = new TextProcessor(Locale.getDefault());
+
+		TextProcessor.TextResult result = processor.analyze("Station Road");
+
+		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
+	}
 }

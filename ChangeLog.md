@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 7.0.2
+ - ENH: Improve FREE_TEXT detection
+
 ### 7.0.1
  - BUG: Fixup plugin.json (qualifier was DOY.FULL_<LOCALE> but was actually returning DAY.FULL_<LOCALE>)
  - BUG: Fixup plugin.json (qualifier was DOY.ABBR_<LOCALE> but was actually returning DAY.ABBR_<LOCALE>)

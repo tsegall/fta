@@ -15,15 +15,20 @@
  */
 package com.cobber.fta.text;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * Capture a set of key metrics for any given language.
  */
 public final class TextConfig {
 	/** Any word longer than this will cause rejection, so set it to something long but not silly (rejecting a couple of should not effect the analysis). */
 	private final int longWord;
-	/** Average word length in the language, so choose a reasonable lower bound. */
+	/** A reasonable lower bound for the average word length in the language. */
 	private final double averageLow;
-	/** Average word length in the language, so choose a reasonable upper bound. */
+	/** A reasonable upper bound for the average word length in the language. */
 	private final double averageHigh;
 	/** The percentage of 'alpha' characters that we expect to be present. */
 	private final int alphaPercentage;
@@ -37,9 +42,13 @@ public final class TextConfig {
 	private final String wordBreak;
 	/** Punctuation character. */
 	private final String punctuation;
+	/** Valid starts for common words. */
+	private final Set<String> validStarts;
 
 	public TextConfig(final int longWord, final double averageLow, final double averageHigh, final int alphaPercentage,
-			final int simplePercentage, final int maxLength, final String sentenceBreak, final String wordBreak, final String punctuation) {
+			final int simplePercentage, final int maxLength, final String sentenceBreak, final String wordBreak,
+			final String punctuation,
+			final String[] starts) {
 		this.longWord = longWord;
 		this.averageLow = averageLow;
 		this.averageHigh = averageHigh;
@@ -49,16 +58,26 @@ public final class TextConfig {
 		this.wordBreak = wordBreak;
 		this.sentenceBreak = sentenceBreak;
 		this.punctuation = punctuation;
+		this.validStarts = new HashSet<>(Arrays.stream(starts).collect(Collectors.toSet()));
 	}
 
+	/*
+	 * The maximum length we expect any likely word to be in the target language.
+	 */
 	public int getLongWord() {
 		return longWord;
 	}
 
+	/*
+	 * A reasonable lower bound for the average word length in the language.
+	 */
 	public double getAverageLow() {
 		return averageLow;
 	}
 
+	/*
+	 * A reasonable upper bound for the average word length in the language.
+	 */
 	public double getAverageHigh() {
 		return averageHigh;
 	}
@@ -71,19 +90,41 @@ public final class TextConfig {
 		return simplePercentage;
 	}
 
+	/**
+	 *  The maximum number of character to analyze in the input.
+	 */
 	public int getMaxLength() {
 		return maxLength;
 	}
 
+	/**
+	 * The Sentence Break characters.
+	 */
 	public String getSentenceBreak() {
 		return sentenceBreak;
 	}
 
+	/**
+	 * The Word Break characters.
+	 */
 	public String getWordBreak() {
 		return wordBreak;
 	}
 
+	/**
+	 * The Punctuation characters.
+	 */
 	public String getPunctuation() {
 		return punctuation;
 	}
+
+	/**
+	 * The 'likely' set of two character initial stems.
+	 * For example, in English 'fo' is reasonable (for, form, foot, ...) whereas 'xz' is not,
+	 * as no words start with xz.
+	 */
+	public Set<String> getStarts() {
+		return validStarts;
+	}
+
 }

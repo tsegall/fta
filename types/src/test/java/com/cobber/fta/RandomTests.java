@@ -836,7 +836,7 @@ public class RandomTests {
 	}
 
 	private void simpleArrayTest(final String name, final String[] inputs) throws FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("DataValueFootnoteSymbol");
+		final TextAnalyzer analysis = new TextAnalyzer(name);
 		int locked = -1;
 		int realSamples = 0;
 		int empty = 0;
@@ -1002,6 +1002,7 @@ public class RandomTests {
 				"Geilear", "", "Tom na Ba", "", "Rathad Ur", "", "Geilear", "Rathad Ur", "", "Struan Ruadh",
 				"", "Struan Ruadh", "", "Rubhachlachainn", "", "Sraid a' Chaisteil", "Sraid a' Bhanca", "Ionad Casimir", "Ionad Mhicceallaig", "", "Slighe Ruairidh", ""
 		};
+
 		simpleArrayTest("blanksAtEndOfField", inputs);
 	}
 
