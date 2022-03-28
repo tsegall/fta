@@ -30,8 +30,8 @@ public final class TextConfig {
 	private final double averageLow;
 	/** A reasonable upper bound for the average word length in the language. */
 	private final double averageHigh;
-	/** The percentage of 'alpha' characters that we expect to be present. */
-	private final int alphaPercentage;
+	/** The percentage of 'alpha' pr 'space' characters that we expect to be present. */
+	private final int alphaSpacePercentage;
 	/** The percentage of 'reasonable' characters that we expect to be present. */
 	private final int simplePercentage;
 	/** Only analyze the first <n> characters. */
@@ -45,14 +45,14 @@ public final class TextConfig {
 	/** Valid starts for common words. */
 	private final Set<String> validStarts;
 
-	public TextConfig(final int longWord, final double averageLow, final double averageHigh, final int alphaPercentage,
+	public TextConfig(final int longWord, final double averageLow, final double averageHigh, final int alphaSpacePercentage,
 			final int simplePercentage, final int maxLength, final String sentenceBreak, final String wordBreak,
 			final String punctuation,
 			final String[] starts) {
 		this.longWord = longWord;
 		this.averageLow = averageLow;
 		this.averageHigh = averageHigh;
-		this.alphaPercentage = alphaPercentage;
+		this.alphaSpacePercentage = alphaSpacePercentage;
 		this.simplePercentage = simplePercentage;
 		this.maxLength = maxLength;
 		this.wordBreak = wordBreak;
@@ -61,37 +61,51 @@ public final class TextConfig {
 		this.validStarts = new HashSet<>(Arrays.stream(starts).collect(Collectors.toSet()));
 	}
 
-	/*
+	/**
 	 * The maximum length we expect any likely word to be in the target language.
+	 * @return The maximum length we expect any likely word to be in the target language.
 	 */
 	public int getLongWord() {
 		return longWord;
 	}
 
-	/*
+	/**
 	 * A reasonable lower bound for the average word length in the language.
+	 * @return A reasonable lower bound for the average word length in the language.
 	 */
 	public double getAverageLow() {
 		return averageLow;
 	}
 
-	/*
+	/**
 	 * A reasonable upper bound for the average word length in the language.
+	 * @return A reasonable upper bound for the average word length in the language.
 	 */
 	public double getAverageHigh() {
 		return averageHigh;
 	}
 
-	public int getAlphaPercentage() {
-		return alphaPercentage;
+	/**
+	 * An estimate of the percentage of 'alpha' or space (isWhiteSpace()) characters that we expect to be present.
+	 * @return An estimate of the percentage of 'alpha' or space (isWhiteSpace()) characters that we expect to be present.
+	 */
+	public int getAlphaSpacePercentage() {
+		return alphaSpacePercentage;
 	}
 
+	/**
+	 * An estimate of the percentage of 'reasonable' characters that we expect to be present.
+	 * Note: The reasonable characters are defined as the sum of:
+	 *  - alphas, digits (in digit only words), wordBreaks, spaces, and punctuation
+	 *  @return An estimate of the percentage of 'reasonable' characters that we expect to be present.
+	 */
 	public int getSimplePercentage() {
 		return simplePercentage;
 	}
 
 	/**
 	 *  The maximum number of character to analyze in the input.
+	 *  @return The maximum number of character to analyze in the input.
 	 */
 	public int getMaxLength() {
 		return maxLength;
@@ -99,6 +113,7 @@ public final class TextConfig {
 
 	/**
 	 * The Sentence Break characters.
+	 * @return The set of characters used to break paragraphs into sentences.
 	 */
 	public String getSentenceBreak() {
 		return sentenceBreak;
@@ -106,6 +121,7 @@ public final class TextConfig {
 
 	/**
 	 * The Word Break characters.
+	 * @return The set of characters used to break sentences into words.
 	 */
 	public String getWordBreak() {
 		return wordBreak;
@@ -113,6 +129,7 @@ public final class TextConfig {
 
 	/**
 	 * The Punctuation characters.
+	 * @return The set of characters recognized as punctuation.
 	 */
 	public String getPunctuation() {
 		return punctuation;
@@ -122,6 +139,7 @@ public final class TextConfig {
 	 * The 'likely' set of two character initial stems.
 	 * For example, in English 'fo' is reasonable (for, form, foot, ...) whereas 'xz' is not,
 	 * as no words start with xz.
+	 * @return The 'likely' set of two character initial stems.
 	 */
 	public Set<String> getStarts() {
 		return validStarts;

@@ -65,6 +65,12 @@ public final class Utils {
 				.concat(input.substring(offset + length));
 	}
 
+	/**
+	 * Return a String with the provided character repeated &lt;count&gt; times;.
+	 * @param c The Character to repeat
+	 * @param count The number of time to repeat the character.
+	 * @return The String with &lt;count&gt; occurrences of the supplied character.
+	 */
 	public static String repeat(final char c, final int count) {
 		final StringBuilder s = new StringBuilder(count);
 		for (int i = 0; i < count; i++)

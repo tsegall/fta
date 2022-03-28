@@ -34,6 +34,7 @@ public abstract class DetermineDateFormat {
 		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("07/04/2012"));
 		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("2012 March 20"));
 		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("2012/04/09 18:24:12"));
+		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("02-01-2014 12:00 AM"));
 
 		// Determine format of the input below and then parse it
 		String input = "Wed Mar 04 05:09:06 GMT-06:00 2009";

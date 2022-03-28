@@ -314,7 +314,7 @@ public class TextProcessor {
 			return ret;
 		}
 
-		if ((ret.alphas + ret.spaces) * 100/idx < config.getAlphaPercentage()) {
+		if ((ret.alphas + ret.spaces) * 100/idx < config.getAlphaSpacePercentage()) {
 			ret.determination = Determination.PERCENT_TOO_LOW;
 			return ret;
 		}

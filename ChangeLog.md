@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 7.0.3
+ - ENH: Improve Date detection - coping with additional variable length components, e.g. the following now pass:
+	- "May 8, 2009 5:57:51 PM", "oct. 7, 70", "2014/4/8 22:05", "2014/04/2 03:00:51", "2014:4:8 22:05", "2014:04:2 03:00:51", "2014:4:02 03:00:51"
+ - ENH: DateTimeParser.determineFormatString() - Cope with single quotes in input string - generated an error previously, e.g., "oct. 7, '70"
+
 ### 7.0.2
  - ENH: Improve FREE_TEXT detection
 

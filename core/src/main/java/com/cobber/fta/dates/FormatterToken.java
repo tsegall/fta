@@ -224,12 +224,16 @@ class FormatterToken {
 				break;
 
 			case '\'':
+				// Quotes in format string are either '' which indicates a single quote or 'x' which indicates the character x
 				i++;
-				ret.add(new FormatterToken(Token.CONSTANT_CHAR, formatString.charAt(i)));
-				if (i + 1 >= formatLength || formatString.charAt(i + 1) != '\'') {
-					throw new DateTimeParseException("Unterminated quote in format String", formatString, i);
+				char constantChar = formatString.charAt(i);
+				ret.add(new FormatterToken(Token.CONSTANT_CHAR, constantChar));
+				if (constantChar != '\'') {
+					if (i + 1 >= formatLength || formatString.charAt(i + 1) != '\'') {
+						throw new DateTimeParseException("Unterminated quote in format String", formatString, i);
+					}
+					i++;
 				}
-				i++;
 				break;
 
 			case 'a':

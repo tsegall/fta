@@ -58,6 +58,7 @@ import com.cobber.fta.core.Utils;
  */
 public class DateTimeParser {
 	private static final String TIME_ONLY_HHMMSS = "d{2}:d{2}:d{2}";
+	private static final String TIME_ONLY_HMMSS = "d:d{2}:d{2}";
 	private static final String TIME_ONLY_HHMM = "d{2}:d{2}";
 	private static final String TIME_ONLY_HMM = "d:d{2}";
 	private static final String TIME_ONLY_PPHMM = " {2}d:d{2}";
@@ -1118,24 +1119,35 @@ public class DateTimeParser {
 			components--;
 		}
 
+		boolean timeFound = false;
 		if (components >= 3 && compressed.indexOf(TIME_ONLY_HHMMSS) != -1) {
 			compressed = Utils.replaceFirst(compressed, TIME_ONLY_HHMMSS, ampm ? "hh:mm:ss" : "HH:mm:ss");
 			components -= 3;
+			timeFound = true;
 		}
 
-		if (components >= 2 && matchAtEnd(compressed, TIME_ONLY_HHMM)) {
+		if (!timeFound && components >= 3 && compressed.indexOf(TIME_ONLY_HMMSS) != -1) {
+			compressed = Utils.replaceFirst(compressed, TIME_ONLY_HMMSS, ampm ? "h:mm:ss" : "H:mm:ss");
+			components -= 3;
+			timeFound = true;
+		}
+
+		if (!timeFound && components >= 2 && matchAtEnd(compressed, TIME_ONLY_HHMM)) {
 			compressed = Utils.replaceFirst(compressed, TIME_ONLY_HHMM, ampm ? "hh:mm" : "HH:mm");
 			components -= 2;
+			timeFound = true;
 		}
 
-		if (components >= 2 && matchAtEnd(compressed, TIME_ONLY_PPHMM)) {
+		if (!timeFound && components >= 2 && matchAtEnd(compressed, TIME_ONLY_PPHMM)) {
 			compressed = Utils.replaceFirst(compressed, TIME_ONLY_PPHMM, ampm ? " pph:mm" : " ppH:mm");
 			components -= 2;
+			timeFound = true;
 		}
 
-		if (components >= 2 && matchAtEnd(compressed, TIME_ONLY_HMM)) {
+		if (!timeFound && components >= 2 && matchAtEnd(compressed, TIME_ONLY_HMM)) {
 			compressed = Utils.replaceFirst(compressed, TIME_ONLY_HMM, ampm ? "h:mm" : "H:mm");
 			components -= 2;
+			timeFound = true;
 		}
 
 		if (components > 3)
@@ -1193,34 +1205,68 @@ public class DateTimeParser {
 					return null;
 			}
 			else {
-				final int first = compressed.indexOf("d{2}");
-				final int second = compressed.indexOf("d{2}", first + 4);
-
-				if (first == -1 || second == -1)
+				// So we are looking for d{2}/d{2} or d{2}/d or d/{d2} or d/d
+				final int firstDigit = compressed.indexOf("d");
+				if (firstDigit == -1)
 					return null;
 
+				final int firstTwoDigit = compressed.indexOf("d{2}");
+				String firstMatch;
+				int secondStart;
+				int firstLength;
+				if (firstDigit == firstTwoDigit) {
+					firstMatch = "d{2}";
+					firstLength = 2;
+					secondStart = firstDigit + 4;
+				}
+				else {
+					firstMatch = "d";
+					firstLength = 1;
+					secondStart = firstDigit + 1;
+				}
+
+				final int secondDigit = compressed.indexOf("d", secondStart);
+				if (secondDigit == -1)
+					return null;
+
+				final int secondTwoDigit = compressed.indexOf("d{2}", secondStart);
+				String secondMatch;
+				int secondLength;
+				if (secondDigit == secondTwoDigit) {
+					secondMatch = "d{2}";
+					secondLength = 2;
+				}
+				else {
+					secondMatch = "d";
+					secondLength = 1;
+				}
+
 				if (monthIndex != -1)
-					compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "dd"), "d{2}", "yy");
+					compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('d', firstLength)), secondMatch, Utils.repeat('y', secondLength));
 				else
-					if (first > yearIndex)
-						compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "MM"), "d{2}", "dd");
+					if (firstDigit > yearIndex)
+						compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('M', firstLength)), secondMatch, Utils.repeat('d', secondLength));
 					else {
-						final int firstValue = Utils.getValue(trimmed, first, 2, 2);
-						final int secondValue = Utils.getValue(trimmed, second, 2, 2);
+						final int firstValue = Utils.getValue(trimmed, firstDigit, 2, 2);
+						final int secondValue = Utils.getValue(trimmed, secondDigit, 2, 2);
 
 						if (firstValue > 12)
-							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "dd"), "d{2}", "MM");
+							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('d', firstLength)), secondMatch, Utils.repeat('M', secondLength));
 						else if (secondValue > 12)
-							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "MM"), "d{2}", "dd");
+							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('M', firstLength)), secondMatch, Utils.repeat('d', secondLength));
 						else
 							if (resolutionMode == DateResolutionMode.DayFirst)
-								compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "dd"), "d{2}", "MM");
+								compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('d', firstLength)), secondMatch, Utils.repeat('M', secondLength));
 							else
-								compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, "d{2}", "MM"), "d{2}", "dd");
+								compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('M', firstLength)), secondMatch, Utils.repeat('d', secondLength));
 					}
 
 			}
 		}
+
+		// Quotes are special in format strings and need to be doubled to protect them
+		if (compressed.indexOf('\'') != -1)
+			compressed = compressed.replaceAll("'", "''");
 
 		// So we think we have nailed it - but it only counts if it happily passes a validity check
 		final DateTimeParserResult dtp = DateTimeParserResult.asResult(compressed, resolutionMode, locale);
