@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 7.0.4
+ - ENH: Bump Jackson due to CVE-2020-36518
+ - ENH: Fix detection of '2014:3:31' and '2014:03:31'
+
 ### 7.0.3
  - ENH: Improve Date detection - coping with additional variable length components, e.g. the following now pass:
 	- "May 8, 2009 5:57:51 PM", "oct. 7, 70", "2014/4/8 22:05", "2014/04/2 03:00:51", "2014:4:8 22:05", "2014:04:2 03:00:51", "2014:4:02 03:00:51"

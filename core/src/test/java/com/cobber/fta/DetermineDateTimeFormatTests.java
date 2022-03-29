@@ -2016,6 +2016,34 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuityyyyMddColons() {
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		assertEquals(dtp.determineFormatString("2014:03:31"), "yyyy:MM:dd");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuitHHmmColons() {
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+
+		assertEquals(dtp.determineFormatString("03:31"), "HH:mm");
+	}
+
+//	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+//	public void intuitZ() {
+//		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
+//
+//		assertEquals(dtp.determineFormatString("06/Jan/2008 15:04:05 -0700"), "HH:mm");
+//	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuitZZ() {
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.DayFirst, Locale.getDefault());
+
+		assertEquals(dtp.determineFormatString("06/Jan/2008 15:04:05"), "dd/MMM/yyyy HH:mm:ss");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitKKMMSSTrain() {
 		for (int i = 0; i < 100; i++) {
 			final DateTimeParser det = new DateTimeParser();

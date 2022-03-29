@@ -282,39 +282,35 @@ public class LocaleInfo {
 
 	/**
 	 * Check that the input starts with a valid month abbreviation (case insensitive)
-	 * and if so return the offset of the end of match.
+	 * and if so return the matched month abbreviation.
 	 * @param input The input string
 	 * @param locale Locale we are interested in
-	 * @return Offset of the end of the matched input, or -1 if no match
+	 * @return The matched month abbreviation, or null if no match
 	 */
-	public static int skipValidMonthAbbr(final String input, final Locale locale) {
+	public static String findValidMonthAbbr(final String input, final Locale locale) {
 		final int inputLength = input.length();
 		// Get the length of Month Abbreviations in this locale
 		final int abbrLength = LocaleInfo.getShortMonthsLength(locale);
-		int upto = 0;
 
 		if (abbrLength != -1) {
 			// If it is constant length it is easy
-			if (upto + abbrLength > inputLength)
-				return -1;
-			final String monthAbbreviation = input.substring(upto, upto + abbrLength);
+			if (abbrLength > inputLength)
+				return null;
+			final String monthAbbreviation = input.substring(0, abbrLength);
 			if (LocaleInfo.shortMonthOffset(monthAbbreviation, locale) == -1)
-				return -1;
-			upto += abbrLength;
-			return upto;
+				return null;
+			return monthAbbreviation;
 		}
 
-		boolean found = false;
 		for (final String monthAbbr : LocaleInfo.getShortMonths(locale).keySet()) {
-			if (input.substring(upto).toUpperCase(locale).startsWith(monthAbbr)) {
-				found = true;
-				upto += monthAbbr.length();
+			if (input.toUpperCase(locale).startsWith(monthAbbr)) {
+				return monthAbbr;
 				// TODO - Note this makes a rash assumption that the upper case length of the month is the same as the input!
 				// This is not the case with Language 'el', Month Μαΐ.
-				break;
 			}
 		}
-		return found ? upto : -1;
+
+		return null;
 	}
 
 	/**

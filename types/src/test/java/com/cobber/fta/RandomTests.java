@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
@@ -1282,8 +1283,8 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
-	public void setMaxCardinalityTooSmall() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("setMaxCardinalityTooSmall");
+	public void setMaxCardinalityNegative() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("setMaxCardinalityNegative");
 
 		try {
 			analysis.setMaxCardinality(-1);
@@ -1293,6 +1294,56 @@ public class RandomTests {
 			return;
 		}
 		fail("Exception should have been thrown");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void setMaxCardinalityTooSmall() throws IOException, FTAException {
+		final String inputs[] = alpha3.split("\\|");
+		final TextAnalyzer analysis = new TextAnalyzer("setMaxCardinalityTooSmall");
+		analysis.setMaxCardinality(100);
+
+		try {
+			for (final String input : inputs)
+				analysis.train(input);
+
+			analysis.getResult();
+		}
+		catch (FTAPluginException e) {
+			String message = e.getMessage();
+			assertTrue(message.startsWith("Internal error: Max Cardinality: 100 is insufficient to support plugin:"));
+			return;
+		}
+		fail("Exception should have been thrown");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void setMaxCardinalitySmall() throws IOException, FTAException {
+		final String inputs[] = alpha3.split("\\|");
+		final TextAnalyzer analysis = new TextAnalyzer("setMaxCardinalitySmall");
+		analysis.setMaxCardinality(100);
+		analysis.setDefaultLogicalTypes(false);
+
+		try {
+			for (final String input : inputs) {
+				analysis.train("A" + input);
+				analysis.train("B" + input);
+			}
+
+			TextAnalysisResult result = analysis.getResult();
+
+			assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{4}");
+			assertEquals(result.getType(), FTAType.STRING);
+			assertNull(result.getTypeQualifier());
+			assertEquals(result.getSampleCount(), inputs.length * 2);
+			assertEquals(result.getOutlierCount(), 0);
+			assertEquals(result.getMatchCount(), inputs.length * 2);
+			assertEquals(result.getNullCount(), 0);
+			assertEquals(result.getConfidence(), 1.0);
+
+		}
+		catch (FTAPluginException e) {
+			fail("Exception should have been thrown");
+		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })

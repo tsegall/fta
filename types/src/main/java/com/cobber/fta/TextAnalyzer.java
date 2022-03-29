@@ -497,7 +497,9 @@ public class TextAnalyzer {
 	 * <p>
 	 * Note:
 	 * <ul>
-	 * <li>The Cardinality must be larger than the Cardinality of the largest Finite Logical type.
+	 * <li>The Cardinality must be larger than the Cardinality of the largest Finite Logical type
+	 * (if Semantic Type detection is enabled - see {@link #setDefaultLogicalTypes(boolean)}).
+	 * <li>
 	 * <li>It is not possible to change the cardinality once training has started.
 	 * </ul>
 	 *

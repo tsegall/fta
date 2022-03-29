@@ -521,10 +521,10 @@ public class DateTimeParserResult {
 
 			case MONTH_ABBR:
 				start = upto;
-				final int monthAbbrOffset = LocaleInfo.skipValidMonthAbbr(input.substring(upto), locale);
-				if (monthAbbrOffset == -1)
+				final String monthAbbr = LocaleInfo.findValidMonthAbbr(input.substring(upto), locale);
+				if (monthAbbr == null)
 					throw new DateTimeParseException("Month Abbreviation invalid", input, start);
-				upto += monthAbbrOffset;
+				upto += monthAbbr.length();
 				break;
 
 			case CLOCK24_1_OR_2:

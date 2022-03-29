@@ -412,15 +412,6 @@ public class DateTimeParser {
 		return answerResult;
 	}
 
-	private static String retDigits(final int digitCount, final char patternChar) {
-		final String ret = String.valueOf(patternChar);
-		if (digitCount == 1)
-			return ret;
-		if (digitCount == 2)
-			return ret + patternChar;
-		return ret + patternChar + patternChar + patternChar;
-	}
-
 	private boolean plausibleDate(final int[] dateValues, final int[] dateDigits, final int[] fieldOffsets) {
 		return plausibleDateCore(lenient, dateValues[fieldOffsets[0]], dateValues[fieldOffsets[1]],
 				dateValues[fieldOffsets[2]], dateDigits[fieldOffsets[2]]);
@@ -442,22 +433,22 @@ public class DateTimeParser {
 		if (yearFirst)
 			switch (resolutionMode) {
 			case None:
-				return retDigits(dateDigits[0], yearKnown ? 'y' : '?')  + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + retDigits(dateDigits[2], '?');
+				return Utils.repeat(yearKnown ? 'y' : '?', dateDigits[0])  + dateSeparator + Utils.repeat('?', dateDigits[1]) + dateSeparator + Utils.repeat('?', dateDigits[2]);
 			case DayFirst:
-				return  retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'M');
+				return  Utils.repeat('y', dateDigits[0]) + dateSeparator + Utils.repeat('d', dateDigits[1]) + dateSeparator + Utils.repeat('M', dateDigits[2]);
 			case MonthFirst:
-				return retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
+				return Utils.repeat('y', dateDigits[0]) + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + Utils.repeat('d', dateDigits[2]);
 			default:
 				throw new InternalErrorException("unexpected resolutionMode: " + resolutionMode);
 			}
 		else
 			switch (resolutionMode) {
 			case None:
-				return retDigits(dateDigits[0], '?') + dateSeparator + retDigits(dateDigits[1], '?') + dateSeparator + retDigits(dateDigits[2], yearKnown ? 'y' : '?');
+				return Utils.repeat('?', dateDigits[0]) + dateSeparator + Utils.repeat('?', dateDigits[1]) + dateSeparator + Utils.repeat(yearKnown ? 'y' : '?', dateDigits[2]);
 			case DayFirst:
-				return retDigits(dateDigits[0], 'd') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'y');
+				return Utils.repeat('d', dateDigits[0]) + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + Utils.repeat('y', dateDigits[2]);
 			case MonthFirst:
-				return retDigits(dateDigits[0], 'M') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'y');
+				return Utils.repeat('M', dateDigits[0]) + dateSeparator + Utils.repeat('d', dateDigits[1]) + dateSeparator + Utils.repeat('y', dateDigits[2]);
 			default:
 				throw new InternalErrorException("unexpected resolutionMode: " + resolutionMode);
 			}
@@ -1015,12 +1006,12 @@ public class DateTimeParser {
 				if (iso8601 || dateValue[2] > 12) {
 					if (!plausibleDate(dateValue, dateDigits, new int[] {2,1,0}))
 						return null;
-					dateAnswer = retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
+					dateAnswer = Utils.repeat('y', dateDigits[0]) + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + Utils.repeat('d', dateDigits[2]);
 				}
 				else if (dateValue[1] > 12) {
 					if (!plausibleDate(dateValue, dateDigits, new int[] {1,2,0}))
 						return null;
-					dateAnswer = retDigits(dateDigits[0], 'y') + dateSeparator + retDigits(dateDigits[1], 'd') + dateSeparator + retDigits(dateDigits[2], 'M');
+					dateAnswer = Utils.repeat('y', dateDigits[0]) + dateSeparator + Utils.repeat('d', dateDigits[1]) + dateSeparator + Utils.repeat('M', dateDigits[2]);
 				}
 				else
 					dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, true);
@@ -1031,12 +1022,12 @@ public class DateTimeParser {
 					if (dateValue[0] > 12) {
 						if (!plausibleDate(dateValue, dateDigits, new int[] {0,1,2}))
 							return null;
-						dateAnswer = "dd" + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + "yyyy";
+						dateAnswer = "dd" + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + "yyyy";
 					}
 					else if (dateValue[1] > 12) {
 						if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
 							return null;
-						dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yyyy";
+						dateAnswer = Utils.repeat('M', dateDigits[0]) + dateSeparator + "dd" + dateSeparator + "yyyy";
 					}
 					else
 						dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, false);
@@ -1048,34 +1039,34 @@ public class DateTimeParser {
 						if (dateValue[1] > 12) {
 							if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
 								return null;
-							dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
+							dateAnswer = Utils.repeat('M', dateDigits[0]) + dateSeparator + "dd" + dateSeparator + "yy";
 						}
 						else
 							dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, false);
 					}
 					// If year is the first field - then assume yy/MM/dd
 					else if (dateValue[0] > 31)
-						dateAnswer = "yy" + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + retDigits(dateDigits[2], 'd');
+						dateAnswer = "yy" + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + Utils.repeat('d', dateDigits[2]);
 					else if (dateValue[2] > 31) {
 						// Year is the last field - attempt to determine which is the month
 						if (dateValue[0] > 12) {
 							if (!plausibleDate(dateValue, dateDigits, new int[] {0,1,2}))
 								return null;
-							dateAnswer = "dd" + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + "yy";
+							dateAnswer = "dd" + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + "yy";
 						}
 						else if (dateValue[1] > 12) {
 							if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
 								return null;
-							dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
+							dateAnswer = Utils.repeat('M', dateDigits[0]) + dateSeparator + "dd" + dateSeparator + "yy";
 						}
 						else
 							dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, false);
 					} else if (dateValue[1] > 12) {
 						if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
 							return null;
-						dateAnswer = retDigits(dateDigits[0], 'M') + dateSeparator + "dd" + dateSeparator + "yy";
+						dateAnswer = Utils.repeat('M', dateDigits[0]) + dateSeparator + "dd" + dateSeparator + "yy";
 					} else if (dateValue[0] > 12 && dateValue[2] > 12) {
-						dateAnswer = "??" + dateSeparator + retDigits(dateDigits[1], 'M') + dateSeparator + "??";
+						dateAnswer = "??" + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + "??";
 					} else
 						dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, false, false);
 				}
@@ -1132,19 +1123,22 @@ public class DateTimeParser {
 			timeFound = true;
 		}
 
-		if (!timeFound && components >= 2 && matchAtEnd(compressed, TIME_ONLY_HHMM)) {
+		// Happy to strip off a trailing time but only if there is something meaningful to further process
+		if (!timeFound && components > 3 && matchAtEnd(compressed, TIME_ONLY_HHMM)) {
 			compressed = Utils.replaceFirst(compressed, TIME_ONLY_HHMM, ampm ? "hh:mm" : "HH:mm");
 			components -= 2;
 			timeFound = true;
 		}
 
-		if (!timeFound && components >= 2 && matchAtEnd(compressed, TIME_ONLY_PPHMM)) {
+		// Happy to strip off a trailing time but only if there is something meaningful to further process
+		if (!timeFound && components > 3 && matchAtEnd(compressed, TIME_ONLY_PPHMM)) {
 			compressed = Utils.replaceFirst(compressed, TIME_ONLY_PPHMM, ampm ? " pph:mm" : " ppH:mm");
 			components -= 2;
 			timeFound = true;
 		}
 
-		if (!timeFound && components >= 2 && matchAtEnd(compressed, TIME_ONLY_HMM)) {
+		// Happy to strip off a trailing time but only if there is something meaningful to further process
+		if (!timeFound && components > 3 && matchAtEnd(compressed, TIME_ONLY_HMM)) {
 			compressed = Utils.replaceFirst(compressed, TIME_ONLY_HMM, ampm ? "h:mm" : "H:mm");
 			components -= 2;
 			timeFound = true;
