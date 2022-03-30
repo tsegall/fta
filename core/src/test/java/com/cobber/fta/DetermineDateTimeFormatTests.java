@@ -1961,80 +1961,97 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitMMMHHmmssa() {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-
-		assertEquals(dtp.determineFormatString("May 8, 2009 5:57:51 PM"), "MMM d, yyyy h:mm:ss a");
+		checker("May 8, 2009 5:57:51 PM", "MMM d, yyyy h:mm:ss a", FTAType.LOCALDATETIME, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuityyyyMMddHmm() {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-
-		assertEquals(dtp.determineFormatString("2014/4/8 22:05"), "yyyy/M/d HH:mm");
+		checker("2014/4/8 22:05", "yyyy/M/d HH:mm", FTAType.LOCALDATETIME, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void embeddedQuote() {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-
-		assertEquals(dtp.determineFormatString("oct 7, '70"), "MMM d, ''yy");
+		checker("oct 7, '70", "MMM d, ''yy", FTAType.LOCALDATE, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitMMMdyy() {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-
-		assertEquals(dtp.determineFormatString("oct. 7, 70"), "MMM. d, yy");
+		checker("oct. 7, 70", "MMM. d, yy", FTAType.LOCALDATE, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuityyyyMMdHHmmss() {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-
-		assertEquals(dtp.determineFormatString("2014/04/2 03:00:51"), "yyyy/MM/d HH:mm:ss");
+		checker("2014/04/2 03:00:51", "yyyy/MM/d HH:mm:ss", FTAType.LOCALDATETIME, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuityyyyMdHHmm() {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-
-		assertEquals(dtp.determineFormatString("2014:4:8 22:05"), "yyyy:M:d HH:mm");
+		checker("2014:4:8 22:05", "yyyy:M:d HH:mm", FTAType.LOCALDATETIME, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuityyyyMMdHHmmssColons() {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-
-		assertEquals(dtp.determineFormatString("2014:04:2 03:00:51"), "yyyy:MM:d HH:mm:ss");
+		checker("2014:04:2 03:00:51", "yyyy:MM:d HH:mm:ss", FTAType.LOCALDATETIME, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuityyyyMddHHmmssColons() {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-
-		assertEquals(dtp.determineFormatString("2014:4:02 03:00:51"), "yyyy:M:dd HH:mm:ss");
+		checker("2014:4:02 03:00:51", "yyyy:M:dd HH:mm:ss", FTAType.LOCALDATETIME, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuityyyyMddColons() {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-
-		assertEquals(dtp.determineFormatString("2014:03:31"), "yyyy:MM:dd");
+		checker("2014:03:31", "yyyy:MM:dd", FTAType.LOCALDATE, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitHHmmColons() {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-
-		assertEquals(dtp.determineFormatString("03:31"), "HH:mm");
+		checker("03:31", "HH:mm", FTAType.LOCALTIME, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
-//	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
-//	public void intuitZ() {
-//		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.getDefault());
-//
-//		assertEquals(dtp.determineFormatString("06/Jan/2008 15:04:05 -0700"), "HH:mm");
-//	}
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuitwithTimeZone() {
+		checker("06/Jan/2008 15:04:05 -0700", "dd/MMM/yyyy HH:mm:ss xx", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	public void checker(final String testInput, final String expectedFormat, final FTAType type,
+			final DateResolutionMode resolutionMode, final Locale locale) {
+		final DateTimeParser dtp = new DateTimeParser(resolutionMode, locale);
+
+		// Check we can determine the format
+		assertEquals(dtp.determineFormatString(testInput), expectedFormat);
+
+		DateTimeParserResult result = DateTimeParserResult.asResult(expectedFormat, resolutionMode, locale);
+
+		// Check it is of the expected FTA type
+		assertEquals(type, result.getType());
+
+		// Grab our slightly modified DateTimeFormatter (since it copes with case insensitivity)
+		DateTimeFormatter dtf = DateTimeParser.ofPattern(expectedFormat, locale);
+
+		String formatted = null;
+		switch (type) {
+		case LOCALDATE:
+			LocalDate ld = LocalDate.parse(testInput, dtf);
+			formatted = ld.format(dtf);
+			break;
+		case LOCALTIME:
+			LocalTime lt = LocalTime.parse(testInput, dtf);
+			formatted = lt.format(dtf);
+			break;
+		case LOCALDATETIME:
+			LocalDateTime ldt = LocalDateTime.parse(testInput, dtf);
+			formatted = ldt.format(dtf);
+			break;
+		case OFFSETDATETIME:
+			OffsetDateTime odt = OffsetDateTime.parse(testInput, dtf);
+			formatted = odt.format(dtf);
+			break;
+		}
+
+		// Check the result by parsing the original string and printing it
+		assertTrue(formatted.equalsIgnoreCase(testInput));
+	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitZZ() {

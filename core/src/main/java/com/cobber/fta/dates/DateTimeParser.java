@@ -1104,10 +1104,22 @@ public class DateTimeParser {
 			compressed = compressed.substring(0, compressed.length() - 1) + 'a';
 
 		if (components > 6) {
-			if (compressed.indexOf("d{3}") == -1)
+			// Do we have a timezone offset?
+			boolean positive;
+			if ((positive = compressed.endsWith(" d{4}")) || compressed.endsWith(" -d{4}")) {
+				int offset = compressed.lastIndexOf(positive ? " d{4}" : " -d{4}");
+				compressed = compressed.substring(0, offset) + " xx";
+				components--;
+			}
+
+			// Do we have some milliseconds?
+			if (components > 6 && compressed.indexOf("d{3}") != -1) {
+				compressed = Utils.replaceFirst(compressed, "d{3}", "SSS");
+				components--;
+			}
+
+			if (components > 6)
 				return null;
-			compressed = Utils.replaceFirst(compressed, "d{3}", "SSS");
-			components--;
 		}
 
 		boolean timeFound = false;

@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 7.0.5
+ - ENH: Fix detection of '06/Jan/2008 15:04:05 -0700' and 'Mon, 02 Jan 2006 15:04:05 -0700'
+ - INT: Cleanup a couple of tests
+
 ### 7.0.4
  - ENH: Bump Jackson due to CVE-2020-36518
  - ENH: Fix detection of '2014:3:31' and '2014:03:31'
