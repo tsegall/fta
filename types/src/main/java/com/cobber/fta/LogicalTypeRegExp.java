@@ -167,20 +167,20 @@ public class LogicalTypeRegExp extends LogicalType {
 		if (facts != null) {
 			switch (defn.baseType) {
 			case LONG:
-				if ((minLong != null && Long.parseLong(facts.minValue) < minLong) ||
-						(maxLong != null && Long.parseLong(facts.maxValue) > maxLong))
+				if ((minLong != null && (Long)facts.getMin() < minLong) ||
+						(maxLong != null && (Long)facts.getMax() > maxLong))
 					return new PluginAnalysis(backout);;
 				break;
 
 			case DOUBLE:
-				if ((minDouble != null && Double.parseDouble(facts.minValue) < minDouble) ||
-						(maxDouble != null && Double.parseDouble(facts.maxValue) > maxDouble))
+				if ((minDouble != null && (Double)facts.getMin() < minDouble) ||
+						(maxDouble != null && (Double)facts.getMax() > maxDouble))
 					return new PluginAnalysis(backout);;
 				break;
 
 			case STRING:
-				if ((minString != null && facts.minValue.compareTo(minString) < 0) ||
-						(maxString != null && facts.maxValue.compareTo(maxString) > 0))
+				if ((minString != null && facts.getMinValue().compareTo(minString) < 0) ||
+						(maxString != null && facts.getMaxValue().compareTo(maxString) > 0))
 					return new PluginAnalysis(backout);;
 				break;
 

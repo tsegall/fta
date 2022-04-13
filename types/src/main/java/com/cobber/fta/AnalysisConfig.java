@@ -15,6 +15,8 @@
  */
 package com.cobber.fta;
 
+import java.util.Objects;
+
 /**
  * Capture how the Analysis is configured.  Attributes on the analysis are typically frozen once training has started.
  */
@@ -71,6 +73,9 @@ public class AnalysisConfig {
 	/** Should we enable Default Logical Type detection. */
 	private boolean enableDefaultLogicalTypes = true;
 
+	/** Enable Numeric widening - i.e. if we see lots of integers then some doubles call it a double. */
+	private boolean numericWidening = true;
+
 	AnalysisConfig() {
 	}
 
@@ -88,6 +93,18 @@ public class AnalysisConfig {
 
 	public void setEnableDefaultLogicalTypes(boolean enableDefaultLogicalTypes) {
 		this.enableDefaultLogicalTypes = enableDefaultLogicalTypes;
+	}
+
+	public boolean isNumericWidening() {
+		return numericWidening;
+	}
+
+	public void setNumericWidening(boolean numericWidening) {
+		this.numericWidening = numericWidening;
+	}
+
+	public boolean getNumericWidening() {
+		return numericWidening;
 	}
 
 	public int getDetectWindow() {
@@ -172,5 +189,20 @@ public class AnalysisConfig {
 
 	public void setDebug(int debug) {
 		this.debug = debug;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AnalysisConfig other = (AnalysisConfig) obj;
+		return detectWindow == other.detectWindow && enableDefaultLogicalTypes == other.enableDefaultLogicalTypes
+				&& Objects.equals(localeTag, other.localeTag) && maxCardinality == other.maxCardinality
+				&& maxInputLength == other.maxInputLength && maxOutliers == other.maxOutliers
+				&& maxShapes == other.maxShapes && threshold == other.threshold && numericWidening == other.numericWidening;
 	}
 }

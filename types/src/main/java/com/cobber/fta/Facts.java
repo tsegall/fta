@@ -15,7 +15,9 @@
  */
 package com.cobber.fta;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,13 +27,19 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * A set of facts for the Analysis in question.
@@ -42,11 +50,11 @@ public class Facts {
 	/** The maximum length (not trimmed) - Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
 	public int maxRawLength = Integer.MIN_VALUE;
 	/** Are any elements multi-line? */
-	protected boolean multiline;
+	public boolean multiline;
 	/** Do any elements have leading White Space? */
-	protected boolean leadingWhiteSpace;
+	public boolean leadingWhiteSpace;
 	/** Do any elements have trailing White Space? */
-	protected boolean trailingWhiteSpace;
+	public boolean trailingWhiteSpace;
 	/** The percentage confidence (0-1.0) that the observed stream is a Key field. */
 	protected Double keyConfidence;
 	/** The number of leading zeros seen in sample set.  Only relevant for type Long. */
@@ -91,23 +99,61 @@ public class Facts {
 	public ZonedDateTime maxZonedDateTime;
 	public final TopBottomK<ZonedDateTime, ChronoZonedDateTime<?>> tbZonedDateTime = new TopBottomK<>();
 
+	public long minLongNonZero = Long.MAX_VALUE;
+	public boolean monotonicIncreasing = true;
+	public boolean monotonicDecreasing = true;
+
+	public String minOutlierString;
+	public String maxOutlierString;
+
+	// The minimum length (not trimmed) - but must be non-Blank
+	public int minRawNonBlankLength = Integer.MAX_VALUE;
+	// The maximum length (not trimmed) - but must be non-Blank
+	public int maxRawNonBlankLength = Integer.MIN_VALUE;
+
+	public int minTrimmedLength = Integer.MAX_VALUE;
+	public int maxTrimmedLength = Integer.MIN_VALUE;
+
+	public int minTrimmedLengthNumeric = Integer.MAX_VALUE;
+	public int maxTrimmedLengthNumeric = Integer.MIN_VALUE;
+
+	public int minTrimmedOutlierLength = Integer.MAX_VALUE;
+	public int maxTrimmedOutlierLength = Integer.MIN_VALUE;
+
+	public long groupingSeparators;
+
+	public Map<String, Long> cardinality = new HashMap<>();
+	public Map<String, Long> outliers = new HashMap<>();
+
 	protected double currentM2 = 0.0;
-	protected double currentMean = 0.0;
+
+	/** The total number of samples seen. */
+	public long sampleCount;
+	/** The number of samples that match the patternInfo. */
+	public long matchCount;
+	/** The total number of samples in the stream (typically -1 to indicate unknown). */
+	public long totalCount = -1;
+	/** The number of nulls seen in the sample set. */
+	public long nullCount;
+	/** The number of blanks seen in the sample set. */
+	public long blankCount;
+	/** The percentage confidence in the analysis. Typically the matchCount divided by the realSamples (facts.sampleCount - (facts.nullCount + facts.blankCount)). */
+	public double confidence;
+	/** The PatternInfo associated with this matchCount. */
+	public PatternInfo matchPatternInfo;
 
 	/** The minimum value observed. */
-	protected String minValue;
+	private String minValue;
 	/** The maximum value observed. */
-	protected String maxValue;
+	private String maxValue;
 	/** The mean of the observed values (Numeric types only). */
-	protected Double mean;
+	public Double mean = 0.0;
 	/** The variance of the observed values (Numeric types only). */
 	protected Double variance;
 	/** The top 10  values. */
-	protected Set<String> topK;
+	public Set<String> topK;
 	/** The bottom 10  values. */
-	protected Set<String> bottomK;
-
-	private PatternInfo currentPatternInfo;
+	public Set<String> bottomK;
 
 	private Locale locale;
 	private boolean collectStatistics;
@@ -116,60 +162,151 @@ public class Facts {
 		this.locale = locale;
 	}
 
+	public Locale getLocale() {
+		return locale;
+	}
+
 	public void setCollectStatistics(boolean collectStatistics) {
 		this.collectStatistics = collectStatistics;
 	}
 
-	public Facts calculateFacts(PatternInfo matchPatternInfo, long matchCount) {
-		currentPatternInfo = matchPatternInfo;
+	@JsonIgnore
+	public Object getMin() {
+		if (matchPatternInfo == null)
+			return null;
+
+		switch (matchPatternInfo.getBaseType()) {
+		case BOOLEAN:
+			return minBoolean;
+
+		case LONG:
+			return minLong;
+
+		case DOUBLE:
+			return minDouble;
+
+		case STRING:
+			return minString;
+
+		case LOCALDATE:
+			return minLocalDate;
+
+		case LOCALTIME:
+			return minLocalTime;
+
+		case LOCALDATETIME:
+			return minLocalDateTime;
+
+		case ZONEDDATETIME:
+			return minZonedDateTime;
+
+		case OFFSETDATETIME:
+			return minOffsetDateTime;
+		}
+		return null;
+	}
+
+	@JsonIgnore
+	public Object getMax() {
+		if (matchPatternInfo == null)
+			return null;
+
+		switch (matchPatternInfo.getBaseType()) {
+		case BOOLEAN:
+			return maxBoolean;
+
+		case LONG:
+			return maxLong;
+
+		case DOUBLE:
+			return maxDouble;
+
+		case STRING:
+			return maxString;
+
+		case LOCALDATE:
+			return maxLocalDate;
+
+		case LOCALTIME:
+			return maxLocalTime;
+
+		case LOCALDATETIME:
+			return maxLocalDateTime;
+
+		case ZONEDDATETIME:
+			return maxZonedDateTime;
+
+		case OFFSETDATETIME:
+			return maxOffsetDateTime;
+		}
+		return null;
+	}
+
+	public String getMinValue() {
+		return minValue;
+	}
+
+	public void setMinValue(String minValue) {
+		this.minValue = minValue;
+	}
+
+	public String getMaxValue() {
+		return maxValue;
+	}
+
+	public void setMaxValue(String maxValue) {
+		this.maxValue = maxValue;
+	}
+
+	public Facts calculateFacts() {
+		if (matchPatternInfo == null)
+			return this;
 
 		// We know the type - so calculate a minimum and maximum value
-		switch (currentPatternInfo.getBaseType()) {
+		switch (matchPatternInfo.getBaseType()) {
 		case BOOLEAN:
 			minValue = String.valueOf(minBoolean);
 			maxValue = String.valueOf(maxBoolean);
 			break;
 
 		case LONG:
-			minValue = String.valueOf(minLong);
-			maxValue = String.valueOf(maxLong);
-			mean = currentMean;
+			final NumberFormat longFormatter = NumberFormat.getIntegerInstance(locale);
+			longFormatter.setGroupingUsed(false);
+			minValue = longFormatter.format(minLong);
+			maxValue = longFormatter.format(maxLong);
 			variance = currentM2/matchCount;
 			bottomK = tbLong.bottomKasString();
 			topK = tbLong.topKasString();
 			break;
 
 		case DOUBLE:
-			final NumberFormat formatter = NumberFormat.getInstance(locale);
-			formatter.setMaximumFractionDigits(12);
-			formatter.setMinimumFractionDigits(1);
-			formatter.setGroupingUsed(false);
-
-			minValue = formatter.format(minDouble);
-			maxValue = formatter.format(maxDouble);
-			mean = currentMean;
+			final NumberFormat doubleFormatter = NumberFormat.getNumberInstance(locale);
+			if (doubleFormatter instanceof DecimalFormat) {
+				DecimalFormat decimalFormatter = (DecimalFormat)doubleFormatter;
+				decimalFormatter.applyPattern("#.##################E0");
+				decimalFormatter.setMinimumFractionDigits(1);
+				minValue = decimalFormatter.format(minDouble);
+				maxValue = decimalFormatter.format(maxDouble);
+			}
+			else {
+				minValue = doubleFormatter.format(minDouble);
+				maxValue = doubleFormatter.format(maxDouble);
+			}
 			variance = currentM2/matchCount;
 			bottomK = tbDouble.bottomKasString();
 			topK = tbDouble.topKasString();
 			break;
 
 		case STRING:
-			if ("NULL".equals(currentPatternInfo.typeQualifier)) {
+			if ("NULL".equals(matchPatternInfo.typeQualifier)) {
 				minRawLength = maxRawLength = 0;
-			} else if ("BLANK".equals(currentPatternInfo.typeQualifier)) {
+			} else if ("BLANK".equals(matchPatternInfo.typeQualifier)) {
 				// If all the fields are blank (i.e. a variable number of spaces) - then we have not saved any of the raw input, so we
 				// need to synthesize the min and max value, as well as the minRawlength if not set.
 				if (minRawLength == Integer.MAX_VALUE)
 					minRawLength = 0;
-				final StringBuilder s = new StringBuilder(maxRawLength);
-				for (int i = 0; i < maxRawLength; i++) {
-					if (i == minRawLength)
-						minValue = s.toString();
-					s.append(' ');
-				}
-				maxValue = s.toString();
-				if (minRawLength == maxRawLength)
-					minValue = maxValue;
+				minValue = Utils.repeat(' ', minRawLength);
+				maxValue = Utils.repeat(' ', maxRawLength);
 			}
 			else {
 				minValue = minString;
@@ -181,7 +318,7 @@ public class Facts {
 
 		case LOCALDATE:
 			if (collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(currentPatternInfo.format, locale);
+				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
 				minValue = minLocalDate == null ? null : minLocalDate.format(dtf);
 				maxValue = maxLocalDate == null ? null : maxLocalDate.format(dtf);
@@ -192,7 +329,7 @@ public class Facts {
 
 		case LOCALTIME:
 			if (collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(currentPatternInfo.format, locale);
+				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
 				minValue = minLocalTime == null ? null : minLocalTime.format(dtf);
 				maxValue = maxLocalTime == null ? null : maxLocalTime.format(dtf);
@@ -203,7 +340,7 @@ public class Facts {
 
 		case LOCALDATETIME:
 			if (collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(currentPatternInfo.format, locale);
+				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
 				minValue = minLocalDateTime == null ? null : minLocalDateTime.format(dtf);
 				maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(dtf);
@@ -214,7 +351,7 @@ public class Facts {
 
 		case ZONEDDATETIME:
 			if (collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(currentPatternInfo.format, locale);
+				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
 				minValue = minZonedDateTime.format(dtf);
 				maxValue = maxZonedDateTime.format(dtf);
@@ -225,7 +362,7 @@ public class Facts {
 
 		case OFFSETDATETIME:
 			if (collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(currentPatternInfo.format, locale);
+				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
 				minValue = minOffsetDateTime.format(dtf);
 				maxValue = maxOffsetDateTime.format(dtf);
@@ -236,6 +373,126 @@ public class Facts {
 		}
 
 		return this;
+	}
+
+	private Double getDouble(NumberFormat doubleFormatter, String input) throws FTAException {
+        try {
+                return doubleFormatter.parse(input).doubleValue();
+        } catch (ParseException e) {
+                throw new FTAException("Failed to parse Double", e);
+        }
+	}
+
+	private Long getLong(NumberFormat longFormatter, String input) throws FTAException {
+        try {
+                return longFormatter.parse(input).longValue();
+        } catch (ParseException e) {
+                throw new FTAException("Failed to parse Long", e);
+        }
+	}
+
+	public void hydrate() throws FTAException {
+		if (!collectStatistics || matchPatternInfo == null)
+			return;
+
+		switch (matchPatternInfo.getBaseType()) {
+		case BOOLEAN:
+			break;
+		case LONG:
+			// We cannot use parseLong as it does not cope with localization
+			NumberFormat longFormatter = NumberFormat.getIntegerInstance(locale);
+
+			minLong = getLong(longFormatter, minValue);
+			maxLong = getLong(longFormatter, maxValue);
+			if (topK != null) {
+				for (String item : topK)
+					tbLong.observe(Long.valueOf(item));
+				for (String item : bottomK)
+					tbLong.observe(Long.valueOf(item));
+			}
+			break;
+
+		case DOUBLE:
+			// We cannot use parseDouble as it does not cope with localization
+			NumberFormat doubleFormatter = NumberFormat.getInstance(locale);
+
+			minDouble = getDouble(doubleFormatter, minValue);
+			maxDouble = getDouble(doubleFormatter, maxValue);
+			if (topK != null) {
+				for (String item : topK)
+					tbDouble.observe(Double.valueOf(item));
+				for (String item : bottomK)
+					tbDouble.observe(Double.valueOf(item));
+			}
+			break;
+
+		case STRING:
+			if (topK != null) {
+				topK.forEach(item -> tbString.observe(item));
+				bottomK.forEach(item -> tbString.observe(item));
+			}
+			break;
+
+		case LOCALDATE:
+			final DateTimeFormatter dtfLD = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+
+			minLocalDate = LocalDate.parse(minValue, dtfLD);
+			maxLocalDate = LocalDate.parse(maxValue, dtfLD);
+
+			if (topK != null) {
+				topK.forEach(item -> tbLocalDate.observe(LocalDate.parse(item, dtfLD)));
+				bottomK.forEach(item -> tbLocalDate.observe(LocalDate.parse(item, dtfLD)));
+			}
+			break;
+
+		case LOCALTIME:
+			final DateTimeFormatter dtfLT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+
+			minLocalTime = LocalTime.parse(minValue, dtfLT);
+			maxLocalTime = LocalTime.parse(maxValue, dtfLT);
+
+			if (topK != null) {
+				topK.forEach(item -> tbLocalTime.observe(LocalTime.parse(item, dtfLT)));
+				bottomK.forEach(item -> tbLocalTime.observe(LocalTime.parse(item, dtfLT)));
+			}
+			break;
+
+		case LOCALDATETIME:
+			final DateTimeFormatter dtfLDT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+
+			minLocalDateTime = LocalDateTime.parse(minValue, dtfLDT);
+			maxLocalDateTime = LocalDateTime.parse(maxValue, dtfLDT);
+
+			if (topK != null) {
+				topK.forEach(item -> tbLocalDateTime.observe(LocalDateTime.parse(item, dtfLDT)));
+				bottomK.forEach(item -> tbLocalDateTime.observe(LocalDateTime.parse(item, dtfLDT)));
+			}
+			break;
+
+		case ZONEDDATETIME:
+			final DateTimeFormatter dtfZDT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+
+			minZonedDateTime = ZonedDateTime.parse(minValue, dtfZDT);
+			maxZonedDateTime = ZonedDateTime.parse(maxValue, dtfZDT);
+
+			if (topK != null) {
+				topK.forEach(item -> tbZonedDateTime.observe(ZonedDateTime.parse(item, dtfZDT)));
+				bottomK.forEach(item -> tbZonedDateTime.observe(ZonedDateTime.parse(item, dtfZDT)));
+			}
+			break;
+
+		case OFFSETDATETIME:
+			final DateTimeFormatter dtfODT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+
+			minOffsetDateTime = OffsetDateTime.parse(minValue, dtfODT);
+			maxOffsetDateTime = OffsetDateTime.parse(maxValue, dtfODT);
+
+			if (topK != null) {
+				topK.forEach(item -> tbOffsetDateTime.observe(OffsetDateTime.parse(item, dtfODT)));
+				bottomK.forEach(item -> tbOffsetDateTime.observe(OffsetDateTime.parse(item, dtfODT)));
+			}
+			break;
+		}
 	}
 
 	/*
@@ -266,5 +523,42 @@ public class Facts {
 		}
 
 		return ret;
+	}
+
+	public boolean equals(Object obj, double epsilon) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Facts other = (Facts) obj;
+
+		Object min = getMin();
+		Object otherMin = other.getMin();
+		if (min == null ^ otherMin == null)
+			return false;
+		if (min != null && !min.equals(otherMin))
+			return false;
+		Object max = getMax();
+		Object otherMax = other.getMax();
+		if (max == null ^ otherMax == null)
+			return false;
+		if (max != null && !max.equals(otherMax))
+			return false;
+		return blankCount == other.blankCount && Objects.equals(cardinality, other.cardinality)
+				&& Double.doubleToLongBits(confidence) == Double.doubleToLongBits(other.confidence)
+				&& decimalSeparator == other.decimalSeparator && groupingSeparators == other.groupingSeparators
+				&& Objects.equals(keyConfidence, other.keyConfidence) && leadingWhiteSpace == other.leadingWhiteSpace
+				&& leadingZeroCount == other.leadingZeroCount && Objects.equals(locale, other.locale)
+				&& matchCount == other.matchCount && Objects.equals(matchPatternInfo, other.matchPatternInfo)
+				&& maxRawLength == other.maxRawLength
+				&& monotonicDecreasing == other.monotonicDecreasing && monotonicIncreasing == other.monotonicIncreasing
+				&& multiline == other.multiline && nullCount == other.nullCount
+				&& Objects.equals(outliers, other.outliers) && sampleCount == other.sampleCount
+				&& totalCount == other.totalCount && trailingWhiteSpace == other.trailingWhiteSpace
+				&& Objects.equals(uniqueness, other.uniqueness)
+				&& ((mean == 0.0 && other.mean == 0.0) || Math.abs(mean - other.mean) < epsilon)
+				&& ((variance == null && other.variance == null) || (variance == 0.0 && other.variance == 0.0) || Math.abs(variance - other.variance) < epsilon);
 	}
 }

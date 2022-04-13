@@ -103,7 +103,7 @@ There are a large number of metrics detected, which vary based on the type of th
  * regExp - A Regular Expression (Java) that matches the detected Type
  * confidence - The percentage confidence (0-1.0) in the determination of the Type
  * type - The Base Type (one of Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
- * typeQualifier - A modifier with respect to the Base Type (e.g. for Date types it will be a pattern, for Long types it might be SIGNED, for String types it might be COUNTRY.ISO-3166-2)
+ * typeQualifier - A modifier with respect to the Base Type. See Note 1.
  * min - The minimum value observed
  * max - The maximum value observed
  * bottomK (Date, Time, Numeric, and String types only) - lowest 10 values
@@ -116,8 +116,8 @@ There are a large number of metrics detected, which vary based on the type of th
  * trailingWhiteSpace - Does the observed set have trailing white space
  * multiline - Does the observed set have leading multiline elements
  * logicalType - Does the observed stream, reflect a Semantic Type
- * uniqueness - The percentage (0.0-1.0) of elements in the stream with a cardinality of one, -1.0 if maxCardinality exceeded.  See Note 1.
- * keyConfidence - The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique).  See Note 1.
+ * uniqueness - The percentage (0.0-1.0) of elements in the stream with a cardinality of one, -1.0 if maxCardinality exceeded.  See Note 2.
+ * keyConfidence - The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique).  See Note 2.
  * cardinalityDetail - Details on the valid set, list of elements and occurrence count
  * outlierDetail - Details on the invalid set, list of elements and occurrence count
  * shapesDetail - Details on the shapes set, list of elements and occurrence count. This will collapse all numerics to '9', and all alphabetics to 'X'
@@ -132,7 +132,15 @@ There are a large number of metrics detected, which vary based on the type of th
 The following fields are *not* calculated by FTA (but may be set on the Analyzer).
  * totalCount - The total number of elements in the Data Stream (-1 unless set explicitly).
 
-Note 1: this field may be set on the Analyzer - and if so FTA attempts no further analysis.
+Note 1: The value of the typeQualifier is dependent on the Base Type as follows:
+ * BOOLEAN - options are "TRUE_FALSE", "YES_NO", "ONE_ZERO"
+ * STRING - options are "BLANK", "BLANKORNULL", "NULL"
+ * LONG - options are "GROUPING", "SIGNED", "SIGNED_TRAILING" ("GROUPING" and "SIGNED" are independent and can both be present).
+ * DOUBLE - options are "GROUPING", "SIGNED", "SIGNED_TRAILING" ("GROUPING" and "SIGNED" are independent and can both be present).
+ * DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The qualifier is the detailed date format string.
+ * If any Logical plugins are installed - then additional Qualifiers may be returned. For example, if the LastName plugin is installed and a Last Name is detected then the Base Type will be STRING, and the qualifier will be "NAME.LAST".
+
+Note 2: This field may be set on the Analyzer - and if so FTA attempts no further analysis.
 
 </details>
 
@@ -369,9 +377,25 @@ Additional attributes captured in JSON structure:
 
 ## Validation and Sample Generation ##
 
-FTA can also be used to validate an input stream either based on known Semantic Types or on Semantic Types detected by FTA.  For example, it is possible to retrieve the LogicalType for a known Semantic Type and then invoke the isValid() method.  This is typically only useful for 'Closed' Semantic Types (isClosed() == true), i.e. those for which there is a known constrained set.  A good example of a closed Semantic Type is the Country code as defined by ISO-3166 Alpha 3.  An example where isValid() would be less useful is FIRST_NAME.  For those cases where the Semantic Type is not one of those known to FTA - the result returned will include a Java Regular Expression which can be used to validate new values.  Please refer to the Validation example for further details.
+FTA can also be used to validate an input stream either based on known Semantic Types or on Semantic Types detected by FTA.  For example, it is possible to retrieve the LogicalType for a known Semantic Type and then invoke the isValid() method.  This is typically only useful for 'Closed' Semantic Types (isClosed() == true), i.e. those for which there is a known constrained set.  A good example of a closed Semantic Type is the Country code as defined by ISO-3166 Alpha 3.  An example where isValid() would be less useful is FIRST_NAME.  For those cases where the Semantic Type is not one of those known to FTA - the result returned will include a Java Regular Expression which can be used to validate new values.  Refer to the Validation example for further details.
 
-In addition to validating a data Stream, FTA can also be used to generate a synthetic pseudo-random data stream.  For any detected Semantic Type which implements the LTRandom interface it is possible to generate a 'random' element of the Semantic Type by invoking nextRandom(). Please refer to the Generation example for further details.
+In addition to validating a data Stream, FTA can also be used to generate a synthetic pseudo-random data stream.  For any detected Semantic Type which implements the LTRandom interface it is possible to generate a 'random' element of the Semantic Type by invoking nextRandom(). Refer to the Generation example for further details.
+
+## Merging Analyses ##
+FTA supports merging of analyses run on distinct data shards.  So for example, if part of the data to be profiled resides on one shard and the balance on a separate shard then FTA can be invoked on each shard separately and then merged.  To accomplish this individual analyses should be executed (with similar configurations), the resulting serialized forms should then be deserialized on a common node and merged. Refer to the Merge example for further details.
+
+The accuracy of the merge is determined by the cardinality of the two individual shards, and falls into one of the the following three cases:
+- cardinality(one) + cardinality(two) < max cardinality
+- cardinality(one) or cardinality(two) > max cardinality
+- cardinality(one) + cardinality(two) >= max cardinality
+
+Assuming all shards have a cardinality less than the maximum cardinality configured there should be no loss of accuracy due to the merge process.
+
+If either shard has a cardinality greater than the maximum cardinality then certain information has already been lost (e.g. uniqueness, cardinality detail).
+
+If the sum of the cardinality is greater than the maximum cardinality but neither individual shard has a cardinality greater than the maximum cardinality then the only attribute that will be indeterminate is the uniqueness of the merged set and clearly the cardinality of the resulting Analysis will be limited to the maximum cardinality.
+
+Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard. 
 
 ## Getting Starting ##
 
@@ -380,7 +404,7 @@ Fastest way to get started is to review the examples included.
 ## Releasing a new version ##
 
 ### Compile ###
-`$ gradle wrapper --gradle-version 7.4.1`
+`$ gradle wrapper --gradle-version 7.4.2`
 
 `$ ./gradlew clean build installDist`
 

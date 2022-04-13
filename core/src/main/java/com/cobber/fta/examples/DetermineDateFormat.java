@@ -37,15 +37,15 @@ public abstract class DetermineDateFormat {
 		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("02-01-2014 12:00 AM"));
 
 		// Determine format of the input below and then parse it
-		String input = "Wed Mar 04 05:09:06 GMT-06:00 2009";
+		final String input = "Wed Mar 04 05:09:06 GMT-06:00 2009";
 
-		String formatString = dtp.determineFormatString(input);
+		final String formatString = dtp.determineFormatString(input);
 
 		// Grab the DateTimeFormatter from fta as this creates a case-insensitive parser and it supports a slightly wider set set of formats
 		// For example, "yyyy" does not work out of the box if you use DateTimeFormatter.ofPattern
-		DateTimeFormatter formatter = DateTimeParser.ofPattern(formatString);
+		final DateTimeFormatter formatter = DateTimeParser.ofPattern(formatString);
 
-		OffsetDateTime parsedDate = OffsetDateTime.parse(input, formatter);
+		final OffsetDateTime parsedDate = OffsetDateTime.parse(input, formatter);
 
 		System.err.printf("Format is: '%s', Date is: '%s'%n", formatString, parsedDate.toString());
 	}

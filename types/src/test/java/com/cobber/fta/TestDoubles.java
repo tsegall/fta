@@ -61,6 +61,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
@@ -69,8 +70,8 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertNull(result.getTypeQualifier());
-		assertEquals(result.getMinValue(), "0.1");
-		assertEquals(result.getMaxValue(), "99.23");
+		assertEquals(result.getMinValue(), "1.0E-1");
+		assertEquals(result.getMaxValue(), "9.923E1");
 		assertEquals(result.getMinLength(), 2);
 		assertEquals(result.getMaxLength(), 11);
 
@@ -87,6 +88,7 @@ public class TestDoubles {
 		analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), 1);
 		assertEquals(result.getNullCount(), 0);
@@ -94,8 +96,8 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertNull(result.getTypeQualifier());
-		assertEquals(result.getMinValue(), "0.0");
-		assertEquals(result.getMaxValue(), "0.0");
+		assertEquals(result.getMinValue(), "0.0E0");
+		assertEquals(result.getMaxValue(), "0.0E0");
 		assertEquals(result.getMinLength(), 5);
 		assertEquals(result.getMaxLength(), 5);
 		assertTrue(input.matches(result.getRegExp()));
@@ -113,6 +115,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
@@ -121,8 +124,8 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertNull(result.getTypeQualifier());
-		assertEquals(result.getMinValue(), "0.1");
-		assertEquals(result.getMaxValue(), "99.23");
+		assertEquals(result.getMinValue(), "1.0E-1");
+		assertEquals(result.getMaxValue(), "9.923E1");
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -141,6 +144,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
@@ -149,8 +153,8 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getTypeQualifier(), PatternInfo.TypeQualifier.SIGNED.toString());
-		assertEquals(result.getMinValue(), "-99.23");
-		assertEquals(result.getMaxValue(), "43.8");
+		assertEquals(result.getMinValue(), "-9.923E1");
+		assertEquals(result.getMaxValue(), "4.38E1");
 
 		assertTrue("0".matches(result.getRegExp()));
 
@@ -176,6 +180,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.DOUBLE);
@@ -204,6 +209,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
@@ -211,14 +217,13 @@ public class TestDoubles {
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE) + "-?");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getMinValue(), "-2903.22");
-		assertEquals(result.getMaxValue(), "5234.0");
+		assertEquals(result.getMinValue(), "-2.90322E3");
+		assertEquals(result.getMaxValue(), "5.234E3");
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
-
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void floatBug() throws IOException, FTAException {
@@ -245,6 +250,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
 		assertEquals(result.getSampleCount(), 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
@@ -256,6 +262,43 @@ public class TestDoubles {
 		for (final String sample : samples) {
 			assertTrue(sample.matches(result.getRegExp()), sample);
 		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void verySmall() throws IOException, FTAException {
+		final String smallest = "1.1388812589363528E-69";
+		final String largest = "1.1388812589363528E-40";
+		final String[] samples = {
+				largest, "1.1388812589363528E-41", "1.1388812589363528E-42",
+				"1.1388812589363528E-43", "1.1388812589363528E-44", "1.1388812589363528E-45",
+				"1.1388812589363528E-46", "1.1388812589363528E-47", "1.1388812589363528E-48",
+				"1.1388812589363528E-49", "1.1388812589363528E-50", "1.1388812589363528E-51",
+				"1.1388812589363528E-52", "1.1388812589363528E-53", "1.1388812589363528E-54",
+				"1.1388812589363528E-55", "1.1388812589363528E-56", "1.1388812589363528E-57",
+				"1.1388812589363528E-58", "1.1388812589363528E-59", "1.1388812589363528E-60",
+				"1.1388812589363528E-61", "1.1388812589363528E-62", "1.1388812589363528E-63",
+				"1.1388812589363528E-64", "1.1388812589363528E-65", "1.1388812589363528E-66",
+				"1.1388812589363528E-67", "1.1388812589363528E-68", smallest
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("verySmall");
+
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(Double.valueOf(result.getMinValue()), Double.valueOf(smallest), TestUtils.EPSILON);
+		assertEquals(Double.valueOf(result.getMaxValue()), Double.valueOf(largest), TestUtils.EPSILON);
+
+		for (final String sample : samples)
+			assertTrue(sample.matches(result.getRegExp()), sample);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
@@ -283,6 +326,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
 		assertEquals(result.getSampleCount(), 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
@@ -309,6 +353,7 @@ public class TestDoubles {
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
@@ -335,6 +380,7 @@ public class TestDoubles {
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
@@ -360,6 +406,7 @@ public class TestDoubles {
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
@@ -396,6 +443,7 @@ public class TestDoubles {
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
@@ -432,6 +480,7 @@ public class TestDoubles {
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getBlankCount(), 33);
@@ -458,6 +507,7 @@ public class TestDoubles {
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
@@ -494,6 +544,7 @@ public class TestDoubles {
 		analysis.train("Infinity");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), iterations + nullIterations + 3);
@@ -535,6 +586,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), iterations + nullIterations);
@@ -562,20 +614,20 @@ public class TestDoubles {
 		final Locale locale = Locale.forLanguageTag("fr-FR");
 		analysis.setLocale(locale);
 
-		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(locale);
+		final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(locale);
 		formatter.setMinimumFractionDigits(2);
 		formatter.setMaximumFractionDigits(2);
 
 		for (int i = 0; i < samples.length; i++) {
-			double d = Double.valueOf(samplesUS[i]);
+			final double d = Double.valueOf(samplesUS[i]);
 			samples[i] = formatter.format(d);
 		}
-
 
 		for (final String sample : samples)
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getDecimalSeparator(), ',');
@@ -602,6 +654,7 @@ public class TestDoubles {
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getDecimalSeparator(), '.');
@@ -631,6 +684,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
@@ -660,6 +714,7 @@ public class TestDoubles {
 		analysis.train("10000e+13");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
@@ -690,6 +745,7 @@ public class TestDoubles {
 		analysis.train("-1000e+13");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 2);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
@@ -732,6 +788,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), iterations + nullIterations);
@@ -756,6 +813,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -763,8 +821,8 @@ public class TestDoubles {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
-		assertEquals(result.getMinValue(), "-101.0");
-		assertEquals(result.getMaxValue(), "119.0");
+		assertEquals(result.getMinValue(), "-1.01E2");
+		assertEquals(result.getMaxValue(), "1.19E2");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
@@ -794,6 +852,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.DOUBLE);
@@ -805,8 +864,8 @@ public class TestDoubles {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMinValue(), "0.0");
-		assertEquals(result.getMaxValue(), "3.0");
+		assertEquals(result.getMinValue(), "0.0E0");
+		assertEquals(result.getMaxValue(), "3.0E0");
 
 		final String regExp = result.getRegExp();
 		for (final String input : inputs) {
@@ -830,8 +889,6 @@ public class TestDoubles {
 			return true;
 		}
 
-		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
-
 		final String negPrefix = TestUtils.getNegativePrefix(locale);
 		final String negSuffix = TestUtils.getNegativeSuffix(locale);
 
@@ -840,12 +897,13 @@ public class TestDoubles {
 			return true;
 		}
 
-		String variant = locale.getDisplayVariant();
+		final String variant = locale.getDisplayVariant();
 		if (variant != null && !variant.isEmpty()) {
 			logger.debug("Skipping locale '{}' as it has a Variant: '{}'.", locale, variant);
 			return true;
 		}
 
+		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 		final String getExponentSeparator = formatSymbols.getExponentSeparator();
 		if (getExponentSeparator.length() != 1 || (getExponentSeparator.charAt(0) != 'e' &&  getExponentSeparator.charAt(0) != 'E')) {
 			logger.debug("Skipping locale '{}' as it uses a non-standard exponentiaion character ({}).", locale, getExponentSeparator);
@@ -888,6 +946,7 @@ public class TestDoubles {
 			}
 
 			final TextAnalysisResult result = analysis.getResult();
+			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getType(), FTAType.DOUBLE);
 			assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
@@ -931,6 +990,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -976,8 +1036,8 @@ public class TestDoubles {
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 			final DecimalFormat df = new DecimalFormat("#E0", formatSymbols);
 
-			String grp = RegExpGenerator.slosh(formatSymbols.getGroupingSeparator());
-			String dec = RegExpGenerator.slosh(formatSymbols.getDecimalSeparator());
+			final String grp = RegExpGenerator.slosh(formatSymbols.getGroupingSeparator());
+			final String dec = RegExpGenerator.slosh(formatSymbols.getDecimalSeparator());
 			logger.debug("Locale '{}', grouping: '{}', decimal: '{}', negPrefix: '{}', negSuffix: '{}'.",
 					locale, grp, dec, TestUtils.getNegativePrefix(locale), TestUtils.getNegativeSuffix(locale));
 
@@ -1002,6 +1062,7 @@ public class TestDoubles {
 			}
 
 			final TextAnalysisResult result = analysis.getResult();
+			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getType(), FTAType.DOUBLE);
 			assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -1049,6 +1110,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -1153,6 +1215,7 @@ public class TestDoubles {
 			}
 
 			final TextAnalysisResult result = analysis.getResult();
+			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getType(), FTAType.DOUBLE);
 			assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -1182,10 +1245,12 @@ public class TestDoubles {
 		final Set<String> samples = new HashSet<>();
 
 		final NumberFormat nf = NumberFormat.getNumberInstance();
-		nf.setMinimumFractionDigits(1);
+		final DecimalFormat decimalFormatter = (DecimalFormat)nf;
+		decimalFormatter.applyPattern("#.##################E0");
+		decimalFormatter.setMinimumFractionDigits(1);
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			final double d = random.nextDouble();
-			final String sample = nf.format(d).toString();
+			final String sample = decimalFormatter.format(d).toString();
 			if (d < min) {
 				min = d;
 				minValue = sample;
@@ -1199,6 +1264,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertNull(result.getTypeQualifier());
@@ -1208,11 +1274,11 @@ public class TestDoubles {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getMinValue(), minValue);
 		assertEquals(result.getMaxValue(), maxValue);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
-			assertTrue(sample.matches(analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE)), sample);
+			assertTrue(sample.matches(analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT)), sample);
 		}
 	}
 
@@ -1227,10 +1293,11 @@ public class TestDoubles {
 		String maxValue = String.valueOf(max);
 		final Set<String> samples = new HashSet<>();
 
-		final NumberFormat nf = NumberFormat.getNumberInstance(Locale.FRENCH);
-		nf.setMinimumFractionDigits(1);
+		final NumberFormat doubleFormatter = NumberFormat.getNumberInstance(Locale.FRENCH);
+		final DecimalFormat nf = (DecimalFormat)doubleFormatter;
+		nf.applyPattern("#.##################E0");
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
-			final double d = random.nextDouble();
+			final double d = random.nextDouble() * 10000;
 			final String sample = nf.format(d).toString();
 			if (d < min) {
 				min = d;
@@ -1254,7 +1321,7 @@ public class TestDoubles {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getMinValue(), minValue);
 		assertEquals(result.getMaxValue(), maxValue);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
@@ -1283,6 +1350,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getTypeQualifier(), "GROUPING");
@@ -1291,8 +1359,8 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT_GROUPING));
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMinValue(), "300000000.0");
-		assertEquals(result.getMaxValue(), "6000000000000000000000000000.0");
+		assertEquals(result.getMinValue(), "3.0E8");
+		assertEquals(result.getMaxValue(), "6.0E27");
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -1320,6 +1388,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
@@ -1328,8 +1397,8 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING));
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMinValue(), "-3000000000000000000000000000.0");
-		assertEquals(result.getMaxValue(), "6000000000000000000000000000.0");
+		assertEquals(result.getMinValue(), "-3.0E27");
+		assertEquals(result.getMaxValue(), "6.0E27");
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -1361,6 +1430,7 @@ public class TestDoubles {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -1369,8 +1439,8 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMinValue(), "-9999.0");
-		assertEquals(result.getMaxValue(), "0.69334954");
+		assertEquals(result.getMinValue(), "-9.999E3");
+		assertEquals(result.getMaxValue(), "6.9334954E-1");
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -1382,7 +1452,7 @@ public class TestDoubles {
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] { Locale.forLanguageTag("en"), Locale.forLanguageTag("es-CO") };
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("bg-BG") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("bg") };
 
 		for (final Locale locale : locales) {
 			final TextAnalyzer analysis = new TextAnalyzer("Separator");
@@ -1408,15 +1478,16 @@ public class TestDoubles {
 				continue;
 			}
 
-			final TextAnalysisResult result = analysis.getResult();
-
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 			final String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
 			final String dec = formatSymbols.getDecimalSeparator() == '.' ? "\\." : "" + formatSymbols.getDecimalSeparator();
-//			logger.debug("Locale: '%s', grp = '%s',  dec = '%s'.", locale, grp, dec);
+//			logger.debug("Locale: '{}', grp = '{}',  dec = '{}'.", locale, grp, dec);
+
+			final TextAnalysisResult result = analysis.getResult();
+			TestUtils.checkSerialization(analysis);
 
 			if (result.getType() == FTAType.STRING) {
-				for (String s : samples)
+				for (final String s : samples)
 					System.err.println(s);
 			}
 			assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
@@ -1457,6 +1528,7 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 		analysis.train(sample);
 
 	final TextAnalysisResult result = analysis.getResult();
+	TestUtils.checkSerialization(analysis);
 
 	assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
 	assertEquals(result.getTypeQualifier(), "GROUPING");
@@ -1534,6 +1606,7 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 			}
 
 			final TextAnalysisResult result = analysis.getResult();
+			TestUtils.checkSerialization(analysis);
 
 			if (!result.getType().equals(FTAType.DOUBLE)) {
 				failures.add("Locale: " + locale + ", type: '" + result.getType() + '"');
@@ -1602,6 +1675,7 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 		if (bw != null)
 			bw.close();
 

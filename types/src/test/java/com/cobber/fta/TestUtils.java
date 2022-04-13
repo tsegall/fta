@@ -28,9 +28,12 @@ import java.util.Set;
 
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.RegExpGenerator;
 
 public class TestUtils {
+	public final static double EPSILON = 0.00000001;
+
 	protected final static String validZips = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
 			"06045|06233|06439|06704|06910|07101|07510|07764|08006|08205|08534|08829|10044|10260|10549|10965|11239|11501|11743|11976|" +
 			"12138|12260|12503|12746|12878|13040|13166|13418|13641|13801|14068|14276|14548|14731|14865|15077|15261|15430|15613|15741|" +
@@ -173,6 +176,12 @@ public class TestUtils {
 			}
 		}
 		return false;
+	}
+
+	protected static void checkSerialization(TextAnalyzer toCheck) throws FTAException {
+		String originalSerialized = toCheck.serialize();
+		TextAnalyzer hydrated = TextAnalyzer.deserialize(originalSerialized);
+		assertEquals(hydrated.serialize(), originalSerialized);
 	}
 
 	@Test(groups = { TestGroups.ALL })

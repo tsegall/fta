@@ -49,6 +49,7 @@ public class TestRegExpPlugins {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getRegExp(), "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
@@ -77,6 +78,7 @@ public class TestRegExpPlugins {
 			analysis.train(sample);
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
 		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}", result.getRegExp());
@@ -105,6 +107,7 @@ public class TestRegExpPlugins {
 			analysis.train(sample);
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLE_COUNT);
 		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}", result.getRegExp());
@@ -133,6 +136,7 @@ public class TestRegExpPlugins {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getTypeQualifier(), "MONTH.DIGITS");
@@ -162,6 +166,7 @@ public class TestRegExpPlugins {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
@@ -191,6 +196,7 @@ public class TestRegExpPlugins {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
@@ -245,6 +251,7 @@ public class TestRegExpPlugins {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getTypeQualifier(), "CITY");

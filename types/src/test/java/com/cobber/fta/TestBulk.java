@@ -42,6 +42,7 @@ public class TestBulk {
 		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), 4000000);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -69,6 +70,7 @@ public class TestBulk {
 		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), 4000000);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -81,6 +83,44 @@ public class TestBulk {
 		final Map<String, Long> details = result.getCardinalityDetails();
 		assertEquals(details.get("MALE"), Long.valueOf(2000000));
 		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
+	public void bulkLong() throws IOException, FTAException {
+		final TextAnalyzer analysisBulk = new TextAnalyzer("baseline");
+		final long SAMPLE_COUNT = 100L;
+
+		Map<String, Long> simple = new HashMap<>();
+		simple.put("100", SAMPLE_COUNT);
+		simple.put("200", SAMPLE_COUNT);
+		analysisBulk.trainBulk(simple);
+
+		final TextAnalysisResult resultBulk = analysisBulk.getResult();
+		TestUtils.checkSerialization(analysisBulk);
+
+		assertEquals(resultBulk.getSampleCount(), 2 * SAMPLE_COUNT);
+		assertEquals(resultBulk.getType(), FTAType.LONG);
+		assertNull(resultBulk.getTypeQualifier());
+		assertEquals(resultBulk.getNullCount(), 0);
+		assertEquals(resultBulk.getBlankCount(), 0);
+		assertEquals(resultBulk.getRegExp(), "\\d{3}");
+		assertEquals(resultBulk.getMatchCount(), 2 * SAMPLE_COUNT);
+		assertEquals(resultBulk.getConfidence(), 1.0);
+		final Map<String, Long> details = resultBulk.getCardinalityDetails();
+		assertEquals(details.get("100"), SAMPLE_COUNT);
+		assertEquals(details.get("200"), SAMPLE_COUNT);
+
+		final TextAnalyzer analysis = new TextAnalyzer("reference");
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			analysis.train("100");
+			analysis.train("200");
+		}
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		// There will be very small errors due to the random nature of the data stream
+		assertEquals(resultBulk.getMean(),result.getMean(), TestUtils.EPSILON);
+		assertEquals(resultBulk.getStandardDeviation(),result.getStandardDeviation(), TestUtils.EPSILON);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -101,6 +141,7 @@ public class TestBulk {
 			analysis.train("Female");
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(resultBulk.getSampleCount(), 3 * ITERATIONS);
 		assertEquals(resultBulk.getType(), FTAType.STRING);
@@ -172,6 +213,7 @@ public class TestBulk {
 		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), 1000000);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -203,6 +245,7 @@ public class TestBulk {
 		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLES);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
@@ -229,6 +272,7 @@ public class TestBulk {
 		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLES);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
@@ -257,6 +301,7 @@ public class TestBulk {
 		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLES);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
@@ -288,6 +333,7 @@ public class TestBulk {
 		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLES);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -336,6 +382,7 @@ public class TestBulk {
 		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), GOOD_SAMPLES + BAD_SAMPLES);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -383,6 +430,7 @@ public class TestBulk {
 		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), GOOD_SAMPLES + BAD_SAMPLES);
 		assertEquals(result.getType(), FTAType.STRING);

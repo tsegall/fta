@@ -15,8 +15,11 @@
  */
 package com.cobber.fta;
 
+import java.util.Objects;
+
 import com.cobber.fta.KnownPatterns.ID;
 import com.cobber.fta.core.FTAType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * The PatternInfo class maintains a set of information about a simple pattern.
@@ -43,10 +46,10 @@ public class PatternInfo {
 		ONE_ZERO
 	}
 
-	private final int minLength;
-	private final int maxLength;
-	private final FTAType type;
-	private final boolean isLogicalType;
+	private int minLength;
+	private int maxLength;
+	private FTAType baseType;
+	private boolean logicalType;
 
 	public KnownPatterns.ID id;
 	public String regexp;
@@ -81,9 +84,9 @@ public class PatternInfo {
 			final boolean isLogicalType, final boolean isLocaleSensitive, final int minLength, final int maxLength, final String generalPattern, final String format) {
 		this.id = id;
 		this.regexp = regexp;
-		this.type = type;
+		this.baseType = type;
 		this.typeQualifier = typeQualifier;
-		this.isLogicalType = isLogicalType;
+		this.logicalType = isLogicalType;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 		this.generalPattern = generalPattern;
@@ -93,13 +96,16 @@ public class PatternInfo {
 	public PatternInfo(final PatternInfo that) {
 		this.id = that.id;
 		this.regexp = that.regexp;
-		this.type = that.type;
+		this.baseType = that.baseType;
 		this.typeQualifier = that.typeQualifier;
-		this.isLogicalType = that.isLogicalType;
+		this.logicalType = that.logicalType;
 		this.minLength = that.minLength;
 		this.maxLength = that.maxLength;
 		this.generalPattern = that.generalPattern;
 		this.format = that.format;
+	}
+
+	protected PatternInfo() {
 	}
 
 	/**
@@ -107,8 +113,9 @@ public class PatternInfo {
 	 *
 	 * @return A boolean indicating if the Type for this pattern is numeric.
 	 */
+	@JsonIgnore
 	public boolean isNumeric() {
-		return FTAType.LONG.equals(this.type) || FTAType.DOUBLE.equals(this.type);
+		return FTAType.isNumeric(this.baseType);
 	}
 
 	/**
@@ -116,9 +123,9 @@ public class PatternInfo {
 	 *
 	 * @return A boolean indicating if the Type for this pattern includes a Date.
 	 */
+	@JsonIgnore
 	public boolean isDateType() {
-		return FTAType.LOCALDATE.equals(this.type) || FTAType.LOCALDATETIME.equals(this.type) ||
-				FTAType.OFFSETDATETIME.equals(this.type) || FTAType.ZONEDDATETIME.equals(this.type);
+		return FTAType.isDateType(this.baseType);
 	}
 
 	/**
@@ -127,7 +134,7 @@ public class PatternInfo {
 	 * @return The FTAType of the pattern.
 	 */
 	public FTAType getBaseType() {
-		return type;
+		return baseType;
 	}
 
 	/**
@@ -153,6 +160,7 @@ public class PatternInfo {
 	 *
 	 * @return A boolean indicating if the Type for this pattern is Alphabetic.
 	 */
+	@JsonIgnore
 	public boolean isAlphabetic() {
 		return this.regexp.startsWith(KnownPatterns.PATTERN_ALPHA);
 	}
@@ -162,6 +170,7 @@ public class PatternInfo {
 	 *
 	 * @return A boolean indicating if the Type for this pattern is Alphanumeric.
 	 */
+	@JsonIgnore
 	public boolean isAlphanumeric() {
 		return this.regexp.startsWith(KnownPatterns.PATTERN_ALPHANUMERIC);
 	}
@@ -172,11 +181,26 @@ public class PatternInfo {
 	 * @return A boolean indicating if this is a Logical Type.
 	 */
 	public boolean isLogicalType() {
-		return isLogicalType;
+		return logicalType;
 	}
 
 	@Override
 	public String toString() {
-		return "type: " + type + ", typeQualifier: " + typeQualifier + ", regexp: " + regexp;
+		return "type: " + baseType + ", typeQualifier: " + typeQualifier + ", regexp: " + regexp;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final PatternInfo other = (PatternInfo) obj;
+		return baseType == other.baseType && Objects.equals(format, other.format)
+				&& Objects.equals(generalPattern, other.generalPattern) && id == other.id
+				&& logicalType == other.logicalType && maxLength == other.maxLength && minLength == other.minLength
+				&& Objects.equals(regexp, other.regexp) && Objects.equals(typeQualifier, other.typeQualifier);
 	}
 }

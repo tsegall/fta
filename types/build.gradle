@@ -28,6 +28,7 @@ dependencies {
 	implementation group: 'com.sun.mail', name: 'javax.mail', version: "${javaxMailApiVersion}"
 	implementation group: 'commons-validator', name: 'commons-validator', version: "${commonsValidatorVersion}"
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonDatabindVersion}"
+	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "${jacksonDatatypeVersion}"
 	implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: "${googlePhoneNumberVersion}"
 	implementation group: 'org.apache.commons', name: 'commons-text', version: "${commonsTextVersion}"
 	implementation group: 'com.github.krraghavan', name: 'xeger', version: "${xegerVersion}"

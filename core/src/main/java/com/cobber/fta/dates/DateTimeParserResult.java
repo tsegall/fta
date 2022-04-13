@@ -212,7 +212,7 @@ public class DateTimeParserResult {
 		int[] dateFieldLengths = {-1, -1, -1};
 		int[] dateFieldOffsets = {-1, -1, -1};
 		int[] dateFieldPad = {0, 0, 0};
-		MinMax[] timeFieldLengths = {new MinMax(), new MinMax(), new MinMax(), new MinMax()};
+		final MinMax[] timeFieldLengths = {new MinMax(), new MinMax(), new MinMax(), new MinMax()};
 		int[] timeFieldOffsets = {-1, -1, -1, -1};
 		int[] timeFieldPad = {0, 0, 0, 0};
 		String timeZone = "";

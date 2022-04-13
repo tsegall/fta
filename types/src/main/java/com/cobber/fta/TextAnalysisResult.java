@@ -21,7 +21,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.Comparator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -42,9 +41,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class TextAnalysisResult {
 	private enum SignatureTarget {
-	    DATA_SIGNATURE,
-	    STRUCTURE_SIGNATURE,
-	    CONSUMER
+		/** Output only the fields we use to construct the Data Signature. */
+		DATA_SIGNATURE,
+		/** Output only the fields we use to construct the Structure Signature. */
+		STRUCTURE_SIGNATURE,
+		/** Output the fields we use to construct a user friendly description. */
+		CONSUMER
 	}
 
 	private final static ObjectMapper MAPPER = new ObjectMapper();
@@ -52,14 +54,6 @@ public class TextAnalysisResult {
 	private static final String NOT_ENABLED = "Statistics not enabled.";
 
 	private final String name;
-	private final Locale locale;
-	private final long matchCount;
-	private final long sampleCount;
-	private final long totalCount;
-	private final long nullCount;
-	private final long blankCount;
-	private final PatternInfo patternInfo;
-	private final double confidence;
 	private final Facts facts;
 	private final DateResolutionMode resolutionMode;
 	private final AnalysisConfig analysisConfig;
@@ -69,15 +63,7 @@ public class TextAnalysisResult {
 
 	/**
 	 * @param name The name of the data stream being analyzed.
-	 * @param locale The locale the analysis was performed in.
-	 * @param matchCount The number of samples that match the patternInfo.
-	 * @param totalCount The total number of samples in the stream (typically -1 to indicate unknown).
-	 * @param sampleCount The total number of samples seen.
-	 * @param nullCount The number of nulls seen in the sample set.
-	 * @param blankCount The number of blanks seen in the sample set.
-	 * @param patternInfo The PatternInfo associated with this matchCount.
-	 * @param facts A set of string representations of minimum/maximum/sum/topK/bottomK values.  Only relevant for Numeric/String types.
-	 * @param confidence The percentage confidence in the analysis.  The matchCount divided by the sampleCount.
+	 * @param facts Most of the relevant metrics for the current analysis.
 	 * @param resolutionMode Determines what to do when the Date field is ambiguous (i.e. we cannot determine which
 	 *   of the fields is the day or the month.  If resolutionMode is DayFirst, then assume day is first, if resolutionMode is
 	 *   MonthFirst then assume month is first, if it is Auto then choose either DayFirst or MonthFirst based on the locale, if it
@@ -87,23 +73,10 @@ public class TextAnalysisResult {
 	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param tokenStreams A shape analysis of the input stream.
 	 */
-	TextAnalysisResult(final String name, final Locale locale, final long matchCount, final long totalCount, final long sampleCount,
-			final long nullCount, final long blankCount,
-			final PatternInfo patternInfo, final Facts facts,
-			final double confidence, final DateResolutionMode resolutionMode,
-			final AnalysisConfig analysisConfig,
-			final Map<String, Long> cardinality,
-			final Map<String, Long> outliers,
-			final TokenStreams shape) {
+	TextAnalysisResult(final String name, final Facts facts, final DateResolutionMode resolutionMode,
+			final AnalysisConfig analysisConfig, final Map<String, Long> cardinality,
+			final Map<String, Long> outliers, final TokenStreams shape) {
 		this.name = name;
-		this.locale = locale;
-		this.matchCount = matchCount;
-		this.patternInfo = patternInfo;
-		this.totalCount = totalCount;
-		this.sampleCount = sampleCount;
-		this.nullCount = nullCount;
-		this.blankCount = blankCount;
-		this.confidence = confidence;
 		this.facts = facts;
 		this.resolutionMode = resolutionMode;
 		this.analysisConfig = analysisConfig;
@@ -127,7 +100,7 @@ public class TextAnalysisResult {
 	 * @return Confidence as a percentage.
 	 */
 	public double getConfidence() {
-		return confidence;
+		return facts.confidence;
 	}
 
 	/**
@@ -135,7 +108,7 @@ public class TextAnalysisResult {
 	 * @return The Type of the data stream.
 	 */
 	public FTAType getType() {
-		return patternInfo.getBaseType();
+		return facts.matchPatternInfo.getBaseType();
 	}
 
 	/**
@@ -155,7 +128,7 @@ public class TextAnalysisResult {
 	 * @return The Type Qualifier for the Type.
 	 */
 	public String getTypeQualifier() {
-		return patternInfo.typeQualifier;
+		return facts.matchPatternInfo.typeQualifier;
 	}
 
 	/**
@@ -164,7 +137,7 @@ public class TextAnalysisResult {
 	 * @return True if this is a Logical Type.
 	 */
 	public boolean isLogicalType() {
-		return patternInfo.isLogicalType();
+		return facts.matchPatternInfo.isLogicalType();
 	}
 
 	/**
@@ -174,7 +147,7 @@ public class TextAnalysisResult {
 	public String getMinValue() {
 		if (!analysisConfig.isCollectStatistics())
 			throw new IllegalArgumentException(NOT_ENABLED);
-		return facts.minValue;
+		return facts.getMinValue();
 	}
 
 	/**
@@ -184,7 +157,7 @@ public class TextAnalysisResult {
 	public String getMaxValue() {
 		if (!analysisConfig.isCollectStatistics())
 			throw new IllegalArgumentException(NOT_ENABLED);
-		return facts.maxValue;
+		return facts.getMaxValue();
 	}
 
 	/**
@@ -229,7 +202,8 @@ public class TextAnalysisResult {
 	public Double getMean() {
 		if (!analysisConfig.isCollectStatistics())
 			throw new IllegalArgumentException(NOT_ENABLED);
-		return facts.mean;
+
+		return facts.matchPatternInfo.isNumeric() ? facts.mean : null;
 	}
 
 	/**
@@ -240,8 +214,7 @@ public class TextAnalysisResult {
 		if (!analysisConfig.isCollectStatistics())
 			throw new IllegalArgumentException(NOT_ENABLED);
 
-
-		return facts.variance == null ? null : Math.sqrt(facts.variance);
+		return facts.matchPatternInfo.isNumeric() ? Math.sqrt(facts.variance) : null;
 	}
 
 	/**
@@ -265,24 +238,24 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get Regular Expression that reflects the data stream.  All valid inputs should match this Regular Expression,
+	 * Get the Regular Expression that reflects the data stream.  All valid inputs should match this Regular Expression,
 	 * however in some instances, not all inputs that match this RE are necessarily valid.  For example,
 	 * 28/13/2017 will match the RE (\d{2}/\d{2}/\d{4}) however this is not a valid date with pattern dd/MM/yyyy (there
 	 * is no 13th month).
 	 * @return The Regular Expression.
 	 */
 	public String getRegExp() {
-		if (patternInfo.isLogicalType() || (!facts.leadingWhiteSpace && !facts.trailingWhiteSpace))
-			return patternInfo.regexp;
+		if (facts.matchPatternInfo.isLogicalType() || (!facts.leadingWhiteSpace && !facts.trailingWhiteSpace))
+			return facts.matchPatternInfo.regexp;
 
 		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
 		String answer = "";
 		if (facts.leadingWhiteSpace)
 			answer = KnownPatterns.PATTERN_WHITESPACE;
-		final boolean optional = patternInfo.regexp.indexOf('|') != -1;
+		final boolean optional = facts.matchPatternInfo.regexp.indexOf('|') != -1;
 		if (optional)
 			answer += "(";
-		answer += patternInfo.regexp;
+		answer += facts.matchPatternInfo.regexp;
 		if (optional)
 			answer += ")";
 		if (facts.trailingWhiteSpace)
@@ -292,12 +265,21 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * Get the Regular Expression that reflects the non-white space element in the data stream.
+	 * For example, if a stream contains '  hello' and 'world  ' this would return '(?i)(HELLO|WORLD)'.
+	 * @return The Regular Expression reflecting the non-white space data.
+	 */
+	public String getDataRegExp() {
+		return facts.matchPatternInfo.regexp;
+	}
+
+	/**
 	 * Get the count of all (non-blank/non-null) samples that matched the determined type.
 	 * More formally the SampleCount is equal to the MatchCount + BlankCount + NullCount.
 	 * @return Count of all matches.
 	 */
 	public long getMatchCount() {
-		return matchCount;
+		return facts.matchCount;
 	}
 
 	/**
@@ -329,7 +311,7 @@ public class TextAnalysisResult {
 	 * @return total number of elements in the Data Stream (if known) - -1 if not.
 	 */
 	public long getTotalCount() {
-		return totalCount;
+		return facts.totalCount;
 	}
 
 	/**
@@ -337,7 +319,7 @@ public class TextAnalysisResult {
 	 * @return Count of all samples observed.
 	 */
 	public long getSampleCount() {
-		return sampleCount;
+		return facts.sampleCount;
 	}
 
 	/**
@@ -345,7 +327,7 @@ public class TextAnalysisResult {
 	 * @return Count of all null samples.
 	 */
 	public long getNullCount() {
-		return nullCount;
+		return facts.nullCount;
 	}
 
 	/**
@@ -354,7 +336,7 @@ public class TextAnalysisResult {
 	 * @return Count of all blank samples.
 	 */
 	public long getBlankCount() {
-		return blankCount;
+		return facts.blankCount;
 	}
 
 	/**
@@ -454,16 +436,16 @@ public class TextAnalysisResult {
 		return analysisConfig.isCollectStatistics();
 	}
 
-	private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
+	private static <K extends Comparable,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
 		final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<>(
 				new Comparator<Map.Entry<K,V>>() {
 					@Override public int compare(final Map.Entry<K,V> e1, final Map.Entry<K,V> e2) {
 						final int res = e2.getValue().compareTo(e1.getValue());
-						if (e1.getKey().equals(e2.getKey())) {
+						final int keyRes = e1.getKey().compareTo(e2.getKey());
+						if (e1.getKey().equals(e2.getKey()))
 							return res;
-						} else {
-							return res != 0 ? res : 1;
-						}
+
+						return res != 0 ? res : keyRes;
 					}
 				}
 				);
@@ -489,7 +471,7 @@ public class TextAnalysisResult {
 	 * @return A String SHA-1 hash that reflects the structure of the data stream.
 	 */
 	public String getStructureSignature() {
-		String structureSignature = patternInfo.getBaseType().toString() + ":";
+		String structureSignature = facts.matchPatternInfo.getBaseType().toString() + ":";
 
 		if (isLogicalType())
 			structureSignature += getTypeQualifier();
@@ -498,6 +480,7 @@ public class TextAnalysisResult {
 
 		MessageDigest md;
 		try {
+
 			md = MessageDigest.getInstance("SHA-1");
 		} catch (NoSuchAlgorithmException e) {
 			return null;
@@ -556,7 +539,7 @@ public class TextAnalysisResult {
 	 */
 	public String asPlugin() {
 		// Already a logical type or date type - so nothing interesting to report as a Plugin
-		if (isLogicalType() || patternInfo.isDateType())
+		if (isLogicalType() || facts.matchPatternInfo.isDateType())
 			return null;
 
 		// Check to see if the Regular Expression is too boring to report - e.g. '.*' or '.{3,31}'
@@ -578,14 +561,14 @@ public class TextAnalysisResult {
 		plugin.set("regExpsToMatch", arrayNode);
 		plugin.put("regExpReturned", regExp);
 
-		if (statisticsEnabled() && matchCount > 100 && (cardinality.size()*100)/matchCount < 20 && !regExp.startsWith("(?i)(")) {
-			if (facts.minValue != null)
-				plugin.put("minimum", facts.minValue);
-			if (facts.maxValue != null)
-				plugin.put("maximum", facts.maxValue);
+		if (statisticsEnabled() && facts.matchCount > 100 && (cardinality.size()*100)/facts.matchCount < 20 && !regExp.startsWith("(?i)(")) {
+			if (facts.getMinValue() != null)
+				plugin.put("minimum", facts.getMinValue());
+			if (facts.getMaxValue() != null)
+				plugin.put("maximum", facts.getMaxValue());
 		}
 
-		plugin.put("baseType", patternInfo.getBaseType().toString());
+		plugin.put("baseType", facts.matchPatternInfo.getBaseType().toString());
 
 		try {
 			return writer.writeValueAsString(plugin);
@@ -601,55 +584,55 @@ public class TextAnalysisResult {
 	 * @return A JSON representation of the analysis.
 	 */
 	public String asJSON(final boolean pretty, final int verbose) {
-		return internalAsJSON(pretty,verbose, SignatureTarget.CONSUMER);
+		return internalAsJSON(pretty, verbose, SignatureTarget.CONSUMER);
 	}
 
 	private String internalAsJSON(final boolean pretty, final int verbose, final SignatureTarget target) {
 		final ObjectWriter writer = pretty ? MAPPER.writerWithDefaultPrettyPrinter() : MAPPER.writer();
 
 		final ObjectNode analysis = MAPPER.createObjectNode();
-		if (target == SignatureTarget.CONSUMER)
+		if (target != SignatureTarget.STRUCTURE_SIGNATURE && target != SignatureTarget.DATA_SIGNATURE)
 			analysis.put("fieldName", name);
-		analysis.put("totalCount", totalCount);
-		analysis.put("sampleCount", sampleCount);
-		analysis.put("matchCount", matchCount);
-		analysis.put("nullCount", nullCount);
-		analysis.put("blankCount", blankCount);
+		analysis.put("totalCount", facts.totalCount);
+		analysis.put("sampleCount", facts.sampleCount);
+		analysis.put("matchCount", facts.matchCount);
+		analysis.put("nullCount", facts.nullCount);
+		analysis.put("blankCount", facts.blankCount);
 		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("regExp", getRegExp());
-//			final ArrayNode regExpStream = analysis.putArray("regExpStream");
-//			final Set<String> streamRegExps = new HashSet<>();
-//			streamRegExps.add(shape.getRegExp(false));
-//			// Only bother to return a fitted result of we have a reasonable number of samples
-//			if (shape.getSamples() > 100)
-//				streamRegExps.add(shape.getRegExp(true));
-//			streamRegExps.remove(getRegExp());
-//			if (!streamRegExps.isEmpty())
-//				outputArray(regExpStream, streamRegExps);
-			analysis.put("confidence", confidence);
-			analysis.put("type", patternInfo.getBaseType().toString());
+			//			final ArrayNode regExpStream = analysis.putArray("regExpStream");
+			//			final Set<String> streamRegExps = new HashSet<>();
+			//			streamRegExps.add(shape.getRegExp(false));
+			//			// Only bother to return a fitted result of we have a reasonable number of samples
+			//			if (shape.getSamples() > 100)
+			//				streamRegExps.add(shape.getRegExp(true));
+			//			streamRegExps.remove(getRegExp());
+			//			if (!streamRegExps.isEmpty())
+			//				outputArray(regExpStream, streamRegExps);
+			analysis.put("confidence", facts.confidence);
+			analysis.put("type", facts.matchPatternInfo.getBaseType().toString());
 
-			if (patternInfo.typeQualifier != null)
-				analysis.put("typeQualifier", patternInfo.typeQualifier);
+			if (facts.matchPatternInfo.typeQualifier != null)
+				analysis.put("typeQualifier", facts.matchPatternInfo.typeQualifier);
 		}
 
-		if (FTAType.DOUBLE == patternInfo.getBaseType())
+		if (FTAType.DOUBLE == facts.matchPatternInfo.getBaseType())
 			analysis.put("decimalSeparator", String.valueOf(facts.decimalSeparator));
 
 		if (statisticsEnabled()) {
-			if (facts.minValue != null)
-				analysis.put("min", facts.minValue);
-			if (facts.maxValue != null)
-				analysis.put("max", facts.maxValue);
+			if (facts.getMinValue() != null)
+				analysis.put("min", facts.getMinValue());
+			if (facts.getMaxValue() != null)
+				analysis.put("max", facts.getMaxValue());
 		}
 
 		analysis.put("minLength", facts.minRawLength);
 		analysis.put("maxLength", facts.maxRawLength);
 
 		if (statisticsEnabled()) {
-			if (facts.mean != null)
+			if (facts.matchPatternInfo.isNumeric())
 				analysis.put("mean", facts.mean);
-			if (facts.variance != null)
+			if (facts.matchPatternInfo.isNumeric())
 				analysis.put("standardDeviation", getStandardDeviation());
 			if (facts.topK != null) {
 				final ArrayNode detail = analysis.putArray("topK");
@@ -661,7 +644,7 @@ public class TextAnalysisResult {
 			}
 		}
 
-		if (patternInfo.isNumeric())
+		if (facts.matchPatternInfo.isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
 		analysis.put("cardinality", cardinality.size() < analysisConfig.getMaxCardinality() ? cardinality.size() : -1);
@@ -687,14 +670,14 @@ public class TextAnalysisResult {
 		analysis.put("trailingWhiteSpace", getTrailingWhiteSpace());
 		analysis.put("multiline", getMultiline());
 
-		if (patternInfo.isDateType())
+		if (facts.matchPatternInfo.isDateType())
 			analysis.put("dateResolutionMode", getDateResolutionMode().toString());
 
 		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("logicalType", isLogicalType());
 			analysis.put("keyConfidence", facts.keyConfidence);
 			analysis.put("uniqueness", facts.uniqueness);
-			analysis.put("detectionLocale", locale.toLanguageTag());
+			analysis.put("detectionLocale", facts.getLocale().toLanguageTag());
 			analysis.put("ftaVersion", Utils.getVersion());
 
 			String signature = getStructureSignature();

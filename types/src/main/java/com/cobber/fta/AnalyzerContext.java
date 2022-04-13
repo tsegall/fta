@@ -15,6 +15,9 @@
  */
 package com.cobber.fta;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 /**
@@ -84,5 +87,19 @@ public class AnalyzerContext {
 	 */
 	public String[] getCompositeStreamNames() {
 		return compositeStreamNames;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AnalyzerContext other = (AnalyzerContext) obj;
+		return Objects.equals(compositeName, other.compositeName)
+				&& Arrays.equals(compositeStreamNames, other.compositeStreamNames)
+				&& dateResolutionMode == other.dateResolutionMode && Objects.equals(streamName, other.streamName);
 	}
 }

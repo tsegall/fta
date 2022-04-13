@@ -259,9 +259,8 @@ public class DetermineDateTimeFormatTests {
 		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser(DateResolutionMode.DayFirst);
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
-		}
+		for (String input : inputs)
+			det.train(input);
 
 		final DateTimeParserResult result = det.getResult();
 		final String formatString = result.getFormatString();
@@ -281,9 +280,8 @@ public class DetermineDateTimeFormatTests {
 		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser(DateResolutionMode.DayFirst);
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
-		}
+		for (String input : inputs)
+			det.train(input);
 
 		final DateTimeParserResult result = det.getResult();
 		final String formatString = result.getFormatString();
@@ -509,9 +507,8 @@ public class DetermineDateTimeFormatTests {
 		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
-		}
+		for (String input : inputs)
+			det.train(input);
 
 		final DateTimeParserResult result = det.getResult();
 
@@ -541,9 +538,8 @@ public class DetermineDateTimeFormatTests {
 		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
-		for (int i = 0; i < inputs.length; i++) {
-			det.train(inputs[i]);
-		}
+		for (String input : inputs)
+			det.train(input);
 
 		final DateTimeParserResult result = det.getResult();
 
@@ -1207,7 +1203,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testDTPResult_Date() {
-		final String[] tests = new String[] { "MM", "MMM", "MMMM", "dd", "yy", "yyyy", "xxx", "x", "EEE", "z", "a" };
+		final String[] tests = { "MM", "MMM", "MMMM", "dd", "yy", "yyyy", "xxx", "x", "EEE", "z", "a" };
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
@@ -1217,7 +1213,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testDTPResult_Time() {
-		final String[] tests = new String[] { "HH", "mm", "ss", "SSS" };
+		final String[] tests = { "HH", "mm", "ss", "SSS" };
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
@@ -1227,7 +1223,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testDTPResult_DateTime() {
-		final String[] tests = new String[] { "MM/dd/yyyy HH:mm:ss" };
+		final String[] tests = { "MM/dd/yyyy HH:mm:ss" };
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
@@ -1237,7 +1233,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testDTPResult_OffsetDateTime() {
-		final String[] tests = new String[] { "yyyyMMdd'T'HHmmssxx" };
+		final String[] tests = { "yyyyMMdd'T'HHmmssxx" };
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
@@ -1247,7 +1243,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testDTPResult_ZonedDateTime() {
-		final String[] tests = new String[] { "EEE MMM dd HH:mm:ss z yyyy" };
+		final String[] tests = { "EEE MMM dd HH:mm:ss z yyyy" };
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
@@ -1257,7 +1253,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testDTPResult_Unknown() {
-		final String[] tests = new String[] { "W", "V", "G", "u", "L", "Q", "e", "c", "K", "n", "N", "O" };
+		final String[] tests = { "W", "V", "G", "u", "L", "Q", "e", "c", "K", "n", "N", "O" };
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, Locale.getDefault());
@@ -2021,30 +2017,30 @@ public class DetermineDateTimeFormatTests {
 		// Check we can determine the format
 		assertEquals(dtp.determineFormatString(testInput), expectedFormat);
 
-		DateTimeParserResult result = DateTimeParserResult.asResult(expectedFormat, resolutionMode, locale);
+		final DateTimeParserResult result = DateTimeParserResult.asResult(expectedFormat, resolutionMode, locale);
 
 		// Check it is of the expected FTA type
 		assertEquals(type, result.getType());
 
 		// Grab our slightly modified DateTimeFormatter (since it copes with case insensitivity)
-		DateTimeFormatter dtf = DateTimeParser.ofPattern(expectedFormat, locale);
+		final DateTimeFormatter dtf = DateTimeParser.ofPattern(expectedFormat, locale);
 
 		String formatted = null;
 		switch (type) {
 		case LOCALDATE:
-			LocalDate ld = LocalDate.parse(testInput, dtf);
+			final LocalDate ld = LocalDate.parse(testInput, dtf);
 			formatted = ld.format(dtf);
 			break;
 		case LOCALTIME:
-			LocalTime lt = LocalTime.parse(testInput, dtf);
+			final LocalTime lt = LocalTime.parse(testInput, dtf);
 			formatted = lt.format(dtf);
 			break;
 		case LOCALDATETIME:
-			LocalDateTime ldt = LocalDateTime.parse(testInput, dtf);
+			final LocalDateTime ldt = LocalDateTime.parse(testInput, dtf);
 			formatted = ldt.format(dtf);
 			break;
 		case OFFSETDATETIME:
-			OffsetDateTime odt = OffsetDateTime.parse(testInput, dtf);
+			final OffsetDateTime odt = OffsetDateTime.parse(testInput, dtf);
 			formatted = odt.format(dtf);
 			break;
 		}
@@ -2096,21 +2092,21 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void check23() {
-		DateTimeParserResult result = DateTimeParserResult.asResult("yyyy-MM-dd HH:mm:ss.S{2,3}", DateResolutionMode.MonthFirst, Locale.US);
+		final DateTimeParserResult result = DateTimeParserResult.asResult("yyyy-MM-dd HH:mm:ss.S{2,3}", DateResolutionMode.MonthFirst, Locale.US);
 		assertEquals(result.timeFieldLengths[3].getMin(), 2);
 		assertEquals(result.timeFieldLengths[3].getMax(), 3);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void check11() {
-		DateTimeParserResult result = DateTimeParserResult.asResult("H:mm:ss.S", DateResolutionMode.MonthFirst, Locale.US);
+		final DateTimeParserResult result = DateTimeParserResult.asResult("H:mm:ss.S", DateResolutionMode.MonthFirst, Locale.US);
 		assertEquals(result.timeFieldLengths[3].getMin(), 1);
 		assertEquals(result.timeFieldLengths[3].getMax(), 1);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void checkembedded11() {
-		DateTimeParserResult result = DateTimeParserResult.asResult("yyyy-MM-dd'T'HH:mm:ss.Sxxx", DateResolutionMode.MonthFirst, Locale.US);
+		final DateTimeParserResult result = DateTimeParserResult.asResult("yyyy-MM-dd'T'HH:mm:ss.Sxxx", DateResolutionMode.MonthFirst, Locale.US);
 		assertEquals(result.timeFieldLengths[3].getMin(), 1);
 		assertEquals(result.timeFieldLengths[3].getMax(), 1);
 	}

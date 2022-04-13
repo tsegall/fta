@@ -1212,7 +1212,7 @@ public class DateTimeParser {
 			}
 			else {
 				// So we are looking for d{2}/d{2} or d{2}/d or d/{d2} or d/d
-				final int firstDigit = compressed.indexOf("d");
+				final int firstDigit = compressed.indexOf('d');
 				if (firstDigit == -1)
 					return null;
 
@@ -1231,7 +1231,7 @@ public class DateTimeParser {
 					secondStart = firstDigit + 1;
 				}
 
-				final int secondDigit = compressed.indexOf("d", secondStart);
+				final int secondDigit = compressed.indexOf('d', secondStart);
 				if (secondDigit == -1)
 					return null;
 

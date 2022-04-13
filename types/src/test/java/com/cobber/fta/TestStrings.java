@@ -52,6 +52,7 @@ public class TestStrings {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), iterations);
 		assertEquals(result.getOutlierCount(), 0);
@@ -82,6 +83,7 @@ public class TestStrings {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), 3 * iterations + 1);
 		assertEquals(result.getMaxLength(), 6);
@@ -113,6 +115,7 @@ public class TestStrings {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), iterations);
 		assertEquals(result.getMaxLength(), 6);
@@ -141,6 +144,7 @@ public class TestStrings {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), iterations);
 		assertEquals(result.getTypeQualifier(), "BLANK");
@@ -174,6 +178,7 @@ public class TestStrings {
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeQualifier(), "BLANKORNULL");
@@ -208,6 +213,7 @@ public class TestStrings {
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.STRING);
 		assertNull(result.getTypeQualifier());
@@ -471,6 +477,7 @@ public class TestStrings {
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{9}");

@@ -68,6 +68,7 @@ public class TestIdentity {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getMatchCount(), samples.length - 2);
@@ -101,6 +102,7 @@ public class TestIdentity {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getMatchCount(), samples.length);
@@ -148,6 +150,7 @@ public class TestIdentity {
 		analysis.train("032--45-0981");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
@@ -189,6 +192,7 @@ public class TestIdentity {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
@@ -228,6 +232,7 @@ public class TestIdentity {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
@@ -267,6 +272,7 @@ public class TestIdentity {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
@@ -305,6 +311,7 @@ public class TestIdentity {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
@@ -344,6 +351,7 @@ public class TestIdentity {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);

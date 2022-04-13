@@ -31,7 +31,7 @@ public class TokenStreams {
 	private final Map<String, TokenStream> tokenStreams = new HashMap<>();
 	private final int maxStreams;
 	private boolean anyShape;
-	private long totalSamples;
+	private long samples;
 
 	/**
 	 * Construct a TokenStreams object with a maximum number of TokenStream instances.
@@ -48,7 +48,7 @@ public class TokenStreams {
 	 * @param count The number of occurrences of this input.
 	 */
 	public void track(final String trimmed, final long count) {
-		totalSamples += count;
+		samples += count;
 		if (anyShape)
 			return;
 
@@ -84,7 +84,7 @@ public class TokenStreams {
 	 * @return The number of inputs this TokenStream has captured.
 	 */
 	public long getSamples() {
-		return totalSamples;
+		return samples;
 	}
 
 	/**
@@ -99,12 +99,12 @@ public class TokenStreams {
 		if (tokenStreams.size() == 1)
 			return tokenStreams.values().iterator().next().getRegExp(fitted);
 
-		if (tokenStreams.size() == 2 && totalSamples >= 100) {
+		if (tokenStreams.size() == 2 && samples >= 100) {
 			final Iterator<Map.Entry<String, TokenStream>> iter = tokenStreams.entrySet().iterator();
 			final TokenStream firstTokenStream = iter.next().getValue();
 			final TokenStream secondTokenStream = iter.next().getValue();
 
-			if (firstTokenStream.getOccurrences() > totalSamples * 15/100 && secondTokenStream.getOccurrences() > totalSamples * 15/100) {
+			if (firstTokenStream.getOccurrences() > samples * 15/100 && secondTokenStream.getOccurrences() > samples * 15/100) {
 				return RegExpGenerator.merge(firstTokenStream.getRegExp(fitted), secondTokenStream.getRegExp(fitted));
 			}
 		}
@@ -178,6 +178,9 @@ public class TokenStreams {
 	 */
 	public boolean matches(final String regExp) {
 		if (anyShape)
+			return false;
+
+		if (tokenStreams.isEmpty())
 			return false;
 
 		for (final TokenStream tokenStream : tokenStreams.values())

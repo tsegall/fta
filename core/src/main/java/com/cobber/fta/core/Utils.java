@@ -72,6 +72,9 @@ public final class Utils {
 	 * @return The String with &lt;count&gt; occurrences of the supplied character.
 	 */
 	public static String repeat(final char c, final int count) {
+		if (count == 0)
+			return "";
+
 		if (count == 1)
 			return String.valueOf(c);
 

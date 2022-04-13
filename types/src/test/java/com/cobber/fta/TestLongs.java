@@ -64,6 +64,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -106,6 +107,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -146,6 +148,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
@@ -173,6 +176,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
@@ -253,6 +257,7 @@ public class TestLongs {
 		analysis.train("000617374");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
@@ -277,6 +282,7 @@ public class TestLongs {
 		analysis.train("10");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
@@ -298,6 +304,7 @@ public class TestLongs {
 			analysis.train("");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
@@ -318,6 +325,7 @@ public class TestLongs {
 			analysis.train(String.valueOf(i));
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
@@ -340,6 +348,7 @@ public class TestLongs {
 		analysis.train("1");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
@@ -361,6 +370,7 @@ public class TestLongs {
 			analysis.train(String.valueOf(i));
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
@@ -382,6 +392,7 @@ public class TestLongs {
 			analysis.train(String.valueOf(i));
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
@@ -405,6 +416,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
@@ -443,6 +455,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getTypeQualifier(), "GROUPING");
@@ -508,6 +521,7 @@ public class TestLongs {
 			}
 
 			final TextAnalysisResult result = analysis.getResult();
+			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getType(), FTAType.LONG);
 			assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toString());
@@ -554,6 +568,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
@@ -647,15 +662,17 @@ public class TestLongs {
 			}
 
 			final TextAnalysisResult result = analysis.getResult();
-
+			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getType(), FTAType.LONG);
 			assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toLanguageTag());
 			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			assertEquals(result.getNullCount(), 0);
-			assertEquals(result.getMinValue(), String.valueOf(min));
-			assertEquals(result.getMaxValue(), String.valueOf(max));
+			final NumberFormat longFormatter = NumberFormat.getIntegerInstance(locale);
+			longFormatter.setGroupingUsed(false);
+			assertEquals(result.getMinValue(), longFormatter.format(min));
+			assertEquals(result.getMaxValue(), longFormatter.format(max));
 			assertEquals(result.getLeadingZeroCount(), 0);
 
 			String regExp = "";
@@ -703,6 +720,7 @@ public class TestLongs {
 		bad++;
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), samples + 1);
@@ -738,6 +756,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), iterations + nullIterations);
@@ -764,6 +783,7 @@ public class TestLongs {
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertTrue(result.isLogicalType());
@@ -791,6 +811,7 @@ public class TestLongs {
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertTrue(result.isLogicalType());
@@ -818,6 +839,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
@@ -849,6 +871,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
@@ -876,6 +899,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -908,6 +932,7 @@ public class TestLongs {
 		analysis.train("    ");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), iterations + nullIterations + 2);
@@ -945,6 +970,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LONG);
@@ -1002,6 +1028,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
@@ -1042,6 +1069,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getRegExp(), "\\d+");
 	}
@@ -1051,7 +1079,6 @@ public class TestLongs {
 		final TextAnalyzer analysis = new TextAnalyzer("justSimple");
 
 		final int iterations = 100_000_000;
-		final long start = System.currentTimeMillis();
 
 		final Map<String, Long> input = new HashMap<>();
 		for (int i = 0; i < 100; i++)
@@ -1059,9 +1086,7 @@ public class TestLongs {
 		analysis.trainBulk(input);
 
 		final TextAnalysisResult result = analysis.getResult();
-
-		final long elapsed = System.currentTimeMillis() - start;
-		System.err.println("Duration: " + elapsed);
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), iterations);
 		assertEquals(result.getType(), FTAType.LONG);
@@ -1084,6 +1109,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), iterations + nullIterations);
@@ -1103,6 +1129,7 @@ public class TestLongs {
 		analysis.train("-1");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getTypeQualifier(), "SIGNED");
@@ -1124,6 +1151,7 @@ public class TestLongs {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), iters);
@@ -1167,6 +1195,7 @@ public class TestLongs {
 
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 		if (bw != null)
 			bw.close();
 

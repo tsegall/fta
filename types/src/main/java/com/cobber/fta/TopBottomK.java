@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import java.util.Iterator;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -42,6 +43,14 @@ public class TopBottomK<T extends Comparable<C>, C> {
 			throw new IllegalArgumentException("size must be > 0");
 		this.size = size;
 		this.starter = new TreeSet<>();
+	}
+
+	/**
+	 * Observe the items provided.
+	 * @param items The set of items to be observed.
+	 */
+	public void observeAll(final Set<T> items) {
+		items.forEach(item -> observe(item));
 	}
 
 	/**

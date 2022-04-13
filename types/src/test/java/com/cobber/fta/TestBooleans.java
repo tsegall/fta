@@ -36,6 +36,7 @@ public class TestBooleans {
 		analysis.train("true");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), 1);
 		assertEquals(result.getOutlierCount(), 0);
@@ -66,6 +67,7 @@ public class TestBooleans {
 		analysis.train(null);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length + NULL_COUNT);
@@ -107,6 +109,7 @@ public class TestBooleans {
 		analysis.train(null);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length + 2);
@@ -148,6 +151,7 @@ public class TestBooleans {
 		analysis.train(null);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertNotEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length + NULL_COUNT);
@@ -197,6 +201,7 @@ public class TestBooleans {
 		analysis.train(null);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertNotEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length + 2);
@@ -233,6 +238,7 @@ public class TestBooleans {
 			analysis.train("C");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), countN + countC);
 		assertEquals(result.getOutlierCount(), 0);
@@ -257,6 +263,7 @@ public class TestBooleans {
 			analysis.train("y");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), COUNT);
 		assertEquals(result.getOutlierCount(), 0);
@@ -287,6 +294,7 @@ public class TestBooleans {
 		analysis.train(null);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), inputs.length + 2);
@@ -321,6 +329,7 @@ public class TestBooleans {
 		analysis.train(null);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), inputs.length + 2);
@@ -355,6 +364,7 @@ public class TestBooleans {
 		analysis.train(null);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), inputs.length + 2);

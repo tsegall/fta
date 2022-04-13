@@ -78,5 +78,36 @@ public enum FTAType {
 		public String toString() {
 			return "ZonedDateTime";
 		}
+	};
+
+	/**
+	 * Is this Type Numeric?
+	 *
+	 * @param type The FTA type to test.
+	 * @return A boolean indicating if the Type for this pattern is numeric.
+	 */
+	public static boolean isNumeric(final FTAType type) {
+		return FTAType.LONG.equals(type) || FTAType.DOUBLE.equals(type);
+	}
+
+	/**
+	 * Is this Type a Date Type?
+	 *
+	 * @param type The FTA type to test.
+	 * @return A boolean indicating if the Type for this pattern includes a Date.
+	 */
+	public static boolean isDateType(final FTAType type) {
+		return FTAType.LOCALDATE.equals(type) || FTAType.LOCALDATETIME.equals(type) ||
+				FTAType.OFFSETDATETIME.equals(type) || FTAType.ZONEDDATETIME.equals(type);
+	}
+
+	/**
+	 * Is this Type a Date or Time Type?
+	 *
+	 * @param type The FTA type to test.
+	 * @return A boolean indicating if the Type for this pattern includes a Date.
+	 */
+	public static boolean isDateOrTimeType(final FTAType type) {
+		return FTAType.LOCALTIME.equals(type) || isDateType(type);
 	}
 }

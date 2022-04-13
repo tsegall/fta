@@ -78,6 +78,7 @@ public class TestDates {
 		analysis.train("02/O2/99");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), records + 1);
@@ -116,6 +117,7 @@ public class TestDates {
 			localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), sampleCount);
 		assertEquals(result.getOutlierCount(), 0);
@@ -154,6 +156,7 @@ public class TestDates {
 			calendar.add(Calendar.SECOND, 1);
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), sampleCount);
 		assertEquals(result.getOutlierCount(), 0);
@@ -192,6 +195,7 @@ public class TestDates {
 			localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), sampleCount);
 		assertEquals(result.getOutlierCount(), 0);
@@ -231,6 +235,7 @@ public class TestDates {
 				localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
 			}
 			final TextAnalysisResult result = analysis.getResult();
+			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getSampleCount(), sampleCount);
 			assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2} (?i)(AM|PM) \\d{2}/\\d{2}/\\d{2}");
@@ -268,6 +273,7 @@ public class TestDates {
 			localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), sampleCount);
 		assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2} (?i)(SA|CH) \\d{2}/\\d{2}/\\d{2}");
@@ -304,6 +310,7 @@ public class TestDates {
 			localDateTime = localDateTime.minusDays(100).minusHours(1).minusMinutes(1).minusSeconds(1);
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.STRING);
 		assertNull(result.getTypeQualifier());
@@ -341,6 +348,7 @@ public class TestDates {
 				}
 
 				final TextAnalysisResult result = analysis.getResult();
+				TestUtils.checkSerialization(analysis);
 
 				assertEquals(result.getType(), FTAType.LOCALDATETIME);
 				assertEquals(result.getTypeQualifier(), "HH:mm dd/M/yy", resolutionMode.toString() + "+" + locale);
@@ -378,6 +386,7 @@ public class TestDates {
 				}
 
 				final TextAnalysisResult result = analysis.getResult();
+				TestUtils.checkSerialization(analysis);
 
 				assertEquals(result.getType(), FTAType.LOCALDATE);
 				String expected;
@@ -418,6 +427,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -451,6 +461,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getTypeQualifier(), "HH:mm dd/M/yy");
@@ -480,6 +491,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getTypeQualifier(), "M/yyyy");
@@ -508,6 +520,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getTypeQualifier(), "MMM ppd yyyy hh:mma");
@@ -538,6 +551,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getTypeQualifier(), "MMM dd, yyyy h:mm a");
@@ -576,6 +590,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getTypeQualifier(), "MMM d yyyy pph:mma");
@@ -613,6 +628,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getTypeQualifier(), "MMM ppd yyyy pph:mma");
@@ -650,6 +666,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getTypeQualifier(), "MMM d yyyy h:mma");
@@ -686,6 +703,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getTypeQualifier(), "M/d/yyyy");
@@ -709,6 +727,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSS");
@@ -737,6 +756,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getTypeQualifier(), "M/d/yy");
@@ -772,6 +792,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -826,6 +847,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
@@ -872,6 +894,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getType(), FTAType.LOCALDATE);
@@ -914,6 +937,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "dd/MM/yy HH:mm");
@@ -943,6 +967,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyy/dd/MM");
@@ -973,6 +998,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
@@ -1004,6 +1030,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALTIME);
 		assertEquals(result.getTypeQualifier(), "H:mm");
@@ -1038,6 +1065,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "M/dd/yy H:mm");
@@ -1067,6 +1095,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "M/d/yy H:mm");
@@ -1092,6 +1121,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1124,6 +1154,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length * iterations);
 		assertEquals(result.getMatchCount(), inputs.length * iterations);
@@ -1152,6 +1183,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), iterations);
 		assertEquals(result.getMatchCount(), iterations);
@@ -1177,6 +1209,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1204,6 +1237,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1241,6 +1275,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getRegExp(), "\\d{1,2} [\\p{IsAlphabetic}\\.]{3,5} \\d{4}");
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
@@ -1284,6 +1319,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		// Post Java 8 the month abbreviations have changed
 		assertEquals(result.getRegExp(), TestUtils.getJavaVersion() == 8 ? "\\d{1,2} \\p{IsAlphabetic}{1,4} \\d{4}" : "\\d{1,2} \\p{IsAlphabetic}{3,4} \\d{4}");
@@ -1328,6 +1364,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getRegExp(), "\\d{1,2} .{5,8} \\d{4}");
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
@@ -1371,6 +1408,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		// Post Java 8 the month abbreviations now appear with a period when necessary
 		assertEquals(result.getRegExp(), TestUtils.getJavaVersion() == 8 ? "\\d{1,2} \\p{IsAlphabetic}{3} \\d{4}" : "\\d{1,2} [\\p{IsAlphabetic}\\.]{3,4} \\d{4}");
@@ -1404,6 +1442,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "\\d{2}/\\d{2}/\\d{2}");
 		assertEquals(result.getType(), FTAType.LOCALDATE);
@@ -1450,6 +1489,7 @@ public class TestDates {
 		analysis.train(null);
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), 20);
 		assertEquals(result.getNullCount(), 2);
@@ -1487,6 +1527,7 @@ public class TestDates {
 		analysis.train(null);
 
 		TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.OFFSETDATETIME);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss.SSSX");
@@ -1528,6 +1569,7 @@ public class TestDates {
 		analysis.train("2021-08-23T18:53:39.559-04:00");
 
 		TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.OFFSETDATETIME);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss.S{1,3}xxx");
@@ -1568,6 +1610,7 @@ public class TestDates {
 		analysis.train("2021-08-23T18:53:39.559-04:00");
 
 		TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.OFFSETDATETIME);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss.S{1,3}xxx");
@@ -1607,6 +1650,7 @@ public class TestDates {
 		analysis.train(null);
 
 		TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.OFFSETDATETIME);
 		assertEquals(result.getSampleCount(), 20);
@@ -1636,6 +1680,7 @@ public class TestDates {
 		analysis.train("01/24/2012 16:53:04 GMT");
 
 		TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 		assertEquals(result.getSampleCount(), 6);
@@ -1662,6 +1707,7 @@ public class TestDates {
 		analysis.train("01/24/2012 16:53:04 GMT");
 
 		TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 		assertEquals(result.getSampleCount(), 6);
@@ -1693,6 +1739,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1722,6 +1769,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1750,6 +1798,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1778,6 +1827,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1806,6 +1856,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1833,6 +1884,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1861,6 +1913,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1891,6 +1944,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1918,6 +1972,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1948,6 +2003,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -2003,6 +2059,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -2040,6 +2097,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd");
@@ -2069,6 +2127,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "d-MMM-yy");
@@ -2102,6 +2161,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 		assertEquals(result.getTypeQualifier(), "EEE MMM ppd HH:mm:ss z yyyy");
@@ -2133,6 +2193,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "MMMM-d-yyyy");
@@ -2169,6 +2230,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
@@ -2205,6 +2267,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
@@ -2223,10 +2286,8 @@ public class TestDates {
 	public void slashDateYYYYMMDD() throws IOException, FTAException {
 		final TextAnalyzer analysis1 = new TextAnalyzer("slashDateYYYYMMDD");
 		analysis1.setTrace("samples=10");
-//		final TextAnalyzer analysis2 = new TextAnalyzer();
 		analysis1.setTrace("samples=10");
 		analysis1.setCollectStatistics(false);
-//		analysis2.setCollectStatistics(false);
 		final String[] inputs1 = "2010/01/22|2019/01/12|1996/01/02|1916/01/02|1993/01/02|1998/01/02|2001/01/02|2000/01/14|2008/01/12".split("\\|");
 		final String[] inputs2 = "2007/01/22|2019/01/12|1996/03/02|1916/06/02|1993/09/02|1998/01/02|2001/01/02|2000/01/14|2018/01/12".split("\\|");
 		int locked = -1;
@@ -2236,10 +2297,8 @@ public class TestDates {
 				locked = i;
 		}
 		final TextAnalysisResult result1 = analysis1.getResult();
-
-		for (final String input2 : inputs2)
-			analysis1.train(input2);
-		final TextAnalysisResult result2 = analysis1.getResult();
+		String structureSignature1 = result1.getStructureSignature();
+		String dateSignature1 = result1.getDataSignature();
 
 		assertEquals(result1.getSampleCount(), inputs1.length);
 		assertEquals(result1.getMatchCount(), inputs1.length);
@@ -2248,16 +2307,27 @@ public class TestDates {
 		assertEquals(result1.getConfidence(), 1.0);
 		assertEquals(result1.getType(), FTAType.LOCALDATE);
 		assertEquals(result1.getTypeQualifier(), "yyyy/MM/dd");
-		assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
-		assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 
-		for (final String input1 : inputs1) {
+		for (final String input2 : inputs2)
+			analysis1.train(input2);
+		final TextAnalysisResult result2 = analysis1.getResult();
+
+		assertEquals(result2.getSampleCount(), inputs1.length + inputs2.length);
+		assertEquals(result2.getMatchCount(), inputs1.length + inputs2.length);
+		assertEquals(result2.getNullCount(), 0);
+		assertEquals(result2.getRegExp(), "\\d{4}/\\d{2}/\\d{2}");
+		assertEquals(result2.getConfidence(), 1.0);
+		assertEquals(result2.getType(), FTAType.LOCALDATE);
+		assertEquals(result2.getTypeQualifier(), "yyyy/MM/dd");
+
+		assertEquals(structureSignature1, result2.getStructureSignature());
+		assertNotEquals(dateSignature1, result2.getDataSignature());
+
+		for (final String input1 : inputs1)
 			assertTrue(input1.matches(result1.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
-
 	public void basicDateDDMMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicDateDDMMYYYY");
 		analysis.setCollectStatistics(false);
@@ -2270,6 +2340,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -2297,6 +2368,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -2328,6 +2400,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length * iterations);
 		assertEquals(result.getMatchCount(), inputs.length * iterations);
@@ -2370,6 +2443,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LOCALDATE);
@@ -2409,6 +2483,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LOCALTIME);
@@ -2550,6 +2625,7 @@ public class TestDates {
 				}
 
 				final TextAnalysisResult result = analysis.getResult();
+				TestUtils.checkSerialization(analysis);
 
 				if (locked != AnalysisConfig.DETECT_WINDOW_DEFAULT) {
 					problems.add(testID + "Locked incorrect: " + locked);
@@ -2630,6 +2706,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "ddMMMyyyy:HH:mm:ss");
@@ -2665,6 +2742,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "ddMMMyyyy");
@@ -2697,6 +2775,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALTIME);
 		assertEquals(result.getTypeQualifier(), "HH:mm:ss");
@@ -2731,6 +2810,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALTIME);
 		assertEquals(result.getTypeQualifier(), "H:mm:ss");
@@ -2760,6 +2840,7 @@ public class TestDates {
 		analysis.train("00/00/0000 00:00:00+0000");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.OFFSETDATETIME);
 		assertEquals(result.getTypeQualifier(), "dd/MM/yyyy HH:mm:ssxx");
@@ -2790,6 +2871,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyyMMdd");
@@ -2826,6 +2908,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "M.d.yyyy");
@@ -2861,6 +2944,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "dd:MM:yyyy");
@@ -2896,6 +2980,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "MM:dd:yyyy");
@@ -2931,6 +3016,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "MM/yyyy");
@@ -2975,6 +3061,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "MM-yyyy");
@@ -3019,6 +3106,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyy/MM");
@@ -3063,6 +3151,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM");
@@ -3106,6 +3195,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "d.M.yyyy");
@@ -3142,6 +3232,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "d.M.yyyy H:mm:ss.S{1,3}");
@@ -3204,6 +3295,7 @@ public class TestDates {
 		analysis.train("2/7/2012 06:22:34");
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "d/M/yyyy HH:mm:ss");
@@ -3215,7 +3307,7 @@ public class TestDates {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
-	public void bizarreFractions() throws IOException, FTAException {
+	public void commaFractions() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 		analysis.setCollectStatistics(false);
 
@@ -3238,6 +3330,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss,SSS");
@@ -3286,6 +3379,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
@@ -3323,6 +3417,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -3358,6 +3453,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -3450,6 +3546,7 @@ public class TestDates {
 				analysis.train(samples[iters]);
 			}
 			final TextAnalysisResult result = analysis.getResult();
+			TestUtils.checkSerialization(analysis);
 
 			if (result.getTypeQualifier() != null) {
 				final SimpleResult expected = results.get(dateTimeFormat);
@@ -3508,6 +3605,7 @@ public class TestDates {
 
 		}
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 		if (bw != null)
 			bw.close();
 
@@ -3544,6 +3642,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LOCALDATE);
@@ -3577,6 +3676,7 @@ public class TestDates {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LOCALDATE);

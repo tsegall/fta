@@ -3,6 +3,8 @@ jar {
 }
 
 dependencies {
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonDatabindVersion}"
+
         testImplementation group: 'org.testng', name: 'testng', version: "${testngVersion}"
 	testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: "${logbackClassicVersion}"
 }
