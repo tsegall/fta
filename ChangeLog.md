@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 8.0.1
+ - BUG: Fix Serialization issue for tiny datasets
+ - BUG: Fix issue for non-US locales where the returned TextAnalyzer was not in the locale of the merged entities
+ - INT: Improve test coverage on TextAnalyzer serialize()/deserialize()/merge() in particular in non-default locales
+
 ### 8.0.0
  - *** Data Signatures for 8.X are not the same as prior releases, see details below ***
  - ENH: Add Serialize()/Deserialize()/merge() to TextAnalzer

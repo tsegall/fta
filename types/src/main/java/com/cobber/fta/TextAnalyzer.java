@@ -2813,6 +2813,11 @@ public class TextAnalyzer {
 	public String serialize() throws FTAPluginException, FTAUnsupportedLocaleException {
 		final ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
+
+		// If we have not already determined the type - we need to force the issue
+		if (facts.matchPatternInfo == null)
+			determineType();
+
 		TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(analysisConfig, context, facts.calculateFacts());
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		try {
@@ -2861,6 +2866,10 @@ public class TextAnalyzer {
 	 */
 	public static TextAnalyzer merge(TextAnalyzer first, TextAnalyzer second) throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
 		TextAnalyzer ret = new TextAnalyzer(first.context);
+
+		// If we have a locale set make sure to set it on the TextAnalyzer
+		if (first.analysisConfig.getLocaleTag() != null)
+			ret.setLocale(Locale.forLanguageTag(first.analysisConfig.getLocaleTag()));
 
 		if (!first.analysisConfig.equals(second.analysisConfig))
 			throw new FTAMergeException("The AnalysisConfig for both TextAnalyzers must be identical.");
@@ -2926,6 +2935,11 @@ public class TextAnalyzer {
 		return ret;
 	}
 
+	/*
+	 * AddToMap is used to add the bottomK and topK to the Map we are going to use to train.  Doing this ensures that
+	 * the merged result will at least have the same bottomK/topK as it should have even if these were not captured in the
+	 * cardinality set.
+	 */
 	private static void addToMap(Map<String, Long>merged, Set<String> extremes) {
 		if (extremes == null)
 			return;
