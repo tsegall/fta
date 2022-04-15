@@ -181,6 +181,10 @@ public class TestUtils {
 	protected static void checkSerialization(TextAnalyzer toCheck) throws FTAException {
 		String originalSerialized = toCheck.serialize();
 		TextAnalyzer hydrated = TextAnalyzer.deserialize(originalSerialized);
+		if (!hydrated.serialize().equals(originalSerialized)) {
+			System.err.println("Original:\n" + originalSerialized);
+			System.err.println("Hydrated:\n" + hydrated.serialize());
+		}
 		assertEquals(hydrated.serialize(), originalSerialized);
 	}
 

@@ -70,8 +70,8 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertNull(result.getTypeQualifier());
-		assertEquals(result.getMinValue(), "1.0E-1");
-		assertEquals(result.getMaxValue(), "9.923E1");
+		assertEquals(result.getMinValue(), "0.1");
+		assertEquals(result.getMaxValue(), "99.23");
 		assertEquals(result.getMinLength(), 2);
 		assertEquals(result.getMaxLength(), 11);
 
@@ -96,8 +96,8 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertNull(result.getTypeQualifier());
-		assertEquals(result.getMinValue(), "0.0E0");
-		assertEquals(result.getMaxValue(), "0.0E0");
+		assertEquals(result.getMinValue(), "0E0");
+		assertEquals(result.getMaxValue(), "0E0");
 		assertEquals(result.getMinLength(), 5);
 		assertEquals(result.getMaxLength(), 5);
 		assertTrue(input.matches(result.getRegExp()));
@@ -124,8 +124,8 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertNull(result.getTypeQualifier());
-		assertEquals(result.getMinValue(), "1.0E-1");
-		assertEquals(result.getMaxValue(), "9.923E1");
+		assertEquals(result.getMinValue(), "0.1");
+		assertEquals(result.getMaxValue(), "99.23");
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -153,8 +153,8 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getTypeQualifier(), PatternInfo.TypeQualifier.SIGNED.toString());
-		assertEquals(result.getMinValue(), "-9.923E1");
-		assertEquals(result.getMaxValue(), "4.38E1");
+		assertEquals(result.getMinValue(), "-99.23");
+		assertEquals(result.getMaxValue(), "43.8");
 
 		assertTrue("0".matches(result.getRegExp()));
 
@@ -217,8 +217,8 @@ public class TestDoubles {
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE) + "-?");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getMinValue(), "-2.90322E3");
-		assertEquals(result.getMaxValue(), "5.234E3");
+		assertEquals(result.getMinValue(), "-2903.22");
+		assertEquals(result.getMaxValue(), "5234.0");
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -821,8 +821,8 @@ public class TestDoubles {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
-		assertEquals(result.getMinValue(), "-1.01E2");
-		assertEquals(result.getMaxValue(), "1.19E2");
+		assertEquals(result.getMinValue(), "-101.0");
+		assertEquals(result.getMaxValue(), "119.0");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
@@ -864,8 +864,8 @@ public class TestDoubles {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMinValue(), "0.0E0");
-		assertEquals(result.getMaxValue(), "3.0E0");
+		assertEquals(result.getMinValue(), "0.0");
+		assertEquals(result.getMaxValue(), "3.0");
 
 		final String regExp = result.getRegExp();
 		for (final String input : inputs) {
@@ -1359,8 +1359,8 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT_GROUPING));
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMinValue(), "3.0E8");
-		assertEquals(result.getMaxValue(), "6.0E27");
+		assertEquals(result.getMinValue(), "3E8");
+		assertEquals(result.getMaxValue(), "6E27");
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -1397,8 +1397,8 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING));
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMinValue(), "-3.0E27");
-		assertEquals(result.getMaxValue(), "6.0E27");
+		assertEquals(result.getMinValue(), "-3E27");
+		assertEquals(result.getMaxValue(), "6E27");
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -1439,8 +1439,8 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMinValue(), "-9.999E3");
-		assertEquals(result.getMaxValue(), "6.9334954E-1");
+		assertEquals(result.getMinValue(), "-9999.0");
+		assertEquals(result.getMaxValue(), "0.69334954");
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));

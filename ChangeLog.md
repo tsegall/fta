@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 8.0.2
+ - ENH: For Doubles & Longs print the min/max/top/bottom in approximately the format of the incoming data (including localization)
+ - BUG: merge() could not cope with cases where the cardinality was large and the top/bottom values were not in the captured set
+ - INT: Improve test coverage on merge()
+
 ### 8.0.1
  - BUG: Fix Serialization issue for tiny datasets
  - BUG: Fix issue for non-US locales where the returned TextAnalyzer was not in the locale of the merged entities

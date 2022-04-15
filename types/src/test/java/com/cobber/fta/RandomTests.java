@@ -78,6 +78,86 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void getAttributesNoStatistics() throws IOException, FTAException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("getMinValueNoStatistics");
+		analysis.setCollectStatistics(false);
+
+		analysis.train("0");
+		analysis.train("1");
+		analysis.train("2");
+		analysis.train("3");
+		analysis.train("4");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		int failures = 0;
+		try {
+			result.getMinValue();
+			failures++;
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(e.getMessage(), "Statistics not enabled.");
+			return;
+		}
+		try {
+			result.getMaxValue();
+			failures++;
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(e.getMessage(), "Statistics not enabled.");
+			return;
+		}
+		try {
+			result.getTopK();
+			failures++;
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(e.getMessage(), "Statistics not enabled.");
+			return;
+		}
+		try {
+			result.getBottomK();
+			failures++;
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(e.getMessage(), "Statistics not enabled.");
+			return;
+		}
+		try {
+			result.getMean();
+			failures++;
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(e.getMessage(), "Statistics not enabled.");
+			return;
+		}
+		try {
+			result.getStandardDeviation();
+			failures++;
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(e.getMessage(), "Statistics not enabled.");
+			return;
+		}
+
+		if (failures != 0)
+			fail("Exception should have been thrown");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void dataRegExp() throws IOException, FTAException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("getMinValueNoStatistics");
+		analysis.setCollectStatistics(false);
+
+		analysis.train("hello  ");
+		analysis.train("  world");
+		analysis.train("magic");
+		TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getRegExp(), "[ 	]*\\p{IsAlphabetic}{5}[ 	]*");
+		assertEquals(result.getDataRegExp(), "\\p{IsAlphabetic}{5}");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void setDefaultLogicalTypes() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setDefaultLogicalTypes");
 		analysis.setDefaultLogicalTypes(false);

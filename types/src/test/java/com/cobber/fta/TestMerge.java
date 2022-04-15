@@ -1,11 +1,14 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -15,7 +18,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
-import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
@@ -92,7 +94,7 @@ public class TestMerge {
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			shardTwo.add("FEMALE");
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "MALE_FEMALE", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "MALE_FEMALE", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
@@ -119,10 +121,50 @@ public class TestMerge {
 		samplesLong200.add("  ");
 		samplesLong200.add("x");
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesLong100, samplesLong200, "long_long", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesLong100, samplesLong200, "long_long", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LONG);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void testBulkLongNoStats() throws IOException, FTAException {
+		final long SAMPLE_COUNT = 100L;
+
+		List<String> samplesLong100 = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesLong100.add("100");
+		samplesLong100.add(null);
+		samplesLong100.add(" ");
+
+		List<String> samplesLong200 = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesLong200.add("200");
+		samplesLong200.add(null);
+		samplesLong200.add(null);
+		samplesLong200.add("  ");
+		samplesLong200.add("  ");
+		samplesLong200.add("x");
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesLong100, samplesLong200, "long_long", null, false);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void testEquals() throws IOException, FTAException {
+		final TextAnalyzer shardOne = new TextAnalyzer();
+		final TextAnalyzer shardTwo = new TextAnalyzer();
+
+		for (int i = 0; i < 100; i++) {
+			shardOne.train(String.valueOf(i));
+			shardTwo.train(String.valueOf(i));
+		}
+		shardOne.train("100");
+		shardTwo.train("0100");
+
+		assertFalse(shardOne.equals(shardTwo));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -144,7 +186,7 @@ public class TestMerge {
 		samplesLong200.add("  ");
 		samplesLong200.add("x");
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesLong100, samplesLong200, "long_long", Locale.FRANCE);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesLong100, samplesLong200, "long_long", Locale.FRANCE, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LONG);
@@ -152,6 +194,27 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededLong() throws IOException, FTAException {
+		final NumberFormat longFormatter = NumberFormat.getIntegerInstance(Locale.ENGLISH);
+		longFormatter.setGroupingUsed(true);
+
+		List<String> shardOne = new ArrayList<>();
+		for (int i = 0; i < 20000; i++)
+			shardOne.add(longFormatter.format(i));
+
+		List<String> shardTwo = new ArrayList<>();
+		for (int i = 40000; i < 100000; i++)
+			shardTwo.add(longFormatter.format(i));
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededLong", null, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+		assertEquals(mergedResult.getTypeQualifier(), "GROUPING");
+		assertEquals(mergedResult.getMaxValue(), "99,999");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void cardinalityExceededLongNoStats() throws IOException, FTAException {
 
 		List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
@@ -161,7 +224,7 @@ public class TestMerge {
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(String.valueOf(100000 + i));
 
-		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededLong", null);
+		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededLong", null, false);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -175,7 +238,7 @@ public class TestMerge {
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(String.valueOf(100000 + i));
 
-		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededLong", Locale.FRANCE);
+		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededLong", Locale.FRANCE, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -189,13 +252,25 @@ public class TestMerge {
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(String.valueOf(100000 + i) + ".0");
 
-		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDouble", null);
+		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDouble", null, true);
 	}
 
-	// TODO Test is broken due to the fact that the bottomk/topK values are stored in Neutral format
-	// whereas it is in the cardinality set with the input as received, hence it is double counted!
-//	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void cardinalityExceededDoubleFrench() throws IOException, FTAException {
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void cardinalityExceededDoubleNoStats() throws IOException, FTAException {
+
+		List<String> shardOne = new ArrayList<>();
+		for (int i = 0; i < 20000; i++)
+			shardOne.add(String.valueOf(i) + ".0");
+
+		List<String> shardTwo = new ArrayList<>();
+		for (int i = 0; i < 20000; i++)
+			shardTwo.add(String.valueOf(100000 + i) + ".0");
+
+		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDouble", null, false);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void cardinalityExceededDoubleFrench0() throws IOException, FTAException {
 
 		List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
@@ -205,7 +280,45 @@ public class TestMerge {
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(String.valueOf(100000 + i) + ",0");
 
-		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededLongFrench", Locale.FRANCE);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDoubleFrench", Locale.FRANCE, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+		assertNull(mergedResult.getTypeQualifier());
+	}
+
+	// Test is broken due to the fact that the bottomk/topK values are stored in a reasonable localized format (reasonable means
+	// that it mirrors the format w.r.t. to the presence of the exponent and the presence of the thousands separator) but NOT
+	// the number of decimal places.
+	// The cardinality set is the input as received, hence if you need to add topK/bottomK as the cardinality has been blown
+	// then it has the potential to change the shapes detected.
+	// Solution is probably to keep the input as received for the values associated with the topK/bottomK.
+	// @Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void cardinalityExceededDoubleFrench00() throws IOException, FTAException {
+
+		List<String> shardOne = new ArrayList<>();
+		for (int i = 0; i < 20000; i++)
+			shardOne.add(String.valueOf(i) + ",00");
+
+		List<String> shardTwo = new ArrayList<>();
+		for (int i = 0; i < 20000; i++)
+			shardTwo.add(String.valueOf(100000 + i) + ",00");
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDoubleFrench", Locale.FRANCE, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+		System.err.println(mergedResult.asJSON(true, 0));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void doubleFrench() throws IOException, FTAException {
+
+		List<String> shardOne = new ArrayList<>();
+		for (int i = 0; i < 20; i++)
+			shardOne.add(String.valueOf(i) + ",0");
+
+		List<String> shardTwo = new ArrayList<>();
+		for (int i = 0; i < 20; i++)
+			shardTwo.add(String.valueOf(100000 + i) + ",0");
+
+		checkTextAnalyzerMerge(shardOne, shardTwo, "doubleFrench", Locale.FRANCE, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -218,7 +331,7 @@ public class TestMerge {
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(longStrings[random.nextInt(longStrings.length)]);
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityNotExceededString", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityNotExceededString", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
@@ -244,7 +357,7 @@ public class TestMerge {
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(randomString(9));
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededString", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededString", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
@@ -264,7 +377,7 @@ public class TestMerge {
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(randomString(9));
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededStringTrailingSpace", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededStringTrailingSpace", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
@@ -284,7 +397,7 @@ public class TestMerge {
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(randomString(9));
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededStringLeadingSpace", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededStringLeadingSpace", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
@@ -304,7 +417,7 @@ public class TestMerge {
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(randomString(9));
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededStringMultiline", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededStringMultiline", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
@@ -383,7 +496,7 @@ public class TestMerge {
 		samplesLong200.add("  ");
 		samplesLong200.add("x");
 
-		checkTextAnalyzerMerge(samplesLong100, samplesLong200, "long_long", null);
+		checkTextAnalyzerMerge(samplesLong100, samplesLong200, "long_long", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -404,7 +517,7 @@ public class TestMerge {
 		samplesDouble200.add(" ");
 		samplesDouble200.add(" ");
 
-		checkTextAnalyzerMerge(samplesDouble100, samplesDouble200, "double_double", null);
+		checkTextAnalyzerMerge(samplesDouble100, samplesDouble200, "double_double", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -424,7 +537,7 @@ public class TestMerge {
 		samplesTwo.add(null);
 		samplesTwo.add(null);
 
-		checkTextAnalyzerMerge(samplesOne, samplesTwo, "string_string", null);
+		checkTextAnalyzerMerge(samplesOne, samplesTwo, "string_string", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -444,7 +557,7 @@ public class TestMerge {
 		samplesTwo.add(null);
 		samplesTwo.add(null);
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localdate_localdate", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localdate_localdate", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getSampleCount(), inputsOne.length + inputsTwo.length + 4);
@@ -457,6 +570,36 @@ public class TestMerge {
 		assertEquals(mergedResult.getTypeQualifier(), "dd MMM yyyy");
 		assertEquals(mergedResult.getMinValue(), "11 Dec 1916");
 		assertEquals(mergedResult.getMaxValue(), "12 Mar 2019");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void simpleLocalDateMergeNoStats() throws IOException, FTAException {
+		final String[] inputsOne = "22 Jan 1971|12 Mar 2019|02 Jun 1996|11 Dec 1916|19 Apr 1993|26 Sep 1998|09 Dec 1959|14 Jul 2000|18 Aug 2008".split("\\|");
+		final String[] inputsTwo = "12 Dec 1970|19 Jan 2010|09 Jul 1999|22 Dec 1976|15 May 1973|23 Sep 1998|09 Dec 1959|14 Jul 2004|17 Nov 1998".split("\\|");
+
+		final List<String> samplesOne = new ArrayList<>();
+		for (final String sample : inputsOne)
+			samplesOne.add(sample);
+		samplesOne.add(" ");
+		samplesOne.add(null);
+
+		final List<String> samplesTwo = new ArrayList<>();
+		for (final String sample : inputsTwo)
+			samplesTwo.add(sample);
+		samplesTwo.add(null);
+		samplesTwo.add(null);
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localdate_localdate", null, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getSampleCount(), inputsOne.length + inputsTwo.length + 4);
+		assertEquals(mergedResult.getMatchCount(), inputsOne.length + inputsTwo.length);
+		assertEquals(mergedResult.getNullCount(), 3);
+		assertEquals(mergedResult.getBlankCount(), 1);
+		assertEquals(mergedResult.getRegExp(), "\\d{2} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{4}");
+		assertEquals(mergedResult.getConfidence(), 1.0);
+		assertEquals(mergedResult.getType(), FTAType.LOCALDATE);
+		assertEquals(mergedResult.getTypeQualifier(), "dd MMM yyyy");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -488,7 +631,7 @@ public class TestMerge {
 		samplesTwo.add(null);
 		samplesTwo.add(null);
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localdatetime_localdatetime", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localdatetime_localdatetime", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getSampleCount(), inputsOne.length + inputsTwo.length + 4);
@@ -529,7 +672,7 @@ public class TestMerge {
 		samplesTwo.add(null);
 		samplesTwo.add(null);
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "offsetdatetime_offsetdatetime", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "offsetdatetime_offsetdatetime", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.OFFSETDATETIME);
@@ -542,9 +685,12 @@ public class TestMerge {
 		assertEquals(mergedResult.getConfidence(), 1.0);
 	}
 
-// TODO Test is broken due to the fact that "2:01:30.00" is captured in the bottomK as "2:01:30.0" (i.e. normalized with one trailing 0)
-//	but it is in the cardinality set with the input as received, hence it is double counted!
-//	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	/*
+	 * The challenge with this test is that "2:01:30.00" is captured in the bottomK as "2:01:30.0" (i.e. normalized
+	 * with one trailing 0) but it is in the cardinality set with the input as received, hence if we are not careful
+	 * it will be double counted!
+	 */
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void simpleLocalTimeMerge() throws IOException, FTAException {
 		final String[] inputsOne = {
 				"1:01:50.00", "2:01:16.00", "2:01:30.00", "2:01:55.00", "5:01:49.00",
@@ -565,7 +711,7 @@ public class TestMerge {
 		samplesTwo.add(null);
 		samplesTwo.add(null);
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localtime_localtime", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localtime_localtime", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getSampleCount(), inputsOne.length + 2);
@@ -575,6 +721,30 @@ public class TestMerge {
 		assertEquals(mergedResult.getConfidence(), 1.0);
 		assertEquals(mergedResult.getType(), FTAType.LOCALTIME);
 		assertEquals(mergedResult.getTypeQualifier(), "H:mm:ss.S{1,2}");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void strangeZeroes() throws IOException, FTAException {
+		final List<String> samplesOne = new ArrayList<>();
+
+		// Register 00, 000, 0000, ...
+		for (int i = 2; i < 10; i++)
+			samplesOne.add(Utils.repeat('0', i));
+
+		final List<String> samplesTwo = new ArrayList<>();
+		samplesTwo.add(null);
+		samplesTwo.add(null);
+
+		// The challenge is that the topK/bottomK has '0' in it which is not in the set of samples registered above
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localtime_localtime", null, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getSampleCount(), 10);
+		assertEquals(mergedResult.getMatchCount(), 8);
+		assertEquals(mergedResult.getNullCount(), 2);
+		assertEquals(mergedResult.getRegExp(), "\\d{2,9}");
+		assertEquals(mergedResult.getConfidence(), 1.0);
+		assertEquals(mergedResult.getType(), FTAType.LONG);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -596,7 +766,7 @@ public class TestMerge {
 		for (final String sample : inputsTwo)
 			samplesTwo.add(sample);
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "zoneddatetime_zoneddatetime", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "zoneddatetime_zoneddatetime", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.ZONEDDATETIME);
@@ -608,6 +778,37 @@ public class TestMerge {
 		assertEquals(mergedResult.getConfidence(), 1.0);
 		assertEquals(mergedResult.getMinValue(), "01/20/2011 10:42:23 GMT");
 		assertEquals(mergedResult.getMaxValue(), "01/30/2012 10:59:48 GMT");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void simpleZonedDateTimeMergeNoStats() throws IOException, FTAException {
+		final String[] inputsOne = {
+				"01/26/2012 10:42:23 GMT", "01/26/2012 10:42:23 GMT", "01/30/2012 10:59:48 GMT", "01/25/2012 16:46:43 GMT",
+				"01/25/2012 16:28:42 GMT", "01/24/2012 16:53:04 GMT",
+		};
+		final String[] inputsTwo = {
+				"01/27/2011 10:42:23 GMT", "01/20/2011 10:42:23 GMT", "01/30/2011 10:59:48 GMT", "01/25/2011 16:46:43 GMT",
+				"01/26/2011 16:28:42 GMT", "01/24/2011 16:53:04 GMT",
+		};
+
+		final List<String> samplesOne = new ArrayList<>();
+		for (final String sample : inputsOne)
+			samplesOne.add(sample);
+
+		final List<String> samplesTwo = new ArrayList<>();
+		for (final String sample : inputsTwo)
+			samplesTwo.add(sample);
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "zoneddatetime_zoneddatetime", null, false);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.ZONEDDATETIME);
+		assertEquals(mergedResult.getSampleCount(), inputsOne.length + inputsTwo.length);
+		assertEquals(mergedResult.getMatchCount(), inputsOne.length + inputsTwo.length);
+		assertEquals(mergedResult.getNullCount(), 0);
+		assertEquals(mergedResult.getRegExp(), "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
+		assertEquals(mergedResult.getTypeQualifier(), "MM/dd/yyyy HH:mm:ss z");
+		assertEquals(mergedResult.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -625,7 +826,28 @@ public class TestMerge {
 		samplesTwo.add(null);
 		samplesTwo.add(null);
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "boolean_boolean", null);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "boolean_boolean", null, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.BOOLEAN);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void simpleBooleanYesNoMerge() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 100;
+
+		final List<String> samplesOne = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesOne.add("yes");
+		samplesOne.add(null);
+
+		final List<String> samplesTwo = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesTwo.add("no");
+		samplesTwo.add(null);
+		samplesTwo.add(null);
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "boolean_boolean", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.BOOLEAN);
@@ -633,91 +855,94 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void NullNullStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesNULL, samplesNULL, "NULL_NULL", null);
+		checkTextAnalyzerMerge(samplesNULL, samplesNULL, "NULL_NULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void NullBlankStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesNULL, samplesBLANK, "NULL_BLANK", null);
+		checkTextAnalyzerMerge(samplesNULL, samplesBLANK, "NULL_BLANK", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void NullBlankOrNullStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesNULL, samplesBLANKORNULL, "NULL_BLANKORNULL", null);
+		checkTextAnalyzerMerge(samplesNULL, samplesBLANKORNULL, "NULL_BLANKORNULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void NullAlphaDataStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesNULL, samplesBLANKORNULL, "NULL_BLANKORNULL", null);
+		checkTextAnalyzerMerge(samplesNULL, samplesBLANKORNULL, "NULL_BLANKORNULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void blankNullStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesBLANK, samplesNULL, "BLANK_NULL", null);
+		checkTextAnalyzerMerge(samplesBLANK, samplesNULL, "BLANK_NULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void blankBlankStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesBLANK, samplesBLANK, "BLANK_BLANK", null);
+		checkTextAnalyzerMerge(samplesBLANK, samplesBLANK, "BLANK_BLANK", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void blankBlankOrNullStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesBLANK, samplesBLANKORNULL, "BLANK_BLANKORNULL", null);
+		checkTextAnalyzerMerge(samplesBLANK, samplesBLANKORNULL, "BLANK_BLANKORNULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void blankAlphaDataStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesBLANK, samplesAlphaData, "BLANK_ALPHADATA", null);
+		checkTextAnalyzerMerge(samplesBLANK, samplesAlphaData, "BLANK_ALPHADATA", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void blankOrNullNullStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesBLANKORNULL, samplesNULL, "BLANKORNULL_NULL", null);
+		checkTextAnalyzerMerge(samplesBLANKORNULL, samplesNULL, "BLANKORNULL_NULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void blankOrNullBlankStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesBLANKORNULL, samplesBLANK, "BLANKORNULL_BLANK", null);
+		checkTextAnalyzerMerge(samplesBLANKORNULL, samplesBLANK, "BLANKORNULL_BLANK", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void blankOrNullBlankOrNullStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesBLANKORNULL, samplesBLANKORNULL, "BLANKORNULL_BLANKORNULL", null);
+		checkTextAnalyzerMerge(samplesBLANKORNULL, samplesBLANKORNULL, "BLANKORNULL_BLANKORNULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void blankOrNullAlphaDataStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesBLANKORNULL, samplesAlphaData, "BLANKORNULL_ALPHADATA", null);
+		checkTextAnalyzerMerge(samplesBLANKORNULL, samplesAlphaData, "BLANKORNULL_ALPHADATA", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void AlphaDataNullStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesAlphaData, samplesNULL, "ALPHADATA_NULL", null);
+		checkTextAnalyzerMerge(samplesAlphaData, samplesNULL, "ALPHADATA_NULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void AlphaDataBlankStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesAlphaData, samplesBLANK, "ALPHADATA_BLANK", null);
+		checkTextAnalyzerMerge(samplesAlphaData, samplesBLANK, "ALPHADATA_BLANK", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void AlphaDataBlankOrNullStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesAlphaData, samplesBLANKORNULL, "ALPHADATA_BLANKORNULL", null);
+		checkTextAnalyzerMerge(samplesAlphaData, samplesBLANKORNULL, "ALPHADATA_BLANKORNULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void AlphaDataAlphaDataStringTest() throws IOException, FTAException {
-		checkTextAnalyzerMerge(samplesAlphaData, samplesAlphaData, "ALPHADATA_ALPHADATA", null);
+		checkTextAnalyzerMerge(samplesAlphaData, samplesAlphaData, "ALPHADATA_ALPHADATA", null, true);
 	}
 
-	private TextAnalyzer checkTextAnalyzerMerge(List<String> samplesOne, List<String> samplesTwo, String streamName, Locale locale) throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+	private TextAnalyzer checkTextAnalyzerMerge(List<String> samplesOne, List<String> samplesTwo, String streamName,
+			Locale locale, boolean collectStatistics) throws FTAException {
 		final TextAnalyzer shardOne = new TextAnalyzer(streamName);
+		shardOne.setCollectStatistics(collectStatistics);
 		if (locale != null)
 			shardOne.setLocale(locale);
 		final TextAnalyzer reference = new TextAnalyzer(streamName);
 		if (locale != null)
 			reference.setLocale(locale);
+		reference.setCollectStatistics(collectStatistics);
 
 		long countOne = 0;
 		long countTwo = 0;
@@ -737,6 +962,7 @@ public class TestMerge {
 		final TextAnalyzer shardTwo = new TextAnalyzer(streamName);
 		if (locale != null)
 			shardTwo.setLocale(locale);
+		shardTwo.setCollectStatistics(collectStatistics);
 
 		for (final String sample : samplesTwo) {
 			shardTwo.train(sample);
@@ -780,22 +1006,25 @@ public class TestMerge {
 					mergedResult.getLeadingWhiteSpace() != referenceResult.getLeadingWhiteSpace() ||
 					mergedResult.getTrailingWhiteSpace() != referenceResult.getTrailingWhiteSpace() ||
 					mergedResult.getMultiline() != referenceResult.getMultiline() ||
-					// Maximum/Minimum
-					!mergedResult.getMaxValue().equals(referenceResult.getMaxValue()) ||
-					!mergedResult.getMinValue().equals(referenceResult.getMinValue()) ||
 					// Counts - totalCount, nullCount, blankCount
 					mergedResult.getTotalCount() != referenceResult.getTotalCount() ||
 					mergedResult.getNullCount() != referenceResult.getNullCount() ||
 					mergedResult.getBlankCount() != referenceResult.getBlankCount() ||
-					// TopK/BottomK
-					!Objects.equals(mergedResult.getBottomK(), referenceResult.getBottomK()) ||
-					!Objects.equals(mergedResult.getTopK(), referenceResult.getTopK()) ||
 					// Structure
 					!mergedResult.getStructureSignature().equals(referenceResult.getStructureSignature()) ||
 					!mergedResult.getRegExp().equals(referenceResult.getRegExp())
 			)
 				failed = true;
-			if (FTAType.isNumeric(mergedResult.getType())) {
+			if (merged.getCollectStatistics() && (
+					// Maximum/Minimum
+					!mergedResult.getMaxValue().equals(referenceResult.getMaxValue()) ||
+					!mergedResult.getMinValue().equals(referenceResult.getMinValue()) ||
+					// TopK/BottomK
+					!Objects.equals(mergedResult.getBottomK(), referenceResult.getBottomK()) ||
+					!Objects.equals(mergedResult.getTopK(), referenceResult.getTopK())
+					))
+				failed = true;
+			if (merged.getCollectStatistics() && FTAType.isNumeric(mergedResult.getType())) {
 				if (
 						Math.abs(mergedResult.getMean() - referenceResult.getMean()) > TestUtils.EPSILON
 //						||

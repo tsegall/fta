@@ -364,6 +364,21 @@ public class KnownPatterns {
 		return knownIDs.get(id);
 	}
 
+	protected static boolean hasExponent(final ID id) {
+		return id == ID.ID_DOUBLE_WITH_EXPONENT || id == ID.ID_DOUBLE_WITH_EXPONENT ||
+				id == ID.ID_SIGNED_DOUBLE_WITH_EXPONENT || id == ID.ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING;
+	}
+
+	protected static boolean hasGrouping(final ID id) {
+		return id == ID.ID_LONG_GROUPING || id == ID.ID_SIGNED_LONG_GROUPING ||
+				id == ID.ID_DOUBLE_GROUPING || id == ID.ID_SIGNED_DOUBLE_GROUPING;
+	}
+
+	protected static boolean isLong(final ID id) {
+		return id == ID.ID_LONG || id == ID.ID_LONG_GROUPING || id == ID.ID_SIGNED_LONG ||
+				id == ID.ID_SIGNED_LONG_TRAILING || id == ID.ID_SIGNED_LONG_GROUPING;
+	}
+
 	protected PatternInfo numericPromotion(final ID left, final ID right) {
 		return promotion.get(left.toString() + "---" + right.toString());
 	}

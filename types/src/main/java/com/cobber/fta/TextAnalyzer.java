@@ -56,7 +56,6 @@ import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -685,8 +684,13 @@ public class TextAnalyzer {
 			if (n == null || trimmed.length() != pos.getIndex())
 				return false;
 			l = n.longValue();
-			if (trimmed.indexOf(localeGroupingSeparator) != -1)
+			if (trimmed.indexOf(localeGroupingSeparator) != -1) {
 				facts.groupingSeparators++;
+				if (!KnownPatterns.hasGrouping(facts.matchPatternInfo.id)) {
+					facts.matchPatternInfo = knownPatterns.grouping(facts.matchPatternInfo.regexp);
+					debug("Type determination - now with grouping {}", facts.matchPatternInfo);
+				}
+			}
 			digits = trimmed.length();
 			final char ch = trimmed.charAt(0);
 			if (hasNegativePrefix && (ch == '-' || ch == '+' || ch == negativePrefix))
@@ -2411,9 +2415,9 @@ public class TextAnalyzer {
 
 		Map<String, Long> cardinalityUpper = new HashMap<>();
 
-		if (KnownPatterns.ID.ID_LONG == facts.matchPatternInfo.id || KnownPatterns.ID.ID_SIGNED_LONG == facts.matchPatternInfo.id) {
+		if (KnownPatterns.isLong(facts.matchPatternInfo.id)) {
 			if (KnownPatterns.ID.ID_LONG == facts.matchPatternInfo.id && facts.matchPatternInfo.typeQualifier == null && facts.minLong < 0)
-				facts.matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG);
+				facts.matchPatternInfo = knownPatterns.negation(facts.matchPatternInfo.regexp);
 
 			// Sometimes a Long is not a Long but it is really a date
 			if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > EARLY_LONG_YYYYMMDD && facts.maxLong < LATE_LONG_YYYYMMDD &&
@@ -2447,7 +2451,7 @@ public class TextAnalyzer {
 				facts.maxBoolean = "1";
 				facts.matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO);
 			} else {
-				if (facts.groupingSeparators != 0)
+				if (facts.groupingSeparators != 0 && !KnownPatterns.hasGrouping(facts.matchPatternInfo.id))
 					facts.matchPatternInfo = knownPatterns.grouping(facts.matchPatternInfo.regexp);
 
 				facts.matchPatternInfo = new PatternInfo(facts.matchPatternInfo);
@@ -2848,7 +2852,7 @@ public class TextAnalyzer {
 			ret.facts.hydrate();
 
 			return ret;
-		} catch (JsonProcessingException|FTAException e) {
+		} catch (JsonProcessingException e) {
 			throw new FTAMergeException("Issue deserializing supplied JSON.", e);
 		}
 	}
@@ -2860,11 +2864,11 @@ public class TextAnalyzer {
 	 * @param first The first TextAnalyzer
 	 * @param second The second TextAnalyzer
 	 * @return A new TextAnalyzer which is a merge of the two arguments.
-	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
+	 * @throws FTAMergeException If the AnalysisConfig for both TextAnalyzers are not identical
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
-	 * @throws FTAMergeException If the AnalysisConfig for both TextAnalyzers are not identical.
+	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
 	 */
-	public static TextAnalyzer merge(TextAnalyzer first, TextAnalyzer second) throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+	public static TextAnalyzer merge(TextAnalyzer first, TextAnalyzer second) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException  {
 		TextAnalyzer ret = new TextAnalyzer(first.context);
 
 		// If we have a locale set make sure to set it on the TextAnalyzer
@@ -2884,8 +2888,8 @@ public class TextAnalyzer {
 		merged.putAll(firstFacts.cardinality);
 		merged.putAll(firstFacts.outliers);
 		// Preserve the top and bottom values - even if they were not captured in the cardinality set
-		addToMap(merged, firstFacts.topK);
-		addToMap(merged, firstFacts.bottomK);
+		addToMap(merged, firstFacts.topK, first);
+		addToMap(merged, firstFacts.bottomK, first);
 
 		// Merge in the second set
 		Facts secondFacts = second.facts;
@@ -2906,8 +2910,8 @@ public class TextAnalyzer {
 				merged.put(entry.getKey(), seen + entry.getValue());
 		}
 		// Preserve the top and bottom values - even if they were not captured in the cardinality set
-		addToMap(merged, secondFacts.topK);
-		addToMap(merged, secondFacts.bottomK);
+		addToMap(merged, secondFacts.topK, second);
+		addToMap(merged, secondFacts.bottomK, second);
 		ret.trainBulk(merged);
 
 		ret.facts.nullCount = firstFacts.nullCount + secondFacts.nullCount;
@@ -2939,16 +2943,33 @@ public class TextAnalyzer {
 	 * AddToMap is used to add the bottomK and topK to the Map we are going to use to train.  Doing this ensures that
 	 * the merged result will at least have the same bottomK/topK as it should have even if these were not captured in the
 	 * cardinality set.
+	 * The challenge here is that the bottomK/topK values are normalized e.g. if the user supplies 00, 2, 4, 6, ...
+	 * then the bottomK will be 0,2,4,6 so 0 will not appear in the cardinality set but will appear in the bottomK set.
+	 * Note: this routine is not fast if the extremes are not in the cardinality set, but it is only used when we are merging two analyses.
 	 */
-	private static void addToMap(Map<String, Long>merged, Set<String> extremes) {
+	private static void addToMap(Map<String, Long>merged, Set<String> extremes, TextAnalyzer analyzer) {
 		if (extremes == null)
 			return;
 
-		for (final String s : extremes) {
-			if (s == null)
+		for (final String e : extremes) {
+			if (e == null)
 				return;
-			if (merged.get(s) == null)
-				merged.put(s, 1L);
+			// If we already have it in the merged set then we are done
+			if (merged.get(e) != null)
+				continue;
+			Object extreme = analyzer.facts.getValue(e);
+			if (extreme == null)
+				continue;
+			boolean found = false;
+			for (final String m : merged.keySet()) {
+				// Check for equality of value not of format - e.g. "00" will equal "0" once both are converted to Longs
+				if (analyzer.facts.getValue(m).equals(extreme)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				merged.put(e, 1L);
 		}
 	}
 

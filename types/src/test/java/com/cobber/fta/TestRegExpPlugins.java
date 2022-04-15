@@ -166,7 +166,6 @@ public class TestRegExpPlugins {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");

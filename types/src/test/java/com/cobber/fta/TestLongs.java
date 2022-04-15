@@ -181,7 +181,35 @@ public class TestLongs {
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "\\d+-?");
+		assertEquals(result.getRegExp(), "\\d{1,4}-?");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getMinValue(), "-2903");
+		assertEquals(result.getMaxValue(), "5234");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void leadingMinus() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("trailingMinus");
+		final String[] inputs = "-458|123|901|404|-209|12|0|0|676|-1894|-2903|-111|5234".split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked != -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(locked, -1);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[+-]?\\d{1,4}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getMinValue(), "-2903");
@@ -438,10 +466,11 @@ public class TestLongs {
 		String minValue = String.valueOf(min);
 		String maxValue = String.valueOf(max);
 		final Set<String> samples = new HashSet<>();
+		final NumberFormat longFormatter = NumberFormat.getNumberInstance(Locale.US);
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			final long l = random.nextInt(100000000);
-			final String sample = NumberFormat.getNumberInstance(Locale.US).format(l).toString();
+			final String sample = longFormatter.format(l);
 			if (l < min) {
 				min = l;
 				minValue = sample;
@@ -463,8 +492,8 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
-		assertEquals(result.getMinValue(), String.valueOf(min));
-		assertEquals(result.getMaxValue(), String.valueOf(max));
+		assertEquals(result.getMinValue(), longFormatter.format(min));
+		assertEquals(result.getMaxValue(), longFormatter.format(max));
 		String regExp = "[\\d,]{";
 		if (minValue.length() == maxValue.length())
 			regExp += minValue.length();
@@ -501,7 +530,7 @@ public class TestLongs {
 				long l = random.nextInt(100000000);
 				if (l%2 == 0)
 					l = -l;
-				final String sample = nf.format(l).toString();
+				final String sample = nf.format(l);
 				if (l < min) {
 					min = l;
 				}
@@ -529,8 +558,8 @@ public class TestLongs {
 			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			assertEquals(result.getNullCount(), 0);
 			assertEquals(result.getLeadingZeroCount(), 0);
-			assertEquals(result.getMinValue(), String.valueOf(min));
-			assertEquals(result.getMaxValue(), String.valueOf(max));
+			assertEquals(result.getMinValue(), nf.format(min));
+			assertEquals(result.getMaxValue(), nf.format(max));
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 
 			String regExp = "[+-]?[\\d" + RegExpGenerator.slosh(formatSymbols.getGroupingSeparator()) + "]";
@@ -635,7 +664,7 @@ public class TestLongs {
 					long l = random.nextLong();
 					if (l % 2 == 0)
 						l = -l;
-					final String sample = nf.format(l).toString();
+					final String sample = nf.format(l);
 
 					if (l < min) {
 						min = l;
@@ -645,11 +674,11 @@ public class TestLongs {
 					}
 					if (Math.abs(l) < absMin) {
 						absMin = Math.abs(l);
-						absMinValue = nf.format(Math.abs(l)).toString();
+						absMinValue = nf.format(Math.abs(l));
 					}
 					if (Math.abs(l) > absMax) {
 						absMax = Math.abs(l);
-						absMaxValue = nf.format(Math.abs(l)).toString();
+						absMaxValue = nf.format(Math.abs(l));
 					}
 
 					samples.add(sample);
@@ -669,10 +698,8 @@ public class TestLongs {
 			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			assertEquals(result.getNullCount(), 0);
-			final NumberFormat longFormatter = NumberFormat.getIntegerInstance(locale);
-			longFormatter.setGroupingUsed(false);
-			assertEquals(result.getMinValue(), longFormatter.format(min));
-			assertEquals(result.getMaxValue(), longFormatter.format(max));
+			assertEquals(result.getMinValue(), nf.format(min));
+			assertEquals(result.getMaxValue(), nf.format(max));
 			assertEquals(result.getLeadingZeroCount(), 0);
 
 			String regExp = "";
@@ -983,7 +1010,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "[\\d,]{3,6}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "200");
-		assertEquals(result.getMaxValue(), "13000");
+		assertEquals(result.getMaxValue(), "13,000");
 
 		final String regExp = result.getRegExp();
 		for (final String input : inputs) {
@@ -1002,6 +1029,7 @@ public class TestLongs {
 		String minValue = String.valueOf(Long.MAX_VALUE);
 		String maxValue = "0";
 		final Set<String> samples = new HashSet<>();
+		final NumberFormat longFormatter = NumberFormat.getNumberInstance(Locale.US);
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			long l = random.nextInt(100000000);
@@ -1013,15 +1041,15 @@ public class TestLongs {
 			if (l > max) {
 				max = l;
 			}
-			final String sample = NumberFormat.getNumberInstance(Locale.US).format(l).toString();
+			final String sample = longFormatter.format(l);
 			final long pos = Math.abs(l);
 			if (pos < absMin) {
 				absMin = pos;
-				minValue = NumberFormat.getNumberInstance(Locale.US).format(pos).toString();
+				minValue = longFormatter.format(pos);
 			}
 			if (pos > absMax) {
 				absMax = pos;
-				maxValue = NumberFormat.getNumberInstance(Locale.US).format(pos).toString();
+				maxValue = longFormatter.format(pos);
 			}
 			samples.add(sample);
 			analysis.train(sample);
@@ -1036,8 +1064,8 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
-		assertEquals(result.getMinValue(), String.valueOf(min));
-		assertEquals(result.getMaxValue(), String.valueOf(max));
+		assertEquals(result.getMinValue(), longFormatter.format(min));
+		assertEquals(result.getMaxValue(), longFormatter.format(max));
 		String regExp = "[+-]?[\\d,]{";
 		if (minValue.length() == maxValue.length())
 			regExp += minValue.length();

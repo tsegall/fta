@@ -35,8 +35,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 
-import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -271,30 +271,32 @@ public class Facts {
 
 		case LONG:
 			final NumberFormat longFormatter = NumberFormat.getIntegerInstance(locale);
-			longFormatter.setGroupingUsed(false);
+			longFormatter.setGroupingUsed(KnownPatterns.hasGrouping(matchPatternInfo.id));
 			minValue = longFormatter.format(minLong);
 			maxValue = longFormatter.format(maxLong);
 			variance = currentM2/matchCount;
-			bottomK = tbLong.bottomKasString();
-			topK = tbLong.topKasString();
+			bottomK = alignFormat(tbLong.bottomKasString(), FTAType.LONG, longFormatter);
+			topK = alignFormat(tbLong.topKasString(), FTAType.LONG, longFormatter);
 			break;
 
 		case DOUBLE:
 			final NumberFormat doubleFormatter = NumberFormat.getNumberInstance(locale);
-			if (doubleFormatter instanceof DecimalFormat) {
+			doubleFormatter.setMinimumFractionDigits(1);
+			doubleFormatter.setMaximumFractionDigits(16);
+			if (doubleFormatter instanceof DecimalFormat && KnownPatterns.hasExponent(matchPatternInfo.id)) {
 				DecimalFormat decimalFormatter = (DecimalFormat)doubleFormatter;
 				decimalFormatter.applyPattern("#.##################E0");
-				decimalFormatter.setMinimumFractionDigits(1);
 				minValue = decimalFormatter.format(minDouble);
 				maxValue = decimalFormatter.format(maxDouble);
 			}
 			else {
+				doubleFormatter.setGroupingUsed(KnownPatterns.hasGrouping(matchPatternInfo.id));
 				minValue = doubleFormatter.format(minDouble);
 				maxValue = doubleFormatter.format(maxDouble);
 			}
 			variance = currentM2/matchCount;
-			bottomK = tbDouble.bottomKasString();
-			topK = tbDouble.topKasString();
+			bottomK = alignFormat(tbDouble.bottomKasString(), FTAType.DOUBLE, doubleFormatter);
+			topK = alignFormat(tbDouble.topKasString(), FTAType.DOUBLE, doubleFormatter);
 			break;
 
 		case STRING:
@@ -375,23 +377,49 @@ public class Facts {
 		return this;
 	}
 
-	private Double getDouble(NumberFormat doubleFormatter, String input) throws FTAException {
-        try {
-                return doubleFormatter.parse(input).doubleValue();
-        } catch (ParseException e) {
-                throw new FTAException("Failed to parse Double", e);
-        }
-	}
+	protected Object getValue(String input) {
+		if (matchPatternInfo == null)
+			return null;
 
-	private Long getLong(NumberFormat longFormatter, String input) throws FTAException {
-        try {
+		switch (matchPatternInfo.getBaseType()) {
+		case LONG:
+			// We cannot use parseLong as it does not cope with localization
+			final NumberFormat longFormatter = NumberFormat.getIntegerInstance(locale);
+	        try {
                 return longFormatter.parse(input).longValue();
-        } catch (ParseException e) {
-                throw new FTAException("Failed to parse Long", e);
-        }
+	        } catch (ParseException e) {
+                throw new InternalErrorException("Failed to parse Long", e);
+	        }
+		case DOUBLE:
+			final NumberFormat doubleFormatter = NumberFormat.getInstance(locale);
+	        try {
+                return doubleFormatter.parse(input).doubleValue();
+	        } catch (ParseException e) {
+                throw new InternalErrorException("Failed to parse Double", e);
+	        }
+		case STRING:
+			return input;
+		case LOCALDATE:
+			final DateTimeFormatter dtfLD = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			return LocalDate.parse(input, dtfLD);
+		case LOCALTIME:
+			final DateTimeFormatter dtfLT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			return LocalTime.parse(input, dtfLT);
+		case LOCALDATETIME:
+			final DateTimeFormatter dtfLDT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			return LocalDateTime.parse(input, dtfLDT);
+		case ZONEDDATETIME:
+			final DateTimeFormatter dtfZDT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			return ZonedDateTime.parse(input, dtfZDT);
+		case OFFSETDATETIME:
+			final DateTimeFormatter dtfODT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			return OffsetDateTime.parse(input, dtfODT);
+		}
+
+		return null;
 	}
 
-	public void hydrate() throws FTAException {
+	public void hydrate() {
 		if (!collectStatistics || matchPatternInfo == null)
 			return;
 
@@ -399,30 +427,22 @@ public class Facts {
 		case BOOLEAN:
 			break;
 		case LONG:
-			// We cannot use parseLong as it does not cope with localization
-			NumberFormat longFormatter = NumberFormat.getIntegerInstance(locale);
+			minLong = (Long)getValue(minValue);
+			maxLong = (Long)getValue(maxValue);
 
-			minLong = getLong(longFormatter, minValue);
-			maxLong = getLong(longFormatter, maxValue);
 			if (topK != null) {
-				for (String item : topK)
-					tbLong.observe(Long.valueOf(item));
-				for (String item : bottomK)
-					tbLong.observe(Long.valueOf(item));
+				topK.forEach(item -> tbLong.observe((Long)getValue(item)));
+				bottomK.forEach(item -> tbLong.observe((Long)getValue(item)));
 			}
 			break;
 
 		case DOUBLE:
-			// We cannot use parseDouble as it does not cope with localization
-			NumberFormat doubleFormatter = NumberFormat.getInstance(locale);
+			minDouble = (Double)getValue(minValue);
+			maxDouble = (Double)getValue(maxValue);
 
-			minDouble = getDouble(doubleFormatter, minValue);
-			maxDouble = getDouble(doubleFormatter, maxValue);
 			if (topK != null) {
-				for (String item : topK)
-					tbDouble.observe(Double.valueOf(item));
-				for (String item : bottomK)
-					tbDouble.observe(Double.valueOf(item));
+				topK.forEach(item -> tbDouble.observe((Double)getValue(item)));
+				bottomK.forEach(item -> tbDouble.observe((Double)getValue(item)));
 			}
 			break;
 
@@ -434,90 +454,86 @@ public class Facts {
 			break;
 
 		case LOCALDATE:
-			final DateTimeFormatter dtfLD = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-			minLocalDate = LocalDate.parse(minValue, dtfLD);
-			maxLocalDate = LocalDate.parse(maxValue, dtfLD);
+			minLocalDate = (LocalDate)getValue(minValue);
+			maxLocalDate = (LocalDate)getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbLocalDate.observe(LocalDate.parse(item, dtfLD)));
-				bottomK.forEach(item -> tbLocalDate.observe(LocalDate.parse(item, dtfLD)));
+				topK.forEach(item -> tbLocalDate.observe((LocalDate)getValue(item)));
+				bottomK.forEach(item -> tbLocalDate.observe((LocalDate)getValue(item)));
 			}
 			break;
 
 		case LOCALTIME:
-			final DateTimeFormatter dtfLT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-			minLocalTime = LocalTime.parse(minValue, dtfLT);
-			maxLocalTime = LocalTime.parse(maxValue, dtfLT);
+			minLocalTime = (LocalTime)getValue(minValue);
+			maxLocalTime = (LocalTime)getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbLocalTime.observe(LocalTime.parse(item, dtfLT)));
-				bottomK.forEach(item -> tbLocalTime.observe(LocalTime.parse(item, dtfLT)));
+				topK.forEach(item -> tbLocalTime.observe((LocalTime)getValue(item)));
+				bottomK.forEach(item -> tbLocalTime.observe((LocalTime)getValue(item)));
 			}
 			break;
 
 		case LOCALDATETIME:
-			final DateTimeFormatter dtfLDT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-			minLocalDateTime = LocalDateTime.parse(minValue, dtfLDT);
-			maxLocalDateTime = LocalDateTime.parse(maxValue, dtfLDT);
+			minLocalDateTime = (LocalDateTime)getValue(minValue);
+			maxLocalDateTime = (LocalDateTime)getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbLocalDateTime.observe(LocalDateTime.parse(item, dtfLDT)));
-				bottomK.forEach(item -> tbLocalDateTime.observe(LocalDateTime.parse(item, dtfLDT)));
+				topK.forEach(item -> tbLocalDateTime.observe((LocalDateTime)getValue(item)));
+				bottomK.forEach(item -> tbLocalDateTime.observe((LocalDateTime)getValue(item)));
 			}
 			break;
 
 		case ZONEDDATETIME:
-			final DateTimeFormatter dtfZDT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-			minZonedDateTime = ZonedDateTime.parse(minValue, dtfZDT);
-			maxZonedDateTime = ZonedDateTime.parse(maxValue, dtfZDT);
+			minZonedDateTime = (ZonedDateTime)getValue(minValue);
+			maxZonedDateTime = (ZonedDateTime)getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbZonedDateTime.observe(ZonedDateTime.parse(item, dtfZDT)));
-				bottomK.forEach(item -> tbZonedDateTime.observe(ZonedDateTime.parse(item, dtfZDT)));
+				topK.forEach(item -> tbZonedDateTime.observe((ZonedDateTime)getValue(item)));
+				bottomK.forEach(item -> tbZonedDateTime.observe((ZonedDateTime)getValue(item)));
 			}
 			break;
 
 		case OFFSETDATETIME:
-			final DateTimeFormatter dtfODT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
-
-			minOffsetDateTime = OffsetDateTime.parse(minValue, dtfODT);
-			maxOffsetDateTime = OffsetDateTime.parse(maxValue, dtfODT);
+			minOffsetDateTime = (OffsetDateTime)getValue(minValue);
+			maxOffsetDateTime = (OffsetDateTime)getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbOffsetDateTime.observe(OffsetDateTime.parse(item, dtfODT)));
-				bottomK.forEach(item -> tbOffsetDateTime.observe(OffsetDateTime.parse(item, dtfODT)));
+				topK.forEach(item -> tbOffsetDateTime.observe((OffsetDateTime)getValue(item)));
+				bottomK.forEach(item -> tbOffsetDateTime.observe((OffsetDateTime)getValue(item)));
 			}
 			break;
 		}
 	}
 
 	/*
-	 * Return a new Set (in the same order) as the input set but formatted according to the supplied DateTimeFormatter.
+	 * Return a new Set (in the same order) as the input set but formatted according to the supplied Formatter.
 	 * The input set is ordered based on the position on a timeline, not lexigraphically.
 	 * Note: The input set is formatted according to the default formatter based on the type.
 	 */
-	private Set<String> alignFormat(final SortedSet<String> toFix, final FTAType type, final DateTimeFormatter dtf) {
+	private Set<String> alignFormat(final SortedSet<String> toFix, final FTAType type, final Object formatter) {
 		final Set<String> ret = new LinkedHashSet<>();
 		for (final String s : toFix) {
 			switch (type) {
+			case LONG:
+				ret.add(((NumberFormat)formatter).format(Long.parseLong(s)));
+				break;
+			case DOUBLE:
+				ret.add(((NumberFormat)formatter).format(Double.parseDouble(s)));
+				break;
 			case LOCALDATE:
-				ret.add(LocalDate.parse(s).format(dtf));
+				ret.add(LocalDate.parse(s).format((DateTimeFormatter)formatter));
 				break;
 			case LOCALTIME:
-				ret.add(LocalTime.parse(s).format(dtf));
+				ret.add(LocalTime.parse(s).format((DateTimeFormatter)formatter));
 				break;
 			case LOCALDATETIME:
-				ret.add(LocalDateTime.parse(s).format(dtf));
+				ret.add(LocalDateTime.parse(s).format((DateTimeFormatter)formatter));
 				break;
 			case ZONEDDATETIME:
-				ret.add(ZonedDateTime.parse(s).format(dtf));
+				ret.add(ZonedDateTime.parse(s).format((DateTimeFormatter)formatter));
 				break;
 			case OFFSETDATETIME:
-				ret.add(OffsetDateTime.parse(s).format(dtf));
+				ret.add(OffsetDateTime.parse(s).format((DateTimeFormatter)formatter));
 				break;
 			}
 		}
