@@ -34,3 +34,5 @@ Option to merge profile results (e.g. given two profiles from sharded sources - 
 
 # Split jars so date detection is lightweight (DONE)
  - Split fta.jar into two so date analysis can be performed with limited dependencies.
+
+# Improve Distinct count

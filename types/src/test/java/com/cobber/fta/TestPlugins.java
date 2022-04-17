@@ -3008,7 +3008,7 @@ public class TestPlugins {
 
 		// Data Signature is independent of Structure
 		assertEquals(preResult.getDataSignature(), result.getDataSignature());
-		assertEquals(preResult.getDataSignature(), "m7A/u2FMhVxyUIROYYvttLOYi3E=");
+		assertEquals(preResult.getDataSignature(), "vIXkwkO9uhB0d5LbnE9RM+B7dgA=");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })

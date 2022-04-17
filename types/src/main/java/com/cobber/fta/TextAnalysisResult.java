@@ -422,6 +422,16 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * Return the distinct number of valid values in this stream.
+	 * Note: Typically only supported if the cardinality presented is less than Max Cardinality.  Can be set
+	 * by an external source.
+	 * @return A long with the number of distinct values in this stream or -1 if unknown.
+	 */
+	public long getDistinctCount() {
+		return facts.distinctCount;
+	}
+
+	/**
 	 * Was statistics collection enabled for this analysis.
 	 * @return True if statistics were collected.
 	 */
@@ -591,6 +601,7 @@ public class TextAnalysisResult {
 		analysis.put("matchCount", facts.matchCount);
 		analysis.put("nullCount", facts.nullCount);
 		analysis.put("blankCount", facts.blankCount);
+		analysis.put("distinctCount", facts.distinctCount);
 		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("regExp", getRegExp());
 			//			final ArrayNode regExpStream = analysis.putArray("regExpStream");

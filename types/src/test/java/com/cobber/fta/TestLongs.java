@@ -346,7 +346,7 @@ public class TestLongs {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testUniqueness() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
+		final TextAnalyzer analysis = new TextAnalyzer("testUniqueness", null);
 		final int tooBig = analysis.getMaxCardinality() - 1;
 
 		for (int i = 0; i < tooBig; i++)
@@ -362,13 +362,14 @@ public class TestLongs {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getUniqueness(), 1.0);
+		assertEquals(result.getDistinctCount(), tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testUniquenessBlown() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
+		final TextAnalyzer analysis = new TextAnalyzer("testUniquenessBlown", null);
 		final int tooBig = analysis.getMaxCardinality();
 
 		for (int i = 10; i < tooBig + 10; i++)
@@ -385,13 +386,14 @@ public class TestLongs {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getUniqueness(), -1.0);
+		assertEquals(result.getDistinctCount(), -1);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testMonotonicIncreasing() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
+		final TextAnalyzer analysis = new TextAnalyzer("testMonotonicIncreasing", null);
 		final int tooBig = 2 * analysis.getMaxCardinality();
 
 		for (int i = 0; i < 2 * tooBig; i++)
@@ -407,13 +409,14 @@ public class TestLongs {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getUniqueness(), 1.0);
+		assertEquals(result.getDistinctCount(), 2 * tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testMonotonicDecreasing() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
+		final TextAnalyzer analysis = new TextAnalyzer("testMonotonicDecreasing", null);
 		final int tooBig = 2 * analysis.getMaxCardinality();
 
 		for (int i = 2 * tooBig; i > 0; i--)
@@ -429,13 +432,14 @@ public class TestLongs {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getUniqueness(), 1.0);
+		assertEquals(result.getDistinctCount(), 2 * tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testUniquenessNone() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("IDs", null);
+		final TextAnalyzer analysis = new TextAnalyzer("testUniquenessNone", null);
 		final int tooBig = analysis.getMaxCardinality() - 1;
 
 		for (int i = 0; i < tooBig; i++) {
@@ -453,7 +457,35 @@ public class TestLongs {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getUniqueness(), 0.0);
+		assertEquals(result.getDistinctCount(), tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void testUniquenessExternal() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testUniquenessExternal", null);
+		final int tooBig = 2 * analysis.getMaxCardinality();
+
+		analysis.setUniqueness(1.0);
+		analysis.setDistinctCount(2 * tooBig + 1);
+
+		for (int i = 0; i < 2 * tooBig; i++)
+			analysis.train(String.valueOf(i));
+		analysis.train("-1");
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getSampleCount(), 2 * tooBig + 1);
+		assertEquals(result.getMatchCount(), 2 * tooBig + 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getUniqueness(), 1.0);
+		assertEquals(result.getDistinctCount(), 2 * tooBig + 1);
+		assertEquals(result.getRegExp(), "[+-]?\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 	}
 

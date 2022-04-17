@@ -136,6 +136,9 @@ public class Facts {
 	public long nullCount;
 	/** The number of blanks seen in the sample set. */
 	public long blankCount;
+	/** The number of distinct valid values seen in the sample set. */
+	public Long distinctCount;
+
 	/** The percentage confidence in the analysis. Typically the matchCount divided by the realSamples (facts.sampleCount - (facts.nullCount + facts.blankCount)). */
 	public double confidence;
 	/** The PatternInfo associated with this matchCount. */
@@ -573,6 +576,7 @@ public class Facts {
 				&& Objects.equals(outliers, other.outliers) && sampleCount == other.sampleCount
 				&& totalCount == other.totalCount && trailingWhiteSpace == other.trailingWhiteSpace
 				&& Objects.equals(uniqueness, other.uniqueness)
+				&& Objects.equals(distinctCount, other.distinctCount)
 				&& ((mean == 0.0 && other.mean == 0.0) || Math.abs(mean - other.mean) < epsilon)
 				&& ((variance == null && other.variance == null) || (variance == 0.0 && other.variance == 0.0) || Math.abs(variance - other.variance) < epsilon);
 	}

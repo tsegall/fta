@@ -100,6 +100,7 @@ There are a large number of metrics detected, which vary based on the type of th
  * matchCount - Number of samples that match the detected Base (or Semantic) type
  * nullCount - Number of null samples
  * blankCount - Number of blank samples
+ * distinctCount - Number of distinct (valid) samples, typically -1 if maxCardinality exceeded. See Note 2.
  * regExp - A Regular Expression (Java) that matches the detected Type
  * confidence - The percentage confidence (0-1.0) in the determination of the Type
  * type - The Base Type (one of Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
@@ -391,7 +392,7 @@ The accuracy of the merge is determined by the cardinality of the two individual
 
 Assuming all shards have a cardinality less than the maximum cardinality configured there should be no loss of accuracy due to the merge process.
 
-If either shard has a cardinality greater than the maximum cardinality then certain information has already been lost (e.g. uniqueness, cardinality detail).
+If either shard has a cardinality greater than the maximum cardinality then certain information has already been lost (e.g. uniqueness, distinctCount, cardinality detail).
 
 If the sum of the cardinality is greater than the maximum cardinality but neither individual shard has a cardinality greater than the maximum cardinality then the only attribute that will be indeterminate is the uniqueness of the merged set and clearly the cardinality of the resulting Analysis will be limited to the maximum cardinality.
 

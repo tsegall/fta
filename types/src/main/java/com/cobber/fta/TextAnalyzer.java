@@ -593,6 +593,16 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Set the Distinct Count - commonly used where there is an external source that has visibility into the entire data set and
+	 * 'knows' the distinct count of the set as a whole. If determined by FTA it will typically indicate that the distinct count
+	 * is less than the maximum cardinality being tracked.
+	 * @param distinctCount The new Distinct Count
+	 */
+	public void setDistinctCount(final long distinctCount) {
+		facts.distinctCount = distinctCount;
+	}
+
+	/**
 	 * Set the total number of elements in the Data Stream (if known).
 	 * @param totalCount The total number of elements, as opposed to the number sampled.
 	 */
@@ -2767,7 +2777,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		// Only attempt to do uniqueness if we have not already been told the answer
+		// Only attempt to set uniqueness if we have not already been told the answer
 		if (facts.uniqueness == null) {
 			if (facts.cardinality.isEmpty())
 				facts.uniqueness = 0.0;
@@ -2786,6 +2796,16 @@ public class TextAnalyzer {
 			else
 				// -1 indicates we have no perspective on the uniqueness of this field
 				facts.uniqueness = -1.0;
+		}
+
+		// Only attempt to set distinct count if we have not already been told the answer
+		if (facts.distinctCount == null) {
+			if (facts.cardinality.size() < analysisConfig.getMaxCardinality())
+				facts.distinctCount = (long)facts.cardinality.size();
+			else if (FTAType.LONG.equals(facts.matchPatternInfo.getBaseType()) && (facts.monotonicIncreasing || facts.monotonicDecreasing))
+				facts.distinctCount = facts.matchCount;
+			else
+				facts.distinctCount = -1L;
 		}
 
 		final TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(),

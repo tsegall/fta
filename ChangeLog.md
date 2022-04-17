@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 8.0.4
+ - ENH: Add support for distinctCount
+
 ### 8.0.3
  - ENH: Improve performance for constant valued columns (x20)
  - ENH: Set Total Count when using command line tool
