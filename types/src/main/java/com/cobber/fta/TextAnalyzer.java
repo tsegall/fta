@@ -21,8 +21,6 @@ import static com.cobber.fta.dates.DateTimeParserResult.HOUR_INDEX;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -722,13 +720,15 @@ public class TextAnalyzer {
 				facts.monotonicIncreasing = false;
 
 			if (analysisConfig.isCollectStatistics()) {
-				// Calculate the mean & standard deviation using Welford's algorithm
-				for (int i = 0; i < count; i++) {
-					final double delta = l - facts.mean;
-					// matchCount is one low - because we do not 'count' the record until we return from this routine indicating valid
-					facts.mean += delta / (facts.matchCount + i + 1);
-					facts.currentM2 += delta * (l - facts.mean);
-				}
+				// This test avoids the loop if the existing mean is the same as the input
+				if (l != facts.mean)
+					// Calculate the mean & standard deviation using Welford's algorithm
+					for (int i = 0; i < count; i++) {
+						final double delta = l - facts.mean;
+						// matchCount is one low - because we do not 'count' the record until we return from this routine indicating valid
+						facts.mean += delta / (facts.matchCount + i + 1);
+						facts.currentM2 += delta * (l - facts.mean);
+					}
 
 				facts.tbLong.observe(l);
 			}
@@ -858,13 +858,15 @@ public class TextAnalyzer {
 			if (d > facts.maxDouble)
 				facts.maxDouble = d;
 
-			for (int i = 0; i < count; i++) {
-				// Calculate the mean & standard deviation using Welford's algorithm
-				final double delta = d - facts.mean;
-				// matchCount is one low - because we do not 'count' the record until we return from this routine indicating valid
-				facts.mean += delta / (facts.matchCount + i + 1);
-				facts.currentM2 += delta * (d - facts.mean);
-			}
+			// This test avoids the loop if the existing mean is the same as the input
+			if (d != facts.mean)
+				for (int i = 0; i < count; i++) {
+					// Calculate the mean & standard deviation using Welford's algorithm
+					final double delta = d - facts.mean;
+					// matchCount is one low - because we do not 'count' the record until we return from this routine indicating valid
+					facts.mean += delta / (facts.matchCount + i + 1);
+					facts.currentM2 += delta * (d - facts.mean);
+				}
 
 			facts.tbDouble.observe(d);
 		}
@@ -1761,7 +1763,7 @@ public class TextAnalyzer {
 			facts.cardinality.put(input, seen + count);
 	}
 
-	private int outlier(final String input, final long count) {
+	private void outlier(final String input, final long count) {
 		final String cleaned = input.trim();
 		final int trimmedLength = cleaned.length();
 
@@ -1792,8 +1794,6 @@ public class TextAnalyzer {
 		} else {
 			facts.outliers.put(input, seen + count);
 		}
-
-		return facts.outliers.size();
 	}
 
 	class OutlierAnalysis {
@@ -2789,8 +2789,7 @@ public class TextAnalyzer {
 		}
 
 		final TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(),
-				facts.calculateFacts(), context.getDateResolutionMode(), analysisConfig,
-				facts.cardinality, facts.outliers, tokenStreams);
+				facts.calculateFacts(), context.getDateResolutionMode(), analysisConfig, tokenStreams);
 
 		if (traceConfig != null)
 			traceConfig.recordResult(result, internalErrors);
@@ -2884,7 +2883,7 @@ public class TextAnalyzer {
 		Map<String, Long>merged = new HashMap<>();
 
 		// Prime the merged set with the first set (real and outliers which are non-overlapping)
-		Facts firstFacts = first.facts;
+		Facts firstFacts = first.facts.calculateFacts();
 		merged.putAll(firstFacts.cardinality);
 		merged.putAll(firstFacts.outliers);
 		// Preserve the top and bottom values - even if they were not captured in the cardinality set
@@ -2892,7 +2891,7 @@ public class TextAnalyzer {
 		addToMap(merged, firstFacts.bottomK, first);
 
 		// Merge in the second set
-		Facts secondFacts = second.facts;
+		Facts secondFacts = second.facts.calculateFacts();
 		for (final Map.Entry<String, Long>entry : secondFacts.cardinality.entrySet()) {
 			final Long seen = firstFacts.cardinality.get(entry.getKey());
 			if (seen == null) {
@@ -2920,20 +2919,56 @@ public class TextAnalyzer {
 		if (firstFacts.totalCount != -1 && secondFacts.totalCount != -1)
 			ret.facts.totalCount = firstFacts.totalCount + secondFacts.totalCount;
 
-		// Set the minmaxRawLength just in case a blank field is the longest/shortest
-		ret.facts.maxRawLength = Math.max(first.facts.maxRawLength, second.facts.maxRawLength);
+		// Set the min/maxRawLength just in case a blank field is the longest/shortest
 		ret.facts.minRawLength = Math.min(first.facts.minRawLength, second.facts.minRawLength);
+		ret.facts.maxRawLength = Math.max(first.facts.maxRawLength, second.facts.maxRawLength);
 
-		// Check to see if we have blown the cardinality on the merge if so we need hammer some attributes
-		if (ret.facts.cardinality.size() == ret.analysisConfig.getMaxCardinality()) {
+		// Check to see if we have exceeded the cardinality on the the first, second, or the merge.
+		// If so the samples we have seen do not reflect the entirety of the input so we need to
+		// we need to calculate a set of attributes.
+		if (ret.facts.cardinality.size() == ret.analysisConfig.getMaxCardinality() ||
+				firstFacts.cardinality.size() == first.analysisConfig.getMaxCardinality() ||
+				secondFacts.cardinality.size() == second.analysisConfig.getMaxCardinality()) {
+
+			ret.facts.minRawNonBlankLength = Math.min(first.facts.minRawNonBlankLength, second.facts.minRawNonBlankLength);
+			ret.facts.maxRawNonBlankLength = Math.max(first.facts.maxRawNonBlankLength, second.facts.maxRawNonBlankLength);
+
+			ret.facts.minTrimmedLength = Math.min(first.facts.minTrimmedLength, second.facts.minTrimmedLength);
+			ret.facts.maxTrimmedLength = Math.max(first.facts.maxTrimmedLength, second.facts.maxTrimmedLength);
+
+			ret.facts.minTrimmedLengthNumeric = Math.min(first.facts.minTrimmedLengthNumeric, second.facts.minTrimmedLengthNumeric);
+			ret.facts.maxTrimmedLengthNumeric = Math.max(first.facts.maxTrimmedLengthNumeric, second.facts.maxTrimmedLengthNumeric);
+
+			ret.facts.minTrimmedOutlierLength = Math.min(first.facts.minTrimmedOutlierLength, second.facts.minTrimmedOutlierLength);
+			ret.facts.maxTrimmedOutlierLength = Math.max(first.facts.maxTrimmedOutlierLength, second.facts.maxTrimmedOutlierLength);
+
+			// In order to calculate the matchCount without having seen all the samples we need both the total
+			// number of samples as well as a valid count of the outliers
+			// TODO: If we do this we end up with matchCount > samples!
+//			if (ret.facts.outliers.size() == ret.analysisConfig.getMaxOutliers() ||
+//					firstFacts.outliers.size() == first.analysisConfig.getMaxOutliers() ||
+//					secondFacts.outliers.size() == second.analysisConfig.getMaxOutliers())
+//				throw new FTAMergeException("Outlier cardinality overflow!!");
+//			if (ret.facts.totalCount == -1)
+//				throw new FTAMergeException("Total count required on both Analyses to be merged!!");
+//
+//			long outliers = 0;
+//			if (ret.facts.outliers.size() != 0)
+//				for (final long value : ret.facts.outliers.values())
+//					outliers += value;
+//			ret.facts.matchCount = ret.facts.totalCount - ret.facts.nullCount - ret.facts.blankCount - outliers;
+
+			ret.facts.leadingWhiteSpace = first.facts.leadingWhiteSpace || second.facts.leadingWhiteSpace;
+			ret.facts.trailingWhiteSpace = first.facts.trailingWhiteSpace || second.facts.trailingWhiteSpace;
+			ret.facts.multiline = first.facts.multiline || second.facts.multiline;
+
+			// If we are numeric then we need to synthesize the mean and variance
 			if (ret.facts.matchPatternInfo != null && ret.facts.matchPatternInfo.isNumeric()) {
-				BigDecimal thisMatchCount = new BigDecimal(first.facts.matchCount);
-		        BigDecimal otherMatchCount = new BigDecimal(second.facts.matchCount);
-		        ret.facts.mean = (new BigDecimal(first.facts.mean).multiply(thisMatchCount).add(new BigDecimal(second.facts.mean).multiply(otherMatchCount)).divide(thisMatchCount.add(otherMatchCount), 2, RoundingMode.HALF_EVEN)).doubleValue();
+		        ret.facts.mean = (first.facts.mean*first.facts.matchCount + second.facts.mean*second.facts.matchCount)/(first.facts.matchCount + second.facts.matchCount);
+		        ret.facts.variance = ((first.facts.matchCount - 1)*first.facts.variance + (second.facts.matchCount - 1)*second.facts.variance)/(first.facts.matchCount+second.facts.matchCount-2);
+		        ret.facts.currentM2 = ret.facts.variance * ret.facts.matchCount;
+
 			}
-			ret.facts.leadingWhiteSpace = first.facts.leadingWhiteSpace | second.facts.leadingWhiteSpace;
-			ret.facts.trailingWhiteSpace = first.facts.trailingWhiteSpace | second.facts.trailingWhiteSpace;
-			ret.facts.multiline = first.facts.multiline | second.facts.multiline;
 		}
 
 		return ret;
@@ -2963,7 +2998,8 @@ public class TextAnalyzer {
 			boolean found = false;
 			for (final String m : merged.keySet()) {
 				// Check for equality of value not of format - e.g. "00" will equal "0" once both are converted to Longs
-				if (analyzer.facts.getValue(m).equals(extreme)) {
+				Object mValue = analyzer.facts.getValue(m);
+				if (mValue != null && mValue.equals(extreme)) {
 					found = true;
 					break;
 				}

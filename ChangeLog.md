@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 8.0.3
+ - ENH: Improve performance for constant valued columns (x20)
+ - ENH: Set Total Count when using command line tool
+ - BUG: Fix variance/standardDeviation on merged analyses
+ - INT: Improve test coverage on merge() especially when cardinality blown
+ - INT: Update Roadmap
+
 ### 8.0.2
  - ENH: For Doubles & Longs print the min/max/top/bottom in approximately the format of the incoming data (including localization)
  - BUG: merge() could not cope with cases where the cardinality was large and the top/bottom values were not in the captured set

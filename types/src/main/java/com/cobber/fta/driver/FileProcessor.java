@@ -136,6 +136,7 @@ class FileProcessor {
 		Processor processor = null;
 		String[] header = null;
 		int numFields = 0;
+		long thisRecord = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
@@ -159,7 +160,6 @@ class FileProcessor {
 
 			processor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
 
-			long thisRecord = 0;
 			String[] row;
 
 			while ((row = parser.parseNext()) != null) {
@@ -200,11 +200,11 @@ class FileProcessor {
 
 				for (int i = 0; i < numFields; i++)
 					if (options.col == -1 || options.col == i) {
-						results[i] = processor.getResult(i);
+						results[i] = processor.getAnalyzer(i).getResult();
 						patterns[i] = Pattern.compile(results[i].getRegExp());
 					}
 
-				long thisRecord = 0;
+				thisRecord = 0;
 				String[] row;
 
 				while ((row = parser.parseNext()) != null) {
@@ -237,7 +237,11 @@ class FileProcessor {
 		TextAnalysisResult result = null;
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
-				result = processor.getResult(i);
+				TextAnalyzer analyzer = processor.getAnalyzer(i);
+				if (thisRecord != options.recordsToProcess)
+					analyzer.setTotalCount(thisRecord);
+
+				result = analyzer.getResult();
 				logger.printf("Field '%s' (%d) - %s%n", header[i], i, result.asJSON(options.pretty, options.verbose));
 				if (options.pluginDefinition) {
 					final String pluginDefinition = result.asPlugin();

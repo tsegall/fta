@@ -1152,7 +1152,7 @@ public class TestLongs {
 		final TextAnalyzer analysis = new TextAnalyzer("LongToSigned");
 		final int SAMPLE_SIZE = 100;
 
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < SAMPLE_SIZE; i++)
 			analysis.train(String.valueOf(i));
 		analysis.train("-1");
 
@@ -1165,6 +1165,212 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE + 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void meanSD() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("meanSD");
+		final int SAMPLE_SIZE = 100;
+
+		for (int i = 0; i < SAMPLE_SIZE; i++) {
+			analysis.train("2");
+			analysis.train("1");
+			analysis.train("3");
+			analysis.train("2");
+			analysis.train("4");
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), 5 * SAMPLE_SIZE);
+		assertEquals(result.getMatchCount(), 5 * SAMPLE_SIZE);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
+		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void meanSDBulk() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("meanSDBulk");
+		final long SAMPLE_SIZE = 100;
+
+		Map<String, Long> data = new HashMap<>();
+		data.put("2", SAMPLE_SIZE * 2);
+		data.put("1", SAMPLE_SIZE);
+		data.put("3", SAMPLE_SIZE);
+		data.put("4", SAMPLE_SIZE);
+		analysis.trainBulk(data);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), 5 * SAMPLE_SIZE);
+		assertEquals(result.getMatchCount(), 5 * SAMPLE_SIZE);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
+		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void meanSDBulkMerge() throws IOException, FTAException {
+		final TextAnalyzer shardOne = new TextAnalyzer("meanSDBulkMerge");
+		final TextAnalyzer shardTwo = new TextAnalyzer("meanSDBulkMerge");
+		final long SAMPLE_SIZE = 100;
+
+		Map<String, Long> data = new HashMap<>();
+
+		data.put("2", SAMPLE_SIZE * 2);
+		data.put("1", SAMPLE_SIZE);
+		shardOne.trainBulk(data);
+
+		data.clear();
+		data.put("3", SAMPLE_SIZE);
+		data.put("4", SAMPLE_SIZE);
+		shardTwo.trainBulk(data);
+
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult result = merged.getResult();
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), 5 * SAMPLE_SIZE);
+		assertEquals(result.getMatchCount(), 5 * SAMPLE_SIZE);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
+		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
+		dump(result);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void meanSDCardinalityExceeded() throws IOException, FTAException {
+		final int MAX_CARDINALITY = 40;
+		final TextAnalyzer analysis = new TextAnalyzer("meanSDCardinalityExceeded");
+		analysis.setMaxCardinality(MAX_CARDINALITY);
+		analysis.setDefaultLogicalTypes(false);
+		final int SAMPLE_SIZE = 100;
+
+		for (int i = 1; i < SAMPLE_SIZE; i++)
+			analysis.train(String.valueOf(i));
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), SAMPLE_SIZE - 1);
+		assertEquals(result.getMatchCount(), SAMPLE_SIZE - 1);
+		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
+		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void meanSDBulkCardinalityExceeded() throws IOException, FTAException {
+		final int MAX_CARDINALITY = 40;
+		final TextAnalyzer analysis = new TextAnalyzer("meanSDBulkCardinalityExceeded");
+		analysis.setMaxCardinality(MAX_CARDINALITY);
+		analysis.setDefaultLogicalTypes(false);
+		final long SAMPLE_SIZE = 100;
+
+		Map<String, Long> data = new HashMap<>();
+		for (int i = 1; i < SAMPLE_SIZE; i++)
+			data.put(String.valueOf(i), 1L);
+		data.put("x", 1L);
+		analysis.trainBulk(data);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getSampleCount(), SAMPLE_SIZE);
+		assertEquals(result.getMatchCount(), SAMPLE_SIZE - 1);
+		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
+		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void meanSDBulkMergeCardinalityExceeded() throws IOException, FTAException {
+		final int MAX_CARDINALITY = 40;
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		shardOne.setMaxCardinality(MAX_CARDINALITY);
+		shardOne.setDefaultLogicalTypes(false);
+
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		shardTwo.setMaxCardinality(MAX_CARDINALITY);
+		shardTwo.setDefaultLogicalTypes(false);
+		final int SAMPLE_SIZE = 100;
+
+		final TextAnalyzer shardReference = new TextAnalyzer("shardReference");
+
+		Map<String, Long> data = new HashMap<>();
+
+		for (int i = 1; i < SAMPLE_SIZE; i++)
+			data.put(String.valueOf(i), 1L);
+		data.put("x", 1L);
+		shardOne.trainBulk(data);
+		shardOne.setTotalCount(data.size());
+		shardReference.trainBulk(data);
+
+		data.clear();
+		for (int i = 1; i < SAMPLE_SIZE; i++)
+			data.put(String.valueOf(i), 1L);
+		shardTwo.trainBulk(data);
+		shardTwo.setTotalCount(data.size());
+		shardReference.trainBulk(data);
+
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult result = merged.getResult();
+
+		final TextAnalysisResult referenceResult = shardReference.getResult();
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
+		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
+		assertEquals(referenceResult.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void meanSDCardinalityExceeded2() throws IOException, FTAException {
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+
+		for (int i = 1; i < 20000; i++) {
+			shardOne.train(String.valueOf(i));
+			shardOne.train(null);
+		}
+		shardOne.setTotalCount(2 * (20000 - 1));
+		final TextAnalysisResult shardOneResult = shardOne.getResult();
+		dump(shardOneResult);
+
+		for (int i = 20001; i < 40000; i++)
+			shardTwo.train(String.valueOf(i));
+		shardTwo.setTotalCount(40000 - 20001);
+		final TextAnalysisResult shardTwoResult = shardTwo.getResult();
+		dump(shardTwoResult);
+
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
+		dump(mergedResult);
+
+		assertEquals((shardOneResult.getMean() + shardTwoResult.getMean())/2, mergedResult.getMean(), .1);
+		assertEquals(shardOneResult.getStandardDeviation(), shardTwoResult.getStandardDeviation(), .5);
+		assertEquals(shardOneResult.getStandardDeviation(), mergedResult.getStandardDeviation(), .5);
+	}
+
+	private void dump(TextAnalysisResult result) {
+		System.err.printf("%s: Total: %d, Real Samples: %d, Matches: %d, Mean: %f, Standard Deviation: %.10f%n",
+				result.getName(), result.getTotalCount(),
+				result.getSampleCount() - result.getNullCount() - result.getBlankCount(), result.getMatchCount(),
+				result.getMean(), result.getStandardDeviation());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })

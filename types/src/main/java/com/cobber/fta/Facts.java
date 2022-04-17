@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -125,7 +124,7 @@ public class Facts {
 	public Map<String, Long> cardinality = new HashMap<>();
 	public Map<String, Long> outliers = new HashMap<>();
 
-	protected double currentM2 = 0.0;
+	public double currentM2 = 0.0;
 
 	/** The total number of samples seen. */
 	public long sampleCount;
@@ -149,7 +148,7 @@ public class Facts {
 	/** The mean of the observed values (Numeric types only). */
 	public Double mean = 0.0;
 	/** The variance of the observed values (Numeric types only). */
-	protected Double variance;
+	public Double variance;
 	/** The top 10  values. */
 	public Set<String> topK;
 	/** The bottom 10  values. */
@@ -388,14 +387,14 @@ public class Facts {
 	        try {
                 return longFormatter.parse(input).longValue();
 	        } catch (ParseException e) {
-                throw new InternalErrorException("Failed to parse Long", e);
+                return null;
 	        }
 		case DOUBLE:
 			final NumberFormat doubleFormatter = NumberFormat.getInstance(locale);
 	        try {
                 return doubleFormatter.parse(input).doubleValue();
 	        } catch (ParseException e) {
-                throw new InternalErrorException("Failed to parse Double", e);
+                return null;
 	        }
 		case STRING:
 			return input;

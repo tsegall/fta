@@ -18,7 +18,6 @@ package com.cobber.fta.driver;
 import java.io.IOException;
 
 import com.cobber.fta.AnalyzerContext;
-import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
@@ -54,7 +53,7 @@ public class Processor {
 		}
 	}
 
-	public TextAnalysisResult getResult(final int stream) throws FTAPluginException, FTAUnsupportedLocaleException {
-		return analyzers[stream].getResult();
+	public TextAnalyzer getAnalyzer(final int stream) {
+		return analyzers[stream];
 	}
 }

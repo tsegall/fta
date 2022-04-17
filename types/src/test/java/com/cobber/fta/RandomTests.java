@@ -25,6 +25,7 @@ import static org.testng.Assert.fail;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -155,6 +156,58 @@ public class RandomTests {
 		TextAnalysisResult result = analysis.getResult();
 		assertEquals(result.getRegExp(), "[ 	]*\\p{IsAlphabetic}{5}[ 	]*");
 		assertEquals(result.getDataRegExp(), "\\p{IsAlphabetic}{5}");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void constantLongZeroes() throws IOException, FTAException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("constantZeroes");
+
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 20_000_000; i++)
+			analysis.train("0");
+
+		TextAnalysisResult result = analysis.getResult();
+		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
+		assertEquals(result.getRegExp(), "\\d");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void constantLongZeroesBulk() throws IOException, FTAException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("constantZeroes");
+		final Map<String, Long> universe = new HashMap<>();
+		universe.put("0", 200_000_000L);
+
+		long start = System.currentTimeMillis();
+		analysis.trainBulk(universe);
+		TextAnalysisResult result = analysis.getResult();
+		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
+		assertEquals(result.getRegExp(), "\\d");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void constantDoubleZeroes() throws IOException, FTAException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("constantZeroes");
+
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 20_000_000; i++)
+			analysis.train("0.0");
+
+		TextAnalysisResult result = analysis.getResult();
+		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
+		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void constantDoubleZeroesBulk() throws IOException, FTAException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("constantZeroes");
+		final Map<String, Long> universe = new HashMap<>();
+		universe.put("1.0", 200_000_000L);
+
+		long start = System.currentTimeMillis();
+		analysis.trainBulk(universe);
+		TextAnalysisResult result = analysis.getResult();
+		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
+		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
@@ -289,7 +342,7 @@ public class RandomTests {
 		assertNull(result.getTypeQualifier());
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMean(), Double.valueOf((double)sum/COUNT));
-		assertEquals(result.getStandardDeviation(), Double.valueOf(28.86607004772212));
+		assertEquals(result.getStandardDeviation(), 28.86607004772212);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })

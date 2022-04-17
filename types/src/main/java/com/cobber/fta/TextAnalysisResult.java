@@ -57,8 +57,6 @@ public class TextAnalysisResult {
 	private final Facts facts;
 	private final DateResolutionMode resolutionMode;
 	private final AnalysisConfig analysisConfig;
-	private final Map<String, Long> cardinality;
-	private final Map<String, Long> outliers;
 	private final TokenStreams shape;
 
 	/**
@@ -69,19 +67,14 @@ public class TextAnalysisResult {
 	 *   MonthFirst then assume month is first, if it is Auto then choose either DayFirst or MonthFirst based on the locale, if it
 	 *   is None then the pattern returned will have '?' in to represent any ambiguity present.
 	 * @param analysisConfig The Configuration of the current analysis.
-	 * @param cardinality A map of valid (matching) input values and the count of occurrences of the those input values.
-	 * @param outliers A map of invalid input values and the count of occurrences of the those input values.
 	 * @param tokenStreams A shape analysis of the input stream.
 	 */
 	TextAnalysisResult(final String name, final Facts facts, final DateResolutionMode resolutionMode,
-			final AnalysisConfig analysisConfig, final Map<String, Long> cardinality,
-			final Map<String, Long> outliers, final TokenStreams shape) {
+			final AnalysisConfig analysisConfig, final TokenStreams shape) {
 		this.name = name;
 		this.facts = facts;
 		this.resolutionMode = resolutionMode;
 		this.analysisConfig = analysisConfig;
-		this.cardinality = cardinality;
-		this.outliers = outliers;
 		this.shape = shape;
 	}
 
@@ -359,7 +352,7 @@ public class TextAnalysisResult {
 	 * @return Count of all blank samples.
 	 */
 	public int getCardinality() {
-		return cardinality.size();
+		return facts.cardinality.size();
 	}
 
 	/**
@@ -368,7 +361,7 @@ public class TextAnalysisResult {
 	 * @return A Map of values and their occurrence frequency of the data stream to date.
 	 */
 	public Map<String, Long> getCardinalityDetails() {
-		return cardinality;
+		return facts.cardinality;
 	}
 
 	/**
@@ -380,7 +373,7 @@ public class TextAnalysisResult {
 	 * @return Count of the distinct outliers.
 	 */
 	public int getOutlierCount() {
-		return outliers.size();
+		return facts.outliers.size();
 	}
 
 	/**
@@ -389,7 +382,7 @@ public class TextAnalysisResult {
 	 * @return A Map of values and their occurrence frequency of the data stream to date.
 	 */
 	public Map<String, Long> getOutlierDetails() {
-		return outliers;
+		return facts.outliers;
 	}
 
 	/**
@@ -561,7 +554,7 @@ public class TextAnalysisResult {
 		plugin.set("regExpsToMatch", arrayNode);
 		plugin.put("regExpReturned", regExp);
 
-		if (statisticsEnabled() && facts.matchCount > 100 && (cardinality.size()*100)/facts.matchCount < 20 && !regExp.startsWith("(?i)(")) {
+		if (statisticsEnabled() && facts.matchCount > 100 && (facts.cardinality.size()*100)/facts.matchCount < 20 && !regExp.startsWith("(?i)(")) {
 			if (facts.getMinValue() != null)
 				plugin.put("minimum", facts.getMinValue());
 			if (facts.getMaxValue() != null)
@@ -647,17 +640,17 @@ public class TextAnalysisResult {
 		if (facts.matchPatternInfo.isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
-		analysis.put("cardinality", cardinality.size() < analysisConfig.getMaxCardinality() ? cardinality.size() : -1);
+		analysis.put("cardinality", facts.cardinality.size() < analysisConfig.getMaxCardinality() ? facts.cardinality.size() : -1);
 
-		if (!cardinality.isEmpty() && verbose > 0) {
+		if (!facts.cardinality.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("cardinalityDetail");
-			outputDetails(MAPPER, detail, cardinality, verbose);
+			outputDetails(MAPPER, detail, facts.cardinality, verbose);
 		}
 
-		analysis.put("outlierCardinality", outliers.size() < analysisConfig.getMaxOutliers() ? outliers.size() : -1);
-		if (!outliers.isEmpty() && verbose > 0) {
+		analysis.put("outlierCardinality", facts.outliers.size() < analysisConfig.getMaxOutliers() ? facts.outliers.size() : -1);
+		if (!facts.outliers.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("outlierDetail");
-			outputDetails(MAPPER, detail, outliers, verbose);
+			outputDetails(MAPPER, detail, facts.outliers, verbose);
 		}
 
 		analysis.put("shapesCardinality", (shape.getShapes().size() > 0 && shape.getShapes().size() < analysisConfig.getMaxShapes()) ? shape.getShapes().size() : -1);

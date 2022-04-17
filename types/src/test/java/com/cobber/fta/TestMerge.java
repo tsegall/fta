@@ -214,6 +214,27 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void cardinalityExceededLongNoSerialization() throws IOException, FTAException {
+		final NumberFormat longFormatter = NumberFormat.getIntegerInstance(Locale.ENGLISH);
+		longFormatter.setGroupingUsed(true);
+
+		TextAnalyzer shardOne = new TextAnalyzer("cardinalityExceededLongNoSerialization");
+		for (int i = 0; i < 20000; i++)
+			shardOne.train(longFormatter.format(i));
+
+		TextAnalyzer shardTwo = new TextAnalyzer("cardinalityExceededLongNoSerialization");
+		for (int i = 40000; i < 100000; i++)
+			shardTwo.train(longFormatter.format(i));
+
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+		assertEquals(mergedResult.getTypeQualifier(), "GROUPING");
+		assertEquals(mergedResult.getMaxValue(), "99,999");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededLongNoStats() throws IOException, FTAException {
 
 		List<String> shardOne = new ArrayList<>();
