@@ -583,7 +583,8 @@ public class TextAnalysisResult {
 	/**
 	 * A JSON representation of the Analysis.
 	 * @param pretty If set, add minimal whitespace formatting.
-	 * @param verbose If &gt; 0 provides additional details on the core, Outlier, and Shapes sets.
+	 * @param verbose If &gt; 0 provides additional details on the core, Outlier, and Shapes sets.  A value of 1
+	 * will output the first 100 elements, a value &gt; 1 will output the full set.
 	 * @return A JSON representation of the analysis.
 	 */
 	public String asJSON(final boolean pretty, final int verbose) {

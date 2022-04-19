@@ -269,6 +269,8 @@ class FileProcessor {
 			}
 		}
 
+		analyzeRecord(processor.getAnalyzers());
+
 	    final Runtime instance = Runtime.getRuntime();
 		final double usedMemory = (instance.totalMemory() - instance.freeMemory()) / (1024 * 1024);
 		final long duration = System.currentTimeMillis() - start;
@@ -285,4 +287,18 @@ class FileProcessor {
 		}
 		logger.printf("Execution time: %dms%n", duration);
 	}
+
+	// HONORIFIC_EN, NAME.FIRST, NAME.LAST, NAME.MIDDLE -> FULL_NAME [PERSON]
+	// HONORIFIC_EN, NAME.FIRST, NAME.LAST, NAME.MIDDLE_INITIAL -> FULL_NAME  [PERSON]
+	// NAME.FIRST, NAME.LAST, NAME.MIDDLE -> FULL_NAME (PERSON)
+	// NAME.FIRST, NAME.LAST, NAME.MIDDLE_INITIAL -> FULL_NAME [PERSON]
+	// NAME.FIRST, NAME.LAST -> FULL_NAME [PERSON]
+	// POSTAL_CODE.ZIP5_US, ADDRESS, CITY, STATE/PROVICE, COUNTRY, COUNTY [ADDRESS]
+	// [PERSON] + DOB/Birth*Date -> PERSON.DOB
+	// [PERSON] + GENDER -> PERSON.GENDER
+	// [PERSON] + JOB_TITLE -> PERSON.JOB_TITLE
+
+	private void analyzeRecord(TextAnalyzer[] analyzers) {
+	}
+
 }

@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 8.0.5
+ - ENH: Add a couple more countries to reference list (ESWATINI, NORTH MACEDONIA)
+ - ENH: Improved documentation for asJSON
+
 ### 8.0.4
  - ENH: Add support for distinctCount
 

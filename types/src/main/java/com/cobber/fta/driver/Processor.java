@@ -56,4 +56,8 @@ public class Processor {
 	public TextAnalyzer getAnalyzer(final int stream) {
 		return analyzers[stream];
 	}
+
+	public TextAnalyzer[] getAnalyzers() {
+		return analyzers;
+	}
 }
