@@ -48,6 +48,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 	private static final int MAX_LAST_NAMES = 100;
 	private Set<String> lastNames;
 	private Set<String> firstNames;
+	private int maxExpectedNames;
 
 	/**
 	 * Construct a plugin to detect First name followed by Last name based on the Plugin Definition.
@@ -66,6 +67,11 @@ public class NameFirstLast extends LogicalTypeInfinite {
 
 		lastNames = new HashSet<>();
 		firstNames = new HashSet<>();
+
+		// Set the number of reasonable parts of a name - Spanish commonly has more than English
+		maxExpectedNames = 4;
+		if ("es".equals(locale.getLanguage()))
+			maxExpectedNames = 5;
 
 		return true;
 	}
@@ -139,7 +145,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 			// OTOH if we lose one or two it should not matter and it dramatically helps with the false positives
 			if (ch == ' ') {
 				spaces++;
-				if (spaces == 2)
+				if (spaces == maxExpectedNames)
 					return false;
 				alphas = 0;
 				continue;
@@ -166,7 +172,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return trimmed.length() >= 5 && trimmed.length() <= 30 && (charCounts[' '] == 1 || charCounts[' '] == 2);
+		return trimmed.length() >= 5 && trimmed.length() <= 32 && charCounts[' '] >= 1 && charCounts[' '] < maxExpectedNames;
 	}
 
 	@Override

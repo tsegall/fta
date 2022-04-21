@@ -1,6 +1,15 @@
 
 ## Changes ##
 
+### 8.0.7
+ - ENH: Bump google phonenumber
+ - ENH: Improve detection of First Names in French/Spanish
+ - ENH: Add a set of common African last names
+ - ENH: Add a set of common Mexican first names
+ - ENH: Minimal mod to header regexp to grab more lat/longs
+ - ENH: Enhanced Gender to handle Woman/Man as well as Female/Male (and localized versions)
+ - BUG: RegExp header for City was a little aggressive (picked up 'Subject Ethnicity')
+
 ### 8.0.6
  - ENH: Support localized versions of Yes/No for booleans e.g. Italian Si/No, French Oui/Non
  - ENH: Support localized versions of YEAR/DATE
