@@ -38,6 +38,7 @@ public class KnownPatterns {
 	public enum ID {
 		ID_BOOLEAN_TRUE_FALSE,
 		ID_BOOLEAN_YES_NO,
+		ID_BOOLEAN_YES_NO_LOCALIZED,
 		ID_BOOLEAN_Y_N,
 		ID_BOOLEAN_ONE_ZERO,
 		ID_ANY_VARIABLE,
@@ -76,6 +77,7 @@ public class KnownPatterns {
 
 	public static final String PATTERN_BOOLEAN_TRUE_FALSE = "(?i)(FALSE|TRUE)";
 	public static final String PATTERN_BOOLEAN_YES_NO = "(?i)(NO|YES)";
+	public static String PATTERN_BOOLEAN_YES_NO_LOCALIZED;
 	public static final String PATTERN_BOOLEAN_Y_N = "(?i)(N|Y)";
 	public static final String PATTERN_BOOLEAN_ONE_ZERO = "[0|1]";
 
@@ -156,6 +158,8 @@ public class KnownPatterns {
 			return PATTERN_BOOLEAN_TRUE_FALSE;
 		case ID_BOOLEAN_YES_NO:
 			return PATTERN_BOOLEAN_YES_NO;
+		case ID_BOOLEAN_YES_NO_LOCALIZED:
+			return PATTERN_BOOLEAN_YES_NO_LOCALIZED;
 		case ID_BOOLEAN_Y_N:
 			return PATTERN_BOOLEAN_Y_N;
 		case ID_NULL:
@@ -172,6 +176,9 @@ public class KnownPatterns {
 		final char groupingSeparator = formatSymbols.getGroupingSeparator();
 		final char decimalSeparator = formatSymbols.getDecimalSeparator();
 		final char minusSign = formatSymbols.getMinusSign();
+		final Keywords keywords = new Keywords();
+
+		keywords.initialize(locale);
 
 		String optionalSignPrefix = "";
 		String optionalSignSuffix = "";
@@ -229,6 +236,16 @@ public class KnownPatterns {
 				new PatternInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, FTAType.BOOLEAN, "TRUE_FALSE", false, false, 4, 5, null, ""));
 		knownPatterns.put(PATTERN_BOOLEAN_YES_NO,
 				new PatternInfo(ID.ID_BOOLEAN_YES_NO, PATTERN_BOOLEAN_YES_NO, FTAType.BOOLEAN, "YES_NO", false, false, 2, 3, null, ""));
+		// Check to see if we have a localized version of Yes/No, if so add it
+		String localizedYes = keywords.get("YES");
+		String localizedNo = keywords.get("NO");
+		if (localizedYes != null && localizedNo != null) {
+			if (!"yes".equals(localizedYes) || !"no".equals(localizedNo)) {
+				PATTERN_BOOLEAN_YES_NO_LOCALIZED = "(?i)(" + localizedNo + "|" + localizedYes + ")";
+				knownPatterns.put(PATTERN_BOOLEAN_YES_NO_LOCALIZED,
+						new PatternInfo(ID.ID_BOOLEAN_YES_NO_LOCALIZED, PATTERN_BOOLEAN_YES_NO_LOCALIZED, FTAType.BOOLEAN, "YES_NO", false, false, 2, 3, null, ""));
+			}
+		}
 		knownPatterns.put(PATTERN_BOOLEAN_Y_N,
 				new PatternInfo(ID.ID_BOOLEAN_Y_N, PATTERN_BOOLEAN_Y_N, FTAType.BOOLEAN, "Y_N", false, false, 2, 3, null, ""));
 		knownPatterns.put(PATTERN_BOOLEAN_ONE_ZERO,

@@ -151,6 +151,9 @@ public class TextAnalyzer {
 
 	private Logger logger = null;
 
+	private String localizedYes;
+	private String localizedNo;
+
 	/**
 	 * An Escalation contains three regExps in order of increasing genericity.  So for example the following 3 regExps:
 	 *
@@ -205,6 +208,7 @@ public class TextAnalyzer {
 	private int[] candidateCounts;
 
 	private final KnownPatterns knownPatterns = new KnownPatterns();
+	private final Keywords keywords = new Keywords();
 
 	private DateTimeParser dateTimeParser;
 
@@ -757,18 +761,20 @@ public class TextAnalyzer {
 	private boolean trackBoolean(final String trimmed) {
 		final String trimmedLower = trimmed.toLowerCase(locale);
 
-		final boolean isTrue = "true".equals(trimmedLower) || "yes".equals(trimmedLower) || "y".equals(trimmedLower);
-		final boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower) || "n".equals(trimmedLower));
+		final boolean isTrue = "true".equals(trimmedLower) || "yes".equals(trimmedLower) || "y".equals(trimmedLower) ||
+				(localizedYes != null && localizedYes.equals(trimmedLower));
+		final boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower) || "n".equals(trimmedLower)) ||
+				(localizedNo != null && localizedNo.equals(trimmedLower));
 
 		if (isTrue) {
 			if (facts.minBoolean == null)
 				facts.minBoolean = trimmedLower;
-			if (facts.maxBoolean == null || "false".equals(facts.maxBoolean) || "no".equals(facts.maxBoolean) || "n".equals(facts.maxBoolean))
+			if (facts.maxBoolean == null || "false".equals(facts.maxBoolean) || "no".equals(facts.maxBoolean) || "n".equals(facts.maxBoolean) || (localizedNo != null && localizedNo.equals(facts.maxBoolean)))
 				facts.maxBoolean = trimmedLower;
 		} else if (isFalse) {
 			if (facts.maxBoolean == null)
 				facts.maxBoolean = trimmedLower;
-			if (facts.minBoolean == null || "true".equals(facts.minBoolean) || "yes".equals(facts.maxBoolean) || "y".equals(facts.maxBoolean))
+			if (facts.minBoolean == null || "true".equals(facts.minBoolean) || "yes".equals(facts.maxBoolean) || "y".equals(facts.maxBoolean) || (localizedYes != null && localizedYes.equals(facts.maxBoolean)))
 				facts.minBoolean = trimmedLower;
 		}
 
@@ -1068,6 +1074,13 @@ public class TextAnalyzer {
 		}
 
 		knownPatterns.initialize(locale);
+
+		keywords.initialize(locale);
+
+		if (knownPatterns.getByID(KnownPatterns.ID.ID_BOOLEAN_YES_NO_LOCALIZED) != null) {
+			localizedYes = keywords.get("YES");
+			localizedNo = keywords.get("NO");
+		}
 
 		// If Resolution mode is auto then set DayFirst or MonthFirst based on the Locale
 		if (context.getDateResolutionMode() == DateResolutionMode.Auto) {
@@ -1405,6 +1418,8 @@ public class TextAnalyzer {
 			compressedl0.append(KnownPatterns.PATTERN_ALPHANUMERIC).append('{').append(String.valueOf(length)).append('}');
 		} else if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
 			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_TRUE_FALSE);
+		} else if (localizedYes != null && (localizedYes.equalsIgnoreCase(trimmed) || localizedNo.equalsIgnoreCase(trimmed))) {
+			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_YES_NO_LOCALIZED);
 		} else if ("yes".equalsIgnoreCase(trimmed) || "no".equalsIgnoreCase(trimmed)) {
 			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_YES_NO);
 		} else if ("y".equalsIgnoreCase(trimmed) || "n".equalsIgnoreCase(trimmed)) {
@@ -2224,7 +2239,6 @@ public class TextAnalyzer {
 		for (final String elt : minusMatches.keySet())
 			newCardinality.remove(elt);
 
-
 		if (!logical.analyzeSet(context, validCount, realSamples, facts.matchPatternInfo.regexp, null, newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
 			return new FiniteMatchResult();
 
@@ -2445,7 +2459,9 @@ public class TextAnalyzer {
 						if (!Utils.allZeroes(s))
 							trackDateTime(s, facts.matchPatternInfo, true);
 			} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > 1800 && facts.maxLong < 2041 &&
-					((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("year") || context.getStreamName().toLowerCase(locale).contains("date"))) {
+					((realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
+							keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) ||
+							keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS))) {
 				facts.matchPatternInfo = new PatternInfo(null, facts.minLongNonZero == facts.minLong ? "\\d{4}" : "0+|\\d{4}", FTAType.LOCALDATE, "yyyy", false, false, 4, 4, null, "yyyy");
 				facts.minLocalDate = LocalDate.of((int)facts.minLongNonZero, 1, 1);
 				facts.maxLocalDate = LocalDate.of((int)facts.maxLong, 1, 1);

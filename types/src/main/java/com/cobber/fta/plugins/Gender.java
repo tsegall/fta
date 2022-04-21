@@ -85,7 +85,7 @@ public class Gender extends LogicalTypeFinite {
 		// Dutch
 		allGenderData.put("NL", new GenderData(".*(?i)(Gender|Geslach|Geslacht)", "VROUWELIJK", "MANNELIJK", "V", "M"));
 		// Portuguese
-		allGenderData.put("PT", new GenderData(".*(?i)(Gender|Gênero)", "FEMININA", "MASCULINO", "F", "M"));
+		allGenderData.put("PT", new GenderData(".*(?i)(Gender|Gênero|Sexo)", "FEMININA", "MASCULINO", "F", "M"));
 		// Turkish
 		allGenderData.put("TR", new GenderData(".*(?i)(Gender)", "KADIN", "ERKEK", "K", "E"));
 
@@ -159,13 +159,26 @@ public class Gender extends LogicalTypeFinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+		final boolean positiveStreamName = context.getStreamName().matches(genderData.header);
 
-		// Feel like this should be a little more inclusive in this day and age but not sure what set to use!!
-		if (outliers.size() > 1)
+		if (cardinality.isEmpty())
 			return new PluginAnalysis(BACKOUT_REGEX);
 
-		final boolean positiveStreamName = context.getStreamName().matches(genderData.header);
-		if (!positiveStreamName && cardinality.size() - outliers.size() <= 1)
+		// If we have a happy header and a good percentage of MALE/FEMALE (localized) - then assume all is good
+		Long feminine = cardinality.get(genderData.feminine);
+		Long masculine = cardinality.get(genderData.masculine);
+		if (positiveStreamName && feminine != null && masculine != null && feminine + masculine > matchCount/2) {
+			final RegExpGenerator re = new RegExpGenerator(8, locale);
+			cardinality.putAll(outliers);
+			outliers.clear();
+			for (String item : cardinality.keySet())
+				re.train(item);
+			happyRegex = re.getResult();
+			return PluginAnalysis.OK;
+		}
+
+		// We made a good faith effort above to be inclusive - so at this stage call it a day if there are too many outliers
+		if (outliers.size() > 1 || (!positiveStreamName && cardinality.size() - outliers.size() <= 1))
 			return new PluginAnalysis(BACKOUT_REGEX);
 
 		String outlier;

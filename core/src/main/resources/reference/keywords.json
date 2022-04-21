@@ -1,0 +1,42 @@
+[
+	{
+		"keytag": "YEAR",
+		"locales": [
+			{ "localeTag": "de", "value": "jahr" },
+			{ "localeTag": "en", "value": "year" },
+			{ "localeTag": "fr", "value": "an" },
+			{ "localeTag": "it", "value": "anno" },
+			{ "localeTag": "nl", "value": "jaar" },
+			{ "localeTag": "pt", "value": "ano" },
+			{ "localeTag": "tr", "value": "yıl" }
+		]
+	},
+	{
+		"keytag": "DATE",
+		"locales": [
+			{ "localeTag": "en", "value": "date" }
+		]
+	},
+	{
+		"keytag": "YES",
+		"locales": [
+			{ "localeTag": "de", "value": "ja" },
+			{ "localeTag": "fr", "value": "oui" },
+			{ "localeTag": "it", "value": "si" },
+			{ "localeTag": "nl", "value": "ja" },
+			{ "localeTag": "pt", "value": "sim" },
+			{ "localeTag": "tr", "value": "evet" }
+		]
+	},
+	{
+		"keytag": "NO",
+		"locales": [
+			{ "localeTag": "de", "value": "nein" },
+			{ "localeTag": "fr", "value": "non" },
+			{ "localeTag": "it", "value": "no" },
+			{ "localeTag": "nl", "value": "nee" },
+			{ "localeTag": "pt", "value": "não" },
+			{ "localeTag": "tr", "value": "hayır" }
+		]
+	}
+]

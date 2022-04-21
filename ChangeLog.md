@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 8.0.6
+ - ENH: Support localized versions of Yes/No for booleans e.g. Italian Si/No, French Oui/Non
+ - ENH: Support localized versions of YEAR/DATE
+ - ENH: Be more forgiving on Gender detection (also for non-English), also Sexo as a synonym for Gênero in Portuguese
+
 ### 8.0.5
  - ENH: Add a couple more countries to reference list (ESWATINI, NORTH MACEDONIA)
  - ENH: Improved documentation for asJSON

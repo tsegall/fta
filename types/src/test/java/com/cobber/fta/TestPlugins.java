@@ -170,35 +170,6 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void basicGenderAllUnknown() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("Gender");
-		final String pipedInput = "U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|U|";
-		final String inputs[] = pipedInput.split("\\|");
-		int locked = -1;
-
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(),  Gender.SEMANTIC_TYPE + "EN");
-		assertEquals(result.getStructureSignature(), analysis.getPlugins().getRegistered(Gender.SEMANTIC_TYPE + "EN").getSignature());
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "(?i)(F|FEMALE|M|MALE|U)");
-		assertEquals(result.getOutlierCount(), 1);
-		assertEquals(result.getMatchCount(), 0);
-		assertEquals(result.getConfidence(), 0.0);
-
-		for (final String input : inputs) {
-			assertTrue(input.matches(result.getRegExp()), input);
-		}
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGender() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
@@ -220,9 +191,7 @@ public class TestPlugins {
 		assertEquals(result.getStructureSignature(), analysis.getPlugins().getRegistered(Gender.SEMANTIC_TYPE + "EN").getSignature());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		final long outlierCount = outliers.get("UNKNOWN");
-		assertEquals(result.getMatchCount(), inputs.length - outlierCount);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		final LogicalType logicalGender = analysis.getPlugins().getRegistered(Gender.SEMANTIC_TYPE + "EN");
@@ -440,9 +409,7 @@ public class TestPlugins {
 		assertEquals(result.getStructureSignature(), analysis.getPlugins().getRegistered(Gender.SEMANTIC_TYPE + "EN").getSignature());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		final long outlierCount = outliers.get("UNKNOWN");
-		assertEquals(result.getMatchCount(), inputs.length - outlierCount);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		final LogicalType logicalGender = analysis.getPlugins().getRegistered(Gender.SEMANTIC_TYPE + "EN");
@@ -460,6 +427,7 @@ public class TestPlugins {
 				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
 				"Unknown|Female|Unknown|Male|Unknown|Female|Unknown|Male|Unknown|Male|" +
 				"Female|Male|Female|FEMALE|Male|Female|male|Male|Male|male|";
+		final int UNKNOWN_COUNT = 6;
 		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
@@ -470,16 +438,15 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
+
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeQualifier(), Gender.SEMANTIC_TYPE + "EN");
 		assertEquals(result.getStructureSignature(), analysis.getPlugins().getRegistered(Gender.SEMANTIC_TYPE + "EN").getSignature());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		final long outlierCount = outliers.get("UNKNOWN");
-		assertEquals(result.getMatchCount(), inputs.length - outlierCount);
-		assertEquals(result.getConfidence(), 1 - (double)outlierCount/result.getSampleCount());
+		assertEquals(result.getMatchCount(), inputs.length - UNKNOWN_COUNT);
+		assertEquals(result.getConfidence(), 1 - (double)UNKNOWN_COUNT/result.getSampleCount());
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()), input);

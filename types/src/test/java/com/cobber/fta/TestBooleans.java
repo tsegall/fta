@@ -21,6 +21,7 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 
 import org.testng.annotations.Test;
@@ -136,6 +137,89 @@ public class TestBooleans {
 		assertEquals(result.getMatchCount(), matches);
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
+	public void basicBooleanItalian() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicBooleanItalian");
+		analysis.setLocale(Locale.ITALIAN);
+		final String[] inputs = "no|si|Si|    no   |NO |SI|si|no|No|Si|no|  NO|NO|si|SI|bogus".split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(locked, -1);
+		assertEquals(result.getSampleCount(), inputs.length + 2);
+		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
+				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO_LOCALIZED) + ")" +
+				KnownPatterns.PATTERN_WHITESPACE);
+		assertEquals(result.getConfidence(), .9375);
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+		assertEquals(result.getTypeQualifier(), "YES_NO");
+		assertEquals(result.getMinLength(), 2);
+		assertEquals(result.getMaxLength(), 9);
+		assertEquals(result.getMinValue(), "no");
+		assertEquals(result.getMaxValue(), "si");
+		assertTrue(inputs[0].matches(result.getRegExp()));
+
+		int matches = 0;
+		for (final String input : inputs) {
+			if (input.trim().matches(result.getRegExp()))
+					matches++;
+		}
+		assertEquals(result.getMatchCount(), matches);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
+	public void basicBooleanFrench() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicBooleanFrench");
+		analysis.setLocale(Locale.FRENCH);
+		final String[] inputs = "non|oui|Oui|    non   |NON |OUI|oui|non|NON|Oui|non|  NON|NON|oui|OUI|bogus".split("\\|");
+		int locked = -1;
+
+		analysis.train(null);
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+		analysis.train(null);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(locked, -1);
+		assertEquals(result.getSampleCount(), inputs.length + 2);
+		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
+				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO_LOCALIZED) + ")" +
+				KnownPatterns.PATTERN_WHITESPACE);
+		assertEquals(result.getConfidence(), .9375);
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+		assertEquals(result.getTypeQualifier(), "YES_NO");
+		assertEquals(result.getMinLength(), 3);
+		assertEquals(result.getMaxLength(), 10);
+		assertEquals(result.getMinValue(), "non");
+		assertEquals(result.getMaxValue(), "oui");
+		assertTrue(inputs[0].matches(result.getRegExp()));
+
+		int matches = 0;
+		for (final String input : inputs) {
+			if (input.trim().matches(result.getRegExp()))
+					matches++;
+		}
+		assertEquals(result.getMatchCount(), matches);
+	}
 	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void basicBooleanYesNoManySamples() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBooleanYesNoManySamples");
