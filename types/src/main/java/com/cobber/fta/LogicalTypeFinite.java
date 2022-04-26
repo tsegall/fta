@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.cobber.fta.core.FTAPluginException;
-import com.cobber.fta.core.FTAType;
 
 /**
  * All Logical Types that consist of a constrained domain, for example, a finite (small) number of elements should
@@ -33,11 +32,6 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 
 	public LogicalTypeFinite(final PluginDefinition plugin) {
 		super(plugin);
-	}
-
-	@Override
-	public FTAType getBaseType() {
-		return FTAType.STRING;
 	}
 
 	/*

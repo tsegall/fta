@@ -1,7 +1,7 @@
 [
 	{
 		"keytag": "YEAR",
-		"locales": [
+		"validLocales": [
 			{ "localeTag": "de", "value": "jahr" },
 			{ "localeTag": "en", "value": "year" },
 			{ "localeTag": "fr", "value": "an" },
@@ -13,13 +13,13 @@
 	},
 	{
 		"keytag": "DATE",
-		"locales": [
+		"validLocales": [
 			{ "localeTag": "en", "value": "date" }
 		]
 	},
 	{
 		"keytag": "YES",
-		"locales": [
+		"validLocales": [
 			{ "localeTag": "de", "value": "ja" },
 			{ "localeTag": "fr", "value": "oui" },
 			{ "localeTag": "it", "value": "si" },
@@ -30,7 +30,7 @@
 	},
 	{
 		"keytag": "NO",
-		"locales": [
+		"validLocales": [
 			{ "localeTag": "de", "value": "nein" },
 			{ "localeTag": "fr", "value": "non" },
 			{ "localeTag": "it", "value": "no" },

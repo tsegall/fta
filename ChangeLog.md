@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 8.0.8
+ - ENH: Improve first-name detection for German
+ - ENH: Add POSTAL_CODE.POSTAL_CODE_DE
+ - ENH: Add support for Finite Types on Longs
+
 ### 8.0.7
  - ENH: Bump google phonenumber
  - ENH: Improve detection of First Names in French/Spanish

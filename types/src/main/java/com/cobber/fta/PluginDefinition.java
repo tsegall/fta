@@ -78,7 +78,7 @@ public class PluginDefinition {
 	/** The required threshold to be matched (can be adjusted by presence of Hot Words. */
 	public int threshold = 95;
 	/** The underlying base type (e.g. STRING, DOUBLE, LONG, DATE, ... */
-	public FTAType baseType;
+	public FTAType baseType = FTAType.STRING;
 	/** Minimum value to be considered as a valid instance of this type, e.g. 1 if the Semantic type is Financial Quarter. */
 	public String minimum;
 	/** Maximum value to be considered as a valid instance of this type, e.g. 4 if the Semantic type is Financial Quarter. */

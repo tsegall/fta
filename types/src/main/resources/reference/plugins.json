@@ -161,6 +161,20 @@
 		"priority": 68
 	},
 	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_DE",
+		"description": "Postal Code (DE)",
+		"signature": "7Q/NP19OT3uFsdQkhdDLsBJdZck=",
+		"validLocales": [ "de" ],
+		"headerRegExps": [ ".*(?i)(postleitzahl).*" ],
+		"headerRegExpConfidence": [ 95 ],
+		"content": "/reference/de_postal_code.csv",
+		"contentType": "resource",
+		"threshold": 99,
+		"baseType": "LONG",
+		"backout": "\\d{5}",
+		"priority": 69
+	},
+	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
@@ -729,7 +743,7 @@
 		"description": "First Name",
 		"signature": "slggsAEDZ26rz9dqs15eNF23j2w=",
 		"clazz": "com.cobber.fta.plugins.FirstName",
-		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name|prénom|prenom|voornaam|vnaam|nombre).*", "(?i)(first)", "(?i)(name|nome|nom|naam)" ],
+		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name|prénom|prenom|voornaam|vornam|vnaam|nombre).*", "(?i)(first)", "(?i)(name|nome|nom|naam)" ],
 		"headerRegExpConfidence": [ 90, 90, 60 ],
 		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 170

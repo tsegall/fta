@@ -182,7 +182,8 @@ public class TestStandalonePlugins {
 
 					String pluginSignature = logical.getPluginDefinition().signature;
 					if (!"[NONE]".equals(pluginSignature) && !logical.getSignature().equals(logical.getPluginDefinition().signature))
-						logger.warn("WARNING: Signature incorrect for '%s.  LogicalType = '%s', Plugin = '%s'.", logical.getQualifier(), logical.getSignature(), logical.getPluginDefinition().signature);
+						logger.warn("WARNING: Signature incorrect for '{}'.  LogicalType = '{}', Plugin = '{}'.",
+								logical.getQualifier(), logical.getSignature(), logical.getPluginDefinition().signature);
 					assertTrue("[NONE]".equals(pluginSignature) || logical.getSignature().equals(logical.getPluginDefinition().signature));
 
 					if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())

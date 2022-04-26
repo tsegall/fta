@@ -1275,7 +1275,7 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicZipHeaderDE() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
+		final TextAnalyzer analysis = new TextAnalyzer("Postleitzahl");
 		analysis.setLocale(Locale.forLanguageTag("de-AT"));
 		final String inputs[] = {
 			"", "", "", "", "", "", "", "", "", "27215", "75251", "66045", "", "",
@@ -1288,13 +1288,14 @@ public class TestPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.LONG);
+//		assertEquals(result.getTypeQualifier(), "POSTAL_CODE.POSTAL_CODE_DE");
 		assertNull(result.getTypeQualifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), 4);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
-		assertEquals(result.getRegExp(), USZip5.REGEXP_ZIP5);
+		assertEquals(result.getRegExp(), "\\d{5}");
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
