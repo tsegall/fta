@@ -21,7 +21,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -37,7 +36,6 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	protected Locale locale;
 	protected int priority;
 	protected int threshold;
-	protected Pattern[] headerPatterns;
 
 	@Override
 	public int compareTo(final LogicalType other) {
@@ -66,12 +64,6 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 		this.locale = locale;
 
-		if (defn != null && defn.headerRegExps != null) {
-			headerPatterns = new Pattern[defn.headerRegExps.length];
-			for (int i = 0; i <  defn.headerRegExps.length; i++)
-				headerPatterns[i] = Pattern.compile(defn.headerRegExps[i]);
-		}
-
 		return true;
 	}
 
@@ -81,10 +73,18 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @return An integer between 0 and 100 reflecting the confidence that this stream name is a valid header.
 	 */
 	public int getHeaderConfidence(final String dataStreamName) {
-		if (headerPatterns != null)
-			for (int i = 0; i < headerPatterns.length; i++) {
-				if (headerPatterns[i].matcher(dataStreamName).matches())
-					return defn.headerRegExpConfidence[i];
+		PluginLocaleEntry entry;
+		try {
+			entry = defn.getLocaleEntry(locale);
+		} catch (FTAPluginException e) {
+			// Should never happen - since we should have bailed earlier
+			return 0;
+		}
+
+		if (entry.headerRegExps != null)
+			for (PluginLocaleHeaderEntry headerEntry : entry.headerRegExps) {
+				if (headerEntry.matches(dataStreamName))
+					return headerEntry.confidence;
 			}
 
 		return 0;

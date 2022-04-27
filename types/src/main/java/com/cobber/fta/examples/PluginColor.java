@@ -58,7 +58,7 @@ public class PluginColor extends LogicalTypeFinite {
 
 	@Override
 	public boolean initialize(final Locale locale) throws FTAPluginException {
-		if (!defn.isSupported(locale))
+		if (!defn.isLocaleSupported(locale))
 			throw new FTAPluginException("Locale '" + language + "' is not supported");
 
 		language = locale.toLanguageTag().split("[-_]+")[0].toUpperCase(Locale.ROOT);

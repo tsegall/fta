@@ -19,7 +19,7 @@ package com.cobber.fta;
  * Each KeywordEntry provided a pair with the locale and the value of the tag in that locale.
  * See keywords.json for the structure of the JSON file.
  */
-public class KeywordEntry {
+public class KeywordLocaleEntry {
 	public String localeTag;
 	public String value;
 }

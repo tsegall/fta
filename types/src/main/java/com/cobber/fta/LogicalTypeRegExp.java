@@ -152,17 +152,10 @@ public class LogicalTypeRegExp extends LogicalType {
 
 		// Plugins can insist that the maximum and minimum values be present in the observed set.
 		if (isMinMaxPresent() && (cardinality.get(defn.minimum) == null || cardinality.get(defn.maximum) == null))
-			return new PluginAnalysis(backout);;
+			return new PluginAnalysis(backout);
 
-		if (defn.headerRegExps != null) {
-			boolean requiredHeaderMissing = false;
-			for (int i = 0; i < defn.headerRegExps.length && !requiredHeaderMissing; i++) {
-				if (defn.headerRegExpConfidence[i] == 100 && !context.getStreamName().matches(defn.headerRegExps[i]))
-					requiredHeaderMissing = true;
-			}
-			if (requiredHeaderMissing)
-				return new PluginAnalysis(backout);;
-		}
+		if (defn.isRequiredHeaderMissing(locale, context.getStreamName()))
+			return new PluginAnalysis(backout);
 
 		if (facts != null) {
 			switch (defn.baseType) {
@@ -207,10 +200,6 @@ public class LogicalTypeRegExp extends LogicalType {
 		}
 
 		return false;
-	}
-
-	public String[] getHeaderRegExps() {
-		return defn.headerRegExps;
 	}
 
 	public int getMinSamples() {

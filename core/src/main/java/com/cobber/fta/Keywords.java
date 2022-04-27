@@ -40,7 +40,7 @@ public class Keywords {
 
 	/** Keyword Tag. */
 	public String keytag;
-	public KeywordEntry[] validLocales;
+	public KeywordLocaleEntry[] validLocales;
 
 	private Locale locale;
 
@@ -69,7 +69,7 @@ public class Keywords {
 	public String get(final String keyTag) {
 		for (final Keywords keyword : keywords) {
 			if (keyword.keytag.equals(keyTag))
-				for (final KeywordEntry entry : keyword.validLocales)
+				for (final KeywordLocaleEntry entry : keyword.validLocales)
 					if (isMatch(entry.localeTag))
 						return entry.value;
 		}
@@ -89,7 +89,7 @@ public class Keywords {
 		String lower = input.trim().toLowerCase(locale);
 		for (final Keywords keyword : keywords)
 			if (keyword.keytag.equals(keyTag))
-				for (final KeywordEntry entry : keyword.validLocales)
+				for (final KeywordLocaleEntry entry : keyword.validLocales)
 					if (isMatch(entry.localeTag))
 							return lower.contains(entry.value);
 

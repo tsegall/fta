@@ -137,7 +137,9 @@ public class TestIdentity {
 		analysis.setDefaultLogicalTypes(false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("SSN", "Social Security Number", "\\d{3}-\\d{2}-\\d{4}",
-				new String[] {"\\d{3}-\\d{2}-\\d{4}"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}", new String[] { "en-US" }, true, new String[] { ".*(SSN|social).*" }, new int[] { 100 }, 98, FTAType.STRING));
+				new String[] {"\\d{3}-\\d{2}-\\d{4}"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}",
+				new PluginLocaleEntry[] { new PluginLocaleEntry("en-US", ".*(SSN|social).*" , 100) },
+						true, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), null);

@@ -2,6 +2,9 @@
 ## Changes ##
 
 ### 8.0.8
+ - INT: Restructure plugins.json to ease localization
+
+### 8.0.8
  - ENH: Improve first-name detection for German
  - ENH: Add POSTAL_CODE.POSTAL_CODE_DE
  - ENH: Add support for Finite Types on Longs

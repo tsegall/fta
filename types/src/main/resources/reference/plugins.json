@@ -4,8 +4,7 @@
 		"description": "Email Address",
 		"signature": "+A0AMjgeFlGRlPKsX/iXYmoWpfY=",
 		"clazz": "com.cobber.fta.plugins.EmailLT",
-		"headerRegExps": [ ".*(?i)(email).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(email).*", "confidence": 90 } ] } ],
 		"priority": 10
 	},
 	{
@@ -13,8 +12,7 @@
 		"description": "URL - see RFC 3986",
 		"signature": "r+muJMmeRDtmg9qyVbWCOAMusc8=",
 		"clazz": "com.cobber.fta.plugins.URLLT",
-		"headerRegExps": [ ".*(?i)(url|web).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(url|web).*", "confidence": 90 } ] } ],
 		"priority": 15
 	},
 	{
@@ -22,8 +20,7 @@
 		"description": "IP V4 Address",
 		"signature": "tjKmv3C98nzoxPHtvYb1sp+UQEY=",
 		"clazz": "com.cobber.fta.plugins.IPV4Address",
-		"headerRegExps": [ ".*(?i)(ip).*" ],
-		"headerRegExpConfidence": [ 70 ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(ip).*", "confidence": 70 } ] } ],
 		"threshold": 99,
 		"priority": 20
 	},
@@ -32,8 +29,7 @@
 		"description": "IP V6 Address",
 		"signature": "UCm9KlNKo0Hv4BULLB3qSWbMQHY=",
 		"clazz": "com.cobber.fta.plugins.IPV6Address",
-		"headerRegExps": [ ".*(?i)(ip).*" ],
-		"headerRegExpConfidence": [ 70 ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(ip).*", "confidence": 70 } ] } ],
 		"threshold": 99,
 		"priority": 25
 	},
@@ -42,14 +38,14 @@
 		"description": "Telephone Number (Generic)",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
 		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
-		"headerRegExps": [ ".*(?i)(phone|fax|mobile|cell|Mobiel).*" ],
-		"headerRegExpConfidence": [ 98 ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(phone|fax|mobile|cell|Mobiel).*", "confidence": 98 } ] } ],
 		"priority": 40
 	},
 	{
 		"qualifier": "GUID",
 		"description": "Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67",
 		"signature": "AtovlR1okrAJUeTCpYUUTXow4yM=",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.GUID",
 		"threshold": 99,
 		"priority": 50
@@ -58,6 +54,7 @@
 		"qualifier": "VIN",
 		"description": "Vehicle Identification Number",
 		"signature": "JLD6IQMMMoQZTZH7OyHsGRuSoTQ=",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.VIN",
 		"threshold": 99,
 		"priority": 51
@@ -67,9 +64,10 @@
 		"description": "Postal Code (US)",
 		"signature": "VvLLosjm/N/z7zpF2IDSgpeT02c=",
 		"clazz": "com.cobber.fta.plugins.USZip5",
-		"validLocales": [ "en-US" ,"en-CA" ],
-		"headerRegExps": [ ".*(?i)(zip|postalcode|postcode).*" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag":  "en-US", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 } ] },
+			{ "localeTag":  "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 } ] }
+		],
 		"threshold": 90,
 		"priority": 60
 	},
@@ -78,9 +76,10 @@
 		"description": "Postal Code + 4 (US)",
 		"signature": "97eQHR8swSv5+VyCVyYDNayMdy4=",
 		"clazz": "com.cobber.fta.plugins.USZipPlus4",
-		"validLocales": [ "en-US" ,"en-CA" ],
-		"headerRegExps": [ ".*(?i)(zip|postalcode|postcode).*" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag":  "en-US", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 } ] },
+			{ "localeTag":  "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 } ] }
+		],
 		"threshold": 90,
 		"priority": 61
 	},
@@ -89,16 +88,17 @@
 		"description": "Postal Code (UK)",
 		"signature": "0m+ny+TVuhGGP1RGw3XKoni4Qyo=",
 		"clazz": "com.cobber.fta.plugins.UKPostalCode",
-		"validLocales": [ "en-GB" ,"en-UK" ],
+		"validLocales": [ { "localeTag":  "en-GB" }, { "localeTag":  "en-UK" } ],
 		"priority": 62
 	},
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_CA",
 		"description": "Postal Code (CA)",
 		"signature": "PJdCrn71buwdG4wyhlOpLSrc1+M=",
-		"validLocales": [ "en-US", "en-CA" ],
-		"headerRegExps": [ ".*(?i)(post).*" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag":  "en-US", "headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 100 } ] },
+			{ "localeTag":  "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d" ],
 		"regExpReturned": "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d",
 		"isRegExpComplete": true,
@@ -110,9 +110,9 @@
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_AU",
 		"description": "Postal Code (AU)",
 		"signature": "GGcrawbIPrKWkNlGg2vaccl1MNY=",
-		"validLocales": [ "en-AU" ],
-		"headerRegExps": [ ".*(?i)(post).*" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag":  "en-AU", "headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 100 } ] }
+		],
 		"regExpReturned": "\\d{4}",
 		"threshold": 98,
 		"baseType": "LONG",
@@ -122,9 +122,9 @@
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_NL",
 		"description": "Postal Code (NL)",
 		"signature": "zPoRG8ivy1ZRtQmx2dYu/pc6Prk=",
-		"validLocales": [ "nl-NL" ],
-		"headerRegExps": [ ".*(?i)(post).*", ".*(?i)(code).*" ],
-		"headerRegExpConfidence": [ 95, 75 ],
+		"validLocales": [
+			{ "localeTag":  "nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 95 }, { "regExp": ".*(?i)(code).*", "confidence": 75 } ] }
+		],
 		"regExpsToMatch": [ "\\d{4}\\p{IsAlphabetic}{2}" ],
 		"regExpReturned": "\\d{4}\\p{IsAlphabetic}{2}",
 		"threshold": 95,
@@ -136,7 +136,7 @@
 		"description": "Postal Code (FR)",
 		"signature": "NBx2UhY9b1E8PKjEPXxorgBew1s=",
 		"clazz": "com.cobber.fta.plugins.PostalCodeFR",
-		"validLocales": [ "fr-FR" ],
+		"validLocales": [ { "localeTag":  "fr-FR" } ],
 		"priority": 66
 	},
 	{
@@ -144,16 +144,16 @@
 		"description": "Postal Code (JA)",
 		"signature": "90grIf//XH2xAcARIKYJPzmfhJg=",
 		"clazz": "com.cobber.fta.plugins.PostalCodeJA",
-		"validLocales": [ "ja" ],
+		"validLocales": [ { "localeTag":  "ja" } ],
 		"priority": 67
 	},
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_PT",
 		"description": "Postal Code (PT)",
 		"signature": "YOwVZiE8O4fMUH/RJ/34zgxi0yg=",
-		"validLocales": [ "pt-PT" ],
-		"headerRegExps": [ ".*(?i)(código|postal).*" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag":  "pt-PT", "headerRegExps": [ { "regExp": ".*(?i)(código|postal).*", "confidence": 95 } ] }
+		],
 		"regExpsToMatch": [ "\\d{4}-\\d{3}" ],
 		"regExpReturned": "\\d{4}-\\d{3}",
 		"threshold": 99,
@@ -164,9 +164,9 @@
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_DE",
 		"description": "Postal Code (DE)",
 		"signature": "7Q/NP19OT3uFsdQkhdDLsBJdZck=",
-		"validLocales": [ "de" ],
-		"headerRegExps": [ ".*(?i)(postleitzahl).*" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag":  "de-DE", "headerRegExps": [ { "regExp": ".*(?i)(postleitzahl).*", "confidence": 95 } ] }
+		],
 		"content": "/reference/de_postal_code.csv",
 		"contentType": "resource",
 		"threshold": 99,
@@ -178,10 +178,10 @@
 		"qualifier": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
-		"headerRegExps": [ ".*(?i)(addr).*" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr).*", "confidence": 95 } ] }
+		],
 		"clazz": "com.cobber.fta.plugins.AddressEN",
-		"validLocales": [ "en" ],
 		"threshold": 90,
 		"priority": 70
 	},
@@ -189,10 +189,10 @@
 		"qualifier": "STREET_ADDRESS2_EN",
 		"description": "Street Address - Line 2 (English Language)",
 		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
-		"headerRegExps": [ ".*(?i)(addr).*2" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr).*2", "confidence": 95 } ] }
+		],
 		"clazz": "com.cobber.fta.plugins.Address2EN",
-		"validLocales": [ "en" ],
 		"threshold": 90,
 		"priority": 71
 	},
@@ -200,9 +200,9 @@
 		"qualifier": "STREET_MARKER_EN",
 		"description": "Street Marker (English Language)",
 		"signature": "whIM9TwB3ArMA50gXTlOBjNCFJk=",
-		"validLocales": [ "en" ],
-		"headerRegExps": [ ".*(?i)(street).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/en_street_markers.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
@@ -213,19 +213,28 @@
 		"description": "Gender",
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.Gender",
-		"validLocales": [ "en", "de", "es", "it", "fr", "ms", "nl", "pt" ],
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Geschlecht)", "confidence": 90 } ] },
+			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex)", "confidence": 90 } ] },
+			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Sexo)", "confidence": 90 } ] },
+			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Genre|Sexe)", "confidence": 90 } ] },
+			{ "localeTag":  "it", "headerRegExps": [ { "regExp": ".*(?i)(Gender|genere|sesso)", "confidence": 90 } ] },
+			{ "localeTag":  "ms", "headerRegExps": [ { "regExp": ".*(?i)(Gender|jantina)", "confidence": 90 } ] },
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Geslach|Geslacht)", "confidence": 90 } ] },
+			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Gênero|Sexo)", "confidence": 90 } ] }
+		],
 		"priority": 80
 	},
 	{
 		"qualifier" : "GENDER.TEXT_JA",
 		"description": "Gender (Japanese Language)",
 		"signature": "Cw4ieuKHMT4qah2mJ9uWUYg+rNk=",
-		"headerRegExps" : [ "(性|性別)" ],
-		"headerRegExpConfidence" : [ 70 ],
+		"validLocales": [
+			{ "localeTag":  "ja", "headerRegExps": [ { "regExp": "(性|性別)", "confidence": 70 } ] }
+		],
 		"contentType": "inline",
 		"content": "{ \"members\": [ \"女性\",\"女\",\"男性\",\"男\",\"その他\" ] }",
 		"regExpReturned" : "(女性|女|男性|男|その他)",
-		"validLocales": [ "ja" ],
 		"backout": ".*",
 		"baseType" : "STRING",
 		"priority": 81
@@ -234,12 +243,12 @@
 		"qualifier" : "GENDER.TEXT_CN",
 		"description": "Gender (Chinese Language)",
 		"signature": "Cw4ieuKHMT4qah2mJ9uWUYg+rNk=",
-		"headerRegExps" : [ "(性|性別)" ],
-		"headerRegExpConfidence" : [ 70 ],
+		"validLocales": [
+			{ "localeTag":  "cn", "headerRegExps": [ { "regExp": "(性|性別)", "confidence": 70 } ] }
+		],
 		"contentType": "inline",
 		"content": "{ \"members\": [ \"女性\",\"女\",\"男性\",\"男\" ] }",
 		"regExpReturned" : "(女性|女|男性|男)",
-		"validLocales": [ "cn" ],
 		"backout": ".*",
 		"baseType" : "STRING",
 		"priority": 82
@@ -248,9 +257,9 @@
 		"qualifier": "NATIONALITY_EN",
 		"description": "Nationality (English Language)",
 		"signature": "FO3IMfeesbLJh6WwceQWPVORcnE=",
-		"validLocales": [ "en" ],
-		"headerRegExps": [ ".*(?i)(nationality).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(nationality).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/en_nationality.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
@@ -260,9 +269,9 @@
 		"qualifier": "HONORIFIC_EN",
 		"description": "Honorific (English Language)",
 		"signature": "/Di73LZHHGjcJYhigTqSTQrtTvA=",
-		"validLocales": [ "en" ],
-		"headerRegExps": [ ".*(?i)(honorific|title).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(honorific|title).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/en_honorific.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
@@ -273,9 +282,9 @@
 		"description": "Country as a string (English language)",
 		"signature": "T4UZNFT895GsC99J7dOz/ENNYvM=",
 		"clazz": "com.cobber.fta.plugins.CountryEN",
-		"validLocales": [ "en" ],
-		"headerRegExps": [ ".*(?i)(country).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(country).*", "confidence": 90 } ] }
+		],
 		"threshold": 85,
 		"priority": 90
 	},
@@ -283,6 +292,7 @@
 		"qualifier": "MONTH.ABBR_<LOCALE>",
 		"description": "Month Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"signature": "[NONE]",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.MonthAbbr",
 		"priority": 100
 	},
@@ -290,6 +300,7 @@
 		"qualifier": "MONTH.FULL_<LOCALE>",
 		"description": "Full Month name <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"signature": "[NONE]",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.MonthFull",
 		"priority": 101
 	},
@@ -297,6 +308,7 @@
 		"qualifier": "DAY.ABBR_<LOCALE>",
 		"description": "Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"signature": "[NONE]",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.DOWAbbr",
 		"priority": 102
 	},
@@ -304,6 +316,7 @@
 		"qualifier": "DAY.FULL_<LOCALE>",
 		"description": "Full Day of Week name <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"signature": "[NONE]",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.DOWFull",
 		"priority": 103
 	},
@@ -311,9 +324,11 @@
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
 		"description": "Canadian Province Code",
 		"signature": "jwzKHMfuq3AO4lEKEm0e/ZmOIRA=",
-		"validLocales": [ "en-US", "en-CA", "es-MX" ],
-		"headerRegExps": [ ".*(?i)(province).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag":  "en-US", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] },
+			{ "localeTag":  "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] },
+			{ "localeTag":  "en-MX", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/ca_provinces.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
@@ -323,9 +338,11 @@
 		"qualifier": "STATE_PROVINCE.STATE_MX",
 		"description": "Mexican State Code",
 		"signature": "h565UW3Wl3GYzYAriMJM6T1LsmY=",
-		"validLocales": [ "en-US", "en-CA", "es-MX" ],
-		"headerRegExps": [ ".*(?i)(estado).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag":  "en-US", "headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ] },
+			{ "localeTag":  "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ] },
+			{ "localeTag":  "en-MX", "headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/mx_states.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
@@ -335,9 +352,11 @@
 		"qualifier": "STATE_PROVINCE.STATE_US",
 		"description": "US State Code",
 		"signature": "JD5jeXHLzGctpqicY44B9iJzyXU=",
-		"validLocales": [ "en-US", "en-CA", "es-MX" ],
-		"headerRegExps": [ ".*(?i)(state).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag":  "en-US", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] },
+			{ "localeTag":  "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] },
+			{ "localeTag":  "en-MX", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/us_states.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
@@ -348,18 +367,20 @@
 		"description": "US State Code/Canadian Province Code/Mexican State Code",
 		"signature": "Q00LXfhmPibwrK8HTkzNsRosvzw=",
 		"clazz": "com.cobber.fta.plugins.NAStateProvince",
-		"validLocales": [ "en-US", "en-CA", "es-MX" ],
-		"headerRegExps": [ ".*(?i)(state|province|estado).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-US", "headerRegExps": [ { "regExp": ".*(?i)(state|province|estado).*", "confidence": 90 } ] },
+			{ "localeTag": "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(state|province|estado).*", "confidence": 90 } ] },
+			{ "localeTag": "en-MX", "headerRegExps": [ { "regExp": ".*(?i)(state|province|estado).*", "confidence": 90 } ] }
+		],
 		"priority": 113
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_AU",
 		"description": "Australian State Code",
 		"signature": "khHytrFa0Oj4KP/37i2mRhJmliU=",
-		"validLocales": [ "en-AU" ],
-		"headerRegExps": [ ".*(?i)(state).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-AU", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "(?i)(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)",
 		"content": "{ \"members\": [ \"ACT\", \"NSW\", \"NT\", \"QLD\", \"SA\", \"TAS\", \"VIC\", \"WA\" ] }",
 		"contentType": "inline",
@@ -370,9 +391,9 @@
 		"qualifier": "STATE_PROVINCE.PROVINCE_IT",
 		"description": "Italian Province Code",
 		"signature": "0vMZaBH760lIeD7hdvi7RVIDoVc=",
-		"validLocales": [ "it-IT" ],
-		"headerRegExps": [ ".*(?i)(province).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/it_provinces.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
@@ -382,9 +403,11 @@
 		"qualifier": "STATE_PROVINCE.CANTON_CH",
 		"description": "Swiss CANTON Code",
 		"signature": "YNu63sC5qbl7DWY0aV4khfLKrXs=",
-		"validLocales": [ "de-CH", "fr-CH" ,"it-CH" ],
-		"headerRegExps": [ ".*(?i)(canton|kanton|cantone).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "de-CH", "headerRegExps": [ { "regExp": ".*(?i)(canton|kanton|cantone).*", "confidence": 90 } ] },
+			{ "localeTag": "fr-CH", "headerRegExps": [ { "regExp": ".*(?i)(canton|kanton|cantone).*", "confidence": 90 } ] },
+			{ "localeTag": "it-CH", "headerRegExps": [ { "regExp": ".*(?i)(canton|kanton|cantone).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/ch_cantons.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
@@ -394,9 +417,9 @@
 		"qualifier": "STATE_PROVINCE.STATE_BR",
 		"description": "Brazilian State Code",
 		"signature": "5B0N5wsZpS+g/ck2cXCQjtqYwXA=",
-		"validLocales": [ "pt-BR" ],
-		"headerRegExps": [ ".*(?i)(estado|state).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "pt-BR", "headerRegExps": [ { "regExp": ".*(?i)(estado|state).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/br_states.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
@@ -406,9 +429,9 @@
 		"qualifier": "STATE_PROVINCE.PROVINCE_ZA",
 		"description": "South African Province Code",
 		"signature": "nXFbO6uiHPMEct83mAPMsziYPtI=",
-		"validLocales": [ "en-ZA" ],
-		"headerRegExps": [ ".*(?i)(province).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-ZA", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/za_provinces.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
@@ -418,9 +441,11 @@
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_CA",
 		"description": "Canadian Province Name",
 		"signature": "hiCNMWvc1MO99KTP8IaH1Fp3s3Y=",
-		"validLocales": [ "en-US", "en-CA", "es-MX" ],
-		"headerRegExps": [ ".*(?i)(province).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-US", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] },
+			{ "localeTag": "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] },
+			{ "localeTag": "en-MX", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[ \\p{IsAlphabetic}]+",
 		"content": "/reference/ca_provinces_full.csv",
 		"contentType": "resource",
@@ -431,9 +456,11 @@
 		"qualifier": "STATE_PROVINCE.STATE_NAME_MX",
 		"description": "Mexican State Name",
 		"signature": "f5Bx+omlv1xMG6Oq8XQo5RkrtmU=",
-		"validLocales": [ "en-US", "en-CA", "es-MX" ],
-		"headerRegExps": [ ".*(?i)(estado).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-US", "headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ] },
+			{ "localeTag": "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ] },
+			{ "localeTag": "en-MX", "headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[ \\p{IsAlphabetic}]+",
 		"content": "/reference/mx_states_full.csv",
 		"contentType": "resource",
@@ -444,9 +471,11 @@
 		"qualifier": "STATE_PROVINCE.STATE_NAME_US",
 		"description": "US State Name",
 		"signature": "y0oxFvZb1RpG1UVwi/hSCEymwzc=",
-		"validLocales": [ "en-US", "en-CA", "es-MX" ],
-		"headerRegExps": [ ".*(?i)(state).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-US", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] },
+			{ "localeTag": "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] },
+			{ "localeTag": "en-MX", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[ \\p{IsAlphabetic}]+",
 		"content": "/reference/us_states_full.csv",
 		"contentType": "resource",
@@ -457,9 +486,11 @@
 		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NAME_NA",
 		"description": "US State Name/Canadian Province Name/Mexican State Name",
 		"signature": "KfDjCnkj/KmZglkvM32W3OBEwxU=",
-		"validLocales": [ "en-US", "en-CA", "es-MX" ],
-		"headerRegExps": [ ".*(?i)(state|province|estado).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-US", "headerRegExps": [ { "regExp": ".*(?i)(state|province|estado).*", "confidence": 90 } ] },
+			{ "localeTag": "en-CA", "headerRegExps": [ { "regExp": ".*(?i)(state|province|estado).*", "confidence": 90 } ] },
+			{ "localeTag": "en-MX", "headerRegExps": [ { "regExp": ".*(?i)(state|province|estado).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[ \\p{IsAlphabetic}]+",
 		"content": "/reference/na_states_provinces_full.csv",
 		"contentType": "resource",
@@ -470,9 +501,9 @@
 		"qualifier": "STATE_PROVINCE.STATE_NAME_AU",
 		"description": "Australian State Name",
 		"signature": "iNmmCNk8cEQ6mQuhOTxSlO+nvUk=",
-		"validLocales": [ "en-AU" ],
-		"headerRegExps": [ ".*(?i)(state).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-AU", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[ \\p{IsAlphabetic}]+",
 		"content": "/reference/au_states_full.csv",
 		"contentType": "resource",
@@ -483,9 +514,9 @@
 		"qualifier": "STATE_PROVINCE.STATE_NAME_DE",
 		"description": "German State Name",
 		"signature": "bEx7JkLIUY8fjFyEhsjeJfx2k6o=",
-		"validLocales": [ "de-DE" ],
-		"headerRegExps": [ ".*(?i)(state|staat).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "de-DE", "headerRegExps": [ { "regExp": ".*(?i)(state|staat).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[- \\p{IsAlphabetic}]+",
 		"content": "/reference/de_states_full.csv",
 		"contentType": "resource",
@@ -496,9 +527,9 @@
 		"qualifier": "STATE_PROVINCE.REGION_NAME_FR",
 		"description": "French Region",
 		"signature": "hiZwJanMwVKNX7yumKr1rNKQNN8=",
-		"validLocales": [ "fr-FR" ],
-		"headerRegExps": [ ".*(?i)(region|région).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "fr-FR", "headerRegExps": [ { "regExp": ".*(?i)(region|région).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[-' \\p{IsAlphabetic}]+",
 		"content": "/reference/fr_regions.csv",
 		"contentType": "resource",
@@ -509,9 +540,9 @@
 		"qualifier": "STATE_PROVINCE.DEPARTMENT_NAME_FR",
 		"description": "French Department",
 		"signature": "oOZtEv/rhMuaXVd2SLFBvR1VShI=",
-		"validLocales": [ "fr-FR" ],
-		"headerRegExps": [ ".*(?i)(department|Département).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "fr-FR", "headerRegExps": [ { "regExp": ".*(?i)(department|Département).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[-' \\p{IsAlphabetic}]+",
 		"content": "/reference/fr_department.csv",
 		"contentType": "resource",
@@ -522,9 +553,9 @@
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_IT",
 		"description": "Italian Province Name",
 		"signature": "veLvb2gbLjr395Sbu+jeP0R9ciQ=",
-		"validLocales": [ "it-IT" ],
-		"headerRegExps": [ ".*(?i)(province).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[-' \\p{IsAlphabetic}]+",
 		"content": "/reference/it_provinces_full.csv",
 		"contentType": "resource",
@@ -535,9 +566,9 @@
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_ES",
 		"description": "Spanish Province Name",
 		"signature": "w5axJ/mMkNw2fiYY3xw7ZDvRurM=",
-		"validLocales": [ "es-ES" ],
-		"headerRegExps": [ ".*(?i)(province|provincias|provincia).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "es-ES", "headerRegExps": [ { "regExp": ".*(?i)(province|provincias|provincia).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[ \\p{IsAlphabetic}]+",
 		"content": "/reference/es_provinces_full.csv",
 		"contentType": "resource",
@@ -548,9 +579,9 @@
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_NL",
 		"description": "Netherlands Province Name",
 		"signature": "LfF0rgcJobv3P/9fW8+SAzpl//c=",
-		"validLocales": [ "nl-NL" ],
-		"headerRegExps": [ ".*(?i)(province|provincies).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(province|provincies).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[- \\p{IsAlphabetic}]+",
 		"content": "/reference/nl_provinces_full.csv",
 		"contentType": "resource",
@@ -561,9 +592,9 @@
 		"qualifier": "STATE_PROVINCE.COUNTY_US",
 		"description": "US County Name",
 		"signature": "NkMoovh9DwxDIeJXza8dsJ4wRzY=",
-		"validLocales": [ "en-US" ],
-		"headerRegExps": [ ".*(?i)(county).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-US", "headerRegExps": [ { "regExp": ".*(?i)(county).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[-\\.,' \\p{IsAlphabetic}]+",
 		"content": "/reference/us_counties_full.csv",
 		"contentType": "resource",
@@ -574,9 +605,10 @@
 		"qualifier": "STATE_PROVINCE.COUNTY_UK",
 		"description": "United Kingdom County Name",
 		"signature": "ppbqIL83hfnExGV8bdzIoA3hLN8=",
-		"validLocales": [ "en-GB" ,"en-UK" ],
-		"headerRegExps": [ ".*(?i)(county).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-GB", "headerRegExps": [ { "regExp": ".*(?i)(county).*", "confidence": 90 } ] },
+			{ "localeTag": "en-UK", "headerRegExps": [ { "regExp": ".*(?i)(county).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[-,& \\p{IsAlphabetic}]+",
 		"content": "/reference/gb_counties_full.csv",
 		"contentType": "resource",
@@ -587,9 +619,11 @@
 		"qualifier": "STATE_PROVINCE.CANTON_NAME_CH",
 		"description": "Swiss CANTON Name",
 		"signature": "s2RWNkJraOojAx4YB3NlVxPjqOY=",
-		"validLocales": [ "de-CH", "fr-CH" ,"it-CH" ],
-		"headerRegExps": [ ".*(?i)(canton|kanton|cantone).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "de-CH", "headerRegExps": [ { "regExp": ".*(?i)(canton|kanton|cantone).*", "confidence": 90 } ] },
+			{ "localeTag": "fr-CH", "headerRegExps": [ { "regExp": ".*(?i)(canton|kanton|cantone).*", "confidence": 90 } ] },
+			{ "localeTag": "it-CH", "headerRegExps": [ { "regExp": ".*(?i)(canton|kanton|cantone).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[-\\. \\p{IsAlphabetic}]+",
 		"content": "/reference/ch_cantons_full.csv",
 		"contentType": "resource",
@@ -600,9 +634,9 @@
 		"qualifier": "STATE_PROVINCE.STATE_NAME_BR",
 		"description": "Brazilian State Name",
 		"signature": "Av9xqFJX7iwzve2N0bwz5yImxnM=",
-		"validLocales": [ "pt-BR" ],
-		"headerRegExps": [ ".*(?i)(estado|state).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "pt-BR", "headerRegExps": [ { "regExp": ".*(?i)(estado|state).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[-\\. \\p{IsAlphabetic}]+",
 		"content": "/reference/br_states_full.csv",
 		"contentType": "resource",
@@ -613,9 +647,9 @@
 		"qualifier": "STATE_PROVINCE.PREFECTURE_NAME_JA",
 		"description": "Japanese Prefecture Name",
 		"signature": "qUPFgdl8kNvmZ8M55kR4qaFp184=",
-		"validLocales": [ "ja" ],
-		"headerRegExps": [ ".*(?i)(都道府県|todōfuken).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "ja", "headerRegExps": [ { "regExp": ".*(?i)(都道府県|todōfuken).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[-\\. \\p{IsAlphabetic}]+",
 		"content": "/reference/ja_prefectures_full.csv",
 		"contentType": "resource",
@@ -626,9 +660,9 @@
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_ZA",
 		"description": "South African Province Name",
 		"signature": "79CAHTLod2FXV8V4iLZvXQ5r61M=",
-		"validLocales": [ "en-ZA" ],
-		"headerRegExps": [ ".*(?i)(province).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en-ZA", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[ \\p{IsAlphabetic}]+",
 		"content": "/reference/za_provinces_full.csv",
 		"contentType": "resource",
@@ -639,9 +673,9 @@
 		"qualifier": "STATE_PROVINCE.DISTRICT_NAME_PT",
 		"description": "Portuguese District Name",
 		"signature": "zx5UQndn84s9pYXMKYEV/HEuu9U=",
-		"validLocales": [ "pt-PT" ],
-		"headerRegExps": [ ".*(?i)(Distritos|District).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "pt-PT", "headerRegExps": [ { "regExp": ".*(?i)(Distritos|District).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[ \\p{IsAlphabetic}]+",
 		"content": "/reference/pt_districts_full.csv",
 		"contentType": "resource",
@@ -652,8 +686,9 @@
 		"qualifier": "CURRENCY_CODE.ISO-4217",
 		"description": "Currency as defined by ISO 4217",
 		"signature": "HElKonWFB+FY+MspBKm3eCwwrVo=",
-		"headerRegExps": [ ".*4217.*", ".*(?i)(currency).*" ],
-		"headerRegExpConfidence": [ 90, 70 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*4217.*", "confidence": 90 }, { "regExp": ".*(?i)(currency).*", "confidence": 70 } ] }
+		],
 		"content": "/reference/ISO-4217.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
@@ -663,8 +698,9 @@
 		"qualifier": "CURRENCY.TEXT_EN",
 		"description": "Currency Name",
 		"signature": "hp7SSeC1M4SD1q40lH1wjYzrgV8=",
-		"headerRegExps": [ ".*(?i)(currency).*" ],
-		"headerRegExpConfidence": [ 90, 70 ],
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(currency).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/en_currency_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
@@ -674,8 +710,9 @@
 		"qualifier": "COUNTRY.ISO-3166-3",
 		"description": "Country as defined by ISO 3166 - Alpha 3",
 		"signature": "WyaPkc1jgevOXlDl5bt1Za4j8ko=",
-		"headerRegExps": [ ".*(?i)(iso|3166).*", ".*(?i)(country).*" ],
-		"headerRegExpConfidence": [ 90, 70 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country).*", "confidence": 70 } ] }
+		],
 		"content": "/reference/ISO-3166-3.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
@@ -685,8 +722,9 @@
 		"qualifier": "COUNTRY.ISO-3166-2",
 		"description": "Country as defined by ISO 3166 - Alpha 2",
 		"signature": "2ySMIn/48aoAVrw/OwOCKdYI4OE=",
-		"headerRegExps": [ ".*(?i)(iso|3166).*", ".*(?i)(country).*" ],
-		"headerRegExpConfidence": [ 90, 70 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country).*", "confidence": 70 } ] }
+		],
 		"content": "/reference/ISO-3166-2.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
@@ -696,8 +734,9 @@
 		"qualifier": "TIMEZONE.IANA",
 		"description": "IANA Time Zone (Olson)",
 		"signature": "AYkvNH/jCNxWHK4uLso7vEbNh5U=",
-		"headerRegExps": [ ".*(?i)(zone).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(zone).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/timezones.csv",
 		"contentType": "resource",
 		"backout": "[-_/A-Za-z]+",
@@ -707,32 +746,33 @@
 		"qualifier": "CONTINENT.TEXT_EN",
 		"description": "Continent",
 		"signature": "LpGvbcbbeanXoAkIVobKRfMuzcg=",
-		"headerRegExps": [ ".*(?i)(continent|region).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(continent|region).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/en_continent.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"validLocales": [ "en" ],
 		"priority": 150
 	},
 	{
 		"qualifier": "CONTINENT.CODE_EN",
 		"description": "Continent Code",
 		"signature": "7VSVzDUptpe+9R5UafDWEwLqKs4=",
-		"headerRegExps": [ ".*(?i)(continent|region).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(continent|region).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/en_continent_code.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"validLocales": [ "en" ],
 		"priority": 152
 	},
 	{
 		"qualifier": "AIRPORT_CODE.IATA",
 		"description": "IATA Airport Code",
 		"signature": "yRx9nzsOl22lQTstXrT43OVBZoU=",
-		"headerRegExps": [ ".*(?i)(iata|air).*" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iata|air).*", "confidence": 100 } ] }
+		],
 		"content": "/reference/IATA.txt",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
@@ -742,73 +782,100 @@
 		"qualifier": "NAME.FIRST",
 		"description": "First Name",
 		"signature": "slggsAEDZ26rz9dqs15eNF23j2w=",
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(first.?name|fname|given.?name).*", "confidence": 90 },
+				{ "regExp": "(?i)(first)", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ] },
+			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(vornam).*", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ] },
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
+			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(prénom|prenom).*", "confidence": 90 },
+				{ "regExp": "(?i)(first)", "confidence": 90 }, { "regExp": "(?i)(nom)", "confidence": 60 } ] },
+			{ "localeTag": "it", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] },
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(voornaam|vnaam).*", "confidence": 90 }, { "regExp": "(?i)(naam)", "confidence": 60 } ] },
+			{ "localeTag": "pt", "headerRegExps": [ { "regExp": "(?i)(nome)", "confidence": 60 } ] }
+		],
 		"clazz": "com.cobber.fta.plugins.FirstName",
-		"headerRegExps": [ ".*(?i)(first.?name|fname|given.?name|prénom|prenom|voornaam|vornam|vnaam|nombre).*", "(?i)(first)", "(?i)(name|nome|nom|naam)" ],
-		"headerRegExpConfidence": [ 90, 90, 60 ],
-		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 170
 	},
 	{
 		"qualifier": "NAME.LAST",
 		"description": "Last Name",
 		"signature": "+h9v4tygGZxbEPbJLp5MDezGgME=",
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(surname|last.?name|lname|maiden.?name).*", "confidence": 90 },
+				{ "regExp": "(?i)(last)", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ] },
+			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(nachname).*", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ] },
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(apellido).*", "confidence": 90 }, { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
+			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(prénom|prenom).*", "confidence": 90 }, { "regExp": "(?i)(nom)", "confidence": 60 } ] },
+			{ "localeTag": "it", "headerRegExps": [ { "regExp": ".*(?i)(cognome).*", "confidence": 90 }, { "regExp": "(?i)(nome)", "confidence": 60 } ] },
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(achternaam|anaam).*", "confidence": 90 }, { "regExp": "(?i)(naam)", "confidence": 60 } ] },
+			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(sobrenome).*", "confidence": 90 }, { "regExp": "(?i)(nome)", "confidence": 60 } ] }
+		],
 		"clazz": "com.cobber.fta.plugins.LastName",
-		"headerRegExps": [ ".*(?i)(surname|last.?name|lname|maiden.?name|sobrenome|nachname|achternaam|anaam|paterno|materno).*", "(?i)(last)", "(?i)(name|nome|nom|naam)" ],
-		"headerRegExpConfidence": [ 90, 90, 60 ],
-		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 171
 	},
 	{
 		"qualifier": "NAME.LAST_FIRST",
 		"description": "Merged Name (Last, First)",
 		"signature": "WlXF9TSnYBDQXbOMhceVK9XCxAk=",
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
+			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
+			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(nom).*", "confidence": 60 } ] },
+			{ "localeTag": "it", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] },
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(naam).*", "confidence": 60 } ] },
+			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] }
+		],
 		"clazz": "com.cobber.fta.plugins.NameLastFirst",
-		"headerRegExps": [ ".*(?i)(name|nome|nom|naam|nombre).*" ],
-		"headerRegExpConfidence": [ 60 ],
-		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 172
 	},
 	{
 		"qualifier": "NAME.FIRST_LAST",
 		"description": "Merged Name (First Last)",
 		"signature": "pJJS+kSfyNDRb2T7SXIWhZhlH3c=",
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
+			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
+			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(nom).*", "confidence": 60 } ] },
+			{ "localeTag": "it", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] },
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(naam).*", "confidence": 60 } ] },
+			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] }
+		],
 		"clazz": "com.cobber.fta.plugins.NameFirstLast",
-		"headerRegExps": [ ".*(?i)(name|nome|nom|naam|nombre).*" ],
-		"headerRegExpConfidence": [ 60 ],
-		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 173
 	},
 	{
 		"qualifier": "NAME.MIDDLE",
 		"description": "Middle Name",
 		"signature": "3UGho+Z93uiqi9L8+qjAQ1pb0qQ=",
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(middle).*", "confidence": 90 } ] }
+		],
 		"clazz": "com.cobber.fta.plugins.MiddleName",
-		"headerRegExps": [ ".*(?i)(middle).*" ],
-		"headerRegExpConfidence": [ 90 ],
-		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 174
 	},
 	{
 		"qualifier": "NAME.MIDDLE_INITIAL",
-		"description": "Middle Name",
+		"description": "Middle Initial",
 		"signature": "5AG+x37vekPMlggzCTebzFWovPc=",
-		"headerRegExps": [ ".*(?i)(middle).*|(?i)(mi)" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(middle).*|(?i)(mi)", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ "\\p{IsAlphabetic}", "\\p{IsAlphabetic}\\." ],
 		"regExpReturned": "\\p{IsAlphabetic}\\.?",
 		"isRegExpComplete": true,
 		"threshold": 98,
 		"baseType": "STRING",
-		"validLocales": [ "en", "de", "es", "fr", "it", "nl", "pt" ],
 		"priority": 175
 	},
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL",
 		"description": "Latitude (Decimal degrees)",
 		"signature": "5+1TLjdhcG8m3gVn0m/r6uLmh/Q=",
-		"validLocales": [ ],
-		"headerRegExps": [ ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*(?i)[^\\p{IsAlphabetic}]lat|(?i)(lat)|^lat[^\\p{IsAlphabetic}].*" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*(?i)[^\\p{IsAlphabetic}]lat|(?i)(lat)|^lat[^\\p{IsAlphabetic}].*", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExpReturned": "([+-]?([0-9]|[0-8][0-9])\\.\\d+)|[+-]?90\\.0+",
 		"isRegExpComplete": true,
@@ -822,8 +889,9 @@
 		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
 		"description": "Longitude (Decimal degrees)",
 		"signature": "nDTXmMjlW1pm2Rav/0mJVPeRvKc=",
-		"headerRegExps": [ ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|.*(?i)[^\\p{IsAlphabetic}]long|(?i)(lon|lng)|^(lon|long)[^\\p{IsAlphabetic}].*" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|.*(?i)[^\\p{IsAlphabetic}]long|(?i)(lon|lng)|^(lon|long)[^\\p{IsAlphabetic}].*", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 		"regExpReturned": "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+)|[+-]?180\\.0+",
 		"isRegExpComplete": true,
@@ -836,20 +904,22 @@
 	{
 		"qualifier": "COORDINATE.LATITUDE_DMS",
 		"description": "Latitude (degrees/minutes/seconds)",
-		"clazz": "com.cobber.fta.plugins.LatitudeDMS",
 		"signature": "DbzARuk/thlR/jm3sj8H3vllZCE=",
-		"headerRegExps": [ ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|(?i)(lat)" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(latitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|(?i)(lat)", "confidence": 95 } ] }
+		],
+		"clazz": "com.cobber.fta.plugins.LatitudeDMS",
 		"threshold": 99,
 		"priority": 192
 	},
 	{
 		"qualifier": "COORDINATE.LONGITUDE_DMS",
 		"description": "Longitude (degrees/minutes/seconds)",
-		"clazz": "com.cobber.fta.plugins.LongitudeDMS",
 		"signature": "uZncg/K2y6hbc3Wul8IFlpvwEEU=",
-		"headerRegExps": [ ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|lon|lng" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic}]).*|lon|lng", "confidence": 95 } ] }
+		],
+		"clazz": "com.cobber.fta.plugins.LongitudeDMS",
 		"threshold": 99,
 		"priority": 193
 	},
@@ -857,6 +927,9 @@
 		"qualifier": "COORDINATE_PAIR.DECIMAL",
 		"description": "Coordinate Pair (Lat,Long - Decimal degrees)",
 		"signature": "6lVqkPqRAcyOlhHO3ckHttlzBww=",
+		"validLocales": [
+			{ "localeTag": "*" }
+		],
 		"regExpsToMatch": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+" ],
 		"regExpReturned": "([+-]?([0-9]|[0-8][0-9])\\.\\d+|[+-]90\\.0+),([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+|[+-]180\\.0+)",
 		"isRegExpComplete": true,
@@ -868,34 +941,35 @@
 		"qualifier": "CITY",
 		"description": "City/Town",
 		"signature": "mz6raYadjSZxxvo+j66/fQXbhf8=",
-		"headerRegExps": [ "^(?i)(city|town)$|^.*[ _](city|town)$|^(city|town)[ _].*$|(?-i).*[a-z](City|Town)$" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": "^(?i)(city|town)$|^.*[ _](city|town)$|^(city|town)[ _].*$|(?-i).*[a-z](City|Town)$", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 		"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
 		"isRegExpComplete": false,
 		"baseType": "STRING",
-		"validLocales": [ "en" ],
 		"priority": 210
 	},
 	{
 		"qualifier": "COMPANY_NAME",
 		"description": "Company Name",
 		"signature": "gTynrjgOpvdzfWdVMRddP2Ksv8k=",
-		"headerRegExps": [ "^(?i)(company|company.name)$" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": "^(?i)(company|company.name)$", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 		"regExpReturned": "[-/()',& \\.\\p{IsAlphabetic}\\d]*",
 		"isRegExpComplete": false,
 		"baseType": "STRING",
-		"validLocales": [ "en" ],
 		"priority": 211
 	},
 	{
 		"qualifier": "CREDIT_CARD_TYPE",
 		"description": "Type of Credit CARD - e.g. AMEX, VISA, ...",
 		"signature": "QzgdMpiIKP3sFI8FS6u3taAuRK4=",
-		"headerRegExps": [ ".*(?i)(credit|card).*", ".*(?i)(type).*" ],
-		"headerRegExpConfidence": [ 90, 70 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(credit|card).*", "confidence": 90 }, { "regExp": ".*(?i)(credit|card).*", "confidence": 70 } ] }
+		],
 		"content": "/reference/CCType.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{Alpha}]+",
@@ -905,12 +979,12 @@
 		"qualifier": "SSN",
 		"description": "Social Security Number (US)",
 		"signature": "SaJgghJaa44guUQ5oMO6woNkWac=",
-		"headerRegExps": [ ".*(?i)(SSN).*", ".*(?i)(Social).*" ],
-		"headerRegExpConfidence": [ 90, 70 ],
+		"validLocales": [
+			{ "localeTag": "en-US", "headerRegExps": [ { "regExp": ".*(?i)(SSN).*", "confidence": 90 }, { "regExp": ".*(?i)(Social).*", "confidence": 70 } ] }
+		],
 		"regExpsToMatch": [ "\\d{3}-\\d{2}-\\d{4}" ],
 		"regExpReturned": "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}",
 		"isRegExpComplete": false,
-		"validLocales": [ "en-US" ],
 		"threshold": 98,
 		"baseType": "STRING",
 		"priority": 230
@@ -918,22 +992,22 @@
 	{
 		"qualifier": "IDENTITY.SSN_FR",
 		"description": "Social Security Number (France)",
-		"clazz": "com.cobber.fta.plugins.identity.SSN_FR",
 		"signature": "XfMSrETk0IIuromCYEfRy+k212s=",
-		"validLocales": [ "fr-FR" ],
-		"headerRegExps": [ ".*(?i)(SSN)" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag": "fr-FR", "headerRegExps": [ { "regExp": ".*(?i)(SSN)", "confidence": 95 } ] }
+		],
+		"clazz": "com.cobber.fta.plugins.identity.SSN_FR",
 		"threshold": 98,
 		"priority": 231
 	},
 	{
 		"qualifier": "IDENTITY.INDIVIDUAL_NUMBER_JA",
 		"description": "Individual Number / My Number (Japan)",
-		"clazz": "com.cobber.fta.plugins.identity.IN_JA",
 		"signature": "E4/GpH4/SwmWNCLlNswUgL6qWBU=",
-		"validLocales": [ "ja" ],
-		"headerRegExps": [ ".*(?i)(Individual Number|My Number|個人番号|マイナンバー|kojin bangō|mai nambā)" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag": "ja", "headerRegExps": [ { "regExp": ".*(?i)(Individual Number|My Number|個人番号|マイナンバー|kojin bangō|mai nambā)", "confidence": 95 } ] }
+		],
+		"clazz": "com.cobber.fta.plugins.identity.IN_JA",
 		"threshold": 98,
 		"priority": 232
 	},
@@ -942,20 +1016,22 @@
 		"description": "AVH Number / SSN (Switzerland)",
 		"clazz": "com.cobber.fta.plugins.identity.SSN_CH",
 		"signature": "JuS68p5mp6n2dvAxNDEuS7S4f9U=",
-		"validLocales": [ "de-CH", "fr-CH" ,"it-CH" ],
-		"headerRegExps": [ ".*(?i)(AVH|SSN|Sozialversicherungsnummer)" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag": "de-CH", "headerRegExps": [ { "regExp": ".*(?i)(AVH|SSN|Sozialversicherungsnummer)", "confidence": 95 } ] },
+			{ "localeTag": "fr-CH", "headerRegExps": [ { "regExp": ".*(?i)(AVH|SSN|Sozialversicherungsnummer)", "confidence": 95 } ] },
+			{ "localeTag": "it-CH", "headerRegExps": [ { "regExp": ".*(?i)(AVH|SSN|Sozialversicherungsnummer)", "confidence": 95 } ] }
+		],
 		"threshold": 98,
 		"priority": 233
 	},
 	{
 		"qualifier": "IDENTITY.AADHAR_IN",
 		"description": "Aadhar (India)",
-		"clazz": "com.cobber.fta.plugins.identity.Aadhar_IN",
 		"signature": "Wlco1SWZzWRzZSrYkb7kcQF3O/E=",
-		"validLocales": [ "en-IN" ],
-		"headerRegExps": [ ".*(?i)(Aadhar)" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag": "en-IN", "headerRegExps": [ { "regExp": ".*(?i)(Aadhar)", "confidence": 95 } ] }
+		],
+		"clazz": "com.cobber.fta.plugins.identity.Aadhar_IN",
 		"threshold": 98,
 		"priority": 234
 	},
@@ -964,9 +1040,10 @@
 		"description": "NHS (UK)",
 		"clazz": "com.cobber.fta.plugins.identity.NHS_UK",
 		"signature": "CftIkR8ZKJb0EsTdGaP4WzBW4/c=",
-		"validLocales": [ "en-GB", "en-UK" ],
-		"headerRegExps": [ ".*(?i)(NHS)" ],
-		"headerRegExpConfidence": [ 95 ],
+		"validLocales": [
+			{ "localeTag": "en-GB", "headerRegExps": [ { "regExp": ".*(?i)(NHS)", "confidence": 95 } ] },
+			{ "localeTag": "en-UK", "headerRegExps": [ { "regExp": ".*(?i)(NHS)", "confidence": 95 } ] }
+		],
 		"threshold": 98,
 		"priority": 235
 	},
@@ -974,8 +1051,9 @@
 		"qualifier": "IDENTITY.DUNS",
 		"description": "Data Universal Numbering System (Dun & Bradstreet)",
 		"signature": "DMFnAAIxAV3SYWq07h/9U2S8IVo=",
-		"headerRegExps": [ ".*(DUNS|D-U-N-S).*" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(DUNS|D-U-N-S).*", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ "\\d{9}" ],
 		"regExpReturned": "\\d{9}",
 		"isRegExpComplete": false,
@@ -986,8 +1064,9 @@
 		"qualifier": "LANGUAGE.ISO-639-2",
 		"description": "Language code - ISO 639, two character",
 		"signature": "oh7DsTF4qDUm+o+JPy7jAIoU+1Y=",
-		"headerRegExps": [ ".*(?i)(language).*",  ".*(?i)(lang).*" ],
-		"headerRegExpConfidence": [ 90, 60 ],
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(language).*", "confidence": 90 }, { "regExp": ".*(?i)(lang).*", "confidence": 60 } ] }
+		],
 		"content": "/reference/ISO-639-2.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
@@ -997,10 +1076,10 @@
 		"qualifier": "LANGUAGE.TEXT_EN",
 		"description": "Language name, e.g. English, French, ...",
 		"signature": "XCjtEvkiEs1eLR9wqzgkxxgosg0=",
-		"headerRegExps": [ ".*(?i)(language).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(language).*", "confidence": 90 } ] }
+		],
 		"regExpReturned": "[-' \\p{IsAlphabetic}]+",
-		"validLocales": [ "en" ],
 		"content": "/reference/en_language.csv",
 		"contentType": "resource",
 		"backout": "[\\p{Alpha}]+",
@@ -1010,8 +1089,9 @@
 		"qualifier": "MACADDRESS",
 		"description": "MAC Address",
 		"signature": "QIZNObx4ycNBImDb7esJCP1YrOs=",
-		"headerRegExps": [ ".*(?i)(MAC).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(MAC).*", "confidence": 90 } ] }
+		],
 		"regExpsToMatch": [ "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}" ],
 		"regExpReturned": "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}",
 		"isRegExpComplete": true,
@@ -1023,8 +1103,9 @@
 		"qualifier": "MONTH.DIGITS",
 		"description": "Numeric Month",
 		"signature": "dFlMU1F4av5mccH3zIeKaRe67SY=",
-		"headerRegExps": [ ".*(?i)(month)|(i?)(month).*" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(month)|(i?)(month).*", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ "\\d{1,2}" ],
 		"regExpReturned": "[1-9]|0[1-9]|1[012]",
 		"isRegExpComplete": true,
@@ -1038,8 +1119,9 @@
 		"qualifier": "DAY.DIGITS",
 		"description": "Numeric Day of Month",
 		"signature": "1C6IAjixbGXDfrkL4dEndXg65BQ=",
-		"headerRegExps": [ ".*(?i)(day|cycle).*" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(day|cycle).*", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ "\\d{1,2}" ],
 		"regExpReturned": "[1-9]|0[1-9]|[12]\\d|3[01]",
 		"isRegExpComplete": true,
@@ -1055,8 +1137,9 @@
 		"qualifier": "EPOCH.MILLISECONDS",
 		"description": "Unix Epoch (Timestamp) - milliseconds",
 		"signature": "viRZbKzQgIqtkppDhoCbAFLXEag=",
-		"headerRegExps": [ ".*(?i)(timestamp)" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(timestamp)", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ "\\d{10}" ],
 		"regExpReturned": "\\d{10}",
 		"isRegExpComplete": false,
@@ -1070,8 +1153,9 @@
 		"qualifier": "EPOCH.NANOSECONDS",
 		"description": "Unix Epoch (Timestamp) - nanoseconds",
 		"signature": "J4XCZXZ7BfO/UL8stzuwRwBHFgc=",
-		"headerRegExps": [ ".*(?i)(timestamp)" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(timestamp)", "confidence": 100 } ] }
+		],
 		"regExpsToMatch": [ "\\d{13}" ],
 		"regExpReturned": "\\d{13}",
 		"isRegExpComplete": false,
@@ -1085,6 +1169,7 @@
 		"qualifier": "CHECKDIGIT.LUHN",
 		"description": "LUHN Checkdigit (Credit Cards, IMEI, etc)",
 		"signature": "ySEbGrpJCO/yoMiVxyK5vi9sBtU=",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.CheckDigitLuhn",
 		"priority": 290
 	},
@@ -1092,6 +1177,7 @@
 		"qualifier": "CHECKDIGIT.CUSIP",
 		"description": "CUSIP - North American Security Identifiers",
 		"signature": "4EK6Y3hBd2en5Hm9EUKnVbrUjlM=",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.CheckDigitCUSIP",
 		"priority": 291
 	},
@@ -1099,6 +1185,7 @@
 		"qualifier": "CHECKDIGIT.SEDOL",
 		"description": "SEDOL - UK Security Identifiers",
 		"signature": "A6zVzMb8GxHKIRvQeHJYY2mUqV0=",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.CheckDigitSEDOL",
 		"priority": 292
 	},
@@ -1106,6 +1193,7 @@
 		"qualifier": "CHECKDIGIT.ISIN",
 		"description": "ISIN - International Securities Identification Number",
 		"signature": "ROIyMHsrinw2O/REk9ClAb0WUEs=",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.CheckDigitISIN",
 		"priority": 293
 	},
@@ -1113,6 +1201,7 @@
 		"qualifier": "CHECKDIGIT.EAN13",
 		"description": "EAN-13 - EAN-13/UPC/ISBN-13 Check digit",
 		"signature": "AP6Bjl97rR4D1ogsqPqXGoD5Dq4=",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.CheckDigitEAN13",
 		"priority": 294
 	},
@@ -1120,6 +1209,7 @@
 		"qualifier": "CHECKDIGIT.IBAN",
 		"description": "IBAN - International Bank Account Number",
 		"signature": "ahEtumk3vTi+ErbmmqrmBN7OeVU=",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.CheckDigitIBAN",
 		"priority": 295
 	},
@@ -1127,6 +1217,7 @@
 		"qualifier": "CHECKDIGIT.ABA",
 		"description": "ABA Number (or Routing Transit Number (RTN))",
 		"signature": "z/uWdWQDM6Ln80wNSIshhGV5et4=",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.CheckDigitABA",
 		"priority": 296
 	},
@@ -1134,6 +1225,7 @@
 		"qualifier": "CHECKDIGIT.ISBN",
 		"description": "ISBN-13 identifiers (with hyphens)",
 		"signature": "4ZyGddBdufT5msMx8IyO5ZJP30s=",
+		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.CheckDigitISBN",
 		"priority": 297
 	},
@@ -1141,10 +1233,10 @@
 		"qualifier": "JOB_TITLE_EN",
 		"description": "Job Title (English Language)",
 		"signature": "6IKfzTa++cfQDm7aehEqSaJ/rek=",
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(title|position).*", "confidence": 90 } ] }
+		],
 		"clazz": "com.cobber.fta.plugins.JobTitleEN",
-		"headerRegExps": [ ".*(?i)(title|position).*" ],
-		"headerRegExpConfidence": [ 90 ],
-		"validLocales": [ "en" ],
 		"threshold": 75,
 		"priority": 300
 	},
@@ -1152,24 +1244,24 @@
 		"qualifier": "INDUSTRY_EN",
 		"description": "Industry Name",
 		"signature": "j2TOVT5j9M0DIQyTrwOdB71iZdA=",
-		"headerRegExps": [ ".*(?i)(industry).*" ],
-		"headerRegExpConfidence": [ 90 ],
+		"validLocales": [
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(industry).*", "confidence": 90 } ] }
+		],
 		"content": "/reference/en_industries.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"validLocales": [ "en" ],
 		"priority": 301
 	},
 	{
 		"qualifier": "FREE_TEXT",
 		"description": "Free Text field - e.g. Description, Notes, Comments, ...",
-		"clazz": "com.cobber.fta.plugins.FreeText",
 		"signature": "7WbjWLZJ8Zdm+U8po/igrvDH3yE=",
-		"headerRegExps": [ ".*(?i)(description|notes|comments|reason).*|.*(?i)(desc)" ],
-		"headerRegExpConfidence": [ 100 ],
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comments|reason).*|.*(?i)(desc)", "confidence": 100 } ] }
+		],
+		"clazz": "com.cobber.fta.plugins.FreeText",
 		"threshold": 70,
 		"baseType": "STRING",
-		"validLocales": [ "en" ],
 		"priority": 390
 	}
 ]

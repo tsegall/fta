@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -49,7 +50,8 @@ public class PluginDefinition {
 	/** Signature (structure) - the MD5 Hash of the Qualifier and the Base Type. */
 	public String signature;
 	/** locales this plugin applies to - empty set, implies all locales.  Can use just language instead of tag, e.g. "en" rather than "en_US". */
-	public String[] validLocales;
+	public PluginLocaleEntry[] validLocales;
+
 	/** Is this plugin sensitive to the input locale? */
 	public boolean localeSensitive;
 	/** The relative priority of this plugin. */
@@ -70,10 +72,6 @@ public class PluginDefinition {
 	/** ContentType describes the supplied content and must be one of 'inline', 'file' or 'resource'. */
 	public String contentType;
 	public String backout;
-
-	/** headerRegExps An optional array of RegExps that will be compared with the datastream name to boost confidence. */
-	public String[] headerRegExps;
-	public int[] headerRegExpConfidence;
 
 	/** The required threshold to be matched (can be adjusted by presence of Hot Words. */
 	public int threshold = 95;
@@ -98,8 +96,8 @@ public class PluginDefinition {
 	}
 
 	public PluginDefinition(final String qualifier, final String description, final String regExpReturned, final String[] regExpsToMatch, final String[] invalidList,
-			final String content, final String contentType, final String backout, final String[] validLocales, final boolean localeSensitive,
-			final String[] headerRegExps, final int[] headerRegExpConfidence, final int threshold, final FTAType  baseType) {
+			final String content, final String contentType, final String backout, final PluginLocaleEntry[] validLocales, final boolean localeSensitive,
+			final int threshold, final FTAType  baseType) {
 		this.qualifier = qualifier;
 		this.description = description;
 		this.regExpReturned = regExpReturned;
@@ -110,8 +108,6 @@ public class PluginDefinition {
 		this.backout = backout;
 		this.validLocales = validLocales;
 		this.localeSensitive = localeSensitive;
-		this.headerRegExps = headerRegExps;
-		this.headerRegExpConfidence = headerRegExpConfidence;
 		this.threshold = threshold;
 		this.baseType = baseType;
 	}
@@ -140,23 +136,59 @@ public class PluginDefinition {
 		return null;
 	}
 
-	public boolean isSupported(final Locale locale) {
-		final String languageTag = locale.toLanguageTag();
-		final String language = locale.getLanguage();
-
-		// Check to see if this plugin is valid for this locale
-		if (validLocales != null && validLocales.length != 0) {
-			for (final String validLocale : validLocales) {
-				if (validLocale.indexOf('-') != -1) {
-					if (validLocale.equals(languageTag))
-						return true;
-				}
-				else if (validLocale.equals(language))
-					return true;
-			}
+	public boolean isRequiredHeaderMissing(final Locale locale, final String streamName) {
+		PluginLocaleEntry localeEntry;
+		try {
+			localeEntry = getLocaleEntry(locale);
+		} catch (FTAPluginException e) {
+			// Should never happen - since we should have bailed earlier
 			return false;
 		}
 
-		return true;
+		if (localeEntry.headerRegExps == null)
+			return false;
+
+		for (PluginLocaleHeaderEntry entry : localeEntry.headerRegExps)
+			if (entry.confidence == 100 && !entry.matches(streamName))
+					return true;
+
+		return false;
+
+	}
+
+	public PluginLocaleEntry getLocaleEntry(final Locale locale) throws FTAPluginException {
+		final String languageTag = locale.toLanguageTag();
+		final String language = locale.getLanguage();
+
+		PluginLocaleEntry wildcard = null;
+
+		if (validLocales == null)
+			throw new FTAPluginException("plugin: " + qualifier + " - validLocales cannot be null");
+
+		for (final PluginLocaleEntry validLocale : validLocales) {
+			String localeTag = validLocale.localeTag;
+			if ("*".equals(localeTag))
+				wildcard = validLocale;
+			if (localeTag.indexOf('-') != -1) {
+				if (localeTag.equals(languageTag))
+					return validLocale;
+			}
+			else if (localeTag.equals(language))
+				return validLocale;
+		}
+
+		return wildcard;
+	}
+
+	public boolean isLocaleSupported(final Locale locale) throws FTAPluginException {
+		return getLocaleEntry(locale) != null;
+	}
+
+	public String getLocaleDescription() {
+		StringBuilder ret = new StringBuilder();
+		for (int i = 0; i < validLocales.length; i++)
+			ret.append(validLocales[i].toString());
+
+		return ret.toString();
 	}
 }

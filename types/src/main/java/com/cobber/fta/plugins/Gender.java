@@ -54,7 +54,6 @@ public class Gender extends LogicalTypeFinite {
 	private GenderData genderData = null;
 
 	private static class GenderData {
-		private final String header;
 		private final String feminine;
 		private final String masculine;
 		private final String feminineShort;
@@ -64,9 +63,8 @@ public class Gender extends LogicalTypeFinite {
 		private final String womanShort;
 		private final String manShort;
 
-		GenderData(final String header, final String feminine, final String masculine, final String feminineShort, final String masculineShort,
+		GenderData(final String feminine, final String masculine, final String feminineShort, final String masculineShort,
 				final String woman, final String man, final String womanShort, final String manShort) {
-			this.header = header;
 			this.feminine = feminine;
 			this.masculine = masculine;
 			this.feminineShort = feminineShort;
@@ -80,31 +78,31 @@ public class Gender extends LogicalTypeFinite {
 
 	static {
 		// German
-		allGenderData.put("DE", new GenderData(".*(?i)(Gender|Geschlecht)", "WEIBLICH", "MÄNNLICH", "W", "M",
+		allGenderData.put("DE", new GenderData("WEIBLICH", "MÄNNLICH", "W", "M",
 				"FRAU", "MANN", "F", "M"));
 		// English
-		allGenderData.put("EN", new GenderData(".*(?i)(Gender|sex)", "FEMALE", "MALE", "F", "M",
+		allGenderData.put("EN", new GenderData("FEMALE", "MALE", "F", "M",
 				null, null, null, null));
 		// Spanish
-		allGenderData.put("ES", new GenderData(".*(?i)(Gender|Sexo)", "FEMENINO", "MASCULINO", "F", "M",
+		allGenderData.put("ES", new GenderData("FEMENINO", "MASCULINO", "F", "M",
 				"MUJERES", "HOMBRES", "M", "H"));
 		// French
-		allGenderData.put("FR", new GenderData(".*(?i)(Gender|Genre|Sexe)", "FEMME", "HOMME", "F", "H",
+		allGenderData.put("FR", new GenderData("FEMME", "HOMME", "F", "H",
 				null, null, null, null));
 		// Italian
-		allGenderData.put("IT", new GenderData(".*(?i)(Gender|genere|sesso)", "FEMMINA", "MASCHIO", "F", "M",
+		allGenderData.put("IT", new GenderData("FEMMINA", "MASCHIO", "F", "M",
 				null, null, null, null));
 		// Malaysian
-		allGenderData.put("MS", new GenderData(".*(?i)(Gender|jantina)", "PEREMPUAN", "LELAKI", "P", "L",
+		allGenderData.put("MS", new GenderData("PEREMPUAN", "LELAKI", "P", "L",
 				null, null, null, null));
 		// Dutch
-		allGenderData.put("NL", new GenderData(".*(?i)(Gender|Geslach|Geslacht)", "VROUWELIJK", "MANNELIJK", "V", "M",
+		allGenderData.put("NL", new GenderData("VROUWELIJK", "MANNELIJK", "V", "M",
 				null, null, null, null));
 		// Portuguese
-		allGenderData.put("PT", new GenderData(".*(?i)(Gender|Gênero|Sexo)", "FEMININA", "MASCULINO", "F", "M",
+		allGenderData.put("PT", new GenderData("FEMININA", "MASCULINO", "F", "M",
 				"DONA", "HOME", "D", "H"));
 		// Turkish
-		allGenderData.put("TR", new GenderData(".*(?i)(Gender)", "KADIN", "ERKEK", "K", "E",
+		allGenderData.put("TR", new GenderData("KADIN", "ERKEK", "K", "E",
 				null, null, null, null));
 
 		// Belgium covered by DE, FR, and NL
@@ -192,7 +190,7 @@ public class Gender extends LogicalTypeFinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		final boolean positiveStreamName = context.getStreamName().matches(genderData.header);
+		final boolean positiveStreamName = getHeaderConfidence(context.getStreamName()) != 0;
 
 		if (cardinality.isEmpty())
 			return new PluginAnalysis(BACKOUT_REGEX);

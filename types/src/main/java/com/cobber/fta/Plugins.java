@@ -63,16 +63,12 @@ public class Plugins {
 				if (plugin.priority < PluginDefinition.PRIORITY_EXTERNAL)
 					throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' has invalid priority, priority must be >= " + PluginDefinition.PRIORITY_EXTERNAL);
 
-			boolean register = plugin.isSupported(locale);
+			boolean register = plugin.isLocaleSupported(locale);
 
 			// Check to see if this plugin requires a mandatory hotword (and it is present)
 			if (register) {
-				if (!"*".equals(dataStreamName) && plugin.headerRegExps != null) {
-					for (int i = 0; i < plugin.headerRegExps.length && register; i++) {
-						if (plugin.headerRegExpConfidence[i] == 100 && !dataStreamName.matches(plugin.headerRegExps[i]))
-							register = false;
-					}
-				}
+				if (!"*".equals(dataStreamName) && plugin.isRequiredHeaderMissing(locale, dataStreamName))
+					register = false;
 			}
 
 			if (register)

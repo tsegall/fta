@@ -241,18 +241,16 @@ public class Driver {
 					if (options.verbose == 0) {
 						if (logical instanceof LogicalTypeFinite) {
 							final LogicalTypeFinite finite = (LogicalTypeFinite)logical;
-							logger.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d%n",
+							logger.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d",
 									logical.getQualifier(), logical.getPriority(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
 						}
 						else if (logical instanceof LogicalTypeInfinite)
-							logger.printf("\t%s (Infinite): Priority: %d%n", logical.getQualifier(), logical.getPriority());
+							logger.printf("\t%s (Infinite): Priority: %d", logical.getQualifier(), logical.getPriority());
 						else {
-							final LogicalTypeRegExp logicalRegExp = (LogicalTypeRegExp)logical;
-							logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s', HeaderRegExps: '%s'%n",
-									logical.getQualifier(), logical.getPriority(), logical.getRegExp(),
-									logicalRegExp.getHeaderRegExps() != null ? String.join("|", logicalRegExp.getHeaderRegExps()) : "None");
+							logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s'",
+									logical.getQualifier(), logical.getPriority(), logical.getRegExp());
 						}
-						logger.printf("\t\t%s%n", logical.getDescription());
+						logger.printf(", Locales: '%s'%n\t\t%s%n", logical.getPluginDefinition().getLocaleDescription(), logical.getDescription());
 					}
 					else {
 						// Used to generate the documentation

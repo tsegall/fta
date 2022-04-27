@@ -54,7 +54,7 @@ public abstract class LogicalTypeFactory {
 
 		// If the plugin is associated with a particular set of locales then use the first plausible one we find to override the default
 		if (plugin.validLocales != null && plugin.validLocales.length != 0)
-			locale = new Locale(plugin.validLocales[0]);
+			locale = new Locale(plugin.validLocales[0].localeTag);
 		else
 			locale = Locale.getDefault();
 
