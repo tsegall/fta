@@ -1,7 +1,10 @@
 
 ## Changes ##
 
-### 8.0.8
+### 8.0.10
+ - ENH: Improve date documentation to cover training as well as simple format retrieval from a single sample
+
+### 8.0.9
  - INT: Restructure plugins.json to ease localization
 
 ### 8.0.8

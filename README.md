@@ -40,7 +40,7 @@ class Trivial {
 
 ## Date Format determination ##
 
-If you are solely interested in determining the format of a date, then the following example is a good starting point:
+If you are solely interested in determining the format of a date from a **single** sample, then the following example is a good starting point:
 
 ```java
 import java.time.OffsetDateTime;
@@ -75,6 +75,39 @@ public abstract class DetermineDateFormat {
 		OffsetDateTime parsedDate = OffsetDateTime.parse(input, formatter);
 
 		System.err.printf("Format is: '%s', Date is: '%s'%n", formatString, parsedDate.toString());
+	}
+}
+```
+
+If you are interested in determining the format based on a set of inputs, then the following example is good starting point:
+
+```java
+package com.cobber.fta.examples;
+
+import java.util.Locale;
+
+import com.cobber.fta.dates.DateTimeParser;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+
+public abstract class DetermineDateFormatTrained {
+
+	public static void main(final String[] args) {
+		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.ENGLISH);
+
+		String inputs[] = { "10/1/2008", "10/2/2008", "10/3/2008", "10/4/2008", "10/5/2008", "10/10/2008" };
+
+		for (final String input : inputs)
+			dtp.train(input);
+
+		// At this stage we are not sure of the date format, since with DateResolutionMode == None we make no
+		// assumption whether it is MM/DD or DD/MM	and the format String is unbound (??/?/yyyy)
+		System.err.println(dtp.getResult().getFormatString());
+
+		dtp.train("10/15/2008");
+
+		// Once we train with another value which indicates that the Day must be the second field then the new
+		// result is correctly determined to be MM/d/yyyy
+		System.err.println(dtp.getResult().getFormatString());
 	}
 }
 ```
