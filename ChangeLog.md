@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 8.0.12
+ - ENH: Add support for Brazilian municipalities - STATE_PROVINCE.MUNICIPALITY_BR
+ - ENH: Improve gender support in Italian
+
 ### 8.0.11
  - ENH: Add serialize(), deserialize(), merge(), and apply() to DateTimeParser (+ tests)
  - ENH: Add fluid API support for config on DateTimeParser (deprecate old contructors)

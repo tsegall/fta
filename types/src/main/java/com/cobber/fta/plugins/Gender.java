@@ -91,7 +91,7 @@ public class Gender extends LogicalTypeFinite {
 				null, null, null, null));
 		// Italian
 		allGenderData.put("IT", new GenderData("FEMMINA", "MASCHIO", "F", "M",
-				null, null, null, null));
+				"FEMMINE", "MASCHI", "F", "M"));
 		// Malaysian
 		allGenderData.put("MS", new GenderData("PEREMPUAN", "LELAKI", "P", "L",
 				null, null, null, null));

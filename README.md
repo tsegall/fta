@@ -255,6 +255,7 @@ POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US
 STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-UK, en-US
 STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|pt-PT
+STATE_PROVINCE.MUNICIPALITY_BR|Brazilian Municipality|pt-BR
 STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US
 STATE_PROVINCE.STATE_NAME_&lt;Country&gt;|State Name|en-AU, pt-BR, de-DE, es-MX, en-US
 STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA, en-US, es-MX

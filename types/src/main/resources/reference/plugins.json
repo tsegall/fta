@@ -683,6 +683,18 @@
 		"priority": 137
 	},
 	{
+		"qualifier": "STATE_PROVINCE.MUNICIPALITY_BR",
+		"description": "Brazilian Municipality",
+		"signature": "+FROCExRov0I3emW4ucxNDfQvr0=",
+		"validLocales": [
+			{ "localeTag": "pt-BR", "headerRegExps": [ { "regExp": ".*(?i)(Município).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/br_municipalities.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 138
+	},
+	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
 		"description": "Currency as defined by ISO 4217",
 		"signature": "HElKonWFB+FY+MspBKm3eCwwrVo=",
@@ -692,7 +704,7 @@
 		"content": "/reference/ISO-4217.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 138
+		"priority": 160
 	},
 	{
 		"qualifier": "CURRENCY.TEXT_EN",
@@ -704,7 +716,7 @@
 		"content": "/reference/en_currency_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 139
+		"priority": 161
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-3",
@@ -716,7 +728,7 @@
 		"content": "/reference/ISO-3166-3.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 140
+		"priority": 162
 	},
 	{
 		"qualifier": "COUNTRY.ISO-3166-2",
@@ -728,7 +740,7 @@
 		"content": "/reference/ISO-3166-2.csv",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 141
+		"priority": 163
 	},
 	{
 		"qualifier": "TIMEZONE.IANA",
@@ -740,7 +752,7 @@
 		"content": "/reference/timezones.csv",
 		"contentType": "resource",
 		"backout": "[-_/A-Za-z]+",
-		"priority": 142
+		"priority": 164
 	},
 	{
 		"qualifier": "CONTINENT.TEXT_EN",
@@ -752,7 +764,7 @@
 		"content": "/reference/en_continent.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 150
+		"priority": 165
 	},
 	{
 		"qualifier": "CONTINENT.CODE_EN",
@@ -764,7 +776,7 @@
 		"content": "/reference/en_continent_code.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 152
+		"priority": 166
 	},
 	{
 		"qualifier": "AIRPORT_CODE.IATA",
@@ -776,7 +788,7 @@
 		"content": "/reference/IATA.txt",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 160
+		"priority": 167
 	},
 	{
 		"qualifier": "NAME.FIRST",
