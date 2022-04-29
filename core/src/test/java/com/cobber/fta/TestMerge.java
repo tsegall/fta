@@ -19,6 +19,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.fail;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -220,7 +221,7 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void simpleStrict() throws FTAMergeException {
-		List<String> list = List.of("21/01/2022", "test string 1", "test string 2");
+		List<String> list = Arrays.asList("21/01/2022", "test string 1", "test string 2");
 		DateTimeParser dateTimeParser = new DateTimeParser().withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto).withStrictMode(true);
 		list.forEach(dateTimeParser::train);
 		assertNull(dateTimeParser.getResult());
