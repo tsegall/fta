@@ -18,6 +18,7 @@ package com.cobber.fta.dates;
 import static com.cobber.fta.dates.DateTimeParserResult.FRACTION_INDEX;
 import static com.cobber.fta.dates.DateTimeParserResult.HOUR_INDEX;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
@@ -30,9 +31,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.MinMax;
 import com.cobber.fta.core.Utils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Analyze String data to determine whether input represents a date or datetime.
@@ -63,7 +68,7 @@ public class DateTimeParser {
 	private static final String TIME_ONLY_HMM = "d:d{2}";
 	private static final String TIME_ONLY_PPHMM = " {2}d:d{2}";
 
-	/** When we have ambiguity - should we prefer to conclude day first, month first or unspecified. */
+	/** When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified. */
 	public enum DateResolutionMode {
 		/** Result returned may have unbound elements, for example ??/??/yyyy. */
 		None,
@@ -74,9 +79,6 @@ public class DateTimeParser {
 		/** Auto will choose DayFirst or MonthFirst based on the Locale. */
 		Auto
 	}
-
-	private DateResolutionMode resolutionMode = DateResolutionMode.None;
-	private Locale locale;
 
 	protected static final Set<String> timeZones = new HashSet<>();
 	private static final int[] monthDays = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -110,28 +112,60 @@ public class DateTimeParser {
 				"YEKT" ));
 	}
 
-	private final Map<String, Integer> results = new HashMap<>();
-	private int sampleCount;
-	private int nullCount;
-	private int blankCount;
-	private int invalidCount;
-
-	// lenient allows dates of the form 00/00/00 etc to be viewed as valid for the purpose of Format detection
-	private boolean lenient = true;
+	private DateTimeParserState state = new DateTimeParserState();
+	private DateTimeParserConfig config = new DateTimeParserConfig();
 
 	private static final Map<String, DateTimeFormatter> formatterCache = new HashMap<>();
 
-	public DateTimeParser(final DateResolutionMode resolutionMode) {
-		this(resolutionMode, Locale.getDefault());
-	}
-
+	/**
+	 * Construct a DateTimeParser with DateResolutionMode = None, and in the default Locale.
+	 */
 	public DateTimeParser() {
-		this(DateResolutionMode.None, Locale.getDefault());
+		config.resolutionMode = DateResolutionMode.None;
+		config.locale = Locale.getDefault();
 	}
 
+	/**
+	 * Construct a DateTimeParse with the specified DateResolutionMode.
+	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified.
+	 * @deprecated Since 8.X use the fluent API instead
+	 */
+	@Deprecated
+	public DateTimeParser(final DateResolutionMode resolutionMode) {
+		config.resolutionMode = resolutionMode;
+		config.locale = Locale.getDefault();
+	}
+
+	/**
+	 * Construct a DateTimeParse with the specified DateResolutionMode and Locale.
+	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified.
+	 * @param locale Locale the input string is in
+	 * @deprecated Since 8.X use the fluent API instead
+	 */
+	@Deprecated
 	public DateTimeParser(final DateResolutionMode resolutionMode, final Locale locale) {
-		this.resolutionMode = resolutionMode;
-		this.locale = locale;
+		config.resolutionMode = resolutionMode;
+		config.locale = locale;
+	}
+
+	/**
+	 * Set the DateResolutionMode on the Parser.
+	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified.
+	 * @return The DateTimeParser
+	 */
+	public DateTimeParser withDateResolutionMode(final DateResolutionMode resolutionMode) {
+		config.resolutionMode = resolutionMode;
+		return this;
+	}
+
+	/**
+	 * Set the Locale on the Parser.
+	 * @param locale Locale the input string is in
+	 * @return The DateTimeParser
+	 */
+	public DateTimeParser withLocale(final Locale locale) {
+		config.locale = locale;
+		return this;
 	}
 
 	/**
@@ -199,34 +233,36 @@ public class DateTimeParser {
 	}
 
 	/**
-	 * Train is the core entry point used to supply input to the DateTimeParser.
+	 * train() is the core entry point used to supply input to the DateTimeParser.
 	 * @param input The String representing a date with possible surrounding whitespace.
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public String train(final String input) {
-		sampleCount++;
+		state.sampleCount++;
 
 		if (input == null) {
-			nullCount++;
-			return null;
-		}
-
-		if (input.length() == 0) {
-			blankCount++;
+			state.nullCount++;
 			return null;
 		}
 
 		final String trimmed = input.trim();
-		final String ret = determineFormatString(trimmed, DateResolutionMode.None);
-		if (ret == null) {
-			invalidCount++;
+
+		if (trimmed.length() == 0) {
+			state.blankCount++;
 			return null;
 		}
-		final Integer seen = results.get(ret);
+
+		// We determine the format using no resolution mode - so as not to bias the training
+		final String ret = determineFormatString(trimmed, DateResolutionMode.None);
+		if (ret == null) {
+			state.invalidCount++;
+			return null;
+		}
+		final Integer seen = state.results.get(ret);
 		if (seen == null)
-			results.put(ret, 1);
+			state.results.put(ret, 1);
 		else
-			results.put(ret, seen + 1);
+			state.results.put(ret, seen + 1);
 
 		return ret;
 	}
@@ -238,30 +274,29 @@ public class DateTimeParser {
 	 */
 	public DateTimeParserResult getResult() {
 		// If we have no good samples, call it a day
-		if (sampleCount == nullCount + blankCount + invalidCount)
+		if (state.sampleCount == state.nullCount + state.blankCount + state.invalidCount)
 			return null;
 
 		DateTimeParserResult answerResult = null;
 		StringBuilder answerBuffer = null;
 
 		// If there is only one result then it must be correct :-)
-		if (results.size() == 1) {
-			answerResult = DateTimeParserResult.asResult(results.keySet().iterator().next(), resolutionMode, locale);
+		if (state.results.size() == 1) {
+			answerResult = DateTimeParserResult.asResult(state.results.keySet().iterator().next(), config.resolutionMode, config.locale);
 			// If we are fully bound then we are done!
-			if (!answerResult.isDateUnbound() || resolutionMode == DateResolutionMode.None)
+			if (!answerResult.isDateUnbound() || config.resolutionMode == DateResolutionMode.None)
 				return answerResult;
 			answerResult = DateTimeParserResult.newInstance(answerResult);
 			answerBuffer = new StringBuilder(answerResult.getFormatString());
 		}
 		else {
-
 			// Sort the results of our training by value so that we consider the most frequent first
-			final Map<String, Integer> byValue = Utils.sortByValue(results);
+			final Map<String, Integer> byValue = Utils.sortByValue(state.results);
 
 			// Iterate through all the results of our training, merging them to produce our best guess
 			for (final Map.Entry<String, Integer> entry : byValue.entrySet()) {
 				final String key = entry.getKey();
-				final DateTimeParserResult result = DateTimeParserResult.asResult(key, resolutionMode, locale);
+				final DateTimeParserResult result = DateTimeParserResult.asResult(key, config.resolutionMode, config.locale);
 
 				// First entry
 				if (answerBuffer == null) {
@@ -351,7 +386,8 @@ public class DateTimeParser {
 						answerResult.dateTimeSeparator = result.dateTimeSeparator;
 
 					// If the result we are looking at has the same format as the current answer then merge lengths
-					if (answerResult.yearOffset == result.yearOffset && answerResult.monthOffset == result.monthOffset)
+					if (answerResult.yearOffset == result.yearOffset &&
+							(answerResult.monthOffset == result.monthOffset || result.monthOffset == -1))
 						for (int i = 0; i < result.dateFieldLengths.length; i++) {
 							if (answerResult.dateFieldLengths[i] == -1 && result.dateFieldLengths[i] != -1)
 								answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
@@ -369,7 +405,7 @@ public class DateTimeParser {
 								String replacement;
 								if ("MMM".equals(was))
 									replacement = "MMMM";
-								else if ("??".equals(was) || "HH".equals(was) || "hh".equals(was) || "dd".equals(was)) {
+								else if ("??".equals(was) || "HH".equals(was) || "hh".equals(was) || "dd".equals(was) || "MM".equals(was)) {
 									replacement = result.dateFieldPad[i] != 0 ? "pp" : "";
 									replacement += was.charAt(0);
 								}
@@ -388,7 +424,7 @@ public class DateTimeParser {
 		}
 
 		// If we are supposed to be fully bound and still have some ambiguities then fix them based on the mode
-		if (answerResult.isDateUnbound() && resolutionMode != DateResolutionMode.None)
+		if (answerResult.isDateUnbound() && config.resolutionMode != DateResolutionMode.None)
 			if (answerResult.monthOffset != -1) {
 				int start = answerResult.dateFieldOffsets[0];
 				answerBuffer.replace(start, start + answerResult.dateFieldLengths[0], Utils.repeat('d', answerResult.dateFieldLengths[0]));
@@ -396,8 +432,8 @@ public class DateTimeParser {
 				answerBuffer.replace(start, start + answerResult.dateFieldLengths[2], Utils.repeat('y', answerResult.dateFieldLengths[2]));
 			}
 			else {
-					final char firstField = resolutionMode == DateResolutionMode.DayFirst ? 'd' : 'M';
-					final char secondField = resolutionMode == DateResolutionMode.DayFirst ? 'M' : 'd';
+					final char firstField = config.resolutionMode == DateResolutionMode.DayFirst ? 'd' : 'M';
+					final char secondField = config.resolutionMode == DateResolutionMode.DayFirst ? 'M' : 'd';
 					final int idx = answerResult.yearOffset == 0 ? 1 : 0;
 					int start = answerResult.dateFieldOffsets[idx];
 					answerBuffer.replace(start, start + answerResult.dateFieldLengths[idx], Utils.repeat(firstField, answerResult.dateFieldLengths[idx]));
@@ -413,7 +449,7 @@ public class DateTimeParser {
 	}
 
 	private boolean plausibleDate(final int[] dateValues, final int[] dateDigits, final int[] fieldOffsets) {
-		return plausibleDateCore(lenient, dateValues[fieldOffsets[0]], dateValues[fieldOffsets[1]],
+		return plausibleDateCore(config.lenient, dateValues[fieldOffsets[0]], dateValues[fieldOffsets[1]],
 				dateValues[fieldOffsets[2]], dateDigits[fieldOffsets[2]]);
 	}
 
@@ -462,14 +498,14 @@ public class DateTimeParser {
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public String determineFormatString(final String input) {
-		return determineFormatString(input,  resolutionMode);
+		return determineFormatString(input,  config.resolutionMode);
 	}
 
 	/**
 	 * Determine a FormatString from an input string that may represent a Date, Time,
 	 * DateTime, OffsetDateTime or a ZonedDateTime.
 	 * @param input The String representing a date with optional leading/trailing whitespace
-	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
+	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified.
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public String determineFormatString(final String input, final DateResolutionMode resolutionMode) {
@@ -495,7 +531,7 @@ public class DateTimeParser {
 		if (trimmed.indexOf('¶') != -1)
 			return null;
 
-		final SimpleDateMatcher matcher = new SimpleDateMatcher(trimmed, locale);
+		final SimpleDateMatcher matcher = new SimpleDateMatcher(trimmed, config.locale);
 
 		// Initial pass is a simple match against a set of known patterns
 		if (passOne(matcher) != null)
@@ -511,7 +547,7 @@ public class DateTimeParser {
 		if (attempt != null)
 			return attempt;
 
-		if ("ja".equals(locale.getLanguage()) || "cn".equals(locale.getLanguage()))
+		if ("ja".equals(config.locale.getLanguage()) || "cn".equals(config.locale.getLanguage()))
 			return passJaCn(trimmed, matcher, resolutionMode);
 
 		// Third and final pass is brute force by elimination
@@ -547,7 +583,7 @@ public class DateTimeParser {
 		String input = trimmed;
 		// Only hunt for AM/PM strings if we have seen the Hours character
 		if (hourIndex != -1)
-			for (final String s : LocaleInfo.getAMPMStrings(locale)) {
+			for (final String s : LocaleInfo.getAMPMStrings(config.locale)) {
 				final int find = trimmed.indexOf(s);
 				if (find != -1)
 					input = Utils.replaceAt(trimmed, find, s.length(), "a");
@@ -602,7 +638,7 @@ public class DateTimeParser {
 		result = result.reverse();
 
 		// So we think we have nailed it - but it only counts if it happily passes a validity check
-		final DateTimeParserResult dtp = DateTimeParserResult.asResult(result.toString(), resolutionMode, locale);
+		final DateTimeParserResult dtp = DateTimeParserResult.asResult(result.toString(), resolutionMode, config.locale);
 
 		return (dtp != null && dtp.isValid(trimmed)) ? result.toString() : null;
 	}
@@ -636,7 +672,7 @@ public class DateTimeParser {
 	 * This is core 'intuitive' pass where we hunt in some logical fashion for something that looks like a date/time.
 	 *
 	 * @param trimmed The input we are scouring for a date/datetime/time
-	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
+	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified.
 	 * @return a DateTimeFormatter pattern.
 	 */
 	private String passTwo(final String trimmed, final DateResolutionMode resolutionMode) {
@@ -729,7 +765,7 @@ public class DateTimeParser {
 
 					i++;
 
-					final String offset = SimpleDateMatcher.compress(trimmed.substring(i, len), locale);
+					final String offset = SimpleDateMatcher.compress(trimmed.substring(i, len), config.locale);
 
 					// Expecting DD:DD:DD or DDDDDD or DD:DD or DDDD or DD
 					if (i + 8 <= len && TIME_ONLY_HHMMSS.equals(offset)) {
@@ -880,9 +916,9 @@ public class DateTimeParser {
 					return null;
 
 				if (timeSeen) {
-					final String rest = trimmed.substring(i).toUpperCase(locale);
+					final String rest = trimmed.substring(i).toUpperCase(config.locale);
 					boolean ampmDetected = false;
-					for (final String s : LocaleInfo.getAMPMStrings(locale)) {
+					for (final String s : LocaleInfo.getAMPMStrings(config.locale)) {
 						if (rest.startsWith(s)) {
 							amPmIndicator = trimmed.charAt(i - 1) == ' ' ? " a" : "a";
 							i += s.length();
@@ -999,7 +1035,7 @@ public class DateTimeParser {
 			// If we don't have two date components then it is invalid
 			if (dateComponent == 1)
 				return null;
-			final boolean freePass = lenient && dateValue[0] == 0 && dateValue[1] == 0 && dateValue[2] == 0;
+			final boolean freePass = config.lenient && dateValue[0] == 0 && dateValue[1] == 0 && dateValue[2] == 0;
 			if ((!freePass && dateValue[1] == 0) || dateValue[1] > 31)
 				return null;
 			if (yearInDateFirst) {
@@ -1091,7 +1127,7 @@ public class DateTimeParser {
 	 *
 	 * @param trimmed The input we are scouring for a date/datetime/time
 	 * @param matcher The previously computed matcher which provides both the compressed form of the input as well as a component count
-	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first or unspecified
+	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified.
 	 * @return a DateTimeFormatter pattern.
 	 */
 	private String passThree(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
@@ -1275,13 +1311,75 @@ public class DateTimeParser {
 			compressed = compressed.replaceAll("'", "''");
 
 		// So we think we have nailed it - but it only counts if it happily passes a validity check
-		final DateTimeParserResult dtp = DateTimeParserResult.asResult(compressed, resolutionMode, locale);
+		final DateTimeParserResult dtp = DateTimeParserResult.asResult(compressed, resolutionMode, config.locale);
 
 		return (dtp != null && dtp.isValid(trimmed)) ? compressed : null;
 	}
 
 	private boolean matchAtEnd(final String input, final String toMatch) {
 		return input.endsWith(toMatch) || input.endsWith(toMatch + 'a') || input.endsWith(toMatch + " a");
+	}
+
+	public DateTimeParser apply(String input) {
+	    train(input);
+	    return this;
+	}
+
+	/**
+	 * Merge a DateTimeParser with another DateTimeParser.
+	 * Note: You cannot merge unless the Configurations are equal.
+	 * @param other The other DateTimeParser to be merged
+	 * @return A merged DateTimeParser.
+	 * @throws FTAMergeException If the merge is impossible.
+	 */
+	public DateTimeParser merge(DateTimeParser other) throws FTAMergeException {
+		if (this == other)
+			throw new FTAMergeException("Cannot merge with myself!");
+
+		if (!this.config.equals(other.config))
+			throw new FTAMergeException("Cannot merge Parsers with differing configurations!");
+		state.merge(other.state);
+	    return this;
+	}
+
+	/**
+	 * Serialize a DateTimeParser - commonly used in concert with {@link #deserialize(String)} and {@link #merge(DateTimeParser)}
+	 * to merge DateTimeParsers run on separate shards into a single DateTimeParser.
+	 * @return A Serialized version of this DateTimeParser which can be hydrated via deserialize().
+	 * @throws FTAMergeException When we fail to serialize the parser.
+	 */
+	public String serialize() throws FTAMergeException {
+		final ObjectMapper mapper = new ObjectMapper();
+
+		DateTimeParserWrapper wrapper = new DateTimeParserWrapper(config, state);
+		try {
+			return mapper.writeValueAsString(mapper.convertValue(wrapper, JsonNode.class));
+		} catch (IOException e) {
+			throw new FTAMergeException("Cannot output JSON for the Parser", e);
+		}
+	}
+
+	/**
+	 * Create a new DateTimeParser from a serialized representation - used in concert with {@link #serialize()} and {@link #merge(DateTimeParser)}
+	 * to merge DateTimeParsers run on separate shards into a single DateTimeParser.
+	 * @param serialized The serialized form of a DateTimeParser.
+	 * @return A new DateTimeParser which can be merged with another DateTimeParser to product a single result.
+	 * @throws FTAMergeException When we fail to de-serialize the provided serialized form.
+	 */
+	public static DateTimeParser deserialize(String serialized) throws FTAMergeException {
+		final ObjectMapper mapper = new ObjectMapper();
+		DateTimeParser ret = null;
+
+		try {
+			DateTimeParserWrapper wrapper = mapper.readValue(serialized, DateTimeParserWrapper.class);
+			ret = new DateTimeParser();
+			ret.config = wrapper.config;
+			ret.state = wrapper.state;
+
+			return ret;
+		} catch (JsonProcessingException e) {
+			throw new FTAMergeException("Issue deserializing supplied JSON.", e);
+		}
 	}
 }
 

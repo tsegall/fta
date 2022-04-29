@@ -1094,7 +1094,7 @@ public class TextAnalyzer {
 			context.setDateResolutionMode(dayIndex < monthIndex ? DateResolutionMode.DayFirst : DateResolutionMode.MonthFirst);
 		}
 
-		dateTimeParser = new DateTimeParser(context.getDateResolutionMode(), locale);
+		dateTimeParser = new DateTimeParser().withDateResolutionMode(context.getDateResolutionMode()).withLocale(locale);
 
 		// If no trace options already set then pick them up from the environment (if set)
 		if (analysisConfig.getTraceOptions() == null) {
@@ -1711,7 +1711,7 @@ public class TextAnalyzer {
 				// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
 				// if there happens to be an issue then we swallow it and will not detect the date/datetime.
 				try {
-					final DateTimeParser det = new DateTimeParser(context.getDateResolutionMode(), locale);
+					final DateTimeParser det = new DateTimeParser().withDateResolutionMode(context.getDateResolutionMode()).withLocale(locale);
 					for (final String sample : raw)
 						det.train(sample);
 
@@ -2884,7 +2884,7 @@ public class TextAnalyzer {
 		try {
 			return mapper.writeValueAsString(mapper.convertValue(wrapper, JsonNode.class));
 		} catch (IOException e) {
-			throw new TraceException("Cannot output JSON for the Analysis", e);
+			throw new InternalErrorException("Cannot output JSON for the Analysis", e);
 		}
 	}
 

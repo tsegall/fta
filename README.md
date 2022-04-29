@@ -53,7 +53,7 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 public abstract class DetermineDateFormat {
 
 	public static void main(final String[] args) {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.MonthFirst, Locale.ENGLISH);
+		final DateTimeParser dtp = new DateTimeParser().withDateResolutionMode(DateResolutionMode.MonthFirst).withLocale(Locale.ENGLISH);
 
 		// Determine the DataTimeFormatter for the following examples
 		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("26 July 2012"));
@@ -82,8 +82,8 @@ public abstract class DetermineDateFormat {
 If you are interested in determining the format based on a set of inputs, then the following example is good starting point:
 
 ```java
-package com.cobber.fta.examples;
-
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import com.cobber.fta.dates.DateTimeParser;
@@ -92,21 +92,24 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 public abstract class DetermineDateFormatTrained {
 
 	public static void main(final String[] args) {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.None, Locale.ENGLISH);
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.ENGLISH);
 
-		String inputs[] = { "10/1/2008", "10/2/2008", "10/3/2008", "10/4/2008", "10/5/2008", "10/10/2008" };
+		final List<String> inputs = Arrays.asList( "10/1/2008", "10/2/2008", "10/3/2008", "10/4/2008", "10/5/2008", "10/10/2008" );
 
-		for (final String input : inputs)
-			dtp.train(input);
+		inputs.forEach(dtp::train);
 
-		// At this stage we are not sure of the date format, since with DateResolutionMode == None we make no
-		// assumption whether it is MM/DD or DD/MM	and the format String is unbound (??/?/yyyy)
+		// At this stage we are not sure of the date format, since with 'DateResolutionMode == None' we make no
+		// assumption whether it is MM/DD or DD/MM and the format String is unbound (??/?/yyyy)
 		System.err.println(dtp.getResult().getFormatString());
-
-		dtp.train("10/15/2008");
 
 		// Once we train with another value which indicates that the Day must be the second field then the new
 		// result is correctly determined to be MM/d/yyyy
+		dtp.train("10/15/2008");
+		System.err.println(dtp.getResult().getFormatString());
+
+		// Once we train with another value which indicates that the Month is expressed using one or two digits the
+		// result is correctly determined to be M/d/yyyy
+		dtp.train("3/15/2008");
 		System.err.println(dtp.getResult().getFormatString());
 	}
 }

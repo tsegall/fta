@@ -25,7 +25,7 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 public abstract class DetermineDateFormat {
 
 	public static void main(final String[] args) {
-		final DateTimeParser dtp = new DateTimeParser(DateResolutionMode.MonthFirst, Locale.ENGLISH);
+		final DateTimeParser dtp = new DateTimeParser().withDateResolutionMode(DateResolutionMode.MonthFirst).withLocale(Locale.ENGLISH);
 
 		// Determine the DataTimeFormatter for the following examples
 		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("26 July 2012"));

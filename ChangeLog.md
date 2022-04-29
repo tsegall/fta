@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 8.0.11
+ - ENH: Add serialize(), deserialize(), merge(), and apply() to DateTimeParser (+ tests)
+ - ENH: Add fluid API support for config on DateTimeParser (deprecate old contructors)
+ - BUG: Minor changes to improve DateTimeParser determination
+
 ### 8.0.10
  - ENH: Improve date documentation to cover training as well as simple format retrieval from a single sample
 

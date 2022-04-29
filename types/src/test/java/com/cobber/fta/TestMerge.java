@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -625,37 +626,35 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void simpleLocalDateTimeMerge() throws IOException, FTAException {
-		final String[] inputsOne = {
+		final List<String> inputsOne = Arrays.asList(
 			"2004-01-01T00:00:00", "2004-01-01T02:00:00", "2006-01-01T00:00:00", "2004-01-01T02:00:00",
 			"2006-01-01T13:00:00", "2004-01-01T00:00:00", "2006-01-01T13:00:00", "2006-01-01T00:00:00",
 			"2004-01-01T00:00:00", "2004-01-01T00:00:00", "2004-01-01T00:00:00", "2004-01-01T00:00:00",
 			"2004-01-01T00:00:00", "2008-01-01T13:00:00", "2008-01-01T13:00:00", "2010-01-01T00:00:00",
 			"2004-01-01T02:00:00", "2008-01-01T00:00:00"
-		};
-		final String[] inputsTwo = {
+		);
+		final List<String> inputsTwo = Arrays.asList(
 				"1994-01-01T00:00:00", "1994-01-01T02:00:00", "1996-01-01T00:00:00", "1994-01-01T02:00:00",
 				"1996-01-01T13:00:00", "1994-01-01T00:00:00", "1996-01-01T13:00:00", "1996-01-01T00:00:00",
 				"1994-01-01T00:00:00", "1994-01-01T00:00:00", "1994-01-01T00:00:00", "1994-01-01T00:00:00",
 				"1994-01-01T00:00:00", "1998-01-01T13:00:00", "1998-01-01T13:00:00", "1990-01-01T00:00:00",
 				"1994-01-01T02:00:00", "1998-01-01T00:00:00"
-		};
+		);
 
 		final List<String> samplesOne = new ArrayList<>();
-		for (final String sample : inputsOne)
-			samplesOne.add(sample);
+		samplesOne.addAll(inputsOne);
 		samplesOne.add(" ");
 		samplesOne.add(null);
 
 		final List<String> samplesTwo = new ArrayList<>();
-		for (final String sample : inputsTwo)
-			samplesTwo.add(sample);
+		samplesTwo.addAll(inputsTwo);
 		samplesTwo.add(null);
 		samplesTwo.add(null);
 
 		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localdatetime_localdatetime", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
-		assertEquals(mergedResult.getSampleCount(), inputsOne.length + inputsTwo.length + 4);
+		assertEquals(mergedResult.getSampleCount(), inputsOne.size() + inputsTwo.size() + 4);
 		assertEquals(mergedResult.getNullCount(), 3);
 		assertEquals(mergedResult.getBlankCount(), 1);
 		assertEquals(mergedResult.getType(), FTAType.LOCALDATETIME);
@@ -666,30 +665,28 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void simpleOffsetDateTimeMerge() throws IOException, FTAException {
-		final String[] inputsOne = {
+		final List<String> inputsOne = Arrays.asList(
 				"2010-07-01T22:20:22.400Z", "2015-03-01T22:20:21.000Z", "2015-07-01T22:20:22.300Z", "2015-07-01T12:20:32.000Z",
 				"2015-07-01T22:20:22.100Z", "2011-02-01T02:20:22.000Z", "2015-07-01T22:30:22.000Z", "2015-07-01T22:20:22.010Z",
 				"2012-01-01T22:20:22.000Z", "2015-07-01T22:40:22.000Z", "2015-07-01T22:20:22.000Z", "2015-07-01T22:20:22.200Z",
 				"2015-07-01T22:20:22.000Z", "2014-08-01T12:10:22.000Z", "2015-06-01T22:20:22.010Z", "2015-07-01T22:20:22.000Z",
-				"2017-07-01T02:20:22.000Z", "2018-06-01T08:20:22.000Z",
-		};
-		final String[] inputsTwo = {
+				"2017-07-01T02:20:22.000Z", "2018-06-01T08:20:22.000Z"
+		);
+		final List<String> inputsTwo = Arrays.asList(
 				"1994-01-01T00:00:00.400Z", "1994-01-01T02:00:00.400Z", "1996-01-01T00:00:00.400Z", "1994-01-01T02:00:00.400Z",
 				"1996-01-01T13:00:00.400Z", "1994-01-01T00:00:00.400Z", "1996-01-01T13:00:00.400Z", "1996-01-01T00:00:00.400Z",
 				"1994-01-01T00:00:00.400Z", "1994-01-01T00:00:00.400Z", "1994-01-01T00:00:00.400Z", "1994-01-01T00:00:00.400Z",
 				"1994-01-01T00:00:00.400Z", "1998-01-01T13:00:00.400Z", "1998-01-01T13:00:00.400Z", "1990-01-01T00:00:00.400Z",
 				"1994-01-01T02:00:00.400Z", "1998-01-01T00:00:00.400Z"
-		};
+		);
 
 		final List<String> samplesOne = new ArrayList<>();
-		for (final String sample : inputsOne)
-			samplesOne.add(sample);
+		samplesOne.addAll(inputsOne);
 		samplesOne.add(" ");
 		samplesOne.add(null);
 
 		final List<String> samplesTwo = new ArrayList<>();
-		for (final String sample : inputsTwo)
-			samplesTwo.add(sample);
+		samplesTwo.addAll(inputsTwo);
 		samplesTwo.add(null);
 		samplesTwo.add(null);
 
@@ -698,11 +695,11 @@ public class TestMerge {
 
 		assertEquals(mergedResult.getType(), FTAType.OFFSETDATETIME);
 		assertEquals(mergedResult.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss.SSSX");
-		assertEquals(mergedResult.getSampleCount(), inputsOne.length + inputsTwo.length + 4);
+		assertEquals(mergedResult.getSampleCount(), inputsOne.size() + inputsTwo.size() + 4);
 		assertEquals(mergedResult.getNullCount(), 3);
 		assertEquals(mergedResult.getBlankCount(), 1);
 		assertEquals(mergedResult.getRegExp(), "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}([-+][0-9]{2}([0-9]{2})?|Z)");
-		assertEquals(mergedResult.getMatchCount(), inputsOne.length + inputsTwo.length);
+		assertEquals(mergedResult.getMatchCount(), inputsOne.size() + inputsTwo.size());
 		assertEquals(mergedResult.getConfidence(), 1.0);
 	}
 
@@ -713,7 +710,7 @@ public class TestMerge {
 	 */
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void simpleLocalTimeMerge() throws IOException, FTAException {
-		final String[] inputsOne = {
+		final List<String>  inputsOne = Arrays.asList(
 				"1:01:50.00", "2:01:16.00", "2:01:30.00", "2:01:55.00", "5:01:49.00",
 				"9:01:51.00", "11:01:20.0", "11:01:47.0", "12:01:16.0", "12:01:55.0",
 				"14:01:21.0", "14:01:25.0", "14:01:43.0", "15:01:03.0", "15:01:39.0",
@@ -721,12 +718,11 @@ public class TestMerge {
 				"21:01:27.0", "22:01:15.0", "22:01:32.0", "11:01:58.0", "13:01:31.0",
 				"16:01:24.0", "16:01:58.0", "17:01:05.0", "11:01:38.0", "11:01:44.0",
 				"13:01:41.0", "14:01:14.0", "14:01:59.0", "14:01:59.0", "14:01:59.0",
-				"15:01:04.0", "15:01:11.0", "15:01:54.0",
-		};
+				"15:01:04.0", "15:01:11.0", "15:01:54.0"
+		);
 
 		final List<String> samplesOne = new ArrayList<>();
-		for (final String sample : inputsOne)
-			samplesOne.add(sample);
+		samplesOne.addAll(inputsOne);
 
 		final List<String> samplesTwo = new ArrayList<>();
 		samplesTwo.add(null);
@@ -735,8 +731,8 @@ public class TestMerge {
 		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localtime_localtime", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
-		assertEquals(mergedResult.getSampleCount(), inputsOne.length + 2);
-		assertEquals(mergedResult.getMatchCount(), inputsOne.length);
+		assertEquals(mergedResult.getSampleCount(), inputsOne.size() + 2);
+		assertEquals(mergedResult.getMatchCount(), inputsOne.size());
 		assertEquals(mergedResult.getNullCount(), 2);
 		assertEquals(mergedResult.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}");
 		assertEquals(mergedResult.getConfidence(), 1.0);

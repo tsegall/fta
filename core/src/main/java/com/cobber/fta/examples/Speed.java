@@ -35,7 +35,7 @@ public abstract class Speed {
 		DateTimeParserResult result = dtp.getResult();
 
 		// Use the FTA date parser to validate dates
-		// Note: this is ~10x faster than the Java parser, however you do not get any object back
+		// Note: this is ~10x faster than the Java parser, **however** you do not get any object back
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < ITERATIONS; i++)
 			result.parse(value);
