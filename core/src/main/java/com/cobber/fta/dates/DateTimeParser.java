@@ -21,6 +21,7 @@ import static com.cobber.fta.dates.DateTimeParserResult.HOUR_INDEX;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.Collections;
@@ -169,6 +170,16 @@ public class DateTimeParser {
 	}
 
 	/**
+	 * Set Strict mode on the Parser - if set, any input to train() that would not pass the current 'best' guess will return null.
+	 * @param strict The new value for Strict mode
+	 * @return The DateTimeParser
+	 */
+	public DateTimeParser withStrictMode(final boolean strict) {
+		config.strictMode = strict;
+		return this;
+	}
+
+	/**
 	 * Given an input string with a DateTimeFormatter pattern return a suitable DateTimeFormatter.
 	 * This is very similar to DateTimeFormatter.ofPattern(), however, there are a set of key differences:
 	 *  - This will cache the Formatters
@@ -238,6 +249,9 @@ public class DateTimeParser {
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public String train(final String input) {
+		if (config.strictMode && state.invalidCount != 0)
+			return null;
+
 		state.sampleCount++;
 
 		if (input == null) {
@@ -264,6 +278,21 @@ public class DateTimeParser {
 		else
 			state.results.put(ret, seen + 1);
 
+		if (config.strictMode) {
+			// If we are insisting that all records are valid - then we need to check as we go that
+			// each input matches the current result.
+			if (config.strictMode) {
+				// If we cannot parse this input - then we are done!
+				try {
+					getResult().parse(input);
+				}
+				catch (DateTimeParseException e) {
+					state.invalidCount++;
+					return null;
+				}
+			}
+		}
+
 		return ret;
 	}
 
@@ -274,7 +303,7 @@ public class DateTimeParser {
 	 */
 	public DateTimeParserResult getResult() {
 		// If we have no good samples, call it a day
-		if (state.sampleCount == state.nullCount + state.blankCount + state.invalidCount)
+		if (state.sampleCount == state.nullCount + state.blankCount + state.invalidCount || (config.strictMode && state.invalidCount != 0))
 			return null;
 
 		DateTimeParserResult answerResult = null;
