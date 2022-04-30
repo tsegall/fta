@@ -22,10 +22,12 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -448,9 +450,9 @@ public class DateTimeParser {
 		return answerResult;
 	}
 
-	private boolean plausibleDate(final int[] dateValues, final int[] dateDigits, final int[] fieldOffsets) {
-		return plausibleDateCore(config.lenient, dateValues[fieldOffsets[0]], dateValues[fieldOffsets[1]],
-				dateValues[fieldOffsets[2]], dateDigits[fieldOffsets[2]]);
+	private boolean plausibleDate(final DateTracker tracker, final int[] fieldOffsets) {
+		return plausibleDateCore(config.lenient, tracker.getValue(fieldOffsets[0]), tracker.getValue(fieldOffsets[1]),
+				tracker.getValue(fieldOffsets[2]), tracker.getDigit(fieldOffsets[2]));
 	}
 
 	public static boolean plausibleDateCore(final boolean lenient, final int day, final int month, final int year, final int yearLength) {
@@ -465,26 +467,26 @@ public class DateTimeParser {
 		return day != 0 && day <= monthDays[month];
 	}
 
-	private static String dateFormat(final int[] dateDigits, final char dateSeparator, final DateResolutionMode resolutionMode, final boolean yearKnown, final boolean yearFirst) {
+	private static String dateFormat(final DateTracker tracker, final char separator, final DateResolutionMode resolutionMode, final boolean yearKnown, final boolean yearFirst) {
 		if (yearFirst)
 			switch (resolutionMode) {
 			case None:
-				return Utils.repeat(yearKnown ? 'y' : '?', dateDigits[0])  + dateSeparator + Utils.repeat('?', dateDigits[1]) + dateSeparator + Utils.repeat('?', dateDigits[2]);
+				return Utils.repeat(yearKnown ? 'y' : '?', tracker.getDigit(0))  + separator + Utils.repeat('?', tracker.getDigit(1)) + separator + Utils.repeat('?', tracker.getDigit(2));
 			case DayFirst:
-				return  Utils.repeat('y', dateDigits[0]) + dateSeparator + Utils.repeat('d', dateDigits[1]) + dateSeparator + Utils.repeat('M', dateDigits[2]);
+				return  Utils.repeat('y', tracker.getDigit(0)) + separator + Utils.repeat('d', tracker.getDigit(1)) + separator + Utils.repeat('M', tracker.getDigit(2));
 			case MonthFirst:
-				return Utils.repeat('y', dateDigits[0]) + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + Utils.repeat('d', dateDigits[2]);
+				return Utils.repeat('y', tracker.getDigit(0)) + separator + Utils.repeat('M', tracker.getDigit(1)) + separator + Utils.repeat('d', tracker.getDigit(2));
 			default:
 				throw new InternalErrorException("unexpected resolutionMode: " + resolutionMode);
 			}
 		else
 			switch (resolutionMode) {
 			case None:
-				return Utils.repeat('?', dateDigits[0]) + dateSeparator + Utils.repeat('?', dateDigits[1]) + dateSeparator + Utils.repeat(yearKnown ? 'y' : '?', dateDigits[2]);
+				return Utils.repeat('?', tracker.getDigit(0)) + separator + Utils.repeat('?', tracker.getDigit(1)) + separator + Utils.repeat(yearKnown ? 'y' : '?', tracker.getDigit(2));
 			case DayFirst:
-				return Utils.repeat('d', dateDigits[0]) + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + Utils.repeat('y', dateDigits[2]);
+				return Utils.repeat('d', tracker.getDigit(0)) + separator + Utils.repeat('M', tracker.getDigit(1)) + separator + Utils.repeat('y', tracker.getDigit(2));
 			case MonthFirst:
-				return Utils.repeat('M', dateDigits[0]) + dateSeparator + Utils.repeat('d', dateDigits[1]) + dateSeparator + Utils.repeat('y', dateDigits[2]);
+				return Utils.repeat('M', tracker.getDigit(0)) + separator + Utils.repeat('d', tracker.getDigit(1)) + separator + Utils.repeat('y', tracker.getDigit(2));
 			default:
 				throw new InternalErrorException("unexpected resolutionMode: " + resolutionMode);
 			}
@@ -656,16 +658,114 @@ public class DateTimeParser {
 		if (!matcher.parse())
 			return null;
 
-		int[] dateValue = new int[] {-1, -1, -1};
+		DateTracker dateTracker = new DateTracker();
+		dateTracker.setComponent(matcher.getDayOfMonth(), matcher.getDayLength(), -1);
+		dateTracker.setComponent(matcher.getMonthValue(), matcher.getMonthLength(), -1);
+		dateTracker.setComponent(matcher.getYear(), matcher.getYearLength(), -1);
 
-		dateValue[0] = matcher.getDayOfMonth();
-		dateValue[1] = matcher.getMonthValue();
-		dateValue[2] = matcher.getYear();
-
-		if (!plausibleDate(dateValue, new int[] {matcher.getDayLength(), matcher.getMonthLength(), matcher.getYearLength()}, new int[] {0,1,2}))
+		if (!plausibleDate(dateTracker, new int[] {0,1,2}))
 			return null;
 
 		return matcher.getFormat();
+	}
+
+	enum TimeDateElement {
+		Time,
+		Date,
+		AMPM,
+		WhiteSpace,
+		TimeZone,
+		Indicator_8601
+	}
+
+	class DateTimeTracker {
+		private int[] valueArray;
+		private int[] digitsArray;
+		private int[] padArray;
+		/** Has we seen the start of a Date/Time. */
+		boolean seen;
+		/** Has the Date/Time been closed. */
+		boolean closed;
+
+		int current;
+
+		DateTimeTracker(int components) {
+			valueArray = new int[components];
+			digitsArray = new int[components];
+			padArray = new int[components];
+		}
+
+		boolean setComponent(final int value, final int digits, final int padding) {
+			if (current >= valueArray.length)
+				return false;
+
+			// If we have set a component then it has clearly been seen
+			seen = true;
+			valueArray[current] = value;
+			digitsArray[current] = digits;
+			padArray[current] = padding;
+
+			current++;
+
+			return true;
+		}
+
+		int getValue(int i) {
+			return valueArray[i];
+		}
+
+		int getDigit(int i) {
+			return digitsArray[i];
+		}
+
+		int getPad(int i) {
+			return padArray[i];
+		}
+
+		boolean seen() {
+			return seen;
+		}
+
+		boolean isClosed() {
+			return closed;
+		}
+
+		void close() {
+			closed = true;
+		}
+
+		int lastSet() {
+			return current - 1;
+		}
+
+		int components() {
+			return current;
+		}
+	}
+
+	class TimeTracker extends DateTimeTracker {
+		TimeTracker() {
+			super(4);
+		}
+
+		@Override
+		boolean setComponent(final int value, final int digits, final int padding) {
+			super.setComponent(value, digits, padding);
+
+			if (current - 1 == 0)
+				return digits == 1 || digits == 2;
+			if (current - 1 == 1 || current - 1 == 2)
+				return digits == 2;
+
+			// You can have any number of fractional seconds
+			return true;
+		}
+	}
+
+	class DateTracker extends DateTimeTracker {
+		DateTracker() {
+			super(3);
+		}
 	}
 
 	/**
@@ -676,29 +776,18 @@ public class DateTimeParser {
 	 * @return a DateTimeFormatter pattern.
 	 */
 	private String passTwo(final String trimmed, final DateResolutionMode resolutionMode) {
+		final List<TimeDateElement> timeDateElements = new ArrayList<>();
 		final int len = trimmed.length();
-
 		int digits = 0;
 		int value = 0;
-		int[] dateValue = new int[3];
-		int[] dateDigits = new int[3];
-		int[] datePad = new int[3];
-		int[] timeValue = new int[4];
-		int[] timeDigits = new int[4];
-		int[] timePad = new int[4];
+		DateTracker dateTracker = new DateTracker();
+		TimeTracker timeTracker = new TimeTracker();
 		char dateSeparator = '_';
-		int dateComponent = 0;
-		int timeComponent = 0;
 		int hourLength = -1;
-		boolean timeFirst = false;
 		boolean yearInDateFirst = false;
 		boolean fourDigitYear = false;
-		boolean timeSeen = false;
-		boolean timeClosed = false;
-		boolean dateSeen = false;
-		boolean dateClosed = false;
 		String timeZone = "";
-		String amPmIndicator = "";
+		boolean ampmDetected = false;
 		boolean iso8601 = false;
 		int padding = 0;
 
@@ -731,25 +820,21 @@ public class DateTimeParser {
 				break;
 
 			case ':':
-				if ((dateSeen && !dateClosed) || (timeSeen && timeClosed) || timeComponent == 3)
+				if ((dateTracker.seen() && !dateTracker.isClosed()) || (timeTracker.seen() && timeTracker.isClosed()) || timeTracker.components() == 3)
 					return null;
 
-				timeFirst = dateComponent == 0;
-				timeSeen = true;
-				timeValue[timeComponent] = value;
-				timeDigits[timeComponent] = digits;
-				timePad[timeComponent] = padding;
+				if (!timeTracker.setComponent(value, digits, padding))
+					return null;
 
-				if (timeComponent == 0) {
+				if (timeTracker.lastSet() == 0) {
 					if (digits != 1 && digits != 2)
 						return null;
 					hourLength = digits;
 				}
-				if (timeComponent == 1 && digits != 2)
+				if (timeTracker.lastSet() == 1 && digits != 2)
 					return null;
-				if (timeComponent == 2)
+				if (timeTracker.lastSet() == 2)
 					return null;
-				timeComponent++;
 				digits = 0;
 				value = 0;
 				padding = 0;
@@ -759,7 +844,7 @@ public class DateTimeParser {
 				// FALL THROUGH
 
 			case '-':
-				if (dateSeen && dateClosed && timeSeen && timeComponent >= 2) {
+				if (dateTracker.seen() && dateTracker.isClosed() && timeTracker.seen() && timeTracker.components() >= 2) {
 					int minutesOffset = Integer.MIN_VALUE;
 					int secondsOffset = Integer.MIN_VALUE;
 
@@ -791,6 +876,17 @@ public class DateTimeParser {
 					else
 						return null;
 
+					if (timeTracker.seen() && !timeTracker.isClosed()) {
+						// Need to close out the time before we can add the TimeZone
+						if (!timeTracker.setComponent(value, digits, padding))
+							return null;
+						digits = 0;
+						timeTracker.close();
+						timeDateElements.add(TimeDateElement.Time);
+					}
+
+					timeDateElements.add(TimeDateElement.TimeZone);
+
 					// Validate the hours
 					final int hours = Utils.getValue(trimmed, i, 2, 2);
 					if (hours != Integer.MIN_VALUE && hours > 18)
@@ -813,30 +909,25 @@ public class DateTimeParser {
 				}
 				// FALL THROUGH
 			case '/':
-				if (timeSeen && !timeClosed)
-					return null;
-				if (dateComponent == 2)
+				if (timeTracker.seen() && !timeTracker.isClosed())
 					return null;
 
-				dateSeen = true;
-				dateValue[dateComponent] = value;
-				dateDigits[dateComponent] = digits;
-				datePad[dateComponent] = padding;
+				if (!dateTracker.setComponent(value, digits, padding))
+					return null;
 
-				if (dateComponent == 0) {
+				if (dateTracker.lastSet() == 0) {
 					dateSeparator = ch;
 					fourDigitYear = digits == 4;
 					yearInDateFirst = fourDigitYear || (digits == 2 && value > 31);
 					if (!yearInDateFirst && digits != 1 && digits != 2)
 						return null;
-				} else if (dateComponent == 1) {
+				} else if (dateTracker.lastSet() == 1) {
 					if (ch != dateSeparator)
 						return null;
 					if (digits != 1 && digits != 2)
 						return null;
 				}
 
-				dateComponent++;
 				digits = 0;
 				value = 0;
 				padding = 0;
@@ -844,37 +935,29 @@ public class DateTimeParser {
 
 			case '.':
 				// If we are not processing the time component
-				if ((!timeSeen || timeClosed)) {
-					if (dateComponent == 2)
+				if ((!timeTracker.seen() || timeTracker.isClosed())) {
+					// Expecting a 'dotted' date - e.g. 9.12.2008
+					if (!dateTracker.setComponent(value, digits, padding))
 						return null;
 
-					// Expecting a 'dotted' date - e.g. 9.12.2008
-					dateSeen = true;
-					dateValue[dateComponent] = value;
-					dateDigits[dateComponent] = digits;
-					datePad[dateComponent] = padding;
-					if (dateComponent == 0) {
+					if (dateTracker.lastSet() == 0) {
 						dateSeparator = ch;
 						fourDigitYear = digits == 4;
 						yearInDateFirst = fourDigitYear || (digits == 2 && value > 31);
 						if (!yearInDateFirst && digits != 1 && digits != 2)
 							return null;
-					} else if (dateComponent == 1) {
+					} else if (dateTracker.lastSet() == 1) {
 						if (ch != dateSeparator)
 							return null;
 						if (digits != 1 && digits != 2)
 							return null;
 					}
-
-					dateComponent++;
 				}
 				else {
-					if ((dateSeen && !dateClosed) || (timeSeen && timeClosed) || timeComponent != 2 || digits != 2)
+					if ((dateTracker.seen() && !dateTracker.isClosed()) || (timeTracker.seen() && timeTracker.isClosed()) || timeTracker.components() != 2 || digits != 2)
 						return null;
-					timeValue[timeComponent] = value;
-					timeDigits[timeComponent] = digits;
-					timePad[timeComponent] = padding;
-					timeComponent++;
+					if (!timeTracker.setComponent(value, digits, padding))
+						return null;
 				}
 				digits = 0;
 				value = 0;
@@ -882,30 +965,27 @@ public class DateTimeParser {
 				break;
 
 			case ' ':
-				if (!dateSeen && !timeSeen)
+				if (!dateTracker.seen() && !timeTracker.seen())
 					return null;
-				if (timeSeen && !timeClosed) {
-					if (digits != 2)
+				if (timeTracker.seen() && !timeTracker.isClosed()) {
+					if (!timeTracker.setComponent(value, digits, padding))
 						return null;
-					timeValue[timeComponent] = value;
-					timeDigits[timeComponent] = digits;
-					timePad[timeComponent] = padding;
-					timeClosed = true;
+					timeTracker.close();
+					timeDateElements.add(TimeDateElement.Time);
 				}
-				else if (dateSeen && !dateClosed) {
-					if (dateComponent != 2)
+				else if (dateTracker.seen() && !dateTracker.isClosed()) {
+					if (dateTracker.components() != 2)
 						return null;
 					if (!(digits == 2 || (!yearInDateFirst && digits == 4)))
 						return null;
 					if (!fourDigitYear)
 						fourDigitYear = digits == 4;
-					dateValue[dateComponent] = value;
-					dateDigits[dateComponent] = digits;
-					datePad[dateComponent] = padding;
-					dateClosed = true;
+					dateTracker.setComponent(value, digits, padding);
+					dateTracker.close();
+					timeDateElements.add(TimeDateElement.Date);
 				}
-				else
-					return null;
+				timeDateElements.add(TimeDateElement.WhiteSpace);
+
 				digits = 0;
 				value = 0;
 				padding = 0;
@@ -915,43 +995,58 @@ public class DateTimeParser {
 				if (!Character.isAlphabetic(ch))
 					return null;
 
-				if (timeSeen) {
+				if (timeTracker.seen()) {
 					final String rest = trimmed.substring(i).toUpperCase(config.locale);
-					boolean ampmDetected = false;
 					for (final String s : LocaleInfo.getAMPMStrings(config.locale)) {
 						if (rest.startsWith(s)) {
-							amPmIndicator = trimmed.charAt(i - 1) == ' ' ? " a" : "a";
-							i += s.length();
+							if (!timeTracker.isClosed()) {
+								if (!timeTracker.setComponent(value, digits, padding))
+									return null;
+								digits = 0;
+								timeTracker.close();
+								timeDateElements.add(TimeDateElement.Time);
+							}
+							timeDateElements.add(TimeDateElement.AMPM);
+							i += s.length() - 1;
 							ampmDetected = true;
+							// Eat the space after if it exists
+							if (i + 1 < len && trimmed.charAt(i + 1) == ' ') {
+								i++;
+								timeDateElements.add(TimeDateElement.WhiteSpace);
+							}
+							break;
 						}
 					}
 
-					if (ampmDetected) {
-						// Eat the space after if it exists
-						if (i + 1 < len && trimmed.charAt(i + 1) == ' ')
-							i++;
-					}
-					else {
+					if (!ampmDetected) {
+						if (!timeTracker.isClosed()) {
+							if (!timeTracker.setComponent(value, digits, padding))
+								return null;
+							digits = 0;
+							timeTracker.close();
+							timeDateElements.add(TimeDateElement.Time);
+						}
+						timeDateElements.add(TimeDateElement.TimeZone);
 						if (ch == 'Z')
 							timeZone = "X";
 						else {
 							final String currentTimeZone = trimmed.substring(i, len);
 							if (!DateTimeParser.timeZones.contains(currentTimeZone))
 								return null;
-							timeZone = " z";
+							timeZone = "z";
 						}
 					}
 				}
 				else {
 					if (ch == 'T') {
 						// ISO 8601
-						if (!dateSeen || dateClosed || digits != 2 || dateSeparator != '-' || !fourDigitYear || !yearInDateFirst)
+						if (!dateTracker.seen() || dateTracker.isClosed() || digits != 2 || dateSeparator != '-' || !fourDigitYear || !yearInDateFirst)
 							return null;
 						iso8601 = true;
-						dateValue[dateComponent] = value;
-						dateDigits[dateComponent] = digits;
-						datePad[dateComponent] = padding;
-						dateClosed = true;
+						dateTracker.setComponent(value, digits, padding);
+						dateTracker.close();
+						timeDateElements.add(TimeDateElement.Date);
+						timeDateElements.add(TimeDateElement.Indicator_8601);
 						digits = 0;
 						value = 0;
 						padding = 0;
@@ -963,10 +1058,10 @@ public class DateTimeParser {
 			}
 		}
 
-		if (!dateSeen && !timeSeen)
+		if (!dateTracker.seen() && !timeTracker.seen())
 			return null;
 
-		if (dateSeen && !dateClosed) {
+		if (dateTracker.seen() && !dateTracker.isClosed()) {
 			// Need to close out the date
 			if (yearInDateFirst) {
 				if (digits != 2)
@@ -977,144 +1072,160 @@ public class DateTimeParser {
 					return null;
 			}
 			fourDigitYear = digits == 4;
-			if (dateComponent != 2)
+			if (dateTracker.components() != 2)
 				return null;
-			dateValue[dateComponent] = value;
-			dateDigits[dateComponent] = digits;
-			datePad[dateComponent] = padding;
+			dateTracker.setComponent(value, digits, padding);
 			digits = 0;
 			padding = 0;
+			timeDateElements.add(TimeDateElement.Date);
 		}
-		if (timeSeen && !timeClosed) {
+		if (timeTracker.seen() && !timeTracker.isClosed()) {
 			// Need to close out the time
-			if ((timeComponent != 3 && digits != 2) || (timeComponent == 3 && (digits == 0 || digits > 9)))
+			if ((timeTracker.components() != 3 && digits != 2) || (timeTracker.components() == 3 && (digits == 0 || digits > 9)))
 				return null;
-			timeValue[timeComponent] = value;
-			timeDigits[timeComponent] = digits;
-			timePad[timeComponent] = padding;
+			if (!timeTracker.setComponent(value, digits, padding))
+				return null;
 			digits = 0;
+			timeDateElements.add(TimeDateElement.Time);
 		}
 
 		if (digits != 0)
 			return null;
 
-		if (iso8601 && timeComponent == 0)
+		if (iso8601 && timeTracker.components() == 0)
 			return null;
 
 		String timeAnswer = null;
-		if (timeComponent != 0) {
-			if (timeValue[1] > 59 || (timeComponent >= 2 && timeValue[2] > 59))
+		if (timeTracker.components() != 0) {
+			if (timeTracker.getValue(1) > 59 || (timeTracker.components() >= 2 && timeTracker.getValue(2) > 59))
 				return null;
-			String hours = timePad[0] != 0 ? "pp" : "";
-			if (amPmIndicator.length() != 0) {
-				if (timeValue[0] > 12)
+			String hours = timeTracker.getPad(0) != 0 ? "pp" : "";
+			if (ampmDetected) {
+				if (timeTracker.getValue(0) > 12)
 					return null;
 				hours += hourLength == 1 ? "h" : "hh";
 			}
 			else {
-				if (timeValue[0] > 24)
+				if (timeTracker.getValue(0) > 24)
 					return null;
-				if (timeValue[0] == 24)
+				if (timeTracker.getValue(0) == 24)
 					hours += hourLength == 1 ? "k" : "kk";
 				else
 					hours = hourLength == 1 ? "H" : "HH";
 			}
 			timeAnswer = hours + ":mm";
-			if (timeComponent >= 2)
+			if (timeTracker.components() > 2)
 				timeAnswer += ":ss";
-			if (timeComponent == 3)
-				timeAnswer += "." + "SSSSSSSSS".substring(0, timeDigits[3]);
-			if (dateComponent == 0)
-				return timeAnswer + amPmIndicator;
+			if (timeTracker.components() == 4)
+				timeAnswer += "." + "SSSSSSSSS".substring(0, timeTracker.getDigit(3));
 		}
 
 		String dateAnswer = null;
 
 		// Do we have any date components?
-		if (dateComponent != 0) {
+		if (dateTracker.components() != 0) {
 			// If we don't have two date components then it is invalid
-			if (dateComponent == 1)
+			if (dateTracker.components() == 1)
 				return null;
-			final boolean freePass = config.lenient && dateValue[0] == 0 && dateValue[1] == 0 && dateValue[2] == 0;
-			if ((!freePass && dateValue[1] == 0) || dateValue[1] > 31)
+			final boolean freePass = config.lenient && dateTracker.getValue(0) == 0 && dateTracker.getValue(1) == 0 && dateTracker.getValue(2) == 0;
+			if ((!freePass && dateTracker.getValue(1) == 0) || dateTracker.getValue(1) > 31)
 				return null;
 			if (yearInDateFirst) {
-				if (iso8601 || dateValue[2] > 12) {
-					if (!plausibleDate(dateValue, dateDigits, new int[] {2,1,0}))
+				if (iso8601 || dateTracker.getValue(2) > 12) {
+					if (!plausibleDate(dateTracker, new int[] {2,1,0}))
 						return null;
-					dateAnswer = Utils.repeat('y', dateDigits[0]) + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + Utils.repeat('d', dateDigits[2]);
+					dateAnswer = Utils.repeat('y', dateTracker.getDigit(0)) + dateSeparator + Utils.repeat('M', dateTracker.getDigit(1)) + dateSeparator + Utils.repeat('d', dateTracker.getDigit(2));
 				}
-				else if (dateValue[1] > 12) {
-					if (!plausibleDate(dateValue, dateDigits, new int[] {1,2,0}))
+				else if (dateTracker.getValue(1) > 12) {
+					if (!plausibleDate(dateTracker, new int[] {1,2,0}))
 						return null;
-					dateAnswer = Utils.repeat('y', dateDigits[0]) + dateSeparator + Utils.repeat('d', dateDigits[1]) + dateSeparator + Utils.repeat('M', dateDigits[2]);
+					dateAnswer = Utils.repeat('y', dateTracker.getDigit(0)) + dateSeparator + Utils.repeat('d', dateTracker.getDigit(1)) + dateSeparator + Utils.repeat('M', dateTracker.getDigit(2));
 				}
 				else
-					dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, true);
+					dateAnswer = dateFormat(dateTracker, dateSeparator, resolutionMode, true, true);
 			}
 			else {
 				if (fourDigitYear) {
 					// Year is the last field - attempt to determine which is the month
-					if (dateValue[0] > 12) {
-						if (!plausibleDate(dateValue, dateDigits, new int[] {0,1,2}))
+					if (dateTracker.getValue(0) > 12) {
+						if (!plausibleDate(dateTracker, new int[] {0,1,2}))
 							return null;
-						dateAnswer = "dd" + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + "yyyy";
+						dateAnswer = "dd" + dateSeparator + Utils.repeat('M', dateTracker.getDigit(1)) + dateSeparator + "yyyy";
 					}
-					else if (dateValue[1] > 12) {
-						if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
+					else if (dateTracker.getValue(1) > 12) {
+						if (!plausibleDate(dateTracker, new int[] {1,0,2}))
 							return null;
-						dateAnswer = Utils.repeat('M', dateDigits[0]) + dateSeparator + "dd" + dateSeparator + "yyyy";
+						dateAnswer = Utils.repeat('M', dateTracker.getDigit(0)) + dateSeparator + "dd" + dateSeparator + "yyyy";
 					}
 					else
-						dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, false);
+						dateAnswer = dateFormat(dateTracker, dateSeparator, resolutionMode, true, false);
 				} else {
 					// If the first group of digits is of length 1, then it is either d/MM/yy or M/dd/yy
-					if (dateDigits[0] == 1) {
-						if (!freePass && dateValue[0] == 0)
+					if (dateTracker.getDigit(0) == 1) {
+						if (!freePass && dateTracker.getValue(0) == 0)
 							return null;
-						if (dateValue[1] > 12) {
-							if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
+						if (dateTracker.getValue(1) > 12) {
+							if (!plausibleDate(dateTracker, new int[] {1,0,2}))
 								return null;
-							dateAnswer = Utils.repeat('M', dateDigits[0]) + dateSeparator + "dd" + dateSeparator + "yy";
+							dateAnswer = Utils.repeat('M', dateTracker.getDigit(0)) + dateSeparator + "dd" + dateSeparator + "yy";
 						}
 						else
-							dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, false);
+							dateAnswer = dateFormat(dateTracker, dateSeparator, resolutionMode, true, false);
 					}
 					// If year is the first field - then assume yy/MM/dd
-					else if (dateValue[0] > 31)
-						dateAnswer = "yy" + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + Utils.repeat('d', dateDigits[2]);
-					else if (dateValue[2] > 31) {
+					else if (dateTracker.getValue(0) > 31)
+						dateAnswer = "yy" + dateSeparator + Utils.repeat('M', dateTracker.getDigit(1)) + dateSeparator + Utils.repeat('d', dateTracker.getDigit(2));
+					else if (dateTracker.getValue(2) > 31) {
 						// Year is the last field - attempt to determine which is the month
-						if (dateValue[0] > 12) {
-							if (!plausibleDate(dateValue, dateDigits, new int[] {0,1,2}))
+						if (dateTracker.getValue(0) > 12) {
+							if (!plausibleDate(dateTracker, new int[] {0,1,2}))
 								return null;
-							dateAnswer = "dd" + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + "yy";
+							dateAnswer = "dd" + dateSeparator + Utils.repeat('M', dateTracker.getDigit(1)) + dateSeparator + "yy";
 						}
-						else if (dateValue[1] > 12) {
-							if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
+						else if (dateTracker.getValue(1) > 12) {
+							if (!plausibleDate(dateTracker, new int[] {1,0,2}))
 								return null;
-							dateAnswer = Utils.repeat('M', dateDigits[0]) + dateSeparator + "dd" + dateSeparator + "yy";
+							dateAnswer = Utils.repeat('M', dateTracker.getDigit(0)) + dateSeparator + "dd" + dateSeparator + "yy";
 						}
 						else
-							dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, true, false);
-					} else if (dateValue[1] > 12) {
-						if (!plausibleDate(dateValue, dateDigits, new int[] {1,0,2}))
+							dateAnswer = dateFormat(dateTracker, dateSeparator, resolutionMode, true, false);
+					} else if (dateTracker.getValue(1) > 12) {
+						if (!plausibleDate(dateTracker, new int[] {1,0,2}))
 							return null;
-						dateAnswer = Utils.repeat('M', dateDigits[0]) + dateSeparator + "dd" + dateSeparator + "yy";
-					} else if (dateValue[0] > 12 && dateValue[2] > 12) {
-						dateAnswer = "??" + dateSeparator + Utils.repeat('M', dateDigits[1]) + dateSeparator + "??";
+						dateAnswer = Utils.repeat('M', dateTracker.getDigit(0)) + dateSeparator + "dd" + dateSeparator + "yy";
+					} else if (dateTracker.getValue(0) > 12 && dateTracker.getValue(2) > 12) {
+						dateAnswer = "??" + dateSeparator + Utils.repeat('M', dateTracker.getDigit(1)) + dateSeparator + "??";
 					} else
-						dateAnswer = dateFormat(dateDigits, dateSeparator, resolutionMode, false, false);
+						dateAnswer = dateFormat(dateTracker, dateSeparator, resolutionMode, false, false);
 				}
 			}
-			if (timeComponent == 0)
-				return dateAnswer + timeZone;
 		}
 
-		if (timeFirst)
-			return timeAnswer + amPmIndicator + (iso8601 ? "'T'" : " ") + dateAnswer + timeZone;
-		else
-			return dateAnswer + (iso8601 ? "'T'" : " ") + timeAnswer + amPmIndicator + timeZone;
+		StringBuilder ret = new StringBuilder();
+		for (final TimeDateElement elt : timeDateElements) {
+			switch (elt) {
+			case Time:
+				ret.append(timeAnswer);
+				break;
+			case Date:
+				ret.append(dateAnswer);
+				break;
+			case WhiteSpace:
+				ret.append(' ');
+				break;
+			case Indicator_8601:
+				ret.append("'T'");
+				break;
+			case TimeZone:
+				ret.append(timeZone);
+				break;
+			case AMPM:
+				ret.append('a');
+				break;
+			}
+		}
+
+		return ret.toString();
 	}
 
 	/**

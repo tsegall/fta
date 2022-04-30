@@ -175,6 +175,20 @@
 		"priority": 69
 	},
 	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_ES",
+		"description": "Postal Code (ES)",
+		"signature": "wme+qdk/tsdr4Fb4qfCyAaicpmE=",
+		"validLocales": [
+			{ "localeTag":  "es-ES", "headerRegExps": [ { "regExp": ".*(?i)(postal).*", "confidence": 95 } ] }
+		],
+		"content": "/reference/es_postal_code.csv",
+		"contentType": "resource",
+		"threshold": 99,
+		"baseType": "LONG",
+		"backout": "\\d{5}",
+		"priority": 70
+	},
+	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
@@ -183,7 +197,7 @@
 		],
 		"clazz": "com.cobber.fta.plugins.AddressEN",
 		"threshold": 90,
-		"priority": 70
+		"priority": 75
 	},
 	{
 		"qualifier": "STREET_ADDRESS2_EN",
@@ -194,7 +208,7 @@
 		],
 		"clazz": "com.cobber.fta.plugins.Address2EN",
 		"threshold": 90,
-		"priority": 71
+		"priority": 76
 	},
 	{
 		"qualifier": "STREET_MARKER_EN",
@@ -206,7 +220,7 @@
 		"content": "/reference/en_street_markers.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 72
+		"priority": 77
 	},
 	{
 		"qualifier": "GENDER.TEXT_<LOCALE>",

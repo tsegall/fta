@@ -4,6 +4,7 @@
 		"validLocales": [
 			{ "localeTag": "de", "value": "jahr" },
 			{ "localeTag": "en", "value": "year" },
+			{ "localeTag": "es", "value": "año" },
 			{ "localeTag": "fr", "value": "an" },
 			{ "localeTag": "it", "value": "anno" },
 			{ "localeTag": "nl", "value": "jaar" },
@@ -21,6 +22,8 @@
 		"keytag": "YES",
 		"validLocales": [
 			{ "localeTag": "de", "value": "ja" },
+			{ "localeTag": "en", "value": "yes" },
+			{ "localeTag": "es", "value": "sí" },
 			{ "localeTag": "fr", "value": "oui" },
 			{ "localeTag": "it", "value": "si" },
 			{ "localeTag": "nl", "value": "ja" },
@@ -32,6 +35,8 @@
 		"keytag": "NO",
 		"validLocales": [
 			{ "localeTag": "de", "value": "nein" },
+			{ "localeTag": "en", "value": "no" },
+			{ "localeTag": "es", "value": "no" },
 			{ "localeTag": "fr", "value": "non" },
 			{ "localeTag": "it", "value": "no" },
 			{ "localeTag": "nl", "value": "nee" },

@@ -2026,6 +2026,61 @@ public class DetermineDateTimeFormatTests {
 		checker("06/Jan/2008 15:04:05 -0700", "dd/MMM/yyyy HH:mm:ss xx", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuitSpaceAMSpacewithTZ() {
+		checker("11/15/2014 02:00:00 AM +0000", "MM/dd/yyyy hh:mm:ss a xx", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuitSpaceAMwithTZ() {
+		checker("11/15/2014 02:00:00 AM+0000", "MM/dd/yyyy hh:mm:ss axx", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuitAMwithTZ() {
+		checker("11/15/2014 02:00:00AM+0000", "MM/dd/yyyy hh:mm:ssaxx", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuitTimeAM() {
+		checker("2:23 PM 29/04/77", "h:mm a dd/MM/yy", FTAType.LOCALDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuitMddyyyyHHmmss() {
+		checker("2/19/2012 09:44:04", "M/dd/yyyy HH:mm:ss", FTAType.LOCALDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuitMMddyyyyHHmmssz() {
+		checker("01/30/2012 10:59:48 GMT", "MM/dd/yyyy HH:mm:ss z", FTAType.ZONEDDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuityyyyMMddTHHmmssx() {
+		checker("2004-01-01T00:00:00+05", "yyyy-MM-dd'T'HH:mm:ssx", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuityyyyMMddTHHmmSSSX() {
+		checker("2010-07-01T22:20:22.400Z", "yyyy-MM-dd'T'HH:mm:ss.SSSX", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuityyyyMMddTHHmmssSSSxxx() {
+		checker("2021-08-23T19:03:44.449-04:00", "yyyy-MM-dd'T'HH:mm:ss.SSSxxx", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuityyyyMMddTHHmmssSxxx() {
+		checker("2021-08-23T19:03:44.5-04:00", "yyyy-MM-dd'T'HH:mm:ss.Sxxx", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void intuityyyyMMddTHHmmz() {
+		checker("2017-08-24 12:10 EDT", "yyyy-MM-dd HH:mm z", FTAType.ZONEDDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+	}
+
 	public void checker(final String testInput, final String expectedFormat, final FTAType type,
 			final DateResolutionMode resolutionMode, final Locale locale) {
 		final DateTimeParser dtp = new DateTimeParser().withDateResolutionMode(resolutionMode).withLocale(locale);
@@ -2036,7 +2091,7 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParserResult result = DateTimeParserResult.asResult(expectedFormat, resolutionMode, locale);
 
 		// Check it is of the expected FTA type
-		assertEquals(type, result.getType());
+		assertEquals(result.getType(), type);
 
 		// Grab our slightly modified DateTimeFormatter (since it copes with case insensitivity)
 		final DateTimeFormatter dtf = DateTimeParser.ofPattern(expectedFormat, locale);
@@ -2058,6 +2113,10 @@ public class DetermineDateTimeFormatTests {
 		case OFFSETDATETIME:
 			final OffsetDateTime odt = OffsetDateTime.parse(testInput, dtf);
 			formatted = odt.format(dtf);
+			break;
+		case ZONEDDATETIME:
+			final ZonedDateTime zdt = ZonedDateTime.parse(testInput, dtf);
+			formatted = zdt.format(dtf);
 			break;
 		}
 

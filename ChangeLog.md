@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 8.0.13
+ - ENH: Improve Spanish support (Postal Codes + Year + Yes/No)
+ - BUG: Fix NPE on "05/09/2014 02:00:00 AM +0000" (rework PassTwo)
+
 ### 8.0.12
  - ENH: Add support for Brazilian municipalities - STATE_PROVINCE.MUNICIPALITY_BR
  - ENH: Improve gender support in Italian
