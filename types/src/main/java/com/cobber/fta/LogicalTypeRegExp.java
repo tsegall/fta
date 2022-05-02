@@ -163,19 +163,19 @@ public class LogicalTypeRegExp extends LogicalType {
 				if ((minLong != null && (Long)facts.getMin() < minLong) ||
 						(maxLong != null && (Long)facts.getMax() > maxLong))
 					return new PluginAnalysis(backout);;
-				break;
+					break;
 
 			case DOUBLE:
 				if ((minDouble != null && (Double)facts.getMin() < minDouble) ||
 						(maxDouble != null && (Double)facts.getMax() > maxDouble))
 					return new PluginAnalysis(backout);;
-				break;
+					break;
 
 			case STRING:
 				if ((minString != null && facts.getMinValue().compareTo(minString) < 0) ||
 						(maxString != null && facts.getMaxValue().compareTo(maxString) > 0))
 					return new PluginAnalysis(backout);;
-				break;
+					break;
 
 			default:
 				throw new InternalErrorException(WRONG_TYPE + defn.baseType);
@@ -220,7 +220,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		if (generator == null)
 			generator = new Xeger(RegExpGenerator.toAutomatonRE(defn.regExpReturned, true));
 
-        return generator.generate();
+		return generator.generate();
 	}
 
 	@Override

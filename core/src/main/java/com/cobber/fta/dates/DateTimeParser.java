@@ -68,7 +68,7 @@ public class DateTimeParser {
 	private static final String TIME_ONLY_HMMSS = "d:d{2}:d{2}";
 	private static final String TIME_ONLY_HHMM = "d{2}:d{2}";
 	private static final String TIME_ONLY_HMM = "d:d{2}";
-	private static final String TIME_ONLY_PPHMM = " {2}d:d{2}";
+	private static final String TIME_ONLY_PPHMM = "  d:d{2}";
 
 	/** When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified. */
 	public enum DateResolutionMode {
@@ -80,6 +80,15 @@ public class DateTimeParser {
 		MonthFirst,
 		/** Auto will choose DayFirst or MonthFirst based on the Locale. */
 		Auto
+	}
+
+	enum TimeDateElement {
+		Time,
+		Date,
+		AMPM,
+		WhiteSpace,
+		TimeZone,
+		Indicator_8601
 	}
 
 	protected static final Set<String> timeZones = new HashSet<>();
@@ -669,15 +678,6 @@ public class DateTimeParser {
 		return matcher.getFormat();
 	}
 
-	enum TimeDateElement {
-		Time,
-		Date,
-		AMPM,
-		WhiteSpace,
-		TimeZone,
-		Indicator_8601
-	}
-
 	class DateTimeTracker {
 		private int[] valueArray;
 		private int[] digitsArray;
@@ -1081,7 +1081,7 @@ public class DateTimeParser {
 		}
 		if (timeTracker.seen() && !timeTracker.isClosed()) {
 			// Need to close out the time
-			if ((timeTracker.components() != 3 && digits != 2) || (timeTracker.components() == 3 && (digits == 0 || digits > 9)))
+			if ((timeTracker.components() != 3 && digits != 2) || (timeTracker.components() == 3 && (digits > 9)))
 				return null;
 			if (!timeTracker.setComponent(value, digits, padding))
 				return null;
@@ -1350,8 +1350,8 @@ public class DateTimeParser {
 			if (components == 1) {
 				if (compressed.indexOf("d{2}") != -1)
 					compressed = Utils.replaceFirst(compressed, "d{2}", "dd");
-				else if (compressed.indexOf(" {2}d") != -1)
-					compressed = Utils.replaceFirst(compressed, " {2}d", " ppd");
+				else if (compressed.indexOf("  d") != -1)
+					compressed = Utils.replaceFirst(compressed, "  d", " ppd");
 				else if (compressed.indexOf('d') != -1)
 					;
 				else
@@ -1376,6 +1376,9 @@ public class DateTimeParser {
 					firstMatch = "d";
 					firstLength = 1;
 					secondStart = firstDigit + 1;
+					// Check to see we are not looking at d{X} where X is other than 2
+					if (compressed.charAt(secondStart) == '{')
+						return null;
 				}
 
 				final int secondDigit = compressed.indexOf('d', secondStart);
@@ -1401,19 +1404,25 @@ public class DateTimeParser {
 						compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('M', firstLength)), secondMatch, Utils.repeat('d', secondLength));
 					else {
 						final int firstValue = Utils.getValue(trimmed, firstDigit, 2, 2);
-						final int secondValue = Utils.getValue(trimmed, secondDigit, 2, 2);
+						final int secondValue = Utils.getValue(trimmed, firstLength == 2 ? secondDigit - 2 : secondDigit, secondLength, secondLength);
 
-						if (firstValue > 12)
-							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('d', firstLength)), secondMatch, Utils.repeat('M', secondLength));
-						else if (secondValue > 12)
+						if (firstValue > 31 || secondValue > 31 || (firstValue > 12 && secondValue > 12))
+							return null;
+
+						if (firstValue > 12) {
+							// Day then Month
+							compressed = Utils.replaceFirst(Utils.replaceLast(compressed, secondMatch, Utils.repeat('M', secondLength)), firstMatch, Utils.repeat('d', firstLength));
+						}
+						else if (secondValue > 12) {
+							// Month then Day
 							compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('M', firstLength)), secondMatch, Utils.repeat('d', secondLength));
+						}
 						else
 							if (resolutionMode == DateResolutionMode.DayFirst)
-								compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('d', firstLength)), secondMatch, Utils.repeat('M', secondLength));
+								compressed = Utils.replaceFirst(Utils.replaceLast(compressed, secondMatch, Utils.repeat('M', secondLength)), firstMatch, Utils.repeat('d', firstLength));
 							else
 								compressed = Utils.replaceFirst(Utils.replaceFirst(compressed, firstMatch, Utils.repeat('M', firstLength)), secondMatch, Utils.repeat('d', secondLength));
 					}
-
 			}
 		}
 
@@ -1424,7 +1433,18 @@ public class DateTimeParser {
 		// So we think we have nailed it - but it only counts if it happily passes a validity check
 		final DateTimeParserResult dtp = DateTimeParserResult.asResult(compressed, resolutionMode, config.locale);
 
-		return (dtp != null && dtp.isValid(trimmed)) ? compressed : null;
+		if (dtp == null || !dtp.isValid(trimmed))
+			return null;
+
+		// So before we declare ultimate success - check that Java is happy with our conclusion
+		try {
+			new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(compressed).toFormatter(config.locale);
+		}
+		catch (IllegalArgumentException e) {
+			return null;
+		}
+
+		return compressed;
 	}
 
 	private boolean matchAtEnd(final String input, final String toMatch) {

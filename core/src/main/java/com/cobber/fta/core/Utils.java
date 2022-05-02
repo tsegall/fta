@@ -44,6 +44,16 @@ public final class Utils {
 				.concat(input.substring(index + oldString.length()));
 	}
 
+	public static String replaceLast(final String input, final String oldString, final String newString) {
+		final int index = input.lastIndexOf(oldString);
+		if (index == -1)
+			return input;
+
+		return input.substring(0, index)
+				.concat(newString)
+				.concat(input.substring(index + oldString.length()));
+	}
+
 	public static String replaceAll(final String input, final String oldString, final String newString) {
 		int index = input.indexOf(oldString);
 		String ret = input;

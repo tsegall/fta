@@ -1477,7 +1477,7 @@ public class TextAnalyzer {
 			// Fast version of replaceAll("\\{\\d*\\}", "+"), e.g. replace \d{5} with \d+
 			final StringBuilder collapsed = new StringBuilder(compressedl0);
 			for (int i = 0; i < collapsed.length(); i++) {
-				if (collapsed.charAt(i) == '{' && Character.isDigit(collapsed.charAt(i + 1))) {
+				if (collapsed.charAt(i) == '{' && i + 1 < collapsed.length() && Character.isDigit(collapsed.charAt(i + 1))) {
 					final int start = i++;
 					while (collapsed.charAt(++i) != '}')
 						/* EMPTY */;
@@ -2787,7 +2787,7 @@ public class TextAnalyzer {
 			// If we are collecting statistics - we need to generate the topK and bottomK
 			if (analysisConfig.isCollectStatistics())
 				for (final String s : facts.cardinality.keySet())
-					if (Integer.valueOf(s) != 0)
+					if (Integer.valueOf(s.trim()) != 0)
 						trackDateTime(s, facts.matchPatternInfo, true);
 		} else if (facts.cardinality.size() == 2 && facts.minLong == 0 && facts.maxLong == 1) {
 			// boolean by any other name

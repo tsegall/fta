@@ -950,6 +950,36 @@
 		"priority": 193
 	},
 	{
+		"qualifier": "COORDINATE.EASTING",
+		"description": "Latitude - easting",
+		"signature": "EMjCy1d/N2KNGU3JR8XeZGAcIW0=",
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(easting).*", "confidence": 100 } ] }
+		],
+		"regExpsToMatch": [ "\\d+" ],
+		"regExpReturned": "\\d+",
+		"isRegExpComplete": true,
+		"threshold": 98,
+		"baseType": "LONG",
+		"minimum": "0",
+		"priority": 194
+	},
+	{
+		"qualifier": "COORDINATE.NORTHING",
+		"description": "Longitude - northing",
+		"signature": "RWgxHqDcPc9KKgzBF03YcFjzwIA=",
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(northing).*", "confidence": 100 } ] }
+		],
+		"regExpsToMatch": [ "\\d+" ],
+		"regExpReturned": "\\d+",
+		"isRegExpComplete": true,
+		"threshold": 98,
+		"baseType": "LONG",
+		"minimum": "0",
+		"priority": 195
+	},
+	{
 		"qualifier": "COORDINATE_PAIR.DECIMAL",
 		"description": "Coordinate Pair (Lat,Long - Decimal degrees)",
 		"signature": "6lVqkPqRAcyOlhHO3ckHttlzBww=",
@@ -961,7 +991,7 @@
 		"isRegExpComplete": true,
 		"threshold": 98,
 		"baseType": "STRING",
-		"priority": 194
+		"priority": 196
 	},
 	{
 		"qualifier": "CITY",

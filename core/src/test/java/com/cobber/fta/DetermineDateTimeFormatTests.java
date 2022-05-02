@@ -30,6 +30,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -203,12 +204,25 @@ public class DetermineDateTimeFormatTests {
 		assertNull(dtp.determineFormatString("12/02-99"));
 	}
 
-	/*
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
-	public void testSpaces() {
-		assertEquals(DateTimeParser.parse("2018 12 24"), "yyyy MM dd");
+	public void testRubbish() {
+		assertNull(new DateTimeParser().determineFormatString("02-0828S15"));
+		assertNull(new DateTimeParser().determineFormatString("88-0828S7"));
+		assertNull(new DateTimeParser().determineFormatString("01-0828S7"));
+		assertNull(new DateTimeParser().determineFormatString("28-0828S7"));
 	}
-	 */
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void unusualT() {
+		String formatString = (new DateTimeParser().determineFormatString("2018-06-26T15:27:50."));
+		new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(formatString).toFormatter(Locale.getDefault());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void unusualDate() {
+		String formatString = (new DateTimeParser().determineFormatString("2009-12-01: WKV"));
+		assertNull(formatString);
+	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitDateOnlyDash() {
@@ -471,6 +485,18 @@ public class DetermineDateTimeFormatTests {
 		det.train("Wed Apr 21 08:10:38 GMT+8 2021");
 		final DateTimeParserResult result = det.getResult();
 		assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss O yyyy");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void fixedWidthDay() {
+		final DateTimeParser dtp = new DateTimeParser();
+		assertEquals(dtp.determineFormatString("Oct  1 2019 12:14AM"), "MMM ppd yyyy hh:mma");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void fixedWidthHour() {
+		final DateTimeParser dtp = new DateTimeParser();
+		assertEquals(dtp.determineFormatString("Oct 1 2019  1:53PM"), "MMM d yyyy pph:mma");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -2080,6 +2106,16 @@ public class DetermineDateTimeFormatTests {
 	public void intuityyyyMMddTHHmmz() {
 		checker("2017-08-24 12:10 EDT", "yyyy-MM-dd HH:mm z", FTAType.ZONEDDATETIME, DateResolutionMode.None, Locale.ENGLISH);
 	}
+
+//	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+//	public void intuitZZZ() {
+//		checker("01/31/2017 10:35:00 AM +0000", "MM/dd/yyyy hh:mm:ss a xx", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+//	}
+//
+//	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+//	public void intuitZZZ2() {
+//		checker("01/01/2017 10:35:00 AM +0000", "MM/dd/yyyy hh:mm:ss a xx", FTAType.OFFSETDATETIME, DateResolutionMode.None, Locale.ENGLISH);
+//	}
 
 	public void checker(final String testInput, final String expectedFormat, final FTAType type,
 			final DateResolutionMode resolutionMode, final Locale locale) {

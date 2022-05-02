@@ -2065,6 +2065,122 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void strange() throws IOException, FTAException {
+		final String INTERESTING = "88-0828S7";
+		final String[] samples = new String[] {
+				"", "", "", "", "", "", "", "", "", "",
+				"", "", "", "", "", "", "", "", "", "",
+				"", "", "", "", "", "", "", "", "", "",
+				INTERESTING, "", "", "", "", "", "", ""
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("Fund Origin Council File_3");
+		analysis.setDebug(2);
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getBlankCount(), 37);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getRegExp(), "\\d{2}-\\d{4}\\p{IsAlphabetic}\\d");
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertTrue(INTERESTING.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void viznet3() throws IOException, FTAException {
+		final String[] samples = new String[] {
+				"688 8271 68", "", "876 2105 21", "654 9262 12", "", "299 8420 96", "",  "974 9680 53",
+				"106 9951 52", "106 9951 52", "551 2387 53", "104 6247 01", "104 6247 01", "654 4365 27",
+				"654 4365 27", "654 4264 33", "654 4264 33", "974 9680 53", "654 9105 28"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("VAT Registration Number");
+		analysis.setDebug(2);
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getBlankCount(), 3);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getRegExp(), "\\d{3} \\d{4} \\d{2}");
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void viznet4() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Garbage");
+		analysis.setDebug(2);
+		analysis.train("        jQuery(function($){");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void viznet5A() throws IOException, FTAException {
+		final String[] samples = new String[] {
+				"2010-01-13 09:58:25.443", "2010-02-02 12:13:36.132", "2010-06-22 18:55:04",
+				"2010-06-22 18:54:46", "2010-02-03 13:00:49.746", "2010-01-14 10:15:08.388",
+				"2010-01-14 10:15:16.041", "2010-01-14 10:14:59.964", "2010-02-02 12:02:38.444",
+				"2010-02-02 12:03:35.649", "2010-01-04 09:42:56.82", "2010-02-04 18:23:49.946"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("data_devolucao");
+		analysis.setDebug(2);
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMatchCount(), 10);
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{2,3}");
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{2,3}");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void viznet5B() throws IOException, FTAException {
+		final String[] samples = new String[] {
+				"2010-01-05 16:26:12.662", "2010-01-12 07:34:13.934", "2010-02-25 07:36:25.8",
+				"2010-02-03 08:58:45.692", "2010-02-03 13:06:30.662", "2010-02-03 13:06:43.125",
+				"2010-01-13 09:58:25.443", "2010-02-02 12:13:36.132", "2010-06-22 18:55:04",
+				"2010-06-22 18:54:46", "2010-02-03 13:00:49.746", "2010-01-14 10:15:08.388"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("data_devolucao");
+		analysis.setDebug(2);
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMatchCount(), 10);
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void freeTextLowCardinalityMultiples() throws IOException, FTAException {
 		final String[] samples = new String[] {
 				"Divorced - separated",

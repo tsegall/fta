@@ -209,6 +209,8 @@ COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|*
 COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|*
 COORDINATE.LATITUDE_DMS|Latitude (degrees/minutes/seconds)|*
 COORDINATE.LONGITUDE_DMS|Longitude (degrees/minutes/seconds)|*
+COORDINATE.EASTING|Coordinate - Easting|*
+COORDINATE.NORTHING|Coordinate - Northing|*
 COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|*
 COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2|*
 COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|*

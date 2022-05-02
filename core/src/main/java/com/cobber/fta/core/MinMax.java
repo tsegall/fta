@@ -64,7 +64,7 @@ public class MinMax implements Comparable<MinMax> {
 	}
 
 	public void merge(final MinMax other) {
-		if (other.min < this.min)
+		if (other.min != -1 && other.min < this.min)
 			this.min = other.min;
 		if (other.max > this.max)
 			this.max = other.max;

@@ -477,6 +477,31 @@ public class TestDates {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void fiscalYear() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Fiscal Year");
+		final String[] inputs = new String[] {
+				"2014", "2004", "2005", " 2006", " 2008", " 2009", " 2010", " 2012", " 2013", " 2011", " 2007" };
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getTypeQualifier(), "yyyy");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[ 	]*\\d{4}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CCEXPIRES", DateResolutionMode.Auto);
 		analysis.setCollectStatistics(false);

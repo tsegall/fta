@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 8.0.14
+ - ENH: Add new Semantic Types - COORDINATE.EASTING, COORDINATE.NORTHING
+ - BUG: Fix NumberFormatException with space padded years - see TestDate.fiscalYear()
+ - BUG: Fix Exception with "88-0828S7" and many blanks - see RandomTests.strange()
+ - BUG: Another viznet nasty -0828S7" - see RandomTests.viznet3()
+ - BUG: Another viznet nasty '2018-06-26T15:27:50.' - see DetermineDateTimeFormatTests.unusualT()
+
 ### 8.0.13
  - ENH: Improve Spanish support (Postal Codes + Year + Yes/No)
  - BUG: Fix NPE on "05/09/2014 02:00:00 AM +0000" (rework PassTwo)
