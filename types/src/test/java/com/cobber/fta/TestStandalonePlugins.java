@@ -177,7 +177,7 @@ public class TestStandalonePlugins {
 			analyzer.registerDefaultPlugins(locale);
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
-			for (int iters = 0; iters < 100; iters++) {
+			for (int iters = 0; iters < 10; iters++) {
 				for (final LogicalType logical : registered) {
 
 					String pluginSignature = logical.getPluginDefinition().signature;

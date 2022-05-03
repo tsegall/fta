@@ -1,12 +1,20 @@
 
 ## Changes ##
 
+### 8.0.15
+ - ENH: Improve header detection for Telephone
+ - INT: Improve test coverage
+ - BUG: Viznet - Do not generate bogus formats if date format switches, e.g. some dd/MM/yyyy then a set of yyyy-MM-dd - see TestDates.mixedDates()
+ - BUG: Viznet - Do not introduce grouping if already a Logical Type - see TestLongs.testLongLogicalType()
+ - BUG: Viznet - Fix date parsing for 02/08/2017 08:30:01 AM +0000 (ambiguous day & month).
+ - BUG: Viznet - Fix dates masquerading as longs (with errors)
+
 ### 8.0.14
  - ENH: Add new Semantic Types - COORDINATE.EASTING, COORDINATE.NORTHING
- - BUG: Fix NumberFormatException with space padded years - see TestDate.fiscalYear()
- - BUG: Fix Exception with "88-0828S7" and many blanks - see RandomTests.strange()
- - BUG: Another viznet nasty -0828S7" - see RandomTests.viznet3()
- - BUG: Another viznet nasty '2018-06-26T15:27:50.' - see DetermineDateTimeFormatTests.unusualT()
+ - BUG: Viznet - Fix NumberFormatException with space padded years - see TestDate.fiscalYear()
+ - BUG: Viznet - Fix Exception with "88-0828S7" and many blanks - see RandomTests.strange()
+ - BUG: Viznet - Another nasty -0828S7" - see RandomTests.viznet3()
+ - BUG: Viznet - Another nasty '2018-06-26T15:27:50.' - see DetermineDateTimeFormatTests.unusualT()
 
 ### 8.0.13
  - ENH: Improve Spanish support (Postal Codes + Year + Yes/No)

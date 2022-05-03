@@ -2134,6 +2134,32 @@ public class TestDates {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void mixedDates() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("mixedDates");
+		analysis.setCollectStatistics(false);
+		final String[] inputs = {
+				"04/07/2017", "13/07/2017", "15/08/2017", "29/08/2017", "09/10/2017", "14/09/2017", "25/09/2017",
+				" 2017-07-11", " 2017-07-16", " 2017-08-06", " 2017-08-09", " 2017-09-04", " 2017-09-06", " 2017-09-08",
+				" 2017-09-11", " 2017-09-14", " 2017-09-17", " 2017-07-07", "", "",
+				" 2017-07-12", " 2017-07-17", " 2017-07-19", "", "", " 2017-08-22", ""
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getBlankCount(), 5);
+		// 20 total - 7 bad, 5 blank
+		assertEquals(result.getMatchCount(), inputs.length - 12);
+		assertEquals(result.getRegExp(), "[ 	]*\\d{4}-\\d{2}-\\d{2}");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicDateDMMMYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicDateDMMMYY");
 		analysis.setCollectStatistics(false);
@@ -2487,6 +2513,37 @@ public class TestDates {
 			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void longAsDatewithErrors() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Date");
+
+		final String inputs[] = {
+				"20050915", "20050915", "20051020", "20060112", "20060201",
+				"20060201", "20060223", "20060700", "20060908", "20061100",
+				"20061100", "20061115", "20061200", "20070110", "20070305",
+				"20070424", "20070717", "20070919", "20070920", "20070921",
+				"20080124", "20080827", "20081007", "20081021", "20081100",
+				"20081203", "20081215", "20090115", "20090115", "20090128",
+				"20090909", "20091109", "20100205", "20100911", "20100922",
+				"201207XX", "20121101"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeQualifier(), "yyyyMMdd");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{8}");
+	}
+
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void anotherDateSwitcher() throws IOException, FTAException {

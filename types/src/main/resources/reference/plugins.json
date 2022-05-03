@@ -4,7 +4,7 @@
 		"description": "Email Address",
 		"signature": "+A0AMjgeFlGRlPKsX/iXYmoWpfY=",
 		"clazz": "com.cobber.fta.plugins.EmailLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(email).*", "confidence": 90 } ] } ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(email|e-mail).*", "confidence": 90 } ] } ],
 		"priority": 10
 	},
 	{
@@ -38,7 +38,7 @@
 		"description": "Telephone Number (Generic)",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
 		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(phone|fax|mobile|cell|Mobiel).*", "confidence": 98 } ] } ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(phone|fax|mobile|cell|Mobiel|telephone|telefon|téléphone).*", "confidence": 98 } ] } ],
 		"priority": 40
 	},
 	{

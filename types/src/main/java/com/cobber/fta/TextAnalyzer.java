@@ -28,6 +28,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -698,7 +699,7 @@ public class TextAnalyzer {
 			l = n.longValue();
 			if (trimmed.indexOf(localeGroupingSeparator) != -1) {
 				facts.groupingSeparators++;
-				if (!KnownPatterns.hasGrouping(facts.matchPatternInfo.id)) {
+				if (!facts.matchPatternInfo.isLogicalType() && !KnownPatterns.hasGrouping(facts.matchPatternInfo.id)) {
 					facts.matchPatternInfo = knownPatterns.grouping(facts.matchPatternInfo.regexp);
 					debug("Type determination - now with grouping {}", facts.matchPatternInfo);
 				}
@@ -1904,7 +1905,7 @@ public class TextAnalyzer {
 			}
 		}
 		// If we are currently Numeric and the only errors are doubles then convert to double
-		else if (facts.outliers.size() == analysis.doubles && FTAType.LONG.equals(current.getBaseType())) {
+		else if (!facts.matchPatternInfo.isLogicalType() && facts.outliers.size() == analysis.doubles && FTAType.LONG.equals(current.getBaseType())) {
 			KnownPatterns.ID id;
 			if (analysis.exponent)
 				id = analysis.negative ? KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT;
@@ -2757,6 +2758,20 @@ public class TextAnalyzer {
 		return result;
 	}
 
+	/*
+	 * Synthesize the topK/bottomK by running the cardinality set.
+	 */
+	private void generateTopBottom() {
+		for (final String s : facts.cardinality.keySet())
+			if (Integer.valueOf(s.trim()) != 0)
+				try {
+					trackDateTime(s, facts.matchPatternInfo, true);
+				}
+				catch (DateTimeException e) {
+					// Swallow - any we lost are no good so will not be in the top/bottom set!
+				}
+	}
+
 	void handleLong(final long realSamples) {
 		if (KnownPatterns.ID.ID_LONG == facts.matchPatternInfo.id && facts.matchPatternInfo.typeQualifier == null && facts.minLong < 0)
 			facts.matchPatternInfo = knownPatterns.negation(facts.matchPatternInfo.regexp);
@@ -2773,9 +2788,7 @@ public class TextAnalyzer {
 
 			// If we are collecting statistics - we need to generate the topK and bottomK
 			if (analysisConfig.isCollectStatistics())
-				for (final String s : facts.cardinality.keySet())
-					if (!Utils.allZeroes(s))
-						trackDateTime(s, facts.matchPatternInfo, true);
+				generateTopBottom();
 		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > 1800 && facts.maxLong < 2041 &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
 						keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) ||
@@ -2786,9 +2799,7 @@ public class TextAnalyzer {
 
 			// If we are collecting statistics - we need to generate the topK and bottomK
 			if (analysisConfig.isCollectStatistics())
-				for (final String s : facts.cardinality.keySet())
-					if (Integer.valueOf(s.trim()) != 0)
-						trackDateTime(s, facts.matchPatternInfo, true);
+				generateTopBottom();
 		} else if (facts.cardinality.size() == 2 && facts.minLong == 0 && facts.maxLong == 1) {
 			// boolean by any other name
 			facts.minBoolean = "0";

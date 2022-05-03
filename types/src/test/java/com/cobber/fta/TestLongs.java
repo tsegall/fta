@@ -883,6 +883,39 @@ public class TestLongs {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void testLongLogicalType() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("PARTITA IVA");
+		analysis.setLocale(Locale.ITALIAN);
+		analysis.setPluginThreshold(95);
+		analysis.setDebug(2);
+
+		final String[] samples = {
+				"01497781003", "01243801006", "01763561006", "02151151004", "01322551001",
+				"03919071005", "01587761006", "05497891001", "00985491000", "01146421001",
+				"01869671006", "01869671006", "01869671006", "01028501003", "01321971002",
+				"01320371006", "02150831002", "04505241002", "01220551004", "01030121006",
+				"01054891005", "07543541002", "07451591007", "04212731006", "01174991008",
+				"01428411001", "02077861009", "01037841002", "09452921001", "01004641005",
+				"1.0752770585E10"
+		};
+
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertTrue(result.isLogicalType());
+		assertEquals(result.getTypeQualifier(), "CHECKDIGIT.LUHN");
+//BUG TODO		assertEquals(result.getRegExp(), "\\d{13}");
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getMatchCount(), samples.length - 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), samples.length - 1);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void paddedLongs() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("RowID");
 		final String inputs[] = {

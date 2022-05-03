@@ -453,6 +453,25 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void unqualifiedPM() {
+		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final String AMBIGUOUS = "08/01/2017 10:35:00.1234 AM +0000";
+
+		for (int i = 0; i < 25; i++)
+			det.train(AMBIGUOUS);
+
+		final DateTimeParserResult result = det.getResult();
+
+		final String formatString = result.getFormatString();
+
+		assertEquals(formatString, "dd/MM/yyyy hh:mm:ss.SSSS a xx");
+
+		final String regExp = result.getRegExp();
+
+		assertTrue(AMBIGUOUS.matches(regExp));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void unixDateCommand(){
 		final String pipedInput = "Thu Jul  2 09:48:00 PDT 2020|Wed Jul  1 10:00:56 PDT 2020|Thu Jul  2 04:56:56 PDT 2020|Wed Jul 22 09:48:56 PDT 2020|";
 		final String inputs[] = pipedInput.split("\\|");
@@ -800,6 +819,58 @@ public class DetermineDateTimeFormatTests {
 	public void testAsResult() {
 		assertNull(DateTimeParserResult.asResult("yyyy-MM-ddTHH:m:ssx", DateResolutionMode.None, Locale.getDefault()));
 		assertNull(DateTimeParserResult.asResult("yyyy-MM-ddTHH:mm:sx", DateResolutionMode.None, Locale.getDefault()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void ambiguous_yyyy_dM_dM() {
+		final DateTimeParser dtp = new DateTimeParser();
+
+		String fmt = dtp.determineFormatString("2022/01/01");
+		DateTimeParserResult result = DateTimeParserResult.asResult(fmt, DateResolutionMode.None, Locale.getDefault());
+		assertEquals("yyyy/??/??", result.getFormatString());
+		result = DateTimeParserResult.asResult(fmt, DateResolutionMode.DayFirst, Locale.getDefault());
+		assertEquals("yyyy/??/??", result.getFormatString());
+		result = DateTimeParserResult.asResult(fmt, DateResolutionMode.MonthFirst, Locale.getDefault());
+		assertEquals("yyyy/??/??", result.getFormatString());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void ambiguous_dM_dM_yyyy() {
+		final DateTimeParser dtp = new DateTimeParser();
+
+		String fmt = dtp.determineFormatString("01/01/2018");
+		DateTimeParserResult result = DateTimeParserResult.asResult(fmt, DateResolutionMode.None, Locale.getDefault());
+		assertEquals(result.getFormatString(), "??/??/yyyy");
+		result = DateTimeParserResult.asResult(fmt, DateResolutionMode.DayFirst, Locale.getDefault());
+		assertEquals(result.getFormatString(), "dd/MM/yyyy");
+		result = DateTimeParserResult.asResult(fmt, DateResolutionMode.MonthFirst, Locale.getDefault());
+		assertEquals(result.getFormatString(), "MM/dd/yyyy");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void ambiguous_dMy_dMy_dMy() {
+		final DateTimeParser dtp = new DateTimeParser();
+
+		String fmt = dtp.determineFormatString("01/01/01");
+		DateTimeParserResult result = DateTimeParserResult.asResult(fmt, DateResolutionMode.None, Locale.getDefault());
+		assertEquals(result.getFormatString(), "??/??/??");
+		result = DateTimeParserResult.asResult(fmt, DateResolutionMode.DayFirst, Locale.getDefault());
+		assertEquals(result.getFormatString(), "dd/MM/yy");
+		result = DateTimeParserResult.asResult(fmt, DateResolutionMode.MonthFirst, Locale.getDefault());
+		assertEquals(result.getFormatString(), "MM/dd/yy");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void padding() {
+		final DateTimeParser dtp = new DateTimeParser();
+		final String PADDED_INPUT = "23/01/88  3:14:16";
+
+		String fmt = dtp.determineFormatString(PADDED_INPUT);
+		DateTimeParserResult result = DateTimeParserResult.asResult(fmt, DateResolutionMode.None, Locale.getDefault());
+		assertEquals(fmt, result.getFormatString());
+		assertEquals(result.getFormatString(), "dd/MM/yy ppH:mm:ss");
+		DateTimeFormatter formatter = DateTimeParser.ofPattern(fmt);
+		formatter.parse(PADDED_INPUT);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

@@ -113,14 +113,35 @@ public class DateTimeParserResult {
 				r.dateFieldOffsets != null ? Arrays.copyOf(r.dateFieldOffsets, r.dateFieldOffsets.length) : null,
 				r.dateFieldPad != null ? Arrays.copyOf(r.dateFieldPad, r.dateFieldPad.length) : null,
 				r.timeFirst, r.dateTimeSeparator, r.yearOffset, r.monthOffset, r.dayOffset, r.dateSeparator, r.timeZone,
-				r.amPmIndicator, r.tokenized != null ? r.tokenized : null);
+				r.amPmIndicator, r.tokenized);
 
 	}
 
 	enum Token {
-		CLOCK24_1_OR_2, CLOCK24_2, CONSTANT_CHAR, DAYS_1_OR_2, DAYS_2, DAY_OF_WEEK, DAY_OF_WEEK_ABBR, DIGITS_1_OR_2, MONTHS_1_OR_2,
-		MONTHS_2, HOURS12_1_OR_2, HOURS12_2, HOURS24_1_OR_2, HOURS24_2, MINS_2, PAD_2, SECS_2, FRACTION,
-		DIGITS_2, YEARS_2, YEARS_4, MONTH, MONTH_ABBR, TIMEZONE, LOCALIZED_TIMEZONE_OFFSET, TIMEZONE_OFFSET, TIMEZONE_OFFSET_Z, AMPM
+		AMPM("a"),
+		CLOCK24_1_OR_2("k"), CLOCK24_2("kk"),
+		CONSTANT_CHAR,
+		DAYS_1_OR_2("d"), DAYS_2("dd"), DAY_OF_WEEK("EEE"), DAY_OF_WEEK_ABBR("EE"),
+		DIGITS_1_OR_2("?"), DIGITS_2("??"),
+		MONTHS_1_OR_2("M"), MONTHS_2("MM"), MONTH("MMMM"), MONTH_ABBR("MMM"),
+		HOURS12_1_OR_2("h"), HOURS12_2("hh"), HOURS24_1_OR_2("H"), HOURS24_2("HH"), MINS_2("mm"), PAD_2("p"), SECS_2("ss"), FRACTION("S"),
+		YEARS_2("yy"), YEARS_4("yyyy"),
+		TIMEZONE("z"), LOCALIZED_TIMEZONE_OFFSET("O"),
+		TIMEZONE_OFFSET("x"), TIMEZONE_OFFSET_Z("X");
+
+		public final String rep;
+
+		Token() {
+			rep = null;
+		}
+
+		Token(String rep) {
+			this.rep = rep;
+		}
+
+		public String getRepresentation() {
+			return rep;
+		}
 	}
 
 	protected boolean isDateUnbound() {
@@ -433,7 +454,7 @@ public class DateTimeParserResult {
 		// Add to cache
 		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, locale, timeElements, timeFieldLengths, timeFieldOffsets, timeFieldPad,
 				hourLength, dateElements, dateFieldLengths, dateFieldOffsets, dateFieldPad, timeFirst, dateTimeSeparator,
-				yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator, fullyBound ? FormatterToken.tokenize(formatString) : null);
+				yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator, FormatterToken.tokenize(formatString));
 		dtpCache.put(key, ret);
 
 		return newInstance(ret);
@@ -947,82 +968,89 @@ public class DateTimeParserResult {
 		if (formatString != null)
 			return formatString;
 
-		String hours = (amPmIndicator != null && amPmIndicator) ? "h" : "H";
-		if (hourLength == 2)
-			hours += hours;
-		String timeAnswer = null;
-		switch (timeElements) {
-		case 1:
-			timeAnswer = hours;
-			break;
-		case 2:
-			timeAnswer = hours + ":mm";
-			break;
-		case 3:
-			timeAnswer = hours + ":mm:ss" ;
-			break;
-		case 4:
-			timeAnswer = hours + ":mm:ss." + Utils.repeat('S', timeFieldLengths[FRACTION_INDEX].getMin());
-			break;
-		}
-		if (amPmIndicator != null && amPmIndicator)
-			timeAnswer += " a";
 
-		String dateAnswer = "";
+		String[] patch = new String[3];
 		if (dateElements != 0) {
 			if (yearOffset == -1) {
-				if (dayOffset != -1) {
-					// The day must be 1, since if it were 0 the year would be known as d/y/m is not valid
-					dateAnswer = asDate(new char[] {'M', 'd', 'y'});
-				}
-				else {
-					// yearOffset == -1 && dayOffset == -1
-					if (resolutionMode != DateResolutionMode.None)
-						if (resolutionMode == DateResolutionMode.DayFirst || monthOffset == 1)
-							dateAnswer = asDate(new char[] {'d', 'M', 'y'});
-						else
-							dateAnswer = asDate(new char[] {'M', 'd', 'y'});
-					else {
-						dateAnswer = asDate(new char[] {'?', monthOffset == 1 ? 'M' : '?', '?'});
+				if (resolutionMode != DateResolutionMode.None)
+					if (resolutionMode == DateResolutionMode.DayFirst) {
+						patch = new String[] { "d", "M", "y" };
 					}
+					else {
+						patch = new String[] { "M", "d", "y" };
+					}
+				else {
+					patch = new String[] { "?", "?", "?" };
 				}
 			}
 			else if (yearOffset == 0) {
-				if (dayOffset != -1) {
-					if (dayOffset == 1)
-						dateAnswer = asDate(new char[] {'y', 'd', 'M'});
-					else
-						dateAnswer = asDate(new char[] {'y', 'M', 'd'});
-				} else
-					dateAnswer += asDate(new char[] {'y', '?', '?'});
+				patch = new String[] { "?", "?" };
 			}
-			else if (yearOffset == 2) {
-				if (dayOffset != -1) {
-					if (dayOffset == 0)
-						dateAnswer = asDate(new char[] {'d', 'M', 'y'});
-					else
-						dateAnswer = asDate(new char[] {'M', 'd', 'y'});
-				} else {
-					if (resolutionMode != DateResolutionMode.None)
-						if (resolutionMode == DateResolutionMode.DayFirst)
-							dateAnswer = asDate(new char[] {'d', 'M', 'y'});
-						else
-							dateAnswer = asDate(new char[] {'M', 'd', 'y'});
-					else
-						dateAnswer = asDate(new char[] {'?', '?', 'y'});
+			else {
+				if (resolutionMode != DateResolutionMode.None)
+					if (resolutionMode == DateResolutionMode.DayFirst) {
+						patch = new String[] { "d", "M" };
+					}
+					else {
+						patch = new String[] { "M", "d" };
+					}
+				else {
+					patch = new String[] { "?", "?" };
 				}
 			}
 		}
 
-		if (timeElements == -1)
-			return dateAnswer + timeZone;
-		if (dateElements == -1)
-			return timeAnswer;
 
-		final String separator = dateTimeSeparator == ' ' ? " " : "'T'";
-		formatString = (timeFirst != null && timeFirst) ? timeAnswer + separator + dateAnswer + timeZone
-				: dateAnswer + separator + timeAnswer + timeZone;
+		StringBuilder ret = new StringBuilder();
+		int patchCount = 0;
+		for (final FormatterToken token : tokenized) {
+			Token nextToken = token.getType();
 
-		return formatString;
+			switch (nextToken) {
+			case AMPM:
+			case CLOCK24_1_OR_2:
+			case CLOCK24_2:
+			case DAYS_1_OR_2:
+			case DAYS_2:
+			case DAY_OF_WEEK:
+			case DAY_OF_WEEK_ABBR:
+			case HOURS12_1_OR_2:
+			case HOURS12_2:
+			case HOURS24_1_OR_2:
+			case HOURS24_2:
+			case MINS_2:
+			case MONTH:
+			case MONTHS_1_OR_2:
+			case MONTHS_2:
+			case MONTH_ABBR:
+			case SECS_2:
+			case TIMEZONE:
+			case YEARS_2:
+			case YEARS_4:
+				ret.append(nextToken.getRepresentation());
+				break;
+			case FRACTION:
+			case LOCALIZED_TIMEZONE_OFFSET:
+			case TIMEZONE_OFFSET:
+			case TIMEZONE_OFFSET_Z:
+				ret.append(Utils.repeat(nextToken.getRepresentation().charAt(0), token.getCount()));
+				break;
+			case CONSTANT_CHAR:
+				ret.append(token.getValue());
+				break;
+			case DIGITS_2:
+				ret.append(patch[patchCount]);
+			case DIGITS_1_OR_2:
+				ret.append(patch[patchCount]);
+				patchCount++;
+				break;
+			case PAD_2:
+				break;
+			default:
+				break;
+			}
+		}
+
+		return ret.toString();
 	}
 }

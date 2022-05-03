@@ -367,6 +367,13 @@ public class DateTimeParser {
 
 				// Process any date-related information
 				if (result.dateElements != -1) {
+					// Ensure that we have compatible date formats - if not skip it
+					if (answerResult.yearOffset != result.yearOffset && answerResult.yearOffset != -1 && result.yearOffset != -1 ||
+							answerResult.monthOffset != result.monthOffset && answerResult.monthOffset != -1 && result.monthOffset != -1 ||
+							answerResult.dayOffset != result.dayOffset && answerResult.dayOffset != -1 && result.dayOffset != -1
+							)
+						continue;
+
 					if (answerResult.dayOffset == -1 && result.dayOffset != -1) {
 						// We did not know where the day was and now do
 						answerResult.dayOffset = result.dayOffset;
@@ -1111,7 +1118,7 @@ public class DateTimeParser {
 				if (timeTracker.getValue(0) == 24)
 					hours += hourLength == 1 ? "k" : "kk";
 				else
-					hours = hourLength == 1 ? "H" : "HH";
+					hours += hourLength == 1 ? "H" : "HH";
 			}
 			timeAnswer = hours + ":mm";
 			if (timeTracker.components() > 2)
