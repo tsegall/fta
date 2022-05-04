@@ -134,7 +134,7 @@ public class TestIdentity {
 		}
 
 		final TextAnalyzer analysis = new TextAnalyzer("Primary SSN");
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("SSN", "Social Security Number", "\\d{3}-\\d{2}-\\d{4}",
 				new String[] {"\\d{3}-\\d{2}-\\d{4}"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}",

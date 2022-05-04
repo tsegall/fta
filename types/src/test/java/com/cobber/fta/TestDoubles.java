@@ -524,7 +524,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void manyRandomDoubles() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyRandomDoubles");
-		analysis.setCollectStatistics(false);
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final int nullIterations = 50;
 		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;
 		int locked = -1;
@@ -561,7 +561,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void manyConstantLengthDoublesI18N_1() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthDoublesI18N_1");
-		analysis.setCollectStatistics(false);
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final int nullIterations = 50;
 		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
 		int locked = -1;
@@ -610,7 +610,7 @@ public class TestDoubles {
 		};
 		String[] samples = new String[samplesUS.length];
 		final TextAnalyzer analysis = new TextAnalyzer("manyFrenchDoubles");
-		analysis.setCollectStatistics(false);
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final Locale locale = Locale.forLanguageTag("fr-FR");
 		analysis.setLocale(locale);
 
@@ -673,7 +673,7 @@ public class TestDoubles {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 
 		analysis.train("1010e:");
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
@@ -704,7 +704,7 @@ public class TestDoubles {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%04d", i);
@@ -734,7 +734,7 @@ public class TestDoubles {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%04d", i);
@@ -768,7 +768,7 @@ public class TestDoubles {
 		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
 		int locked = -1;
 		final Locale locale = Locale.forLanguageTag("de-DE");
-		analysis.setCollectStatistics(false);
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		analysis.setLocale(locale);
 		final Set<String> samples = new HashSet<>();
 
@@ -967,7 +967,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void simpleDoubleExponentTest() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleDoubleExponentTest");
-		analysis.setCollectStatistics(false);
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final DecimalFormat df = new DecimalFormat("0.00E00");
 		final int SAMPLE_SIZE = 1000;
 		String sample;
@@ -1087,7 +1087,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void spacedDoubles() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("AMT");
-		analysis.setCollectStatistics(false);
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String inputs[] = {
 				" 000000512.80", "-000000512.80", "-000000006.96", "-000000206.43", "-000000078.40", " 000000000.03", "-000000000.03", "-000000010.60", " 000000244.87", " 000000917.60",
 				" 000000150.00", " 000000024.00", " 000000035.00", " 000000150.00", " 000000035.00", " 000000010.00", " 000000035.00", " 000000035.00", " 000000035.00", " 000000002.80",
@@ -1130,11 +1130,11 @@ public class TestDoubles {
 		final TextAnalyzer analysis1 = new TextAnalyzer("LATITUDE");
 		final TextAnalyzer analysis2 = new TextAnalyzer("LATITUDE");
 		final TextAnalyzer analysis3 = new TextAnalyzer("LATITUDE");
-		analysis1.setCollectStatistics(false);
+		analysis1.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		analysis1.setDebug(2);
-		analysis2.setCollectStatistics(false);
+		analysis2.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		analysis2.setDebug(2);
-		analysis3.setCollectStatistics(false);
+		analysis3.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		analysis3.setDebug(2);
 		final String inputs1[] = {
 				"-89.00", "-88.80", "-87.96", "-86.43", "-85.40", "84.03", "-83.03", "-82.60", "-81.87", "-80.60",
@@ -1199,7 +1199,7 @@ public class TestDoubles {
 
 		for (final Locale locale : locales) {
 			final TextAnalyzer analysis = new TextAnalyzer("DecimalSeparator");
-			analysis.setCollectStatistics(false);
+			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 			analysis.setLocale(locale);
 
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
@@ -1646,8 +1646,8 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 	public void _doublePerf(final boolean statisticsOn) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("_doublePerfcd ");
 		if (!statisticsOn) {
-			analysis.setDefaultLogicalTypes(false);
-			analysis.setCollectStatistics(false);
+			analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		}
 		final long sampleCount = 100_000_000_000L;
 		boolean saveOutput = false;

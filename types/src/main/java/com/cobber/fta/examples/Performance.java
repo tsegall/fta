@@ -26,8 +26,8 @@ public abstract class Performance {
 		final TextAnalyzer analysis = new TextAnalyzer("DateOfBirth");
 
 		// To maximize performance - disable default logical types and Statistics
-		analysis.setDefaultLogicalTypes(false);
-		analysis.setCollectStatistics(false);
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 
 		final String[] inputs = {
 				"11/25/2010 11:13:48 AM",  "9/20/2010 7:30:26 AM", "9/17/2010 2:27:58 PM", "12/14/2010 11:07:17 AM",

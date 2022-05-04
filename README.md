@@ -225,7 +225,7 @@ EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
 FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|en
-GENDER.TEXT_&lt;Language&gt;|Gender|cn, de, en, es, fr, it, ms, nl, pt, tr, ja
+GENDER.TEXT_&lt;Language&gt;|Gender|cn, de, en, es, fi, fr, it, ja, ms, nl, pl, pt, tr
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN

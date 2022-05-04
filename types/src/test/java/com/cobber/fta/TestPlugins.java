@@ -456,7 +456,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderNoDefaults() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
 				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
@@ -545,7 +545,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegisterInfinite() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		PluginDefinition pluginDefinition = new PluginDefinition("CC", "com.cobber.fta.PluginCreditCard");
 		pluginDefinition.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en") };
@@ -2041,10 +2041,10 @@ public class TestPlugins {
 				locked = i;
 		}
 		try {
-			analysis.setCollectStatistics(false);
+			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		}
 		catch (IllegalArgumentException e) {
-			assertEquals(e.getMessage(), "Cannot adjust statistics collection once training has started");
+			assertEquals(e.getMessage(), "Cannot adjust feature 'COLLECT_STATISTICS' once training has started");
 			return;
 		}
 		fail("Exception should have been thrown");
@@ -2531,7 +2531,7 @@ public class TestPlugins {
 		}
 
 		final TextAnalyzer analysis = new TextAnalyzer("genero");
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		Locale portuguese = Locale.forLanguageTag("pt-BR");
 		analysis.setLocale(portuguese);
 		final List<PluginDefinition> plugins = new ArrayList<>();

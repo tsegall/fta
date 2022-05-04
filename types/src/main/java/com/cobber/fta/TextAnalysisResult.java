@@ -138,7 +138,7 @@ public class TextAnalysisResult {
 	 * @return The minimum value as a String.
 	 */
 	public String getMinValue() {
-		if (!analysisConfig.isCollectStatistics())
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.getMinValue();
 	}
@@ -148,7 +148,7 @@ public class TextAnalysisResult {
 	 * @return The maximum value as a String.
 	 */
 	public String getMaxValue() {
-		if (!analysisConfig.isCollectStatistics())
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.getMaxValue();
 	}
@@ -193,7 +193,7 @@ public class TextAnalysisResult {
 	 * @return The mean.
 	 */
 	public Double getMean() {
-		if (!analysisConfig.isCollectStatistics())
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 
 		return facts.matchPatternInfo.isNumeric() ? facts.mean : null;
@@ -204,7 +204,7 @@ public class TextAnalysisResult {
 	 * @return The Standard Deviation.
 	 */
 	public Double getStandardDeviation() {
-		if (!analysisConfig.isCollectStatistics())
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 
 		return facts.matchPatternInfo.isNumeric() ? Math.sqrt(facts.variance) : null;
@@ -215,7 +215,7 @@ public class TextAnalysisResult {
 	 * @return The top K values (default: 10).
 	 */
 	public Set<String> getTopK() {
-		if (!analysisConfig.isCollectStatistics())
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.topK;
 	}
@@ -225,7 +225,7 @@ public class TextAnalysisResult {
 	 * @return The bottom K values (default: 10).
 	 */
 	public Set<String> getBottomK() {
-		if (!analysisConfig.isCollectStatistics())
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 		return facts.bottomK;
 	}
@@ -436,7 +436,7 @@ public class TextAnalysisResult {
 	 * @return True if statistics were collected.
 	 */
 	public boolean statisticsEnabled() {
-		return analysisConfig.isCollectStatistics();
+		return analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS);
 	}
 
 	private static <K extends Comparable,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
@@ -619,6 +619,8 @@ public class TextAnalysisResult {
 
 			if (facts.matchPatternInfo.typeQualifier != null)
 				analysis.put("typeQualifier", facts.matchPatternInfo.typeQualifier);
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.FORMAT_DETECTION))
+				analysis.put("contentFormat", facts.streamFormat);
 		}
 
 		if (FTAType.DOUBLE == facts.matchPatternInfo.getBaseType())

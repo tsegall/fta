@@ -35,7 +35,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Plugins {
 	private final Map<String, LogicalType> registered = new HashMap<>();
-	private final static ObjectMapper MAPPER = new ObjectMapper();
+	private ObjectMapper MAPPER;
+
+	Plugins(ObjectMapper mapper) {
+		this.MAPPER = mapper;
+	}
 
 	public void registerPlugins(final Reader JSON, final String dataStreamName, final Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
 		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, false);

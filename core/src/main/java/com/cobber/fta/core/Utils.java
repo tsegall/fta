@@ -15,10 +15,20 @@
  */
 package com.cobber.fta.core;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.xml.sax.InputSource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * A Utility class with a set of helper functions.
@@ -150,8 +160,8 @@ public final class Utils {
 	}
 
 	public static String getBaseName(final String fileName) {
-	    final int index = fileName.lastIndexOf('.');
-        return index == -1 ? fileName : fileName.substring(0, index);
+		final int index = fileName.lastIndexOf('.');
+		return index == -1 ? fileName : fileName.substring(0, index);
 	}
 
 	private static String version = Utils.class.getPackage().getImplementationVersion();
@@ -162,5 +172,73 @@ public final class Utils {
 	 */
 	public static String getVersion() {
 		return version;
+	}
+
+	public static String determineStreamFormat(final ObjectMapper mapper, final Map<String, Long> cardinality) {
+		final int totalSamples = cardinality.size();
+		final String HTML_CHECKER = "<!DOCTYPE html>|</?\\s*[a-z-][^>]*\\s*>|(\\&(?:[\\w\\d]+|#\\d+|#x[a-f\\d]+);)";
+		final Pattern patternHTML = Pattern.compile(HTML_CHECKER);
+
+		if (totalSamples == 0)
+			return null;
+
+		int fmtJSON = 0;
+		int fmtHTML = 0;
+		int fmtXML = 0;
+		int fmtBase64 = 0;
+		int fmtRealBase64 = 0;
+		int samples = 0;
+
+		for (final String sample : cardinality.keySet()) {
+			samples++;
+			if (sample.length() < 2)
+				continue;
+			char first = sample.charAt(0);
+			char last = sample.charAt(sample.length() - 1);
+			if (first == '{' || first == '[' && first == last && samples - fmtJSON < 5) {
+				try {
+					mapper.readTree(sample);
+					fmtJSON++;
+					continue;
+				} catch (IOException e) {
+					// Ignore
+				}
+			}
+			if (first == '<' && last == '>'&& samples - fmtXML < 5) {
+				try {
+					DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(sample)));
+					fmtXML++;
+				} catch (Exception e) {
+				}
+				continue;
+			}
+			if (first == '<' && samples - (fmtHTML + fmtXML) < 5) {
+				if (patternHTML.matcher(sample).groupCount() != 0)
+					fmtHTML++;
+				continue;
+			}
+			if (sample.length() % 4 == 0 && samples - fmtBase64 < 5) {
+				try {
+					Base64.getDecoder().decode(sample);
+					fmtBase64++;
+					if (last == '=')
+						fmtRealBase64++;
+					continue;
+				}
+				catch (IllegalArgumentException e) {
+					// Ignore
+				}
+			}
+		}
+		if (cardinality.size() == fmtJSON)
+			return "JSON";
+		else if (cardinality.size() == fmtXML)
+			return "XML";
+		else if (cardinality.size() == fmtHTML + fmtXML)
+			return "HTML";
+		else if (cardinality.size() == fmtBase64 && fmtRealBase64 != 0)
+			return "Base64";
+
+		return "OTHER";
 	}
 }

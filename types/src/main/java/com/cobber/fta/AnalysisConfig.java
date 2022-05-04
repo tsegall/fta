@@ -17,9 +17,13 @@ package com.cobber.fta;
 
 import java.util.Objects;
 
+import com.cobber.fta.TextAnalyzer.Feature;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
 /**
  * Capture how the Analysis is configured.  Attributes on the analysis are typically frozen once training has started.
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class AnalysisConfig {
 	/** The default value for the maximum Cardinality tracked. */
 	public static final int MAX_CARDINALITY_DEFAULT = 12_000;
@@ -76,35 +80,51 @@ public class AnalysisConfig {
 	/** Enable Numeric widening - i.e. if we see lots of integers then some doubles call it a double. */
 	private boolean numericWidening = true;
 
+	/** Should we attempt to do Stream format detection.  For example, HTML, XML, JSON, BASE64, ... */
+	private boolean formatDetection = false;
+
 	AnalysisConfig() {
 	}
 
-	public boolean isCollectStatistics() {
-		return collectStatistics;
+	/**
+	 * Method for changing state of an on/off feature for this TextAnalyzer.
+	 * @param feature The feature to be set.
+	 * @param state The new state of the feature.
+	 */
+	public void configure(Feature feature, final boolean state) {
+		switch (feature) {
+		case COLLECT_STATISTICS:
+			collectStatistics = state;
+			break;
+		case DEFAULT_LOGICAL_TYPES:
+			enableDefaultLogicalTypes = state;
+			break;
+		case NUMERIC_WIDENING:
+			numericWidening = state;
+			break;
+		case FORMAT_DETECTION:
+			formatDetection = state;
+			break;
+		}
 	}
 
-	public void setCollectStatistics(boolean collectStatistics) {
-		this.collectStatistics = collectStatistics;
-	}
-
-	public boolean isEnableDefaultLogicalTypes() {
-		return enableDefaultLogicalTypes;
-	}
-
-	public void setEnableDefaultLogicalTypes(boolean enableDefaultLogicalTypes) {
-		this.enableDefaultLogicalTypes = enableDefaultLogicalTypes;
-	}
-
-	public boolean isNumericWidening() {
-		return numericWidening;
-	}
-
-	public void setNumericWidening(boolean numericWidening) {
-		this.numericWidening = numericWidening;
-	}
-
-	public boolean getNumericWidening() {
-		return numericWidening;
+	/**
+	 * Method for checking whether given TextAnalyzer feature is enabled.
+	 * @param feature The feature to be tested.
+	 * @return Whether the identified feature is enabled.
+	 */
+	public boolean isEnabled(Feature feature) {
+		switch (feature) {
+		case COLLECT_STATISTICS:
+			return collectStatistics;
+		case DEFAULT_LOGICAL_TYPES:
+			return enableDefaultLogicalTypes;
+		case NUMERIC_WIDENING:
+			return numericWidening;
+		case FORMAT_DETECTION:
+			return formatDetection;
+		}
+		return false;
 	}
 
 	public int getDetectWindow() {

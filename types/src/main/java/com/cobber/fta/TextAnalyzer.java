@@ -155,6 +155,39 @@ public class TextAnalyzer {
 	private String localizedYes;
 	private String localizedNo;
 
+	/** Enumeration that defines all on/off features for parsers. */
+	public enum Feature {
+		/** Feature that if enabled return a double if we see a set of integers followed by some doubles call it a double. Feature is enabled by default. */
+		NUMERIC_WIDENING,
+		/** Feature that determines whether to collect statistics or not. Feature is enabled by default. */
+		COLLECT_STATISTICS,
+		/** Feature that indicates whether to enable the built-in Logical Types. Feature is enabled by default. */
+		DEFAULT_LOGICAL_TYPES,
+		/** Feature that indicates whether to attempt to detect the stream format (HTML, XML, JSON, BASE64, OTHER). Feature is disabled by default. */
+		FORMAT_DETECTION,
+	}
+
+	/**
+	 * Method for changing state of an on/off feature for this TextAnalyzer.
+	 * @param feature The feature to be set.
+	 * @param state The new state of the feature.
+	 */
+	public void configure(Feature feature, final boolean state) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot adjust feature '" + feature.toString() + "' once training has started");
+
+		analysisConfig.configure(feature, state);
+	}
+
+	/**
+	 * Method for checking whether given TextAnalyzer feature is enabled.
+	 * @param feature The feature to be tested.
+	 * @return Whether the identified feature is enabled.
+	 */
+	public boolean isEnabled(Feature feature) {
+		return analysisConfig.isEnabled(feature);
+	}
+
 	/**
 	 * An Escalation contains three regExps in order of increasing genericity.  So for example the following 3 regExps:
 	 *
@@ -213,7 +246,9 @@ public class TextAnalyzer {
 
 	private DateTimeParser dateTimeParser;
 
-	private final Plugins plugins = new Plugins();
+	private final ObjectMapper mapper = new ObjectMapper();
+
+	private final Plugins plugins = new Plugins(mapper);
 
 	/**
 	 * Construct a Text Analyzer using the supplied context.
@@ -289,13 +324,15 @@ public class TextAnalyzer {
      * @param collectStatistics
      *            A boolean indicating the desired state
 	 * @return The previous value of this parameter.
+	 * @deprecated Since 8.X, use {@link #configure(Feature, boolean)}
 	 */
+	@Deprecated
 	public boolean setCollectStatistics(final boolean collectStatistics) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot adjust statistics collection once training has started");
 
 		final boolean ret = collectStatistics;
-		analysisConfig.setCollectStatistics(collectStatistics);
+		analysisConfig.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
 		return ret;
 	}
 
@@ -332,9 +369,11 @@ public class TextAnalyzer {
 	 * Indicates whether to collect statistics or not.
 	 *
 	 * @return Whether Statistics collection is enabled.
+	 * @deprecated Since 8.X, use {@link #isEnabled(Feature)}
 	 */
+	@Deprecated
 	public boolean getCollectStatistics() {
-		return analysisConfig.isCollectStatistics();
+		return analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS);
 	}
 
 	/**
@@ -343,13 +382,15 @@ public class TextAnalyzer {
 	 * @param logicalTypeDetection
 	 *            A boolean indicating the desired state
 	 * @return The previous value of this parameter.
+	 * @deprecated Since 8.X, use {@link #configure(Feature, boolean)}
 	 */
+	@Deprecated
 	public boolean setDefaultLogicalTypes(final boolean logicalTypeDetection) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot adjust Logical Type detection once training has started");
 
 		final boolean ret = logicalTypeDetection;
-		analysisConfig.setEnableDefaultLogicalTypes(logicalTypeDetection);
+		analysisConfig.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, logicalTypeDetection);
 		return ret;
 	}
 
@@ -357,9 +398,11 @@ public class TextAnalyzer {
 	 * Indicates whether to enable default Logical Type processing or not.
 	 *
 	 * @return Whether default Logical Type processing collection is enabled.
+	 * @deprecated Since 8.X, use {@link #isEnabled(Feature)}
 	 */
+	@Deprecated
 	public boolean getDefaultLogicalTypes() {
-		return analysisConfig.isEnableDefaultLogicalTypes();
+		return analysisConfig.isEnabled(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES);
 	}
 
 	/**
@@ -415,21 +458,25 @@ public class TextAnalyzer {
 	 * If true enable Numeric widening - that is, if we see lots of integers then some doubles call it a double.
 	 * <p>Note: Defaults to true.
 	 * @param numericWidening The new value for numericWidening.
+	 * @deprecated Since 8.X, use {@link #configure(Feature, boolean)}
 	 */
+	@Deprecated
 	public void setNumericWidening(final boolean numericWidening) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot adjust NumericWidening once training has started");
 
-		analysisConfig.setNumericWidening(numericWidening);
+		analysisConfig.configure(TextAnalyzer.Feature.NUMERIC_WIDENING, numericWidening);
 	}
 
 	/**
 	 * Get the current value for numeric widening.
 	 *
 	 * @return The current value.
+	 * @deprecated Since 8.X, use {@link #isEnabled(Feature)}
 	 */
+	@Deprecated
 	public boolean getNumericWidening() {
-		return analysisConfig.getNumericWidening();
+		return analysisConfig.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING);
 	}
 
 	/**
@@ -498,7 +545,7 @@ public class TextAnalyzer {
 	 * Note:
 	 * <ul>
 	 * <li>The Cardinality must be larger than the Cardinality of the largest Finite Logical type
-	 * (if Semantic Type detection is enabled - see {@link #setDefaultLogicalTypes(boolean)}).
+	 * (if Semantic Type detection is enabled - see {@link #configure(Feature, boolean)}).
 	 * <li>
 	 * <li>It is not possible to change the cardinality once training has started.
 	 * </ul>
@@ -734,7 +781,7 @@ public class TextAnalyzer {
 			else
 				facts.monotonicIncreasing = false;
 
-			if (analysisConfig.isCollectStatistics()) {
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
 				// This test avoids the loop if the existing mean is the same as the input
 				if (l != facts.mean)
 					// Calculate the mean & standard deviation using Welford's algorithm
@@ -822,7 +869,7 @@ public class TextAnalyzer {
 		if (len > facts.maxTrimmedLength)
 			facts.maxTrimmedLength = len;
 
-		if (analysisConfig.isCollectStatistics())
+		if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			facts.tbString.observe(cleaned);
 
 		return true;
@@ -868,7 +915,7 @@ public class TextAnalyzer {
 		if (Double.isNaN(d) || Double.isInfinite(d))
 			return true;
 
-		if (register && analysisConfig.isCollectStatistics()) {
+		if (register && analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
 			if (d < facts.minDouble)
 				facts.minDouble = d;
 
@@ -911,7 +958,7 @@ public class TextAnalyzer {
 		// significantly faster than the parse on LocalTime/LocalDate/LocalDateTime/...
 		switch (result.getType()) {
 		case LOCALTIME:
-			if (register && analysisConfig.isCollectStatistics()) {
+			if (register && analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
 				final LocalTime localTime = LocalTime.parse(trimmed, formatter);
 				if (facts.minLocalTime == null || localTime.compareTo(facts.minLocalTime) < 0)
 					facts.minLocalTime = localTime;
@@ -924,7 +971,7 @@ public class TextAnalyzer {
 			break;
 
 		case LOCALDATE:
-			if (register && analysisConfig.isCollectStatistics()) {
+			if (register && analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
 				final LocalDate localDate = LocalDate.parse(trimmed, formatter);
 				if (facts.minLocalDate == null || localDate.compareTo(facts.minLocalDate) < 0)
 					facts.minLocalDate = localDate;
@@ -937,7 +984,7 @@ public class TextAnalyzer {
 			break;
 
 		case LOCALDATETIME:
-			if (register && analysisConfig.isCollectStatistics()) {
+			if (register && analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
 				final LocalDateTime localDateTime = LocalDateTime.parse(trimmed, formatter);
 				if (facts.minLocalDateTime == null || localDateTime.compareTo(facts.minLocalDateTime) < 0)
 					facts.minLocalDateTime = localDateTime;
@@ -950,7 +997,7 @@ public class TextAnalyzer {
 			break;
 
 		case ZONEDDATETIME:
-			if (register && analysisConfig.isCollectStatistics()) {
+			if (register && analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
 				final ZonedDateTime zonedDateTime = ZonedDateTime.parse(trimmed, formatter);
 				if (facts.minZonedDateTime == null || zonedDateTime.compareTo(facts.minZonedDateTime) < 0)
 					facts.minZonedDateTime = zonedDateTime;
@@ -963,7 +1010,7 @@ public class TextAnalyzer {
 			break;
 
 		case OFFSETDATETIME:
-			if (register && analysisConfig.isCollectStatistics()) {
+			if (register && analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
 				final OffsetDateTime offsetDateTime = OffsetDateTime.parse(trimmed, formatter);
 				if (facts.minOffsetDateTime == null || offsetDateTime.compareTo(facts.minOffsetDateTime) < 0)
 					facts.minOffsetDateTime = offsetDateTime;
@@ -1002,6 +1049,8 @@ public class TextAnalyzer {
 	}
 
 	private void initialize() throws FTAPluginException, FTAUnsupportedLocaleException {
+		mapper.registerModule(new JavaTimeModule());
+
 		final Calendar cal = Calendar.getInstance(locale);
 		if (!(cal instanceof GregorianCalendar))
 			throw new FTAUnsupportedLocaleException("No support for locales that do not use the Gregorian Calendar");
@@ -1016,7 +1065,7 @@ public class TextAnalyzer {
 		detectWindowEscalations = new ArrayList<>(analysisConfig.getDetectWindow());
 
 		// If enabled, load the default set of plugins for Logical Type detection
-		if (analysisConfig.isEnableDefaultLogicalTypes())
+		if (analysisConfig.isEnabled(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES))
 			registerDefaultPlugins(locale);
 
 		for (final LogicalType logical : plugins.getRegisteredLogicalTypes()) {
@@ -1108,7 +1157,7 @@ public class TextAnalyzer {
 			traceConfig = new Trace(analysisConfig.getTraceOptions(), context,  analysisConfig);
 
 		// Now that we have initialized these facts cannot change, so set them on the Facts object
-		this.facts.setCollectStatistics(analysisConfig.isCollectStatistics());
+		this.facts.setCollectStatistics(analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS));
 		this.facts.setLocale(this.locale);
 
 		initialized = true;
@@ -2749,6 +2798,9 @@ public class TextAnalyzer {
 				facts.distinctCount = -1L;
 		}
 
+		if (isEnabled(Feature.FORMAT_DETECTION))
+			facts.streamFormat = Utils.determineStreamFormat(mapper, facts.cardinality);
+
 		final TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(),
 				facts.calculateFacts(), context.getDateResolutionMode(), analysisConfig, tokenStreams);
 
@@ -2787,7 +2839,7 @@ public class TextAnalyzer {
 			facts.maxLocalDate = LocalDate.parse(String.valueOf(facts.maxLong), dtf);
 
 			// If we are collecting statistics - we need to generate the topK and bottomK
-			if (analysisConfig.isCollectStatistics())
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 				generateTopBottom();
 		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > 1800 && facts.maxLong < 2041 &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
@@ -2798,7 +2850,7 @@ public class TextAnalyzer {
 			facts.maxLocalDate = LocalDate.of((int)facts.maxLong, 1, 1);
 
 			// If we are collecting statistics - we need to generate the topK and bottomK
-			if (analysisConfig.isCollectStatistics())
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 				generateTopBottom();
 		} else if (facts.cardinality.size() == 2 && facts.minLong == 0 && facts.maxLong == 1) {
 			// boolean by any other name
@@ -2834,7 +2886,7 @@ public class TextAnalyzer {
 
 			if (!facts.matchPatternInfo.isLogicalType() && realSamples >= analysisConfig.getDetectWindow() &&
 					(facts.confidence < analysisConfig.getThreshold()/100.0 ||
-							(analysisConfig.getNumericWidening() && !facts.outliers.isEmpty() && (new OutlierAnalysis(facts.outliers, facts.matchPatternInfo)).doubles == facts.outliers.size()))) {
+							(analysisConfig.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING) && !facts.outliers.isEmpty() && (new OutlierAnalysis(facts.outliers, facts.matchPatternInfo)).doubles == facts.outliers.size()))) {
 				// We thought it was an integer field, but on reflection it does not feel like it
 				conditionalBackoutToPattern(realSamples, facts.matchPatternInfo);
 				facts.confidence = (double) facts.matchCount / realSamples;
@@ -2883,9 +2935,6 @@ public class TextAnalyzer {
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
 	public String serialize() throws FTAPluginException, FTAUnsupportedLocaleException {
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
-
 		// If we have not already determined the type - we need to force the issue
 		if (facts.matchPatternInfo == null)
 			determineType();
@@ -2905,8 +2954,10 @@ public class TextAnalyzer {
 	 * @param serialized The serialized form of a TextAnalyzer.
 	 * @return A new TextAnalyzer which can be merged with another TextAnalyzer to product a single result.
 	 * @throws FTAMergeException When we fail to de-serialize the provided String.
+	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
+	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
 	 */
-	public static TextAnalyzer deserialize(String serialized) throws FTAMergeException {
+	public static TextAnalyzer deserialize(String serialized) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException {
 		final ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		TextAnalyzer ret = null;
@@ -2916,8 +2967,13 @@ public class TextAnalyzer {
 			ret = new TextAnalyzer(wrapper.analyzerContext);
 			ret.analysisConfig = wrapper.analysisConfig;
 			ret.facts = wrapper.facts;
-			ret.facts.setCollectStatistics(ret.analysisConfig.isCollectStatistics());
+
+			if (wrapper.analysisConfig.getLocaleTag() != null)
+				ret.setLocale(Locale.forLanguageTag(wrapper.analysisConfig.getLocaleTag()));
+			ret.facts.setCollectStatistics(wrapper.analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS));
+
 			ret.facts.hydrate();
+			ret.initialize();
 
 			return ret;
 		} catch (JsonProcessingException e) {

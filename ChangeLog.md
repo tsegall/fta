@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 8.0.17
+ - ENH: Add Gender support for Finnish, Polish
+ - ENH: Other minor improvements for Danish, Finnish, Polish
+ - ENH: Switch boolean setter of TextAnalyzer to configure(Feature) - deprecate old way
+ - ENH: Initial support for contentFormat (disabled by default)
+
 ### 8.0.16
  - INT: Rewrite Gender plugin - improve I18N support
 

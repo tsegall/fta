@@ -92,15 +92,14 @@ public class Replay {
 			final TextAnalyzer analyzer = new TextAnalyzer(analyzerContext);
 
 			// Apply the Config we retrieved from the Trace file
-			analyzer.setCollectStatistics(analysisConfig.isCollectStatistics());
-			analyzer.setDefaultLogicalTypes(analysisConfig.isEnableDefaultLogicalTypes());
+			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS));
+			analyzer.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, analysisConfig.isEnabled(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES));
 			analyzer.setDetectWindow(analysisConfig.getDetectWindow());
 			analyzer.setMaxCardinality(analysisConfig.getMaxCardinality());
 			analyzer.setMaxInputLength(analysisConfig.getMaxInputLength());
 			analyzer.setMaxOutliers(analysisConfig.getMaxOutliers());
 			analyzer.setPluginThreshold(analysisConfig.getThreshold());
 			analyzer.setDetectWindow(analysisConfig.getDetectWindow());
-			analyzer.setDefaultLogicalTypes(analysisConfig.isEnableDefaultLogicalTypes());
 			if (analysisConfig.getLocaleTag() != null)
 				analyzer.setLocale(Locale.forLanguageTag(analysisConfig.getLocaleTag()));
 

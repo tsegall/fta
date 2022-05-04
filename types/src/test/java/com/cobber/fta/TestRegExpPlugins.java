@@ -98,7 +98,7 @@ public class TestRegExpPlugins {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("SSN");
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%03d-%02d-%04d",

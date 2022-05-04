@@ -953,13 +953,14 @@ public class TestMerge {
 	private TextAnalyzer checkTextAnalyzerMerge(List<String> samplesOne, List<String> samplesTwo, String streamName,
 			Locale locale, boolean collectStatistics) throws FTAException {
 		final TextAnalyzer shardOne = new TextAnalyzer(streamName);
-		shardOne.setCollectStatistics(collectStatistics);
+		shardOne.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
+
 		if (locale != null)
 			shardOne.setLocale(locale);
 		final TextAnalyzer reference = new TextAnalyzer(streamName);
 		if (locale != null)
 			reference.setLocale(locale);
-		reference.setCollectStatistics(collectStatistics);
+		reference.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
 
 		long countOne = 0;
 		long countTwo = 0;
@@ -979,7 +980,7 @@ public class TestMerge {
 		final TextAnalyzer shardTwo = new TextAnalyzer(streamName);
 		if (locale != null)
 			shardTwo.setLocale(locale);
-		shardTwo.setCollectStatistics(collectStatistics);
+		shardTwo.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
 
 		for (final String sample : samplesTwo) {
 			shardTwo.train(sample);
@@ -1032,7 +1033,7 @@ public class TestMerge {
 					!mergedResult.getRegExp().equals(referenceResult.getRegExp())
 			)
 				failed = true;
-			if (merged.getCollectStatistics() && (
+			if (merged.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) && (
 					// Maximum/Minimum
 					!mergedResult.getMaxValue().equals(referenceResult.getMaxValue()) ||
 					!mergedResult.getMinValue().equals(referenceResult.getMinValue()) ||
@@ -1041,7 +1042,7 @@ public class TestMerge {
 					!Objects.equals(mergedResult.getTopK(), referenceResult.getTopK())
 					))
 				failed = true;
-			if (merged.getCollectStatistics() && FTAType.isNumeric(mergedResult.getType())) {
+			if (merged.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) && FTAType.isNumeric(mergedResult.getType())) {
 				if (
 						Math.abs(mergedResult.getMean() - referenceResult.getMean()) > TestUtils.EPSILON
 //						||

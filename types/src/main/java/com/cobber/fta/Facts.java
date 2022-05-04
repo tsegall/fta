@@ -157,6 +157,8 @@ public class Facts {
 	/** The bottom 10  values. */
 	public Set<String> bottomK;
 
+	public String streamFormat;
+
 	private Locale locale;
 	private boolean collectStatistics;
 
@@ -577,6 +579,7 @@ public class Facts {
 				&& totalCount == other.totalCount && trailingWhiteSpace == other.trailingWhiteSpace
 				&& Objects.equals(uniqueness, other.uniqueness)
 				&& Objects.equals(distinctCount, other.distinctCount)
+				&& Objects.equals(streamFormat, other.streamFormat)
 				&& ((mean == 0.0 && other.mean == 0.0) || Math.abs(mean - other.mean) < epsilon)
 				&& ((variance == null && other.variance == null) || (variance == 0.0 && other.variance == 0.0) || Math.abs(variance - other.variance) < epsilon);
 	}

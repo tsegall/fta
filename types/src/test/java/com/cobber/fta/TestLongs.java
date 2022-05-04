@@ -52,7 +52,7 @@ public class TestLongs {
 	public void _variableLengthPositiveInteger(final boolean collectStatistics) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("_variableLengthPositiveInteger");
 		if (!collectStatistics)
-			analysis.setCollectStatistics(false);
+			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 
 		final String[] inputs = "47|909|809821|34590|2|0|12|390|4083|4499045|90|9003|8972|42987|8901".split("\\|");
 
@@ -96,7 +96,7 @@ public class TestLongs {
 	public void _variableLengthInteger(final boolean collectStatistics) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("_variableLengthInteger");
 		if (!collectStatistics)
-			analysis.setCollectStatistics(false);
+			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String[] inputs = "-100000|-1000|-100|-10|-3|-2|-1|100|200|300|400|500|600|1000|10000|601|602|6033|604|605|606|607|608|609|610|911|912|913|914|915".split("\\|");
 
 		int locked = -1;
@@ -755,9 +755,9 @@ public class TestLongs {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void someInts() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("someInts");
-		assertTrue(analysis.getNumericWidening());
-		analysis.setNumericWidening(false);
-		assertFalse(analysis.getNumericWidening());
+		assertTrue(analysis.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING));
+		analysis.configure(TextAnalyzer.Feature.NUMERIC_WIDENING, false);
+		assertFalse(analysis.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING));
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
 		int locked = -1;
@@ -1319,7 +1319,7 @@ public class TestLongs {
 		final int MAX_CARDINALITY = 40;
 		final TextAnalyzer analysis = new TextAnalyzer("meanSDCardinalityExceeded");
 		analysis.setMaxCardinality(MAX_CARDINALITY);
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		final int SAMPLE_SIZE = 100;
 
 		for (int i = 1; i < SAMPLE_SIZE; i++)
@@ -1341,7 +1341,7 @@ public class TestLongs {
 		final int MAX_CARDINALITY = 40;
 		final TextAnalyzer analysis = new TextAnalyzer("meanSDBulkCardinalityExceeded");
 		analysis.setMaxCardinality(MAX_CARDINALITY);
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		final long SAMPLE_SIZE = 100;
 
 		Map<String, Long> data = new HashMap<>();
@@ -1366,11 +1366,11 @@ public class TestLongs {
 		final int MAX_CARDINALITY = 40;
 		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
 		shardOne.setMaxCardinality(MAX_CARDINALITY);
-		shardOne.setDefaultLogicalTypes(false);
+		shardOne.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 
 		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
 		shardTwo.setMaxCardinality(MAX_CARDINALITY);
-		shardTwo.setDefaultLogicalTypes(false);
+		shardTwo.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		final int SAMPLE_SIZE = 100;
 
 		final TextAnalyzer shardReference = new TextAnalyzer("shardReference");
@@ -1441,7 +1441,7 @@ public class TestLongs {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void noStatistics() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("noStatistics");
-		analysis.setCollectStatistics(false);
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String[] samples = new String[10000];
 
 		int iters;
@@ -1465,8 +1465,8 @@ public class TestLongs {
 	public void _longPerf(final boolean statisticsOn) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("_longPerf");
 		if (!statisticsOn) {
-			analysis.setDefaultLogicalTypes(false);
-			analysis.setCollectStatistics(false);
+			analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		}
 		final long sampleCount = 100_000_000_000L;
 		boolean saveOutput = false;

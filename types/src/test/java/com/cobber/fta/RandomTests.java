@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.TextAnalyzer.Feature;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -59,7 +60,7 @@ public class RandomTests {
 	public void getDefaultLogicalTypesDefault() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("getDefaultLogicalTypesDefault");
 
-		assertTrue(analysis.getDefaultLogicalTypes());
+		assertTrue(analysis.isEnabled(Feature.DEFAULT_LOGICAL_TYPES));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
@@ -69,10 +70,10 @@ public class RandomTests {
 		analysis.train("Hello, World");
 
 		try {
-			analysis.setDefaultLogicalTypes(false);
+			analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		}
 		catch (IllegalArgumentException e) {
-			assertEquals(e.getMessage(), "Cannot adjust Logical Type detection once training has started");
+			assertEquals(e.getMessage(), "Cannot adjust feature 'DEFAULT_LOGICAL_TYPES' once training has started");
 			return;
 		}
 		fail("Exception should have been thrown");
@@ -81,7 +82,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void getAttributesNoStatistics() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("getMinValueNoStatistics");
-		analysis.setCollectStatistics(false);
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 
 		analysis.train("0");
 		analysis.train("1");
@@ -148,7 +149,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void dataRegExp() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("getMinValueNoStatistics");
-		analysis.setCollectStatistics(false);
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 
 		analysis.train("hello  ");
 		analysis.train("  world");
@@ -213,8 +214,8 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void setDefaultLogicalTypes() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setDefaultLogicalTypes");
-		analysis.setDefaultLogicalTypes(false);
-		assertFalse(analysis.getDefaultLogicalTypes());
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		assertFalse(analysis.isEnabled(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
@@ -1454,7 +1455,7 @@ public class RandomTests {
 		final String inputs[] = alpha3.split("\\|");
 		final TextAnalyzer analysis = new TextAnalyzer("setMaxCardinalitySmall");
 		analysis.setMaxCardinality(100);
-		analysis.setDefaultLogicalTypes(false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 
 		try {
 			for (final String input : inputs) {

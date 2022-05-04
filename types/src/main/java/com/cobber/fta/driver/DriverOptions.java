@@ -36,6 +36,7 @@ class DriverOptions {
 	protected boolean noAnalysis;
 	protected boolean noLogicalTypes;
 	protected boolean noStatistics;
+	protected boolean formatDetection;
 	protected long recordsToProcess = -1;
 	protected int detectWindow = -1;
 	protected Locale locale;
@@ -71,9 +72,11 @@ class DriverOptions {
 		if (this.locale != null)
 			analyzer.setLocale(this.locale);
 		if (this.noStatistics)
-			analyzer.setCollectStatistics(false);
+			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		if (this.noLogicalTypes)
-			analyzer.setDefaultLogicalTypes(false);
+			analyzer.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		if (this.formatDetection)
+			analyzer.configure(TextAnalyzer.Feature.FORMAT_DETECTION, true);
 
 		if (this.logicalTypes != null)
 			try {

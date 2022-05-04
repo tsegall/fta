@@ -72,6 +72,8 @@ public class Driver {
 				options.delimiter = args[++idx];
 			else if ("--detectWindow".equals(args[idx]))
 				options.detectWindow = Integer.valueOf(args[++idx]);
+			else if ("--formatDetection".equals(args[idx]))
+				options.formatDetection = true;
 			else if ("--help".equals(args[idx])) {
 				logger.println("Usage: fta [OPTIONS] file ...");
 				logger.println("Valid OPTIONS are:");
