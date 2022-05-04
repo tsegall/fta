@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 8.0.16
+ - INT: Rewrite Gender plugin - improve I18N support
+
 ### 8.0.15
  - ENH: Improve header detection for Telephone
  - INT: Improve test coverage

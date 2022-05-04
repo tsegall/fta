@@ -17,7 +17,6 @@ package com.cobber.fta.plugins;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +27,6 @@ import com.cobber.fta.Facts;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.token.TokenStreams;
 
@@ -41,73 +39,56 @@ public class Gender extends LogicalTypeFinite {
 
 	private static final String BACKOUT_REGEX = "\\p{IsAlphabetic}+";
 
-	// Map from ISO language to Gender Data for the language
-	private static Map<String, GenderData> allGenderData = new HashMap<>();
-
-	private static Map<String, Set<String>> allMembers = new HashMap<>();
-	private static Map<String, Map<String, String>> allOpposites = new HashMap<>();
-
 	private Map<String, String> opposites = null;
 
 	private String happyRegex = BACKOUT_REGEX;
-	private String language = null;
-	private GenderData genderData = null;
+	private String language;
+	private GenderData genderData;
+	private Set<String> languageMembers;
 
-	private static class GenderData {
-		private final String feminine;
-		private final String masculine;
-		private final String feminineShort;
-		private final String masculineShort;
-		private final String woman;
-		private final String man;
-		private final String womanShort;
-		private final String manShort;
 
-		GenderData(final String feminine, final String masculine, final String feminineShort, final String masculineShort,
-				final String woman, final String man, final String womanShort, final String manShort) {
+	class GenderPair {
+		String feminine;
+		String masculine;
+
+		GenderPair(final String feminine, final String masculine) {
 			this.feminine = feminine;
 			this.masculine = masculine;
-			this.feminineShort = feminineShort;
-			this.masculineShort = masculineShort;
-			this.woman = woman;
-			this.womanShort = womanShort;
-			this.man = man;
-			this.manShort = manShort;
 		}
 	}
 
-	static {
-		// German
-		allGenderData.put("DE", new GenderData("WEIBLICH", "MÄNNLICH", "W", "M",
-				"FRAU", "MANN", "F", "M"));
-		// English
-		allGenderData.put("EN", new GenderData("FEMALE", "MALE", "F", "M",
-				null, null, null, null));
-		// Spanish
-		allGenderData.put("ES", new GenderData("FEMENINO", "MASCULINO", "F", "M",
-				"MUJERES", "HOMBRES", "M", "H"));
-		// French
-		allGenderData.put("FR", new GenderData("FEMME", "HOMME", "F", "H",
-				null, null, null, null));
-		// Italian
-		allGenderData.put("IT", new GenderData("FEMMINA", "MASCHIO", "F", "M",
-				"FEMMINE", "MASCHI", "F", "M"));
-		// Malaysian
-		allGenderData.put("MS", new GenderData("PEREMPUAN", "LELAKI", "P", "L",
-				null, null, null, null));
-		// Dutch
-		allGenderData.put("NL", new GenderData("VROUWELIJK", "MANNELIJK", "V", "M",
-				null, null, null, null));
-		// Portuguese
-		allGenderData.put("PT", new GenderData("FEMININA", "MASCULINO", "F", "M",
-				"DONA", "HOME", "D", "H"));
-		// Turkish
-		allGenderData.put("TR", new GenderData("KADIN", "ERKEK", "K", "E",
-				null, null, null, null));
+	class GenderData {
+		private GenderPair[] words;
+		private GenderPair[] abbreviations;
+		private GenderPair[] all;
 
-		// Belgium covered by DE, FR, and NL
-		// Switzerland covered DE, FR, IT
-		// Austria covered by DE
+		GenderData(final String[][] words, final String[][] abbreviations) {
+			this.words = new GenderPair[words.length];
+			this.abbreviations = new GenderPair[abbreviations.length];
+			this.all = new GenderPair[words.length + abbreviations.length];
+
+			for (int i = 0; i < words.length; i++) {
+				this.words[i] = new GenderPair(words[i][0], words[i][1]);
+				this.all[i] = new GenderPair(words[i][0], words[i][1]);
+			}
+
+			for (int i = 0; i < abbreviations.length; i++) {
+				this.abbreviations[i] = new GenderPair(abbreviations[i][0], abbreviations[i][1]);
+				this.all[words.length + i] = new GenderPair(abbreviations[i][0], abbreviations[i][1]);
+			}
+		}
+
+		public GenderPair[] getWords() {
+			return words;
+		}
+
+		public GenderPair[] getAbbreviations() {
+			return abbreviations;
+		}
+
+		public GenderPair[] getAll() {
+			return all;
+		}
 	}
 
 	/**
@@ -120,32 +101,88 @@ public class Gender extends LogicalTypeFinite {
 
 	@Override
 	public String nextRandom() {
-		return random.nextInt(2) != 0 ? genderData.feminine : genderData.masculine;
+		return random.nextInt(2) != 0 ? genderData.getWords()[0].feminine : genderData.getWords()[0].masculine;
 	}
 
-	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
-
+	public boolean initializeDelayed() {
 		language = locale.getLanguage().toUpperCase(Locale.ROOT);
-		genderData = allGenderData.get(language);
 
-		opposites = allOpposites.get(language);
-		if (opposites == null) {
-			opposites = new HashMap<>();
-			opposites.put(genderData.feminineShort, genderData.masculineShort);
-			opposites.put(genderData.masculineShort, genderData.feminineShort);
-			opposites.put(genderData.feminine, genderData.masculine);
-			opposites.put(genderData.masculine, genderData.feminine);
+		// Belgium covered by DE, FR, and NL
+		// Switzerland covered DE, FR, IT
+		// Austria covered by DE
+		switch(language) {
+		case "DE":
+			// German
+			genderData = new GenderData(
+					new String[][] { new String[] { "WEIBLICH", "MÄNNLICH" }, new String[] { "FRAU", "MANN" } },
+					new String[][] { new String[] { "W", "M" }, new String[] { "F", "M" } });
+		case "ES":
+			// Spanish
+			genderData = new GenderData(
+					new String[][] { new String[] { "FEMENINO", "MASCULINO" }, new String[] { "MUJERES", "HOMBRES" }, new String[] { "MUJER", "HOMBRE" } },
+					new String[][] { new String[] { "F", "M" }, new String[] { "M", "H" } } );
+			break;
+		case "FR":
+			// French
+			genderData = new GenderData(
+					new String[][] { new String[] { "FEMME", "HOMME" },  new String[] { "F", "H" } },
+					new String[][] { new String[] { "FEMME", "HOMME" },  new String[] { "F", "H" } } );
+			break;
+		case "IT":
+			// Italian
+			genderData = new GenderData(
+					new String[][] { new String[] { "FEMMINA", "MASCHIO" }, new String[] { "FEMMINE", "MASCHI" } },
+					new String[][] { new String[] { "F", "M" } } );
+			break;
+		case "MS":
+			// Malaysian
+			genderData = new GenderData(
+					new String[][] { new String[] { "PEREMPUAN", "LELAKI" } },
+					new String[][] { new String[] { "P", "L" } } );
+			break;
+		case "NL":
+			// Dutch
+			genderData = new GenderData(
+					new String[][] { new String[] { "VROUWELIJK", "MANNELIJK" } },
+					new String[][] { new String[] { "V", "M" } } );
+			break;
+		case "PT":
+			// Portuguese
+			genderData = new GenderData(
+					new String[][] { new String[] { "FEMININA", "MASCULINO" } },
+					new String[][] { new String[] { "F", "M" } } );
+			break;
+		case "TR":
+			// Turkish
+			genderData = new GenderData(
+					new String[][] { new String[] { "KADIN", "ERKEK" } },
+					new String[][] { new String[] { "K", "E" } } );
+		default:
+			// FALL THROUGH TO ENGLISH!!!!
+		case "EN":
+			// English
+			genderData = new GenderData(
+					new String[][] { new String[] { "FEMALE", "MALE" } },
+					new String[][] { new String[] { "F", "M" } } );
+			break;
+		}
 
-			if (genderData.woman != null) {
-				opposites.put(genderData.womanShort, genderData.manShort);
-				opposites.put(genderData.manShort, genderData.manShort);
-				opposites.put(genderData.woman, genderData.man);
-				opposites.put(genderData.man, genderData.woman);
-			}
+		languageMembers = new HashSet<>();
+		opposites = new HashMap<>();
 
-			allOpposites.put(language, opposites);
+		// Add the Gender Words (e.g. MALE, FEMALE) and setup opposites
+		for (GenderPair candidate : genderData.getWords()) {
+			languageMembers.add(candidate.feminine);
+			languageMembers.add(candidate.masculine);
+			opposites.put(candidate.feminine, candidate.masculine);
+			opposites.put(candidate.masculine, candidate.feminine);
+		}
+		// Add the Gender Abbreviations (e.g. M, F) and setup opposites
+		for (GenderPair candidate : genderData.getAbbreviations()) {
+			languageMembers.add(candidate.feminine);
+			languageMembers.add(candidate.masculine);
+			opposites.put(candidate.feminine, candidate.masculine);
+			opposites.put(candidate.masculine, candidate.feminine);
 		}
 
 		return true;
@@ -153,28 +190,8 @@ public class Gender extends LogicalTypeFinite {
 
 	@Override
 	public Set<String> getMembers() {
-		final String setupLanguage = locale.getLanguage().toUpperCase(Locale.ROOT);
-		Set<String> languageMembers = allMembers.get(setupLanguage);
-
-		if (languageMembers == null) {
-			final GenderData setup = allGenderData.get(setupLanguage);
-
-			languageMembers = new HashSet<>();
-			languageMembers.add(setup.feminineShort);
-			languageMembers.add(setup.masculineShort);
-			languageMembers.add(setup.feminine);
-			languageMembers.add(setup.masculine);
-
-			if (setup.woman != null) {
-				languageMembers.add(setup.womanShort);
-				languageMembers.add(setup.manShort);
-				languageMembers.add(setup.woman);
-				languageMembers.add(setup.man);
-			}
-
-			allMembers.put(setupLanguage, languageMembers);
-		}
-
+		if (genderData == null)
+			initializeDelayed();
 		return languageMembers;
 	}
 
@@ -195,73 +212,56 @@ public class Gender extends LogicalTypeFinite {
 		if (cardinality.isEmpty())
 			return new PluginAnalysis(BACKOUT_REGEX);
 
-		// If we have a happy header and a good percentage of FEMALE/MALE or WOMAN/MAN (localized) - then assume all is good
-		Long feminine = cardinality.get(genderData.feminine);
-		Long masculine = cardinality.get(genderData.masculine);
-		Long woman = cardinality.get(genderData.woman);
-		Long man = cardinality.get(genderData.man);
-		if (positiveStreamName && (
-				(feminine != null && masculine != null && feminine + masculine > matchCount/2) ||
-				(woman != null && man != null && woman + man > matchCount/2)
-			))
-		{
-			final RegExpGenerator re = new RegExpGenerator(8, locale);
-			cardinality.putAll(outliers);
-			outliers.clear();
-			for (String item : cardinality.keySet())
-				re.train(item);
-			happyRegex = re.getResult();
-			return PluginAnalysis.OK;
+		if (positiveStreamName) {
+			for (GenderPair candidate : genderData.getAll()) {
+				Long feminine = cardinality.get(candidate.feminine);
+				Long masculine = cardinality.get(candidate.masculine);
+				long thisPairCount = 0;
+				if (feminine != null)
+					thisPairCount += feminine;
+				if (masculine != null)
+					thisPairCount += masculine;
+
+				// If we have a happy header and a good percentage of FEMALE/MALE F/M (localized) - then assume all is good
+				if (thisPairCount > matchCount/2)
+				{
+					final RegExpGenerator re = new RegExpGenerator(8, locale);
+					cardinality.putAll(outliers);
+					outliers.clear();
+					for (String item : cardinality.keySet())
+						re.train(item);
+
+					// We might have a great header and a set of one or other of the pair - in this case add the opposite
+					if (feminine == null)
+						re.train(opposites.get(candidate.masculine));
+					if (masculine == null)
+						re.train(opposites.get(candidate.feminine));
+					happyRegex = re.getResult();
+					return PluginAnalysis.OK;
+				}
+			}
 		}
 
 		// We made a good faith effort above to be inclusive - so at this stage call it a day if there are too many outliers
 		if (outliers.size() > 1 || (!positiveStreamName && cardinality.size() - outliers.size() <= 1))
 			return new PluginAnalysis(BACKOUT_REGEX);
 
-		String outlier;
-		if (!outliers.isEmpty()) {
-			outlier = outliers.keySet().iterator().next();
-			cardinality = new HashMap<>(cardinality);
-			cardinality.remove(outlier);
-		}
-
-		final int count = cardinality.size();
-		Iterator<String> iter = null;
-		String first = null;
-		if (count != 0) {
-			iter = cardinality.keySet().iterator();
-			first = iter.next();
-		}
-
-		// If we have seen no more than one outlier then we are feeling pretty good unless we are in Strict mode (e.g. 100%)
-		if ((threshold != 100 && outliers.size() <= 1) || (double)matchCount / realSamples >= getThreshold()/100.0) {
-			final RegExpGenerator re = new RegExpGenerator(5, locale);
-			// There is some complexity here due to the facts that 'Male' & 'Female' are good predictors of Gender.
-			// However a field with only 'M' and 'F' in it is not, so in this case we would like an extra hint.
-			if (count == 1) {
-				if (!positiveStreamName && (first.equals(genderData.feminineShort) || first.equals(genderData.masculineShort)))
-					return new PluginAnalysis(BACKOUT_REGEX);
-				re.train(first);
-				re.train(opposites.get(first));
-			} else if (count == 2) {
-				final String second = iter.next();
-				if (!positiveStreamName && (first.equals(genderData.feminineShort) || first.equals(genderData.masculineShort)) && (second.equals(genderData.feminineShort) || second.equals(genderData.masculineShort)))
-					return new PluginAnalysis(BACKOUT_REGEX);
-				if (opposites.get(first).equals(second)) {
-					re.train(first);
-					re.train(second);
-				}
-				else
-					for (final String element : getMembers())
-						re.train(element);
-			} else {
-				for (final String element : getMembers())
-					re.train(element);
+		// We have at most one outlier and if the sum of one of the word pairs == matchCount then declare success
+		for (GenderPair candidate : genderData.getWords()) {
+			Long feminine = cardinality.get(candidate.feminine);
+			Long masculine = cardinality.get(candidate.masculine);
+			if (feminine == null || masculine == null)
+				continue;
+			long thisPairCount = feminine + masculine;
+			if (thisPairCount == matchCount) {
+				final RegExpGenerator re = new RegExpGenerator(8, locale);
+				cardinality.putAll(outliers);
+				outliers.clear();
+				for (String item : cardinality.keySet())
+					re.train(item);
+				happyRegex = re.getResult();
+				return PluginAnalysis.OK;
 			}
-			if (!outliers.isEmpty())
-				re.train(outliers.keySet().iterator().next());
-			happyRegex = re.getResult();
-			return PluginAnalysis.OK;
 		}
 
 		return new PluginAnalysis(BACKOUT_REGEX);

@@ -206,6 +206,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testRubbish() {
+		assertNull(new DateTimeParser().determineFormatString("hello44world{"));
 		assertNull(new DateTimeParser().determineFormatString("02-0828S15"));
 		assertNull(new DateTimeParser().determineFormatString("88-0828S7"));
 		assertNull(new DateTimeParser().determineFormatString("01-0828S7"));

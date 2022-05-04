@@ -13,6 +13,8 @@
  - Data distribution (e.g. Normal, uniform, ...)
  - Improved anomaly detection (see https://www.sciencedirect.com/science/article/pii/S0925231217309864)
  - Add Filename detection
+ - Add ContentFormat attribute: e.g. JSON, XML, base64 encoded, encrypted?
+ - Add Distribution attribute: uniform, normal, random
 
 # Broaden Identities supported
  - Chinese SSN

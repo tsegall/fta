@@ -15,7 +15,8 @@
 	{
 		"keytag": "DATE",
 		"validLocales": [
-			{ "localeTag": "en", "value": "date" }
+			{ "localeTag": "en", "value": "date" },
+			{ "localeTag": "es", "value": "fecha" }
 		]
 	},
 	{

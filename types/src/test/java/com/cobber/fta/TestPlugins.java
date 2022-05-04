@@ -160,7 +160,7 @@ public class TestPlugins {
 		assertEquals(result.getStructureSignature(), analysis.getPlugins().getRegistered(Gender.SEMANTIC_TYPE + "EN").getSignature());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "(?i)(F|M|U)");
-		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length - UNKNOWNS);
 		assertEquals(result.getConfidence(), 1 - (double)UNKNOWNS/result.getSampleCount());
 
