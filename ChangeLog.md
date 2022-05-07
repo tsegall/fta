@@ -1,14 +1,24 @@
 
 ## Changes ##
 
+### 8.0.18
+ - ENH: I18N - Improve Slovakian support
+ - ENH: I18N - Improve French-Canadian support
+ - ENH: I18N - Move "regExpsToMatch", "regExpReturned", "isRegExpComplete" to be per locale
+ - ENH: I18N - Support a concept of a non-localized Double (e.g. for example latitude which commonly does not use locale specific decimal separator)
+ - ENH: I18N - Gender support for Croatian, Catalan, Swedish and improve French
+ - ENH: I18N - Initial support for Romanian
+ - ENH: Add new Semantic Type - STATE_PROVINCE.REGION_IT
+ - ENH: Bump google phonenumber
+
 ### 8.0.17
- - ENH: Add Gender support for Finnish, Polish
- - ENH: Other minor improvements for Danish, Finnish, Polish
+ - ENH: I18N - Add Gender support for Finnish, Polish
+ - ENH: I18N - Other minor improvements for Danish, Finnish, Polish
  - ENH: Switch boolean setter of TextAnalyzer to configure(Feature) - deprecate old way
  - ENH: Initial support for contentFormat (disabled by default)
 
 ### 8.0.16
- - INT: Rewrite Gender plugin - improve I18N support
+ - INT: I18N - Rewrite Gender plugin - improve I18N support
 
 ### 8.0.15
  - ENH: Improve header detection for Telephone
@@ -26,12 +36,12 @@
  - BUG: Viznet - Another nasty '2018-06-26T15:27:50.' - see DetermineDateTimeFormatTests.unusualT()
 
 ### 8.0.13
- - ENH: Improve Spanish support (Postal Codes + Year + Yes/No)
+ - ENH: I18N - Improve Spanish support (Postal Codes + Year + Yes/No)
  - BUG: Fix NPE on "05/09/2014 02:00:00 AM +0000" (rework PassTwo)
 
 ### 8.0.12
- - ENH: Add support for Brazilian municipalities - STATE_PROVINCE.MUNICIPALITY_BR
- - ENH: Improve gender support in Italian
+ - ENH: I18N - Add support for Brazilian municipalities - STATE_PROVINCE.MUNICIPALITY_BR
+ - ENH: I18N - Improve gender support in Italian
 
 ### 8.0.11
  - ENH: Add serialize(), deserialize(), merge(), and apply() to DateTimeParser (+ tests)
@@ -45,8 +55,8 @@
  - INT: Restructure plugins.json to ease localization
 
 ### 8.0.8
- - ENH: Improve first-name detection for German
- - ENH: Add POSTAL_CODE.POSTAL_CODE_DE
+ - ENH: I18N - Improve first-name detection for German
+ - ENH: I18N - Add POSTAL_CODE.POSTAL_CODE_DE
  - ENH: Add support for Finite Types on Longs
 
 ### 8.0.7
@@ -59,9 +69,9 @@
  - BUG: RegExp header for City was a little aggressive (picked up 'Subject Ethnicity')
 
 ### 8.0.6
- - ENH: Support localized versions of Yes/No for booleans e.g. Italian Si/No, French Oui/Non
+ - ENH: I18N - Support localized versions of Yes/No for booleans e.g. Italian Si/No, French Oui/Non
  - ENH: Support localized versions of YEAR/DATE
- - ENH: Be more forgiving on Gender detection (also for non-English), also Sexo as a synonym for Gênero in Portuguese
+ - ENH: I18N - Be more forgiving on Gender detection (also for non-English), also Sexo as a synonym for Gênero in Portuguese
 
 ### 8.0.5
  - ENH: Add a couple more countries to reference list (ESWATINI, NORTH MACEDONIA)

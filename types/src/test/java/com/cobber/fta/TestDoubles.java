@@ -1645,6 +1645,7 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 
 	public void _doublePerf(final boolean statisticsOn) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("_doublePerfcd ");
+		analysis.setLocale(Locale.FRENCH);
 		if (!statisticsOn) {
 			analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
@@ -1657,8 +1658,10 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 		if (saveOutput)
 			bw = new BufferedWriter(new FileWriter("/tmp/doublePerf.csv"));
 
-		for (int i = 0; i < samples.length; i++)
+		for (int i = 0; i < samples.length; i++) {
 			samples[i] = String.valueOf(random.nextDouble() * 1000000);
+			samples[i] = samples[i].replace('.', ',');
+		}
 
 		final long start = System.currentTimeMillis();
 

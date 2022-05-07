@@ -40,7 +40,7 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 	}
 
 	public PersonName(final PluginDefinition plugin, final String filename) {
-		super(plugin, REGEXP, ".*", plugin.threshold);
+		super(plugin, ".*", plugin.threshold);
 		setContent("resource", "/reference/" + filename);
 	}
 

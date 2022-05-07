@@ -80,7 +80,7 @@ public class Plugins {
 					registerLogicalTypeClass(plugin, locale);
 				else if (plugin.content != null)
 					registerLogicalTypeFiniteSet(plugin, locale);
-				else if (plugin.regExpReturned != null)
+				else if (plugin.getLocaleEntry(locale).regExpReturned != null)
 					registerLogicalTypeRegExp(plugin, locale);
 				else
 					throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' unknown type.");

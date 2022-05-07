@@ -8,13 +8,13 @@
 
 # Field attributes
  - Improve PII detection (e.g. DOB, Age, ...)
- - Improve Semantic Type detection (e.g. Age field as AGE, Description fields)
+ - Improve Semantic Type detection (e.g. Age field as AGE or AGE_RANGE, Race)
  - Outlier detection in numeric fields
- - Data distribution (e.g. Normal, uniform, ...)
  - Improved anomaly detection (see https://www.sciencedirect.com/science/article/pii/S0925231217309864)
  - Add Filename detection
  - Add ContentFormat attribute: e.g. JSON, XML, base64 encoded, encrypted?
  - Add Distribution attribute: uniform, normal, random
+ - Distinguish between HOME/WORK attributes (e.g. EMAIL, PHONE, ADDRESS)
 
 # Broaden Identities supported
  - Chinese SSN
@@ -27,6 +27,14 @@
  - ...
 
 # Improve Date Detection
+
+# Improve Internationalization
+ - Headers RegExp should be per locale (DONE)
+ - "regExpsToMatch", "regExpReturned", "isRegExpComplete" should be per locale (DONE)
+ - Gender support needs rework (DONE)
+ - Need to support a concept of a non-localized Double (e.g. for example latitude which commonly does not use locale specific decimal separator) (DONE)
+ - Need broader support for Western Europe (e.g. Address detection does not exist)
+ - Should support localized true/false
 
 # Merge sharded analyses (DONE)
 Option to merge profile results (e.g. given two profiles from sharded sources - produce a single profile result).

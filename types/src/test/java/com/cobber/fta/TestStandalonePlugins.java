@@ -146,11 +146,9 @@ public class TestStandalonePlugins {
 	public void randomCountry() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("COUNTRY.TEXT_EN"), Locale.getDefault());
 
-		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
-
 		for (int i = 0; i < 100; i++) {
 			final String example = logical.nextRandom();
-			assertTrue(example.matches(logical.getRegExp()));
+			assertTrue(example.matches(logical.getRegExp()), example + logical.getRegExp());
 			assertTrue(logical.isValid(example.toLowerCase(Locale.ENGLISH)), example);
 		}
 	}

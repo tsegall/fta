@@ -22,19 +22,35 @@ package com.cobber.fta;
 public class PluginLocaleEntry {
 	public String localeTag;
 	public PluginLocaleHeaderEntry[] headerRegExps;
+	/** RegExp plugins: the RegExps to be matched to qualify as this Logical Type. */
+	private String[] regExpsToMatch;
+	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
+	public String regExpReturned;
+	/** Is the returned Regular Expression a complete representation of the Logical Type. */
+	public boolean isRegExpComplete;
 
 	public PluginLocaleEntry() {
+	}
+
+	public String[] getRegExpsToMatch() {
+		if (regExpsToMatch == null)
+			regExpsToMatch = new String[] { regExpReturned };
+		return regExpsToMatch;
+
 	}
 
 	/**
 	 * Simple Constructor for use when have a single Language tag and a single header (regular expression, confidence pair).
 	 * @param localeTag The localeTag we are using to construct the Locale Entry.
-	 * @param regExp The Regular Expression used to match against the stream name.
+	 * @param headerRegExp The Regular Expression used to match against the stream name.
 	 * @param confidence The confidence in our assessment that this is the Semantic Type if the regular expression matches.
+	 * @param regExpReturned The Regular Expressed returned in the case of a successful match.
 	 */
-	public PluginLocaleEntry(String localeTag, final String regExp, final int confidence) {
+	public PluginLocaleEntry(String localeTag, final String headerRegExp, final int confidence, final String regExpReturned) {
 		this.localeTag = localeTag;
-		this.headerRegExps = new PluginLocaleHeaderEntry[] { new PluginLocaleHeaderEntry(regExp, confidence) };
+		if (headerRegExp != null)
+			this.headerRegExps = new PluginLocaleHeaderEntry[] { new PluginLocaleHeaderEntry(headerRegExp, confidence) };
+		this.regExpReturned = regExpReturned;
 	}
 
 	/**

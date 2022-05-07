@@ -25,16 +25,12 @@ public class NAStateProvince extends LogicalTypeFiniteSimple {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "STATE_PROVINCE.STATE_PROVINCE_NA";
 
-	/** The Regular Express for this Semantic type. */
-	private static final String REGEXP = "\\p{Alpha}{2}";
-
 	/**
 	 * Construct a North American State/Province plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
 	public NAStateProvince(final PluginDefinition plugin) {
-		super(plugin, REGEXP,
-				"\\p{IsAlphabetic}{2}", plugin.threshold);
+		super(plugin, "\\p{IsAlphabetic}{2}", plugin.threshold);
 		setContent("resource", "/reference/na_states_provinces.csv");
 	}
 }

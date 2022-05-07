@@ -16,6 +16,8 @@
 package com.cobber.fta;
 
 import java.security.SecureRandom;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -42,6 +44,8 @@ public class LogicalTypeRegExp extends LogicalType {
 	private String maxString;
 	protected SecureRandom random;
 	private Xeger generator;
+	private NumberFormat longFormatter;
+	private NumberFormat doubleFormatter;
 
 	public LogicalTypeRegExp(final PluginDefinition plugin) throws FTAPluginException {
 		super(plugin);
@@ -73,13 +77,16 @@ public class LogicalTypeRegExp extends LogicalType {
 		super.initialize(locale);
 
 		try {
-			pattern = Pattern.compile(defn.regExpReturned);
+			pattern = Pattern.compile(pluginLocaleEntry.regExpReturned);
 		}
 		catch (Exception e) {
 			return false;
 		}
 
 		random = new SecureRandom(new byte[] { 3, 1, 4, 1, 5, 9, 2 });
+
+		longFormatter = NumberFormat.getIntegerInstance(locale);
+		doubleFormatter = NumberFormat.getInstance(locale);
 
 		return true;
 	}
@@ -91,16 +98,48 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	@Override
 	public String getRegExp() {
-		return defn.regExpReturned;
+		return pluginLocaleEntry.regExpReturned;
 	}
 
 	public String[] getRegExpToMatch() {
-		return defn.regExpsToMatch == null ? new String[] { defn.regExpReturned } : defn.regExpsToMatch;
+		return pluginLocaleEntry.getRegExpsToMatch();
 	}
 
 	@Override
 	public FTAType getBaseType() {
 		return defn.baseType;
+	}
+
+	private long safeParseLong(final String input) {
+		long ret;
+		try {
+			ret = Long.parseLong(input);
+		}
+		catch (NumberFormatException e) {
+			try {
+				ret = longFormatter.parse(input).longValue();
+			} catch (ParseException pe) {
+				throw new NumberFormatException(pe.getMessage());
+			}
+		}
+
+		return ret;
+	}
+
+	private double safeParseDouble(final String input) {
+		double ret;
+		try {
+			ret = Double.parseDouble(input);
+		}
+		catch (NumberFormatException e) {
+			try {
+				ret = doubleFormatter.parse(input).doubleValue();
+			} catch (ParseException pe) {
+				throw new NumberFormatException(pe.getMessage());
+			}
+		}
+
+		return ret;
 	}
 
 	@Override
@@ -111,7 +150,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		if (defn.minimum != null || defn.maximum != null)
 			switch (defn.baseType) {
 			case LONG:
-				final long inputLong = Long.parseLong(input);
+				final long inputLong = safeParseLong(input);
 				if (minLong != null && inputLong < minLong)
 					return false;
 				if (maxLong != null && inputLong > maxLong)
@@ -119,7 +158,7 @@ public class LogicalTypeRegExp extends LogicalType {
 				break;
 
 			case DOUBLE:
-				final double inputDouble = Double.parseDouble(input);
+				final double inputDouble = safeParseDouble(input);
 				if (minDouble != null && inputDouble < minDouble)
 					return false;
 				if (maxDouble != null && inputDouble > maxDouble)
@@ -191,10 +230,10 @@ public class LogicalTypeRegExp extends LogicalType {
 	public boolean isMatch(final String regExp) {
 		// The optional 'regExpsToMatch' tag is an ordered list of Regular Expressions used to match against the Stream Data.
 		// If not set then the regExpReturned is used to match.
-		if (defn.regExpsToMatch == null)
-			return regExp.equals(defn.regExpReturned);
+		if (pluginLocaleEntry.getRegExpsToMatch() == null)
+			return regExp.equals(pluginLocaleEntry.regExpReturned);
 
-		for (final String re : defn.regExpsToMatch) {
+		for (final String re : pluginLocaleEntry.getRegExpsToMatch()) {
 			if (regExp.equals(re))
 				return true;
 		}
@@ -218,7 +257,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	@Override
 	public String nextRandom() {
 		if (generator == null)
-			generator = new Xeger(RegExpGenerator.toAutomatonRE(defn.regExpReturned, true));
+			generator = new Xeger(RegExpGenerator.toAutomatonRE(pluginLocaleEntry.regExpReturned, true));
 
 		return generator.generate();
 	}

@@ -776,19 +776,6 @@ public class DateTimeParserResult {
 		return FTAType.LOCALDATETIME;
 	}
 
-	private String asDate(final char[] fieldChars) {
-		final StringBuilder ret = new StringBuilder();
-		for (int f = 0; f < fieldChars.length; f++) {
-			for (int i = 0; i < dateFieldLengths[f]; i++) {
-				ret.append(fieldChars[f]);
-			}
-			if (f + 1 < fieldChars.length)
-				ret.append(dateSeparator);
-		}
-
-		return ret.toString();
-	}
-
 	private void addDigits(final StringBuilder b, final int digitsMin, int digitsMax, int padding) {
 		if (padding != 0) {
 			digitsMax -= 1;

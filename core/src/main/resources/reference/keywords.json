@@ -2,16 +2,18 @@
 	{
 		"keytag": "YEAR",
 		"validLocales": [
-			{ "localeTag": "da", "value": "år" },
 			{ "localeTag": "de", "value": "jahr" },
 			{ "localeTag": "en", "value": "year" },
 			{ "localeTag": "es", "value": "año" },
-			{ "localeTag": "fi", "value": "vuosi" },
 			{ "localeTag": "fr", "value": "an" },
+			{ "localeTag": "fi", "value": "vuosi" },
 			{ "localeTag": "it", "value": "anno" },
 			{ "localeTag": "nl", "value": "jaar" },
 			{ "localeTag": "pl", "value": "rok" },
 			{ "localeTag": "pt", "value": "ano" },
+			{ "localeTag": "ro", "value": "anul" },
+			{ "localeTag": "se", "value": "ar" },
+			{ "localeTag": "sk", "value": "rok" },
 			{ "localeTag": "tr", "value": "yıl" }
 		]
 	},
@@ -34,6 +36,8 @@
 			{ "localeTag": "nl", "value": "ja" },
 			{ "localeTag": "pl", "value": "tak" },
 			{ "localeTag": "pt", "value": "sim" },
+			{ "localeTag": "ro", "value": "da" },
+			{ "localeTag": "sk", "value": "ano" },
 			{ "localeTag": "tr", "value": "evet" }
 		]
 	},
@@ -48,6 +52,8 @@
 			{ "localeTag": "nl", "value": "nee" },
 			{ "localeTag": "pl", "value": "nie" },
 			{ "localeTag": "pt", "value": "não" },
+			{ "localeTag": "ro", "value": "nu" },
+			{ "localeTag": "sk", "value": "nie" },
 			{ "localeTag": "tr", "value": "hayır" }
 		]
 	}

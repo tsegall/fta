@@ -26,42 +26,6 @@ import com.cobber.fta.core.FTAPluginException;
  */
 public abstract class LogicalTypeFactory {
 	/**
-	 * Return a Logical Type based simply on the name of the Logical Type.  The locale will be derived from the first valid locale in
-	 * the internal plugins file.
-	 *
-	 * @param qualifier Name of the Semantic Type for which we wish to retrieve the Logical Type.
-	 * @return The LogicalType The Logical Type associated with the definition (if it exists), null if non-existent.
-	 *
-	 *  Note: isValid(input) can be invoked on the resulting type, and nextRandom() if the type is an subclass of LogicalTypeCode.
-	 * @throws FTAPluginException Thrown when the plugin is incorrectly configured.
-	 */
-	public static LogicalType newInstance(final String qualifier) throws FTAPluginException {
-		return LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier(qualifier));
-	}
-
-	/**
-	 * Return a Logical Type based on a Plugin Definition.
-	 *
-	 * @param plugin The Definition for this plugin
-	 * @return The LogicalType The Logical Type associated with the definition (if it exists), null if non-existent.
-	 * @throws FTAPluginException Thrown when the plugin is incorrectly configured.
-	 */
-	public static LogicalType newInstance(final PluginDefinition plugin) throws FTAPluginException {
-		if (plugin == null)
-			return null;
-
-		Locale locale;
-
-		// If the plugin is associated with a particular set of locales then use the first plausible one we find to override the default
-		if (plugin.validLocales != null && plugin.validLocales.length != 0)
-			locale = new Locale(plugin.validLocales[0].localeTag);
-		else
-			locale = Locale.getDefault();
-
-		return newInstance(plugin, locale);
-	}
-
-	/**
 	 * Return a Logical Type based on a Plugin Definition in a particular locale.
 	 *
 	 * @param plugin The Definition for this plugin
@@ -88,7 +52,7 @@ public abstract class LogicalTypeFactory {
 		}
 		else if (plugin.content != null)
 			logical = new LogicalTypeFiniteSimpleExternal(plugin);
-		else if (plugin.regExpReturned != null)
+		else
 			logical = new LogicalTypeRegExp(plugin);
 
 		if (!(logical instanceof LogicalType))

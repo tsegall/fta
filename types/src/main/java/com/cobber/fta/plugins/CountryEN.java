@@ -33,30 +33,30 @@ public class CountryEN extends LogicalTypeFiniteSimple {
 	public static final String SEMANTIC_TYPE = "COUNTRY.TEXT_EN";
 
 	/** The Regular Express for this Semantic type. */
-	private static final String REGEXP = ".+";
+	private static final String BACKOUT = ".+";
 
 	/**
 	 * Construct a plugin to detect Country names based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
 	public CountryEN(final PluginDefinition plugin) {
-		super(plugin, REGEXP, "\\p{IsAlphabetic}{2}", plugin.threshold);
+		super(plugin, BACKOUT, plugin.threshold);
 		setContent("resource", "/reference/en_countries.csv");
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (matchCount < 50 && outliers.size() > Math.sqrt(getMembers().size()))
-			return new PluginAnalysis(REGEXP);
+			return new PluginAnalysis(BACKOUT);
 
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 
 		if (headerConfidence == 0 && (realSamples < 10 || cardinality.size() == 1))
-			return new PluginAnalysis(REGEXP);
+			return new PluginAnalysis(BACKOUT);
 
 		if ((double)matchCount / realSamples >= getThreshold()/100.0)
 			return PluginAnalysis.OK;
 
-		return new PluginAnalysis(REGEXP);
+		return new PluginAnalysis(BACKOUT);
 	}
 }

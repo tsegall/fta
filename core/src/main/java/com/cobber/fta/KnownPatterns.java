@@ -58,6 +58,8 @@ public class KnownPatterns {
 		ID_DOUBLE_WITH_EXPONENT_GROUPING,
 		ID_SIGNED_DOUBLE_WITH_EXPONENT,
 		ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING,
+		ID_DOUBLE_NL,
+		ID_SIGNED_DOUBLE_NL,
 		ID_NULL,
 		ID_BLANKORNULL,
 		ID_BLANK
@@ -97,6 +99,10 @@ public class KnownPatterns {
 	public String PATTERN_DOUBLE_WITH_EXPONENT_GROUPING;
 	public String PATTERN_SIGNED_DOUBLE_WITH_EXPONENT;
 	public String PATTERN_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING;
+	// These two are for Non-localized doubles, i.e. if we have a country that uses ',' for decimal separator
+	// and '.' for thousands separator then that is reflected in PATTERN_DOUBLE, but PATTERN_DOUBLE_NL will use a '.'
+	public String PATTERN_DOUBLE_NL;
+	public String PATTERN_SIGNED_DOUBLE_NL;
 
 	private final Map<String, PatternInfo> knownPatterns = new HashMap<>();
 	private final Map<ID, PatternInfo> knownIDs = new EnumMap<>(ID.class);
@@ -146,6 +152,10 @@ public class KnownPatterns {
 			return PATTERN_DOUBLE_WITH_EXPONENT;
 		case ID_DOUBLE_WITH_EXPONENT_GROUPING:
 			return PATTERN_DOUBLE_WITH_EXPONENT_GROUPING;
+		case ID_DOUBLE_NL:
+			return PATTERN_DOUBLE_NL;
+		case ID_SIGNED_DOUBLE_NL:
+			return PATTERN_SIGNED_DOUBLE_NL;
 		case ID_SIGNED_DOUBLE_WITH_EXPONENT:
 			return PATTERN_SIGNED_DOUBLE_WITH_EXPONENT;
 		case ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING:
@@ -221,6 +231,11 @@ public class KnownPatterns {
 		PATTERN_SIGNED_DOUBLE = optionalSignPrefix + PATTERN_DOUBLE + optionalSignSuffix;
 		PATTERN_SIGNED_DOUBLE_TRAILING = PATTERN_DOUBLE + "-?";
 
+		if (decimalSeparator != '.' && !optionalSignPrefix.isEmpty() && optionalSignSuffix.isEmpty()) {
+			PATTERN_DOUBLE_NL = "\\d*\\.?\\d+";
+			PATTERN_SIGNED_DOUBLE_NL = optionalSignPrefix + PATTERN_DOUBLE_NL;
+		}
+
 		PATTERN_DOUBLE_WITH_EXPONENT = PATTERN_DOUBLE + EXPONENT_REGEXP;
 		// Not quite what you would expect, always use +- if you have an exponent (locale ar_AE for
 		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT = optionalSignPrefix + PATTERN_DOUBLE + EXPONENT_REGEXP;
@@ -266,6 +281,12 @@ public class KnownPatterns {
 				new PatternInfo(ID.ID_DOUBLE, PATTERN_DOUBLE, FTAType.DOUBLE, null, false, false, -1, -1, null, ""));
 		knownPatterns.put(PATTERN_SIGNED_DOUBLE,
 				new PatternInfo(ID.ID_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE, FTAType.DOUBLE, "SIGNED", false, false, -1, -1, null, ""));
+		if (PATTERN_DOUBLE_NL != null) {
+			knownPatterns.put(PATTERN_DOUBLE_NL,
+					new PatternInfo(ID.ID_DOUBLE_NL, PATTERN_DOUBLE_NL, FTAType.DOUBLE, null, false, false, -1, -1, null, ""));
+			knownPatterns.put(PATTERN_SIGNED_DOUBLE_NL,
+					new PatternInfo(ID.ID_SIGNED_DOUBLE_NL, PATTERN_SIGNED_DOUBLE_NL, FTAType.DOUBLE, "SIGNED", false, false, -1, -1, null, ""));
+		}
 		knownPatterns.put(PATTERN_SIGNED_DOUBLE_TRAILING,
 				new PatternInfo(ID.ID_SIGNED_DOUBLE_TRAILING, PATTERN_SIGNED_DOUBLE_TRAILING, FTAType.DOUBLE, "SIGNED_TRAILING", false, false, -1, -1, null, ""));
 		knownPatterns.put(PATTERN_DOUBLE_WITH_EXPONENT,
@@ -354,6 +375,8 @@ public class KnownPatterns {
 		addUnary(negation, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 		addUnary(negation, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 		addUnary(negation, PATTERN_DOUBLE_WITH_EXPONENT_GROUPING, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING);
+		addUnary(negation, PATTERN_DOUBLE_NL, PATTERN_SIGNED_DOUBLE_NL);
+		addUnary(negation, PATTERN_SIGNED_DOUBLE_NL, PATTERN_SIGNED_DOUBLE_NL);
 
 		addUnary(grouping, PATTERN_LONG, PATTERN_LONG_GROUPING);
 		addUnary(grouping, PATTERN_LONG_GROUPING, PATTERN_LONG_GROUPING);

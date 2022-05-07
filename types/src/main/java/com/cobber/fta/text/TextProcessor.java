@@ -189,6 +189,10 @@ public class TextProcessor {
 		if (this.locale == null)
 			this.locale = Locale.getDefault();
 		this.config = allConfigData.get(this.locale.getLanguage().toUpperCase(Locale.ROOT));
+
+		// If we don't support the requested locale - just default to English
+		if (this.config == null)
+			this.config = allConfigData.get("EN");
 	}
 
 	/**

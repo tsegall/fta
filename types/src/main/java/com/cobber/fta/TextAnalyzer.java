@@ -1163,8 +1163,8 @@ public class TextAnalyzer {
 		initialized = true;
 	}
 
-	StringBuilder[]
-	determineNumericPattern(final SignStatus signStatus, final int numericDecimalSeparators, final int possibleExponentSeen) {
+	private StringBuilder[]
+	determineNumericPattern(final SignStatus signStatus, final int numericDecimalSeparators, final int possibleExponentSeen, boolean nonLocalizedDouble) {
 		StringBuilder[] result = new StringBuilder[2];
 
 		if (signStatus == SignStatus.TRAILING_MINUS) {
@@ -1176,8 +1176,14 @@ public class TextAnalyzer {
 
 		if (numericDecimalSeparators == 1) {
 			if (possibleExponentSeen == -1) {
-				result[0] = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_DOUBLE : knownPatterns.PATTERN_DOUBLE);
-				result[1] = new StringBuilder(knownPatterns.PATTERN_SIGNED_DOUBLE);
+				if (nonLocalizedDouble) {
+					result[0] = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_DOUBLE_NL : knownPatterns.PATTERN_DOUBLE_NL);
+					result[1] = new StringBuilder(knownPatterns.PATTERN_SIGNED_DOUBLE_NL);
+				}
+				else {
+					result[0] = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_DOUBLE : knownPatterns.PATTERN_DOUBLE);
+					result[1] = new StringBuilder(knownPatterns.PATTERN_SIGNED_DOUBLE);
+				}
 			}
 			else {
 				result[0] = new StringBuilder(numericSigned ? knownPatterns.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT : knownPatterns.PATTERN_DOUBLE_WITH_EXPONENT);
@@ -1379,6 +1385,7 @@ public class TextAnalyzer {
 		SignStatus numericSigned = SignStatus.NONE;
 		int numericDecimalSeparators = 0;
 		int numericGroupingSeparators = 0;
+		boolean nonLocalizedDouble = false;
 		boolean couldBeNumeric = true;
 		int possibleExponentSeen = -1;
 		int digitsSeen = 0;
@@ -1407,6 +1414,8 @@ public class TextAnalyzer {
 		if (matches == matchesRequired && matches > 0)
 			numericSigned = SignStatus.LOCALE_STANDARD;
 
+		int periodOffset = -1;
+		int periods = 0;
 		for (int i = startLooking; i < stopLooking; i++) {
 			final char ch = trimmed.charAt(i);
 
@@ -1442,6 +1451,10 @@ public class TextAnalyzer {
 					couldBeNumeric = false;
 			} else {
 				l0.append(ch);
+				if (ch == '.') {
+					periodOffset = i;
+					periods++;
+				}
 				// If the last character was an exponentiation symbol then this better be a sign if it is going to be numeric
 				if (possibleExponentSeen != -1 && possibleExponentSeen == i - 1) {
 					if (ch != localeMinusSign && ch != '+')
@@ -1449,6 +1462,20 @@ public class TextAnalyzer {
 				}
 				else
 					couldBeNumeric = false;
+			}
+		}
+
+		// Handle doubles stored in non-localized for (e.g. latitude is often stored with a '.')
+		// This case handles the case where the grouping separator is not a '.'
+		if (periodOffset != -1 && periods == 1 && numericDecimalSeparators == 0 && numericGroupingSeparators == 0) {
+			couldBeNumeric = true;
+			for (int i = 0; i < l0.length(); i++) {
+				if (l0.charAt(i) == '.') {
+					l0.replace(i, i + 1, "D");
+					numericDecimalSeparators++;
+					nonLocalizedDouble = true;
+					break;
+				}
 			}
 		}
 
@@ -1460,6 +1487,21 @@ public class TextAnalyzer {
 				final int exponentSize = Integer.parseInt(trimmed.substring(possibleExponentSeen + 1, stopLooking));
 				if (Math.abs(exponentSize) > 308)
 					couldBeNumeric = false;
+			}
+		}
+
+		// Handle doubles stored in non-localized for (e.g. latitude is often stored with a '.')
+		// This case handles the case where the grouping separator is a '.'
+		if (couldBeNumeric && numericGroupingSeparators == 1 && numericDecimalSeparators == 0 && localeGroupingSeparator == '.' &&
+				digitsSeen - 1 / 3 > numericGroupingSeparators) {
+			for (int i = 0; i < l0.length(); i++) {
+				if (l0.charAt(i) == 'G') {
+					l0.replace(i, i + 1, "D");
+					numericGroupingSeparators--;
+					numericDecimalSeparators++;
+					nonLocalizedDouble = true;
+					break;
+				}
 			}
 		}
 
@@ -1487,7 +1529,7 @@ public class TextAnalyzer {
 					repetitions++;
 				} else {
 					if (last == 'd' || last == 'a') {
-						compressedl0.append(last == 'd' ? "\\d" : KnownPatterns.PATTERN_ALPHA);
+						compressedl0.append(last == 'd' ? KnownPatterns.PATTERN_NUMERIC : KnownPatterns.PATTERN_ALPHA);
 						compressedl0.append('{').append(String.valueOf(repetitions)).append('}');
 					} else {
 						for (int j = 0; j < repetitions; j++) {
@@ -1520,7 +1562,7 @@ public class TextAnalyzer {
 
 		// Create the level 1 and 2
 		if (digitsSeen > 0 && couldBeNumeric && numericDecimalSeparators <= 1) {
-			final StringBuilder[] result = determineNumericPattern(numericSigned, numericDecimalSeparators, possibleExponentSeen);
+			final StringBuilder[] result = determineNumericPattern(numericSigned, numericDecimalSeparators, possibleExponentSeen, nonLocalizedDouble);
 			escalation.level[1] = result[0];
 			escalation.level[2] = result[1];
 		} else {
@@ -2844,7 +2886,9 @@ public class TextAnalyzer {
 		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > 1800 && facts.maxLong < 2041 &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
 						keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) ||
-						keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS))) {
+						keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) ||
+						context.getStreamName().toUpperCase(locale).contains("YEAR") ||
+						context.getStreamName().toUpperCase(locale).contains("DATE"))) {
 			facts.matchPatternInfo = new PatternInfo(null, facts.minLongNonZero == facts.minLong ? "\\d{4}" : "0+|\\d{4}", FTAType.LOCALDATE, "yyyy", false, false, 4, 4, null, "yyyy");
 			facts.minLocalDate = LocalDate.of((int)facts.minLongNonZero, 1, 1);
 			facts.maxLocalDate = LocalDate.of((int)facts.maxLong, 1, 1);

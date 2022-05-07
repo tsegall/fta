@@ -114,8 +114,7 @@ public class TextAnalysisResult {
 	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The qualifier is the detailed date format string</li>
 	 * </ul>
 	 *
-	 * Note: Boolean TRUE_FALSE and YES_NO are not localized, i.e. these will only be detected if the field contains
-	 * yes/no and true/false respectively.
+	 * Note: Boolean TRUE_FALSE is not localized, i.e. it will only be detected if the field contains true/false respectively.
 	 * Note: Additional Type Qualifiers may be returned if any Logical Type plugins are installed.
 	 * For example: If the Month Abbreviation plugin installed, the Base Type will be STRING, and the Qualifier will be "MONTHABBR".
 	 * @return The Type Qualifier for the Type.

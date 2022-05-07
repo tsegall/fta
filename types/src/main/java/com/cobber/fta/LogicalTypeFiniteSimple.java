@@ -29,15 +29,14 @@ import com.cobber.fta.token.TokenStreams;
  */
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected String qualifier;
-	protected String regexp;
+	protected String regExp;
 	protected String backout;
 	protected Reader reader;
 	protected SingletonSet memberSet;
 
-	public LogicalTypeFiniteSimple(final PluginDefinition plugin, final String regexp, final String backout, final int threshold) {
+	public LogicalTypeFiniteSimple(final PluginDefinition plugin, final String backout, final int threshold) {
 		super(plugin);
 		this.qualifier = plugin.qualifier;
-		this.regexp = regexp;
 		this.backout = backout;
 		this.threshold = threshold;
 	}
@@ -45,15 +44,6 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	public void setContent(final String contentType, final String content) {
 		this.memberSet = new SingletonSet(contentType, content);
 
-		// If the Regular Expression has not been set then generate one based on the content
-		if (regexp == null) {
-			final RegExpGenerator gen = new RegExpGenerator(15, Locale.getDefault());
-
-			for (final String elt : getMembers())
-			       gen.train(elt);
-
-			regexp = gen.getResult();
-		}
 	}
 
 	@Override
@@ -81,6 +71,18 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 		super.initialize(locale);
 
+		regExp = pluginLocaleEntry.regExpReturned;
+
+		// If the Regular Expression has not been set then generate one based on the content
+		if (regExp == null) {
+			final RegExpGenerator gen = new RegExpGenerator(15, Locale.getDefault());
+
+			for (final String elt : getMembers())
+			       gen.train(elt);
+
+			regExp = gen.getResult();
+		}
+
 		return true;
 	}
 
@@ -91,7 +93,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	@Override
 	public String getRegExp() {
-		return regexp;
+		return regExp;
 	}
 
 	@Override

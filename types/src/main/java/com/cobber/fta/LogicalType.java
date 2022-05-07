@@ -36,6 +36,8 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	protected Locale locale;
 	protected int priority;
 	protected int threshold;
+	protected PluginLocaleEntry pluginLocaleEntry;
+
 
 	@Override
 	public int compareTo(final LogicalType other) {
@@ -64,6 +66,11 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 		this.locale = locale;
 
+		pluginLocaleEntry = defn.getLocaleEntry(locale);
+
+		if (pluginLocaleEntry == null)
+			throw new FTAPluginException("Plugin: " + defn.qualifier + " has no support for " + locale.toLanguageTag());
+
 		return true;
 	}
 
@@ -73,16 +80,8 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @return An integer between 0 and 100 reflecting the confidence that this stream name is a valid header.
 	 */
 	public int getHeaderConfidence(final String dataStreamName) {
-		PluginLocaleEntry entry;
-		try {
-			entry = defn.getLocaleEntry(locale);
-		} catch (FTAPluginException e) {
-			// Should never happen - since we should have bailed earlier
-			return 0;
-		}
-
-		if (entry.headerRegExps != null)
-			for (PluginLocaleHeaderEntry headerEntry : entry.headerRegExps) {
+		if (pluginLocaleEntry.headerRegExps != null)
+			for (PluginLocaleHeaderEntry headerEntry : pluginLocaleEntry.headerRegExps) {
 				if (headerEntry.matches(dataStreamName))
 					return headerEntry.confidence;
 			}
@@ -133,7 +132,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @return The Java Regular Expression that most closely matches this Logical Type.
 	 */
 	public boolean isRegExpComplete() {
-		return defn.isRegExpComplete;
+		return pluginLocaleEntry.isRegExpComplete;
 	}
 
 	/**

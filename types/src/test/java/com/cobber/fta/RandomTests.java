@@ -2396,9 +2396,9 @@ public class RandomTests {
 
 	private static String someSemanticTypes[] = new String[] {
 			"EMAIL", "URI.URL", "IPADDRESS.IPV4", "IPADDRESS.IPV6", "TELEPHONE", "GUID",
-			"POSTAL_CODE.ZIP5_US", "POSTAL_CODE.POSTAL_CODE_UK", "POSTAL_CODE.POSTAL_CODE_CA", "POSTAL_CODE.POSTAL_CODE_AU",
+			"POSTAL_CODE.ZIP5_US", "POSTAL_CODE.POSTAL_CODE_CA",
 			"STREET_ADDRESS_EN", "GENDER.TEXT_<LOCALE>", "COUNTRY.TEXT_EN",
-			"STATE_PROVINCE.PROVINCE_CA", "STATE_PROVINCE.STATE_US", "STATE_PROVINCE.STATE_PROVINCE_NA", "STATE_PROVINCE.STATE_AU",
+			"STATE_PROVINCE.PROVINCE_CA", "STATE_PROVINCE.STATE_US", "STATE_PROVINCE.STATE_PROVINCE_NA",
 			"CURRENCY_CODE.ISO-4217", "COUNTRY.ISO-3166-3", "COUNTRY.ISO-3166-2",
 			"AIRPORT_CODE.IATA", "CITY", "SSN",
 			"NAME.FIRST", "NAME.LAST", "NAME.LAST_FIRST", "NAME.FIRST_LAST",
@@ -2419,7 +2419,10 @@ public class RandomTests {
 			do {
 				final String semanticType = someSemanticTypes[random.nextInt(someSemanticTypes.length)];
 				try {
-					logical = LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier(semanticType), Locale.getDefault());
+					PluginDefinition defn = PluginDefinition.findByQualifier(semanticType);
+					if (!defn.isLocaleSupported(Locale.getDefault()))
+						System.err.println("Attempting to create an intance of LogicalType: " + defn.qualifier + " in an unsupported Locale");
+					logical = LogicalTypeFactory.newInstance(defn, Locale.getDefault());
 				} catch (FTAException e) {
 					e.printStackTrace();
 				}

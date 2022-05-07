@@ -264,6 +264,33 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void trickLatitude() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("latitude");
+		analysis.setLocale(Locale.forLanguageTag("de-DE"));
+
+		String[] inputs = {
+				"54.176658700787", "54.1523286823181", "54.1507845291159", "54.1444646959388", "54.0948626983874",
+				"54.099612908786", "54.0928342952505", "54.1492128935414", "54.0996275412016", "54.1767338631483",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "(-?([0-9]|[0-8][0-9])[\\.,]\\d+)|-?90\\.0+");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()), input);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPostalCodeNL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("P_PCODE");
 		analysis.setLocale(Locale.forLanguageTag("nl-NL"));
@@ -507,7 +534,8 @@ public class TestPlugins {
 		analysis.setMaxCardinality(20000);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		final PluginDefinition plugin = new PluginDefinition("CUSIP", "com.cobber.fta.PluginCUSIP");
-		plugin.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en", ".*(?i)(cusip).*", 90) };
+		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\p{IsDigit}]{9}";
+		plugin.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en", ".*(?i)(cusip).*", 90, CUSIP_REGEXP) };
 		plugins.add(plugin);
 
 		try {
@@ -524,7 +552,7 @@ public class TestPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getRegExp(), PluginCUSIP.REGEXP);
+		assertEquals(result.getRegExp(), CUSIP_REGEXP);
 		assertEquals(result.getTypeQualifier(), "CUSIP");
 		assertEquals(result.getSampleCount(), validCUSIPs.length + 1);
 		assertEquals(result.getMatchCount(), validCUSIPs.length);
@@ -778,15 +806,6 @@ public class TestPlugins {
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 		}
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void pluginNoLocale() throws IOException, FTAException {
-
-		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("GENDER.TEXT_<LOCALE>");
-		final LogicalType knownLogicalType = LogicalTypeFactory.newInstance(pluginDefinition);
-
-		assertTrue(knownLogicalType.isValid("Female"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1637,7 +1656,7 @@ public class TestPlugins {
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_NAME_AU").signature);
 		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getOutlierCount());
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "[ \\p{IsAlphabetic}]+");
+		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic} ]+");
 		final Map<String, Long> outliers = result.getOutlierDetails();
 		assertEquals(outliers.get("UK"), Long.valueOf(1));
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
@@ -1682,7 +1701,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(),
 				inputs.length - result.getBlankCount() - result.getOutlierCount() - result.getBlankCount());
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "[ \\p{IsAlphabetic}]+");
+		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic} ]+");
 		final Map<String, Long> outliers = result.getOutlierDetails();
 		assertEquals(outliers.size(), 5);
 		assertEquals(result.getConfidence(), 0.9696969696969697);
@@ -2535,9 +2554,9 @@ public class TestPlugins {
 		Locale portuguese = Locale.forLanguageTag("pt-BR");
 		analysis.setLocale(portuguese);
 		final List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("GENDER_PT", "Gender (Portuguese Language)", "(?i)(FEMENINO|MASCULINO)",
-				new String[] {"(?i)(FEMENINO|MASCULINO)"}, null, null, null, "\\d{3}-\\d{2}-\\d{4}",
-				PluginLocaleEntry.simple(new String[] { "pt" }), true, 98, FTAType.STRING));
+		plugins.add(new PluginDefinition("GENDER_PT", "Gender (Portuguese Language)", null, null, null, "\\d{3}-\\d{2}-\\d{4}",
+				new PluginLocaleEntry[] { new PluginLocaleEntry("pt", null, 90, "(?i)(FEMENINO|MASCULINO)") },
+				true, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), portuguese);
@@ -2569,9 +2588,9 @@ public class TestPlugins {
 		final InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
 
-		final PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
-				null, null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*",
-				PluginLocaleEntry.simple(new String[] { "en" }), true,  98, FTAType.STRING);
+		final PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System",
+				null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*",
+				new PluginLocaleEntry[] { new PluginLocaleEntry("en", null, 90, null) }, true,  98, FTAType.STRING);
 
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
@@ -2594,7 +2613,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
 		final String re = result.getRegExp();
-		assertEquals(re, "\\p{Alpha}*");
+		assertEquals(re, "(?i)(|EARTH|JUPITER|MARS|MERCURY|NEPTUNE|PLUTO|SATURN|URANUS|VENUS)");
 		assertEquals(result.getTypeQualifier(), "PLANET");
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 		assertEquals(result.getOutlierCount(), 1);
@@ -2609,9 +2628,9 @@ public class TestPlugins {
 		final InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
 
-		final PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System", "\\p{Alpha}*",
-				null, null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*",
-				PluginLocaleEntry.simple(new String[] { "en" }), true, 98, FTAType.STRING);
+		final PluginDefinition pluginDefinition = new PluginDefinition(
+				"PLANET", "One of the planets orbiting our Solar System", null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*",
+				new PluginLocaleEntry[] { new PluginLocaleEntry("en", null, 90, "\\p{Alpha}*") }, true, 98, FTAType.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
 		final List<PluginDefinition> plugins = new ArrayList<>();
@@ -2647,7 +2666,7 @@ public class TestPlugins {
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		final PluginDefinition plugin = new PluginDefinition("PERCENT", "com.cobber.fta.PluginPercent");
 
-		plugin.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en", ".*(?i)(percent).*", 90) };
+		plugin.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en", ".*(?i)(percent).*", 90, "\\d*\\.?\\d+") };
 		plugins.add(plugin);
 
 		try {
@@ -2683,7 +2702,7 @@ public class TestPlugins {
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		final PluginDefinition plugin = new PluginDefinition("BIRTHDATE", "com.cobber.fta.PluginBirthDate");
-		plugin.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en", ".*(?i)(DOB).*", 90) };
+		plugin.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en", ".*(?i)(DOB).*", 90, "\\d{4}/\\d{2}/\\d{2}") };
 		plugins.add(plugin);
 
 		try {
@@ -2839,9 +2858,9 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
-				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}",
-				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*CUSIP.*", 100) },
+		plugins.add(new PluginDefinition("CUSIP", "Another sort of CUSIP",
+				null, null, null, "[\\p{IsAlphabetic}\\d]{9}",
+				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*CUSIP.*", 100, "[\\p{IsAlphabetic}\\d]{9}") },
 				false, 98, FTAType.STRING));
 
 		try {
@@ -2881,9 +2900,9 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
-				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}",
-				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*CUSIP.*", 100) }, false, 98, FTAType.STRING));
+		plugins.add(new PluginDefinition("CUSIP", "Another sort of CUSIP",
+				null, null, null, "[\\p{IsAlphabetic}\\d]{9}",
+				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*CUSIP.*", 100, "[\\p{IsAlphabetic}\\d]{9}") }, false, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
@@ -2956,9 +2975,9 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("CUSIP", null, "[\\p{IsAlphabetic}\\d]{9}",
-				null, null, null, null, "[\\p{IsAlphabetic}\\d]{9}",
-				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 100) }, false, 98, FTAType.STRING));
+		plugins.add(new PluginDefinition("CUSIP", "Another sort of CUSIP",
+				null, null, null, "[\\p{IsAlphabetic}\\d]{9}",
+				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 100, "[\\p{IsAlphabetic}\\d]{9}") }, false, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
@@ -3008,9 +3027,8 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("FUND_ID");
 		final List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("FUND_ID", null, FUND_REGEXP,
-				null, null, null, null, FUND_REGEXP,
-				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 90) }, false, 98, FTAType.STRING));
+		plugins.add(new PluginDefinition("FUND_ID", "Fund Identifier", null, null, null, FUND_REGEXP,
+				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 90, FUND_REGEXP) }, false, 98, FTAType.STRING));
 
 		try {
 			analysis.getPlugins().registerPluginList(plugins, "FUND_ID", null);
@@ -3049,12 +3067,10 @@ public class TestPlugins {
 		final String pluginDefinitions =
 				"[ {" +
 				"  \"qualifier\": \"BUG\"," +
-				"  \"validLocales\": [ { \"localeTag\":  \"*\" } ]," +
-				"  \"regExpReturned\": \"\\\\d{11}\"," +
+				"  \"validLocales\": [ { \"localeTag\":  \"*\", \"regExpReturned\": \"\\\\d{11}\" } ]," +
 				"  \"threshold\": 98," +
 				"  \"baseType\": \"STRING\"" +
 				"  } ]";
-
 
 
 		try {
@@ -3163,7 +3179,7 @@ public class TestPlugins {
 		final long outlierCount = outliers.get("GONDWANALAND");
 		assertEquals(result.getMatchCount(), inputs.length - outlierCount);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), ".+");
+		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}][-\\p{IsAlphabetic} '\\.(),]+");
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 	}
 
@@ -3191,7 +3207,7 @@ public class TestPlugins {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), ".+");
+		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}][-\\p{IsAlphabetic} '\\.(),]+");
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -3246,7 +3262,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), 4);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), ".+");
+		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}][-\\p{IsAlphabetic} '\\.(),]+");
 		assertEquals(result.getConfidence(), 1.0);
 	}
 

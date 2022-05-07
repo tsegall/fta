@@ -59,12 +59,6 @@ public class PluginDefinition {
 
 	/** Infinite/Finite plugins: this is the class used to implement. */
 	public String clazz;
-	/** RegExp plugins: the RegExps to be matched to qualify as this Logical Type. */
-	public String[] regExpsToMatch;
-	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
-	public String regExpReturned;
-	/** Is the returned Regular Expression a complete representation of the Logical Type. */
-	public boolean isRegExpComplete;
 	/** RegExp plugins: a set of strings that match the regExp but are known to be invalid. */
 	public Set<String> invalidList;
 	/** Simple finite plugins: the content with the set of valid elements. */
@@ -93,15 +87,14 @@ public class PluginDefinition {
 	protected PluginDefinition(final String qualifier, final String clazz) {
 		this.qualifier = qualifier;
 		this.clazz = clazz;
+		this.validLocales = PluginLocaleEntry.simple(new String[] { "en" });
 	}
 
-	public PluginDefinition(final String qualifier, final String description, final String regExpReturned, final String[] regExpsToMatch, final String[] invalidList,
+	public PluginDefinition(final String qualifier, final String description, final String[] invalidList,
 			final String content, final String contentType, final String backout, final PluginLocaleEntry[] validLocales, final boolean localeSensitive,
 			final int threshold, final FTAType  baseType) {
 		this.qualifier = qualifier;
 		this.description = description;
-		this.regExpReturned = regExpReturned;
-		this.regExpsToMatch = regExpsToMatch == null ? new String[] { regExpReturned } : regExpsToMatch;
 		this.invalidList = invalidList == null ? null : new HashSet<>(Arrays.asList(invalidList));
 		this.content = content;
 		this.contentType = contentType;
@@ -166,15 +159,17 @@ public class PluginDefinition {
 			throw new FTAPluginException("plugin: " + qualifier + " - validLocales cannot be null");
 
 		for (final PluginLocaleEntry validLocale : validLocales) {
-			String localeTag = validLocale.localeTag;
-			if ("*".equals(localeTag))
-				wildcard = validLocale;
-			if (localeTag.indexOf('-') != -1) {
-				if (localeTag.equals(languageTag))
+			String[] localeTags = validLocale.localeTag.split(",");
+			for (final String localeTag : localeTags) {
+				if ("*".equals(localeTag))
+					wildcard = validLocale;
+				if (localeTag.indexOf('-') != -1) {
+					if (localeTag.equals(languageTag))
+						return validLocale;
+				}
+				else if (localeTag.equals(language))
 					return validLocale;
 			}
-			else if (localeTag.equals(language))
-				return validLocale;
 		}
 
 		return wildcard;

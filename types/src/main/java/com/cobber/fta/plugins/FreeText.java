@@ -106,7 +106,8 @@ public class FreeText extends LogicalTypeInfinite {
 		processor = new TextProcessor(locale);
 
 		final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
-		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, locale);
+		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst,
+				pluginFirst.isLocaleSupported(locale) ? locale : Locale.ENGLISH);
 
 		return true;
 	}
