@@ -1,16 +1,17 @@
 # Fast Text Analyzer #
 
 Analyze Text data to determine Base Type and Semantic type information and other key metrics associated with a text stream.
-A key objective of the analysis is that it should be sufficiently fast to be inline (e.g. as the
-data is input from some source it should be possible to stream the data through this class without
-undue performance degradation).  See Performance notes below.
+Key objective of the analysis include:
+* Sufficiently fast to be used inline.  See Performance notes below.
+* Minimal false positives for Semantic type detection.
+
 Support for non-English date detection is relatively robust, with the following exceptions:
 * No support for non-Gregorian calendars
 * No support for non-Arabic numerals
 
 Notes:
 * By default analysis is performed on the initial 4096 characters of each record (adjustable via setMaxInputLength())
-* Semantic Type detection is typically predicated on valid input data, for example, a field that contains data that looks
+* Semantic Type detection is typically predicated on plausible input data, for example, a field that contains data that looks
 like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
 
 Typical usage is:
@@ -173,7 +174,7 @@ Note 1: The value of the typeQualifier is dependent on the Base Type as follows:
  * BOOLEAN - options are "TRUE_FALSE", "YES_NO", "ONE_ZERO"
  * STRING - options are "BLANK", "BLANKORNULL", "NULL"
  * LONG - options are "GROUPING", "SIGNED", "SIGNED_TRAILING" ("GROUPING" and "SIGNED" are independent and can both be present).
- * DOUBLE - options are "GROUPING", "SIGNED", "SIGNED_TRAILING" ("GROUPING" and "SIGNED" are independent and can both be present).
+ * DOUBLE - options are "GROUPING", "SIGNED", "SIGNED_TRAILING", "NON_LOCALIZED" ("GROUPING" and "SIGNED" are independent and can both be present).
  * DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The qualifier is the detailed date format string.
  * If any Logical plugins are installed - then additional Qualifiers may be returned. For example, if the LastName plugin is installed and a Last Name is detected then the Base Type will be STRING, and the qualifier will be "NAME.LAST".
 
@@ -225,7 +226,7 @@ EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
 FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|en
-GENDER.TEXT_&lt;Language&gt;|Gender|cn, de, en, es, fi, fr, it, ja, ms, nl, pl, pt, tr
+GENDER.TEXT_&lt;Language&gt;|Gender|ca, cn, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN

@@ -15,13 +15,15 @@
  */
 package com.cobber.fta;
 
+import com.cobber.fta.core.LocaleEntry;
+
 /**
  * The Locale entry on the plugin has a localeTag (e.g. en, en-US, or *) and an associated set of Header Entries.
  * These Header entries are used to match against the stream name and indicate a confidence in the value of the match.
  */
 public class PluginLocaleEntry {
 	public String localeTag;
-	public PluginLocaleHeaderEntry[] headerRegExps;
+	public LocaleEntry[] headerRegExps;
 	/** RegExp plugins: the RegExps to be matched to qualify as this Logical Type. */
 	private String[] regExpsToMatch;
 	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
@@ -49,7 +51,7 @@ public class PluginLocaleEntry {
 	public PluginLocaleEntry(String localeTag, final String headerRegExp, final int confidence, final String regExpReturned) {
 		this.localeTag = localeTag;
 		if (headerRegExp != null)
-			this.headerRegExps = new PluginLocaleHeaderEntry[] { new PluginLocaleHeaderEntry(headerRegExp, confidence) };
+			this.headerRegExps = new LocaleEntry[] { new LocaleEntry(headerRegExp, confidence) };
 		this.regExpReturned = regExpReturned;
 	}
 
@@ -82,7 +84,7 @@ public class PluginLocaleEntry {
 
 		if (headerRegExps != null) {
 			ret.append(':');
-			for (PluginLocaleHeaderEntry entry : headerRegExps)
+			for (LocaleEntry entry : headerRegExps)
 				ret.append(entry);
 		}
 

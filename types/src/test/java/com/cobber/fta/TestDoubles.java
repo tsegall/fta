@@ -1406,6 +1406,279 @@ public class TestDoubles {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void groupingWithPeriod() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("groupingWithPeriod");
+		final Locale locale = Locale.forLanguageTag("pt-BR");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"46.448", "6.341.288", "543.022", "636.666", "61.606.330",
+				"64.425", "109.089", "57.995", "4.773.826", "23.498.620",
+				"43.391", "1.356.902", "22.039", "2.526.587", "33.113.104",
+				"221.887", "6.313.005", "879.865", "84.369.774"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "GROUPING");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[\\d\\.]{6,10}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "22.039");
+		assertEquals(result.getMaxValue(), "84.369.774");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void notLocalizedPortugueseDouble() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedPortugueseDouble");
+		// For Portuguese, Decimal Sep = ',' and Thousands Set = '.'
+		final Locale locale = Locale.forLanguageTag("pt-BR");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"46.448", "6.341288", "543.022", "636.666", "61.606330",
+				"64.425", "109.089", "57.995", "4773.826", "23.498620",
+				"43.391", "1356.902", "22.039", "2526.587", "33.113104",
+				"221.887", "6313.005", "879.865", "84.369774"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "NON_LOCALIZED");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "6.341288");
+		assertEquals(result.getMaxValue(), "6313.005");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void notLocalizedPortugueseDoubleSigned() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedPortugueseDoubleSigned");
+		// For Portuguese, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("pt-BR");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"46.448", "6.341288", "543.022", "636.666", "61.606330",
+				"64.425", "109.089", "57.995", "4773.826", "23.498620",
+				"43.391", "-1356.902", "22.039", "2526.587", "33.113104",
+				"221.887", "6313.005", "879.865", "84.369774"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "SIGNED,NON_LOCALIZED");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "-1356.902");
+		assertEquals(result.getMaxValue(), "6313.005");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void notLocalizedPortugueseWithDecSep() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedPortugueseWithDecSep");
+		// For Portuguese, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("pt-BR");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"46.448", "6.341288", "543.022", "636.666", "61.606330",
+				"64.425", "109.089", "57.995", "4773.826", "23.498620",
+				"43.391", "-1356.902", "22.039", "2526.587", "33.113104",
+				"221.887", "6313.005", "879.865", "84.369774", "43.075",
+				"64.425", "109.089", "57.995", "4773.826", "23.498620",
+				"76,87"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "SIGNED,NON_LOCALIZED");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
+		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		assertEquals(result.getMinValue(), "-1356.902");
+		assertEquals(result.getMaxValue(), "6313.005");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void notLocalizedFrenchDouble() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedFrenchDouble");
+		// For French, Decimal Sep = ',' and Thousands Sep = ' '
+		final Locale locale = Locale.forLanguageTag("fr-FR");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"46.448", "6.341288", "543.022", "636.666", "61.606330",
+				"64.425", "109.089", "57.995", "4773.826", "23.498620",
+				"43.391", "1356.902", "22.039", "2526.587", "33.113104",
+				"221.887", "6313.005", "879.865", "84.369774"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "NON_LOCALIZED");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "6.341288");
+		assertEquals(result.getMaxValue(), "6313.005");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void notLocalizedFrenchDoubleSigned() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedFrenchDoubleSigned");
+		// For French, Decimal Sep = ',' and Thousands Sep = ' '
+		final Locale locale = Locale.forLanguageTag("fr-FR");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"46.448", "6.341288", "543.022", "636.666", "61.606330",
+				"64.425", "109.089", "57.995", "4773.826", "23.498620",
+				"43.391", "-1356.902", "22.039", "2526.587", "33.113104",
+				"221.887", "6313.005", "879.865", "84.369774"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "SIGNED,NON_LOCALIZED");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "-1356.902");
+		assertEquals(result.getMaxValue(), "6313.005");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void notLocalizedFrenchWithDecSep() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedFrenchWithDecSep");
+		// For French, Decimal Sep = ',' and Thousands Sep = ' '
+		final Locale locale = Locale.forLanguageTag("fr-FR");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"46.448", "6.341288", "543.022", "636.666", "61.606330",
+				"64.425", "109.089", "57.995", "4773.826", "23.498620",
+				"43.391", "-1356.902", "22.039", "2526.587", "33.113104",
+				"221.887", "6313.005", "879.865", "84.369774", "43.075",
+				"64.425", "109.089", "57.995", "4773.826", "23.498620",
+				"76,87"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "SIGNED,NON_LOCALIZED");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
+		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		assertEquals(result.getMinValue(), "-1356.902");
+		assertEquals(result.getMaxValue(), "6313.005");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void notLocalizedFrenchWithThousandsSep() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedFrenchChange");
+		// For French, Decimal Sep = ',' and Thousands Sep = ' '
+		final Locale locale = Locale.forLanguageTag("fr-FR");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"46.448", "6.341288", "543.022", "636.666", "61.606330",
+				"64.425", "109.089", "57.995", "4773.826", "23.498620",
+				"43.391", "-1356.902", "22.039", "2526.587", "33.113104",
+				"221.887", "6313.005", "879.865", "84.369774", "43.075",
+				"64.425", "109.089", "57.995", "4773.826", "23.498620",
+				"7 687"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "SIGNED,NON_LOCALIZED");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
+		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		assertEquals(result.getMinValue(), "-1356.902");
+		assertEquals(result.getMaxValue(), "6313.005");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void doublesWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("doublesWithSpaces");
 		final String pipedInput =

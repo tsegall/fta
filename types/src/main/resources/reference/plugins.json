@@ -249,6 +249,7 @@
 			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Geslach|Geslacht).*", "confidence": 90 } ] },
 			{ "localeTag":  "pl", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Płeć|P³eæ).*", "confidence": 90 } ] },
 			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Gênero|Sexo).*", "confidence": 90 } ] },
+			{ "localeTag":  "ro", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
 			{ "localeTag":  "sv", "headerRegExps": [ { "regExp": ".*(?i)(Gender|kon|kön).*", "confidence": 90 } ] }
 		],
 		"priority": 80
@@ -429,7 +430,7 @@
 		"description": "Italian Province Code",
 		"signature": "0vMZaBH760lIeD7hdvi7RVIDoVc=",
 		"validLocales": [
-			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] }
+			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(province|provincia).*", "confidence": 90 } ] }
 		],
 		"content": "/reference/it_provinces.csv",
 		"contentType": "resource",
@@ -607,7 +608,7 @@
 		"validLocales": [
 			{
 				"localeTag": "it-IT",
-				"headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(province|provincia).*", "confidence": 90 } ],
 				"regExpReturned": "[-' \\p{IsAlphabetic}]+"
 			}
 		],
@@ -893,7 +894,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(first.?name|fname|given.?name).*", "confidence": 90 },
+				"headerRegExps": [ { "regExp": ".*(?i)(first.?name|fname|given.?name|forename).*", "confidence": 90 },
 					{ "regExp": "(?i)(first)", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ],
 				"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
 			},
@@ -1016,7 +1017,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(middle).*", "confidence": 90 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(middlename|middle name).*", "confidence": 99 }, { "regExp": ".*(?i)(middle).*", "confidence": 90 } ],
 				"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
 			}
 		],
@@ -1483,7 +1484,7 @@
 		"description": "Job Title (English Language)",
 		"signature": "6IKfzTa++cfQDm7aehEqSaJ/rek=",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(title|position).*", "confidence": 90 } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(job title).*", "confidence": 99 }, { "regExp": ".*(?i)(title|position).*", "confidence": 90 } ] }
 		],
 		"clazz": "com.cobber.fta.plugins.JobTitleEN",
 		"threshold": 75,

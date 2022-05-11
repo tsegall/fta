@@ -63,6 +63,8 @@ class FileProcessor {
 		if (options.xMaxCharsPerColumn != -1)
 			settings.setMaxCharsPerColumn(options.xMaxCharsPerColumn);
 
+		settings.setMaxColumns(1024);
+
 		if (options.bulk)
 			processBulk(settings);
 		else

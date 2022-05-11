@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.LocaleEntry;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -81,7 +82,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 */
 	public int getHeaderConfidence(final String dataStreamName) {
 		if (pluginLocaleEntry.headerRegExps != null)
-			for (PluginLocaleHeaderEntry headerEntry : pluginLocaleEntry.headerRegExps) {
+			for (LocaleEntry headerEntry : pluginLocaleEntry.headerRegExps) {
 				if (headerEntry.matches(dataStreamName))
 					return headerEntry.confidence;
 			}

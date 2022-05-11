@@ -284,7 +284,7 @@ public class Facts {
 			break;
 
 		case DOUBLE:
-			final NumberFormat doubleFormatter = NumberFormat.getNumberInstance(locale);
+			final NumberFormat doubleFormatter = NumberFormat.getNumberInstance(KnownPatterns.isNonLocalized(matchPatternInfo.id) ? Locale.ROOT : locale);
 			doubleFormatter.setMinimumFractionDigits(1);
 			doubleFormatter.setMaximumFractionDigits(16);
 			if (doubleFormatter instanceof DecimalFormat && KnownPatterns.hasExponent(matchPatternInfo.id)) {
@@ -395,7 +395,7 @@ public class Facts {
                 return null;
 	        }
 		case DOUBLE:
-			final NumberFormat doubleFormatter = NumberFormat.getInstance(locale);
+			final NumberFormat doubleFormatter = NumberFormat.getInstance(KnownPatterns.isNonLocalized(matchPatternInfo.id) ? Locale.ROOT : locale);
 	        try {
                 return doubleFormatter.parse(input).doubleValue();
 	        } catch (ParseException e) {

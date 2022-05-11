@@ -27,6 +27,7 @@ import java.util.Set;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
+import com.cobber.fta.core.LocaleEntry;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -141,7 +142,7 @@ public class PluginDefinition {
 		if (localeEntry.headerRegExps == null)
 			return false;
 
-		for (PluginLocaleHeaderEntry entry : localeEntry.headerRegExps)
+		for (LocaleEntry entry : localeEntry.headerRegExps)
 			if (entry.confidence == 100 && !entry.matches(streamName))
 					return true;
 

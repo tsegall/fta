@@ -283,9 +283,9 @@ public class KnownPatterns {
 				new PatternInfo(ID.ID_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE, FTAType.DOUBLE, "SIGNED", false, false, -1, -1, null, ""));
 		if (PATTERN_DOUBLE_NL != null) {
 			knownPatterns.put(PATTERN_DOUBLE_NL,
-					new PatternInfo(ID.ID_DOUBLE_NL, PATTERN_DOUBLE_NL, FTAType.DOUBLE, null, false, false, -1, -1, null, ""));
+					new PatternInfo(ID.ID_DOUBLE_NL, PATTERN_DOUBLE_NL, FTAType.DOUBLE, "NON_LOCALIZED", false, false, -1, -1, null, ""));
 			knownPatterns.put(PATTERN_SIGNED_DOUBLE_NL,
-					new PatternInfo(ID.ID_SIGNED_DOUBLE_NL, PATTERN_SIGNED_DOUBLE_NL, FTAType.DOUBLE, "SIGNED", false, false, -1, -1, null, ""));
+					new PatternInfo(ID.ID_SIGNED_DOUBLE_NL, PATTERN_SIGNED_DOUBLE_NL, FTAType.DOUBLE, "SIGNED,NON_LOCALIZED", false, false, -1, -1, null, ""));
 		}
 		knownPatterns.put(PATTERN_SIGNED_DOUBLE_TRAILING,
 				new PatternInfo(ID.ID_SIGNED_DOUBLE_TRAILING, PATTERN_SIGNED_DOUBLE_TRAILING, FTAType.DOUBLE, "SIGNED_TRAILING", false, false, -1, -1, null, ""));
@@ -327,12 +327,16 @@ public class KnownPatterns {
 		addBinary(promotion, PATTERN_LONG, PATTERN_SIGNED_DOUBLE_TRAILING, PATTERN_SIGNED_DOUBLE_TRAILING);
 		addBinary(promotion, PATTERN_LONG, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_DOUBLE_WITH_EXPONENT);
 		addBinary(promotion, PATTERN_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_LONG, PATTERN_DOUBLE_NL, PATTERN_DOUBLE_NL);
+		addBinary(promotion, PATTERN_LONG, PATTERN_SIGNED_DOUBLE_NL, PATTERN_SIGNED_DOUBLE_NL);
 
 		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_LONG, PATTERN_SIGNED_LONG);
 		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE);
 		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE, PATTERN_SIGNED_DOUBLE);
 		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
 		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_DOUBLE_NL, PATTERN_SIGNED_DOUBLE_NL);
+		addBinary(promotion, PATTERN_SIGNED_LONG, PATTERN_SIGNED_DOUBLE_NL, PATTERN_SIGNED_DOUBLE_NL);
 
 		addBinary(promotion, PATTERN_DOUBLE, PATTERN_LONG, PATTERN_DOUBLE);
 		addBinary(promotion, PATTERN_DOUBLE, PATTERN_SIGNED_DOUBLE_TRAILING, PATTERN_SIGNED_DOUBLE_TRAILING);
@@ -417,6 +421,10 @@ public class KnownPatterns {
 	protected static boolean isLong(final ID id) {
 		return id == ID.ID_LONG || id == ID.ID_LONG_GROUPING || id == ID.ID_SIGNED_LONG ||
 				id == ID.ID_SIGNED_LONG_TRAILING || id == ID.ID_SIGNED_LONG_GROUPING;
+	}
+
+	protected static boolean isNonLocalized(final ID id) {
+		return id == ID.ID_DOUBLE_NL || id == ID.ID_SIGNED_DOUBLE_NL;
 	}
 
 	protected PatternInfo numericPromotion(final ID left, final ID right) {

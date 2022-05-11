@@ -40,7 +40,6 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = ".+";
 
-	private static final String BACKOUT = ".+";
 	private SingletonSet titleStartersRef;
 	private Set<String> titleStarters;
 	private SingletonSet titleHotWordsRef;
@@ -130,6 +129,9 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+		if (getHeaderConfidence(context.getStreamName()) >= 99)
+			return PluginAnalysis.OK;
+
 		int minCardinality = 10;
 		int minSamples = 20;
 		if (getHeaderConfidence(context.getStreamName()) != 0) {
@@ -138,10 +140,10 @@ public class JobTitleEN extends LogicalTypeInfinite {
 		}
 
 		if (cardinality.size() < minCardinality)
-			return new PluginAnalysis(BACKOUT);
+			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		if (realSamples < minSamples)
-			return new PluginAnalysis(BACKOUT);
+			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		if ((double)matchCount/realSamples >= getThreshold()/100.0)
 			return PluginAnalysis.OK;

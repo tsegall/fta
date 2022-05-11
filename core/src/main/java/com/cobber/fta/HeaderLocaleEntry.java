@@ -15,11 +15,28 @@
  */
 package com.cobber.fta;
 
+import com.cobber.fta.core.LocaleEntry;
+
 /**
  * Each KeywordEntry provided a pair with the locale and the value of the tag in that locale.
  * See keywords.json for the structure of the JSON file.
  */
-public class KeywordLocaleEntry {
+public class HeaderLocaleEntry {
 	public String localeTag;
-	public String value;
+	public LocaleEntry[] headerRegExps;
+
+	/**
+	 * Determine the confidence that the name of the data stream is likely a valid header
+	 * @param dataStreamName The name of this data stream
+	 * @return An integer between 0 and 100 reflecting the confidence that this stream name is a valid header.
+	 */
+	public int getHeaderConfidence(final String dataStreamName) {
+		if (headerRegExps != null)
+			for (LocaleEntry headerEntry : headerRegExps) {
+				if (headerEntry.matches(dataStreamName))
+					return headerEntry.confidence;
+			}
+
+		return 0;
+	}
 }

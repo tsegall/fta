@@ -40,7 +40,12 @@ public class Keywords {
 
 	/** Keyword Tag. */
 	public String keytag;
-	public KeywordLocaleEntry[] validLocales;
+	/** keyType is either HEADER or WORD. */
+	public String keyType;
+	/** Used if keyType == WORD. */
+	public WordLocaleEntry[] wordLocales;
+	/** Used if keyType == HEADER. */
+	public HeaderLocaleEntry[] validLocales;
 
 	private Locale locale;
 
@@ -62,14 +67,16 @@ public class Keywords {
 	}
 
 	/**
-	 * Retrieve a localized version of the keyTag supplied.
+	 * Retrieve the localized version of the keyTag supplied.
 	 * @param keyTag The Keytag we are looking for a localized version of - e.g. YES in fr-FR will return 'oui'.
-	 * @return The localized version of the supplied tag.
+	 * @return The localized version of the supplied tag (null if no version exists).
 	 */
 	public String get(final String keyTag) {
 		for (final Keywords keyword : keywords) {
+			if (!"WORD".equals(keyword.keyType))
+				continue;
 			if (keyword.keytag.equals(keyTag))
-				for (final KeywordLocaleEntry entry : keyword.validLocales)
+				for (final WordLocaleEntry entry : keyword.wordLocales)
 					if (isMatch(entry.localeTag))
 						return entry.value;
 		}
@@ -78,22 +85,30 @@ public class Keywords {
 	}
 
 	/**
-	 * Does the supplied input match the Keyword we are looking for in the locale provided.
+	 * Does the supplied input 'match' the Keyword we are looking for in the locale provided.
 	 *
 	 * @param input The input string to match against.
 	 * @param keyTag The well-defined Tag - that we are going to search for a locale specific match for
 	 * @param matchStyle Either CONTAINS or EQUALS
-	 * @return A boolean indicating if the input 'matches' the supplied tag.
+	 * @return An integer (1-100) indicating how well the input 'matches' the supplied tag.
 	 */
-	public boolean match(final String input, final String keyTag, MatchStyle matchStyle) {
+	public int match(final String input, final String keyTag, MatchStyle matchStyle) {
 		String lower = input.trim().toLowerCase(locale);
-		for (final Keywords keyword : keywords)
-			if (keyword.keytag.equals(keyTag))
-				for (final KeywordLocaleEntry entry : keyword.validLocales)
-					if (isMatch(entry.localeTag))
-							return lower.contains(entry.value);
+		if (lower.isEmpty())
+			return 0;
 
-		return false;
+		// Find our Keyword
+		for (final Keywords keyword : keywords) {
+			if (!"HEADER".equals(keyword.keyType))
+				continue;
+			if (keyword.keytag.equals(keyTag))
+				// Find our locale
+				for (final HeaderLocaleEntry entry : keyword.validLocales)
+					if (isMatch(entry.localeTag))
+						return entry.getHeaderConfidence(input);
+		}
+
+		return 0;
 	}
 
 	private boolean isMatch(final String validLocale) {

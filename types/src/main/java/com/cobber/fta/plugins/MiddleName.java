@@ -60,10 +60,42 @@ public class MiddleName extends FirstName {
 		return SEMANTIC_TYPE;
 	}
 
+	/*
+	 * Note: The input String will be both trimmed and converted to upper Case
+	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
+	 */
+	@Override
+	public boolean isValid(final String input) {
+		final String trimmedUpper = input.trim().toUpperCase(locale);
+		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength)
+			return false;
+		if (getMembers().contains(trimmedUpper))
+			return true;
+		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
+		for (int i = 0; i < trimmedUpper.length(); i++) {
+			if (!Character.isAlphabetic(trimmedUpper.charAt(i)))
+				return false;
+		}
+
+		// Assume 40% of the remaining are good - hopefully this will not bias the determination excessively.
+		// Use hashCode as opposed to random() to ensure that a given data set gives the same results from one run to another.
+		return input.hashCode() % 10 < 4;
+	}
+
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (context.getCompositeStreamNames() == null)
 			return PluginAnalysis.SIMPLE_NOT_OK;
+
+		// We have 'Middle Name' or MiddleName'
+		if (getHeaderConfidence(context.getStreamName()) >= 99) {
+			long newMatchCount = matchCount;
+			for (final Map.Entry<String, Long> outlier : outliers.entrySet())
+				if (outlier.getKey().length() == 1 && Character.isAlphabetic(outlier.getKey().charAt(0)))
+					newMatchCount += outlier.getValue();
+			if (super.analyzeSet(context, newMatchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig).isValid())
+				return PluginAnalysis.OK;
+		}
 
 		// Find the index of the First & Last Name fields and of the current field
 		int first = -1;

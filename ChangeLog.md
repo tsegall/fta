@@ -1,6 +1,15 @@
 
 ## Changes ##
 
+### 8.0.19
+ - ENH: I18N - Gender support for Romanian
+ - ENH: I18N - Improve support for Middle Name (cope with a blend of initials and names)
+ - ENH: I18N - Improve JOB_TITLE detection
+ - ENH: I18N - Improve Italian Province detection
+ - ENH: I18N - Improve Yes/No detection for Bulgarian, Catalan, Finnish, and Slovakian
+ - ENH: I18N - Improve 4 digit year detection for a set of European countries
+ - BUG: I18N - Fix issue with non-localized Doubles (also added modifier to Double - NON_LOCALIZED) - also more tests
+
 ### 8.0.18
  - ENH: I18N - Improve Slovakian support
  - ENH: I18N - Improve French-Canadian support

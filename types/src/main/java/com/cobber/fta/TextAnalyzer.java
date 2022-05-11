@@ -891,6 +891,9 @@ public class TextAnalyzer {
 			else
 				d = Double.parseDouble(input);
 		} catch (NumberFormatException e) {
+			// If we think we are a Non Localized number then no point in using the locale-aware parsing
+			if (KnownPatterns.isNonLocalized(facts.matchPatternInfo.id))
+				return false;
 			// Failed to parse using the naive parseDouble, so use the locale-sensitive Numberformat.parse
 			final ParsePosition pos = new ParsePosition(0);
 			final Number n = doubleFormatter.parse(input, pos);
@@ -1493,7 +1496,7 @@ public class TextAnalyzer {
 		// Handle doubles stored in non-localized for (e.g. latitude is often stored with a '.')
 		// This case handles the case where the grouping separator is a '.'
 		if (couldBeNumeric && numericGroupingSeparators == 1 && numericDecimalSeparators == 0 && localeGroupingSeparator == '.' &&
-				digitsSeen - 1 / 3 > numericGroupingSeparators) {
+				(digitsSeen - 1) / 3 > numericGroupingSeparators) {
 			for (int i = 0; i < l0.length(); i++) {
 				if (l0.charAt(i) == 'G') {
 					l0.replace(i, i + 1, "D");
@@ -2885,10 +2888,8 @@ public class TextAnalyzer {
 				generateTopBottom();
 		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > 1800 && facts.maxLong < 2041 &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
-						keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) ||
-						keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) ||
-						context.getStreamName().toUpperCase(locale).contains("YEAR") ||
-						context.getStreamName().toUpperCase(locale).contains("DATE"))) {
+						keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) >= 90 ||
+						keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90)) {
 			facts.matchPatternInfo = new PatternInfo(null, facts.minLongNonZero == facts.minLong ? "\\d{4}" : "0+|\\d{4}", FTAType.LOCALDATE, "yyyy", false, false, 4, 4, null, "yyyy");
 			facts.minLocalDate = LocalDate.of((int)facts.minLongNonZero, 1, 1);
 			facts.maxLocalDate = LocalDate.of((int)facts.maxLong, 1, 1);
@@ -2902,8 +2903,10 @@ public class TextAnalyzer {
 			facts.maxBoolean = "1";
 			facts.matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO);
 		} else {
-			if (facts.groupingSeparators != 0 && !KnownPatterns.hasGrouping(facts.matchPatternInfo.id))
+			if (facts.groupingSeparators != 0 && !KnownPatterns.hasGrouping(facts.matchPatternInfo.id)) {
 				facts.matchPatternInfo = knownPatterns.grouping(facts.matchPatternInfo.regexp);
+				debug("Type determination - now with grouping {}", facts.matchPatternInfo);
+			}
 
 			// Create a new PatternInfo - we don't want to change a predefined one!
 			facts.matchPatternInfo = new PatternInfo(facts.matchPatternInfo);
@@ -2948,8 +2951,10 @@ public class TextAnalyzer {
 		if (facts.minDouble < 0.0)
 			facts.matchPatternInfo = knownPatterns.negation(facts.matchPatternInfo.regexp);
 
-		if (facts.groupingSeparators != 0)
+		if (facts.groupingSeparators != 0 && !KnownPatterns.hasGrouping(facts.matchPatternInfo.id)) {
 			facts.matchPatternInfo = knownPatterns.grouping(facts.matchPatternInfo.regexp);
+			debug("Type determination - now with grouping {}", facts.matchPatternInfo);
+		}
 
 		for (final LogicalTypeRegExp logical : regExpTypes) {
 			if (logical.acceptsBaseType(FTAType.DOUBLE) &&

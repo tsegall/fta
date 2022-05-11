@@ -178,6 +178,12 @@ public class Gender extends LogicalTypeFinite {
 					new String[][] { new String[] { "FEMININA", "MASCULINO" } },
 					new String[][] { new String[] { "F", "M" } } );
 			break;
+		case "RO":
+			// Romanian
+			genderData = new GenderData(
+					new String[][] { new String[] { "FEMEIE", "MASCULIN" } },
+					new String[][] { new String[] { "F", "M" } } );
+			break;
 		case "SV":
 			// Swedish
 			genderData = new GenderData(
