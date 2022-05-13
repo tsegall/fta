@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 8.0.20
+ - ENH: Improve STREET_ADDRESS_EN and STREET_ADDRESS2_EN detection rate
+ - INT: More testing on non localized doubles
+ - INT: Add support for plugin validation from the command line
+
 ### 8.0.19
  - ENH: I18N - Gender support for Romanian
  - ENH: I18N - Improve support for Middle Name (cope with a blend of initials and names)

@@ -94,7 +94,7 @@ public class AddressEN extends LogicalTypeInfinite {
 		final int length = input.length();
 
 		// Attempt to fail fast
-		if (length > 60)
+		if (length > 60 || length < 5)
 			return false;
 
 		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
@@ -104,14 +104,15 @@ public class AddressEN extends LogicalTypeInfinite {
 		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1)))
 			return true;
 
-		if (inputUpper.startsWith("PO BOX"))
+		// Look for some variant of P.O. BOX
+		if (inputUpper.replace(".", "").replace(" ", "").indexOf("POBOX") != -1)
 			return true;
 
 		// Accept something of the form, initial digit followed by an address marker word (e.g. Road, Street, etc).
-		if (!Character.isDigit(inputUpper.charAt(0)))
+		if (inputUpper.length() < 5 || !Character.isDigit(inputUpper.charAt(0)))
 			return false;
 
-		final String[] words = inputUpper.replace(",", "").split(" ");
+		final String[] words = inputUpper.replaceAll("[,\\.]", "").split(" ");
 		if (words.length < 3)
 			return false;
 
@@ -132,11 +133,10 @@ public class AddressEN extends LogicalTypeInfinite {
 		if (!multiline)
 			multiline = trimmed.indexOf('\n') != -1 || trimmed.indexOf('\r') != -1;
 
-
 		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1, inputUpper.length())))
 			return true;
 
-		if (inputUpper.startsWith("PO BOX"))
+		if (inputUpper.contains("BOX"))
 			return true;
 
 		if (!Character.isDigit(inputUpper.charAt(0)) || charCounts[' '] < 2)
@@ -159,9 +159,20 @@ public class AddressEN extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
 		double confidence = (double)matchCount/realSamples;
-		// Boost by up to 5% if we like the header
-		if (getHeaderConfidence(dataStreamName) != 0)
-			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.05), 1.0);
+		int headerConfidence = getHeaderConfidence(dataStreamName);
+
+		// We really don't want to classify Line 2/Line 3 of an address as a Line 1
+		if (dataStreamName.length() > 1) {
+			char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
+			if (Character.isDigit(lastChar) && lastChar != '1')
+				return 0;
+		}
+
+		// Boost based on how much we like the header
+		if (headerConfidence >= 99)
+			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.30), 1.0);
+		else if (headerConfidence >= 90)
+			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.15), 1.0);
 
 		return confidence;
 	}

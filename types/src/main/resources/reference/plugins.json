@@ -202,7 +202,7 @@
 		"description": "Street Address (English Language)",
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr).*", "confidence": 95 } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(address|address.*1)", "confidence": 99 }, { "regExp": ".*(?i)(addr).*", "confidence": 95 } ] }
 		],
 		"clazz": "com.cobber.fta.plugins.AddressEN",
 		"threshold": 90,

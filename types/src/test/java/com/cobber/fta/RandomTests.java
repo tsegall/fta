@@ -18,6 +18,7 @@ package com.cobber.fta;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -2291,7 +2292,7 @@ public class RandomTests {
 			this.streamType = streamType;
 			this.stream = stream;
 			this.answer = answer;
-			analysis = new TextAnalyzer("AnalysisThread" + id);
+			analysis = new TextAnalyzer("AnalysisThread-<" + id + ">");
 			//			logger.debug("Thread %s: created, Stream: type: %s, length: %d.",
 			//					this.id, decoder[this.streamType], this.stream.length);
 		}
@@ -2308,7 +2309,8 @@ public class RandomTests {
 				assertEquals(result.getSampleCount(), answer.getSampleCount());
 				assertEquals(result.getNullCount(), answer.getNullCount());
 				assertEquals(result.getBlankCount(), answer.getBlankCount());
-				assertEquals(result.getRegExp(), answer.getRegExp());
+				if (!result.getRegExp().equals(answer.getRegExp()))
+					assertEquals(result.getRegExp(), answer.getRegExp());
 				assertEquals(result.getConfidence(), answer.getConfidence());
 				assertEquals(result.getType(), answer.getType());
 				assertEquals(result.getMinValue(), answer.getMinValue());
@@ -2318,6 +2320,45 @@ public class RandomTests {
 			}
 
 			// logger.debug("Thread %s: exiting, duration %d.", id, System.currentTimeMillis() - start);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testTypes() throws IOException, FTAException, FTAException, InterruptedException {
+		for (int i = 0; i < 100; i++) {
+			final int index = random.nextInt(someSemanticTypes.length);
+			final String semanticType = someSemanticTypes[index];
+			final String heading = someSemanticTypesHeader[index];
+			if (
+					semanticType.equals("COORDINATE_PAIR.DECIMAL") ||
+					semanticType.equals("SSN")
+					) {
+//				System.err.printf("%s: %d%n", semanticType, index);
+				continue;
+			}
+			PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
+			LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+
+			final int length = 30 + random.nextInt(10000);
+			final String[] stream = new String[length];
+			for (int j = 0; j < length; j++)
+				stream[j] = logicalType.nextRandom();
+			final TextAnalyzer analysis = new TextAnalyzer(heading);
+			if (semanticType.endsWith("_CA"))
+				analysis.setLocale(Locale.CANADA);
+
+			for (final String input : stream)
+				analysis.train(input);
+
+			final TextAnalysisResult result = analysis.getResult();
+			assertEquals(result.getSampleCount(), stream.length);
+			assertEquals(result.getConfidence(), 1.0);
+			String typeQualifier = result.getTypeQualifier();
+			assertNotNull(typeQualifier, semanticType);
+			if (!typeQualifier.equals(semanticType) &&
+					!typeQualifier.equals(semanticType.replaceAll("<LOCALE>", "EN")) &&
+					!typeQualifier.equals(semanticType.replaceAll("<LOCALE>", "en-US")))
+					fail("Input: " + semanticType + ", Result: " + typeQualifier);
 		}
 	}
 
@@ -2404,6 +2445,18 @@ public class RandomTests {
 			"NAME.FIRST", "NAME.LAST", "NAME.LAST_FIRST", "NAME.FIRST_LAST",
 			"CREDIT_CARD_TYPE", "LANGUAGE.ISO-639-2", "LANGUAGE.TEXT_EN",
 			"MONTH.ABBR_<LOCALE>", "MONTH.FULL_<LOCALE>", "COORDINATE.LATITUDE_DECIMAL", "COORDINATE.LONGITUDE_DECIMAL", "COORDINATE_PAIR.DECIMAL"
+	};
+
+	private static String someSemanticTypesHeader[] = new String[] {
+			"EMAIL", "URI.URL", "IPADDRESS", "IPADDRESS", "TELEPHONE", "GUID",
+			"POSTAL_CODE", "POSTAL_CODE",
+			"ADDRESS", "GENDER", "COUNTRY",
+			"PROVINCE", "STATE", "STATE",
+			"CURRENCY", "COUNTRY", "COUNTRY",
+			"AIRPORT_CODE", "CITY", "SSN",
+			"NAME", "NAME", "NAME", "NAME",
+			"CREDIT_CARD_TYPE", "Language", "Language",
+			"Month", "Month", "Latitude", "Longitude", "COORDINATES"
 	};
 
 	class LogicalTypeThread implements Runnable {

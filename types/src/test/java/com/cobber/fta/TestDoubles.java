@@ -1440,9 +1440,9 @@ public class TestDoubles {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
-	public void notLocalizedPortugueseDouble() throws IOException, FTAException {
+	public void nonLocalizedPortugueseDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedPortugueseDouble");
-		// For Portuguese, Decimal Sep = ',' and Thousands Set = '.'
+		// For Portuguese, Decimal Sep = ',' and Thousands Sep = '.'
 		final Locale locale = Locale.forLanguageTag("pt-BR");
 		analysis.setLocale(locale);
 
@@ -1468,6 +1468,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "6.341288");
 		assertEquals(result.getMaxValue(), "6313.005");
+		assertEquals(result.getDecimalSeparator(), '.');
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -1475,7 +1476,7 @@ public class TestDoubles {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
-	public void notLocalizedPortugueseDoubleSigned() throws IOException, FTAException {
+	public void nonLocalizedPortugueseDoubleSigned() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedPortugueseDoubleSigned");
 		// For Portuguese, Decimal Sep = ',' and Thousands Sep = '.'
 		final Locale locale = Locale.forLanguageTag("pt-BR");
@@ -1503,6 +1504,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-1356.902");
 		assertEquals(result.getMaxValue(), "6313.005");
+		assertEquals(result.getDecimalSeparator(), '.');
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -1510,7 +1512,7 @@ public class TestDoubles {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
-	public void notLocalizedPortugueseWithDecSep() throws IOException, FTAException {
+	public void nonLocalizedPortugueseWithDecSep() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedPortugueseWithDecSep");
 		// For Portuguese, Decimal Sep = ',' and Thousands Sep = '.'
 		final Locale locale = Locale.forLanguageTag("pt-BR");
@@ -1540,10 +1542,11 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		assertEquals(result.getMinValue(), "-1356.902");
 		assertEquals(result.getMaxValue(), "6313.005");
+		assertEquals(result.getDecimalSeparator(), '.');
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
-	public void notLocalizedFrenchDouble() throws IOException, FTAException {
+	public void nonLocalizedFrenchDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedFrenchDouble");
 		// For French, Decimal Sep = ',' and Thousands Sep = ' '
 		final Locale locale = Locale.forLanguageTag("fr-FR");
@@ -1571,6 +1574,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "6.341288");
 		assertEquals(result.getMaxValue(), "6313.005");
+		assertEquals(result.getDecimalSeparator(), '.');
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -1578,7 +1582,7 @@ public class TestDoubles {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
-	public void notLocalizedFrenchDoubleSigned() throws IOException, FTAException {
+	public void nonLocalizedFrenchDoubleSigned() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedFrenchDoubleSigned");
 		// For French, Decimal Sep = ',' and Thousands Sep = ' '
 		final Locale locale = Locale.forLanguageTag("fr-FR");
@@ -1606,6 +1610,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-1356.902");
 		assertEquals(result.getMaxValue(), "6313.005");
+		assertEquals(result.getDecimalSeparator(), '.');
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -1613,7 +1618,7 @@ public class TestDoubles {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
-	public void notLocalizedFrenchWithDecSep() throws IOException, FTAException {
+	public void nonLocalizedFrenchWithDecSep() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedFrenchWithDecSep");
 		// For French, Decimal Sep = ',' and Thousands Sep = ' '
 		final Locale locale = Locale.forLanguageTag("fr-FR");
@@ -1643,10 +1648,11 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		assertEquals(result.getMinValue(), "-1356.902");
 		assertEquals(result.getMaxValue(), "6313.005");
+		assertEquals(result.getDecimalSeparator(), '.');
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
-	public void notLocalizedFrenchWithThousandsSep() throws IOException, FTAException {
+	public void nonLocalizedFrenchWithThousandsSep() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedFrenchChange");
 		// For French, Decimal Sep = ',' and Thousands Sep = ' '
 		final Locale locale = Locale.forLanguageTag("fr-FR");
@@ -1676,6 +1682,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		assertEquals(result.getMinValue(), "-1356.902");
 		assertEquals(result.getMaxValue(), "6313.005");
+		assertEquals(result.getDecimalSeparator(), '.');
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })

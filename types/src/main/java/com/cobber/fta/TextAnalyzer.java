@@ -722,6 +722,7 @@ public class TextAnalyzer {
 		// Interpret the String as a long, first attempt uses parseLong which is fast (although not localized), if that fails,
 		// then try using a NumberFormatter which will cope with grouping separators (e.g. 1,000).
 		int digits = trimmed.length();
+		final char firstCh = trimmed.charAt(0);
 
 		try {
 			if (patternInfo.id == KnownPatterns.ID.ID_SIGNED_LONG_TRAILING) {
@@ -734,14 +735,14 @@ public class TextAnalyzer {
 			}
 			else {
 				l = Long.parseLong(trimmed);
-				final char ch = trimmed.charAt(0);
-				if (ch == '-' || ch == '+')
+				if (firstCh == '-' || firstCh == '+')
 					digits--;
 			}
 		} catch (NumberFormatException e) {
 			final ParsePosition pos = new ParsePosition(0);
-			final Number n = longFormatter.parse(trimmed, pos);
-			if (n == null || trimmed.length() != pos.getIndex())
+			String cleaned = firstCh == '+' ? trimmed.substring(1) : trimmed;
+			final Number n = longFormatter.parse(cleaned, pos);
+			if (n == null || cleaned.length() != pos.getIndex())
 				return false;
 			l = n.longValue();
 			if (trimmed.indexOf(localeGroupingSeparator) != -1) {
@@ -752,15 +753,14 @@ public class TextAnalyzer {
 				}
 			}
 			digits = trimmed.length();
-			final char ch = trimmed.charAt(0);
-			if (hasNegativePrefix && (ch == '-' || ch == '+' || ch == negativePrefix))
+			if (hasNegativePrefix && (firstCh == '-' || firstCh == '+' || firstCh == negativePrefix))
 				digits--;
 			if (l < 0 && hasNegativeSuffix)
 				digits--;
 		}
 
 		if (register) {
-			if (trimmed.charAt(0) == '0' && digits != 1)
+			if (firstCh == '0' && digits != 1)
 				facts.leadingZeroCount++;
 
 			if (digits < facts.minTrimmedLengthNumeric)
@@ -1438,6 +1438,8 @@ public class TextAnalyzer {
 			} else if (ch == localeDecimalSeparator) {
 				l0.append('D');
 				numericDecimalSeparators++;
+				if (numericDecimalSeparators > 1)
+					couldBeNumeric = false;
 			} else if (ch == localeGroupingSeparator) {
 				l0.append('G');
 				numericGroupingSeparators++;

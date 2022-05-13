@@ -3375,8 +3375,8 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void basicUSStreet2() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicUSStreet2");
+	public void basicUSStreetTwo() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicUSStreetTwo");
 
 		for (final String s : validUSStreets2) {
 			analysis.train(s);

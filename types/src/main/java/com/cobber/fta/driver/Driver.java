@@ -181,7 +181,7 @@ public class Driver {
 		}
 
 		// Are we generating samples for a specific Semantic Type or a signature?
-		if (options.pluginName != null) {
+		if (options.pluginName != null && !options.validate) {
 			final long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
 			final TextAnalyzer analyzer = getDefaultAnalysis();
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();

@@ -606,8 +606,77 @@ public class TestLongs {
 		}
 	}
 
-	// BROKEN @Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void localizedPortugueseLong() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("localizedPortugueseLong");
+		// For Portuguese, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("pt-BR");
+		analysis.setLocale(locale);
 
+		final String[] inputs = {
+				"46.448", "6.341.288", "543.022", "636.666", "61.606.330",
+				"64.425", "109.089", "57.995", "4.773.826", "23.498.620",
+				"43.391", "1.356.902", "22.039", "2.526.587", "33.113.104",
+				"221.887", "6.313.005", "879.865", "84.369.774"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "GROUPING");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[\\d\\.]{6,10}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "22.039");
+		assertEquals(result.getMaxValue(), "84.369.774");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void localizedGermanLong() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("localizedGermanLong");
+		final Locale locale = Locale.forLanguageTag("de-DE");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+	            "1.234.567.890.123", "-1234567890123", "   51.000", "1.000.000.000.000",
+	            "+11.123.000", "     ",  "  ", "  -12000   "
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+		analysis.train(null);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+		assertEquals(result.getSampleCount(), inputs.length + 1);
+		assertEquals(result.getBlankCount(), 2);
+		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
+		assertEquals(result.getNullCount(), 1);
+		assertEquals(result.getRegExp(), "[ 	]*[+-]?[\\d\\.]{5,17}[ 	]*");
+		assertEquals(result.getMinValue(), "-1.234.567.890.123");
+		assertEquals(result.getMaxValue(), "1.234.567.890.123");
+
+		for (final String input : inputs) {
+			if (input == null || input.trim().isEmpty())
+				continue;
+			assertTrue(input.matches(result.getRegExp()), input);
+		}
+	}
+
+	// BROKEN @Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void trailingMinusArEH() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
 		final Locale locale = Locale.forLanguageTag("ar-EH");

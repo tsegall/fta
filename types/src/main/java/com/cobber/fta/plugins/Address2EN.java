@@ -105,17 +105,17 @@ public class Address2EN extends LogicalTypeInfinite {
 		if (context.getCompositeStreamNames() == null)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		// Find the index of the Address Line 1 field and of the current field
-		int line1 = -1;
+		// Find the index of the of the current field
 		int current = -1;
 		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
-			if (line1 == -1 && logicalAddressLine1.getHeaderConfidence(context.getCompositeStreamNames()[i]) > 90)
-				line1 = i;
-			if (context.getStreamName().equals(context.getCompositeStreamNames()[i]))
+			if (context.getStreamName().equals(context.getCompositeStreamNames()[i])) {
 				current = i;
+				break;
+			}
 		}
 
-		if (line1 != -1 && current == line1 + 1 && getHeaderConfidence(context.getStreamName()) > 90)
+		// Does the previous field look like an Address Line 1?
+		if (current >= 1 && logicalAddressLine1.getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) > 90)
 			return PluginAnalysis.OK;
 
 		return PluginAnalysis.SIMPLE_NOT_OK;
@@ -123,6 +123,10 @@ public class Address2EN extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+		// If all the samples match and the header looks perfect then we are in great shape
+		if (matchCount == realSamples && getHeaderConfidence(dataStreamName) >= 95)
+			return 1.0;
+
 		return (double)getHeaderConfidence(dataStreamName) / 100;
 	}
 }

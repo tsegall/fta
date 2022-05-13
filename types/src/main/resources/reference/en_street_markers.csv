@@ -13,21 +13,34 @@
 #112 See the License for the specific language governing permissions and
 #113 limitations under the License.
 #114
+#115 Good UK reference - https://ideal-postcodes.co.uk/guides/thoroughfare-descriptors
+#116 Good US reference - https://pe.usps.com/text/pub28/28apc_002.htm
+#117
+#118 CR = Country Route/Road
+#119 RR = Rural Route/Road
+#120 FM = Farm to Market Road (Texas)
+#121 RM = Ranch to Market (Texas)
+#122
 ALLEY
 ALY
 ARCADE
+AV
 AVE
 AVE.
 AVENUE
 BLVD
 BLVD.
 BOULEVARD
+BROADWAY
 BVD
 BVD.
+CAMINO
+CAUSEWAY
 CENTER
 CIR
 CIR.
 CIRCLE
+CIRCUS
 CLOSE
 CMN
 CMNS
@@ -35,6 +48,7 @@ COMMON
 COMMONS
 CORNER
 COURT
+CR
 CREEK
 CRES
 CRES.
@@ -43,18 +57,21 @@ CRK
 CROSSING
 CT
 CT.
+DALE
 DR
 DR.
 DRIVE
 ESPLANADE
 EXPRESSWAY
 EXPY
+FM
 FORD
 FRD
 FTAFTAFTA
 GARDEN
 GARDENS
 GATEWAY
+GRANGE
 GREEN
 GROVE
 GTWY
@@ -68,11 +85,13 @@ JUNCTION
 LANDING
 LANE
 LN
+LN.
 LNDG
 LOOP
 MALL
 MANOR
 MEADOW
+MEADOWS
 MEWS
 MNR
 PARADE
@@ -98,9 +117,11 @@ RD
 RD.
 RDG
 RIDGE
+RM
 ROAD
 ROUTE
 ROW
+RR
 RTE
 RUN
 SQ
@@ -108,7 +129,9 @@ SQ.
 SQUARE
 ST
 ST.
+STE
 STREET
+SUITE
 TCE
 TCE.
 TER
