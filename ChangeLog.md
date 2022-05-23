@@ -1,9 +1,19 @@
 
 ## Changes ##
 
+### 8.0.21
+ - ENH: I18N - Add new Semantic Type - POSTAL_CODE.POSTAL_CODE_SE (uses Bloom Filter)
+ - ENH: I18N - Improve COORDINATE_PAIR.DECIMAL, COORDINATE.LATITUDE_DECIMAL, and COORDINATE.LONGITUDE_DECIMAL detection rate (especially in Western Europe)
+ - ENH: I18N - Update Japanese Postal Codes
+ - ENH: I18N - Improve detection of non-localized doubles
+ - ENH: Update plugin format to explicitly indicate the type of the plugin ('java', 'list', or 'regex')
+ - ENH: Add support for a sample list for regex plugins (enables reasonable support for nextRandom())
+ - ENH: Bump Jackson
+ - BUG: I18N - Failed to handle UTF-8 minus sign on Exponents (e.g. locale "nn")
+
 ### 8.0.20
- - ENH: Improve STREET_ADDRESS_EN and STREET_ADDRESS2_EN detection rate
- - INT: More testing on non localized doubles
+ - ENH: I18N - Improve STREET_ADDRESS_EN and STREET_ADDRESS2_EN detection rate (especially UK)
+ - INT: I18N - More testing on non-localized doubles
  - INT: Add support for plugin validation from the command line
 
 ### 8.0.19
@@ -22,7 +32,7 @@
  - ENH: I18N - Support a concept of a non-localized Double (e.g. for example latitude which commonly does not use locale specific decimal separator)
  - ENH: I18N - Gender support for Croatian, Catalan, Swedish and improve French
  - ENH: I18N - Initial support for Romanian
- - ENH: Add new Semantic Type - STATE_PROVINCE.REGION_IT
+ - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.REGION_IT
  - ENH: Bump google phonenumber
 
 ### 8.0.17

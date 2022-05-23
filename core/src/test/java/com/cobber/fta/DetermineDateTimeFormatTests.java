@@ -631,9 +631,8 @@ public class DetermineDateTimeFormatTests {
 		final String inputs[] = pipedInput.split("\\|");
 		final DateTimeParser det = new DateTimeParser();
 
-		for (final String input : inputs) {
+		for (final String input : inputs)
 			det.train(input);
-		}
 
 		final DateTimeParserResult result = det.getResult();
 
@@ -648,9 +647,8 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (final String input : inputs) {
+		for (final String input : inputs)
 			assertTrue(input.matches(regExp));
-		}
 	}
 
 	private DateTimeParser checkSerialization(DateTimeParser input) {
@@ -690,9 +688,8 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (final String input : inputs) {
+		for (final String input : inputs)
 			assertTrue(input.matches(regExp), input);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -725,9 +722,8 @@ public class DetermineDateTimeFormatTests {
 
 		final String regExp = result.getRegExp();
 
-		for (final String input : inputs) {
+		for (final String input : inputs)
 			assertTrue(input.matches(regExp), input);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

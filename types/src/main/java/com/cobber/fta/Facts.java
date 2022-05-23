@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -59,9 +60,12 @@ public class Facts {
 	/** The number of leading zeros seen in sample set.  Only relevant for type Long. */
 	protected long leadingZeroCount;
 	/** Get the Decimal Separator used to interpret Doubles.  Only relevant for type double. */
-	protected char decimalSeparator = '.';
+	public char decimalSeparator = '.';
 	/** What is the uniqueness percentage of this column. */
 	protected Double uniqueness;
+
+	// The Locale default Decimal Separator
+	protected char localeDecimalSeparator;
 
 	public String minBoolean;
 	public String maxBoolean;
@@ -162,15 +166,19 @@ public class Facts {
 	private Locale locale;
 	private boolean collectStatistics;
 
-	public void setLocale(Locale locale) {
+	public void setLocale(final Locale locale) {
 		this.locale = locale;
+
+		DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
+		DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
+		localeDecimalSeparator = symbols.getDecimalSeparator();
 	}
 
 	public Locale getLocale() {
 		return locale;
 	}
 
-	public void setCollectStatistics(boolean collectStatistics) {
+	public void setCollectStatistics(final boolean collectStatistics) {
 		this.collectStatistics = collectStatistics;
 	}
 
@@ -250,7 +258,7 @@ public class Facts {
 		return minValue;
 	}
 
-	public void setMinValue(String minValue) {
+	public void setMinValue(final String minValue) {
 		this.minValue = minValue;
 	}
 
@@ -258,7 +266,7 @@ public class Facts {
 		return maxValue;
 	}
 
-	public void setMaxValue(String maxValue) {
+	public void setMaxValue(final String maxValue) {
 		this.maxValue = maxValue;
 	}
 
@@ -284,7 +292,7 @@ public class Facts {
 			break;
 
 		case DOUBLE:
-			final NumberFormat doubleFormatter = NumberFormat.getNumberInstance(KnownPatterns.isNonLocalized(matchPatternInfo.id) ? Locale.ROOT : locale);
+			final NumberFormat doubleFormatter = NumberFormat.getNumberInstance(decimalSeparator == localeDecimalSeparator ? locale : Locale.ROOT);
 			doubleFormatter.setMinimumFractionDigits(1);
 			doubleFormatter.setMaximumFractionDigits(16);
 			if (doubleFormatter instanceof DecimalFormat && KnownPatterns.hasExponent(matchPatternInfo.id)) {
@@ -381,7 +389,7 @@ public class Facts {
 		return this;
 	}
 
-	protected Object getValue(String input) {
+	protected Object getValue(final String input) {
 		if (matchPatternInfo == null)
 			return null;
 
@@ -395,7 +403,7 @@ public class Facts {
                 return null;
 	        }
 		case DOUBLE:
-			final NumberFormat doubleFormatter = NumberFormat.getInstance(KnownPatterns.isNonLocalized(matchPatternInfo.id) ? Locale.ROOT : locale);
+			final NumberFormat doubleFormatter = NumberFormat.getInstance(decimalSeparator == localeDecimalSeparator ? locale : Locale.ROOT);
 	        try {
                 return doubleFormatter.parse(input).doubleValue();
 	        } catch (ParseException e) {
@@ -545,7 +553,7 @@ public class Facts {
 		return ret;
 	}
 
-	public boolean equals(Object obj, double epsilon) {
+	public boolean equals(final Object obj, final double epsilon) {
 		if (this == obj)
 			return true;
 		if (obj == null)

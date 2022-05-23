@@ -36,7 +36,7 @@ public abstract class LogicalTypeFactory {
 	public static LogicalType newInstance(final PluginDefinition plugin, final Locale locale) throws FTAPluginException {
 		LogicalType logical = null;
 
-		if (plugin.clazz != null) {
+		if ("java".equals(plugin.pluginType)) {
 			Class<?> newLogicalType;
 			Constructor<?> ctor;
 
@@ -50,13 +50,13 @@ public abstract class LogicalTypeFactory {
 				throw new FTAPluginException("Logical type: " + plugin.qualifier + " of class " + plugin.clazz + " does not appear to be a Logical Type.", e);
 			}
 		}
-		else if (plugin.content != null)
+		else if ("list".equals(plugin.pluginType))
 			logical = new LogicalTypeFiniteSimpleExternal(plugin);
-		else
+		else if ("regex".equals(plugin.pluginType))
 			logical = new LogicalTypeRegExp(plugin);
 
 		if (!(logical instanceof LogicalType))
-			throw new FTAPluginException("Failed to instantiate a new Logical Type.");
+			throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' unknown type.");
 
 		logical.initialize(locale);
 

@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.testng.annotations.Test;
 
+import com.cobber.fta.TextAnalyzer.Feature;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.plugins.identity.Aadhar_IN;
@@ -62,7 +63,7 @@ public class TestIdentity {
 		samples[samples.length - 1] = "943-00-1067";
 
 		final TextAnalyzer analysis = new TextAnalyzer("possibleSSN");
-		analysis.setLengthQualifier(false);
+		analysis.configure(Feature.LENGTH_QUALIFIER, false);
 		for (final String sample : samples) {
 			analysis.train(sample);
 		}
@@ -96,7 +97,7 @@ public class TestIdentity {
 		final String samples[] = pipedInput.split("\\|");
 
 		final TextAnalyzer analysis = new TextAnalyzer("notSSN");
-		analysis.setLengthQualifier(false);
+		analysis.configure(Feature.LENGTH_QUALIFIER, false);
 		for (final String sample : samples) {
 			analysis.train(sample);
 		}

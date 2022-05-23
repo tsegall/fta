@@ -44,8 +44,12 @@ public class LogicalTypeRegExp extends LogicalType {
 	private String maxString;
 	protected SecureRandom random;
 	private Xeger generator;
+	private boolean xegerCompatible = true;
 	private NumberFormat longFormatter;
 	private NumberFormat doubleFormatter;
+	private int matchEntry = -1;
+	private SingletonSet samples;
+	private boolean randomInitialized;
 
 	public LogicalTypeRegExp(final PluginDefinition plugin) throws FTAPluginException {
 		super(plugin);
@@ -76,13 +80,6 @@ public class LogicalTypeRegExp extends LogicalType {
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		try {
-			pattern = Pattern.compile(pluginLocaleEntry.regExpReturned);
-		}
-		catch (Exception e) {
-			return false;
-		}
-
 		random = new SecureRandom(new byte[] { 3, 1, 4, 1, 5, 9, 2 });
 
 		longFormatter = NumberFormat.getIntegerInstance(locale);
@@ -97,12 +94,13 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public String getRegExp() {
-		return pluginLocaleEntry.regExpReturned;
+	public boolean isRegExpComplete() {
+		return pluginLocaleEntry.isRegExpComplete(matchEntry);
 	}
 
-	public String[] getRegExpToMatch() {
-		return pluginLocaleEntry.getRegExpsToMatch();
+	@Override
+	public String getRegExp() {
+		return pluginLocaleEntry.getRegExpReturned(matchEntry);
 	}
 
 	@Override
@@ -133,7 +131,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		}
 		catch (NumberFormatException e) {
 			try {
-				ret = doubleFormatter.parse(input).doubleValue();
+				ret = doubleFormatter.parse(input.charAt(0) == '+' ? input.substring(1) : input).doubleValue();
 			} catch (ParseException pe) {
 				throw new NumberFormatException(pe.getMessage());
 			}
@@ -142,9 +140,27 @@ public class LogicalTypeRegExp extends LogicalType {
 		return ret;
 	}
 
+	private Pattern getPattern() {
+		if (pattern != null)
+			return pattern;
+
+		final String toCompile = pluginLocaleEntry.getRegExpReturned(matchEntry);
+		if (toCompile == null)
+			throw new InternalErrorException("Failed to locate pattern, matchEntry = " + matchEntry);
+
+		try {
+			pattern = Pattern.compile(toCompile);
+		}
+		catch (Exception e) {
+			throw new InternalErrorException("Failed to compile pattern, RegExpReturned = " + matchEntry, e);
+		}
+
+		return pattern;
+	}
+
 	@Override
 	public boolean isValid(final String input) {
-		if (!pattern.matcher(input).matches())
+		if (!getPattern().matcher(input).matches())
 			return false;
 
 		if (defn.minimum != null || defn.maximum != null)
@@ -228,17 +244,12 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	public boolean isMatch(final String regExp) {
-		// The optional 'regExpsToMatch' tag is an ordered list of Regular Expressions used to match against the Stream Data.
-		// If not set then the regExpReturned is used to match.
-		if (pluginLocaleEntry.getRegExpsToMatch() == null)
-			return regExp.equals(pluginLocaleEntry.regExpReturned);
-
-		for (final String re : pluginLocaleEntry.getRegExpsToMatch()) {
-			if (regExp.equals(re))
-				return true;
+		if (matchEntry == -1) {
+			matchEntry = pluginLocaleEntry.getMatchEntry(regExp, matchEntry);
+			return matchEntry != -1;
 		}
 
-		return false;
+		return pluginLocaleEntry.getMatchEntry(regExp, matchEntry) != -1;
 	}
 
 	public int getMinSamples() {
@@ -254,12 +265,57 @@ public class LogicalTypeRegExp extends LogicalType {
 		return false;
 	}
 
+	/*
+	 * There are two options for generating random samples for 'regex' plugins.  Either you provide a list of samples via the content and then
+	 * these are selected at from random or you use Xeger to generate samples based on the regular expression returned.
+	 * We use samples for things like 'CITY' where we prefer to see 'Paris', 'London' etc as opposed to 'aqrzx' which is what would be generated
+	 * if we simply use the regular expression.
+	 */
 	@Override
 	public String nextRandom() {
-		if (generator == null)
-			generator = new Xeger(RegExpGenerator.toAutomatonRE(pluginLocaleEntry.regExpReturned, true));
+		if (!randomInitialized) {
+			// Check to see if we have been provided with a set of samples
+			if (defn.content != null && samples == null)
+				samples = new SingletonSet(defn.contentType, defn.content);
+			else {
+				final String regExp = pluginLocaleEntry.getRegExpReturned(matchEntry);
+				// Xeger cannot cope with things like 'zero-width negative lookahead' - '(?!X' - so give up in this case
+				if (regExp.matches(".*[^\\\\]\\(\\?.*")) {
+					xegerCompatible = false;
+					return null;
+				}
 
-		return generator.generate();
+				generator = new Xeger(RegExpGenerator.toAutomatonRE(regExp, true));
+			}
+			randomInitialized = true;
+		}
+
+		// We have samples so use them
+		if (samples != null)
+			return samples.getAt(random.nextInt(samples.getMembers().size()));
+
+		if (!xegerCompatible)
+			return null;
+
+		// If the Regular Express is complete - then anything generated is valid and so we are done
+		if (isRegExpComplete())
+			return generator.generate();
+
+		// If the Regular Expression is not complete - then the sample Xeger generates may not be valid,
+		// attempt to generate multiple samples hoping that we will get one that works, but give up if we
+		// cannot succeed.
+		String ret;
+		long retries = 0;
+		do {
+			ret = generator.generate();
+			retries++;
+			// If we have tried too many time then give up and return an invalid entry.
+			if (retries%10 == 0) {
+				return ret;
+			}
+		} while (!isValid(ret));
+
+		return ret;
 	}
 
 	@Override

@@ -927,7 +927,7 @@ public class TestDoubles {
 			if (isTooHard(locale))
 				continue;
 
-			final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+			final NumberFormat nf = NumberFormat.getNumberInstance(locale);
 
 			final Set<String> samples = new HashSet<>();
 			nf.setMinimumFractionDigits(2);
@@ -1013,7 +1013,7 @@ public class TestDoubles {
 	public void localeNegativeDoubleExponentTest() throws IOException, FTAException {
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-JO") };
+//		final Locale[] locales = { Locale.forLanguageTag("nn") };
 
 		for (final Locale locale : locales) {
 			final TextAnalyzer analysis = new TextAnalyzer("localeNegativeDoubleExponentTest");
@@ -1433,6 +1433,80 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "22.039");
 		assertEquals(result.getMaxValue(), "84.369.774");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void longitudeGermanNonLocalized() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("LÄNGENGRAD");
+		// For German, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("de-DE");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"13.41036986", "13.41064075", "13.41052643", "13.4109571", "13.41033349",
+				"13.410574", "13.4105445", "13.40978114", "13.41017903", "13.40948033",
+				"13.41058769", "13.4105362", "13.4103485", "13.41049951", "13.41070876",
+				"13.41005569", "13.41025133", "13.40963824", "13.4108598", "13.41032171",
+				"13.41036725", "13.4101065", "13.41052288", "13.41310555",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "COORDINATE.LONGITUDE_DECIMAL");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+)|[+-]?180\\.0+");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "13.40948033");
+		assertEquals(result.getMaxValue(), "13.41310555");
+		assertEquals(result.getDecimalSeparator(), '.');
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void longitudeGermanLocalized() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("LÄNGENGRAD");
+		// For German, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("de-DE");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"13,41036986", "13,41064075", "13,41052643", "13,4109571", "13,41033349",
+				"13,410574", "13,4105445", "13,40978114", "13,41017903", "13,40948033",
+				"13,41058769", "13,4105362", "13,4103485", "13,41049951", "13,41070876",
+				"13,41005569", "13,41025133", "13,40963824", "13,4108598", "13,41032171",
+				"13,41036725", "13,4101065", "13,41052288", "13,41310555",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeQualifier(), "COORDINATE.LONGITUDE_DECIMAL");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9]),\\d+)|[+-]?180\\.0+");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "13,40948033");
+		assertEquals(result.getMaxValue(), "13,41310555");
+		assertEquals(result.getDecimalSeparator(), ',');
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));

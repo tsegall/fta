@@ -134,7 +134,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed);
+		return trimmed.length() > 5 && isValid(trimmed);
 	}
 
 	@Override

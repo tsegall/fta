@@ -114,7 +114,7 @@ class FileProcessor {
 						options.apply(analyzer);
 						analyzer.trainBulk(bulkMap);
 						result = analyzer.getResult();
-						logger.printf("Field '%s' - %s%n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
+						logger.printf("Field '%s' - %s%n", sanitize(analyzer.getStreamName()), result.asJSON(options.pretty, options.verbose));
 					}
 					bulkMap.clear();
 					previousKey = key;
@@ -128,9 +128,27 @@ class FileProcessor {
 				options.apply(analyzer);
 				analyzer.trainBulk(bulkMap);
 				result = analyzer.getResult();
-				logger.printf("Field '%s' - %s%n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
+				logger.printf("Field '%s' - %s%n", sanitize(analyzer.getStreamName()), result.asJSON(options.pretty, options.verbose));
 			}
 		}
+	}
+
+	private String sanitize(final String input) {
+		if (input == null || input.isEmpty())
+			return input;
+
+		final StringBuilder b = new StringBuilder();
+
+		for (int i = 0; i < input.length(); i++) {
+			if (input.charAt(i) == '\n')
+				b.append("%0A");
+			else if (input.charAt(i) == '\r')
+				b.append("%0D");
+			else
+				b.append(input.charAt(i));
+		}
+
+		return b.toString();
 	}
 
 	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException {
@@ -239,12 +257,12 @@ class FileProcessor {
 		TextAnalysisResult result = null;
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
-				TextAnalyzer analyzer = processor.getAnalyzer(i);
+				final TextAnalyzer analyzer = processor.getAnalyzer(i);
 				if (thisRecord != options.recordsToProcess)
 					analyzer.setTotalCount(thisRecord);
 
 				result = analyzer.getResult();
-				logger.printf("Field '%s' (%d) - %s%n", header[i], i, result.asJSON(options.pretty, options.verbose));
+				logger.printf("Field '%s' (%d) - %s%n", sanitize(header[i]), i, result.asJSON(options.pretty, options.verbose));
 				if (options.pluginDefinition) {
 					final String pluginDefinition = result.asPlugin();
 					if (pluginDefinition != null)
@@ -300,7 +318,7 @@ class FileProcessor {
 	// [PERSON] + GENDER -> PERSON.GENDER
 	// [PERSON] + JOB_TITLE -> PERSON.JOB_TITLE
 
-	private void analyzeRecord(TextAnalyzer[] analyzers) {
+	private void analyzeRecord(final TextAnalyzer[] analyzers) {
 	}
 
 }

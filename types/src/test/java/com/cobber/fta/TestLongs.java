@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
+import com.cobber.fta.TextAnalyzer.Feature;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
@@ -1218,7 +1219,7 @@ public class TestLongs {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testQualifierNumeric() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Numeric");
-		analysis.setLengthQualifier(false);
+		analysis.configure(Feature.LENGTH_QUALIFIER, false);
 
 		final int start = 10000;
 		final int end = 99999;

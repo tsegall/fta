@@ -103,9 +103,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  * </pre>
  */
 public class TextAnalyzer {
-	/** Should we attempt to qualifier the size of the returned RexExp. */
-	private boolean lengthQualifier = true;
-
 	/** Plugin Threshold for detection - by default this is unset and sensible defaults are used. */
 	private int pluginThreshold = -1;
 
@@ -165,6 +162,8 @@ public class TextAnalyzer {
 		DEFAULT_LOGICAL_TYPES,
 		/** Feature that indicates whether to attempt to detect the stream format (HTML, XML, JSON, BASE64, OTHER). Feature is disabled by default. */
 		FORMAT_DETECTION,
+		/** Indicate whether we should qualify the size of the RegExp. */
+		LENGTH_QUALIFIER
 	}
 
 	/**
@@ -331,7 +330,7 @@ public class TextAnalyzer {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot adjust statistics collection once training has started");
 
-		final boolean ret = collectStatistics;
+		final boolean ret = analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS);
 		analysisConfig.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
 		return ret;
 	}
@@ -610,11 +609,12 @@ public class TextAnalyzer {
 	 * @param newLengthQualifier The new value.
 	 *
 	 * @return The previous value of this parameter.
+	 * @deprecated Since 8.X, use {@link #configure(Feature, boolean)}
 	 */
+	@Deprecated
 	public boolean setLengthQualifier(final boolean newLengthQualifier) {
-
-		final boolean ret = this.lengthQualifier;
-		lengthQualifier = newLengthQualifier;
+		final boolean ret = analysisConfig.isEnabled(TextAnalyzer.Feature.LENGTH_QUALIFIER);
+		analysisConfig.configure(TextAnalyzer.Feature.LENGTH_QUALIFIER, newLengthQualifier);
 		return ret;
 	}
 
@@ -622,9 +622,11 @@ public class TextAnalyzer {
 	 * Indicates whether the size of the RegExp pattern is being defined.
 	 *
 	 * @return True if lengths are being qualified.
+	 * @deprecated Since 8.X, use {@link #isEnabled(Feature)}
 	 */
+	@Deprecated
 	public boolean getLengthQualifier() {
-		return lengthQualifier;
+		return analysisConfig.isEnabled(TextAnalyzer.Feature.LENGTH_QUALIFIER);
 	}
 
 	/**
@@ -1489,8 +1491,13 @@ public class TextAnalyzer {
 			if (exponentLength >= 5)
 				couldBeNumeric = false;
 			else {
-				final int exponentSize = Integer.parseInt(trimmed.substring(possibleExponentSeen + 1, stopLooking));
-				if (Math.abs(exponentSize) > 308)
+				int offset = possibleExponentSeen + 1;
+				// parseInt cannot cope with UTF-8 minus sign, which is used in some locales, so just skip sign
+				final char ch = trimmed.charAt(possibleExponentSeen + 1);
+				if (ch == localeMinusSign || ch == '-' || ch == '+')
+					offset++;
+				final int exponentSize = Integer.parseInt(trimmed.substring(offset, stopLooking));
+				if (exponentSize > 308)
 					couldBeNumeric = false;
 			}
 		}
@@ -2343,12 +2350,11 @@ public class TextAnalyzer {
 	}
 
 	private String lengthQualifier(final int min, final int max) {
-		if (!lengthQualifier)
+		if (!isEnabled(Feature.LENGTH_QUALIFIER))
 			return min > 0 ? "+" : ".";
 
 		return RegExpSplitter.qualify(min, max);
 	}
-
 
 	/**
 	 * Given a Regular Expression with an unbound Integer freeze it with the low and high size.
@@ -2659,17 +2665,22 @@ public class TextAnalyzer {
 			if (facts.matchCount == realSamples && !tokenStreams.isAnyShape()) {
 				final String newRegExp = tokenStreams.getRegExp(false);
 				if (newRegExp != null) {
-					facts.matchPatternInfo = new PatternInfo(null, newRegExp, FTAType.STRING, facts.matchPatternInfo.typeQualifier, false, false,
+					facts.matchPatternInfo = new PatternInfo(null, newRegExp, FTAType.STRING, null, false, false,
 							facts.minTrimmedLength, facts.maxTrimmedLength, null, null);
+					debug("Type determination - updated based on Stream analysis {}", facts.matchPatternInfo);
 				}
 			}
 
 			if (!backedOutRegExp)
 				for (final LogicalTypeRegExp logical : regExpTypes) {
+					// Check to see if either
+					// the Regular Expression we have matches the logical types, or
+					// the Regular Expression for the logical types matches all the data we have observed
 					if (logical.acceptsBaseType(FTAType.STRING) &&
-							(logical.isMatch(facts.matchPatternInfo.regexp) || tokenStreams.matches(logical.getRegExp())) &&
+							(logical.isMatch(facts.matchPatternInfo.regexp) || tokenStreams.matches(logical.getRegExp(), logical.getThreshold())) &&
 							logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
 						facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+						debug("Type determination - updated to Regular Expression logical type {}", facts.matchPatternInfo);
 						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
 						updated = true;
 						break;

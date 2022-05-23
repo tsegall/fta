@@ -305,9 +305,9 @@ public class TestStrings {
 			assertEquals(result.getSampleCount(), inputs.length * ITERATIONS);
 			assertEquals(result.getNullCount(), 0);
 			if (!result.getRegExp().equals("(?i)(A|ASK|CAN|DO|H|HELLO|HELLOWORLD|NOT|WHAT|YOU|Z)")) {
-					for (Map.Entry<String, Long> entry : result.getShapeDetails().entrySet())
+					for (final Map.Entry<String, Long> entry : result.getShapeDetails().entrySet())
 						logger.debug("%s: %d", entry.getKey(), entry.getValue());
-					for (Map.Entry<String, Long> entry : result.getCardinalityDetails().entrySet())
+					for (final Map.Entry<String, Long> entry : result.getCardinalityDetails().entrySet())
 						logger.debug("%s: %d", entry.getKey(), entry.getValue());
 			}
 			assertEquals(result.getMatchCount(), inputs.length * ITERATIONS);
@@ -814,6 +814,112 @@ public class TestStrings {
 		result = analysis.getResult();
 
 		assertEquals(result.getSampleCount(), inputs.length * iterations);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			if (input.length() != 0)
+				assertTrue(input.matches(result.getRegExp()), result.getRegExp());
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
+	public void testCompressCoordinates3() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("lat-lon");
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		final String[] inputs = {
+				"20.627527,-87.076686", "20.627567,-87.076718", "20.6267,-87.075866", "20.635482,-87.070345",
+				"20.629092,-87.074658", "20.62158,-87.092398", "20.630723,-87.073113", "20.669436,-87.041784",
+				"20.636356,-87.064015", "20.616003,-87.08558", "21.026917,-89.57469", "20.698689,-88.589284",
+				"20.927007,-89.562144", "20.666667,-89.25", "20.997851,-89.564806", "21.036225,-89.622806",
+				"20.666667,-89.25", "20.96681,-89.664374", "20.97,-89.62", "20.993882,-89.654744",
+				"21.022035,-89.569943", "21.017202,-89.576877", "20.968765,-89.575109", "21.010511,-89.562531",
+				"20.989657,-89.586893", "20.968422,-89.67354", "", "", "19.54761,-96.928985"
+		};
+
+		for (final String sample : inputs)
+			analysis.train(sample);
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 2);
+		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			if (input.length() != 0)
+				assertTrue(input.matches(result.getRegExp()), result.getRegExp());
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
+	public void testCompressCoordinates4() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("loc");
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		final String[] inputs = {
+				"(51.426177000000003, -2.58955)", "(51.411724999999997, -2.6098059999999998)", "(51.473087, -2.6035400000000002)",
+				"(51.407119999999999, -2.5915240000000002)", "(51.414721999999998, -2.6210499999999999)",
+				"(51.492756999999997, -2.6825899999999998)", "(51.460093999999998, -2.5694659999999998)",
+				"(51.495963000000003, -2.649632)", "(51.484152999999999, -2.566719)", "(51.462553999999997, -2.5361630000000002)",
+				"(51.444048000000002, -2.5403690000000001)", "(51.416970999999997, -2.566805)", "(51.416007, -2.5475789999999998)",
+				"(51.434202999999997, -2.6147840000000002)", "(51.472231999999998, -2.52)", "(51.508037999999999, -2.621737)",
+				"(51.456617999999999, -2.5249999999999999)", "(51.434257000000002, -2.5544449999999999)",
+				"(51.432758999999997, -2.5686930000000001)", "(51.440463000000001, -2.5828549999999999)",
+				"(51.463408999999999, -2.5583079999999998)", "(51.485061000000002, -2.5265499999999999)",
+				"(51.494734000000001, -2.5876619999999999)", "(51.473087, -2.6035400000000002)", "(51.466189999999997, -2.583456)",
+				"(51.474530999999999, -2.5471499999999998)", "(51.480358000000003, -2.5889489999999999)",
+				"(51.490031999999999, -2.6219079999999999)", "(51.452018000000002, -2.5990769999999999)",
+				"(51.485970000000002, -2.6072310000000001)", "(51.466884999999998, -2.6031970000000002)",
+				"(51.473087, -2.6035400000000002)", "(51.479823000000003, -2.6368429999999998)",
+				"(51.462446999999997, -2.6123810000000001)", "(51.455067, -2.6207919999999998)",
+		};
+
+		for (final String sample : inputs)
+			analysis.train(sample);
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			if (input.length() != 0)
+				assertTrue(input.matches(result.getRegExp()), result.getRegExp());
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
+	public void testCompressCoordinates5() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Location");
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		final String[] inputs = {
+				"(42.678066, -73.814233)", "(42.678066, -73.814233)", "(42.678066, -73.814233)", "(42.226801, -78.020567)",
+				"(42.226801, -78.020567)", "(42.226801, -78.020567)", "(40.85589, -73.868294)", "(40.85589, -73.868294)",
+				"(40.85589, -73.868294)", "(42.122015, -75.933191)", "(42.122015, -75.933191)", "(42.122015, -75.933191)",
+				"(42.122015, -75.933191)", "(42.122015, -75.933191)", "(42.224267, -78.606673)", "(42.224267, -78.606673)",
+				"(42.224267, -78.606673)", "(42.940095, -76.560755)", "(42.940095, -76.560755)", "(42.940095, -76.560755)",
+				"(42.940095, -76.560755)", "(42.246904, -79.315313)", "(42.246904, -79.315313)"
+		};
+
+		for (final String sample : inputs)
+			analysis.train(sample);
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");

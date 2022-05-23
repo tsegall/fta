@@ -82,7 +82,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 */
 	public int getHeaderConfidence(final String dataStreamName) {
 		if (pluginLocaleEntry.headerRegExps != null)
-			for (LocaleEntry headerEntry : pluginLocaleEntry.headerRegExps) {
+			for (final LocaleEntry headerEntry : pluginLocaleEntry.headerRegExps) {
 				if (headerEntry.matches(dataStreamName))
 					return headerEntry.confidence;
 			}
@@ -133,7 +133,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @return The Java Regular Expression that most closely matches this Logical Type.
 	 */
 	public boolean isRegExpComplete() {
-		return pluginLocaleEntry.isRegExpComplete;
+		return pluginLocaleEntry.isRegExpComplete(-1);
 	}
 
 	/**

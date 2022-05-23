@@ -38,7 +38,7 @@ public class Processor {
 		this.options = options;
 		this.streamCount = fieldNames.length;
 
-		if (options.pluginName != null && options.validate == true) {
+		if (options.pluginName != null && options.validate) {
 			if (logicalType == null) {
 				PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(options.pluginName);
 				if (pluginDefinition == null) {
@@ -65,7 +65,7 @@ public class Processor {
 			if (options.col == -1 || options.col == i) {
 				if (options.verbose != 0)
 					System.out.printf("\"%s\"%n", row[i]);
-				if (options.pluginName != null && options.validate == true)
+				if (options.pluginName != null && options.validate)
 					System.out.printf("'%s': %b%n", row[i], logicalType.isValid(row[i]));
 				else if (!options.noAnalysis)
 					analyzers[i].train(row[i]);

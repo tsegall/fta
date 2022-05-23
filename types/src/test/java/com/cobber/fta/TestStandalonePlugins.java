@@ -156,7 +156,7 @@ public class TestStandalonePlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomSupport() throws IOException, FTAPluginException {
 		final int SAMPLE_SIZE = 100;
-		final Locale[] locales = new Locale[] {
+		final Locale[] locales = {
 				Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("de-CH"),
 				Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB"), Locale.forLanguageTag("en-AU"),
 				Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("es-MX"),
@@ -168,7 +168,7 @@ public class TestStandalonePlugins {
 				Locale.forLanguageTag("tr-TR")
 		};
 
-		for (Locale locale : locales) {
+		for (final Locale locale : locales) {
 			// Create an Analyzer to retrieve the Logical Types (magically will be all - since passed in '*')
 			final TextAnalyzer analyzer = new TextAnalyzer("*");
 			// Load the default set of plugins for Logical Type detection (normally done by a call to train())
@@ -178,7 +178,7 @@ public class TestStandalonePlugins {
 			for (int iters = 0; iters < 10; iters++) {
 				for (final LogicalType logical : registered) {
 
-					String pluginSignature = logical.getPluginDefinition().signature;
+					final String pluginSignature = logical.getPluginDefinition().signature;
 					if (!"[NONE]".equals(pluginSignature) && !logical.getSignature().equals(logical.getPluginDefinition().signature))
 						logger.warn("WARNING: Signature incorrect for '{}'.  LogicalType = '{}', Plugin = '{}'.",
 								logical.getQualifier(), logical.getSignature(), logical.getPluginDefinition().signature);
@@ -186,6 +186,11 @@ public class TestStandalonePlugins {
 
 					if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
 						continue;
+
+					if (logical.nextRandom() == null) {
+						System.err.println("No nextRandom() support for Logical Type: " + logical.getQualifier());
+						continue;
+					}
 
 					final String[] testCases = new String[SAMPLE_SIZE];
 					for (int i = 0; i < SAMPLE_SIZE; i++) {
@@ -246,7 +251,7 @@ public class TestStandalonePlugins {
 		for (final String sample : validSamples)
 			assertTrue(logical.isValid(sample), sample);
 
-		final String[] invalidSamples = new String[] { "2001Olypics" };
+		final String[] invalidSamples = { "2001Olypics" };
 
 		for (final String sample : invalidSamples)
 			assertFalse(logical.isValid(sample), sample);

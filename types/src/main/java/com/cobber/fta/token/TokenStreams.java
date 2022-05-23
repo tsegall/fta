@@ -174,18 +174,30 @@ public class TokenStreams {
 	/**
 	 * Check if the TokenStreams (i.e. if all member TokenStream's) match the supplied Regular Expression.
 	 * @param regExp The Regular Expression to match.
+	 * @param confidence The confidence we require to determine if this is a match.
 	 * @return True if the TokenStreams match the supplied Regular Expression.
 	 */
-	public boolean matches(final String regExp) {
+	public boolean matches(final String regExp, final int confidence) {
 		if (anyShape)
 			return false;
 
 		if (tokenStreams.isEmpty())
 			return false;
 
+		// First calculate the total number of entries
+		long total = 0;
 		for (final TokenStream tokenStream : tokenStreams.values())
-			if (!tokenStream.matches(regExp))
-				return false;
+			total += tokenStream.getOccurrences();
+
+		long misses = 0;
+		for (final TokenStream tokenStream : tokenStreams.values()) {
+			if (!tokenStream.matches(regExp)) {
+				misses += tokenStream.getOccurrences();
+				// We can bail as soon as the misses exceeds the threshold since it cannot get better
+				if ((double)misses/total > (double)(100 - confidence)/100)
+					return false;
+			}
+		}
 
 		return true;
 	}

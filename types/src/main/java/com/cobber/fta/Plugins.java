@@ -37,7 +37,7 @@ public class Plugins {
 	private final Map<String, LogicalType> registered = new HashMap<>();
 	private ObjectMapper MAPPER;
 
-	Plugins(ObjectMapper mapper) {
+	Plugins(final ObjectMapper mapper) {
 		this.MAPPER = mapper;
 	}
 
@@ -70,17 +70,15 @@ public class Plugins {
 			boolean register = plugin.isLocaleSupported(locale);
 
 			// Check to see if this plugin requires a mandatory hotword (and it is present)
-			if (register) {
-				if (!"*".equals(dataStreamName) && plugin.isRequiredHeaderMissing(locale, dataStreamName))
-					register = false;
-			}
+			if (register && !"*".equals(dataStreamName) && plugin.isRequiredHeaderMissing(locale, dataStreamName))
+				register = false;
 
 			if (register)
-				if (plugin.clazz != null)
+				if ("java".equals(plugin.pluginType))
 					registerLogicalTypeClass(plugin, locale);
-				else if (plugin.content != null)
+				else if ("list".equals(plugin.pluginType))
 					registerLogicalTypeFiniteSet(plugin, locale);
-				else if (plugin.getLocaleEntry(locale).regExpReturned != null)
+				else if ("regex".equals(plugin.pluginType))
 					registerLogicalTypeRegExp(plugin, locale);
 				else
 					throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' unknown type.");

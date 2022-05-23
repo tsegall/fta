@@ -38,7 +38,7 @@ public abstract class SamplePlugin {
 		final TextAnalyzer analysis = new TextAnalyzer("Colors");
 
 		// Register our new magic plugin
-		final String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_<LANG>\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"validLocales\": [ \"en\", \"fr-FR\" ] } ]";
+		final String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_<LANG>\", \"pluginType\": \"java\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"validLocales\": [ \"en\", \"fr-FR\" ] } ]";
 		try {
 			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", null);
 		} catch (InvocationTargetException e) {

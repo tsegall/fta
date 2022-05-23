@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Set;
@@ -57,7 +58,7 @@ public class Driver {
 		int idx = 0;
 		while (idx < args.length && args[idx].charAt(0) == '-') {
 			if ("--bloomfilter".equals(args[idx])) {
-				createBloomOutput(args[idx + 1], args[idx + 2]);
+				createBloomOutput(args[idx + 1], args[idx + 2], args[idx + 3]);
 				System.exit(0);
 			}
 			else if ("--bulk".equals(args[idx]))
@@ -77,6 +78,7 @@ public class Driver {
 			else if ("--help".equals(args[idx])) {
 				logger.println("Usage: fta [OPTIONS] file ...");
 				logger.println("Valid OPTIONS are:");
+				logger.println(" --bloomfilter <input> <output> <type> - Create Bloom Filter, type: 'integer'|'string'");
 				logger.println(" --bulk - Enable bulk mode");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
@@ -298,7 +300,7 @@ public class Driver {
 		return  analysis;
 	}
 
-	private static void createBloomOutput(final String inputName, final String outputName) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+	private static void createBloomOutput(final String inputName, final String outputName, final String funnelType) throws UnsupportedEncodingException, FileNotFoundException, IOException {
 		int lineCount = 0;
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(inputName)), "UTF-8"))) {
 			String input;
@@ -310,21 +312,36 @@ public class Driver {
 			}
 		}
 
+
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(inputName)), "UTF-8"))) {
 			String input;
-			final BloomFilter<Integer> filter = BloomFilter.create(
-					  Funnels.integerFunnel(),
-					  lineCount,
-					  0.005);
-			while ((input = in.readLine()) != null) {
-				final String trimmed = input.trim();
-				if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
-					continue;
-				filter.put(Integer.valueOf(trimmed));
-			}
+			if ("integer".equalsIgnoreCase(funnelType)) {
+				final BloomFilter<Integer> filter = BloomFilter.create(Funnels.integerFunnel(), lineCount, 0.005);
 
-			try (OutputStream filterStream = new FileOutputStream(new File(outputName))) {
-				filter.writeTo(filterStream);
+				while ((input = in.readLine()) != null) {
+					final String trimmed = input.trim();
+					if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
+						continue;
+					filter.put(Integer.valueOf(trimmed));
+				}
+
+				try (OutputStream filterStream = new FileOutputStream(new File(outputName))) {
+					filter.writeTo(filterStream);
+				}
+			}
+			else {
+				final BloomFilter<CharSequence> filter = BloomFilter.create(Funnels.stringFunnel(StandardCharsets.UTF_8), lineCount, 0.005);
+
+				while ((input = in.readLine()) != null) {
+					final String trimmed = input.trim();
+					if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
+						continue;
+					filter.put(trimmed);
+				}
+
+				try (OutputStream filterStream = new FileOutputStream(new File(outputName))) {
+					filter.writeTo(filterStream);
+				}
 			}
 		}
 	}

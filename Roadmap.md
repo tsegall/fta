@@ -26,6 +26,8 @@
  - Add Japanese Postal Code support
  - ...
 
+# Generalize Bloom Filter support for large static reference lists
+
 # Improve Date Detection
 
 # Improve Internationalization

@@ -22,23 +22,59 @@ import com.cobber.fta.core.LocaleEntry;
  * These Header entries are used to match against the stream name and indicate a confidence in the value of the match.
  */
 public class PluginLocaleEntry {
+	/* A comma separated list of locales - either la (language 'la') or la-CT (language 'la' in country 'CT') or '*'. */
 	public String localeTag;
 	public LocaleEntry[] headerRegExps;
-	/** RegExp plugins: the RegExps to be matched to qualify as this Logical Type. */
-	private String[] regExpsToMatch;
-	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
-	public String regExpReturned;
-	/** Is the returned Regular Expression a complete representation of the Logical Type. */
-	public boolean isRegExpComplete;
+	public PluginMatchEntry[] matchEntries;
 
 	public PluginLocaleEntry() {
 	}
 
-	public String[] getRegExpsToMatch() {
-		if (regExpsToMatch == null)
-			regExpsToMatch = new String[] { regExpReturned };
-		return regExpsToMatch;
+	/**
+	 * Is the returned Regular Expression a true and complete representation of the Logical Type.
+	 * For example, \\d{5} is not for US ZIP codes (e.g. 00000 is not a valid Zip), whereas (?i)(male|female) could be valid for a Gender.
+	 * @return The Java Regular Expression that most closely matches this Logical Type.
+	 * @param matchEntry The MatchEntry we have concluded is the correct one.
+	 */
+	public boolean isRegExpComplete(final int matchEntry) {
+		// If we have not decided which Match Entry we are after (then default to the first!)
+		if (matchEntry == -1) {
+			return matchEntries[0].isRegExpComplete();
+		}
 
+		return matchEntries[matchEntry].isRegExpComplete();
+	}
+
+	public String getRegExpReturned(final int matchEntry) {
+		if (matchEntries == null)
+			return null;
+
+		// If we have not decided which Match Entry we are after (then default to the first!)
+		if (matchEntry == -1) {
+			return matchEntries[0].getRegExpReturned();
+		}
+
+		return matchEntries[matchEntry].getRegExpReturned();
+	}
+
+	public int getMatchEntry(final String regExp, final int matchEntry) {
+		if (matchEntry == -1) {
+			for (int i = 0; i < matchEntries.length; i++) {
+				for (final String re : matchEntries[i].getRegExpsToMatch()) {
+					if (regExp.equals(re))
+						return i;
+				}
+			}
+
+			return -1;
+		}
+
+		for (final String re : matchEntries[matchEntry].getRegExpsToMatch()) {
+			if (regExp.equals(re))
+				return matchEntry;
+		}
+
+		return -1;
 	}
 
 	/**
@@ -48,11 +84,11 @@ public class PluginLocaleEntry {
 	 * @param confidence The confidence in our assessment that this is the Semantic Type if the regular expression matches.
 	 * @param regExpReturned The Regular Expressed returned in the case of a successful match.
 	 */
-	public PluginLocaleEntry(String localeTag, final String headerRegExp, final int confidence, final String regExpReturned) {
+	public PluginLocaleEntry(final String localeTag, final String headerRegExp, final int confidence, final String regExpReturned) {
 		this.localeTag = localeTag;
 		if (headerRegExp != null)
 			this.headerRegExps = new LocaleEntry[] { new LocaleEntry(headerRegExp, confidence) };
-		this.regExpReturned = regExpReturned;
+		matchEntries = new PluginMatchEntry[] { new PluginMatchEntry(regExpReturned) };
 	}
 
 	/**
@@ -67,7 +103,7 @@ public class PluginLocaleEntry {
 	 * @param localeTags Construct an array of simple Locale Entries based on a set of locale tags.
 	 * @return An array of Locale Entries with only the tag set - no header information.
 	 */
-	public static PluginLocaleEntry[] simple(String[] localeTags) {
+	public static PluginLocaleEntry[] simple(final String[] localeTags) {
 		PluginLocaleEntry[] ret = new PluginLocaleEntry[localeTags.length];
 
 		for (int i = 0; i < ret.length; i++) {
@@ -79,12 +115,12 @@ public class PluginLocaleEntry {
 
 	@Override
 	public String toString() {
-		StringBuilder ret = new StringBuilder();
+		final StringBuilder ret = new StringBuilder();
 		ret.append(localeTag);
 
 		if (headerRegExps != null) {
 			ret.append(':');
-			for (LocaleEntry entry : headerRegExps)
+			for (final LocaleEntry entry : headerRegExps)
 				ret.append(entry);
 		}
 

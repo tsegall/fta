@@ -35,51 +35,54 @@ import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
 
 /**
- * Plugin to detect valid Japanese Postal Codes.
+ * Plugin to detect valid Swedish Postal Codes.
  */
-public class PostalCodeJA extends LogicalTypeInfinite {
+public class PostalCodeSE extends LogicalTypeInfinite {
 	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_JA";
+	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_SE";
 
 	/** The Regular Expression for this Semantic type. */
-	public static final String REGEXP_POSTAL_CODE = "\\d{3}-\\d{4}";
+	public static final String REGEXP_POSTAL_CODE = "\\d{3} \\d{2}";
 
 	/** The Regular Expression for this Semantic type. */
 	private BloomFilter<CharSequence> zipsRef;
 	private static final String examples[] = {
-			"004-0063", "004-0064", "004-0065", "004-0068", "004-0069", "004-0071", "004-0072", "004-0073", "014-0051", "014-0052", "018-4271",
-			"018-4272", "024-0051", "024-0052", "028-8351", "028-8352", "036-0162", "036-0162", "038-3525", "038-3531", "041-0407", "041-0408",
-			"049-5414", "049-5415", "062-0033", "062-0034", "070-8061", "070-8071", "078-3166", "078-3167", "085-1145", "089-2261", "098-3221",
-			"100-6930", "107-6006", "158-0096", "183-0003", "220-6110", "243-0415", "260-0814", "277-0087", "289-1537", "298-0217", "300-1634",
-			"308-0111", "315-0037", "321-4200", "329-1316", "343-0823", "355-0009", "367-0244", "373-0038", "381-3203", "395-0301", "407-0311",
-			"415-0302", "425-0072", "437-1214", "441-3608", "445-0077", "453-0833", "464-0037", "471-0878", "483-8204", "490-1145", "498-0808",
-			"501-3227", "503-0936", "509-2204", "511-0946", "517-0701", "520-0853", "526-0103", "537-0014", "566-0034", "576-0054", "591-8013",
-			"600-8468", "602-8175", "604-8242", "607-8187", "614-8247", "620-0004", "629-1108", "633-2224", "639-2318", "647-0054", "651-2226",
-			"661-0022", "669-1101", "670-0914", "675-1306", "680-0134", "689-1124", "697-0001", "703-8228", "710-0064", "722-0211", "732-0811",
-			"741-0072", "752-0931", "762-0025", "771-5409", "780-8088", "786-0061", "792-0002", "799-1108", "808-0014", "817-0321", "830-1127",
-			"842-0052", "852-8053", "859-3600", "861-4736", "869-3172", "873-0222", "879-6911", "890-0067", "898-0043", "905-0219", "912-0071",
-			"918-8161", "920-2347", "925-0303", "929-2218", "932-0311", "939-0119", "939-2624", "942-0536", "948-0304", "950-0872", "954-0111",
-			"959-1717", "960-0808", "963-7716", "968-0412", "969-6506", "981-2116", "986-1335", "989-6436", "997-0055", "999-8211"
+			"186 00", "186 01", "186 03", "186 21", "186 22", "186 23", "186 24", "186 25", "186 26", "186 30",
+			"186 31", "186 32", "186 33", "186 34", "186 35", "186 36", "186 37", "186 38", "186 39", "186 40",
+			"186 41", "186 42", "186 43", "186 44", "186 45", "186 46", "186 49", "186 50", "186 51", "186 52",
+			"186 53", "186 54", "186 55", "186 60", "186 70", "186 86", "186 91", "186 92", "186 93", "186 94",
+			"186 95", "186 96", "186 97", "184 86", "103 86", "107 86", "111 86", "112 86", "113 86", "114 86",
+			"117 86", "118 86", "121 86", "122 86", "123 86", "125 86", "126 86", "127 86", "141 86", "161 86",
+			"164 86", "169 86", "152 86", "131 86", "171 86", "109 86", "110 86", "173 86", "181 86", "186 20",
+			"186 47", "186 56", "191 86", "194 86", "901 86", "905 86", "931 86", "930 86", "971 86", "941 86",
+			"961 86", "981 86", "751 86", "745 86", "611 86", "631 86", "581 86", "586 00", "586 43", "586 44",
+			"586 46", "586 47", "586 48", "586 62", "586 63", "586 65", "586 66", "601 86", "603 86", "591 86",
+			"551 86", "351 86", "386 01", "386 21", "386 22", "386 23", "386 30", "386 31", "386 32", "386 33",
+			"386 34", "386 35", "386 50", "386 63", "386 64", "386 90", "386 92", "386 93", "386 96", "391 86",
+			"598 86", "386 94", "386 95", "386 20", "593 86", "621 86", "371 86", "375 86", "286 01", "286 21",
+			"686 25", "686 26", "686 28", "686 29", "686 30", "686 31", "686 33", "686 35", "686 80", "686 91",
+			"686 92", "686 93", "686 94", "686 95", "686 96", "686 98", "651 86", "686 97", "686 20", "686 34",
+			"701 86", "691 86", "702 86", "721 86", "786 02", "786 21", "786 31", "786 32", "786 33", "786 71"
 	};
 
 	/**
-	 * Construct a Japanese Postal code plugin based on the Plugin Definition.
+	 * Construct a Swedish Postal code plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public PostalCodeJA(final PluginDefinition plugin) {
+	public PostalCodeSE(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return REGEXP_POSTAL_CODE.equals(compressed.toString());
+		return REGEXP_POSTAL_CODE.equals(compressed.toString()) || "\\d{5}".equals(compressed.toString());
 	}
 
 	@Override
 	public boolean initialize(final Locale locale) throws FTAPluginException {
 		super.initialize(locale);
 
-		try (InputStream filterStream = PostalCodeJA.class.getResourceAsStream("/reference/ja_postal_code.bf")) {
+		try (InputStream filterStream = PostalCodeSE.class.getResourceAsStream("/reference/se_postal_code.bf")) {
 			zipsRef = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			throw new FTAPluginException("Failed to load BloomFilter", e);
@@ -112,10 +115,10 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 	public boolean isValid(final String input) {
 		final int len = input.length();
 
-		if (len != 8)
+		if (len < 5 || len > 6)
 			return false;
 
-		return zipsRef.mightContain(input);
+		return len == 5 ? zipsRef.mightContain(input.substring(0, 3) + " " + input.substring(3)) : zipsRef.mightContain(input);
 	}
 
 	private String backout() {

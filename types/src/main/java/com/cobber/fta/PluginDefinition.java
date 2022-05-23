@@ -48,6 +48,8 @@ public class PluginDefinition {
 	public String qualifier;
 	/** English language description of the Semantic Type. */
 	public String description;
+	/** Type of the plugin - can be 'java', 'list', or 'regex' */
+	public String pluginType;
 	/** Signature (structure) - the MD5 Hash of the Qualifier and the Base Type. */
 	public String signature;
 	/** locales this plugin applies to - empty set, implies all locales.  Can use just language instead of tag, e.g. "en" rather than "en_US". */
@@ -84,18 +86,21 @@ public class PluginDefinition {
 	public PluginDefinition() {
 	}
 
-	// Only use this for internal testing
+	// *** Only use this for internal testing ***
 	protected PluginDefinition(final String qualifier, final String clazz) {
 		this.qualifier = qualifier;
 		this.clazz = clazz;
+		this.pluginType = "java";
 		this.validLocales = PluginLocaleEntry.simple(new String[] { "en" });
 	}
 
+	// *** Only use this for internal testing ***
 	public PluginDefinition(final String qualifier, final String description, final String[] invalidList,
 			final String content, final String contentType, final String backout, final PluginLocaleEntry[] validLocales, final boolean localeSensitive,
 			final int threshold, final FTAType  baseType) {
 		this.qualifier = qualifier;
 		this.description = description;
+		this.pluginType = content != null ? "list" : "regex";
 		this.invalidList = invalidList == null ? null : new HashSet<>(Arrays.asList(invalidList));
 		this.content = content;
 		this.contentType = contentType;
@@ -142,25 +147,25 @@ public class PluginDefinition {
 		if (localeEntry.headerRegExps == null)
 			return false;
 
-		for (LocaleEntry entry : localeEntry.headerRegExps)
+		for (final LocaleEntry entry : localeEntry.headerRegExps)
 			if (entry.confidence == 100 && !entry.matches(streamName))
-					return true;
+				return true;
 
 		return false;
 
 	}
 
 	public PluginLocaleEntry getLocaleEntry(final Locale locale) throws FTAPluginException {
+		if (validLocales == null)
+			throw new FTAPluginException("plugin: " + qualifier + " - validLocales cannot be null");
+
 		final String languageTag = locale.toLanguageTag();
 		final String language = locale.getLanguage();
 
 		PluginLocaleEntry wildcard = null;
 
-		if (validLocales == null)
-			throw new FTAPluginException("plugin: " + qualifier + " - validLocales cannot be null");
-
 		for (final PluginLocaleEntry validLocale : validLocales) {
-			String[] localeTags = validLocale.localeTag.split(",");
+			final String[] localeTags = validLocale.localeTag.split(",");
 			for (final String localeTag : localeTags) {
 				if ("*".equals(localeTag))
 					wildcard = validLocale;
@@ -181,7 +186,7 @@ public class PluginDefinition {
 	}
 
 	public String getLocaleDescription() {
-		StringBuilder ret = new StringBuilder();
+		final StringBuilder ret = new StringBuilder();
 		for (int i = 0; i < validLocales.length; i++)
 			ret.append(validLocales[i].toString());
 

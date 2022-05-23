@@ -83,6 +83,9 @@ public class AnalysisConfig {
 	/** Should we attempt to do Stream format detection.  For example, HTML, XML, JSON, BASE64, ... */
 	private boolean formatDetection = false;
 
+	/** Should we attempt to qualify the size of the returned RexExp. */
+	private boolean lengthQualifier = true;
+
 	AnalysisConfig() {
 	}
 
@@ -105,6 +108,9 @@ public class AnalysisConfig {
 		case FORMAT_DETECTION:
 			formatDetection = state;
 			break;
+		case LENGTH_QUALIFIER:
+			lengthQualifier = state;
+			break;
 		}
 	}
 
@@ -123,6 +129,8 @@ public class AnalysisConfig {
 			return numericWidening;
 		case FORMAT_DETECTION:
 			return formatDetection;
+		case LENGTH_QUALIFIER:
+			return lengthQualifier;
 		}
 		return false;
 	}
@@ -219,7 +227,7 @@ public class AnalysisConfig {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AnalysisConfig other = (AnalysisConfig) obj;
+		final AnalysisConfig other = (AnalysisConfig) obj;
 		return detectWindow == other.detectWindow && enableDefaultLogicalTypes == other.enableDefaultLogicalTypes
 				&& Objects.equals(localeTag, other.localeTag) && maxCardinality == other.maxCardinality
 				&& maxInputLength == other.maxInputLength && maxOutliers == other.maxOutliers

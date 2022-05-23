@@ -268,7 +268,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("latitude");
 		analysis.setLocale(Locale.forLanguageTag("de-DE"));
 
-		String[] inputs = {
+		final String[] inputs = {
 				"54.176658700787", "54.1523286823181", "54.1507845291159", "54.1444646959388", "54.0948626983874",
 				"54.099612908786", "54.0928342952505", "54.1492128935414", "54.0996275412016", "54.1767338631483",
 		};
@@ -282,7 +282,7 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "(-?([0-9]|[0-8][0-9])[\\.,]\\d+)|-?90\\.0+");
+		assertEquals(result.getRegExp(), "(-?([0-9]|[0-8][0-9])\\.\\d+)|-?90\\.0+");
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -575,7 +575,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
-		PluginDefinition pluginDefinition = new PluginDefinition("CC", "com.cobber.fta.PluginCreditCard");
+		final PluginDefinition pluginDefinition = new PluginDefinition("CC", "com.cobber.fta.PluginCreditCard");
 		pluginDefinition.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en") };
 		plugins.add(pluginDefinition);
 
@@ -971,7 +971,7 @@ public class TestPlugins {
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
-			String input = inputs[i].charAt(0) == '0' ? inputs[i].substring(1) : inputs[i];
+			final String input = inputs[i].charAt(0) == '0' ? inputs[i].substring(1) : inputs[i];
 			if (analysis.train(input) && locked == -1)
 				locked = i;
 		}
@@ -2551,7 +2551,7 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("genero");
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
-		Locale portuguese = Locale.forLanguageTag("pt-BR");
+		final Locale portuguese = Locale.forLanguageTag("pt-BR");
 		analysis.setLocale(portuguese);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("GENDER_PT", "Gender (Portuguese Language)", null, null, null, "\\d{3}-\\d{2}-\\d{4}",
@@ -2777,19 +2777,19 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testNameHeader() throws IOException, FTAException {
-		final String headersGood[] = new String[] {
+		final String headersGood[] = {
 				"FirstName", "First Name", "First_Name", "FIRSTNAME", "FNAME", "FIRST.NAME", "FIRST-NAME", "GIVEN NAME"
 		};
-		final String headersMaybe[] = new String[] {
+		final String headersMaybe[] = {
 				"NAME"
 		};
-		final String headersBad[] = new String[] {
+		final String headersBad[] = {
 				null, ""
 		};
-		final String[] samplesGoodFirstOnly = new String[] {
+		final String[] samplesGoodFirstOnly = {
 				"Elizabeth", "Sarah", "Tim", "Paula", "Bethany", "Reginald", "Amanda", "Nancy", "Margaret", "Leila"
 		};
-		final String[] samplesUnknown = new String[] {
+		final String[] samplesUnknown = {
 				"Mary Beth", "Mary Joe"
 		};
 
@@ -2848,7 +2848,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_CUSIP() throws IOException, FTAException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
 				"G0084W951", "G0129K104", "G0129K904", "G0129K954", "G0132V105", "G0176J109", "G0176J909", "G0176J959", "G01767105", "G01767905",
 				"G01767955", "G0177J108", "G0177J908", "G0177J958", "G02602103", "G02602903", "G02602953", "G0335L102", "G0335L902", "G0335L952"
@@ -2890,7 +2890,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_CUSIP_bulk() throws IOException, FTAException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
 				"G0084W951", "G0129K104", "G0129K904", "G0129K954", "G0132V105", "G0176J109", "G0176J909", "G0176J959", "G01767105", "G01767905",
 				"G01767955", "G0177J108", "G0177J908", "G0177J958", "G02602103", "G02602903", "G02602953", "G0335L102", "G0335L902", "G0335L952"
@@ -2934,7 +2934,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testSignatures() throws IOException, FTAException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"B38564108", "B38564908", "B38564958", "C10268AC1", "C35329AA6", "D18190898", "D18190908", "D18190958", "G0084W101", "G0084W901",
 				"G0084W951", "G0129K104", "G0129K904", "G0129K954", "G0132V105", "G0176J109", "G0176J909", "G0176J959", "G01767105", "G01767905",
 				"G01767955", "G0177J108", "G0177J908", "G0177J958", "G02602103", "G02602903", "G02602953", "G0335L102", "G0335L902", "G0335L952"
@@ -2956,15 +2956,15 @@ public class TestPlugins {
 		assertEquals(preResult.getConfidence(), 1.0);
 		assertEquals(preResult.getStructureSignature(), "yW7lIrjlrjF/WZwIInoH/TrmhCw=");
 		assertEquals(preResult.getShapeCount(), 3);
-		Iterator<Entry<String, Long>> shapes =  preResult.getShapeDetails().entrySet().iterator();
+		final Iterator<Entry<String, Long>> shapes =  preResult.getShapeDetails().entrySet().iterator();
 
-		Map.Entry<String, Long> first = shapes.next();
+		final Map.Entry<String, Long> first = shapes.next();
 		assertEquals(first.getKey(), "X99999999");
 		assertEquals(first.getValue().longValue(), 12);
-		Map.Entry<String, Long> second = shapes.next();
+		final Map.Entry<String, Long> second = shapes.next();
 		assertEquals(second.getKey(), "X99999XX9");
 		assertEquals(second.getValue().longValue(), 2);
-		Map.Entry<String, Long> third = shapes.next();
+		final Map.Entry<String, Long> third = shapes.next();
 		assertEquals(third.getKey(), "X9999X999");
 		assertEquals(third.getValue().longValue(), 16);
 
@@ -3011,7 +3011,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_FUND() throws IOException, FTAException {
 		final String FUND_REGEXP = "[\\p{IsAlphabetic}\\d]{10}";
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"BFLGXF682X", "BFLGXF682W", "PNUJWNGCFQ", "SVAXRA5JCJ", "Y7OBPIXWM9", "G8K8TRB34J", "Y3EB59C7IS", "SJBDBG2P2M", "4XC8B8ZE2Y", "JN7BXG4Z6B",
 				"VMTM4FS09S", "INX2TS29XH", "HCUBHG6SL8", "KTCZJMS3C2", "YOUOL9IN2K", "NK8YM32JKG", "J8608B2931", "YFJBB0HOUS", "HKPS0A7DGO", "6USXWQTEK1",
 				"4BTJHZ1I2V", "PDGWWLKDY9", "OQ1KEBQD85", "HS8JYUVVCO", "WZYULQRKW2", "SDLJVXYOUW", "2DBSKJEJMK", "J0DN2PR11M", "DDIKS9IUVJ", "WRUDP8V53N",
@@ -3057,7 +3057,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_Bug() throws FTAException {
 		final String EXPECTED_REGEXP = "\\p{IsAlphabetic}\\d{10}";
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890",
 				"a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890",
 				"a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890", "a1234567890",
@@ -3067,7 +3067,8 @@ public class TestPlugins {
 		final String pluginDefinitions =
 				"[ {" +
 				"  \"qualifier\": \"BUG\"," +
-				"  \"validLocales\": [ { \"localeTag\":  \"*\", \"regExpReturned\": \"\\\\d{11}\" } ]," +
+				"  \"pluginType\": \"regex\"," +
+				"  \"validLocales\": [ { \"localeTag\":  \"*\", \"matchEntries\": [ { \"regExpReturned\": \"\\\\d{11}\" } ] } ]," +
 				"  \"threshold\": 98," +
 				"  \"baseType\": \"STRING\"" +
 				"  } ]";
@@ -3078,6 +3079,7 @@ public class TestPlugins {
 					analysis.getStreamName(), Locale.getDefault());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
+			fail();
 		}
 		for (final String sample : samples) {
 			analysis.train(sample);
@@ -3186,7 +3188,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void constantLengthCountry() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("constantLengthCountry");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"ARUBA", "BENIN", "BURMA", "CHILE", "CHINA", "CONGO", "EGYPT", "FYROM", "GABON", "GHANA", "HAITI", "INDIA",
 				"ITALY", "JAPAN", "KENYA", "KOREA", "LIBYA", "MACAU", "MALTA", "NAURU", "NEPAL", "NIGER", "PALAU", "QATAR",
 				"SAMOA", "SPAIN", "SUDAN", "SYRIA", "TONGA", "WALES", "YEMEN"
@@ -3214,7 +3216,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void thinAddress() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Example_Address");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"123 Test St",
 				"124 Test St",
 				"125 Test St",

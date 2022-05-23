@@ -27,14 +27,13 @@ public abstract class Merge {
 		final TextAnalyzer shardOne = new TextAnalyzer("Merge");
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			shardOne.train("FEMALE");
-		String serializedOne = shardOne.serialize();
+		final String serializedOne = shardOne.serialize();
 
 		// Create the second Analyzer
 		final TextAnalyzer shardTwo = new TextAnalyzer("Merge");
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			shardTwo.train("MALE");
-		String serializedTwo = shardTwo.serialize();
-
+		final String serializedTwo = shardTwo.serialize();
 
 		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(serializedOne);
 		System.err.println(hydratedOne.getResult().getTypeQualifier());

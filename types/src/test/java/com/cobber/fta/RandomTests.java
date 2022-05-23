@@ -91,7 +91,7 @@ public class RandomTests {
 		analysis.train("3");
 		analysis.train("4");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		int failures = 0;
 		try {
@@ -155,7 +155,7 @@ public class RandomTests {
 		analysis.train("hello  ");
 		analysis.train("  world");
 		analysis.train("magic");
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 		assertEquals(result.getRegExp(), "[ 	]*\\p{IsAlphabetic}{5}[ 	]*");
 		assertEquals(result.getDataRegExp(), "\\p{IsAlphabetic}{5}");
 	}
@@ -164,11 +164,11 @@ public class RandomTests {
 	public void constantLongZeroes() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("constantZeroes");
 
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 		for (int i = 0; i < 20_000_000; i++)
 			analysis.train("0");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
 		assertEquals(result.getRegExp(), "\\d");
 	}
@@ -179,9 +179,9 @@ public class RandomTests {
 		final Map<String, Long> universe = new HashMap<>();
 		universe.put("0", 200_000_000L);
 
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 		analysis.trainBulk(universe);
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
 		assertEquals(result.getRegExp(), "\\d");
 	}
@@ -190,11 +190,11 @@ public class RandomTests {
 	public void constantDoubleZeroes() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("constantZeroes");
 
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 		for (int i = 0; i < 20_000_000; i++)
 			analysis.train("0.0");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
 		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 	}
@@ -205,9 +205,9 @@ public class RandomTests {
 		final Map<String, Long> universe = new HashMap<>();
 		universe.put("1.0", 200_000_000L);
 
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 		analysis.trainBulk(universe);
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
 		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 	}
@@ -415,7 +415,7 @@ public class RandomTests {
 
 		int matchCount = 0;
 		for (int i = 0; i < samplesProcessed - 1; i++) {
-			String input = inputs[i];
+			final String input = inputs[i];
 			if (!input.trim().isEmpty() && input.matches(result.getRegExp()))
 				matchCount++;
 		}
@@ -551,9 +551,9 @@ public class RandomTests {
 	public void testQualifierAlpha() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alpha");
 		final int STRING_LENGTH = 5;
-		assertTrue(analysis.getLengthQualifier());
-		analysis.setLengthQualifier(false);
-		assertFalse(analysis.getLengthQualifier());
+		assertTrue(analysis.isEnabled(Feature.LENGTH_QUALIFIER));
+		analysis.configure(Feature.LENGTH_QUALIFIER, false);
+		assertFalse(analysis.isEnabled(Feature.LENGTH_QUALIFIER));
 		final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 		final int start = 10000;
@@ -577,7 +577,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testQualifierAlphaNumeric() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("AlphaNumeric");
-		analysis.setLengthQualifier(false);
+		analysis.configure(Feature.LENGTH_QUALIFIER, false);
 
 		final int start = 10000;
 		final int end = 99999;
@@ -634,7 +634,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void mixedZip() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("mixedZip");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"98115-2654", "98007", "98042-8501", "98311-3239", "98074-3322", "98039", "98466-2041", "98136-2633", "98166-3212", "98042-8213",
 				"98121", "98038-8314", "98112-4739", "98059-7315", "20017-4261", "21204-2055", "21158-3604", "21784", "21776-9719", "20854",
 				"22201-2618", "20017-1513", "20016-8001", "20008-5941", "20904-1209", "20901-1040", "20901-3105", "20817-6330", "20164", "20008-2522",
@@ -683,7 +683,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void trailingAM() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("trailingAM");
-		final String inputs[] = new String[] {
+		final String inputs[] = {
 				"02s500000023SQ3AAM", "02s5000000233ThAAI", "02s5000000238JRAAY", "02s500000023QCEAA2",
 				"02s500000023QCFAA2", "02s500000023SKAAA2", "02s5000000233TgAAI", "02s500000023Sw9AAE",
 				"02s500000023T0pAAE", "02s500000023U6FAAU", "02s500000023qQVAAY", "02s500000023qQWAAY",
@@ -1078,7 +1078,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void blanksLeft() throws IOException, FTAException {
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				" D12345",
 				"A123 56", "A1234567", "A12345678", "A123456789", "A123456", "A1234567", "A12345678", "A123456789",
 				"B123 56", "B1234567", "B12345678", "B123456789", "B123456", "B1234567", "B12345678", "B123456789",
@@ -1090,7 +1090,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void blanksInInput() throws IOException, FTAException {
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				" D12345", "  C123456789",
 				"A123 56", "A1234567", "A12345678", "        ", "A123456", "A1234567", "A12345678", "A123456789",
 				"B123 56", "B1234567", "B12345678", "B123456789", "B123456", "B1234567", "B12345678", "B123456789",
@@ -1102,7 +1102,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void allEmpty() throws IOException, FTAException {
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 				"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 		};
@@ -1112,7 +1112,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void blanksInField() throws IOException, FTAException {
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"-", "-", "", "", "", "", "^^^", "", "", "", "-", "", "", "", "", "", "", "", "",
 				"", "-", "", "", "", "", "", "-", "", "", "-", "", "-", "-", "", "", "", "-", "", "",
 				"-", "", "", "", "-", "", "-", "-", "", "", "", "-", "", "-", "", "", "", "****", "****", "",
@@ -1125,7 +1125,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void blanksAtEndOfField() throws IOException, FTAException {
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"", "Foster Road", "", "Grove Road", "", "Library", "", "Bradgers Hill Road", "", "Tomlinson Avenue", "Wheatfield Road", "Tomlinson Avenue", "",
 				"Bradgers Hill Road", "", "Nixon Street", "", "Moor Lane", "", "West Hanningfield Road", "Fambridge Road", "Victoria Drive", "Maypole Road",
 				"Station Road", "Roundbush Road", "Harborough Hall Lane", "Colchester Road", "Church Road", "Roundbush Road", "Harborough Hall Lane", "Colchester Road", "The Folly",
@@ -1184,7 +1184,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void belowDetectWindow() throws IOException, FTAException {
 		final String BAD = "hello";
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"1234567", "403901",  "6200243690", "6200243691", "6200243692", "6200243693", "6200243694", "5", "8", "9",
 				BAD, "020035031", "6200243635", "6200243635", "6200206290", "6200206290",
 		};
@@ -1212,7 +1212,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void regExpIssue() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"51100", "44087", "05454-876", "69004", "B-6000", "05454-876", "3012", "1204", "08737-363", "5022", "8010",
 				"05022", "50739", "02389-673", "87110", "8010", "S-844 67", "67000", "90110", "80805", "1081", "98124",
 				"90110", "82520", "87110", "01307", "51100", "24100", "05033", "04179", "S-958 22", "60528", "S-958 22",
@@ -1444,7 +1444,7 @@ public class RandomTests {
 			analysis.getResult();
 		}
 		catch (FTAPluginException e) {
-			String message = e.getMessage();
+			final String message = e.getMessage();
 			assertTrue(message.startsWith("Internal error: Max Cardinality: 100 is insufficient to support plugin:"));
 			return;
 		}
@@ -1464,7 +1464,7 @@ public class RandomTests {
 				analysis.train("B" + input);
 			}
 
-			TextAnalysisResult result = analysis.getResult();
+			final TextAnalysisResult result = analysis.getResult();
 
 			assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{4}");
 			assertEquals(result.getType(), FTAType.STRING);
@@ -1678,7 +1678,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void bigExponents() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"5230CGX16431", "3590E094000", "3590E092401", "3590E012300", "66004890064", "020035020", "270000009882", "020035256", "5520WDB48305", "6200600740",
 				"6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "6200243690", "66004589900", "66004589900",
 				"020035300", "020035300", "020035347", "6020710337", "6020710337", "020035257", "020035053", "020035030", "020035030", "020035031",
@@ -1877,7 +1877,7 @@ public class RandomTests {
 		final String hello = "Hello";
 		analysis.train(hello);
 		for (int i = 'a'; i < 'a' + 26; i++) {
-			String longString = Utils.repeat((char)i, LONG_TEST);
+			final String longString = Utils.repeat((char)i, LONG_TEST);
 			analysis.train(longString);
 		}
 
@@ -1896,7 +1896,7 @@ public class RandomTests {
 
 		analysis.train(hello);
 		for (int i = 'a'; i < 'a' + 26; i++) {
-			String longString = Utils.repeat((char)i, LONG_TEST);
+			final String longString = Utils.repeat((char)i, LONG_TEST);
 			analysis.train(longString);
 		}
 
@@ -2001,7 +2001,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void freeText() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"The main issue I have is that it did not arrive correctly calibrated.",
 				"This was the most reasonably priced 4’ digital level I could find.",
 				"I have been using a couple of this product for about two years and am glad I purchased it. I don't know how accurate the other brands are but this one is accurate enough for my purpose.",
@@ -2036,7 +2036,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void freeTextLowCardinality() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"Divorced - separated",
 				"Divorced - not separated",
 				"Married - sharing a house",
@@ -2069,7 +2069,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void strange() throws IOException, FTAException {
 		final String INTERESTING = "88-0828S7";
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"", "", "", "", "", "", "", "", "", "",
 				"", "", "", "", "", "", "", "", "", "",
 				"", "", "", "", "", "", "", "", "", "",
@@ -2096,7 +2096,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void viznet3() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"688 8271 68", "", "876 2105 21", "654 9262 12", "", "299 8420 96", "",  "974 9680 53",
 				"106 9951 52", "106 9951 52", "551 2387 53", "104 6247 01", "104 6247 01", "654 4365 27",
 				"654 4365 27", "654 4264 33", "654 4264 33", "974 9680 53", "654 9105 28"
@@ -2134,7 +2134,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void viznet5A() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"2010-01-13 09:58:25.443", "2010-02-02 12:13:36.132", "2010-06-22 18:55:04",
 				"2010-06-22 18:54:46", "2010-02-03 13:00:49.746", "2010-01-14 10:15:08.388",
 				"2010-01-14 10:15:16.041", "2010-01-14 10:14:59.964", "2010-02-02 12:02:38.444",
@@ -2158,8 +2158,45 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void embeddedNumerics() throws IOException, FTAException {
+		final String[] samples = {
+				"hello 45.6", "world 89.9", "5.89 world 87.33", "9.89 world 87.33", "4.89 world 87.33",
+				"4.891 world 87.33", "4.89 world 87.33", "41.89 world 87.33", "4.89 world 87.33", "4.89 world 817.33",
+				"41.89 world 87.133", "4.89 world 87.33", "hello 45.6", "world 89.9", "xoom 2456.890",
+				"hello 45.6", "world 89.9", "5.89 world 87.33", "9.89 world 87.33", "4.89 world 87.33",
+
+				"4.891 world 87.33", "4.89 world 87.33", "41.89 world 87.33",
+				"4.89 world 87.33", "4.89 world 817.33", "41.89 world 87.33",
+				"4.89 world 87.33", "4.89 world 817.33", "41.89 world 87.133",
+				"4.89 world 87.33", "hello 45.6", "world 89.9", "xoom 2456.890",
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("embeddedNumerics");
+		for (final String sample : samples) {
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
+		assertEquals(result.getRegExp(), ".{10,18}");
+		assertEquals(result.getConfidence(), 1.0);
+
+		int matched = 0;
+		for (final String sample : samples)
+			if (sample.matches(result.getRegExp()))
+				matched++;
+
+		assertEquals(result.getSampleCount(), matched);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void viznet5B() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"2010-01-05 16:26:12.662", "2010-01-12 07:34:13.934", "2010-02-25 07:36:25.8",
 				"2010-02-03 08:58:45.692", "2010-02-03 13:06:30.662", "2010-02-03 13:06:43.125",
 				"2010-01-13 09:58:25.443", "2010-02-02 12:13:36.132", "2010-06-22 18:55:04",
@@ -2184,7 +2221,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void freeTextLowCardinalityMultiples() throws IOException, FTAException {
-		final String[] samples = new String[] {
+		final String[] samples = {
 				"Divorced - separated",
 				"Divorced - not separated",
 				"Married - sharing a house",
@@ -2215,7 +2252,7 @@ public class RandomTests {
 		}
 	}
 
-	public String[] decoder = new String[] {
+	public String[] decoder = {
 			"Integer", "Boolean", "Long", "Double", "Date",
 			"ISO-3166-3", "ISO-3166-2", "ZIP", "US_STATE", "CA_PROVINCE",
 			"US_STREET"
@@ -2331,13 +2368,14 @@ public class RandomTests {
 			final String heading = someSemanticTypesHeader[index];
 			if (
 					semanticType.equals("COORDINATE_PAIR.DECIMAL") ||
+					semanticType.equals("COORDINATE.LONGITUDE_DECIMAL") ||
 					semanticType.equals("SSN")
 					) {
 //				System.err.printf("%s: %d%n", semanticType, index);
 				continue;
 			}
-			PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
-			LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
+			final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
 
 			final int length = 30 + random.nextInt(10000);
 			final String[] stream = new String[length];
@@ -2352,8 +2390,12 @@ public class RandomTests {
 
 			final TextAnalysisResult result = analysis.getResult();
 			assertEquals(result.getSampleCount(), stream.length);
-			assertEquals(result.getConfidence(), 1.0);
-			String typeQualifier = result.getTypeQualifier();
+			if (result.getOutlierCount() != 0) {
+				for (final Map.Entry<String, Long> outlier : result.getOutlierDetails().entrySet())
+					System.err.println("'" + outlier.getKey() + "': " + outlier.getValue());
+			}
+			assertEquals(result.getConfidence(), 1.0, semanticType);
+			final String typeQualifier = result.getTypeQualifier();
 			assertNotNull(typeQualifier, semanticType);
 			if (!typeQualifier.equals(semanticType) &&
 					!typeQualifier.equals(semanticType.replaceAll("<LOCALE>", "EN")) &&
@@ -2435,7 +2477,7 @@ public class RandomTests {
 				threads[t].join();
 	}
 
-	private static String someSemanticTypes[] = new String[] {
+	private static String someSemanticTypes[] = {
 			"EMAIL", "URI.URL", "IPADDRESS.IPV4", "IPADDRESS.IPV6", "TELEPHONE", "GUID",
 			"POSTAL_CODE.ZIP5_US", "POSTAL_CODE.POSTAL_CODE_CA",
 			"STREET_ADDRESS_EN", "GENDER.TEXT_<LOCALE>", "COUNTRY.TEXT_EN",
@@ -2447,7 +2489,7 @@ public class RandomTests {
 			"MONTH.ABBR_<LOCALE>", "MONTH.FULL_<LOCALE>", "COORDINATE.LATITUDE_DECIMAL", "COORDINATE.LONGITUDE_DECIMAL", "COORDINATE_PAIR.DECIMAL"
 	};
 
-	private static String someSemanticTypesHeader[] = new String[] {
+	private static String someSemanticTypesHeader[] = {
 			"EMAIL", "URI.URL", "IPADDRESS", "IPADDRESS", "TELEPHONE", "GUID",
 			"POSTAL_CODE", "POSTAL_CODE",
 			"ADDRESS", "GENDER", "COUNTRY",
@@ -2472,7 +2514,7 @@ public class RandomTests {
 			do {
 				final String semanticType = someSemanticTypes[random.nextInt(someSemanticTypes.length)];
 				try {
-					PluginDefinition defn = PluginDefinition.findByQualifier(semanticType);
+					final PluginDefinition defn = PluginDefinition.findByQualifier(semanticType);
 					if (!defn.isLocaleSupported(Locale.getDefault()))
 						System.err.println("Attempting to create an intance of LogicalType: " + defn.qualifier + " in an unsupported Locale");
 					logical = LogicalTypeFactory.newInstance(defn, Locale.getDefault());
@@ -2532,7 +2574,7 @@ public class RandomTests {
 			int blanks = 0;
 			int errorCase = -1;
 			long firstFloat = -1;
-			final String[] errorCaseDecode = new String[] { "String", "NegativeInt", "Double", "negativeDouble", "null", "blank" };
+			final String[] errorCaseDecode = { "String", "NegativeInt", "Double", "negativeDouble", "null", "blank" };
 
 			for (long i = low; i <= high; i++) {
 				if (i != low && i != high && random.nextInt(99) < 2) {

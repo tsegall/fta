@@ -43,7 +43,6 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	public void setContent(final String contentType, final String content) {
 		this.memberSet = new SingletonSet(contentType, content);
-
 	}
 
 	@Override
@@ -71,7 +70,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 		super.initialize(locale);
 
-		regExp = pluginLocaleEntry.regExpReturned;
+		regExp = pluginLocaleEntry.getRegExpReturned(-1);
 
 		// If the Regular Expression has not been set then generate one based on the content
 		if (regExp == null) {
@@ -107,7 +106,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		int minSamples = 20;
 		if (headerConfidence != 0) {
 			minCardinality = 1;
-			minSamples = 4;
+			minSamples = headerConfidence < 99 ? 4 : 1;
 			maxOutliers =  headerConfidence < 90 ? Math.max(4, baseOutliers) : getSize() / 2;
 		}
 
