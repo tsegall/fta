@@ -41,7 +41,7 @@ subprojects {
 
 	configureVersions()
 
-	version = "8.0.21"
+	version = "8.0.22"
 	group = "com.cobber.fta"
 
 	java {

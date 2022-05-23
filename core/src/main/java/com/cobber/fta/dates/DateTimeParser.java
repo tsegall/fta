@@ -21,6 +21,7 @@ import static com.cobber.fta.dates.DateTimeParserResult.HOUR_INDEX;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -180,6 +181,16 @@ public class DateTimeParser {
 	}
 
 	/**
+	 * Set Strict mode on the Parser - if set, any input to train() that would not pass the current 'best' guess will return null.
+	 * @param strict The new value for Strict mode
+	 * @return The DateTimeParser
+	 */
+	public DateTimeParser withStrictMode(final boolean strict) {
+		config.strictMode = strict;
+		return this;
+	}
+
+	/**
 	 * Given an input string with a DateTimeFormatter pattern return a suitable DateTimeFormatter.
 	 * This is very similar to DateTimeFormatter.ofPattern(), however, there are a set of key differences:
 	 *  - This will cache the Formatters
@@ -244,11 +255,16 @@ public class DateTimeParser {
 	}
 
 	/**
-	 * train() is the core entry point used to supply input to the DateTimeParser.
+	 * train() is the core entry point used to supply input to the DateTimeParser.  The returned value from this method is the
+	 * DateTimeFormatter Pattern for this input.  For the consolidated result of all the training see {@link #getResult()}.
+	 * Note: If {@link #withStrictMode(boolean)} is set then train will return null if the input does not match the current consolidated training result.
 	 * @param input The String representing a date with possible surrounding whitespace.
-	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
+	 * @return A String representing the DateTime detected for this input (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public String train(final String input) {
+		if (config.strictMode && state.invalidCount != 0)
+			return null;
+
 		state.sampleCount++;
 
 		if (input == null) {
@@ -275,6 +291,19 @@ public class DateTimeParser {
 		else
 			state.results.put(ret, seen + 1);
 
+		if (config.strictMode) {
+			// If we are insisting that all records are valid - then we need to check as we go that
+			// each input matches the current result.
+			try {
+				getResult().parse(input);
+			}
+			catch (DateTimeParseException e) {
+				// If we cannot parse this input - then we are done!
+				state.invalidCount++;
+				return null;
+			}
+		}
+
 		return ret;
 	}
 
@@ -284,8 +313,8 @@ public class DateTimeParser {
 	 * @return A DateTimeParserResult with the analysis of any training completed, or null if no answer.
 	 */
 	public DateTimeParserResult getResult() {
-		// If we have no good samples, call it a day
-		if (state.sampleCount == state.nullCount + state.blankCount + state.invalidCount)
+		// If we have no good samples or we are in Strict mode and have seen an error, call it a day
+		if (state.sampleCount == state.nullCount + state.blankCount + state.invalidCount || (config.strictMode && state.invalidCount != 0))
 			return null;
 
 		DateTimeParserResult answerResult = null;

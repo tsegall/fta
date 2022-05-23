@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 8.0.22
+ - ENH: Add StrictMode to DateTimeParser
+
 ### 8.0.21
  - ENH: I18N - Add new Semantic Type - POSTAL_CODE.POSTAL_CODE_SE (uses Bloom Filter)
  - ENH: I18N - Improve COORDINATE_PAIR.DECIMAL, COORDINATE.LATITUDE_DECIMAL, and COORDINATE.LONGITUDE_DECIMAL detection rate (especially in Western Europe)

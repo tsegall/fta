@@ -16,8 +16,12 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.fail;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.testng.annotations.Test;
@@ -214,5 +218,23 @@ public class TestMerge {
 			return;
 		}
 		fail("Should have thrown");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void simpleStrictOn() throws FTAMergeException {
+		List<String> list = Arrays.asList("21/01/2022", "test string 1", "test string 2");
+		DateTimeParser dateTimeParser = new DateTimeParser().withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto).withStrictMode(true);
+		list.forEach(dateTimeParser::train);
+		assertNull(dateTimeParser.getResult());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void simpleStrictOff() throws FTAMergeException {
+		List<String> list = Arrays.asList("21/01/2022", "test string 1", "test string 2");
+		DateTimeParser dateTimeParser = new DateTimeParser().withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto).withStrictMode(false);
+		list.forEach(dateTimeParser::train);
+		DateTimeParserResult result = dateTimeParser.getResult();
+		assertNotNull(result);
+		assertEquals(result.getFormatString(), "dd/MM/yyyy");
 	}
 }
