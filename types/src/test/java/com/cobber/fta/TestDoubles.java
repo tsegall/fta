@@ -47,7 +47,7 @@ import com.cobber.fta.core.RegExpGenerator;
 
 public class TestDoubles {
 	private static final SecureRandom random = new SecureRandom();
-	private Logger logger = LoggerFactory.getLogger("fta");
+	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void positiveDouble() throws IOException, FTAException {
@@ -1516,6 +1516,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void nonLocalizedPortugueseDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedPortugueseDouble");
+		analysis.setDebug(2);
 		// For Portuguese, Decimal Sep = ',' and Thousands Sep = '.'
 		final Locale locale = Locale.forLanguageTag("pt-BR");
 		analysis.setLocale(locale);

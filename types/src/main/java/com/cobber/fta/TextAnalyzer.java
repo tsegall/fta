@@ -1724,7 +1724,7 @@ public class TextAnalyzer {
 	void debug(final String format, final Object... arguments) {
 		if (analysisConfig.getDebug() >= 2) {
 			if (logger == null)
-				logger = LoggerFactory.getLogger("fta");
+				logger = LoggerFactory.getLogger("com.cobber.fta");
 			logger.debug(format, arguments);
 		}
 	}

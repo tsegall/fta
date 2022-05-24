@@ -267,7 +267,7 @@ public class SimpleDateMatcher {
 				break;
 			}
 			else {
-				// Look for a localized zone-offset (O), something of the form GMT+8 or GMT+08:00
+				// Look for a localized zone-offset (O), something of the form GMT+8 or GMT+08:00 or GMT+08:00:00
 				if (word.startsWith("GMT+") || word.startsWith("GMT-")) {
 					final String balance = word.substring(4);
 					final int offsetLength = balance.length();
@@ -279,7 +279,7 @@ public class SimpleDateMatcher {
 						len = input.length();
 						break;
 					}
-					else if ("99:99".equals(smashed) || "99:99.99".equals(smashed)) {
+					else if ("99:99".equals(smashed) || "99:99:99".equals(smashed)) {
 						input = replaceString(input, len, word, "OOOO");
 						len = input.length();
 						break;

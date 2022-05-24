@@ -166,7 +166,12 @@ class FormatterToken {
 				break;
 
 			case 'O':
-				ret.add(new FormatterToken(Token.LOCALIZED_TIMEZONE_OFFSET));
+				int countO = 1;
+				while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
+					countO++;
+					i++;
+				}
+				ret.add(new FormatterToken(Token.LOCALIZED_TIMEZONE_OFFSET, countO));
 				break;
 
 			case 'p':
@@ -211,12 +216,12 @@ class FormatterToken {
 
 			case 'x':
 			case 'X':
-				int nextCount = 1;
+				int countX = 1;
 				while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
-					nextCount++;
+					countX++;
 					i++;
 				}
-				ret.add(new FormatterToken(ch == 'x' ? Token.TIMEZONE_OFFSET : Token.TIMEZONE_OFFSET_Z, nextCount));
+				ret.add(new FormatterToken(ch == 'x' ? Token.TIMEZONE_OFFSET : Token.TIMEZONE_OFFSET_Z, countX));
 				break;
 
 			case 'z':
@@ -226,7 +231,7 @@ class FormatterToken {
 			case '\'':
 				// Quotes in format string are either '' which indicates a single quote or 'x' which indicates the character x
 				i++;
-				char constantChar = formatString.charAt(i);
+				final char constantChar = formatString.charAt(i);
 				ret.add(new FormatterToken(Token.CONSTANT_CHAR, constantChar));
 				if (constantChar != '\'') {
 					if (i + 1 >= formatLength || formatString.charAt(i + 1) != '\'') {

@@ -55,7 +55,7 @@ import com.cobber.fta.dates.DateTimeParserResult;
 
 public class DetermineDateTimeFormatTests {
 	private static final SecureRandom random = new SecureRandom();
-	private Logger logger = LoggerFactory.getLogger("fta");
+	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void allOptions() {
@@ -367,6 +367,9 @@ public class DetermineDateTimeFormatTests {
 		assertFalse(result.isValid8("2012-03-04T19:22:10+08:00:0"));
 		assertFalse(result.isValid8("2012-03-04T19:22:10+O8:00:00"));
 		assertFalse(result.isValid8("2012-03-04T19:22:10+08:00:60"));
+
+		assertFalse(result.isValid("2004-01-01T00:00:00+19:00:00"));
+		assertFalse(result.isValid8("2004-01-01T00:00:00+19:00:00"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -520,11 +523,31 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
-	public void EEE_With_LongOffset() {
+	public void EEE_With_Offset_mm() {
+		final String sample = "Wed Apr 21 08:10:38 GMT-07:12 2021";
 		final DateTimeParser det = new DateTimeParser();
-		det.train("Wed Apr 21 08:10:38 GMT-07:00 2021");
+		det.train(sample);
 		final DateTimeParserResult result = det.getResult();
 		assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss OOOO yyyy");
+
+		assertTrue(result.isValid8(sample));
+		assertTrue(result.isValid(sample));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void EEE_With_Offset_mmss() {
+		final String sample = "Wed Apr 21 08:10:38 GMT-07:12:34 2021";
+		final DateTimeFormatter dtf = DateTimeParser.ofPattern("EEE MMM dd HH:mm:ss OOOO yyyy", Locale.getDefault());
+
+		ZonedDateTime zdt = ZonedDateTime.parse("Wed Apr 21 08:10:38 GMT-07:12:34 2021", dtf);
+
+		final DateTimeParser det = new DateTimeParser();
+		det.train(sample);
+		final DateTimeParserResult result = det.getResult();
+		assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss OOOO yyyy");
+
+		assertTrue(result.isValid8(sample));
+		assertTrue(result.isValid(sample));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

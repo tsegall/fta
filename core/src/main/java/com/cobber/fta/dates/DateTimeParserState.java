@@ -38,14 +38,14 @@ public class DateTimeParserState {
 	 * @param other The other DateTimeParserState to be merged
 	 * @return A merged DateTimeParserState.
 	 */
-	public DateTimeParserState merge(DateTimeParserState other) {
+	public DateTimeParserState merge(final DateTimeParserState other) {
 		sampleCount += other.sampleCount;
 		nullCount += other.nullCount;
 		blankCount += other.blankCount;
 		invalidCount += other.invalidCount;
 
-		for (Map.Entry<String, Integer> entry : other.results.entrySet()) {
-			Integer myCount = results.get(entry.getKey());
+		for (final Map.Entry<String, Integer> entry : other.results.entrySet()) {
+			final Integer myCount = results.get(entry.getKey());
 			if (myCount == null)
 				results.put(entry.getKey(), entry.getValue());
 			else

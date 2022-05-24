@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 8.0.23
+ - INT: Change logger name from fta to com.cobber.fta
+ - INT: Suppress testNG logging when executing tests
+ - INT: Improve test coverage
+ - BUG: Fix issues with TimeZoneOffsets with seconds (e.g. GMT+08:09:20)
+
 ### 8.0.22
  - ENH: Add StrictMode to DateTimeParser
 

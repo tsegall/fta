@@ -40,7 +40,7 @@ import com.cobber.fta.plugins.CountryEN;
 
 public class TestStrings {
 	private static final SecureRandom random = new SecureRandom();
-	private Logger logger = LoggerFactory.getLogger("fta");
+	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void manyNulls() throws IOException, FTAException {

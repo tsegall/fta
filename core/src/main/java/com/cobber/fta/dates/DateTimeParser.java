@@ -703,7 +703,7 @@ public class DateTimeParser {
 		if (!matcher.parse())
 			return null;
 
-		DateTracker dateTracker = new DateTracker();
+		final DateTracker dateTracker = new DateTracker();
 		dateTracker.setComponent(matcher.getDayOfMonth(), matcher.getDayLength(), -1);
 		dateTracker.setComponent(matcher.getMonthValue(), matcher.getMonthLength(), -1);
 		dateTracker.setComponent(matcher.getYear(), matcher.getYearLength(), -1);
@@ -725,7 +725,7 @@ public class DateTimeParser {
 
 		int current;
 
-		DateTimeTracker(int components) {
+		DateTimeTracker(final int components) {
 			valueArray = new int[components];
 			digitsArray = new int[components];
 			padArray = new int[components];
@@ -746,15 +746,15 @@ public class DateTimeParser {
 			return true;
 		}
 
-		int getValue(int i) {
+		int getValue(final int i) {
 			return valueArray[i];
 		}
 
-		int getDigit(int i) {
+		int getDigit(final int i) {
 			return digitsArray[i];
 		}
 
-		int getPad(int i) {
+		int getPad(final int i) {
 			return padArray[i];
 		}
 
@@ -816,8 +816,8 @@ public class DateTimeParser {
 		final int len = trimmed.length();
 		int digits = 0;
 		int value = 0;
-		DateTracker dateTracker = new DateTracker();
-		TimeTracker timeTracker = new TimeTracker();
+		final DateTracker dateTracker = new DateTracker();
+		final TimeTracker timeTracker = new TimeTracker();
 		char dateSeparator = '_';
 		int hourLength = -1;
 		boolean yearInDateFirst = false;
@@ -1237,7 +1237,7 @@ public class DateTimeParser {
 			}
 		}
 
-		StringBuilder ret = new StringBuilder();
+		final StringBuilder ret = new StringBuilder();
 		for (final TimeDateElement elt : timeDateElements) {
 			switch (elt) {
 			case Time:
@@ -1290,7 +1290,7 @@ public class DateTimeParser {
 			// Do we have a timezone offset?
 			boolean positive;
 			if ((positive = compressed.endsWith(" d{4}")) || compressed.endsWith(" -d{4}")) {
-				int offset = compressed.lastIndexOf(positive ? " d{4}" : " -d{4}");
+				final int offset = compressed.lastIndexOf(positive ? " d{4}" : " -d{4}");
 				compressed = compressed.substring(0, offset) + " xx";
 				components--;
 			}
@@ -1487,7 +1487,7 @@ public class DateTimeParser {
 		return input.endsWith(toMatch) || input.endsWith(toMatch + 'a') || input.endsWith(toMatch + " a");
 	}
 
-	public DateTimeParser apply(String input) {
+	public DateTimeParser apply(final String input) {
 	    train(input);
 	    return this;
 	}
@@ -1499,7 +1499,7 @@ public class DateTimeParser {
 	 * @return A merged DateTimeParser.
 	 * @throws FTAMergeException If the merge is impossible.
 	 */
-	public DateTimeParser merge(DateTimeParser other) throws FTAMergeException {
+	public DateTimeParser merge(final DateTimeParser other) throws FTAMergeException {
 		if (this == other)
 			throw new FTAMergeException("Cannot merge with myself!");
 
@@ -1518,7 +1518,7 @@ public class DateTimeParser {
 	public String serialize() throws FTAMergeException {
 		final ObjectMapper mapper = new ObjectMapper();
 
-		DateTimeParserWrapper wrapper = new DateTimeParserWrapper(config, state);
+		final DateTimeParserWrapper wrapper = new DateTimeParserWrapper(config, state);
 		try {
 			return mapper.writeValueAsString(mapper.convertValue(wrapper, JsonNode.class));
 		} catch (IOException e) {
@@ -1533,12 +1533,12 @@ public class DateTimeParser {
 	 * @return A new DateTimeParser which can be merged with another DateTimeParser to product a single result.
 	 * @throws FTAMergeException When we fail to de-serialize the provided serialized form.
 	 */
-	public static DateTimeParser deserialize(String serialized) throws FTAMergeException {
+	public static DateTimeParser deserialize(final String serialized) throws FTAMergeException {
 		final ObjectMapper mapper = new ObjectMapper();
 		DateTimeParser ret = null;
 
 		try {
-			DateTimeParserWrapper wrapper = mapper.readValue(serialized, DateTimeParserWrapper.class);
+			final DateTimeParserWrapper wrapper = mapper.readValue(serialized, DateTimeParserWrapper.class);
 			ret = new DateTimeParser();
 			ret.config = wrapper.config;
 			ret.state = wrapper.state;

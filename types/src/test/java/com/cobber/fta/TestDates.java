@@ -54,7 +54,7 @@ import com.cobber.fta.dates.LocaleInfo;
 import com.cobber.fta.dates.SimpleDateMatcher;
 
 public class TestDates {
-	private Logger logger = LoggerFactory.getLogger("fta");
+	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateOutlier() throws IOException, FTAException {

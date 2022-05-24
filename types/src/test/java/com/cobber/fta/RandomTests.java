@@ -48,7 +48,7 @@ import com.cobber.fta.plugins.USZipPlus4;
 
 public class RandomTests {
 	private static final SecureRandom random = new SecureRandom();
-	private Logger logger = LoggerFactory.getLogger("fta");
+	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void getReflectionSampleSize() throws IOException, FTAException {

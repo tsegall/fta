@@ -176,11 +176,12 @@ public final class Utils {
 
 	public static String determineStreamFormat(final ObjectMapper mapper, final Map<String, Long> cardinality) {
 		final int totalSamples = cardinality.size();
-		final String HTML_CHECKER = "<!DOCTYPE html>|</?\\s*[a-z-][^>]*\\s*>|(\\&(?:[\\w\\d]+|#\\d+|#x[a-f\\d]+);)";
-		final Pattern patternHTML = Pattern.compile(HTML_CHECKER);
 
 		if (totalSamples == 0)
 			return null;
+
+		final String HTML_CHECKER = "<!DOCTYPE html>|</?\\s*[a-z-][^>]*\\s*>|(\\&(?:[\\w\\d]+|#\\d+|#x[a-f\\d]+);)";
+		final Pattern patternHTML = Pattern.compile(HTML_CHECKER);
 
 		int fmtJSON = 0;
 		int fmtHTML = 0;

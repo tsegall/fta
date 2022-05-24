@@ -135,7 +135,7 @@ public class DateTimeParserResult {
 			rep = null;
 		}
 
-		Token(String rep) {
+		Token(final String rep) {
 			this.rep = rep;
 		}
 
@@ -684,13 +684,64 @@ public class DateTimeParserResult {
 				upto += ampmOffset;
 				break;
 
+			case LOCALIZED_TIMEZONE_OFFSET:
+				// 'O' - expecting H[:MM[:SS]]
+				// 'OOOO' - expecting HH:MM[:SS]
+				if (token.getCount() != 1 && token.getCount() != 4)
+					throw new DateTimeParseException("Invalid localized time zone offset", input, upto);
+				start = upto;
+				while (upto < inputLength && (input.charAt(upto) != '+' && input.charAt(upto) != '-'))
+					upto++;
+				final String timeZoneLTO = input.substring(start, upto);
+				if (!DateTimeParser.timeZones.contains(timeZoneLTO))
+					throw new DateTimeParseException("Expecting time zone - bad time zone: " + timeZoneLTO, input, upto);
+
+				if (upto == inputLength || (input.charAt(upto) != '+' && input.charAt(upto) != '-'))
+					throw new DateTimeParseException("Expecting offset - bad time zone offset: " + timeZoneLTO, input, upto);
+
+				upto++;
+				final int hourlength = upto == inputLength || !Character.isDigit(input.charAt(upto)) ? 1 : 2;
+				if (hourlength == 1 && token.getCount() == 4)
+					throw new DateTimeParseException("Expecting time zone offset, expected two digit hour", input, upto);
+				final int hours = Utils.getValue(input, upto, hourlength, 2);
+				if (hours > 18)
+					throw new DateTimeParseException("Expecting time zone offset, invalid hour offset", input, upto);
+
+				upto += hourLength;
+
+				if (upto == inputLength) {
+					if (token.getCount() == 4)
+						throw new DateTimeParseException("Expecting time zone offset, expected minutes", input, upto + 1);
+				}
+				else {
+					if (input.charAt(upto) != ':') {
+						if (token.getCount() == 4)
+							throw new DateTimeParseException("Expecting time zone offset, expected minutes", input, upto + 1);
+					}
+					else {
+						upto++;
+						final int minutes = Utils.getValue(input, upto, 2, 2);
+						if (minutes > 59)
+							throw new DateTimeParseException("Expecting time zone offset, invalid minute offset", input, upto);
+						upto += 2;
+						if (upto != inputLength && input.charAt(upto) == ':') {
+							upto++;
+							final int seconds = Utils.getValue(input, upto, 2, 2);
+							if (seconds > 59)
+								throw new DateTimeParseException("Expecting time zone offset, invalid seconds offset", input, upto);
+							upto += 2;
+						}
+					}
+				}
+				break;
+
 			case TIMEZONE:
 				start = upto;
 				while (upto < inputLength && input.charAt(upto) != ' ')
 					upto++;
-				final String currentTimeZone = input.substring(start, upto);
-				if (!DateTimeParser.timeZones.contains(currentTimeZone))
-					throw new DateTimeParseException("Expecting time zone - bad time zone: " + currentTimeZone, input, upto);
+				final String timeZoneT = input.substring(start, upto);
+				if (!DateTimeParser.timeZones.contains(timeZoneT))
+					throw new DateTimeParseException("Expecting time zone - bad time zone: " + timeZoneT, input, upto);
 				break;
 
 			case TIMEZONE_OFFSET_Z:
@@ -988,10 +1039,10 @@ public class DateTimeParserResult {
 		}
 
 
-		StringBuilder ret = new StringBuilder();
+		final StringBuilder ret = new StringBuilder();
 		int patchCount = 0;
 		for (final FormatterToken token : tokenized) {
-			Token nextToken = token.getType();
+			final Token nextToken = token.getType();
 
 			switch (nextToken) {
 			case AMPM:

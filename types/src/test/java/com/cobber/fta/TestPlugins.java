@@ -2754,7 +2754,7 @@ public class TestPlugins {
 			header = parser.getRecordMetadata().headers();
 			analysis = new TextAnalyzer[header.length];
 			for (int i = 0; i < header.length; i++) {
-				analysis[i] = new TextAnalyzer(header[i]);
+				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "Names.txt", header));
 			}
 			while ((row = parser.parseNext()) != null) {
 				for (int i = 0; i < row.length; i++) {
@@ -2770,6 +2770,14 @@ public class TestPlugins {
 		final TextAnalysisResult last = analysis[1].getResult();
 		assertEquals(last.getTypeQualifier(), "NAME.LAST");
 		assertEquals(last.getStructureSignature(), PluginDefinition.findByQualifier("NAME.LAST").signature);
+
+		final TextAnalysisResult middle = analysis[2].getResult();
+		assertEquals(middle.getTypeQualifier(), "NAME.MIDDLE");
+		assertEquals(middle.getStructureSignature(), PluginDefinition.findByQualifier("NAME.MIDDLE").signature);
+
+		final TextAnalysisResult middleInitial = analysis[3].getResult();
+		assertEquals(middleInitial.getTypeQualifier(), "NAME.MIDDLE_INITIAL");
+		assertEquals(middleInitial.getStructureSignature(), PluginDefinition.findByQualifier("NAME.MIDDLE_INITIAL").signature);
 
 		final LogicalType logicalFirst = analysis[0].getPlugins().getRegistered(FirstName.SEMANTIC_TYPE);
 		assertTrue(logicalFirst.isValid("Harry"));
