@@ -303,37 +303,57 @@ Note: The Context (the current Stream Name and other field names) can be used to
 
 ```json
 [
-	{
-		"qualifier": "PII.SSN",
-		"headerRegExps": [ ".*(?i)(SSN|Social).*" ],
-		"headerRegExpConfidence": [ 70 ],
-		"regExpReturned": "\\d{3}-\\d{2}-\\d{4}",
-		"threshold": 98,
-		"baseType": "STRING"
-	},
-	{
-		"qualifier": "AIRPORT_CODE.IATA",
-		"clazz": "com.cobber.fta.plugins.IATA",
-		"headerRegExps": [ ".*(?i)(iata|air).*" ],
-		"headerRegExpConfidence": [ 100 ],
-	},
-	{
-		"qualifier" : "PLANET_JA",
-		"description": "Planets in Japanese (Kanji) via an inline list",
-		"headerRegExps" : [ ".*星" ],
-		"headerRegExpConfidence" : [ 70 ],
-		"contentType": "inline",
-		"content": "{ \"members\": [ \"冥王星\", \"土星\", \"地球\", \"天王星\", \"木星\", \"水星\", \"海王星\", \"火星\", \"金星\" ] }",
-		"regExpReturned" : "(?i)(冥王星|土星|地球|天王星|木星|水星|海王星|火星|金星)",
-		"backout": ".*",
-                "validLocales": [ "ja" ],
-	},
+        {
+                "qualifier": "PII.SSN",
+                "description": "Naive SSN detection",
+                "pluginType": "regex",
+                "validLocales": [
+                        {
+                                "localeTag": "en-US",
+                                "headerRegExps": [ { "regExp": ".*(?i)(SSN|Social).*", "confidence": 70 } ],
+                                "matchEntries": [ { "regExpReturned" : "(?i)(冥王星|土星|地球|天王星|木星|水星|海王星|火星|金星)" } ]
+                        }
+                ],
+                "threshold": 98,
+                "baseType": "STRING"
+        },
+        {
+                "qualifier": "AIRPORT_CODE.IATA",
+                "description": "IATA Airport Code",
+                "pluginType": "java",
+                "clazz": "com.cobber.fta.plugins.IATA",
+                "validLocales": [
+                        {
+                                "localeTag": "*",
+                                "headerRegExps": [ { "regExp": ".*(?i)(iata|air).*", "confidence": 100 } ]
+                        }
+                ],
+                "baseType": "STRING"
+        },
+        {
+                "qualifier" : "PLANET_JA",
+                "description": "Planets in Japanese (Kanji) via an inline list",
+                "pluginType": "list",
+                "validLocales": [
+                        {
+                                "localeTag": "ja",
+                                "headerRegExps": [ { "regExp": ".*星", "confidence": 70 } ],
+                                "matchEntries": [ { "regExpReturned" : "(?i)(冥王星|土星|地球|天王星|木星|水星|海王星|火星|金星)" } ]
+                        }
+                ],
+                "contentType": "inline",
+                "content": "{ \"members\": [ \"冥王星\", \"土星\", \"地球\", \"天王星\", \"木星\", \"水星\", \"海王星\", \"火星\", \"金星\" ] }",
+                "backout": ".*",
+                "baseType": "STRING"
+        }
 ]
 ```
 
-The JSON definition will determine how the plugin is registered.  If a *clazz* field is present then a new Instance of that class will be created.
-If the *content* field is present then a new instance of LogicalTypeFiniteSimpleExternal will be instantiated.
-If neither *clazz* or *content* is present then an instance of LogicalTypeRegExp will be instantiated.
+The pluginType attribute of the JSON definition will determine the type of the plugin.
+If the pluginType is 'java' then a *clazz* field is required and a new Instance of that class will be created.
+If the pluginType is 'list' then the *content* field must be present and a new instance of LogicalTypeFiniteSimpleExternal will be instantiated.
+If the pluginType is 'regex' then an instance of LogicalTypeRegExp will be instantiated.
+
 In all cases the plugin definition and locale are passed as arguments.
 
 ### All Plugins ###
@@ -346,11 +366,9 @@ The threshold will default to 95% if not specified.
 The 'baseType' tag constrains the plugin to streams that are of this Base Type (see discussion above on the valid Base Types).
 The baseType is defined by the implementation for all Code Plugins, STRING for all Finite plugins, and must be defined for RegExp plugins.
 
-The optional 'validLocales' tag is used to constrain the plugin to a set of languages or locales.  This is the set of locales where the plugin should be enabled.
-For example, [ "en-US" ,"en-CA" ] indicates that the plugin should be enabled in both the US and Canada, [ "en" ] indicates that the plugin should be enabled in
-any locale that uses the English language.
-
-The optional 'headerRegExps' tag is an ordered list of Regular Expression used to match against the Stream Name (if present), along with the parallel list 'headerRegExpConfidence' it controls the use of the Stream Name to match the Semantic Type.  For RegExp plugins the headerRegExps are optional but if present must have a confidence of 100% and will be required to match for the Stream to be declared a match.
+The 'validLocales' array is used to constrain the plugin to a set of languages or locales.  This is the set of locales where the plugin should be enabled.
+For example, a localeTag of "en-US,en-CA" indicates that the plugin should be enabled in both the US and Canada, a localeTag "en" indicates that the plugin should be enabled in
+any locale that uses the English language. In addition the 'headerRegExps' tag is an ordered list of Regular Expression (and the associated confidence) used to match against the Stream Name (if present)'.
 
 The optional 'isRegExpComplete' tag indicates if the returned Regular Expression is a definitive representation of the Logical Type. For example, \\d{5} is not for US ZIP codes as 00000 is not a valid Zip but does match the Regular Expression.
 
@@ -544,4 +562,5 @@ Semantic Data Type Detection (https://arxiv.org/pdf/1905.10688.pdf)
 * Synthesizing Type-Detection Logic for Rich Semantic Data
 Types using Open-source Code (https://congyan.org/autotype.pdf)
 * T2Dv2 Gold Standard for Matching Web Tables to DBpedia (http://webdatacommons.org/webtables/goldstandardV2.html)
+* VizNet Towards a Visualization Learning and Benchmarking Repository (https://viznet.media.mit.edu/)
 
