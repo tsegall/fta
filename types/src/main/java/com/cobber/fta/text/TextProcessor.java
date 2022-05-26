@@ -185,7 +185,7 @@ public class TextProcessor {
 		// German configuration
 		allConfigData.put("DE", new TextConfig(
 				26,				// Choose something that is reasonable
-				4.0, 10.0,		// Average word length in German is ~6.5, so choose a reasonable lower and upper bound
+				3.0, 10.0,		// Average word length in German is ~6.5, so choose a reasonable lower and upper bound
 				30,				// The percentage of 'alpha' characters that we expect to be present
 				80,				// The percentage of 'reasonable' characters that we expect to be present
 				140,			// Only analyze the first <n> characters

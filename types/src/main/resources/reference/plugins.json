@@ -237,6 +237,34 @@
 		"priority": 71
 	},
 	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_UY",
+		"description": "Postal Code (UY)",
+		"pluginType": "list",
+		"signature": "bGHgk5RMF4mqRw5xkTxm8AdUMxg=",
+		"validLocales": [
+			{ "localeTag":  "es-UY", "headerRegExps": [ { "regExp": ".*(?i)(codigo.*postal).*", "confidence": 99 } ] }
+		],
+		"content": "/reference/uy_postal_code.csv",
+		"contentType": "resource",
+		"threshold": 99,
+		"baseType": "LONG",
+		"backout": "\\d{5}",
+		"priority": 72
+	},
+	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_MX",
+		"description": "Postal Code (MX)",
+		"pluginType": "java",
+		"signature": "z0MBnHNCyrDo8blnBUAqjNDVwdw=",
+		"clazz": "com.cobber.fta.plugins.PostalCodeMX",
+		"validLocales": [
+			{ "localeTag":  "es-MX", "headerRegExps": [ { "regExp": ".*(?i)(c.digo.*postal).*", "confidence": 99 } ] }
+		],
+		"threshold": 99,
+		"baseType": "STRING",
+		"priority": 72
+	},
+	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
 		"pluginType": "java",

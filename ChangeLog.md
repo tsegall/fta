@@ -1,7 +1,15 @@
 
 ## Changes ##
 
-### 8.0.23
+### 8.0.25
+ - ENH: I18N - FREE_TEXT - improve German samples
+ - ENH: I18N - Add new Semantic Types - POSTAL_CODE.POSTAL_CODE_UY, POSTAL_CODE.POSTAL_CODE_MX
+ - BUG: Do not die if tracing is on and the fieldName is extremely long
+ - INT: Support setting Trace options from the CLI
+ - INT: Support adjusting Max Columns (Univocity option) from the command line
+ - INT: Improve code coverage
+
+### 8.0.24
  - ENH: I18N - Add FREE_TEXT support for German
  - ENH: Split COORDINATE_PAIR.DECIMAL into COORDINATE_PAIR.DECIMAL (no parens) and COORDINATE_PAIR.DECIMAL (parens)
  - ENH: Do not label as COORDINATE.PAIR_DECIMAL without some signal from the header

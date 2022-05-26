@@ -1,4 +1,4 @@
-# Fast Text Analyzer #
+# Text Profiling and Semantic Type Detection (Fast Text Analyzer) #
 
 Analyze Text data to determine Base Type and Semantic type information and other key metrics associated with a text stream.
 Key objective of the analysis include:
@@ -252,7 +252,7 @@ NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, nl, pr
 NAME.MIDDLE|Middle Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.MIDDLE_INITIAL|Middle Initial|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NATIONALITY_EN|Nationality|en
-POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|en-AU, en-CA, nl-NL, en-UK, es-ES, fr-FR, ja, pt-PT, sv-SE
+POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|en-AU, en-CA, nl-NL, en-UK, es-ES, es-MX, es-UY, fr-FR, ja, pt-PT, sv-SE
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US

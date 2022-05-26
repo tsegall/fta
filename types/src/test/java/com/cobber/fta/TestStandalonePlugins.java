@@ -195,7 +195,7 @@ public class TestStandalonePlugins {
 					final String[] testCases = new String[SAMPLE_SIZE];
 					for (int i = 0; i < SAMPLE_SIZE; i++) {
 						testCases[i] = logical.nextRandom();
-						assertTrue(logical.isValid(testCases[i]), logical.getQualifier() + ":'" + testCases[i] + "'");
+						assertTrue(logical.isValid(testCases[i]), logical.getQualifier() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
 					}
 					for (int i = 0; i < SAMPLE_SIZE; i++)
 						assertTrue(testCases[i].matches(logical.getRegExp()), logical.getQualifier() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());

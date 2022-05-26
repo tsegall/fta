@@ -104,9 +104,11 @@ public class Driver {
 				logger.println(" --samples <n> - Set the size of the sample window");
 				logger.println(" --signature - Output the Signature for the supplied pluginName");
 				logger.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
+				logger.println(" --trace <trace_options> - Set trace options");
 				logger.println(" --validate - Validate the result of the analysis by reprocessing file against results");
 				logger.println(" --verbose - Output each record as it is processed");
 				logger.println(" --xMaxCharsPerColumn <n> - Set the maximum column width (CSV parsing option)");
+				logger.println(" --xMaxColumns <n> - Set the maximum number of columns (CSV parsing option - default 1024)");
 				helpRequested = true;
 
 			}
@@ -159,6 +161,8 @@ public class Driver {
 				options.signature = true;
 			else if ("--threshold".equals(args[idx]))
 				options.threshold = Integer.valueOf(args[++idx]);
+			else if ("--trace".equals(args[idx]))
+				options.trace = args[++idx];
 			else if ("--validate".equals(args[idx]))
 				options.validate = true;
 			else if ("--verbose".equals(args[idx]))
@@ -169,6 +173,8 @@ public class Driver {
 			}
 			else if ("--xMaxCharsPerColumn".equals(args[idx]))
 				options.xMaxCharsPerColumn = Integer.valueOf(args[++idx]);
+			else if ("--xMaxColumns".equals(args[idx]))
+				options.xMaxColumns = Integer.valueOf(args[++idx]);
 			else {
 				logger.printf("ERROR: Unrecognized option: '%s', use --help%n", args[idx]);
 				System.exit(1);

@@ -291,6 +291,64 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void latitudeDMS() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("PRIMARY_LAT_DMS");
+
+		final String[] inputs = {
+				"402628N", "402427N", "402402N", "402743N", "402543N", "402948N", "402311N", "402621N", "403308N", "403306N",
+				"402536N", "402319N", "402808N", "402846N", "402940N", "402659N", "402326N", "401814N", "374458N", "385855N",
+				"393617N", "395150N", "405638N", "384141N", "400938N", "392534N", "385957N", "395325N", "392609N", "372359N",
+				"401324N", "374640N", "394807N", "390734N", "401008N", "374419N", "410949N", "405543N", "401205N", "392837N",
+				"390016N", "412252N", "420158N", "414315N", "414941N", "393903N", "404816N", "410717N", "381018N", "374655N",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DMS");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "(\\d{5,6}|\\d{1,3} \\d{1,2} \\d{1,2} ?)[NnSs]");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()), input);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void longitudeDMS() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("PRIM_LONG_DMS");
+
+		final String[] inputs = {
+				"0894332W", "0893834W", "0893832W", "0894457W", "0894454W", "0894429W", "0894259W", "0894414W", "0894038W", "0894356W",
+				"0894408W", "0894635W", "0893809W", "0894024W", "0893906W", "0894429W", "0894300W", "0894358W", "0884311W", "0890508W",
+				"0872305W", "0912038W", "0900136W", "0891621W", "0884901W", "0905221W", "0903358W", "0881050W", "0874208W", "0892343W",
+				"0904357W", "0891239W", "0894633W", "0904053W", "0881823W", "0884309W", "0880635W", "0901110W", "0902733W", "0891553W",
+				"0890942W", "0894706W", "0881808W", "0873718W", "0873800W", "0905342W", "0902406W", "0905001W", "0885837W", "0883739W",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "COORDINATE.LONGITUDE_DMS");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "(\\d{5,7}|\\d{1,2} \\d{1,2} \\d{1,2} ?)[EeWw]");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()), input);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPostalCodeNL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("P_PCODE");
 		analysis.setLocale(Locale.forLanguageTag("nl-NL"));

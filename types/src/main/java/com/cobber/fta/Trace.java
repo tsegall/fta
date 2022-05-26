@@ -84,7 +84,11 @@ public class Trace {
 			String filename = "";
 			if (context.getCompositeName() != null)
 				filename += context.getCompositeName() + "_";
-			filename += context.getStreamName() + ".fta";
+			// Constrain it to the first 1000 characters just in case the stream name is really silly!
+			filename += context.getStreamName().trim();
+			if (filename.length() > 1000)
+				filename = filename.substring(0, 1000);
+			filename += ".fta";
 			// There are a lot of characters that Windows does not like in filenames ...
 			filename = filename.replaceAll("[<>:\"/\\\\|\\?\\*]", "_");
 			traceWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(traceDirectory, filename))));

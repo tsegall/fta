@@ -51,9 +51,11 @@ class DriverOptions {
 	protected boolean samples;
 	protected boolean signature;
 	protected int threshold = -1;
+	protected String trace;
 	protected boolean validate;
 	protected int verbose;
 	protected int xMaxCharsPerColumn = -1;
+	protected int xMaxColumns = 1024;
 	protected String delimiter;
 
 	public void apply(final TextAnalyzer analyzer) throws IOException {
@@ -77,6 +79,8 @@ class DriverOptions {
 			analyzer.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		if (this.formatDetection)
 			analyzer.configure(TextAnalyzer.Feature.FORMAT_DETECTION, true);
+		if (this.trace != null)
+			analyzer.setTrace(trace);
 
 		if (this.logicalTypes != null)
 			try {
