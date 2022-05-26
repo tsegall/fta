@@ -1362,14 +1362,35 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(loc|lat.*lon|lon.*lat|coord|position|geo|ubicación|koord|lokasi|posizione|Координаты|координати).*", "confidence": 100 } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+", "([+-]?\\d*\\.?\\d+, [+-]?\\d*\\.?\\d+)" ],
-					"regExpReturned": "\\(?([+-]?([0-9]|[0-8][0-9])\\.\\d+|[+-]90\\.0+), ?([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+|[+-]180\\.0+)\\)?",
+					"regExpsToMatch": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+", "([+-]?\\d*\\.\\d+, [+-]?\\d*\\.\\d+)" ],
+					"regExpReturned": "([+-]?([0-9]|[0-8][0-9])\\.\\d+|[+-]90\\.0+), ?([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+|[+-]180\\.0+)",
 					"isRegExpComplete": true
 				} ]
 			}
 		],
 		"threshold": 98,
+		"baseType": "STRING",
+		"priority": 196
+	},
+	{
+		"qualifier": "COORDINATE_PAIR.DECIMAL_PAREN",
+		"description": "Coordinate Pair (Lat,Long - Decimal degrees)",
+		"pluginType": "regex",
+		"signature": "JjuOgDiwZkSPUB8AQMBLHAM1HFs=",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(loc|lat.*lon|lon.*lat|coord|position|geo|ubicación|koord|lokasi|posizione|Координаты|координати).*", "confidence": 95 } ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+", "([+-]?\\d*\\.\\d+, [+-]?\\d*\\.\\d+)" ],
+					"regExpReturned": "\\(([+-]?([0-9]|[0-8][0-9])\\.\\d+|[+-]90\\.0+), ?([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+|[+-]180\\.0+)\\)",
+					"isRegExpComplete": true
+				} ]
+			}
+		],
+		"threshold": 99,
 		"baseType": "STRING",
 		"priority": 196
 	},
@@ -1778,6 +1799,7 @@
 		"signature": "7WbjWLZJ8Zdm+U8po/igrvDH3yE=",
 		"clazz": "com.cobber.fta.plugins.FreeText",
 		"validLocales": [
+			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(bezeichnung|anmerkungen|bemerkungen).*|.*(?i)(desc)", "confidence": 100 } ] },
 			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comments|reason).*|.*(?i)(desc)", "confidence": 100 } ] }
 		],
 		"threshold": 70,

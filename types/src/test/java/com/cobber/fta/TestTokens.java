@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.token.CharClassToken;
+import com.cobber.fta.token.Range;
 import com.cobber.fta.token.Token;
 import com.cobber.fta.token.TokenStream;
 import com.cobber.fta.token.TokenStreams;
@@ -147,7 +148,7 @@ public class TestTokens {
 		final Token[] tokens = ts.getBest().getTokens();
 		for (int i = 0; i < tokens.length; i++) {
 			final CharClassToken ccToken = (CharClassToken)tokens[i];
-			for (final CharClassToken.Range range : ccToken.getRanges()) {
+			for (final Range range : ccToken.getRanges()) {
 				if (i == 0) {
 					assertEquals(ccToken.getRanges().size(), 1);
 					assertEquals(range.getMin(), '0');

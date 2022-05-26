@@ -18,7 +18,6 @@ package com.cobber.fta.token;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -100,57 +99,6 @@ public class CharClassToken extends Token {
 		return ret;
 	}
 
-	public class Range implements Comparable<Range> {
-		private char min;
-		private char max;
-
-		public Range(final char ch) {
-			this.min = ch;
-		}
-
-		public char getMin() {
-			return min;
-		}
-
-		public char getMax() {
-			return max;
-		}
-
-		@Override
-		public String toString() {
-			String ret = String.valueOf(min);
-			if (min != max)
-				ret += "-" + this.max;
-			return ret;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + Objects.hash(max, min);
-			return result;
-		}
-
-		@Override
-		public boolean equals(final Object o) {
-			if (o == this)
-				return true;
-
-			if (!(o instanceof Range))
-				return false;
-
-			final Range other = (Range)o;
-
-			return other != null && this.min == other.min && this.max == other.max;
-		}
-
-		@Override
-		public int compareTo(final Range other) {
-			return min - other.min;
-		}
-	}
-
 	/**
 	 * Get the set of Ranges (contiguous low to high characters) for this Character Class.
 	 * For example with inputs 1, 2, 3, 6, 8, 9 - three ranges would be returned 1-3, 6-6, and 8-9.
@@ -169,14 +117,14 @@ public class CharClassToken extends Token {
 			else if (ch == last + 1)
 				last = ch;
 			else {
-				range.max = last;
+				range.setMax(last);
 				ranges.add(range);
 				range = new Range(ch);
 				last = ch;
 			}
 		}
 		if (range != null) {
-			range.max = last;
+			range.setMax(last);
 			ranges.add(range);
 		}
 

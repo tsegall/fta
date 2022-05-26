@@ -2,6 +2,12 @@
 ## Changes ##
 
 ### 8.0.23
+ - ENH: I18N - Add FREE_TEXT support for German
+ - ENH: Split COORDINATE_PAIR.DECIMAL into COORDINATE_PAIR.DECIMAL (no parens) and COORDINATE_PAIR.DECIMAL (parens)
+ - ENH: Do not label as COORDINATE.PAIR_DECIMAL without some signal from the header
+ - ENH: Improve detection of COORDINATE_PAIR.DECIMAL
+
+### 8.0.23
  - INT: Change logger name from fta to com.cobber.fta
  - INT: Suppress testNG logging when executing tests
  - INT: Improve test coverage

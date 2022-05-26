@@ -182,6 +182,42 @@ public class TextProcessor {
 					"xx",						// xx is really a no-no but it seems to be commonly used to redact
 					"zo" }
 				));
+		// German configuration
+		allConfigData.put("DE", new TextConfig(
+				26,				// Choose something that is reasonable
+				4.0, 10.0,		// Average word length in German is ~6.5, so choose a reasonable lower and upper bound
+				30,				// The percentage of 'alpha' characters that we expect to be present
+				80,				// The percentage of 'reasonable' characters that we expect to be present
+				140,			// Only analyze the first <n> characters
+				".!?",			// Sentence Break characters
+				", /();:.!?",	// Word Break characters
+				",\"'-();:.!?",	// Punctuation character
+				new String[] {
+						"ab", "ac", "ad", "af", "ag", "ai", "ak", "al", "am", "an", "ap", "ar", "as", "at", "au",
+						"ba", "bä", "be", "bi", "bl", "bo", "bö", "br", "bu", "bü",
+						"ca", "cd", "ce", "ch", "ci", "cl", "co", "cr",
+						"da", "de", "di", "do", "dr", "du", "dü",
+						"eb", "ec", "ed", "eh", "ei", "el", "em", "en", "er", "es", "et", "eu", "ev", "ex",
+						"fa", "fä", "fe", "fi", "fl", "fo", "fö", "fr", "fu", "fü",
+						"ga", "gä", "ge", "gi", "gl", "go", "gr", "gu", "gü",
+						"ha", "hä", "he", "hi", "ho", "hö", "ht", "hu", "hü", "hy",
+						"id", "im", "in", "ir", "is", "it",
+						"ja", "je", "jo", "ju",
+						"ka", "kä", "ke", "ki", "kl", "kn", "ko", "kö", "kr", "ku", "kü",
+						"la", "lä", "le", "li", "lo", "lö", "lu",
+						"ma", "mä", "me", "mi", "mo", "mö", "mu", "mü",
+						"na", "nä", "ne", "ni", "no", "nu",
+						"ob", "of", "oh", "ök", "ol", "öl", "on", "op", "or", "os",
+						"pa", "pe", "pf", "ph", "pi", "pl", "po", "pr", "ps", "pu",
+						"qu",
+						"ra", "re", "rh", "ri", "ro", "rö", "ru", "rü",
+						"sa", "sä", "sc", "se", "sh", "si", "sk", "so", "sp", "st", "su", "sü", "sy",
+						"ta", "te", "th", "ti", "to", "tr", "ts", "tu", "tü",
+						"üb", "ul", "um", "un", "ur", "us",
+						"va", "ve", "vi", "vo",
+						"wa", "wä", "we", "wi", "wo", "wu", "wü", "ww",
+						"za", "ze", "zi", "zo", "zu", "zw" }
+				));
 	}
 
 	public TextProcessor(final Locale locale) {

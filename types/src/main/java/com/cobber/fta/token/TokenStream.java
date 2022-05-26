@@ -17,6 +17,7 @@ package com.cobber.fta.token;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -465,33 +466,107 @@ public class TokenStream {
 		case ALPHADIGIT_CLASS:
 			if (transitions.isEmpty())
 				return false;
-			Boolean satisfied = null;
+
 			// We need to make sure that every range has a successful transition, there is no more
 			// than one applicable transition per range.
-			final CharClassToken ccToken = (CharClassToken)token;
-			final Set<Integer> done = new HashSet<>();
-			for (final CharClassToken.Range range : ccToken.getRanges()) {
-				nextRange:
-					for (final Transition transition : transitions)
-						if (range.getMin() >= transition.getMin() && range.getMax() <= transition.getMax()) {
-							if (done.contains(transition.hashCode()))
-								continue nextRange;
-							if (satisfied == null)
-								satisfied = true;
-							if (!matches(transition.getDest(), tokenIndex + 1))
-								return false;
-							done.add(transition.hashCode());
-						}
-				// We need to see one successful transition for every range
-				if (satisfied == null)
-					return false;
-			}
-			return satisfied != null && satisfied;
+			return checkRanges(((CharClassToken)token).getRanges(), transitions, tokenIndex, 0);
 
 		default:
 			// Should never happen since FLOAT is not in an uncompressed form and we should not be invoked with ANY
 			return false;
 
 		}
+	}
+	private boolean checkRanges(final Set<Range> ranges, final List<Transition> transitions, final int tokenIndex, final int level) {
+		Boolean satisfied = null;
+		Set<Range> splits;
+		final Set<Integer> done = new HashSet<>();
+
+		// We have a set of ranges and we need to make sure they are covered by transitions for this Regular Expression
+		// There are two cases:
+		//  - The range in question is covered by the transition (e.g. we observed the digits 1-3, and the transition covers 0-9)
+		//  - The range in question is partly covered by a transition (e.g we observed 1-2, and hopefully there are separate transitions that
+		// cover this range for example 1-1, 2-9).
+		// In the latter case (partial coverage) - we split the range and then validate that the split ranges are both covered
+		for (final Range range : ranges) {
+			nextRange:
+				for (final Transition transition : transitions) {
+
+					if (isCoveredBy(range, transition)) {
+						if (done.contains(transition.hashCode())) {
+							continue nextRange;
+						}
+						if (satisfied == null)
+							satisfied = true;
+						if (!matches(transition.getDest(), tokenIndex + 1))
+							return false;
+						done.add(transition.hashCode());
+					}
+					else if ((splits = isPartiallyCoveredBy(range, transition)) != null) {
+						for (final Range splitRange : splits)
+							if (!checkRanges(Collections.singleton(splitRange), transitions, tokenIndex, level + 1))
+								return false;
+						if (satisfied == null)
+							satisfied = true;
+					}
+				}
+			// We need to see one successful transition for every range
+			if (satisfied == null)
+				return false;
+		 }
+		 return satisfied != null && satisfied;
+	}
+
+	/**
+	 * Is this Range completely covered by this Transition.
+	 * @param range The Range to test
+	 * @param transition The Transition to test
+	 * @return
+	 */
+	private static boolean isCoveredBy(Range range, Transition transition) {
+		return transition.getMin() <= range.getMin() && range.getMax() <= transition.getMax();
+	}
+
+	/* Is this Range partially covered by this Transition.
+	 * Note: Assumes isCovered() is false
+	 *
+	 * @param range The Range to test
+	 * @param transition The Transition to test
+	 * @return A Set with the input range split into two (one covered by this transition and one not)
+	 */
+	private static Set<Range> isPartiallyCoveredBy(Range range, Transition transition) {
+		Set<Range> ret = new HashSet<>();
+		///  R             -----------------------
+		///  T       ----------------------
+		if (transition.getMin() < range.getMin()) {
+			if (transition.getMax() < range.getMax() && transition.getMax() >= range.getMin()) {
+				ret.add(new Range(range.getMin(), transition.getMax()));
+				ret.add(new Range((char)(transition.getMax() + 1), range.getMax()));
+				return ret;
+			}
+			return null;
+		}
+
+		///  R       -----------------------
+		///  T       --------------------
+		if (transition.getMin() == range.getMin()) {
+			if (transition.getMax() < range.getMax()) {
+				ret.add(new Range(range.getMin(), transition.getMax()));
+				ret.add(new Range((char)(transition.getMax() + 1), range.getMax()));
+				return ret;
+			}
+			return null;
+		}
+
+		///  R       ----------------------- (1-2)
+		///  T             ---------------------- (2-9)
+		// transition.getMin() > range.getMin()
+		if (transition.getMin() <= range.getMax()) {
+			ret.add(new Range(range.getMin(), (char) (transition.getMin() - 1)));
+			ret.add(new Range(transition.getMin(), range.getMax()));
+			return ret;
+		}
+
+		return null;
 	}
 }

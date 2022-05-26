@@ -757,7 +757,7 @@ public class TestStrings {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testCompressCoordinates() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("testCompressC_oordinates");
+		final TextAnalyzer analysis = new TextAnalyzer("testCompressCoordinates");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String[] inputs = {
 				"-69.97345,12.51678", "66.00845,33.83627", "17.53646,12.29118",
@@ -788,7 +788,7 @@ public class TestStrings {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testCompressCoordinates2() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("testCompressC_oordinates2");
+		final TextAnalyzer analysis = new TextAnalyzer("testCompressCoordinates2");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String[] inputs = {
 				"-38.3,142.4", "33.749,-84.4124",
@@ -890,7 +890,7 @@ public class TestStrings {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
+		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL_PAREN");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -922,7 +922,7 @@ public class TestStrings {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
+		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL_PAREN");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -931,6 +931,45 @@ public class TestStrings {
 				assertTrue(input.matches(result.getRegExp()), result.getRegExp());
 		}
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
+	public void testCompressCoordinates6() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Location");
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		final String[] inputs = {
+				"(28.0, 3.0)", "(28.0, 3.0)", "(28.0, 3.0)", "(28.0, 3.0)", "(28.0, 3.0)", "(28.0, 3.0)", "(28.0, 3.0)", "(28.0, 3.0)", "(28.0, 3.0)", "(28.0, 3.0)",
+				"(28.0, 3.0)", "(28.0, 3.0)", "(28.0, 3.0)", "(28.0, 3.0)", "(42.5, 1.6)", "(42.5, 1.6)", "(42.5, 1.6)", "(42.5, 1.6)", "(42.5, 1.6)", "(42.5, 1.6)",
+				"(42.5, 1.6)", "(42.5, 1.6)", "(42.5, 1.6)", "(42.5, 1.6)", "(42.5, 1.6)", "(42.5, 1.6)", "(42.5, 1.6)", "(42.5, 1.6)", "(46.0, 2.0)", "(46.0, 2.0)",
+				"(46.0, 2.0)", "(46.0, 2.0)", "(46.0, 2.0)", "(46.0, 2.0)", "(46.0, 2.0)", "(46.0, 2.0)", "(46.0, 2.0)", "(46.0, 2.0)", "(46.0, 2.0)", "(46.0, 2.0)",
+				"(46.0, 2.0)", "(46.0, 2.0)", "(51.0, 9.0)", "(51.0, 9.0)", "(51.0, 9.0)", "(51.0, 9.0)", "(51.0, 9.0)", "(51.0, 9.0)", "(51.0, 9.0)", "(51.0, 9.0)",
+				"(51.0, 9.0)", "(51.0, 9.0)", "(51.0, 9.0)", "(51.0, 9.0)", "(51.0, 9.0)", "(51.0, 9.0)", "(16.0, 8.0)", "(16.0, 8.0)", "(16.0, 8.0)", "(16.0, 8.0)",
+				"(16.0, 8.0)", "(16.0, 8.0)", "(16.0, 8.0)", "(16.0, 8.0)", "(16.0, 8.0)", "(16.0, 8.0)", "(16.0, 8.0)", "(16.0, 8.0)", "(16.0, 8.0)", "(16.0, 8.0)",
+				"(10.0, 8.0)", "(10.0, 8.0)", "(10.0, 8.0)", "(10.0, 8.0)", "(10.0, 8.0)", "(10.0, 8.0)", "(10.0, 8.0)", "(10.0, 8.0)", "(10.0, 8.0)", "(10.0, 8.0)",
+				"(10.0, 8.0)", "(10.0, 8.0)", "(10.0, 8.0)", "(10.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)",
+				"(47.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)", "(47.0, 8.0)", "(34.0, 9.0)", "(34.0, 9.0)",
+				"(34.0, 9.0)", "(34.0, 9.0)", "(34.0, 9.0)", "(34.0, 9.0)", "(34.0, 9.0)", "(34.0, 9.0)", "(34.0, 9.0)", "(34.0, 9.0)", "(34.0, 9.0)", "(34.0, 9.0)"
+		};
+
+		for (final String sample : inputs)
+			analysis.train(sample);
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL_PAREN");
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			if (input.length() != 0)
+				assertTrue(input.matches(result.getRegExp()), result.getRegExp());
+		}
+	}
+
+
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testBugPipe() throws IOException, FTAException {
