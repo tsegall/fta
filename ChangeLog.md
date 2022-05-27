@@ -2,6 +2,12 @@
 ## Changes ##
 
 ### 8.0.25
+ - ENH: I18N - Add new Semantic Type - POSTAL_CODE.BG
+ - ENH: I18N - Improve year detection in Russian/Finnish/Danish
+ - ENH: I18N - Add Bulgarian Gender support
+ - ENH: I18N - Add Russian/Japanese LATITUDE/LONGITUDE detection
+
+### 8.0.25
  - ENH: I18N - FREE_TEXT - improve German samples
  - ENH: I18N - Add new Semantic Types - POSTAL_CODE.POSTAL_CODE_UY, POSTAL_CODE.POSTAL_CODE_MX
  - BUG: Do not die if tracing is on and the fieldName is extremely long

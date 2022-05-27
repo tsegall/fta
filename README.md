@@ -1,4 +1,4 @@
-# Text Profiling and Semantic Type Detection (Fast Text Analyzer) #
+# Text Profiling and Semantic Type Detection #
 
 Analyze Text data to determine Base Type and Semantic type information and other key metrics associated with a text stream.
 Key objective of the analysis include:
@@ -226,7 +226,7 @@ EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
 FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|de, en
-GENDER.TEXT_&lt;Language&gt;|Gender|ca, cn, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr
+GENDER.TEXT_&lt;Language&gt;|Gender|bg, ca, cn, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN

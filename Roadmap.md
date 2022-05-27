@@ -35,8 +35,8 @@
  - "regExpsToMatch", "regExpReturned", "isRegExpComplete" should be per locale (DONE)
  - Gender support needs rework (DONE)
  - Need to support a concept of a non-localized Double (e.g. for example latitude which commonly does not use locale specific decimal separator) (DONE)
- - Need broader support for Western Europe (e.g. Address detection does not exist)
- - Should support localized true/false
+ - Address detection in Western Europe
+ - Should support localized true/false?
 
 # Merge sharded analyses (DONE)
 Option to merge profile results (e.g. given two profiles from sharded sources - produce a single profile result).

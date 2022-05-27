@@ -43,7 +43,7 @@
 		"pluginType": "java",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
 		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|Mobiel|telephone|telefon|téléphone).*", "confidence": 98 } ] } ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|Mobiel|telephone|telefon|téléphone|телефон|Факс).*", "confidence": 98 } ] } ],
 		"priority": 40
 	},
 	{
@@ -265,6 +265,21 @@
 		"priority": 72
 	},
 	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_BG",
+		"description": "Postal Code (BG)",
+		"pluginType": "list",
+		"signature": "",
+		"validLocales": [
+			{ "localeTag":  "bg-BG", "headerRegExps": [ { "regExp": ".*(?i)(Пощ код|Пощенски код).*", "confidence": 99 } ] }
+		],
+		"content": "/reference/bg_postal_code.csv",
+		"contentType": "resource",
+		"threshold": 99,
+		"baseType": "LONG",
+		"backout": "\\d{4}",
+		"priority": 73
+	},
+	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
 		"pluginType": "java",
@@ -308,9 +323,10 @@
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.Gender",
 		"validLocales": [
+			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": "(?i)(?u)(Gender|пол|пол .*)", "confidence": 90 } ] },
 			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sexe).*", "confidence": 90 } ] },
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
-			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Geschlecht).*", "confidence": 90 } ] },
+			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(Gender|geschlecht).*", "confidence": 90 } ] },
 			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
 			{ "localeTag":  "fi", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Genre|Sukupuoli).*", "confidence": 90 } ] },
 			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Genre|Sexe).*", "confidence": 90 } ] },
@@ -318,9 +334,10 @@
 			{ "localeTag":  "it", "headerRegExps": [ { "regExp": ".*(?i)(Gender|genere|sesso).*", "confidence": 90 } ] },
 			{ "localeTag":  "ms", "headerRegExps": [ { "regExp": ".*(?i)(Gender|jantina).*", "confidence": 90 } ] },
 			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Geslach|Geslacht).*", "confidence": 90 } ] },
-			{ "localeTag":  "pl", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Płeć|P³eæ).*", "confidence": 90 } ] },
+			{ "localeTag":  "pl", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Płeć|P³eæ).*", "confidence": 90 } ] },
 			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Gênero|Sexo).*", "confidence": 90 } ] },
 			{ "localeTag":  "ro", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
+			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Пол).*", "confidence": 90 } ] },
 			{ "localeTag":  "sv", "headerRegExps": [ { "regExp": ".*(?i)(Gender|kon|kön).*", "confidence": 90 } ] }
 		],
 		"priority": 80
@@ -1258,8 +1275,8 @@
 				} ]
 			},
 			{
-				"localeTag": "ca,de,fr,it,ro,es",
-				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|breitengrad|latitudine|latitud|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 100 } ],
+				"localeTag": "ca,de,es,fr,it,ja,ro,ru",
+				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|breitengrad|latitudine|latitud|Широта|緯度|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 100 } ],
 				"matchEntries": [
 				{
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
@@ -1295,8 +1312,8 @@
 				} ]
 			},
 			{
-				"localeTag": "ca,de,fr,it,ro,es",
-				"headerRegExps": [ { "regExp": ".*(?i)(?u)(longitude|längengrad|laengengrad|longitudine|longitud|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 100 } ],
+				"localeTag": "ca,de,es,fr,it,ja,ro,ru",
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(longitude|längengrad|laengengrad|longitudine|longitud|Долгота|経度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 100 } ],
 				"matchEntries": [
 				{
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],

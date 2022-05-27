@@ -111,6 +111,12 @@ public class Gender extends LogicalTypeFinite {
 		// Switzerland covered DE, FR, IT
 		// Austria covered by DE
 		switch(language) {
+		case "BG":
+			// Bulgarian
+			genderData = new GenderData(
+					new String[][] { new String[] { "ЖЕНСКИ", "МЪЖКИ" } },
+					new String[][] { new String[] { "Ж", "M" } } );
+			break;
 		case "CA":
 			// Catalan
 			genderData = new GenderData(
@@ -183,6 +189,12 @@ public class Gender extends LogicalTypeFinite {
 			genderData = new GenderData(
 					new String[][] { new String[] { "FEMEIE", "MASCULIN" } },
 					new String[][] { new String[] { "F", "M" } } );
+			break;
+		case "RU":
+			// Russian
+			genderData = new GenderData(
+					new String[][] { new String[] { "ЖЕНЩИНА", "МУЖЧИНА" } },
+					new String[][] { new String[] { "Ж", "M" } } );
 			break;
 		case "SV":
 			// Swedish
