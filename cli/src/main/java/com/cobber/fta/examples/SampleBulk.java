@@ -15,25 +15,27 @@
  */
 package com.cobber.fta.examples;
 
+import java.util.HashMap;
+
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
 
-public abstract class Trivial {
-
+public abstract class SampleBulk {
 	public static void main(final String[] args) throws FTAException {
 
-		// Use simple constructor - for improved detection you can provide an AnalyzerContext (see Contextual example).
-		final TextAnalyzer analysis = new TextAnalyzer("Age");
+		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		final HashMap<String, Long> basic = new HashMap<>();
 
-		analysis.train("12");
-		analysis.train("62");
-		analysis.train("21");
-		analysis.train("37");
+		basic.put("Male", 2_000_000L);
+		basic.put("Female", 1_000_000L);
+		basic.put("Unknown", 10_000L);
+
+		analysis.trainBulk(basic);
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		System.err.printf("Result: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
+		System.err.printf("Semantic Type: %s (%s)%n", result.getTypeQualifier(), result.getType());
 
 		System.err.println("Detail: " + result.asJSON(true, 1));
 	}

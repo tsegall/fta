@@ -1,7 +1,11 @@
 
 ## Changes ##
 
-### 8.0.25
+### 8.0.27
+ - INT: Move CLI to separate jar
+ - INT: Improve examples and README
+
+### 8.0.26
  - ENH: I18N - Add new Semantic Type - POSTAL_CODE.BG
  - ENH: I18N - Improve year detection in Russian/Finnish/Danish
  - ENH: I18N - Add Bulgarian Gender support

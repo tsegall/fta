@@ -1,43 +1,69 @@
 # Text Profiling and Semantic Type Detection #
 
 Analyze Text data to determine Base Type and Semantic type information and other key metrics associated with a text stream.
-Key objective of the analysis include:
-* Sufficiently fast to be used inline.  See Performance notes below.
+Key objectives of the library include:
+* Large set of built-in Semantic Types (extensible via JSON defined plugins).  See list below.
+* Sufficiently fast to be used inline.   See Performance notes below.
+* Usable in either Streaming or Bulk mode.
 * Minimal false positives for Semantic type detection.
-
-Support for non-English date detection is relatively robust, with the following exceptions:
-* No support for non-Gregorian calendars
-* No support for non-Arabic numerals
+* Support for non-English languages.
+* Support for sharded analysis (i.e. Analysis results can be merged)
 
 Notes:
-* By default analysis is performed on the initial 4096 characters of each record (adjustable via setMaxInputLength())
+* By default analysis is performed on the initial 4096 characters (adjustable via setMaxInputLength())
 * Semantic Type detection is typically predicated on plausible input data, for example, a field that contains data that looks
 like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
+* Date detection has no support for non-Gregorian calendars or non-Arabic numerals
 
-Typical usage is:
+Streaming example:
 ```java
-import java.util.Locale;
-import com.cobber.fta.TextAnalyzer;
-import com.cobber.fta.TextAnalysisResult;
+public static void main(final String[] args) throws FTAException {
+	final String[] inputs = {
+				"Anaïs Nin", "Gertrude Stein", "Paul Cézanne", "Pablo Picasso", "Theodore Roosevelt",
+				"Henri Matisse", "Georges Braque", "Henri de Toulouse-Lautrec", "Ernest Hemingway",
+				"Alice B. Toklas", "Eleanor Roosevelt", "Edgar Degas", "Pierre-Auguste Renoir",
+				"Claude Monet", "Édouard Manet", "Mary Cassatt", "Alfred Sisley",
+				"Camille Pissarro", "Franklin Delano Roosevelt", "Winston Churchill" };
 
-class Trivial {
+	// Use simple constructor - for improved detection provide an AnalyzerContext (see Contextual example).
+	final TextAnalyzer analysis = new TextAnalyzer("Famous");
 
-        public static void main(String args[]) throws FTAException {
+	for (String input : inputs)
+		analysis.train(input);
 
-                // Use simple constructor - for improved detection you can provide an AnalyzerContext (see Contextual example)
-                TextAnalyzer analysis = new TextAnalyzer("Age");
+	final TextAnalysisResult result = analysis.getResult();
 
-                analysis.train("12");
-                analysis.train("62");
-                analysis.train("21");
-                analysis.train("37");
+	System.err.printf("Semantic Type: %s (%s)%n",
+			result.getTypeQualifier(), result.getType());
 
-                TextAnalysisResult result = analysis.getResult();
-
-                System.err.printf("Result: %s, Regular Expression: %s, Max: %s, Min: %s.\n", result.getType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
-        }
+	System.err.println("Detail: " + result.asJSON(true, 1));
 }
 ```
+
+Result: Semantic Type: **NAME.FIRST_LAST** (String)
+
+Bulk example:
+```java
+public static void main(final String[] args) throws FTAException {
+
+		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		final HashMap<String, Long> basic = new HashMap<>();
+
+		basic.put("Male", 2_000_000L);
+		basic.put("Female", 1_000_000L);
+		basic.put("Unknown", 10_000L);
+
+		analysis.trainBulk(basic);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		System.err.printf("Semantic Type: %s (%s)%n", result.getTypeQualifier(), result.getType());
+
+		System.err.println("Detail: " + result.asJSON(true, 1));
+	}
+```
+
+Result: Semantic Type: **GENDER.TEXT_EN** (String)
 
 ## Date Format determination ##
 

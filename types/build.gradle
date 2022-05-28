@@ -1,5 +1,3 @@
-apply plugin: 'application'
-
 jar {
     archiveBaseName = 'fta'
 }
@@ -9,10 +7,6 @@ tasks.distTar.enabled = false
 
 project.tasks.named("installDist") {
 	duplicatesStrategy = 'exclude'
-}
-
-application {
-    mainClass = "com.cobber.fta.driver.Driver"
 }
 
 distributions {

@@ -309,7 +309,7 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Get the configuration associated of this TextAnalyzer.
+	 * Get the configuration associated with this TextAnalyzer.
 	 *
 	 * @return The AnalysisConfig  of the TextAnalyzer.
 	 */

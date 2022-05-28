@@ -15,27 +15,29 @@
  */
 package com.cobber.fta.examples;
 
-import java.util.HashMap;
-
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
 
-public abstract class SampleBulk {
+public abstract class Trivial {
+
 	public static void main(final String[] args) throws FTAException {
+		final String[] inputs = {
+				"Anaïs Nin", "Gertrude Stein", "Paul Cézanne", "Pablo Picasso", "Theodore Roosevelt",
+				"Henri Matisse", "Georges Braque", "Henri de Toulouse-Lautrec", "Ernest Hemingway",
+				"Alice B. Toklas", "Eleanor Roosevelt", "Edgar Degas", "Pierre-Auguste Renoir",
+				"Claude Monet", "Édouard Manet", "Mary Cassatt", "Alfred Sisley",
+				"Camille Pissarro", "Franklin Delano Roosevelt", "Winston Churchill" };
 
-		final TextAnalyzer analysis = new TextAnalyzer("Gender");
-		final HashMap<String, Long> basic = new HashMap<>();
+		// Use simple constructor - for improved detection provide an AnalyzerContext (see Contextual example).
+		final TextAnalyzer analysis = new TextAnalyzer("Famous");
 
-		basic.put("Male", 2_000_000L);
-		basic.put("Female", 1_000_000L);
-		basic.put("Unknown", 10_000L);
-
-		analysis.trainBulk(basic);
+		for (String input : inputs)
+			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		System.err.printf("Result: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
+		System.err.printf("Semantic Type: %s (%s)%n", result.getTypeQualifier(), result.getType());
 
 		System.err.println("Detail: " + result.asJSON(true, 1));
 	}
