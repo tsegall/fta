@@ -2220,6 +2220,30 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void manyEyes1() throws IOException, FTAException {
+		final String[] samples = {
+				"New York, NY", "Davidson, TN", "Ocean, NJ", "Stark, OH", "Forsyth, NC", "Cumberland, NC",
+				"Whatcom, WA", "Muscogee, GA", "Vanderburgh, IN", "Tolland, CT", "Fairfield, OH", "Frederick, VA",
+				"Laurens, SC", "Huron, OH", "Sullivan, NH", "Silver Bow, MT", "Gunnison, CO", "Custer, MT",
+				"Carbon, MT", "Lyman, SD", "Los Angeles, CA", "Cook, IL", "Wayne, MI", "Middlesex, MA",
+				"St. Louis, MO", "Hartford, CT", "Philadelphia, PA", "Fulton, GA", "New Haven, CT",
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("County, State");
+		analysis.setDebug(2);
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeQualifier());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void freeTextLowCardinalityMultiples() throws IOException, FTAException {
 		final String[] samples = {
 				"Divorced - separated",

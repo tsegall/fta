@@ -60,7 +60,7 @@ public class FreeText extends LogicalTypeInfinite {
 	private static String[] de_nouns = { "Banane", "Wand", "Kirche", "Kathedrale", "Erdbeere", "mango",
 			"Fahrrad", "Motorrad", "Auto", "Himbeere", "Zug", "Flugzeug" };
 
-	private static String[] en_verbs = { "contemplated", "painted", "saw", "observed", "studied" };
+	private static String[] en_verbs = { "contemplated", "painted", "spotted", "observed", "studied" };
 	private static String[] en_base_pronouns = { "she", "he", "they" };
 	private static String[] en_nouns = { "banana", "wall", "church", "cathederal", "strawberry", "mango",
 			"bicycle", "motorbike", "car", "raspberry", "train", "plane" };

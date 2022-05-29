@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 8.0.28
+ - ENH: Bump google phonenumber
+ - ENH: Decrease false positives on NAME.LAST_FIRST
+
 ### 8.0.27
  - INT: Move CLI to separate jar
  - INT: Improve examples and README

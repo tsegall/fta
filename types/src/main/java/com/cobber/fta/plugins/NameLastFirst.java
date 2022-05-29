@@ -15,13 +15,14 @@
  */
 package com.cobber.fta.plugins;
 
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.LogicalTypeInfinite;
@@ -41,8 +42,12 @@ public class NameLastFirst extends LogicalTypeInfinite {
 	/** The Regular Express for this Semantic type. */
 	private static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*, ?[- \\p{IsAlphabetic}]+";
 	private static final String BACKOUT = ".+";
-	private LogicalTypeCode logicalFirst;
-	private LogicalTypeCode logicalLast;
+	private LogicalTypeFiniteSimple logicalFirst;
+	private LogicalTypeFiniteSimple logicalLast;
+	private static final int MAX_FIRST_NAMES = 100;
+	private static final int MAX_LAST_NAMES = 100;
+	private Set<String> lastNames;
+	private Set<String> firstNames;
 
 	/**
 	 * Construct a plugin to detect Last name followed by First name based on the Plugin Definition.
@@ -58,6 +63,9 @@ public class NameLastFirst extends LogicalTypeInfinite {
 
 		logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), locale);
 		logicalLast = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.LAST"), locale);
+
+		firstNames = new HashSet<>();
+		lastNames = new HashSet<>();
 
 		return true;
 	}
@@ -139,7 +147,22 @@ public class NameLastFirst extends LogicalTypeInfinite {
 			return false;
 		}
 
-		return true;
+		String firstName = trimmed.substring(comma + 1).trim();
+		final int middleName = firstName.indexOf(' ');
+		if (middleName != -1)
+			firstName = firstName.substring(0, middleName);
+		final String lastName = trimmed.substring(0, comma).trim();
+
+		if (firstNames.size() < MAX_FIRST_NAMES)
+			firstNames.add(firstName);
+		if (lastNames.size() < MAX_LAST_NAMES)
+			lastNames.add(lastName);
+
+		// So if we only have a few names insist it is found, otherwise use the isValid() test
+		if (firstNames.size() < 10 ? logicalFirst.isMember(firstName) : logicalFirst.isValid(firstName))
+			return true;
+
+		return lastNames.size() < 10 ? logicalLast.isMember(lastName) : logicalLast.isValid(lastName);
 	}
 
 	@Override
@@ -162,6 +185,12 @@ public class NameLastFirst extends LogicalTypeInfinite {
 			return new PluginAnalysis(BACKOUT);
 
 		if (realSamples < minSamples)
+			return new PluginAnalysis(BACKOUT);
+
+		// Reject if there is not a reasonable spread of last or first names
+		if (getHeaderConfidence(context.getStreamName()) == 0 &&
+				((lastNames.size() < MAX_LAST_NAMES && (double)lastNames.size()/matchCount < .2) ||
+				(firstNames.size() < MAX_FIRST_NAMES && (double)firstNames.size()/matchCount < .2)))
 			return new PluginAnalysis(BACKOUT);
 
 		if (getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0)

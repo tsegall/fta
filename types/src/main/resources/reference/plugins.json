@@ -1203,6 +1203,7 @@
 			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(naam).*", "confidence": 60 } ] },
 			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] }
 		],
+		"threshold": 90,
 		"priority": 172
 	},
 	{

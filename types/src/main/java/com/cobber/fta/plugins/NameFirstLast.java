@@ -65,8 +65,8 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), locale);
 		logicalLast = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.LAST"), locale);
 
-		lastNames = new HashSet<>();
 		firstNames = new HashSet<>();
+		lastNames = new HashSet<>();
 
 		// Set the number of reasonable parts of a name - Spanish commonly has more than English
 		maxExpectedNames = 4;
