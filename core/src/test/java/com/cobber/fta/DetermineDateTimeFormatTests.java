@@ -293,6 +293,33 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void manyEyes1() {
+		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final String[] inputs = {
+				"Fri 08 Jan 2010 14:34:29 +0000", "Fri 08 Jan 2010 14:34:29 +0000", "Fri 08 Jan 2010 14:42:51 +0000", "Fri 08 Jan 2010 14:44:15 +0000",
+				"Fri 08 Jan 2010 14:44:26 +0000", "Fri 08 Jan 2010 14:44:51 +0000", "Fri 08 Jan 2010 14:46:13 +0000", "Fri 08 Jan 2010 14:48:16 +0000",
+				"Fri 08 Jan 2010 14:48:29 +0000", "Fri 08 Jan 2010 14:49:58 +0000", "Fri 08 Jan 2010 14:49:59 +0000", "Fri 08 Jan 2010 14:51:13 +0000",
+				"Fri 08 Jan 2010 14:51:15 +0000", "Fri 08 Jan 2010 14:51:57 +0000", "Fri 08 Jan 2010 14:52:37 +0000", "Fri 08 Jan 2010 14:56:53 +0000",
+				"Fri 08 Jan 2010 14:57:57 +0000", "Fri 08 Jan 2010 15:02:11 +0000", "Fri 08 Jan 2010 15:03:17 +0000", "Fri 08 Jan 2010 15:06:53 +0000",
+				"Fri 08 Jan 2010 15:08:08 +0000", "Fri 08 Jan 2010 15:08:17 +0000", "Fri 08 Jan 2010 15:09:00 +0000", "Fri 08 Jan 2010 15:10:09 +0000",
+				"Fri 08 Jan 2010 15:10:12 +0000", "Fri 08 Jan 2010 15:10:37 +0000", "Fri 08 Jan 2010 15:10:52 +0000", "Fri 08 Jan 2010 15:10:56 +0000"
+		};
+
+		for (String input : inputs)
+			det.train(input);
+
+		final DateTimeParserResult result = det.getResult();
+		final String formatString = result.getFormatString();
+
+		assertEquals(formatString, "EEE dd MMM yyyy HH:mm:ss x");
+
+		final String regExp = result.getRegExp();
+
+		for (final String input : inputs)
+			assertTrue(input.matches(regExp));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void xx() {
 		final String pipedInput = "2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2017-08-09T15:29:22+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|";
 		final String inputs[] = pipedInput.split("\\|");

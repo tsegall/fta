@@ -126,8 +126,9 @@ public class DateTimeParserResult {
 		MONTHS_1_OR_2("M"), MONTHS_2("MM"), MONTH("MMMM"), MONTH_ABBR("MMM"),
 		HOURS12_1_OR_2("h"), HOURS12_2("hh"), HOURS24_1_OR_2("H"), HOURS24_2("HH"), MINS_2("mm"), PAD_2("p"), SECS_2("ss"), FRACTION("S"),
 		YEARS_2("yy"), YEARS_4("yyyy"),
-		TIMEZONE("z"), LOCALIZED_TIMEZONE_OFFSET("O"),
-		TIMEZONE_OFFSET("x"), TIMEZONE_OFFSET_Z("X");
+		TIMEZONE("z"),
+		LOCALIZED_TIMEZONE_OFFSET("O"),
+		TIMEZONE_OFFSET("x"), TIMEZONE_OFFSET_ZERO("X");
 
 		public final String rep;
 
@@ -744,7 +745,7 @@ public class DateTimeParserResult {
 					throw new DateTimeParseException("Expecting time zone - bad time zone: " + timeZoneT, input, upto);
 				break;
 
-			case TIMEZONE_OFFSET_Z:
+			case TIMEZONE_OFFSET_ZERO:
 				if (upto >= inputLength)
 					throw new DateTimeParseException("Expecting time zone offset, end of input", input, upto);
 				if (input.charAt(upto) == 'Z') {
@@ -818,7 +819,7 @@ public class DateTimeParserResult {
 			tokenized =  FormatterToken.tokenize(formatString);
 
 		for (final FormatterToken t : tokenized) {
-			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_Z) || t.getType().equals(Token.LOCALIZED_TIMEZONE_OFFSET))
+			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_ZERO) || t.getType().equals(Token.LOCALIZED_TIMEZONE_OFFSET))
 				return FTAType.OFFSETDATETIME;
 			if (t.getType().equals(Token.TIMEZONE))
 				return FTAType.ZONEDDATETIME;
@@ -864,7 +865,7 @@ public class DateTimeParserResult {
 			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.PAD_2 || token.getType() == Token.MONTH ||
 					token.getType() == Token.MONTH_ABBR || token.getType() == Token.DAY_OF_WEEK_ABBR ||
 					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE ||
-					token.getType() == Token.TIMEZONE_OFFSET || token.getType() == Token.TIMEZONE_OFFSET_Z) {
+					token.getType() == Token.TIMEZONE_OFFSET || token.getType() == Token.TIMEZONE_OFFSET_ZERO) {
 				if (digitsMin != 0) {
 					addDigits(ret, digitsMin, digitsMax, padding);
 					digitsMin = digitsMax = padding = 0;
@@ -905,7 +906,7 @@ public class DateTimeParserResult {
 //					Four letters outputs the hour and minute and optional second, without a colon, such as '+013015'.
 //					Five letters outputs the hour and minute and optional second, with a colon, such as '+01:30:15'.
 //					Six or more letters throws IllegalArgumentException. Pattern letter 'X' (upper case) will output 'Z' when the offset to be output would be zero, whereas pattern letter 'x' (lower case) will output '+00', '+0000', or '+00:00'.
-				case TIMEZONE_OFFSET_Z:
+				case TIMEZONE_OFFSET_ZERO:
 					switch (token.getCount()) {
 					case 1:
 						ret.append("(" + x + "|Z)");
@@ -1070,7 +1071,7 @@ public class DateTimeParserResult {
 			case FRACTION:
 			case LOCALIZED_TIMEZONE_OFFSET:
 			case TIMEZONE_OFFSET:
-			case TIMEZONE_OFFSET_Z:
+			case TIMEZONE_OFFSET_ZERO:
 				ret.append(Utils.repeat(nextToken.getRepresentation().charAt(0), token.getCount()));
 				break;
 			case CONSTANT_CHAR:

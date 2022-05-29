@@ -132,6 +132,7 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleFacts("EEE MMM  d d{2}:d{2}:d{2} z d{4}", "EEE MMM ppd HH:mm:ss z yyyy", FTAType.ZONEDDATETIME));
 		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} O d{4}", "EEE MMM dd HH:mm:ss O yyyy", FTAType.OFFSETDATETIME));
 		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} OOOO d{4}", "EEE MMM dd HH:mm:ss OOOO yyyy", FTAType.OFFSETDATETIME));
+		matchers.add(new SimpleFacts("EEE d{2} MMM d{4} d{2}:d{2}:d{2} +d{4}", "EEE dd MMM yyyy HH:mm:ss x", FTAType.OFFSETDATETIME));
 
 		final HashMap<String, SimpleFacts> localeMatcher = new HashMap<>();
 		for (final SimpleFacts sdm : matchers) {

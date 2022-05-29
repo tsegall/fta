@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 8.0.29
+ - ENH: Cope with Date Format - "Fri 08 Jan 2010 15:11:16 +0000"
+
 ### 8.0.28
  - ENH: Bump google phonenumber
  - ENH: Decrease false positives on NAME.LAST_FIRST

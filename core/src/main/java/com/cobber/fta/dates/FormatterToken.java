@@ -221,7 +221,7 @@ class FormatterToken {
 					countX++;
 					i++;
 				}
-				ret.add(new FormatterToken(ch == 'x' ? Token.TIMEZONE_OFFSET : Token.TIMEZONE_OFFSET_Z, countX));
+				ret.add(new FormatterToken(ch == 'x' ? Token.TIMEZONE_OFFSET : Token.TIMEZONE_OFFSET_ZERO, countX));
 				break;
 
 			case 'z':
