@@ -320,6 +320,95 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void manyEyes2() {
+		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final String[] inputs = {
+				"Sunday, June  6, 2010 23:02:18 UTC", "Sunday, June  6, 2010 22:58:45 UTC", "Sunday, June  6, 2010 22:58:20 UTC",
+				"Sunday, June  6, 2010 22:35:06 UTC", "Sunday, June  6, 2010 22:21:39 UTC", "Sunday, June  6, 2010 22:07:59 UTC",
+				"Sunday, June  6, 2010 22:07:52 UTC", "Sunday, June  6, 2010 21:46:07 UTC", "Sunday, June  6, 2010 21:44:19 UTC",
+				"Sunday, June  6, 2010 21:23:41 UTC", "Sunday, June  6, 2010 21:21:48 UTC", "Sunday, June  6, 2010 21:20:31 UTC",
+				"Sunday, June  6, 2010 21:15:45 UTC", "Sunday, June  6, 2010 21:08:57 UTC", "Sunday, June  6, 2010 20:30:08 UTC",
+				"Sunday, June  6, 2010 20:26:52 UTC", "Sunday, June  6, 2010 20:17:12 UTC", "Sunday, June  6, 2010 20:04:35 UTC",
+				"Sunday, June  6, 2010 19:34:07 UTC", "Sunday, June  6, 2010 19:07:12 UTC", "Sunday, June  6, 2010 18:58:43 UTC",
+				"Sunday, June  6, 2010 18:54:22 UTC", "Sunday, June  6, 2010 18:38:08 UTC", "Sunday, June  6, 2010 17:50:25 UTC",
+				"Sunday, June  6, 2010 17:44:22 UTC", "Sunday, June  6, 2010 17:11:25 UTC", "Sunday, June  6, 2010 16:59:38 UTC",
+				"Sunday, June  6, 2010 16:57:26 UTC", "Sunday, June  6, 2010 16:42:49 UTC", "Sunday, June  6, 2010 16:38:56 UTC"
+		};
+
+		for (String input : inputs)
+			det.train(input);
+
+		final DateTimeParserResult result = det.getResult();
+		final String formatString = result.getFormatString();
+
+		assertEquals(formatString, "EEEE, MMMM ppd, yyyy HH:mm:ss z");
+
+		final String regExp = result.getRegExp();
+
+		for (final String input : inputs)
+			assertTrue(input.matches(regExp), regExp);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void manyEyes3() {
+		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final String[] inputs = {
+				"Sunday, June 6, 2010 23:02:18 UTC", "Sunday, June 6, 2010 22:58:45 UTC", "Sunday, June 6, 2010 22:58:20 UTC",
+				"Sunday, June 6, 2010 22:35:06 UTC", "Sunday, June 6, 2010 22:21:39 UTC", "Sunday, June 6, 2010 22:07:59 UTC",
+				"Sunday, June 6, 2010 22:07:52 UTC", "Sunday, June 6, 2010 21:46:07 UTC", "Sunday, June 6, 2010 21:44:19 UTC",
+				"Sunday, June 6, 2010 21:23:41 UTC", "Sunday, June 6, 2010 21:21:48 UTC", "Sunday, June 6, 2010 21:20:31 UTC",
+				"Sunday, June 6, 2010 21:15:45 UTC", "Sunday, June 6, 2010 21:08:57 UTC", "Sunday, June 6, 2010 20:30:08 UTC",
+				"Sunday, June 6, 2010 20:26:52 UTC", "Sunday, June 6, 2010 20:17:12 UTC", "Sunday, June 6, 2010 20:04:35 UTC",
+				"Sunday, June 6, 2010 19:34:07 UTC", "Sunday, June 6, 2010 19:07:12 UTC", "Sunday, June 6, 2010 18:58:43 UTC",
+				"Sunday, June 6, 2010 18:54:22 UTC", "Sunday, June 6, 2010 18:38:08 UTC", "Sunday, June 6, 2010 17:50:25 UTC",
+				"Sunday, June 6, 2010 17:44:22 UTC", "Sunday, June 6, 2010 17:11:25 UTC", "Sunday, June 6, 2010 16:59:38 UTC",
+		};
+
+		for (String input : inputs)
+			det.train(input);
+
+		final DateTimeParserResult result = det.getResult();
+		final String formatString = result.getFormatString();
+
+		assertEquals(formatString, "EEEE, MMMM d, yyyy HH:mm:ss z");
+
+		final String regExp = result.getRegExp();
+
+		for (final String input : inputs)
+			assertTrue(input.matches(regExp), regExp);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void manyEyes4() {
+		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		// ** Note: June 16 was NOT a Sunday! We still return the 'correct' format.
+		final String[] inputs = {
+				"Sunday, June 16, 2010 23:02:18 UTC", "Sunday, June 16, 2010 22:58:45 UTC", "Sunday, June 16, 2010 22:58:20 UTC",
+				"Sunday, June 16, 2010 22:35:06 UTC", "Sunday, June 16, 2010 22:21:39 UTC", "Sunday, June 16, 2010 22:07:59 UTC",
+				"Sunday, June 16, 2010 22:07:52 UTC", "Sunday, June 16, 2010 21:46:07 UTC", "Sunday, June 16, 2010 21:44:19 UTC",
+				"Sunday, June 16, 2010 21:23:41 UTC", "Sunday, June 16, 2010 21:21:48 UTC", "Sunday, June 16, 2010 21:20:31 UTC",
+				"Sunday, June 16, 2010 21:15:45 UTC", "Sunday, June 16, 2010 21:08:57 UTC", "Sunday, June 16, 2010 20:30:08 UTC",
+				"Sunday, June 16, 2010 20:26:52 UTC", "Sunday, June 16, 2010 20:17:12 UTC", "Sunday, June 16, 2010 20:04:35 UTC",
+				"Sunday, June 16, 2010 19:34:07 UTC", "Sunday, June 16, 2010 19:07:12 UTC", "Sunday, June 16, 2010 18:58:43 UTC",
+				"Sunday, June 16, 2010 18:54:22 UTC", "Sunday, June 16, 2010 18:38:08 UTC", "Sunday, June 16, 2010 17:50:25 UTC",
+				"Sunday, June 16, 2010 17:44:22 UTC", "Sunday, June 16, 2010 17:11:25 UTC", "Sunday, June 16, 2010 16:59:38 UTC"
+		};
+
+		for (String input : inputs)
+			det.train(input);
+
+		final DateTimeParserResult result = det.getResult();
+		final String formatString = result.getFormatString();
+
+		assertEquals(formatString, "EEEE, MMMM dd, yyyy HH:mm:ss z");
+
+		final String regExp = result.getRegExp();
+
+		for (final String input : inputs)
+			assertTrue(input.matches(regExp), regExp);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void xx() {
 		final String pipedInput = "2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2017-08-09T15:29:22+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|";
 		final String inputs[] = pipedInput.split("\\|");

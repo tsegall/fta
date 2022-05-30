@@ -121,7 +121,7 @@ public class DateTimeParserResult {
 		AMPM("a"),
 		CLOCK24_1_OR_2("k"), CLOCK24_2("kk"),
 		CONSTANT_CHAR,
-		DAYS_1_OR_2("d"), DAYS_2("dd"), DAY_OF_WEEK("EEE"), DAY_OF_WEEK_ABBR("EE"),
+		DAYS_1_OR_2("d"), DAYS_2("dd"), DAY_OF_WEEK("EEEE"), DAY_OF_WEEK_ABBR("EEE"),
 		DIGITS_1_OR_2("?"), DIGITS_2("??"),
 		MONTHS_1_OR_2("M"), MONTHS_2("MM"), MONTH("MMMM"), MONTH_ABBR("MMM"),
 		HOURS12_1_OR_2("h"), HOURS12_2("hh"), HOURS24_1_OR_2("H"), HOURS24_2("HH"), MINS_2("mm"), PAD_2("p"), SECS_2("ss"), FRACTION("S"),
@@ -525,12 +525,19 @@ public class DateTimeParserResult {
 
 			switch (nextToken) {
 			case DAY_OF_WEEK:
+				start = upto;
+				final int dayOfWeekOffset = LocaleInfo.skipValidDayOfWeek(input.substring(upto), locale);
+				if (dayOfWeekOffset == -1)
+					throw new DateTimeParseException("Day of Week invalid", input, start);
+				upto += dayOfWeekOffset;
+				break;
+
 			case DAY_OF_WEEK_ABBR:
 				start = upto;
-				final int dayOfWeekOffset = LocaleInfo.skipValidDayOfWeekAbbr(input.substring(upto), locale);
-				if (dayOfWeekOffset == -1)
+				final int dayOfWeekAbbrOffset = LocaleInfo.skipValidDayOfWeekAbbr(input.substring(upto), locale);
+				if (dayOfWeekAbbrOffset == -1)
 					throw new DateTimeParseException("Day of Week Abbreviation invalid", input, start);
-				upto += dayOfWeekOffset;
+				upto += dayOfWeekAbbrOffset;
 				break;
 
 			case MONTH:
@@ -862,8 +869,9 @@ public class DateTimeParserResult {
 			formatString = getFormatString();
 
 		for (final FormatterToken token : FormatterToken.tokenize(formatString)) {
-			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.PAD_2 || token.getType() == Token.MONTH ||
-					token.getType() == Token.MONTH_ABBR || token.getType() == Token.DAY_OF_WEEK_ABBR ||
+			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.PAD_2 ||
+					token.getType() == Token.MONTH || token.getType() == Token.MONTH_ABBR ||
+					token.getType() == Token.DAY_OF_WEEK || token.getType() == Token.DAY_OF_WEEK_ABBR ||
 					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE ||
 					token.getType() == Token.TIMEZONE_OFFSET || token.getType() == Token.TIMEZONE_OFFSET_ZERO) {
 				if (digitsMin != 0) {
@@ -881,6 +889,10 @@ public class DateTimeParserResult {
 
 				case MONTH:
 					ret.append(LocaleInfo.getMonthsRegExp(locale));
+					break;
+
+				case DAY_OF_WEEK:
+					ret.append(LocaleInfo.getWeekdaysRegExp(locale));
 					break;
 
 				case DAY_OF_WEEK_ABBR:

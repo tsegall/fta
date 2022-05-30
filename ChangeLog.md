@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 8.0.30
+ - ENH: Improve support for dates with full weekdays (EEEE)
+ - BUG: Fix issue with ZoneDateTime or OffsetDateTime and no valid data
+
 ### 8.0.29
  - ENH: Cope with Date Format - "Fri 08 Jan 2010 15:11:16 +0000"
 

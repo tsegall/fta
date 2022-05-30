@@ -2263,6 +2263,47 @@ analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		}
 	}
 
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void badDatesGoodFormat() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicUnixDateCommand");
+		// ** Note: June 16 was NOT a Sunday! We still return the 'correct' format.
+		final String[] inputs = {
+				"Sunday, June 16, 2010 23:02:18 UTC", "Sunday, June 16, 2010 22:58:45 UTC", "Sunday, June 16, 2010 22:58:20 UTC",
+				"Sunday, June 16, 2010 22:35:06 UTC", "Sunday, June 16, 2010 22:21:39 UTC", "Sunday, June 16, 2010 22:07:59 UTC",
+				"Sunday, June 16, 2010 22:07:52 UTC", "Sunday, June 16, 2010 21:46:07 UTC", "Sunday, June 16, 2010 21:44:19 UTC",
+				"Sunday, June 16, 2010 21:23:41 UTC", "Sunday, June 16, 2010 21:21:48 UTC", "Sunday, June 16, 2010 21:20:31 UTC",
+				"Sunday, June 16, 2010 21:15:45 UTC", "Sunday, June 16, 2010 21:08:57 UTC", "Sunday, June 16, 2010 20:30:08 UTC",
+				"Sunday, June 16, 2010 20:26:52 UTC", "Sunday, June 16, 2010 20:17:12 UTC", "Sunday, June 16, 2010 20:04:35 UTC",
+				"Sunday, June 16, 2010 19:34:07 UTC", "Sunday, June 16, 2010 19:07:12 UTC", "Sunday, June 16, 2010 18:58:43 UTC",
+				"Sunday, June 16, 2010 18:54:22 UTC", "Sunday, June 16, 2010 18:38:08 UTC", "Sunday, June 16, 2010 17:50:25 UTC",
+				"Sunday, June 16, 2010 17:44:22 UTC", "Sunday, June 16, 2010 17:11:25 UTC", "Sunday, June 16, 2010 16:59:38 UTC"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.ZONEDDATETIME);
+		assertEquals(result.getTypeQualifier(), "EEEE, MMMM dd, yyyy HH:mm:ss z");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{6,9}, \\p{IsAlphabetic}{3,9} \\d{2}, \\d{4} \\d{2}:\\d{2}:\\d{2} .*");
+		assertEquals(result.getConfidence(), 0.0);
+
+		// The dates are all invalid BUT they should still match the RE
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+
+
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicMMMM_d_yyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMMMM_d_yyyy");

@@ -364,6 +364,16 @@ public class LocaleInfo {
 	}
 
 	/**
+	 * Are Week Days all Alphabetic?
+	 * @param locale Locale we are interested in
+	 * @return True if all Week Days strings are all Alphabetic
+	 */
+	public static boolean areDayOfWeekAlphabetic(final Locale locale) {
+		cacheLocaleInfo(locale);
+		return shortWeekdaysAlphabetic.get(locale.toLanguageTag());
+	}
+
+	/**
 	 * Are Short Week Days all Alphabetic?
 	 * @param locale Locale we are interested in
 	 * @return True if all Short Week Days strings are all Alphabetic
@@ -383,8 +393,44 @@ public class LocaleInfo {
 		return shortWeekdaysRegExp.get(locale.toLanguageTag());
 	}
 
+	public static boolean validDayOfWeek(final String dayOfWeek, final Locale locale) {
+		return LocaleInfo.getWeekdays(locale).contains(dayOfWeek.toUpperCase(locale));
+	}
+
 	public static boolean validDayOfWeekAbbr(final String dayOfWeekAbbr, final Locale locale) {
 		return LocaleInfo.getShortWeekdays(locale).contains(dayOfWeekAbbr.toUpperCase(locale));
+	}
+
+	/**
+	 * Check that the input starts with a valid week day (case insensitive)
+	 * and if so return the offset of the end of match.
+	 * @param input The input string
+	 * @param locale Locale we are interested in
+	 * @return Offset of the end of the matched input, or -1 if no match
+	 */
+	public static int skipValidDayOfWeek(String input, final Locale locale) {
+		final int inputLength = input.length();
+		final boolean allAlphabetic = LocaleInfo.areDayOfWeekAlphabetic(locale);
+		int upto = 0;
+
+		if (allAlphabetic) {
+			while (upto < inputLength && Character.isAlphabetic(input.charAt(upto)))
+				upto++;
+			final String dayOfWeek = input.substring(0, upto);
+			return validDayOfWeek(dayOfWeek, locale) ? upto : -1;
+		}
+
+		boolean found = false;
+		input = input.toUpperCase(locale);
+		for (final String dayOfWeek : LocaleInfo.getWeekdays(locale)) {
+			if (input.startsWith(dayOfWeek)) {
+				found = true;
+				upto += dayOfWeek.length();
+				break;
+			}
+		}
+
+		return found ? upto : -1;
 	}
 
 	/**

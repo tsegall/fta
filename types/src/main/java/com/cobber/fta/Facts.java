@@ -367,8 +367,8 @@ public class Facts {
 			if (collectStatistics) {
 				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
-				minValue = minZonedDateTime.format(dtf);
-				maxValue = maxZonedDateTime.format(dtf);
+				minValue = minZonedDateTime == null ? null : minZonedDateTime.format(dtf);
+				maxValue = maxZonedDateTime == null ? null : maxZonedDateTime.format(dtf);
 				bottomK = alignFormat(tbZonedDateTime.bottomKasString(), FTAType.ZONEDDATETIME, dtf);
 				topK = alignFormat(tbZonedDateTime.topKasString(), FTAType.ZONEDDATETIME, dtf);
 			}
@@ -378,8 +378,8 @@ public class Facts {
 			if (collectStatistics) {
 				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
 
-				minValue = minOffsetDateTime.format(dtf);
-				maxValue = maxOffsetDateTime.format(dtf);
+				minValue = minOffsetDateTime == null ? null : minOffsetDateTime.format(dtf);
+				maxValue = maxOffsetDateTime == null ? null : maxOffsetDateTime.format(dtf);
 				bottomK = alignFormat(tbOffsetDateTime.bottomKasString(), FTAType.OFFSETDATETIME, dtf);
 				topK = alignFormat(tbOffsetDateTime.topKasString(), FTAType.OFFSETDATETIME, dtf);
 			}
@@ -390,7 +390,7 @@ public class Facts {
 	}
 
 	protected Object getValue(final String input) {
-		if (matchPatternInfo == null)
+		if (matchPatternInfo == null || input == null)
 			return null;
 
 		switch (matchPatternInfo.getBaseType()) {
