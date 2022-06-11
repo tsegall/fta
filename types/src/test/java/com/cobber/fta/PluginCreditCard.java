@@ -15,7 +15,6 @@
  */
 package com.cobber.fta;
 
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.validator.routines.CreditCardValidator;
@@ -42,8 +41,8 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		return true;
 	}

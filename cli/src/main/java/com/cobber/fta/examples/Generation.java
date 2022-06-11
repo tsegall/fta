@@ -16,8 +16,8 @@
 package com.cobber.fta.examples;
 
 import java.io.IOException;
-import java.util.Locale;
 
+import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeRegExp;
@@ -34,7 +34,7 @@ public abstract class Generation {
 
 		for (final String s: demos) {
 			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(s);
-			final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+			final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
 			if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete()) {
 				System.err.printf("Logical Type (%s) does implement LTRandom interface - however samples may not be valid.", s);

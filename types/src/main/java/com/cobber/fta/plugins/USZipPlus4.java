@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -67,8 +66,8 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		zipsRef = new SingletonSet("resource", "/reference/us_zips.csv");
 		zips = zipsRef.getMembers();

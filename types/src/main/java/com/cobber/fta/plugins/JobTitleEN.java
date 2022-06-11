@@ -66,8 +66,8 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		titleStartersRef = new SingletonSet("resource", "/reference/en_title_starters.csv");
 		titleStarters = titleStartersRef.getMembers();

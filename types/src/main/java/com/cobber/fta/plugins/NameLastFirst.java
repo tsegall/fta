@@ -16,7 +16,6 @@
 package com.cobber.fta.plugins;
 
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,11 +57,11 @@ public class NameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
-		logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), locale);
-		logicalLast = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.LAST"), locale);
+		logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), analysisConfig);
+		logicalLast = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.LAST"), analysisConfig);
 
 		firstNames = new HashSet<>();
 		lastNames = new HashSet<>();

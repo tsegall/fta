@@ -17,8 +17,8 @@ package com.cobber.fta.driver;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Locale;
 
+import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFactory;
@@ -46,7 +46,7 @@ public class Processor {
 					System.exit(1);
 				}
 
-				logicalType = LogicalTypeFactory.newInstance(pluginDefinition, options.locale != null ? options.locale : Locale.getDefault());
+				logicalType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(options.locale));
 			}
 		}
 

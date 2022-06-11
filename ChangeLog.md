@@ -1,6 +1,20 @@
 
 ## Changes ##
 
+### 9.0.0
+ - *** Plugin definition has changed with 9.0 as has DateTimeParser.ofPattern, also new Feature.NO_ABBREVIATION_PUNCTUATION is enabled by default
+ - ENH: I18N - Improve date detection in locales with abbreviations with periods for short-months (and AM/PM strings) (e.g. en-CA, en-AU) - see Feature.NO_ABBREVIATION_PUNCTUATION
+ - ENH: I18N - Add support for FREE_TEXT in french
+ - ENH: FREE_TEXT implies some level of uniqueness - change to insist on > .1 uniqueness
+ - ENH: I18N - Add new Semantic Types - STATE_PROVINCE.COUNTY_HU, CHECKDIGIT.UPC, COLOR.HEX, HASH.SHA1_HEX
+ - ENH: Bump google phonenumber
+ - ENH: Add support for MAC ADDRESS detection with minus as well as colon
+ - ENH: Extend Shape support from 40 to 65 before declaring too long
+ - BUG: I18N - Year in french has an acute!
+ - BUG: I18N - Year in Catalan was wrong
+ - BUG: I18N - Fix issue with Chakma (locale ccp), issue related to surrogate pairs
+ - INT: I18N - Add --abbreviationPunctuation to CLI
+
 ### 8.0.30
  - ENH: Improve support for dates with full weekdays (EEEE)
  - BUG: Fix issue with ZoneDateTime or OffsetDateTime and no valid data

@@ -43,7 +43,7 @@ public abstract class SamplePluginFrench {
 		// Register our new magic plugin
 		final String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_<LANG>\", \"pluginType\": \"java\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"validLocales\": [ \"en-US\", \"fr-FR\" ] } ]";
 		try {
-			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", locale);
+			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", analysis.getConfig());
 		} catch (InvocationTargetException e) {
 			System.err.println("ERROR: Failed to register plugin: " + e.getCause().getMessage());
 			System.exit(1);

@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.core.FTAPluginException;
@@ -35,58 +34,55 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Plugins {
 	private final Map<String, LogicalType> registered = new HashMap<>();
-	private ObjectMapper MAPPER;
+	private final ObjectMapper MAPPER;
 
 	Plugins(final ObjectMapper mapper) {
 		this.MAPPER = mapper;
 	}
 
-	public void registerPlugins(final Reader JSON, final String dataStreamName, final Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
-		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, false);
+	public void registerPlugins(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, false);
 	}
 
-	public void registerPlugins(final String JSON, final String dataStreamName, final Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
-		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, false);
+	public void registerPlugins(final String JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, false);
 	}
 
-	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
-		registerPluginListCore(plugins, dataStreamName, locale, false);
+	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+		registerPluginListCore(plugins, dataStreamName, analysisConfig, false);
 	}
 
-	protected void registerPluginsInternal(final Reader JSON, final String dataStreamName, final Locale locale) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
-		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, locale, true);
+	protected void registerPluginsInternal(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, true);
 	}
 
-	protected void registerPluginListCore(final List<PluginDefinition> plugins, final String dataStreamName, Locale locale, final boolean internal) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
-		if (locale == null)
-			locale = Locale.getDefault();
-
+	protected void registerPluginListCore(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig, final boolean internal) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
 		// Only register plugins that are valid for this locale
 		for (final PluginDefinition plugin : plugins) {
 			if (!internal)
 				if (plugin.priority < PluginDefinition.PRIORITY_EXTERNAL)
 					throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' has invalid priority, priority must be >= " + PluginDefinition.PRIORITY_EXTERNAL);
 
-			boolean register = plugin.isLocaleSupported(locale);
+			boolean register = plugin.isLocaleSupported(analysisConfig.getLocale());
 
 			// Check to see if this plugin requires a mandatory hotword (and it is present)
-			if (register && !"*".equals(dataStreamName) && plugin.isRequiredHeaderMissing(locale, dataStreamName))
+			if (register && !"*".equals(dataStreamName) && plugin.isRequiredHeaderMissing(analysisConfig.getLocale(), dataStreamName))
 				register = false;
 
 			if (register)
 				if ("java".equals(plugin.pluginType))
-					registerLogicalTypeClass(plugin, locale);
+					registerLogicalTypeClass(plugin, analysisConfig);
 				else if ("list".equals(plugin.pluginType))
-					registerLogicalTypeFiniteSet(plugin, locale);
+					registerLogicalTypeFiniteSet(plugin, analysisConfig);
 				else if ("regex".equals(plugin.pluginType))
-					registerLogicalTypeRegExp(plugin, locale);
+					registerLogicalTypeRegExp(plugin, analysisConfig);
 				else
 					throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' unknown type.");
 		}
 	}
 
-	private void registerLogicalType(final LogicalType logical, final Locale locale) throws FTAPluginException {
-		logical.initialize(locale);
+	private void registerLogicalType(final LogicalType logical, final AnalysisConfig analysisConfig) throws FTAPluginException {
+		logical.initialize(analysisConfig);
 
 		if (registered.containsKey(logical.getQualifier()))
 			throw new FTAPluginException("Logical type: " + logical.getQualifier() + " already registered.");
@@ -111,7 +107,7 @@ public class Plugins {
 	 * @throws InstantiationException
 	 * @throws FTAPluginException
 	 */
-	private void registerLogicalTypeClass(final PluginDefinition plugin, final Locale locale) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+	private void registerLogicalTypeClass(final PluginDefinition plugin, final AnalysisConfig analysisConfig) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
 		Class<?> newLogicalType;
 		Constructor<?> ctor;
 		LogicalType logical;
@@ -123,7 +119,7 @@ public class Plugins {
 		if (!(logical instanceof LogicalType))
 			throw new FTAPluginException("Logical type: " + plugin.clazz + " does not appear to be a Logical Type.");
 
-		registerLogicalType(logical, locale);
+		registerLogicalType(logical, analysisConfig);
 	}
 
 	/**
@@ -133,8 +129,8 @@ public class Plugins {
 	 * @param locale The current Locale
 	 * @throws FTAPluginException
 	 */
-	private void registerLogicalTypeRegExp(final PluginDefinition plugin, final Locale locale) throws FTAPluginException {
-		registerLogicalType(new LogicalTypeRegExp(plugin), locale);
+	private void registerLogicalTypeRegExp(final PluginDefinition plugin, final AnalysisConfig analysisConfig) throws FTAPluginException {
+		registerLogicalType(new LogicalTypeRegExp(plugin), analysisConfig);
 	}
 
 	/**
@@ -144,8 +140,8 @@ public class Plugins {
 	 * @param locale The current Locale
 	 * @throws FTAPluginException
 	 */
-	private void registerLogicalTypeFiniteSet(final PluginDefinition plugin, final Locale locale) throws FTAPluginException {
-		registerLogicalType(new LogicalTypeFiniteSimpleExternal(plugin), locale);
+	private void registerLogicalTypeFiniteSet(final PluginDefinition plugin, final AnalysisConfig analysisConfig) throws FTAPluginException {
+		registerLogicalType(new LogicalTypeFiniteSimpleExternal(plugin), analysisConfig);
 	}
 
 	/**

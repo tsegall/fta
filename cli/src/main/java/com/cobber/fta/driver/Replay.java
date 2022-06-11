@@ -72,7 +72,7 @@ public class Replay {
 	 */
 	static void replay(final String replayFile, final DriverOptions options) {
 		final ObjectMapper mapper = new ObjectMapper();
-		try (final InputStream in = new FileInputStream(replayFile); JsonParser parser = new JsonFactory().createParser(in)) {
+		try (InputStream in = new FileInputStream(replayFile); JsonParser parser = new JsonFactory().createParser(in)) {
 			final AnalysisConfigWrapper configWrapper = mapper.readValue(parser, AnalysisConfigWrapper.class);
 			final AnalysisConfig analysisConfig = configWrapper.analysisConfig;
 			final AnalyzerContextWrapper contextWrapper = mapper.readValue(parser, AnalyzerContextWrapper.class);

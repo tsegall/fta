@@ -16,19 +16,15 @@
  - Add Distribution attribute: uniform, normal, random
  - Distinguish between HOME/WORK attributes (e.g. EMAIL, PHONE, ADDRESS)
 
-# Broaden Identities supported
+# Broaden Identity supported
  - Chinese SSN
  - Belgian SSN
  - German SSN
  - ...
 
-# Improve International Postal Code support
- - Add Japanese Postal Code support
- - ...
-
 # Generalize Bloom Filter support for large static reference lists
 
-# Improve Date Detection
+# Improve Date Detection (DONE)
 
 # Improve Internationalization
  - Headers RegExp should be per locale (DONE)
@@ -37,6 +33,8 @@
  - Need to support a concept of a non-localized Double (e.g. for example latitude which commonly does not use locale specific decimal separator) (DONE)
  - Address detection in Western Europe
  - Should support localized true/false?
+ - Broaden languages supported for FREE_TEXT
+ - Add Japanese Postal Code support (DONE)
 
 # Merge sharded analyses (DONE)
 Option to merge profile results (e.g. given two profiles from sharded sources - produce a single profile result).

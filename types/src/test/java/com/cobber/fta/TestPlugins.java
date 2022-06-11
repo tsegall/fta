@@ -597,7 +597,7 @@ public class TestPlugins {
 		plugins.add(plugin);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "C U S I P", null);
+			analysis.getPlugins().registerPluginList(plugins, "C U S I P", analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -638,7 +638,7 @@ public class TestPlugins {
 		plugins.add(pluginDefinition);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "Ignore", null);
+			analysis.getPlugins().registerPluginList(plugins, "Ignore", analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -1052,7 +1052,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void random3166_2() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("country");
-		analyzer.registerDefaultPlugins(null);
+		analyzer.registerDefaultPlugins(analyzer.getConfig());
 		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-2");
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
@@ -1064,7 +1064,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void random3166_2_noHeader() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("random3166_2_noHeader");
-		analyzer.registerDefaultPlugins(Locale.getDefault());
+		analyzer.registerDefaultPlugins(analyzer.getConfig());
 		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-2");
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
@@ -1076,7 +1076,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void random3166_3() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("country");
-		analyzer.registerDefaultPlugins(null);
+		analyzer.registerDefaultPlugins(analyzer.getConfig());
 		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("COUNTRY.ISO-3166-3");
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
@@ -1088,7 +1088,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void random4217() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("currency");
-		analyzer.registerDefaultPlugins(null);
+		analyzer.registerDefaultPlugins(analyzer.getConfig());
 		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("CURRENCY_CODE.ISO-4217");
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
@@ -1100,7 +1100,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomIATA() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("IATA");
-		analyzer.registerDefaultPlugins(null);
+		analyzer.registerDefaultPlugins(analyzer.getConfig());
 		final LogicalTypeCode logical = (LogicalTypeCode)analyzer.getPlugins().getRegistered("AIRPORT_CODE.IATA");
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
@@ -1113,7 +1113,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegister() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("testRegister");
-		analyzer.registerDefaultPlugins(null);
+		analyzer.registerDefaultPlugins(analyzer.getConfig());
 
 		LogicalType logical = analyzer.getPlugins().getRegistered(URLLT.SEMANTIC_TYPE);
 
@@ -2307,6 +2307,7 @@ public class TestPlugins {
 
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrGerman");
 		analysis.setLocale(german);
+		analysis.configure(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION, false);
 
 		final int badCount = 4;
 		final int iterations = 10;
@@ -2460,9 +2461,45 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicMonthAbbr_enCA() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbr");
+		analysis.setLocale(Locale.CANADA);
+		final int badCount = 4;
+		final String inputs[] = TestUtils.months.split("\\|");
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getTypeQualifier(), "MONTH.ABBR_en-CA");
+		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3}");
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 1);
+		final Map<String, Long> outliers = result.getOutlierDetails();
+		assertEquals(outliers.size(), 1);
+		assertEquals(outliers.get("UNK"), Long.valueOf(4));
+		assertEquals(result.getMatchCount(), inputs.length - badCount);
+		assertEquals(result.getNullCount(), 0);
+		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
+		assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
+
+		// Even the UNK match the RE
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicMonthAbbrFrench() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrFrench");
 		analysis.setLocale(Locale.FRENCH);
+		analysis.configure(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION, false);
 		final int badCount = 4;
 		final String inputs[] = TestUtils.monthsFrench.split("\\|");
 
@@ -2617,7 +2654,7 @@ public class TestPlugins {
 				true, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), portuguese);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -2656,7 +2693,7 @@ public class TestPlugins {
 		plugins.add(pluginDefinition);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "Planets", null);
+			analysis.getPlugins().registerPluginList(plugins, "Planets", analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -2695,7 +2732,7 @@ public class TestPlugins {
 		plugins.add(pluginDefinition);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "Planets", null);
+			analysis.getPlugins().registerPluginList(plugins, "Planets", analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -2728,7 +2765,7 @@ public class TestPlugins {
 		plugins.add(plugin);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "Percentages", null);
+			analysis.getPlugins().registerPluginList(plugins, "Percentages", analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -2764,7 +2801,7 @@ public class TestPlugins {
 		plugins.add(plugin);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "BirthDate", null);
+			analysis.getPlugins().registerPluginList(plugins, "BirthDate", analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -2930,7 +2967,7 @@ public class TestPlugins {
 				false, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
+			analysis.getPlugins().registerPluginList(plugins, "CUSIP", analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -2971,7 +3008,7 @@ public class TestPlugins {
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*CUSIP.*", 100, "[\\p{IsAlphabetic}\\d]{9}") }, false, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
+			analysis.getPlugins().registerPluginList(plugins, "CUSIP", analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -3046,7 +3083,7 @@ public class TestPlugins {
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 100, "[\\p{IsAlphabetic}\\d]{9}") }, false, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "CUSIP", null);
+			analysis.getPlugins().registerPluginList(plugins, "CUSIP", analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -3097,7 +3134,7 @@ public class TestPlugins {
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 90, FUND_REGEXP) }, false, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "FUND_ID", null);
+			analysis.getPlugins().registerPluginList(plugins, "FUND_ID", analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -3142,7 +3179,7 @@ public class TestPlugins {
 
 		try {
 			analysis.getPlugins().registerPlugins(new StringReader(pluginDefinitions),
-					analysis.getStreamName(), Locale.getDefault());
+					analysis.getStreamName(), analysis.getConfig());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			fail();

@@ -15,6 +15,7 @@
  */
 package com.cobber.fta;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import com.cobber.fta.TextAnalyzer.Feature;
@@ -62,7 +63,7 @@ public class AnalysisConfig {
 	/** The maximum input length. */
 	private int maxInputLength = MAX_INPUT_LENGTH_DEFAULT;
 
-	/** The current Locale tag - null if not set. */
+	/** The current Locale tag. */
 	private String localeTag;
 
 	/** The current tracing options. */
@@ -86,7 +87,34 @@ public class AnalysisConfig {
 	/** Should we attempt to qualify the size of the returned RexExp. */
 	private boolean lengthQualifier = true;
 
-	AnalysisConfig() {
+	/** Should we use simple Month Abbreviations with no punctuation for example some locales have periods, e.g. Canada uses 'AUG.',
+	 * similarly for the AM/PM string which are defined in Canada as A.M and P.M. */
+	private boolean noAbbreviationPunctuation = true;
+
+	public AnalysisConfig() {
+		this(Locale.getDefault());
+	}
+
+	public AnalysisConfig(final Locale locale) {
+		localeTag = locale == null ? Locale.getDefault().toLanguageTag() : locale.toLanguageTag();
+	}
+
+	public AnalysisConfig(final AnalysisConfig other) {
+		this.maxCardinality = other.maxCardinality;
+		this.maxOutliers = other.maxOutliers;
+		this.maxShapes = other.maxShapes;
+		this.threshold = other.threshold;
+		this.detectWindow = other.detectWindow;
+		this.maxInputLength = other.maxInputLength;
+		this.localeTag = other.localeTag;
+		this.traceOptions = other.traceOptions;
+		this.collectStatistics = other.collectStatistics;
+		this.debug = other.debug;
+		this.enableDefaultLogicalTypes = other.enableDefaultLogicalTypes;
+		this.numericWidening = other.numericWidening;
+		this.formatDetection = other.formatDetection;
+		this.lengthQualifier = other.lengthQualifier;
+		this.noAbbreviationPunctuation = other.noAbbreviationPunctuation;
 	}
 
 	/**
@@ -94,7 +122,7 @@ public class AnalysisConfig {
 	 * @param feature The feature to be set.
 	 * @param state The new state of the feature.
 	 */
-	public void configure(Feature feature, final boolean state) {
+	public void configure(final Feature feature, final boolean state) {
 		switch (feature) {
 		case COLLECT_STATISTICS:
 			collectStatistics = state;
@@ -111,6 +139,9 @@ public class AnalysisConfig {
 		case LENGTH_QUALIFIER:
 			lengthQualifier = state;
 			break;
+		case NO_ABBREVIATION_PUNCTUATION:
+			noAbbreviationPunctuation = state;
+			break;
 		}
 	}
 
@@ -119,7 +150,7 @@ public class AnalysisConfig {
 	 * @param feature The feature to be tested.
 	 * @return Whether the identified feature is enabled.
 	 */
-	public boolean isEnabled(Feature feature) {
+	public boolean isEnabled(final Feature feature) {
 		switch (feature) {
 		case COLLECT_STATISTICS:
 			return collectStatistics;
@@ -131,6 +162,8 @@ public class AnalysisConfig {
 			return formatDetection;
 		case LENGTH_QUALIFIER:
 			return lengthQualifier;
+		case NO_ABBREVIATION_PUNCTUATION:
+			return noAbbreviationPunctuation;
 		}
 		return false;
 	}
@@ -139,7 +172,7 @@ public class AnalysisConfig {
 		return detectWindow;
 	}
 
-	public int setDetectWindow(int detectWindow) {
+	public int setDetectWindow(final int detectWindow) {
 		final int ret = this.detectWindow;
 		this.detectWindow = detectWindow;
 		return ret;
@@ -149,7 +182,7 @@ public class AnalysisConfig {
 		return maxCardinality;
 	}
 
-	public int setMaxCardinality(int maxCardinality) {
+	public int setMaxCardinality(final int maxCardinality) {
 		final int ret = this.maxCardinality;
 		this.maxCardinality = maxCardinality;
 		return ret;
@@ -159,7 +192,7 @@ public class AnalysisConfig {
 		return maxInputLength;
 	}
 
-	public int setMaxInputLength(int maxInputLength) {
+	public int setMaxInputLength(final int maxInputLength) {
 		final int ret = this.maxInputLength;
 		this.maxInputLength = maxInputLength;
 		return ret;
@@ -179,7 +212,7 @@ public class AnalysisConfig {
 		return threshold;
 	}
 
-	public int setThreshold(int threshold) {
+	public int setThreshold(final int threshold) {
 		final int ret = this.threshold;
 		this.threshold = threshold;
 		return ret;
@@ -189,15 +222,28 @@ public class AnalysisConfig {
 		return localeTag;
 	}
 
-	public void setLocaleTag(String localeTag) {
+	public void setLocaleTag(final String localeTag) {
 		this.localeTag = localeTag;
+	}
+
+	public Locale getLocale() {
+		return localeTag == null ? null : Locale.forLanguageTag(localeTag);
+	}
+
+	public void setLocale(final Locale locale) {
+		localeTag = locale == null ? null : locale.toLanguageTag();
+	}
+
+	public AnalysisConfig withLocale(final Locale locale) {
+		setLocale(locale);
+		return this;
 	}
 
 	public int getMaxShapes() {
 		return maxShapes;
 	}
 
-	public int setMaxShapes(int maxShapes) {
+	public int setMaxShapes(final int maxShapes) {
 		final int ret = this.maxShapes;
 		this.maxShapes = maxShapes;
 		return ret;
@@ -207,7 +253,7 @@ public class AnalysisConfig {
 		return traceOptions;
 	}
 
-	public void setTraceOptions(String traceOptions) {
+	public void setTraceOptions(final String traceOptions) {
 		this.traceOptions = traceOptions;
 	}
 
@@ -215,12 +261,12 @@ public class AnalysisConfig {
 		return debug;
 	}
 
-	public void setDebug(int debug) {
+	public void setDebug(final int debug) {
 		this.debug = debug;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)

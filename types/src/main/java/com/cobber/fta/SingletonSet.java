@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -93,8 +94,12 @@ public class SingletonSet {
 					} catch (FileNotFoundException e) {
 						throw new IllegalArgumentException("Internal error: Issues with 'file' content: " + content, e);
 					}
-				else if ("resource".equals(contentType))
-					reader = new InputStreamReader(LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content), StandardCharsets.UTF_8);
+				else if ("resource".equals(contentType)) {
+					InputStream stream = LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content);
+					if (stream == null)
+						throw new IllegalArgumentException("Internal error: Issues with 'resource' content: " + content);
+					reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+				}
 				else
 					throw new IllegalArgumentException("Internal error: contentType must be 'inline', 'file' or 'resource'");
 

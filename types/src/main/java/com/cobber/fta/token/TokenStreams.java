@@ -172,17 +172,18 @@ public class TokenStreams {
 	}
 
 	/**
-	 * Check if the TokenStreams (i.e. if all member TokenStream's) match the supplied Regular Expression.
+	 * Check if the TokenStreams (i.e. if all member TokenStream's) match the supplied Regular Expression
+	 * at the supplied confidence level.
 	 * @param regExp The Regular Expression to match.
 	 * @param confidence The confidence we require to determine if this is a match.
-	 * @return True if the TokenStreams match the supplied Regular Expression.
+	 * @return The number of matches if the TokenStreams matches the supplied Regular Expression at the supplied confidence level or 0 otherwise.
 	 */
-	public boolean matches(final String regExp, final int confidence) {
+	public long matches(final String regExp, final int confidence) {
 		if (anyShape)
-			return false;
+			return 0;
 
 		if (tokenStreams.isEmpty())
-			return false;
+			return 0;
 
 		// First calculate the total number of entries
 		long total = 0;
@@ -195,11 +196,11 @@ public class TokenStreams {
 				misses += tokenStream.getOccurrences();
 				// We can bail as soon as the misses exceeds the threshold since it cannot get better
 				if ((double)misses/total > (double)(100 - confidence)/100)
-					return false;
+					return 0;
 			}
 		}
 
-		return true;
+		return total - misses;
 	}
 
 	/**

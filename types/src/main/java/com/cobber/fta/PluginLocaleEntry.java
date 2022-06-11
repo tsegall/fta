@@ -15,7 +15,7 @@
  */
 package com.cobber.fta;
 
-import com.cobber.fta.core.LocaleEntry;
+import com.cobber.fta.core.HeaderEntry;
 
 /**
  * The Locale entry on the plugin has a localeTag (e.g. en, en-US, or *) and an associated set of Header Entries.
@@ -24,7 +24,7 @@ import com.cobber.fta.core.LocaleEntry;
 public class PluginLocaleEntry {
 	/* A comma separated list of locales - either la (language 'la') or la-CT (language 'la' in country 'CT') or '*'. */
 	public String localeTag;
-	public LocaleEntry[] headerRegExps;
+	public HeaderEntry[] headerRegExps;
 	public PluginMatchEntry[] matchEntries;
 
 	public PluginLocaleEntry() {
@@ -57,7 +57,8 @@ public class PluginLocaleEntry {
 		return matchEntries[matchEntry].getRegExpReturned();
 	}
 
-	public int getMatchEntry(final String regExp, final int matchEntry) {
+	public int getMatchEntryIndex(final String regExp, final int matchEntry) {
+		// If we have not decided which Match Entry we are after - then search for a match
 		if (matchEntry == -1) {
 			for (int i = 0; i < matchEntries.length; i++) {
 				for (final String re : matchEntries[i].getRegExpsToMatch()) {
@@ -87,7 +88,7 @@ public class PluginLocaleEntry {
 	public PluginLocaleEntry(final String localeTag, final String headerRegExp, final int confidence, final String regExpReturned) {
 		this.localeTag = localeTag;
 		if (headerRegExp != null)
-			this.headerRegExps = new LocaleEntry[] { new LocaleEntry(headerRegExp, confidence) };
+			this.headerRegExps = new HeaderEntry[] { new HeaderEntry(headerRegExp, confidence) };
 		matchEntries = new PluginMatchEntry[] { new PluginMatchEntry(regExpReturned) };
 	}
 
@@ -120,7 +121,7 @@ public class PluginLocaleEntry {
 
 		if (headerRegExps != null) {
 			ret.append(':');
-			for (final LocaleEntry entry : headerRegExps)
+			for (final HeaderEntry entry : headerRegExps)
 				ret.append(entry);
 		}
 

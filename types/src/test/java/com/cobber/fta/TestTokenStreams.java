@@ -16,7 +16,6 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -303,7 +302,7 @@ public class TestTokenStreams {
 
 		assertEquals(tokenStreams.getRegExp(false), "\\(\\d+\\.\\d+, \\d+\\.\\d+\\)");
 		assertEquals(tokenStreams.getRegExp(true), "\\(\\d+\\.\\d+, \\d+\\.\\d+\\)");
-		assertTrue(tokenStreams.matches("\\(?([+-]?([0-9]|[0-8][0-9])\\.\\d+|[+-]90\\.0+), ?([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+|[+-]180\\.0+)\\)?", 100));
+		assertEquals(tokenStreams.matches("\\(?([+-]?([0-9]|[0-8][0-9])\\.\\d+|[+-]90\\.0+), ?([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+|[+-]180\\.0+)\\)?", 100), 20);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })

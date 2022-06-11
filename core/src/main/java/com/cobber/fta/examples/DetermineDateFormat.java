@@ -43,7 +43,7 @@ public abstract class DetermineDateFormat {
 
 		// Grab the DateTimeFormatter from fta as this creates a case-insensitive parser and it supports a slightly wider set set of formats
 		// For example, "yyyy" does not work out of the box if you use DateTimeFormatter.ofPattern
-		final DateTimeFormatter formatter = DateTimeParser.ofPattern(formatString);
+		final DateTimeFormatter formatter = dtp.ofPattern(formatString);
 
 		final OffsetDateTime parsedDate = OffsetDateTime.parse(input, formatter);
 

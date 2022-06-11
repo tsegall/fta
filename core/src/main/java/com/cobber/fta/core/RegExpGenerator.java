@@ -302,10 +302,12 @@ public class RegExpGenerator {
 		toSimplifyFull.put("\\p{XDigit}", "[0-9A-Fa-f]");
 		toSimplifyFull.put("\\p{IsAlphabetic}", "<L>");
 		toSimplifyFull.put("\\d", "<Nd>");
+		toSimplifyFull.put("#", "\\#");
 
 		toSimplifyASCII.put("\\p{XDigit}", "[0-9A-Fa-f]");
 		toSimplifyASCII.put("\\p{IsAlphabetic}", "[A-Za-z]");
 		toSimplifyASCII.put("\\d", "[0-9]");
+		toSimplifyASCII.put("#", "\\#");
 	}
 
 	/**
@@ -319,7 +321,7 @@ public class RegExpGenerator {
 		String ret = regExp;
 
 		for (final Map.Entry<String, String> s : mapping.entrySet())
-			ret = Utils.replaceAll(ret, s.getKey(), s.getValue());
+			ret = ret.replace(s.getKey(), s.getValue());
 
 		return ret;
 	}

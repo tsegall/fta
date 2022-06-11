@@ -28,11 +28,20 @@ public class DateTimeParserConfig {
 	public DateResolutionMode resolutionMode;
 	/** The Locale the input is in. */
 	public Locale locale;
+	/** If Strict mode is set, any input to train() that would not pass the current 'best' guess will return null. */
 	public boolean strictMode;
+	/** If noAbbreviationPunctuation is set we should use Month Abbreviations without periods, for example for the
+	 * Canadian locale, Java returns 'AUG.', and similarly for the AM/PM string which are defined in as A.M and P.M. */
+	public boolean noAbbreviationPunctuation = true;
 	/** lenient allows dates of the form 00/00/00 etc to be viewed as valid for the purpose of Format detection. */
 	public boolean lenient = true;
 
-	DateTimeParserConfig() {
+	public DateTimeParserConfig(final Locale locale) {
+		this.locale = locale;
+	}
+
+	public DateTimeParserConfig() {
+		this.locale = Locale.getDefault();
 		resolutionMode = DateResolutionMode.None;
 	}
 

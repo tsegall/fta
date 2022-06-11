@@ -52,4 +52,13 @@ public class PluginMatchEntry {
 	public String getRegExpReturned() {
 		return regExpReturned;
 	}
+
+	public boolean matches(String regExp) {
+		for (final String re : getRegExpsToMatch()) {
+			if (regExp.equals(re))
+				return true;
+		}
+
+		return false;
+	}
 }

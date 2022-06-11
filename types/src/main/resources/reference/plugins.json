@@ -107,7 +107,7 @@
 		"validLocales": [
 			{
 				"localeTag":  "en-US,en-CA,fr-CA",
-				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d" ],
 					"regExpReturned": "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d",
@@ -127,7 +127,7 @@
 		"validLocales": [
 			{
 				"localeTag":  "en-AU",
-				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\d{4}"
 				} ]
@@ -958,6 +958,19 @@
 		"priority": 139
 	},
 	{
+		"qualifier": "STATE_PROVINCE.COUNTY_HU",
+		"description": "Hungarian County",
+		"pluginType": "list",
+		"signature": "Cif4jZjegKgHwceZACrW5E0Vsdg=",
+		"validLocales": [
+			{ "localeTag": "hu-HU", "headerRegExps": [ { "regExp": ".*(?i)(?u)(megye).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/hu_counties.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 140
+	},
+	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
 		"description": "Currency as defined by ISO 4217",
 		"pluginType": "list",
@@ -1059,12 +1072,13 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(iata|air).*", "confidence": 100 } ]
+				"headerRegExps": [ { "regExp": ".*(?i)(iata|air).*", "confidence": 99, "mandatory": true } ]
 			}
 		],
 		"content": "/reference/IATA.txt",
 		"contentType": "resource",
 		"backout": "\\p{IsAlphabetic}{3}",
+		"threshold": 97,
 		"priority": 167
 	},
 	{
@@ -1248,7 +1262,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(middle).*|(?i)(mi)", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(middle).*|(?i)(mi)", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\p{IsAlphabetic}", "\\p{IsAlphabetic}\\." ],
 					"regExpReturned": "\\p{IsAlphabetic}\\.?",
@@ -1268,7 +1282,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
 					"regExpReturned": "([+-]?([0-9]|[0-8][0-9])\\.\\d+)|[+-]?90\\.0+",
@@ -1277,7 +1291,7 @@
 			},
 			{
 				"localeTag": "ca,de,es,fr,it,ja,ro,ru",
-				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|breitengrad|latitudine|latitud|Широта|緯度|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|breitengrad|latitudine|latitud|Широта|緯度|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [
 				{
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
@@ -1286,7 +1300,7 @@
 				},
 				{
 					"regExpsToMatch": [ "\\d*,?\\d+", "[+-]?\\d*,?\\d+" ],
-					"regExpReturned": "(-?([0-9]|[0-8][0-9]),\\d+)|-?90\\.0+",
+					"regExpReturned": "(-?([0-9]|[0-8][0-9]),\\d+)|-?90,0+",
 					"isRegExpComplete": true
 				} ]
 			}
@@ -1305,7 +1319,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+(?:[eE]([+-]?\\d+))?" ],
 					"regExpReturned": "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+)|[+-]?180\\.0+|[+-]?\\d*\\.?\\d+([eE]([+-]?\\d{1,3}))?",
@@ -1314,7 +1328,7 @@
 			},
 			{
 				"localeTag": "ca,de,es,fr,it,ja,ro,ru",
-				"headerRegExps": [ { "regExp": ".*(?i)(?u)(longitude|längengrad|laengengrad|longitudine|longitud|Долгота|経度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(longitude|längengrad|laengengrad|longitudine|longitud|Долгота|経度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [
 				{
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
@@ -1323,7 +1337,7 @@
 				},
 				{
 					"regExpsToMatch": [ "\\d*,?\\d+", "[+-]?\\d*,?\\d+" ],
-					"regExpReturned": "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9]),\\d+)|[+-]?180\\.0+",
+					"regExpReturned": "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9]),\\d+)|[+-]?180,0+",
 					"isRegExpComplete": true
 				} ]
 			}
@@ -1366,7 +1380,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(easting).*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(easting).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d+" ],
 					"regExpReturned": "\\d+",
@@ -1387,7 +1401,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(northing).*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(northing).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d+" ],
 					"regExpReturned": "\\d+",
@@ -1402,13 +1416,13 @@
 	},
 	{
 		"qualifier": "COORDINATE_PAIR.DECIMAL",
-		"description": "Coordinate Pair (Lat,Long - Decimal degrees)",
+		"description": "Coordinate Pair Lat,Long - Decimal degrees",
 		"pluginType": "regex",
 		"signature": "6lVqkPqRAcyOlhHO3ckHttlzBww=",
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(?u)(loc|lat.*lon|lon.*lat|coord|position|geo|ubicación|koord|lokasi|posizione|Координаты|координати).*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(loc|lat.*lon|lon.*lat|coord|position|geo|ubicación|koord|lokasi|posizione|Координаты|координати).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+", "([+-]?\\d*\\.\\d+, [+-]?\\d*\\.\\d+)" ],
 					"regExpReturned": "([+-]?([0-9]|[0-8][0-9])\\.\\d+|[+-]90\\.0+), ?([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+|[+-]180\\.0+)",
@@ -1422,7 +1436,7 @@
 	},
 	{
 		"qualifier": "COORDINATE_PAIR.DECIMAL_PAREN",
-		"description": "Coordinate Pair (Lat,Long - Decimal degrees)",
+		"description": "Coordinate Pair (Lat,Long) - Decimal degrees)",
 		"pluginType": "regex",
 		"signature": "JjuOgDiwZkSPUB8AQMBLHAM1HFs=",
 		"validLocales": [
@@ -1430,7 +1444,7 @@
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(?u)(loc|lat.*lon|lon.*lat|coord|position|geo|ubicación|koord|lokasi|posizione|Координаты|координати).*", "confidence": 95 } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "[+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+", "[+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+", "([+-]?\\d*\\.\\d+, [+-]?\\d*\\.\\d+)" ],
+					"regExpsToMatch": [ "\\([+-]?\\d+\\.\\d+,[+-]?\\d+\\.\\d+\\)", "\\([+-]?\\d+\\.\\d+, [+-]?\\d+\\.\\d+\\)", "\\(([+-]?\\d*\\.\\d+, [+-]?\\d*\\.\\d+)\\)" ],
 					"regExpReturned": "\\(([+-]?([0-9]|[0-8][0-9])\\.\\d+|[+-]90\\.0+), ?([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+|[+-]180\\.0+)\\)",
 					"isRegExpComplete": true
 				} ]
@@ -1438,7 +1452,7 @@
 		],
 		"threshold": 99,
 		"baseType": "STRING",
-		"priority": 196
+		"priority": 197
 	},
 	{
 		"qualifier": "CITY",
@@ -1448,7 +1462,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": "^(?i)(city|town)$|^.*[ _](city|town)$|^(city|town)[ _].*$|(?-i).*[a-z](City|Town)$", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": "^(?i)(city|town)$|^.*[ _](city|town)$|^(city|town)[ _].*$|(?-i).*[a-z](City|Town)$", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 					"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
@@ -1469,7 +1483,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": "^(?i)(company|company.name)$", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": "^(?i)(company|company.name)$", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 					"regExpReturned": "[-/()',& \\.\\p{IsAlphabetic}\\d]*",
@@ -1581,7 +1595,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(DUNS|D-U-N-S).*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(DUNS|D-U-N-S).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d{9}" ],
 					"regExpReturned": "\\d{9}",
@@ -1633,11 +1647,18 @@
 			{
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(MAC).*", "confidence": 90 } ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}" ],
-					"regExpReturned": "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}",
-					"isRegExpComplete": true
-				} ]
+				"matchEntries": [
+					{
+						"regExpsToMatch": [ "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}" ],
+						"regExpReturned": "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}",
+						"isRegExpComplete": true
+					},
+					{
+						"regExpsToMatch": [ "\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}" ],
+						"regExpReturned": "\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}",
+						"isRegExpComplete": true
+					}
+				]
 			}
 		],
 		"threshold": 98,
@@ -1652,7 +1673,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(month)|(i?)(month).*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(month)|(i?)(month).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d{1,2}" ],
 					"regExpReturned": "[1-9]|0[1-9]|1[012]",
@@ -1674,7 +1695,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(day|cycle).*", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(day|cycle).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d{1,2}" ],
 					"regExpReturned": "[1-9]|0[1-9]|[12]\\d|3[01]",
@@ -1698,7 +1719,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(timestamp)", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(timestamp)", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d{10}" ],
 					"regExpReturned": "\\d{10}",
@@ -1720,7 +1741,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(timestamp)", "confidence": 100 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(timestamp)", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d{13}" ],
 					"regExpReturned": "\\d{13}",
@@ -1779,12 +1800,21 @@
 	},
 	{
 		"qualifier": "CHECKDIGIT.EAN13",
-		"description": "EAN-13 - EAN-13/UPC/ISBN-13 Check digit",
+		"description": "EAN-13 - EAN-13/ISBN-13 Check digit",
 		"pluginType": "java",
 		"signature": "AP6Bjl97rR4D1ogsqPqXGoD5Dq4=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitEAN13",
 		"validLocales": [ { "localeTag":  "*" } ],
 		"priority": 294
+	},
+	{
+		"qualifier": "CHECKDIGIT.UPC",
+		"description": "UPC - Universal Product Code",
+		"pluginType": "java",
+		"signature": "L88o6zYDCyR84UYMe+O/ua0Kfcg=",
+		"clazz": "com.cobber.fta.plugins.CheckDigitUPC",
+		"validLocales": [ { "localeTag":  "*" } ],
+		"priority": 295
 	},
 	{
 		"qualifier": "CHECKDIGIT.IBAN",
@@ -1793,7 +1823,7 @@
 		"signature": "ahEtumk3vTi+ErbmmqrmBN7OeVU=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitIBAN",
 		"validLocales": [ { "localeTag":  "*" } ],
-		"priority": 295
+		"priority": 296
 	},
 	{
 		"qualifier": "CHECKDIGIT.ABA",
@@ -1802,7 +1832,7 @@
 		"signature": "z/uWdWQDM6Ln80wNSIshhGV5et4=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitABA",
 		"validLocales": [ { "localeTag":  "*" } ],
-		"priority": 296
+		"priority": 297
 	},
 	{
 		"qualifier": "CHECKDIGIT.ISBN",
@@ -1811,7 +1841,7 @@
 		"signature": "4ZyGddBdufT5msMx8IyO5ZJP30s=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitISBN",
 		"validLocales": [ { "localeTag":  "*" } ],
-		"priority": 297
+		"priority": 298
 	},
 	{
 		"qualifier": "JOB_TITLE_EN",
@@ -1839,14 +1869,75 @@
 		"priority": 301
 	},
 	{
+		"qualifier": "HASH.SHA1_HEX",
+		"description": "SHA1 Hash - hexadecimal",
+		"pluginType": "regex",
+		"signature": "N4sH+cysuswY590FSnqXWIn0e3k=",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(SHA1|hash).*", "confidence": 99 } ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ "\\p{XDigit}{40}" ],
+					"regExpReturned": "\\p{XDigit}{40}",
+					"isRegExpComplete": true
+				} ]
+			}
+		],
+		"threshold": 99,
+		"baseType": "STRING",
+		"priority": 302
+	},
+	{
+		"qualifier": "HASH.SHA256_HEX",
+		"description": "SHA256 Hash - hexadecimal",
+		"pluginType": "regex",
+		"signature": "D+loPv6WvUlbi28kW3z7tVJ40N4=",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(SHA256|hash).*", "confidence": 99 } ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ "\\p{XDigit}{64}" ],
+					"regExpReturned": "\\p{XDigit}{64}",
+					"isRegExpComplete": true
+				} ]
+			}
+		],
+		"threshold": 99,
+		"baseType": "STRING",
+		"priority": 303
+	},
+	{
+		"qualifier": "COLOR.HEX",
+		"description": "Hex Color code",
+		"pluginType": "regex",
+		"signature": "HX3ks449m2szm58Mj0TNb+W8e0A=",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(SHA1|hash).*", "confidence": 90 } ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ "#\\p{XDigit}{6}" ],
+					"regExpReturned": "#\\p{XDigit}{6}",
+					"isRegExpComplete": true
+				} ]
+			}
+		],
+		"threshold": 99,
+		"baseType": "STRING",
+		"priority": 304
+	},
+	{
 		"qualifier": "FREE_TEXT",
 		"description": "Free Text field - e.g. Description, Notes, Comments, ...",
 		"pluginType": "java",
 		"signature": "7WbjWLZJ8Zdm+U8po/igrvDH3yE=",
 		"clazz": "com.cobber.fta.plugins.FreeText",
 		"validLocales": [
-			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(bezeichnung|anmerkungen|bemerkungen).*|.*(?i)(desc)", "confidence": 100 } ] },
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comments|reason).*|.*(?i)(desc)", "confidence": 100 } ] }
+			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(bezeichnung|anmerkungen|bemerkungen).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": ".*(?i)(description|remarques|commentaire|raison).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comment|reason).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 70,
 		"baseType": "STRING",

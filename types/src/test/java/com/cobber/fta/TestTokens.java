@@ -16,7 +16,6 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
@@ -35,7 +34,7 @@ import com.cobber.fta.token.TokenStreams;
 public class TestTokens {
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void tooLong() throws IOException, FTAException {
-		final String input = "0123456789012345678901234567890012345678901234567890";
+		final String input = "012345678901234567890123456789001234567890123456789012345678901234";
 
 		final TokenStream ts = new TokenStream(input, 1);
 		assertEquals(ts.getKey(), "ANY");
@@ -227,7 +226,7 @@ public class TestTokens {
 		for (final Map.Entry<String, TokenStream> entry : ts.getStreams().entrySet())
 			assertTrue(entry.getValue().matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}"));
 
-		assertTrue(ts.matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}", 100));
+		assertEquals(ts.matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}", 100), 5);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
@@ -239,7 +238,7 @@ public class TestTokens {
 		ts.track("00:19:8c:0F:04:00", 1);
 		ts.track("00:04:08:1E:01:GG", 1);
 
-		assertFalse(ts.matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}", 100));
+		assertEquals(ts.matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}", 100), 0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })

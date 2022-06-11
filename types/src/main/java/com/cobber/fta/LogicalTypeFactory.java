@@ -17,7 +17,6 @@ package com.cobber.fta;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Locale;
 
 import com.cobber.fta.core.FTAPluginException;
 
@@ -29,11 +28,11 @@ public abstract class LogicalTypeFactory {
 	 * Return a Logical Type based on a Plugin Definition in a particular locale.
 	 *
 	 * @param plugin The Definition for this plugin
-	 * @param locale The locale used for this LogicalType
+	 * @param analysisConfig The Analysis configuration used for this analysis
 	 * @return The LogicalType The Logical Type associated with the definition (if it exists), null if non-existent.
 	 * @throws FTAPluginException Thrown when the plugin is incorrectly configured.
 	 */
-	public static LogicalType newInstance(final PluginDefinition plugin, final Locale locale) throws FTAPluginException {
+	public static LogicalType newInstance(final PluginDefinition plugin, final AnalysisConfig analysisConfig) throws FTAPluginException {
 		LogicalType logical = null;
 
 		if ("java".equals(plugin.pluginType)) {
@@ -58,7 +57,7 @@ public abstract class LogicalTypeFactory {
 		if (!(logical instanceof LogicalType))
 			throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' unknown type.");
 
-		logical.initialize(locale);
+		logical.initialize(analysisConfig);
 
 		return logical;
 	}

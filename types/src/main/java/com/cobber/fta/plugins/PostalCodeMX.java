@@ -18,7 +18,6 @@ package com.cobber.fta.plugins;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
@@ -76,8 +75,8 @@ public class PostalCodeMX extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		try (InputStream filterStream = PostalCodeMX.class.getResourceAsStream("/reference/mx_postal_code.bf")) {
 			zipsRef = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));

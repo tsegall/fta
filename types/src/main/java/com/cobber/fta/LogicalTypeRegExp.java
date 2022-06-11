@@ -18,7 +18,6 @@ package com.cobber.fta;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -47,7 +46,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	private boolean xegerCompatible = true;
 	private NumberFormat longFormatter;
 	private NumberFormat doubleFormatter;
-	private int matchEntry = -1;
+	private PluginMatchEntry matchEntry = null;
 	private SingletonSet samples;
 	private boolean randomInitialized;
 
@@ -77,8 +76,8 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		random = new SecureRandom(new byte[] { 3, 1, 4, 1, 5, 9, 2 });
 
@@ -95,12 +94,16 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	@Override
 	public boolean isRegExpComplete() {
-		return pluginLocaleEntry.isRegExpComplete(matchEntry);
+		if (matchEntry != null)
+			return matchEntry.isRegExpComplete();
+		return pluginLocaleEntry.matchEntries[0].isRegExpComplete();
 	}
 
 	@Override
 	public String getRegExp() {
-		return pluginLocaleEntry.getRegExpReturned(matchEntry);
+		if (matchEntry != null)
+			return matchEntry.getRegExpReturned();
+		return pluginLocaleEntry.matchEntries[0].getRegExpReturned();
 	}
 
 	@Override
@@ -144,7 +147,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		if (pattern != null)
 			return pattern;
 
-		final String toCompile = pluginLocaleEntry.getRegExpReturned(matchEntry);
+		final String toCompile = getRegExp();
 		if (toCompile == null)
 			throw new InternalErrorException("Failed to locate pattern, matchEntry = " + matchEntry);
 
@@ -243,13 +246,28 @@ public class LogicalTypeRegExp extends LogicalType {
 		return new PluginAnalysis(backout);
 	}
 
+	/**
+	 * Test if the Regular Expression is in the current MatchEntry if we have already decided
+	 * which one we match or in all the entries if no decision made yet.  Note: if we had not already
+	 * decided which entry - then it will be set as a side-effect if the Regular Expression is found.
+	 * @param regExp The Regular expression we are search for
+	 * @return True if the Regular Expression matches the current Match Entry
+	 */
 	public boolean isMatch(final String regExp) {
-		if (matchEntry == -1) {
-			matchEntry = pluginLocaleEntry.getMatchEntry(regExp, matchEntry);
-			return matchEntry != -1;
-		}
+		if (matchEntry != null)
+			return matchEntry.matches(regExp);
 
-		return pluginLocaleEntry.getMatchEntry(regExp, matchEntry) != -1;
+		for (final PluginMatchEntry entry : pluginLocaleEntry.matchEntries)
+			if (entry.matches(regExp)) {
+				matchEntry = entry;
+				return true;
+			}
+
+		return false;
+	}
+
+	public PluginMatchEntry[] getMatchEntries() {
+		return pluginLocaleEntry.matchEntries;
 	}
 
 	public int getMinSamples() {
@@ -278,7 +296,7 @@ public class LogicalTypeRegExp extends LogicalType {
 			if (defn.content != null && samples == null)
 				samples = new SingletonSet(defn.contentType, defn.content);
 			else {
-				final String regExp = pluginLocaleEntry.getRegExpReturned(matchEntry);
+				final String regExp = getRegExp();
 				// Xeger cannot cope with things like 'zero-width negative lookahead' - '(?!X' - so give up in this case
 				if (regExp.matches(".*[^\\\\]\\(\\?.*")) {
 					xegerCompatible = false;
@@ -322,5 +340,13 @@ public class LogicalTypeRegExp extends LogicalType {
 	public void seed(final byte[] seed) {
 
 		random = new SecureRandom(seed);
+	}
+
+	public PluginMatchEntry getMatchEntry() {
+		return matchEntry;
+	}
+
+	public void setMatchEntry(PluginMatchEntry matchEntry) {
+		this.matchEntry = matchEntry;
 	}
 }

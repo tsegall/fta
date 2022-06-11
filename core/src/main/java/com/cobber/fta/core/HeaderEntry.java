@@ -18,19 +18,21 @@ package com.cobber.fta.core;
 import java.util.regex.Pattern;
 
 /**
- * The Locale Header entry has a Regular Expression and a Confidence that reflects the confidence that if the regular expression
- * matches the input we are likely to have a match.  A confidence of 100 indicates that
- * if the input does match the regular expression then we know we have a match.
+ * The Header entry has a Regular Expression and a Confidence that reflects the confidence that if the regular expression
+ * matches the input header we are likely to have a match.
  */
-public class LocaleEntry {
+public class HeaderEntry {
 	/** The Regular Expression used to match against the input. */
 	public String regExp;
 	/** The confidence that the match is a good predictor. */
 	public int confidence;
+	/** If true then the header must match be present. */
+	public boolean mandatory;
+
 	/** The pattern is used to cache the compiled regular expression since it will be executed many times. */
 	private Pattern pattern;
 
-	public LocaleEntry() {
+	public HeaderEntry() {
 	}
 
 	/**
@@ -38,7 +40,7 @@ public class LocaleEntry {
 	 * @param regExp The Regular Expression used to match against the input.
 	 * @param confidence The confidence in our assessment that this is the Semantic Type if the regular expression matches.
 	 */
-	public LocaleEntry(final String regExp, final int confidence) {
+	public HeaderEntry(final String regExp, final int confidence) {
 		this.regExp = regExp;
 		this.confidence = confidence;
 		pattern = Pattern.compile(regExp);
@@ -46,7 +48,7 @@ public class LocaleEntry {
 
 	@Override
 	public String toString() {
-		return (new StringBuilder()).append('[').append(regExp).append(':').append(confidence).append(']').toString();
+		return (new StringBuilder()).append('[').append(regExp).append(':').append(confidence).append(':').append(mandatory).append(']').toString();
 	}
 
 	public boolean matches(final String streamName) {

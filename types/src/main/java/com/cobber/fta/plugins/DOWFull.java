@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +25,6 @@ import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
-import com.cobber.fta.dates.LocaleInfo;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -45,10 +43,10 @@ public class DOWFull extends LogicalTypeFinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
-		days = LocaleInfo.getWeekdays(locale);
+		days = localeInfo.getWeekdays();
 
 		return true;
 	}
@@ -63,7 +61,7 @@ public class DOWFull extends LogicalTypeFinite {
 
 	@Override
 	public Set<String> getMembers() {
-		return LocaleInfo.getWeekdays(locale);
+		return localeInfo.getWeekdays();
 	}
 
 	@Override
@@ -73,18 +71,17 @@ public class DOWFull extends LogicalTypeFinite {
 
 	@Override
 	public String getRegExp() {
-		return LocaleInfo.getWeekdaysRegExp(locale);
+		return localeInfo.getWeekdaysRegExp();
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (outliers.size() > 1)
-			return new PluginAnalysis(LocaleInfo.getWeekdaysRegExp(locale));
+			return new PluginAnalysis(localeInfo.getWeekdaysRegExp());
 
 		if ((double)matchCount / realSamples >= getThreshold()/100.0)
 			return PluginAnalysis.OK;
 
-		return new PluginAnalysis(LocaleInfo.getWeekdaysRegExp(locale));
+		return new PluginAnalysis(localeInfo.getWeekdaysRegExp());
 	}
 }
-

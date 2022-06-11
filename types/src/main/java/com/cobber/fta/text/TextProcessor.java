@@ -138,16 +138,16 @@ public class TextProcessor {
 	}
 
 	private class WordState {
-		int charsInWord = 0;
-		int digitsInWord = 0;
-		int lastWordLength = 0;
+		int charsInWord;
+		int digitsInWord;
+		int lastWordLength;
 	}
 
 	static {
 		// English configuration
 		allConfigData.put("EN", new TextConfig(
 				20,				// antidisestablishmentarianism is 28 (there are longer), so we choose something that is reasonable
-				3.0, 9.0,		// Average word length in English is ~5, so choose a reasonable lower and upper bound
+				3.0, 9.0,		// Average word length is ~5, so choose a reasonable lower and upper bound
 				30,				// The percentage of 'alpha' characters that we expect to be present
 				80,				// The percentage of 'reasonable' characters that we expect to be present
 				120,			// Only analyze the first <n> characters
@@ -185,10 +185,10 @@ public class TextProcessor {
 		// German configuration
 		allConfigData.put("DE", new TextConfig(
 				26,				// Choose something that is reasonable
-				3.0, 10.0,		// Average word length in German is ~6.5, so choose a reasonable lower and upper bound
+				3.0, 10.0,		// Average word length is ~6.5, so choose a reasonable lower and upper bound
 				30,				// The percentage of 'alpha' characters that we expect to be present
 				80,				// The percentage of 'reasonable' characters that we expect to be present
-				140,			// Only analyze the first <n> characters
+				160,			// Only analyze the first <n> characters
 				".!?",			// Sentence Break characters
 				", /();:.!?",	// Word Break characters
 				",\"'-();:.!?",	// Punctuation character
@@ -217,6 +217,42 @@ public class TextProcessor {
 						"va", "ve", "vi", "vo",
 						"wa", "wä", "we", "wi", "wo", "wu", "wü", "ww",
 						"za", "ze", "zi", "zo", "zu", "zw" }
+				));
+		// French configuration
+		allConfigData.put("FR", new TextConfig(
+				26,				// Choose something that is reasonable
+				3.0, 9.0,		// Average word length is ~5, so choose a reasonable lower and upper bound
+				30,				// The percentage of 'alpha' characters that we expect to be present
+				80,				// The percentage of 'reasonable' characters that we expect to be present
+				140,			// Only analyze the first <n> characters
+				".!?",			// Sentence Break characters
+				", /();:.!?",	// Word Break characters
+				",\"'-();:.!?",	// Punctuation character
+				new String[] {
+						"ab", "ac", "ad", "aé", "af", "ag", "ai", "aj", "al", "am", "an", "ap", "ar", "as", "at", "au", "av", "az",
+						"ba", "bâ", "be", "bé", "bi", "bl", "bo", "br", "bu",
+						"ca", "câ", "ce", "cé", "ch", "ci", "cl", "co", "cr", "cu", "cy",
+						"da", "de", "dé", "di", "do", "dr", "du",
+						"éb", "éc", "éd", "ef", "ég", "él", "em", "ém", "en", "én", "ép", "éq", "er", "ér", "es", "ét", "eu", "év", "ex",
+						"fa", "fe", "fé", "fi", "fl", "fo", "fr", "fu",
+						"ga", "ge", "gé", "gi", "gl", "go", "gr", "gu",
+						"ha", "he", "hé", "hi", "ho", "hô", "hu", "hy",
+						"id", "ig", "il", "im", "in", "ir", "is",
+						"ja", "je", "jo", "ju",
+						"ka",
+						"la", "le", "lé", "li", "lo", "lu", "ly",
+						"ma", "me", "mé", "mi", "mo", "mu", "my",
+						"na", "ne", "né", "ni", "no", "nu",
+						"ob", "oc", "of", "om", "on", "op", "or", "os", "ou",
+						"pa", "pâ", "pe", "pé", "ph", "pi", "pl", "po", "pr", "ps", "pu",
+						"qu",
+						"ra", "re", "ré", "rê", "ri", "ro", "ru",
+						"sa", "sc", "se", "sé", "sh", "si", "so", "sp", "st", "su", "sy",
+						"ta", "tc", "te", "té", "th", "ti", "to", "tr", "tu", "ty",
+						"ul", "un", "ur", "us", "ut",
+						"va", "ve", "vé", "vi", "vo", "vr", "vu",
+						"wa",
+						"ya" }
 				));
 	}
 

@@ -24,7 +24,8 @@ import java.util.Map;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.core.LocaleEntry;
+import com.cobber.fta.core.HeaderEntry;
+import com.cobber.fta.dates.LocaleInfo;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -34,7 +35,9 @@ import com.cobber.fta.token.TokenStreams;
  */
 public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	protected PluginDefinition defn;
+	protected AnalysisConfig analysisConfig;
 	protected Locale locale;
+	protected LocaleInfo localeInfo;
 	protected int priority;
 	protected int threshold;
 	protected PluginLocaleEntry pluginLocaleEntry;
@@ -57,15 +60,17 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 	/**
 	 * Called to perform any initialization.
-	 * @param locale The locale used for this analysis
+	 * @param analysisConfig The Analysis configuration used for this analysis
 	 * @return True if initialization was successful.
 	 * @throws FTAPluginException Thrown when the plugin is incorrectly configured.
 	 */
-	public boolean initialize(final Locale locale) throws FTAPluginException {
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		if (getBaseType() == null)
 			throw new FTAPluginException("baseType cannot be null");
 
-		this.locale = locale;
+		this.analysisConfig = analysisConfig;
+		this.locale = analysisConfig.getLocale();
+		this.localeInfo = LocaleInfo.getInstance(locale, analysisConfig.isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION));
 
 		pluginLocaleEntry = defn.getLocaleEntry(locale);
 
@@ -82,7 +87,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 */
 	public int getHeaderConfidence(final String dataStreamName) {
 		if (pluginLocaleEntry.headerRegExps != null)
-			for (final LocaleEntry headerEntry : pluginLocaleEntry.headerRegExps) {
+			for (final HeaderEntry headerEntry : pluginLocaleEntry.headerRegExps) {
 				if (headerEntry.matches(dataStreamName))
 					return headerEntry.confidence;
 			}

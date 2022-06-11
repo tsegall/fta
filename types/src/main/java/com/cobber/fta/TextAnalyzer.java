@@ -39,9 +39,7 @@ import java.time.format.DateTimeParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -66,6 +64,7 @@ import com.cobber.fta.core.TraceException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+import com.cobber.fta.dates.DateTimeParserConfig;
 import com.cobber.fta.dates.DateTimeParserResult;
 import com.cobber.fta.dates.LocaleInfo;
 import com.cobber.fta.token.Token;
@@ -162,8 +161,14 @@ public class TextAnalyzer {
 		DEFAULT_LOGICAL_TYPES,
 		/** Feature that indicates whether to attempt to detect the stream format (HTML, XML, JSON, BASE64, OTHER). Feature is disabled by default. */
 		FORMAT_DETECTION,
-		/** Indicate whether we should qualify the size of the RegExp. */
-		LENGTH_QUALIFIER
+		/** Indicate whether we should qualify the size of the RegExp. Feature is enabled by default. */
+		LENGTH_QUALIFIER,
+		/**
+		 * Indicate whether we should Month Abbreviations (without punctuation), for instance the locale for Canada
+		 * uses 'AUG.' for the month abbreviation, and similarly for the AM/PM string which are defined as A.M and P.M.
+		 * Feature is enabled by default.
+		 */
+		NO_ABBREVIATION_PUNCTUATION
 	}
 
 	/**
@@ -951,11 +956,11 @@ public class TextAnalyzer {
 		final String dateFormat = patternInfo.format;
 
 		// Retrieve the (likely cached) DateTimeParserResult for the supplied dateFormat
-		final DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, context.getDateResolutionMode(), locale);
+		final DateTimeParserResult result = DateTimeParserResult.asResult(dateFormat, context.getDateResolutionMode(), dateTimeParser.getConfig());
 		if (result == null)
 			throw new InternalErrorException("NULL result for " + dateFormat);
 
-		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getFormatString(), locale);
+		final DateTimeFormatter formatter = dateTimeParser.ofPattern(result.getFormatString());
 
 		final String trimmed = input.trim();
 
@@ -1040,14 +1045,13 @@ public class TextAnalyzer {
 
 	/**
 	 * Register the default set of plugins for Logical Type detection.
-	 * <p>Note: If the locale is null it will default to the Default locale.
 	 *
-	 * @param locale The Locale used for analysis, the will impact both the set of plugins registered as well as the behavior of the individual plugins
-	 *
+	 * @param analysisConfig The Analysis configuration used for this analysis.
+	 * Note: The Locale (on the configuration)  will impact both the set of plugins registered as well as the behavior of the individual plugins
 	 */
-	public void registerDefaultPlugins(final Locale locale) {
+	public void registerDefaultPlugins(final AnalysisConfig analysisConfig) {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
-			plugins.registerPluginsInternal(reader, context.getStreamName(), locale);
+			plugins.registerPluginsInternal(reader, context.getStreamName(), analysisConfig);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
 		}
@@ -1055,13 +1059,6 @@ public class TextAnalyzer {
 
 	private void initialize() throws FTAPluginException, FTAUnsupportedLocaleException {
 		mapper.registerModule(new JavaTimeModule());
-
-		final Calendar cal = Calendar.getInstance(locale);
-		if (!(cal instanceof GregorianCalendar))
-			throw new FTAUnsupportedLocaleException("No support for locales that do not use the Gregorian Calendar");
-
-		if (!NumberFormat.getNumberInstance(locale).format(0).matches("\\d"))
-			throw new FTAUnsupportedLocaleException("No support for locales that do not use Arabic numerals");
 
 		if (LocaleInfo.isSupported(locale) != null)
 			throw new FTAUnsupportedLocaleException(LocaleInfo.isSupported(locale));
@@ -1071,7 +1068,7 @@ public class TextAnalyzer {
 
 		// If enabled, load the default set of plugins for Logical Type detection
 		if (analysisConfig.isEnabled(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES))
-			registerDefaultPlugins(locale);
+			registerDefaultPlugins(analysisConfig);
 
 		for (final LogicalType logical : plugins.getRegisteredLogicalTypes()) {
 
@@ -1149,7 +1146,10 @@ public class TextAnalyzer {
 			context.setDateResolutionMode(dayIndex < monthIndex ? DateResolutionMode.DayFirst : DateResolutionMode.MonthFirst);
 		}
 
-		dateTimeParser = new DateTimeParser().withDateResolutionMode(context.getDateResolutionMode()).withLocale(locale);
+		dateTimeParser = new DateTimeParser()
+				.withDateResolutionMode(context.getDateResolutionMode())
+				.withLocale(locale)
+				.withNoAbbreviationPunctuation(analysisConfig.isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION));
 
 		// If no trace options already set then pick them up from the environment (if set)
 		if (analysisConfig.getTraceOptions() == null) {
@@ -1162,8 +1162,7 @@ public class TextAnalyzer {
 			traceConfig = new Trace(analysisConfig.getTraceOptions(), context,  analysisConfig);
 
 		// Now that we have initialized these facts cannot change, so set them on the Facts object
-		this.facts.setCollectStatistics(analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS));
-		this.facts.setLocale(this.locale);
+		this.facts.setConfig(analysisConfig);
 
 		initialized = true;
 	}
@@ -1815,11 +1814,10 @@ public class TextAnalyzer {
 				// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
 				// if there happens to be an issue then we swallow it and will not detect the date/datetime.
 				try {
-					final DateTimeParser det = new DateTimeParser().withDateResolutionMode(context.getDateResolutionMode()).withLocale(locale);
 					for (final String sample : raw)
-						det.train(sample);
+						dateTimeParser.train(sample);
 
-					final DateTimeParserResult result = det.getResult();
+					final DateTimeParserResult result = dateTimeParser.getResult();
 					final String formatString = result.getFormatString();
 					facts.matchPatternInfo = new PatternInfo(null, result.getRegExp(), result.getType(), formatString, false, false, -1, -1, null, formatString);
 				}
@@ -2201,7 +2199,7 @@ public class TextAnalyzer {
 			catch (DateTimeParseException reale) {
 				// The real parse threw an Exception, this does not give us enough facts to usefully determine if there are any
 				// improvements to our assumptions we could make to do better, so re-parse and handle our more nuanced exception
-				DateTimeParserResult result = DateTimeParserResult.asResult(facts.matchPatternInfo.format, context.getDateResolutionMode(), locale);
+				DateTimeParserResult result = DateTimeParserResult.asResult(facts.matchPatternInfo.format, context.getDateResolutionMode(), new DateTimeParserConfig(locale));
 				boolean success = false;
 				do {
 					try {
@@ -2254,7 +2252,7 @@ public class TextAnalyzer {
 						if (!updated)
 							break;
 
-						result = DateTimeParserResult.asResult(newFormatString, context.getDateResolutionMode(), locale);
+						result = DateTimeParserResult.asResult(newFormatString, context.getDateResolutionMode(), new DateTimeParserConfig(locale));
 						facts.matchPatternInfo = new PatternInfo(null, result.getRegExp(), facts.matchPatternInfo.getBaseType(), newFormatString, false, false, -1, -1, null, newFormatString);
 					}
 				} while (!success);
@@ -2671,21 +2669,31 @@ public class TextAnalyzer {
 				}
 			}
 
-			if (!backedOutRegExp)
+			if (!backedOutRegExp) {
+				solved:
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					// Check to see if either
 					// the Regular Expression we have matches the logical types, or
 					// the Regular Expression for the logical types matches all the data we have observed
-					if (logical.acceptsBaseType(FTAType.STRING) &&
-							(logical.isMatch(facts.matchPatternInfo.regexp) || tokenStreams.matches(logical.getRegExp(), logical.getThreshold())) &&
-							logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-						facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-						debug("Type determination - updated to Regular Expression logical type {}", facts.matchPatternInfo);
-						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
-						updated = true;
-						break;
+					if (logical.acceptsBaseType(FTAType.STRING)) {
+						for (final PluginMatchEntry entry : logical.getMatchEntries()) {
+							long newMatchCount = facts.matchCount;
+							for (final String re : entry.getRegExpsToMatch()) {
+								if ((facts.matchPatternInfo.regexp.equals(re) || (newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0) &&
+										logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+									logical.setMatchEntry(entry);
+									facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+									facts.matchCount = newMatchCount;
+									debug("Type determination - updated to Regular Expression logical type {}", facts.matchPatternInfo);
+									facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+									updated = true;
+									break solved;
+								}
+							}
+						}
 					}
 				}
+			}
 
 			final long interestingSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
 
@@ -2892,7 +2900,7 @@ public class TextAnalyzer {
 				DateTimeParser.plausibleDateCore(false, (int)facts.maxLong%100, ((int)facts.maxLong/100)%100, (int)facts.maxLong/10000, 4)  &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("date"))) {
 			facts.matchPatternInfo = new PatternInfo(null, (facts.minLongNonZero == facts.minLong || tokenStreams.size() == 1) ? "\\d{8}" : "0|\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, false, 8, 8, null, "yyyyMMdd");
-			final DateTimeFormatter dtf = DateTimeParser.ofPattern(facts.matchPatternInfo.format, locale);
+			final DateTimeFormatter dtf = dateTimeParser.ofPattern(facts.matchPatternInfo.format);
 			facts.minLocalDate = LocalDate.parse(String.valueOf(facts.minLongNonZero), dtf);
 			facts.maxLocalDate = LocalDate.parse(String.valueOf(facts.maxLong), dtf);
 
@@ -3032,7 +3040,7 @@ public class TextAnalyzer {
 
 			if (wrapper.analysisConfig.getLocaleTag() != null)
 				ret.setLocale(Locale.forLanguageTag(wrapper.analysisConfig.getLocaleTag()));
-			ret.facts.setCollectStatistics(wrapper.analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS));
+			ret.facts.setConfig(wrapper.analysisConfig);
 
 			ret.facts.hydrate();
 			ret.initialize();

@@ -21,7 +21,7 @@ package com.cobber.fta.token;
  */
 public abstract class Token {
 	/* Any input whose input is longer than this is deemed to be too long to be interesting. */
-	public final static int MAX_LENGTH = 50;
+	public final static int MAX_LENGTH = 65;
 
 	protected Type type;
 	protected char ch;

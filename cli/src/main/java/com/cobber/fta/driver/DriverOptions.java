@@ -28,6 +28,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 class DriverOptions {
+	protected boolean abbreviationPunctuation;
 	protected String charset = "UTF-8";
 	protected boolean bulk;
 	protected int col = -1;
@@ -36,6 +37,7 @@ class DriverOptions {
 	protected boolean noAnalysis;
 	protected boolean noLogicalTypes;
 	protected boolean noStatistics;
+	protected boolean output;
 	protected boolean formatDetection;
 	protected long recordsToProcess = -1;
 	protected int detectWindow = -1;
@@ -79,6 +81,8 @@ class DriverOptions {
 			analyzer.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		if (this.formatDetection)
 			analyzer.configure(TextAnalyzer.Feature.FORMAT_DETECTION, true);
+		if (this.abbreviationPunctuation)
+			analyzer.configure(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION, false);
 		if (this.trace != null)
 			analyzer.setTrace(trace);
 
@@ -86,13 +90,13 @@ class DriverOptions {
 			try {
 				if (this.logicalTypes.charAt(0) == '[')
 					analyzer.getPlugins().registerPlugins(new StringReader(this.logicalTypes),
-							analyzer.getStreamName(), this.locale);
+							analyzer.getStreamName(), analyzer.getConfig());
 				else {
 					if(!Files.isRegularFile(Paths.get(this.logicalTypes))) {
 						System.err.println("ERROR: Failed to read Logical Types file: " + this.logicalTypes);
 						System.exit(1);
 					}
-					analyzer.getPlugins().registerPlugins(new FileReader(this.logicalTypes), analyzer.getStreamName(), this.locale);
+					analyzer.getPlugins().registerPlugins(new FileReader(this.logicalTypes), analyzer.getStreamName(), analyzer.getConfig());
 				}
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
 					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | FTAPluginException e) {

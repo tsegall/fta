@@ -163,23 +163,23 @@ public class Facts {
 
 	public String streamFormat;
 
+	private AnalysisConfig analysisConfig;
 	private Locale locale;
-	private boolean collectStatistics;
-
-	public void setLocale(final Locale locale) {
-		this.locale = locale;
-
-		DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
-		DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
-		localeDecimalSeparator = symbols.getDecimalSeparator();
-	}
+	private DateTimeParser dateTimeParser;
 
 	public Locale getLocale() {
 		return locale;
 	}
 
-	public void setCollectStatistics(final boolean collectStatistics) {
-		this.collectStatistics = collectStatistics;
+	public void setConfig(final AnalysisConfig analysisConfig) {
+		this.analysisConfig = analysisConfig;
+
+		this.locale = analysisConfig.getLocaleTag() == null ? Locale.getDefault() : Locale.forLanguageTag(analysisConfig.getLocaleTag());
+		final DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
+		final DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
+		localeDecimalSeparator = symbols.getDecimalSeparator();
+
+		dateTimeParser = new DateTimeParser().withLocale(locale);
 	}
 
 	@JsonIgnore
@@ -296,7 +296,7 @@ public class Facts {
 			doubleFormatter.setMinimumFractionDigits(1);
 			doubleFormatter.setMaximumFractionDigits(16);
 			if (doubleFormatter instanceof DecimalFormat && KnownPatterns.hasExponent(matchPatternInfo.id)) {
-				DecimalFormat decimalFormatter = (DecimalFormat)doubleFormatter;
+				final DecimalFormat decimalFormatter = (DecimalFormat)doubleFormatter;
 				decimalFormatter.applyPattern("#.##################E0");
 				minValue = decimalFormatter.format(minDouble);
 				maxValue = decimalFormatter.format(maxDouble);
@@ -331,8 +331,8 @@ public class Facts {
 			break;
 
 		case LOCALDATE:
-			if (collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
+				final DateTimeFormatter dtf = dateTimeParser.ofPattern(matchPatternInfo.format);
 
 				minValue = minLocalDate == null ? null : minLocalDate.format(dtf);
 				maxValue = maxLocalDate == null ? null : maxLocalDate.format(dtf);
@@ -342,8 +342,8 @@ public class Facts {
 			break;
 
 		case LOCALTIME:
-			if (collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
+				final DateTimeFormatter dtf = dateTimeParser.ofPattern(matchPatternInfo.format);
 
 				minValue = minLocalTime == null ? null : minLocalTime.format(dtf);
 				maxValue = maxLocalTime == null ? null : maxLocalTime.format(dtf);
@@ -353,8 +353,8 @@ public class Facts {
 			break;
 
 		case LOCALDATETIME:
-			if (collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
+				final DateTimeFormatter dtf = dateTimeParser.ofPattern(matchPatternInfo.format);
 
 				minValue = minLocalDateTime == null ? null : minLocalDateTime.format(dtf);
 				maxValue = maxLocalDateTime == null ? null : maxLocalDateTime.format(dtf);
@@ -364,8 +364,8 @@ public class Facts {
 			break;
 
 		case ZONEDDATETIME:
-			if (collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
+				final DateTimeFormatter dtf = dateTimeParser.ofPattern(matchPatternInfo.format);
 
 				minValue = minZonedDateTime == null ? null : minZonedDateTime.format(dtf);
 				maxValue = maxZonedDateTime == null ? null : maxZonedDateTime.format(dtf);
@@ -375,8 +375,8 @@ public class Facts {
 			break;
 
 		case OFFSETDATETIME:
-			if (collectStatistics) {
-				final DateTimeFormatter dtf = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
+				final DateTimeFormatter dtf = dateTimeParser.ofPattern(matchPatternInfo.format);
 
 				minValue = minOffsetDateTime == null ? null : minOffsetDateTime.format(dtf);
 				maxValue = maxOffsetDateTime == null ? null : maxOffsetDateTime.format(dtf);
@@ -412,19 +412,19 @@ public class Facts {
 		case STRING:
 			return input;
 		case LOCALDATE:
-			final DateTimeFormatter dtfLD = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			final DateTimeFormatter dtfLD = dateTimeParser.ofPattern(matchPatternInfo.format);
 			return LocalDate.parse(input, dtfLD);
 		case LOCALTIME:
-			final DateTimeFormatter dtfLT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			final DateTimeFormatter dtfLT = dateTimeParser.ofPattern(matchPatternInfo.format);
 			return LocalTime.parse(input, dtfLT);
 		case LOCALDATETIME:
-			final DateTimeFormatter dtfLDT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			final DateTimeFormatter dtfLDT = dateTimeParser.ofPattern(matchPatternInfo.format);
 			return LocalDateTime.parse(input, dtfLDT);
 		case ZONEDDATETIME:
-			final DateTimeFormatter dtfZDT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			final DateTimeFormatter dtfZDT = dateTimeParser.ofPattern(matchPatternInfo.format);
 			return ZonedDateTime.parse(input, dtfZDT);
 		case OFFSETDATETIME:
-			final DateTimeFormatter dtfODT = DateTimeParser.ofPattern(matchPatternInfo.format, locale);
+			final DateTimeFormatter dtfODT = dateTimeParser.ofPattern(matchPatternInfo.format);
 			return OffsetDateTime.parse(input, dtfODT);
 		}
 
@@ -432,7 +432,7 @@ public class Facts {
 	}
 
 	public void hydrate() {
-		if (!collectStatistics || matchPatternInfo == null)
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) || matchPatternInfo == null)
 			return;
 
 		switch (matchPatternInfo.getBaseType()) {
@@ -560,16 +560,16 @@ public class Facts {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Facts other = (Facts) obj;
+		final Facts other = (Facts) obj;
 
-		Object min = getMin();
-		Object otherMin = other.getMin();
+		final Object min = getMin();
+		final Object otherMin = other.getMin();
 		if (min == null ^ otherMin == null)
 			return false;
 		if (min != null && !min.equals(otherMin))
 			return false;
-		Object max = getMax();
-		Object otherMax = other.getMax();
+		final Object max = getMax();
+		final Object otherMax = other.getMax();
 		if (max == null ^ otherMax == null)
 			return false;
 		if (max != null && !max.equals(otherMax))

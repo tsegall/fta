@@ -62,18 +62,22 @@ public class DateTimeParserResult {
 	public List<FormatterToken> tokenized;
 
 	private final DateResolutionMode resolutionMode;
+	private final DateTimeParserConfig config;
 	private final Locale locale;
+	private final LocaleInfo localeInfo;
 	private final int hourLength;
 
 	private static Map<String, DateTimeParserResult> dtpCache = new ConcurrentHashMap<>();
 
-	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, final Locale locale, final int timeElements,
+	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, final DateTimeParserConfig config, final int timeElements,
 			final MinMax[] timeFieldLengths, final int[] timeFieldOffsets, final int[] timeFieldPad, final int hourLength, final int dateElements, final int[] dateFieldLengths,
 			final int[] dateFieldOffsets, final int[] dateFieldPad, final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset,
 			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final List<FormatterToken> tokenized) {
 		this.formatString = formatString;
 		this.resolutionMode = resolutionMode;
-		this.locale = locale;
+		this.config = config;
+		this.locale = config.locale;
+		this.localeInfo = LocaleInfo.getInstance(config.locale, config.noAbbreviationPunctuation);
 		this.timeElements = timeElements;
 		this.timeFieldLengths = timeFieldLengths;
 		this.timeFieldOffsets = timeFieldOffsets;
@@ -103,7 +107,7 @@ public class DateTimeParserResult {
 			}
 		}
 
-		return new DateTimeParserResult(r.formatString, r.resolutionMode, r.locale,
+		return new DateTimeParserResult(r.formatString, r.resolutionMode, r.config,
 				r.timeElements,
 				timeFieldLengthsClone,
 				r.timeFieldOffsets != null ? Arrays.copyOf(r.timeFieldOffsets, r.timeFieldOffsets.length) : null,
@@ -174,7 +178,7 @@ public class DateTimeParserResult {
 	 * @return A boolean indicating if the input is valid.
 	 */
 	public boolean isValid8(final String input) {
-		final DateTimeFormatter dtf = DateTimeParser.ofPattern(getFormatString(), locale);
+		final DateTimeFormatter dtf = new DateTimeParser().withLocale(locale).ofPattern(getFormatString());
 
 		try {
 			if (FTAType.LOCALTIME.equals(getType()))
@@ -213,11 +217,11 @@ public class DateTimeParserResult {
 	 * Given an input string with a DateTimeFormatter pattern convert to a DateTimeParserResult
 	 * @param formatString A DateTimeString using DateTimeFormatter patterns
 	 * @param resolutionMode 	When we have ambiguity - should we prefer to conclude day first, month first or unspecified
-	 * @param locale Locale the input string is in
+	 * @param config DateTimeParserConfig (including the locale the input string is in)
 	 * @return The corresponding DateTimeParserResult
 	 */
-	public static DateTimeParserResult asResult(final String formatString, final DateResolutionMode resolutionMode, final Locale locale) {
-		final String key = resolutionMode.name() + '#' + locale + '#' + formatString;
+	public static DateTimeParserResult asResult(final String formatString, final DateResolutionMode resolutionMode, final DateTimeParserConfig config) {
+		final String key = resolutionMode.name() + '#' + config.locale + '#' + formatString + '#' + config.noAbbreviationPunctuation;
 		DateTimeParserResult ret = dtpCache.get(key);
 		if (ret != null)
 			return newInstance(ret);
@@ -453,7 +457,7 @@ public class DateTimeParserResult {
 			timeElements = -1;
 
 		// Add to cache
-		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, locale, timeElements, timeFieldLengths, timeFieldOffsets, timeFieldPad,
+		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, config, timeElements, timeFieldLengths, timeFieldOffsets, timeFieldPad,
 				hourLength, dateElements, dateFieldLengths, dateFieldOffsets, dateFieldPad, timeFirst, dateTimeSeparator,
 				yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator, FormatterToken.tokenize(formatString));
 		dtpCache.put(key, ret);
@@ -526,7 +530,7 @@ public class DateTimeParserResult {
 			switch (nextToken) {
 			case DAY_OF_WEEK:
 				start = upto;
-				final int dayOfWeekOffset = LocaleInfo.skipValidDayOfWeek(input.substring(upto), locale);
+				final int dayOfWeekOffset = localeInfo.skipValidDayOfWeek(input.substring(upto));
 				if (dayOfWeekOffset == -1)
 					throw new DateTimeParseException("Day of Week invalid", input, start);
 				upto += dayOfWeekOffset;
@@ -534,7 +538,7 @@ public class DateTimeParserResult {
 
 			case DAY_OF_WEEK_ABBR:
 				start = upto;
-				final int dayOfWeekAbbrOffset = LocaleInfo.skipValidDayOfWeekAbbr(input.substring(upto), locale);
+				final int dayOfWeekAbbrOffset = localeInfo.skipValidDayOfWeekAbbr(input.substring(upto));
 				if (dayOfWeekAbbrOffset == -1)
 					throw new DateTimeParseException("Day of Week Abbreviation invalid", input, start);
 				upto += dayOfWeekAbbrOffset;
@@ -542,7 +546,7 @@ public class DateTimeParserResult {
 
 			case MONTH:
 				start = upto;
-				final int monthOffset = LocaleInfo.skipValidMonth(input.substring(upto), locale);
+				final int monthOffset = localeInfo.skipValidMonth(input.substring(upto));
 				if (monthOffset == -1)
 					throw new DateTimeParseException("Month invalid", input, start);
 				upto += monthOffset;
@@ -550,7 +554,7 @@ public class DateTimeParserResult {
 
 			case MONTH_ABBR:
 				start = upto;
-				final String monthAbbr = LocaleInfo.findValidMonthAbbr(input.substring(upto), locale);
+				final String monthAbbr = localeInfo.findValidMonthAbbr(input.substring(upto));
 				if (monthAbbr == null)
 					throw new DateTimeParseException("Month Abbreviation invalid", input, start);
 				upto += monthAbbr.length();
@@ -686,7 +690,7 @@ public class DateTimeParserResult {
 
 			case AMPM:
 				start = upto;
-				final int ampmOffset = LocaleInfo.skipValidAMPM(input.substring(upto), locale);
+				final int ampmOffset = localeInfo.skipValidAMPM(input.substring(upto));
 				if (ampmOffset == -1)
 					throw new DateTimeParseException("Expecting am/pm indicator", input, start);
 				upto += ampmOffset;
@@ -873,7 +877,8 @@ public class DateTimeParserResult {
 					token.getType() == Token.MONTH || token.getType() == Token.MONTH_ABBR ||
 					token.getType() == Token.DAY_OF_WEEK || token.getType() == Token.DAY_OF_WEEK_ABBR ||
 					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE ||
-					token.getType() == Token.TIMEZONE_OFFSET || token.getType() == Token.TIMEZONE_OFFSET_ZERO) {
+					token.getType() == Token.TIMEZONE_OFFSET || token.getType() == Token.TIMEZONE_OFFSET_ZERO ||
+					token.getType() == Token.LOCALIZED_TIMEZONE_OFFSET) {
 				if (digitsMin != 0) {
 					addDigits(ret, digitsMin, digitsMax, padding);
 					digitsMin = digitsMax = padding = 0;
@@ -888,23 +893,23 @@ public class DateTimeParserResult {
 					break;
 
 				case MONTH:
-					ret.append(LocaleInfo.getMonthsRegExp(locale));
+					ret.append(localeInfo.getMonthsRegExp());
 					break;
 
 				case DAY_OF_WEEK:
-					ret.append(LocaleInfo.getWeekdaysRegExp(locale));
+					ret.append(localeInfo.getWeekdaysRegExp());
 					break;
 
 				case DAY_OF_WEEK_ABBR:
-					ret.append(LocaleInfo.getShortWeekdaysRegExp(locale));
+					ret.append(localeInfo.getShortWeekdaysRegExp());
 					break;
 
 				case MONTH_ABBR:
-					ret.append(LocaleInfo.getShortMonthsRegExp(locale));
+					ret.append(localeInfo.getShortMonthsRegExp());
 					break;
 
 				case AMPM:
-					ret.append(LocaleInfo.getAMPMRegExp(locale));
+					ret.append(localeInfo.getAMPMRegExp());
 					break;
 
 				case TIMEZONE:
@@ -963,6 +968,17 @@ public class DateTimeParserResult {
 					case 5:
 						ret.append(xxxxx);
 						break;
+					}
+					break;
+				case LOCALIZED_TIMEZONE_OFFSET:
+					ret.append("\\p{IsAlphabetic}+[+-]");
+					if (token.getCount() == 1) {
+						// 'O' - expecting H[:MM[:SS]]
+						ret.append("\\d{1,2}(:\\d{2}(:\\d{2})?)?");
+					}
+					else {
+						// 'OOOO' - expecting HH:MM[:SS]
+						ret.append("\\d{2}:\\d{2}(:\\d{2})?");
 					}
 					break;
 				}

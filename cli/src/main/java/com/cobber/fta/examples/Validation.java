@@ -16,8 +16,8 @@
 package com.cobber.fta.examples;
 
 import java.io.IOException;
-import java.util.Locale;
 
+import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.PluginDefinition;
@@ -35,7 +35,7 @@ public abstract class Validation {
 
 	public static void main(final String[] args) throws IOException, FTAException {
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("EMAIL");
-		final LogicalType knownLogicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+		final LogicalType knownLogicalType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
 		// Make sure we like India and do not like Gondwana
 		System.err.println("Is 'elease.campo@gmail.com' valid? " + knownLogicalType.isValid("elease.campo@gmail.com"));

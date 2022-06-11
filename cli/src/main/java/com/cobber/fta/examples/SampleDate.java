@@ -17,7 +17,6 @@ package com.cobber.fta.examples;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
@@ -51,7 +50,7 @@ public abstract class SampleDate {
 		// Now prove it works!!
 		// Grab the DateTimeFormatter from fta as this creates a case-insensitive parser and it supports a slightly wider set set of formats
 		// For example, "yyyy" does not work out of the box if you use ofPattern
-		final DateTimeFormatter formatter = DateTimeParser.ofPattern(result.getTypeQualifier(), Locale.getDefault());
+		final DateTimeFormatter formatter = new DateTimeParser().ofPattern(result.getTypeQualifier());
 
 		for (final String input : inputs)
 			LocalDateTime.parse(input, formatter);

@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins.identity;
 
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.validator.routines.checkdigit.CheckDigit;
@@ -68,8 +67,8 @@ public class NHS_UK extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		validator = new NHSCheckDigit();
 

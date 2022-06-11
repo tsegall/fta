@@ -28,7 +28,13 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormatSymbols;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
@@ -50,14 +56,16 @@ public class Driver {
 	private static DriverOptions options;
 
 	public static void main(final String[] args) throws IOException {
-		final PrintStream logger = System.err;
+		PrintStream logger = System.err;
 		boolean helpRequested = false;
 		String replayFile = null;
 
 		options = new DriverOptions();
 		int idx = 0;
 		while (idx < args.length && args[idx].charAt(0) == '-') {
-			if ("--bloomfilter".equals(args[idx])) {
+			if ("--abbreviationPunctuation".equals(args[idx]))
+				options.abbreviationPunctuation = true;
+			else if ("--bloomfilter".equals(args[idx])) {
 				createBloomOutput(args[idx + 1], args[idx + 2], args[idx + 3]);
 				System.exit(0);
 			}
@@ -78,6 +86,7 @@ public class Driver {
 			else if ("--help".equals(args[idx])) {
 				logger.println("Usage: fta [OPTIONS] file ...");
 				logger.println("Valid OPTIONS are:");
+				logger.println(" --abbreviationPunctuation - Disable NO_ABBREVIATION_PUNCTUATION mode");
 				logger.println(" --bloomfilter <input> <output> <type> - Create Bloom Filter, type: 'integer'|'string'");
 				logger.println(" --bulk - Enable bulk mode");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
@@ -85,6 +94,7 @@ public class Driver {
 				logger.println(" --debug <n> - Set the debug level to <n>");
 				logger.println(" --delimiter <ch> - Set the delimiter to the charactere <ch>");
 				logger.println(" --detectWindow <n> - Set the size of the detect window to <n>");
+				logger.println(" --formatDetection - Enabled Format Detection");
 				logger.println(" --help - Print this help");
 				logger.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				logger.println(" --logicalType <JSON representation of Logical Types> - Can be inline or as a File");
@@ -130,6 +140,8 @@ public class Driver {
 				options.pretty = false;
 			else if ("--noStatistics".equals(args[idx]))
 				options.noStatistics = true;
+			else if ("--output".equals(args[idx]))
+				options.output = true;
 			else if ("--pluginDefinition".equals(args[idx]))
 				options.pluginDefinition = true;
 			else if ("--pluginName".equals(args[idx]))
@@ -235,7 +247,7 @@ public class Driver {
 			System.exit(0);
 		}
 
-		if (helpRequested) {
+		if (helpRequested && options.verbose != 0) {
 			final TextAnalyzer analyzer = getDefaultAnalysis();
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 			final Set<String> qualifiers = new TreeSet<>();
@@ -248,26 +260,53 @@ public class Driver {
 				logger.println("\nRegistered Logical Types:");
 				for (final String qualifier : qualifiers) {
 					final LogicalType logical = analyzer.getPlugins().getRegistered(qualifier);
-					if (options.verbose == 0) {
-						if (logical instanceof LogicalTypeFinite) {
-							final LogicalTypeFinite finite = (LogicalTypeFinite)logical;
-							logger.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d",
-									logical.getQualifier(), logical.getPriority(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
-						}
-						else if (logical instanceof LogicalTypeInfinite)
-							logger.printf("\t%s (Infinite): Priority: %d", logical.getQualifier(), logical.getPriority());
-						else {
-							logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s'",
-									logical.getQualifier(), logical.getPriority(), logical.getRegExp());
-						}
-						logger.printf(", Locales: '%s'%n\t\t%s%n", logical.getPluginDefinition().getLocaleDescription(), logical.getDescription());
+					if (logical instanceof LogicalTypeFinite) {
+						final LogicalTypeFinite finite = (LogicalTypeFinite)logical;
+						logger.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d",
+								logical.getQualifier(), logical.getPriority(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
 					}
+					else if (logical instanceof LogicalTypeInfinite)
+						logger.printf("\t%s (Infinite): Priority: %d", logical.getQualifier(), logical.getPriority());
 					else {
-						// Used to generate the documentation
-						logger.printf("%s|%s%n", logical.getQualifier(), logical.getDescription());
+						logger.printf("\t%s (RegExp): Priority: %d, RegExp: '%s'",
+								logical.getQualifier(), logical.getPriority(), logical.getRegExp());
 					}
+					logger.printf(", Locales: '%s'%n\t\t%s%n", logical.getPluginDefinition().getLocaleDescription(), logical.getDescription());
 				}
 			}
+
+			Locale locale = options.locale == null ? Locale.getDefault() : options.locale;
+			final DateFormatSymbols dfs = DateFormatSymbols.getInstance(locale);
+			final GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(locale);
+
+			final int actualMonths = cal.getActualMaximum(Calendar.MONTH);
+
+			logger.printf("%nLocale: '%s'%n", locale.toLanguageTag());
+
+			logger.printf("\tMonths: ");
+			final String[] months = dfs.getMonths();
+			for (int i = 0; i <= actualMonths; i++) {
+				logger.printf("%s", months[i]);
+				if (i != actualMonths)
+					logger.printf(", ");
+			}
+
+			logger.printf("%n\tShort Months: ");
+			final String[] shortMonths = dfs.getShortMonths();
+			for (int i = 0; i <= actualMonths; i++) {
+				logger.printf("%s", shortMonths[i]);
+				if (i != actualMonths)
+					logger.printf(", ");
+			}
+
+			final String[] amPmStrings = dfs.getAmPmStrings();
+			logger.printf("%n\tAM/PM: %s, %s%n", amPmStrings[0], amPmStrings[1]);
+
+			DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(locale);
+			DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
+			logger.printf("\tDecimal Separator: '%c'%n", symbols.getDecimalSeparator());
+			logger.printf("\tGrouping Separator: '%c'%n", symbols.getGroupingSeparator());
+
 			System.exit(0);
 		}
 
@@ -280,9 +319,14 @@ public class Driver {
 		while (idx < args.length) {
 			final String filename = args[idx++];
 
+			if (options.output)
+				logger = new PrintStream(filename + ".out");
 			final FileProcessor fileProcessor = new FileProcessor(logger, filename, options);
+
 			try {
 				fileProcessor.process();
+				if (options.output)
+					logger.close();
 			} catch (FTAPluginException e) {
 				logger.printf("ERROR: Plugin Exception: %s%n", e.getMessage());
 				System.exit(1);
@@ -301,7 +345,7 @@ public class Driver {
 			analysis.setLocale(options.locale);
 
 		// Load the default set of plugins for Logical Type detection (normally done by a call to train())
-		analysis.registerDefaultPlugins(options.locale);
+		analysis.registerDefaultPlugins(analysis.getConfig());
 
 		return  analysis;
 	}

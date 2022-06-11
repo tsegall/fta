@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins;
 
-import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
@@ -49,8 +48,8 @@ public class GUID extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		return true;
 	}

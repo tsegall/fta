@@ -149,14 +149,16 @@ public class FreeText extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		processor = new TextProcessor(locale);
 
 		final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
-		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst,
-				pluginFirst.isLocaleSupported(locale) ? locale : Locale.ENGLISH);
+		// The FreeText Plugin is pseudo supported by any locale, however, if we are generating
+		// random entries we use the first name plugins (which may not be supported by the current locale)
+		AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
+		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, pluginConfig);
 
 		return true;
 	}
@@ -194,9 +196,25 @@ public class FreeText extends LogicalTypeInfinite {
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams,
 			final AnalysisConfig analysisConfig) {
-		// If we are below the threshold or the cardinality (and uniqueness are low) reject
-		if ((double)matchCount/realSamples < getThreshold()/100.0 ||
-				(cardinality.size() < 20 && cardinality.size()*3 < realSamples))
+
+		// If we are below the threshold reject
+		if ((double)matchCount/realSamples < getThreshold()/100.0)
+			return new PluginAnalysis(REGEXP);
+
+		double uniqueness = 1.0;
+		// Calculate the uniqueness if it is possible
+		if (realSamples != 0 && cardinality.size() != analysisConfig.getMaxCardinality()) {
+			// We want to discard the most common entry just in case it is an 'Not Applicable' or something similar
+			Map.Entry<String, Long> largest = null;
+			for (final Map.Entry<String, Long> entry : cardinality.entrySet())
+				if (largest == null || entry.getValue() > largest.getValue())
+					largest = entry;
+
+			uniqueness = (double)(cardinality.size() - 1)/(realSamples - largest.getValue());
+		}
+
+		// If the uniqueness is low reject
+		if (uniqueness < .1)
 			return new PluginAnalysis(REGEXP);
 
 		if (facts != null)

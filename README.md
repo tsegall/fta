@@ -228,7 +228,9 @@ CHECKDIGIT.ISBN|ISBN-13 identifiers (with hyphens)|*
 CHECKDIGIT.ISIN|International Securities Identification Number|*
 CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit (and length between 8 and 30 inclusive)|*
 CHECKDIGIT.SEDOL|UK/Ireland Security Identifier|*
+CHECKDIGIT.UPC|Universal Product Code|*
 CITY|City/Town|en
+COLOR.HEX|Hex Color code|*
 COMPANY_NAME|Company Name|en
 CONTINENT.CODE_EN|Continent Code|en
 CONTINENT.TEXT_EN|Continent Name|en
@@ -251,9 +253,10 @@ DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-U
 EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
-FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|de, en
+FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|de, en, fr
 GENDER.TEXT_&lt;Language&gt;|Gender|bg, ca, cn, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
+HASH.SHA1_HEX|SHA1 Hash - hexadecimal|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN
 IDENTITY.DUNS|Data Universal Numbering System (Dun & Bradstreet)|*
@@ -282,7 +285,7 @@ POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|en-AU, en-CA, nl-NL, en-UK, 
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US
-STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-UK, en-US
+STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-UK, en-US, hu-HU
 STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|pt-PT
 STATE_PROVINCE.MUNICIPALITY_BR|Brazilian Municipality|pt-BR
 STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US

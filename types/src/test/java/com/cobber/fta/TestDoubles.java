@@ -1502,7 +1502,7 @@ public class TestDoubles {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9]),\\d+)|[+-]?180\\.0+");
+		assertEquals(result.getRegExp(), "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9]),\\d+)|[+-]?180,0+");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "13,40948033");
 		assertEquals(result.getMaxValue(), "13,41310555");

@@ -2398,14 +2398,14 @@ public class RandomTests {
 //				System.err.printf("%s: %d%n", semanticType, index);
 				continue;
 			}
+			final TextAnalyzer analysis = new TextAnalyzer(heading);
 			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
-			final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, Locale.getDefault());
+			final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, analysis.getConfig());
 
 			final int length = 30 + random.nextInt(10000);
 			final String[] stream = new String[length];
 			for (int j = 0; j < length; j++)
 				stream[j] = logicalType.nextRandom();
-			final TextAnalyzer analysis = new TextAnalyzer(heading);
 			if (semanticType.endsWith("_CA"))
 				analysis.setLocale(Locale.CANADA);
 
@@ -2462,7 +2462,7 @@ public class RandomTests {
 			if (textAnalyzer == null) {
 				// initialize textAnalyzer
 				textAnalyzer = new TextAnalyzer("getPlugins");
-				textAnalyzer.registerDefaultPlugins(Locale.getDefault());
+				textAnalyzer.registerDefaultPlugins(textAnalyzer.getConfig());
 				this.textAnalyzer.set(textAnalyzer);
 			}
 			return textAnalyzer.getPlugins();
@@ -2541,7 +2541,7 @@ public class RandomTests {
 					final PluginDefinition defn = PluginDefinition.findByQualifier(semanticType);
 					if (!defn.isLocaleSupported(Locale.getDefault()))
 						System.err.println("Attempting to create an intance of LogicalType: " + defn.qualifier + " in an unsupported Locale");
-					logical = LogicalTypeFactory.newInstance(defn, Locale.getDefault());
+					logical = LogicalTypeFactory.newInstance(defn, new AnalysisConfig());
 				} catch (FTAException e) {
 					e.printStackTrace();
 				}

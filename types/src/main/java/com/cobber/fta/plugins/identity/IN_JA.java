@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins.identity;
 
-import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
@@ -62,8 +61,8 @@ public class IN_JA extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		return true;
 	}

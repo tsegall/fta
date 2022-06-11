@@ -64,21 +64,6 @@ public final class Utils {
 				.concat(input.substring(index + oldString.length()));
 	}
 
-	public static String replaceAll(final String input, final String oldString, final String newString) {
-		int index = input.indexOf(oldString);
-		String ret = input;
-		do {
-			if (index == -1)
-				return input;
-
-			ret = ret.substring(0, index)
-					.concat(newString)
-					.concat(ret.substring(index + oldString.length()));
-		} while ((index = ret.indexOf(oldString)) != -1);
-
-		return ret;
-	}
-
 	public static String replaceAt(final String input, final int offset, final int length, final String newString) {
 		return input.substring(0, offset)
 				.concat(newString)

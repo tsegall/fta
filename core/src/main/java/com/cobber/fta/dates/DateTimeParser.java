@@ -129,6 +129,8 @@ public class DateTimeParser {
 
 	private static final Map<String, DateTimeFormatter> formatterCache = new HashMap<>();
 
+	private LocaleInfo localeInfo;
+
 	/**
 	 * Construct a DateTimeParser with DateResolutionMode = None, and in the default Locale.
 	 */
@@ -191,6 +193,28 @@ public class DateTimeParser {
 	}
 
 	/**
+	 * Set NoAbbreviationPunctuation mode on the Parser - if set then use month abbreviations without periods.
+	 * This attempts to workaround the fact that Java will return things like Aug. for month abbreviation in Canada
+	 * (and other locales) whereas many dates are simply of the form '02-Aug-2013' (i.e. without the period).
+	 * Similarly for the AM/PM string which are defined in Canada as A.M and P.M.
+	 *
+	 * @param noAbbreviationPunctuation The new value for noAbbreviationPunctuation mode.
+	 * @return The DateTimeParser
+	 */
+	public DateTimeParser withNoAbbreviationPunctuation(final boolean noAbbreviationPunctuation) {
+		config.noAbbreviationPunctuation = noAbbreviationPunctuation;
+		return this;
+	}
+
+	/**
+	 * Retrieve the Configuration for this DateTimeParser.
+	 * @return The current Configuration.
+	 */
+	public DateTimeParserConfig getConfig() {
+		return config;
+	}
+
+	/**
 	 * Given an input string with a DateTimeFormatter pattern return a suitable DateTimeFormatter.
 	 * This is very similar to DateTimeFormatter.ofPattern(), however, there are a set of key differences:
 	 *  - This will cache the Formatters
@@ -201,25 +225,25 @@ public class DateTimeParser {
 	 *  - The formatter returned is always case-insensitive
 	 *
 	 * @param formatString A DateTimeString using DateTimeFormatter patterns
-	 * @param locale Locale the input string is in
 	 * @return The corresponding DateTimeFormatter (note - this will be a case-insensitive parser).
 	 */
-	public static DateTimeFormatter ofPattern(final String formatString, final Locale locale) {
-		DateTimeFormatter formatter = formatterCache.get(locale.toLanguageTag() + "---" + formatString);
+	public DateTimeFormatter ofPattern(final String formatString) {
+		final String cacheKey = config.locale.toLanguageTag() + "---" + formatString + "---" + config.noAbbreviationPunctuation;
+		DateTimeFormatter formatter = formatterCache.get(cacheKey);
 
 		if (formatter != null)
 			return formatter;
 
-		final int fractionOffset = formatString.indexOf("S{");
-		if (fractionOffset != -1) {
-			final MinMax minMax = new MinMax(formatString.substring(fractionOffset, formatString.indexOf('}', fractionOffset)));
+		int offset = formatString.indexOf("S{");
+		if (offset != -1) {
+			final MinMax minMax = new MinMax(formatString.substring(offset, formatString.indexOf('}', offset)));
 			final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
-					.appendPattern(formatString.substring(0, fractionOffset))
+					.appendPattern(formatString.substring(0, offset))
 					.appendFraction(ChronoField.MICRO_OF_SECOND, minMax.getMin(), minMax.getMax(), false);
-			final int upto = fractionOffset + minMax.getPatternLength();
+			final int upto = offset + minMax.getPatternLength();
 			if (upto < formatString.length())
 				builder.appendPattern(formatString.substring(upto));
-			formatter = builder.toFormatter(locale);
+			formatter = builder.toFormatter(config.locale);
 		}
 		else if ("yyyy".equals(formatString))
             // The default formatter with "yyyy" will not default the month/day, make it so!
@@ -228,30 +252,38 @@ public class DateTimeParser {
             .parseCaseInsensitive()
             .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
             .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
-            .toFormatter(locale);
+            .toFormatter(config.locale);
 		else if ("MM/yyyy".equals(formatString) || "MM-yyyy".equals(formatString) || "yyyy/MM".equals(formatString) || "yyyy-MM".equals(formatString))
 			formatter = new DateTimeFormatterBuilder()
 			.parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
 			.append(DateTimeFormatter.ofPattern(formatString))
-			.toFormatter(locale);
-		else
-			formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(formatString).toFormatter(locale);
+			.toFormatter(config.locale);
+		else if (config.noAbbreviationPunctuation && (offset = formatString.indexOf("MMM")) != -1 && offset != formatString.indexOf("MMMM")) {
+			if (localeInfo == null)
+				localeInfo = LocaleInfo.getInstance(config.locale, config.noAbbreviationPunctuation);
 
-		formatterCache.put(locale.toLanguageTag() + "---" + formatString, formatter);
+			// Setup the Monthly abbreviations, in Java some countries (e.g. Canada) have the short months defined with a
+			// period after them, for example 'AUG.' - we compensate by removing the punctuation
+			Map<Long, String> lookup = new HashMap<>();
+			long index = 1;
+			for (String month : localeInfo.getShortMonthsArray())
+				lookup.put(index++, month);
+
+			final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
+		            .parseCaseInsensitive()
+					.appendPattern(formatString.substring(0, offset))
+					.appendText(ChronoField.MONTH_OF_YEAR, lookup);
+			final int upto = offset + "MMM".length();
+			if (upto < formatString.length())
+				builder.appendPattern(formatString.substring(upto));
+			formatter = builder.toFormatter(config.locale);
+		}
+		else
+			formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(formatString).toFormatter(config.locale);
+
+		formatterCache.put(cacheKey, formatter);
 
 		return formatter;
-	}
-
-	/**
-	 * Given an input string with a DateTimeFormatter pattern return a suitable DateTimeFormatter.
-	 *
-	 * @see #ofPattern(java.lang.String, Locale) for more detail
-	 *
-	 * @param formatString A DateTimeString using DateTimeFormatter patterns
-	 * @return The corresponding DateTimeFormatter (note - this will be a case-insensitive parser).
-	 */
-	public static DateTimeFormatter ofPattern(final String formatString) {
-		return ofPattern(formatString, Locale.getDefault());
 	}
 
 	/**
@@ -262,6 +294,9 @@ public class DateTimeParser {
 	 * @return A String representing the DateTime detected for this input (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public String train(final String input) {
+		if (localeInfo == null)
+			localeInfo = LocaleInfo.getInstance(config.locale, config.noAbbreviationPunctuation);
+
 		if (config.strictMode && state.invalidCount != 0)
 			return null;
 
@@ -322,7 +357,7 @@ public class DateTimeParser {
 
 		// If there is only one result then it must be correct :-)
 		if (state.results.size() == 1) {
-			answerResult = DateTimeParserResult.asResult(state.results.keySet().iterator().next(), config.resolutionMode, config.locale);
+			answerResult = DateTimeParserResult.asResult(state.results.keySet().iterator().next(), config.resolutionMode, config);
 			// If we are fully bound then we are done!
 			if (!answerResult.isDateUnbound() || config.resolutionMode == DateResolutionMode.None)
 				return answerResult;
@@ -336,7 +371,7 @@ public class DateTimeParser {
 			// Iterate through all the results of our training, merging them to produce our best guess
 			for (final Map.Entry<String, Integer> entry : byValue.entrySet()) {
 				final String key = entry.getKey();
-				final DateTimeParserResult result = DateTimeParserResult.asResult(key, config.resolutionMode, config.locale);
+				final DateTimeParserResult result = DateTimeParserResult.asResult(key, config.resolutionMode, config);
 
 				// First entry
 				if (answerBuffer == null) {
@@ -556,6 +591,9 @@ public class DateTimeParser {
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public String determineFormatString(final String input, final DateResolutionMode resolutionMode) {
+		if (localeInfo == null)
+			localeInfo = LocaleInfo.getInstance(config.locale, config.noAbbreviationPunctuation);
+
 		int len = input.length();
 
 		// Remove leading spaces
@@ -572,27 +610,28 @@ public class DateTimeParser {
 		final String trimmed = input.substring(start, len + start);
 
 		// Fail fast if we can
-		if (len < 4 || len > 50 || (!Character.isDigit(trimmed.charAt(0)) && !Character.isAlphabetic(trimmed.charAt(0))))
+		if (len < 4 || len > 70 || (!Character.isDigit(trimmed.codePointAt(0)) && !Character.isAlphabetic(trimmed.codePointAt(0))))
 			return null;
 
 		if (trimmed.indexOf('¶') != -1)
 			return null;
 
-		final SimpleDateMatcher matcher = new SimpleDateMatcher(trimmed, config.locale);
+		final SimpleDateMatcher matcher = new SimpleDateMatcher(trimmed, localeInfo);
 
 		// Initial pass is a simple match against a set of known patterns
-		if (passOne(matcher) != null)
-			return matcher.getFormat();
+		final String formatPassOne = passOne(matcher);
+		if (formatPassOne != null)
+			return formatPassOne;
 
 		// Fail fast if we can
 		if (matcher.getComponentCount() < 2 || !Character.isLetterOrDigit(trimmed.charAt(0)))
 			return null;
 
 		// Second pass is an attempt to 'parse' the provided input string and derive a format
-		final String attempt = passTwo(trimmed, resolutionMode);
+		final String formatPassTwo = passTwo(trimmed, resolutionMode);
 
-		if (attempt != null)
-			return attempt;
+		if (formatPassTwo != null)
+			return formatPassTwo;
 
 		if ("ja".equals(config.locale.getLanguage()) || "cn".equals(config.locale.getLanguage()))
 			return passJaCn(trimmed, matcher, resolutionMode);
@@ -630,7 +669,7 @@ public class DateTimeParser {
 		String input = trimmed;
 		// Only hunt for AM/PM strings if we have seen the Hours character
 		if (hourIndex != -1)
-			for (final String s : LocaleInfo.getAMPMStrings(config.locale)) {
+			for (final String s : localeInfo.getAMPMStrings()) {
 				final int find = trimmed.indexOf(s);
 				if (find != -1)
 					input = Utils.replaceAt(trimmed, find, s.length(), "a");
@@ -685,7 +724,7 @@ public class DateTimeParser {
 		result = result.reverse();
 
 		// So we think we have nailed it - but it only counts if it happily passes a validity check
-		final DateTimeParserResult dtp = DateTimeParserResult.asResult(result.toString(), resolutionMode, config.locale);
+		final DateTimeParserResult dtp = DateTimeParserResult.asResult(result.toString(), resolutionMode, config);
 
 		return (dtp != null && dtp.isValid(trimmed)) ? result.toString() : null;
 	}
@@ -697,10 +736,12 @@ public class DateTimeParser {
 	 * @return a DateTimeFormatter pattern.
 	 */
 	private String passOne(final SimpleDateMatcher matcher) {
-		if (!matcher.isKnown())
+		SimpleFacts simpleFacts = SimpleDateMatcher.getSimpleDataFacts().get(matcher.getCompressed());
+
+		if (simpleFacts == null)
 			return null;
 
-		if (!matcher.parse())
+		if (!matcher.parse(simpleFacts.getFormat()))
 			return null;
 
 		final DateTracker dateTracker = new DateTracker();
@@ -711,7 +752,7 @@ public class DateTimeParser {
 		if (!plausibleDate(dateTracker, new int[] {0,1,2}))
 			return null;
 
-		return matcher.getFormat();
+		return simpleFacts.getFormat();
 	}
 
 	class DateTimeTracker {
@@ -878,7 +919,6 @@ public class DateTimeParser {
 
 			case '+':
 				// FALL THROUGH
-
 			case '-':
 				if (dateTracker.seen() && dateTracker.isClosed() && timeTracker.seen() && timeTracker.components() >= 2) {
 					int minutesOffset = Integer.MIN_VALUE;
@@ -886,7 +926,7 @@ public class DateTimeParser {
 
 					i++;
 
-					final String offset = SimpleDateMatcher.compress(trimmed.substring(i, len), config.locale);
+					final String offset = SimpleDateMatcher.compress(trimmed.substring(i, len), localeInfo);
 
 					// Expecting DD:DD:DD or DDDDDD or DD:DD or DDDD or DD
 					if (i + 8 <= len && TIME_ONLY_HHMMSS.equals(offset)) {
@@ -1033,7 +1073,7 @@ public class DateTimeParser {
 
 				if (timeTracker.seen()) {
 					final String rest = trimmed.substring(i).toUpperCase(config.locale);
-					for (final String s : LocaleInfo.getAMPMStrings(config.locale)) {
+					for (final String s : localeInfo.getAMPMStrings()) {
 						if (rest.startsWith(s)) {
 							if (!timeTracker.isClosed()) {
 								if (!timeTracker.setComponent(value, digits, padding))
@@ -1467,9 +1507,9 @@ public class DateTimeParser {
 			compressed = compressed.replaceAll("'", "''");
 
 		// So we think we have nailed it - but it only counts if it happily passes a validity check
-		final DateTimeParserResult dtp = DateTimeParserResult.asResult(compressed, resolutionMode, config.locale);
+		final DateTimeParserResult dtpResult = DateTimeParserResult.asResult(compressed, resolutionMode, config);
 
-		if (dtp == null || !dtp.isValid(trimmed))
+		if (dtpResult == null || !dtpResult.isValid(trimmed))
 			return null;
 
 		// So before we declare ultimate success - check that Java is happy with our conclusion
@@ -1534,12 +1574,11 @@ public class DateTimeParser {
 	 * @throws FTAMergeException When we fail to de-serialize the provided serialized form.
 	 */
 	public static DateTimeParser deserialize(final String serialized) throws FTAMergeException {
-		final ObjectMapper mapper = new ObjectMapper();
-		DateTimeParser ret = null;
-
 		try {
+			final ObjectMapper mapper = new ObjectMapper();
 			final DateTimeParserWrapper wrapper = mapper.readValue(serialized, DateTimeParserWrapper.class);
-			ret = new DateTimeParser();
+			final DateTimeParser ret = new DateTimeParser();
+
 			ret.config = wrapper.config;
 			ret.state = wrapper.state;
 

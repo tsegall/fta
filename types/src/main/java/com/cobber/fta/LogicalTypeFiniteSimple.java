@@ -64,11 +64,11 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		if (this.backout == null)
 			throw new FTAPluginException("Internal error: Finite Simple types require backout.");
 
-		super.initialize(locale);
+		super.initialize(analysisConfig);
 
 		regExp = pluginLocaleEntry.getRegExpReturned(-1);
 

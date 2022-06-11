@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins;
 
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.validator.routines.InetAddressValidator;
@@ -55,8 +54,8 @@ public class IPV4Address extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		return true;
 	}

@@ -17,7 +17,6 @@ package com.cobber.fta;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.core.FTAPluginException;
@@ -39,15 +38,15 @@ public class PluginBirthDate extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		final String format = dtp.determineFormatString(trimmed, DateResolutionMode.MonthFirst);
-		final DateTimeFormatter formatter = DateTimeParser.ofPattern(format, locale);
+		final DateTimeFormatter formatter = dtp.ofPattern(format);
 		final LocalDate localDate = LocalDate.parse(trimmed, formatter);
 
 		return localDate.isAfter(plausibleBirth);
 	}
 
 	@Override
-	public boolean initialize(final Locale locale) throws FTAPluginException {
-		super.initialize(locale);
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
 
 		return true;
 	}
