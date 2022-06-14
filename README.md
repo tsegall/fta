@@ -257,6 +257,7 @@ FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|de, en, fr
 GENDER.TEXT_&lt;Language&gt;|Gender|bg, ca, cn, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HASH.SHA1_HEX|SHA1 Hash - hexadecimal|*
+HASH.SHA256_HEX|SHA256 Hash - hexadecimal|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN
 IDENTITY.DUNS|Data Universal Numbering System (Dun & Bradstreet)|*

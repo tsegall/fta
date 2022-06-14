@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.text.Collator;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -148,8 +149,12 @@ public class TextAnalyzer {
 
 	private Logger logger = null;
 
+	private Collator collator;
+
 	private String localizedYes;
 	private String localizedNo;
+
+	private boolean cacheCheck;
 
 	/** Enumeration that defines all on/off features for parsers. */
 	public enum Feature {
@@ -1063,6 +1068,9 @@ public class TextAnalyzer {
 		if (LocaleInfo.isSupported(locale) != null)
 			throw new FTAUnsupportedLocaleException(LocaleInfo.isSupported(locale));
 
+		collator = Collator.getInstance(locale);
+		collator.setStrength(Collator.PRIMARY);
+
 		raw = new ArrayList<>(analysisConfig.getDetectWindow());
 		detectWindowEscalations = new ArrayList<>(analysisConfig.getDetectWindow());
 
@@ -1516,12 +1524,13 @@ public class TextAnalyzer {
 			}
 		}
 
+
 		final StringBuilder compressedl0 = new StringBuilder(length);
 		if (alphasSeen != 0 && digitsSeen != 0 && alphasSeen + digitsSeen == length) {
 			compressedl0.append(KnownPatterns.PATTERN_ALPHANUMERIC).append('{').append(String.valueOf(length)).append('}');
 		} else if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
 			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_TRUE_FALSE);
-		} else if (localizedYes != null && (localizedYes.equalsIgnoreCase(trimmed) || localizedNo.equalsIgnoreCase(trimmed))) {
+		} else if (localizedYes != null && (collator.compare(trimmed, localizedYes) == 0 || collator.compare(trimmed, localizedNo) == 0)) {
 			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_YES_NO_LOCALIZED);
 		} else if ("yes".equalsIgnoreCase(trimmed) || "no".equalsIgnoreCase(trimmed)) {
 			compressedl0.append(KnownPatterns.PATTERN_BOOLEAN_YES_NO);
@@ -2148,7 +2157,10 @@ public class TextAnalyzer {
 
 	/**
 	 * Track the supplied raw input, once we have enough samples attempt to determine the type.
-	 * @param input The raw input string
+	 * @param rawInput The raw input string
+	 * @param trimmed The trimmed version of the raw input string
+	 * @param fromTraining True if this is a real sample
+	 * @param count The number of occurrences of this input
 	 */
 	private void trackResult(final String rawInput, final String trimmed, final boolean fromTraining, final long count) {
 		if (fromTraining)
@@ -2292,6 +2304,12 @@ public class TextAnalyzer {
 					conditionalBackoutToPattern(realSamples, facts.matchPatternInfo);
 				}
 			}
+		}
+
+		// So before we blow the cache (either Shapes or Cardinality) we should look for RegExp matches ONCE!
+		if (!cacheCheck && (tokenStreams.isFull() || facts.cardinality.size() + 1 == analysisConfig.getMaxCardinality())) {
+			checkRegExpTypes();
+			cacheCheck = true;
 		}
 	}
 
@@ -2669,31 +2687,8 @@ public class TextAnalyzer {
 				}
 			}
 
-			if (!backedOutRegExp) {
-				solved:
-				for (final LogicalTypeRegExp logical : regExpTypes) {
-					// Check to see if either
-					// the Regular Expression we have matches the logical types, or
-					// the Regular Expression for the logical types matches all the data we have observed
-					if (logical.acceptsBaseType(FTAType.STRING)) {
-						for (final PluginMatchEntry entry : logical.getMatchEntries()) {
-							long newMatchCount = facts.matchCount;
-							for (final String re : entry.getRegExpsToMatch()) {
-								if ((facts.matchPatternInfo.regexp.equals(re) || (newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0) &&
-										logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-									logical.setMatchEntry(entry);
-									facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-									facts.matchCount = newMatchCount;
-									debug("Type determination - updated to Regular Expression logical type {}", facts.matchPatternInfo);
-									facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
-									updated = true;
-									break solved;
-								}
-							}
-						}
-					}
-				}
-			}
+			if (!backedOutRegExp)
+				updated = checkRegExpTypes();
 
 			final long interestingSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
 
@@ -2874,6 +2869,34 @@ public class TextAnalyzer {
 			traceConfig.recordResult(result, internalErrors);
 
 		return result;
+	}
+
+	private boolean checkRegExpTypes() {
+		final long realSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
+
+		for (final LogicalTypeRegExp logical : regExpTypes) {
+			// Check to see if either
+			// the Regular Expression we have matches the logical types, or
+			// the Regular Expression for the logical types matches all the data we have observed
+			if (logical.acceptsBaseType(FTAType.STRING)) {
+				for (final PluginMatchEntry entry : logical.getMatchEntries()) {
+					long newMatchCount = facts.matchCount;
+					for (final String re : entry.getRegExpsToMatch()) {
+						if ((facts.matchPatternInfo.regexp.equals(re) || (newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0) &&
+								logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+							logical.setMatchEntry(entry);
+							facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+							facts.matchCount = newMatchCount;
+							debug("Type determination - updated to Regular Expression logical type {}", facts.matchPatternInfo);
+							facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/*

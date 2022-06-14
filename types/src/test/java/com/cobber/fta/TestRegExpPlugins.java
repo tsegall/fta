@@ -19,16 +19,23 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 
 public class TestRegExpPlugins {
 	private static final SecureRandom random = new SecureRandom();
@@ -284,6 +291,86 @@ public class TestRegExpPlugins {
 		for (final String sample : samples) {
 			assertTrue(sample.matches(result.getRegExp()));
 		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.ALL })
+	public void shapeCacheOverflow() throws IOException, FTAException {
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(true);
+		String[] header;
+		String[] row;
+		TextAnalyzer[] analysis;
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/MAC.csv"), StandardCharsets.UTF_8))) {
+
+			final CsvParser parser = new CsvParser(settings);
+			parser.beginParsing(in);
+
+			header = parser.getRecordMetadata().headers();
+			analysis = new TextAnalyzer[header.length];
+			for (int i = 0; i < header.length; i++) {
+				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "Mac.csv", header));
+			}
+			while ((row = parser.parseNext()) != null) {
+				for (int i = 0; i < row.length; i++) {
+					analysis[i].train(row[i]);
+				}
+			}
+		}
+
+		final TextAnalysisResult result = analysis[0].getResult();
+		assertEquals(result.getTypeQualifier(), "MACADDRESS");
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("MACADDRESS").signature);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getSampleCount(), 1000);
+		assertEquals(result.getMatchCount(), 999);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getOutlierCount(), 1);
+		Entry<String, Long> only = result.getOutlierDetails().entrySet().iterator().next();
+		assertEquals(only.getKey(), "rubbish");
+		assertEquals(only.getValue(), 1);
+		assertEquals(result.getConfidence(), 0.999);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.ALL })
+	public void cardinalityCacheOverflow() throws IOException, FTAException {
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(true);
+		String[] header;
+		String[] row;
+		TextAnalyzer[] analysis;
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/color.csv"), StandardCharsets.UTF_8))) {
+
+			final CsvParser parser = new CsvParser(settings);
+			parser.beginParsing(in);
+
+			header = parser.getRecordMetadata().headers();
+			analysis = new TextAnalyzer[header.length];
+			for (int i = 0; i < header.length; i++) {
+				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "color.csv", header));
+			}
+			while ((row = parser.parseNext()) != null) {
+				for (int i = 0; i < row.length; i++) {
+					analysis[i].train(row[i]);
+				}
+			}
+		}
+
+		final TextAnalysisResult result = analysis[0].getResult();
+		assertEquals(result.getTypeQualifier(), "COLOR.HEX");
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("COLOR.HEX").signature);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getSampleCount(), 20000);
+		assertEquals(result.getMatchCount(), 19999);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getOutlierCount(), 1);
+		Entry<String, Long> only = result.getOutlierDetails().entrySet().iterator().next();
+		assertEquals(only.getKey(), "rubbish");
+		assertEquals(only.getValue(), 1);
+		assertEquals(result.getConfidence(), 0.99995);
 	}
 
 	@Test(groups = { TestGroups.ALL })

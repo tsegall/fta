@@ -11,6 +11,8 @@
 				"headerRegExps": [ { "regExp": "(?i).*(År|year).*", "confidence": 90 } ] },
 			{ "localeTag": "de",
 				"headerRegExps": [ { "regExp": "(?i).*(jahr|year).*", "confidence": 90 } ] },
+			{ "localeTag": "el",
+				"headerRegExps": [ { "regExp": "(?i)(?u).*(έτος|year).*", "confidence": 90 } ] },
 			{ "localeTag": "en",
 				"headerRegExps": [ { "regExp": "(?i).*year.*", "confidence": 90 } ] },
 			{ "localeTag": "es",
@@ -36,7 +38,9 @@
 			{ "localeTag": "sv",
 				"headerRegExps": [ { "regExp": "(?i).*(year).*", "confidence": 90 }, { "regExp": "(?i)ar", "confidence": 90 } ] },
 			{ "localeTag": "tr",
-				"headerRegExps": [ { "regExp": "(?i).*(yıl|year).*", "confidence": 90 } ] }
+				"headerRegExps": [ { "regExp": "(?i).*(yıl|year).*", "confidence": 90 } ] },
+			{ "localeTag": "zh",
+				"headerRegExps": [ { "regExp": "(?i).*(年度|year).*", "confidence": 90 } ] }
 		]
 	},
 	{
@@ -51,6 +55,8 @@
 				"headerRegExps": [ { "regExp": "(?i).*(dato|date).*", "confidence": 90 } ] },
 			{ "localeTag": "de",
 				"headerRegExps": [ { "regExp": "(?i).*(datum|date).*", "confidence": 90 } ] },
+			{ "localeTag": "el",
+				"headerRegExps": [ { "regExp": "(?i)(?u).*(ημερομηνία|date).*", "confidence": 90 } ] },
 			{ "localeTag": "en",
 				"headerRegExps": [ { "regExp": "(?i).*(date).*", "confidence": 90 } ] },
 			{ "localeTag": "es",
@@ -84,6 +90,7 @@
 			{ "localeTag": "bg", "value": "да" },
 			{ "localeTag": "ca", "value": "sí" },
 			{ "localeTag": "de", "value": "ja" },
+			{ "localeTag": "el", "value": "nαί" },
 			{ "localeTag": "en", "value": "yes" },
 			{ "localeTag": "es", "value": "sí" },
 			{ "localeTag": "fr", "value": "oui" },
@@ -107,6 +114,7 @@
 			{ "localeTag": "bg", "value": "не" },
 			{ "localeTag": "ca", "value": "no" },
 			{ "localeTag": "de", "value": "nein" },
+			{ "localeTag": "el", "value": "όχι" },
 			{ "localeTag": "en", "value": "no" },
 			{ "localeTag": "es", "value": "no" },
 			{ "localeTag": "fr", "value": "non" },

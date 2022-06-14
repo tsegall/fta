@@ -43,7 +43,7 @@
 		"pluginType": "java",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
 		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|Mobiel|telephone|telefon|téléphone|телефон|Факс).*", "confidence": 98 } ] } ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|Mobiel|telephone|telefon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
 		"priority": 40
 	},
 	{
@@ -326,7 +326,7 @@
 			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": "(?i)(?u)(Gender|пол|пол .*)", "confidence": 90 } ] },
 			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sexe).*", "confidence": 90 } ] },
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
-			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(Gender|geschlecht).*", "confidence": 90 } ] },
+			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex|geschlecht).*", "confidence": 90 } ] },
 			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
 			{ "localeTag":  "fi", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Genre|Sukupuoli).*", "confidence": 90 } ] },
 			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Genre|Sexe).*", "confidence": 90 } ] },
@@ -425,6 +425,19 @@
 		],
 		"threshold": 85,
 		"priority": 90
+	},
+	{
+		"qualifier": "COUNTRY.TEXT_DE",
+		"description": "Country as a string (German)",
+		"pluginType": "list",
+		"signature": "",
+		"validLocales": [
+			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/de_countries.csv",
+		"contentType": "resource",
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 91
 	},
 	{
 		"qualifier": "MONTH.ABBR_<LOCALE>",
@@ -1290,7 +1303,7 @@
 				} ]
 			},
 			{
-				"localeTag": "ca,de,es,fr,it,ja,ro,ru",
+				"localeTag": "ca,de,es,fr,it,ja,ro,ru,zh",
 				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|breitengrad|latitudine|latitud|Широта|緯度|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [
 				{
@@ -1327,8 +1340,8 @@
 				} ]
 			},
 			{
-				"localeTag": "ca,de,es,fr,it,ja,ro,ru",
-				"headerRegExps": [ { "regExp": ".*(?i)(?u)(longitude|längengrad|laengengrad|longitudine|longitud|Долгота|経度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 99, "mandatory": true } ],
+				"localeTag": "ca,de,es,fr,it,ja,ro,ru,zh",
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(longitude|längengrad|laengengrad|longitudine|longitud|Долгота|經度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [
 				{
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
@@ -1612,7 +1625,7 @@
 		"pluginType": "list",
 		"signature": "oh7DsTF4qDUm+o+JPy7jAIoU+1Y=",
 		"validLocales": [
-			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(language).*", "confidence": 90 }, { "regExp": ".*(?i)(lang).*", "confidence": 60 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(language|639|3066).*", "confidence": 90 }, { "regExp": ".*(?i)(lang).*", "confidence": 60 } ] }
 		],
 		"content": "/reference/ISO-639-2.csv",
 		"contentType": "resource",

@@ -1,12 +1,18 @@
 
 ## Changes ##
 
+### 9.0.1
+ - ENH: I18N - Initial Greek support (Dates, Yes/No, PhoneNumbers)
+ - ENH: I18N - Improve Chinese support
+ - ENH: I18N - Add new Semantic Types - COUNTRY.TEXT_DE
+ - BUG: Outliers were not being correctly tracked for late detected RegExp types
+
 ### 9.0.0
  - *** Plugin definition has changed with 9.0 as has DateTimeParser.ofPattern, also new Feature.NO_ABBREVIATION_PUNCTUATION is enabled by default
  - ENH: I18N - Improve date detection in locales with abbreviations with periods for short-months (and AM/PM strings) (e.g. en-CA, en-AU) - see Feature.NO_ABBREVIATION_PUNCTUATION
  - ENH: I18N - Add support for FREE_TEXT in french
  - ENH: FREE_TEXT implies some level of uniqueness - change to insist on > .1 uniqueness
- - ENH: I18N - Add new Semantic Types - STATE_PROVINCE.COUNTY_HU, CHECKDIGIT.UPC, COLOR.HEX, HASH.SHA1_HEX
+ - ENH: I18N - Add new Semantic Types - STATE_PROVINCE.COUNTY_HU, CHECKDIGIT.UPC, COLOR.HEX, HASH.SHA1_HEX, HASH.SHA256_HEX
  - ENH: Bump google phonenumber
  - ENH: Add support for MAC ADDRESS detection with minus as well as colon
  - ENH: Extend Shape support from 40 to 65 before declaring too long

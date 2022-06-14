@@ -5,16 +5,6 @@ jar {
 tasks.distZip.enabled = false
 tasks.distTar.enabled = false
 
-project.tasks.named("installDist") {
-	duplicatesStrategy = 'exclude'
-}
-
-distributions {
-    main {
-        distributionBaseName = 'fta'
-    }
-}
-
 dependencies {
 	implementation project(':core')
 

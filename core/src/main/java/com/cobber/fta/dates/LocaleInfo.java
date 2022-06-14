@@ -165,8 +165,10 @@ public class LocaleInfo {
 				shortMonthsArray[i] = shortMonthsArray[i].substring(0, len - 1);
 			final String shortMonth = shortMonthsArray[i].toUpperCase(locale);
 			shortMonthsLocale.put(shortMonth, i + 1);
+			// Check that the length of the upper case month abbreviation is the same as the length of the month abbreviation in Title Case
+			// This is not the case with Language 'el', Month Μαΐ.
 			if (shortMonthsArray[i].length() != shortMonth.length())
-				unsupportedReason = "Month abbreviation has different length when upshifted: '" + shortMonthsArray[i] + "'";
+				useShortMonths = false;
 			if (Utils.isNumeric(shortMonthsArray[i]))
 				useShortMonths = false;
 			generator.train(shortMonthsArray[i]);
@@ -364,8 +366,6 @@ public class LocaleInfo {
 		for (final String monthAbbr : getShortMonths().keySet()) {
 			if (input.toUpperCase(locale).startsWith(monthAbbr)) {
 				return monthAbbr;
-				// TODO - Note this makes a rash assumption that the upper case length of the month is the same as the input!
-				// This is not the case with Language 'el', Month Μαΐ.
 			}
 		}
 

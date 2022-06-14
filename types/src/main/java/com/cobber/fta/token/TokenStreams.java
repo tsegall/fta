@@ -80,6 +80,10 @@ public class TokenStreams {
 		return anyShape;
 	}
 
+	public boolean isFull() {
+		return tokenStreams.size() + 1 == maxStreams;
+	}
+
 	/**
 	 * @return The number of inputs this TokenStream has captured.
 	 */

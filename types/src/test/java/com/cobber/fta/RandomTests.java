@@ -459,6 +459,33 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void wide() throws IOException, FTAException, FTAException, InterruptedException {
+		final int COPIES = 100;
+		final String demos[] = { "EMAIL", "COORDINATE.LATITUDE_DECIMAL", "CITY", "NAME.FIRST", "NAME.LAST" };
+		final LogicalType[] logicals = new LogicalType[COPIES * demos.length];
+		final TextAnalyzer[] analyzers = new TextAnalyzer[COPIES * demos.length];
+
+		for (int copy = 0; copy < COPIES; copy++)
+			for (int i = 0; i < demos.length; i++) {
+				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(demos[i]);
+				int index = copy * demos.length + i;
+				logicals[index] = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
+				analyzers[index] = new TextAnalyzer(demos[i]);
+			}
+
+		for (int rows = 0; rows < 1000; rows++) {
+			for (int field = 0; field < analyzers.length; field++) {
+				analyzers[field].train(logicals[field].nextRandom());
+			}
+		}
+
+		for (int field = 0; field < analyzers.length; field++) {
+			final TextAnalysisResult result = analyzers[field].getResult();
+			assertEquals(result.getTypeQualifier(), demos[field%demos.length]);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void changeMind() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("changeMind");
 		int locked = -1;
