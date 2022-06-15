@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 9.0.2
+ - INT: Switch to Gradle 7 way of versioning stuff
+
 ### 9.0.1
  - ENH: I18N - Initial Greek support (Dates, Yes/No, PhoneNumbers)
  - ENH: I18N - Improve Chinese support
