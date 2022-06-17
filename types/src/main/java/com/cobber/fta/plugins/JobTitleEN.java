@@ -150,4 +150,17 @@ public class JobTitleEN extends LogicalTypeInfinite {
 
 		return PluginAnalysis.SIMPLE_NOT_OK;
 	}
+
+	@Override
+	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+		double confidence = (double)matchCount/realSamples;
+
+		if (getHeaderConfidence(dataStreamName) >= 99)
+			return 1.0;
+		else if (getHeaderConfidence(dataStreamName) >= 90)
+			return Math.min(1.2 * confidence, 1.0);
+
+		return confidence;
+	}
+
 }

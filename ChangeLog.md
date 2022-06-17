@@ -1,6 +1,19 @@
 
 ## Changes ##
 
+### 9.0.3
+ - ENH: I18N - Initial support for Latvian
+ - ENH: I18N - Enhance Croatian
+ - ENH: I18N - Be more lenient for Dutch Post Codes
+ - ENH: I18N - Improve French Department detection
+ - ENH: Add new Semantic Types - IDENTITY.EIN_US ("Employer Identification Number (US)"), STATE_PROVINCE.COMMUNE_IT ("Italian Commune")
+ - ENH: Add support for IBANs with embedded spaces
+ - ENH: Reimplemnent SSN as a Java plugin
+ - ENH: Improve Job Title detection
+ - BUG: Switch GENDER.TEXT_CN to GENDER.TEXT_ZH (and change localeTag to 'zh')
+ - INT: Switch to jakarta.mail from javax.mail
+ - INT: Fixup dependencies for CLI
+
 ### 9.0.2
  - INT: Switch to Gradle 7 way of versioning stuff
 

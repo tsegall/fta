@@ -70,7 +70,6 @@ public class CheckDigitISBN extends CheckDigitLT {
 		return FTAType.STRING;
 	}
 
-
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		final int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +

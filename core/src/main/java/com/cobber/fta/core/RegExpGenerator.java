@@ -15,7 +15,7 @@
  */
 package com.cobber.fta.core;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -296,14 +296,16 @@ public class RegExpGenerator {
 		return memory;
 	}
 
-	private static Map<String, String> toSimplifyFull = new HashMap<>();
-	private static Map<String, String> toSimplifyASCII = new HashMap<>();
+	private static Map<String, String> toSimplifyFull = new LinkedHashMap<>();
+	private static Map<String, String> toSimplifyASCII = new LinkedHashMap<>();
 	static {
+		toSimplifyFull.put("[\\p{IsAlphabetic}\\d]", "(<L>|<Nd>)");
 		toSimplifyFull.put("\\p{XDigit}", "[0-9A-Fa-f]");
 		toSimplifyFull.put("\\p{IsAlphabetic}", "<L>");
 		toSimplifyFull.put("\\d", "<Nd>");
 		toSimplifyFull.put("#", "\\#");
 
+		toSimplifyASCII.put("[\\p{IsAlphabetic}\\d]", "[A-Za-z0-9]");
 		toSimplifyASCII.put("\\p{XDigit}", "[0-9A-Fa-f]");
 		toSimplifyASCII.put("\\p{IsAlphabetic}", "[A-Za-z]");
 		toSimplifyASCII.put("\\d", "[0-9]");

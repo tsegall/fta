@@ -32,7 +32,7 @@ public abstract class Trivial {
 		// Use simple constructor - for improved detection provide an AnalyzerContext (see Contextual example).
 		final TextAnalyzer analysis = new TextAnalyzer("Famous");
 
-		for (String input : inputs)
+		for (final String input : inputs)
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();

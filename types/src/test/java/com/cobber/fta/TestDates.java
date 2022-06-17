@@ -1473,7 +1473,17 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicGermanDatePassThree() throws IOException, FTAException {
 
-		final String[] samples = {
+		final String[] samplesOld = {
+				"17.Jul.2003",	"21.Mai.2010", "03.Jul.2017", "15.Nov.2018",
+				"23.Feb.2019", "16.Jun.2005", "07.Okt.2014", "12.Mai.2004",
+				"17.Mär.2011",	"12.Aug.1998", "30.Mär.1997", "20.Sep.2002",
+				"20.Dez.1996", "03.Mai.2021", "16.Aug.2001", "16.Apr.2009",
+				"17.Mai.2007", "28.Feb.1999", "25.Jul.2009", "03.Jun.2019",
+				"02.Feb.2004", "04.Mär.2002", "12.Jul.2000", "19.Jän.2018",
+				"06.Feb.2007", "25.Dez.1999", "07.Jun.2022", "15.Okt.2020",
+				"10.Feb.2010", "28.Sep.2008", "24.Feb.1996"
+		};
+		final String[] samplesNew = {
 				"17.Juli.2003",	"21.Mai.2010", "03.Juli.2017", "15.Nov.2018",
 				"23.Feb.2019", "16.Juni.2005", "07.Okt.2014", "12.Mai.2004",
 				"17.März.2011",	"12.Aug.1998", "30.März.1997", "20.Sep.2002",
@@ -1485,6 +1495,9 @@ public class TestDates {
 		};
 		if (!TestUtils.isValidLocale("de_AT"))
 			return;
+
+		final String[] samples = TestUtils.getJavaVersion() == 8 ? samplesOld : samplesNew;
+		final String expectedRE = TestUtils.getJavaVersion() == 8 ? "\\d{2}\\.\\p{IsAlphabetic}{3}\\.\\d{4}" : "\\d{2}\\.\\p{IsAlphabetic}{3,4}\\.\\d{4}";
 
 		final Locale german = Locale.forLanguageTag("de-AT");
 
@@ -1498,10 +1511,10 @@ public class TestDates {
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
 
+		assertEquals(result.getTypeQualifier(), "dd.MMM.yyyy", result.getTypeQualifier());
 		// Post Java 8 the month abbreviations now appear with a period when necessary
-		assertEquals(result.getRegExp(), TestUtils.getJavaVersion() == 8 ? "\\d{2}\\.\\p{IsAlphabetic}{3}.\\d{4}" : "\\d{2}\\.\\p{IsAlphabetic}{3,4}\\.\\d{4}");
+		assertEquals(result.getRegExp(), expectedRE);
 		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertEquals(result.getTypeQualifier(), "dd.MMM.yyyy");
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), samples.length);

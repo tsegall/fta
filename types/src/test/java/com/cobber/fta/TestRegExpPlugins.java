@@ -119,19 +119,17 @@ public class TestRegExpPlugins {
 				"136-33-7291", "039-42-1364", "510-90-7575", "626-97-6912", "768-85-9118", "654-95-4223", "700-31-1292", "767-20-5141", "063-74-4131", "740-32-9176"
 		};
 
-		analysis.train("Unknown");
-
-		for (int i = 0; i < samples.length; i++) {
-			final String sample = String.format("%03d-%02d-%04d",
-					random.nextInt(1000),  random.nextInt(100), random.nextInt(10000));
+		for (final String sample : samples)
 			analysis.train(sample);
-		}
+
+		analysis.train("510-00-7575");
+
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length + 1);
-		assertEquals(result.getRegExp(), "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}", result.getRegExp());
 		assertEquals(result.getTypeQualifier(), "SSN");
+		assertEquals(result.getRegExp(), "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}", result.getRegExp());
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);

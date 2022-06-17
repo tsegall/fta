@@ -122,8 +122,14 @@ public class Driver {
 				helpRequested = true;
 
 			}
-			else if ("--locale".equals(args[idx]))
-				options.locale = Locale.forLanguageTag(args[++idx]);
+			else if ("--locale".equals(args[idx])) {
+				String tag = args[++idx];
+				options.locale = Locale.forLanguageTag(tag);
+				if (!options.locale.toLanguageTag().equals(tag)) {
+					logger.printf("ERROR: Language tag '%s' not known - using '%s'?%n", tag, options.locale.toLanguageTag());
+					System.exit(1);
+				}
+			}
 			else if ("--logicalType".equals(args[idx]))
 				options.logicalTypes = args[++idx];
 			else if ("--maxCardinality".equals(args[idx]))

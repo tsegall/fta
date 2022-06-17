@@ -146,10 +146,16 @@
 			{
 				"localeTag":  "nl-NL",
 				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 95 }, { "regExp": ".*(?i)(code).*", "confidence": 75 } ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d{4}\\p{IsAlphabetic}{2}" ],
-					"regExpReturned": "\\d{4}\\p{IsAlphabetic}{2}"
-				} ]
+				"matchEntries": [
+					{
+						"regExpsToMatch": [ "\\d{4}\\p{IsAlphabetic}{2}" ],
+						"regExpReturned": "\\d{4}\\p{IsAlphabetic}{2}"
+					},
+					{
+						"regExpsToMatch": [ "\\d{4} \\p{IsAlphabetic}{2}" ],
+						"regExpReturned": "\\d{4} \\p{IsAlphabetic}{2}"
+					}
+				 ]
 			}
 		],
 		"threshold": 95,
@@ -363,21 +369,21 @@
 		"priority": 81
 	},
 	{
-		"qualifier" : "GENDER.TEXT_CN",
+		"qualifier" : "GENDER.TEXT_ZH",
 		"description": "Gender (Chinese Language)",
 		"pluginType": "regex",
 		"signature": "Cw4ieuKHMT4qah2mJ9uWUYg+rNk=",
 		"validLocales": [
 			{
-				"localeTag":  "cn",
+				"localeTag":  "zh",
 				"headerRegExps": [ { "regExp": "(性|性別)", "confidence": 70 } ],
 				"matchEntries": [ {
-					"regExpReturned" : "(女性|女|男性|男)"
+					"regExpReturned" : "(女性|女|女生|男性|男|男生)"
 				} ]
 			}
 		],
 		"contentType": "inline",
-		"content": "{ \"members\": [ \"女性\",\"女\",\"男性\",\"男\" ] }",
+		"content": "{ \"members\": [ \"女性\",\"女\",\"女生\",\"男性\",\"男\",\"男生\" ] }",
 		"backout": ".*",
 		"baseType" : "STRING",
 		"priority": 82
@@ -971,6 +977,20 @@
 		"priority": 139
 	},
 	{
+		"qualifier": "STATE_PROVINCE.COMMUNE_IT",
+		"description": "Italian Commune",
+		"pluginType": "list",
+		"signature": "",
+		"validLocales": [
+			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(comune).*", "confidence": 95 } ] }
+		],
+		"content": "/reference/it_comuni.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"threshold": 85,
+		"priority": 140
+	},
+	{
 		"qualifier": "STATE_PROVINCE.COUNTY_HU",
 		"description": "Hungarian County",
 		"pluginType": "list",
@@ -981,7 +1001,7 @@
 		"content": "/reference/hu_counties.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 140
+		"priority": 141
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
@@ -1523,22 +1543,37 @@
 	{
 		"qualifier": "SSN",
 		"description": "Social Security Number (US)",
-		"pluginType": "regex",
+		"pluginType": "java",
 		"signature": "SaJgghJaa44guUQ5oMO6woNkWac=",
+		"clazz": "com.cobber.fta.plugins.identity.SSN_US",
 		"validLocales": [
 			{
 				"localeTag": "en-US",
-				"headerRegExps": [ { "regExp": ".*(?i)(SSN).*", "confidence": 90 }, { "regExp": ".*(?i)(Social).*", "confidence": 70 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(SSN).*", "confidence": 90 }, { "regExp": ".*(?i)(Social).*", "confidence": 70 } ]
+			}
+		],
+		"threshold": 98,
+		"priority": 225
+	},
+	{
+		"qualifier": "IDENTITY.EIN_US",
+		"description": "Employer Identification Number (US)",
+		"pluginType": "regex",
+		"signature": "XwD3tlpcRPsH1AXfYE5z7XPvrjA=",
+		"validLocales": [
+			{
+				"localeTag": "en-US",
+				"headerRegExps": [ { "regExp": ".*(?i)(EIN).*", "confidence": 90 }, { "regExp": ".*(?i)(Employer).*", "confidence": 70 } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d{3}-\\d{2}-\\d{4}" ],
-					"regExpReturned": "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}",
+					"regExpsToMatch": [ "\\d{2}-\\d{7}" ],
+					"regExpReturned": "(0[1-6]|1[0-6]|2[0-7]|3[0-9]|4[0-8]|5[0-9]|6[0-8]|7[1-7]|8[0-8]|9[01234589])-\\d{7}",
 					"isRegExpComplete": false
 				} ]
 			}
 		],
 		"threshold": 98,
 		"baseType": "STRING",
-		"priority": 230
+		"priority": 226
 	},
 	{
 		"qualifier": "IDENTITY.SSN_FR",
@@ -1865,7 +1900,7 @@
 		"validLocales": [
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(job title).*", "confidence": 99 }, { "regExp": ".*(?i)(title|position).*", "confidence": 90 } ] }
 		],
-		"threshold": 75,
+		"threshold": 60,
 		"priority": 300
 	},
 	{

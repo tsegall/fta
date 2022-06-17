@@ -26,14 +26,7 @@ dependencies {
 	implementation project(':types')
 
 	implementation libs.univocity
-	implementation libs.javaxMailAPI
-	implementation libs.commonsValidator
 	implementation libs.jacksonDataBind
-	implementation libs.jacksonDataType
-	implementation libs.googlePhoneNumber
-	implementation libs.commonsText
-	implementation libs.xeger
-	implementation libs.slf4jAPI
 	implementation libs.guava
 
 	testImplementation testLibs.testng

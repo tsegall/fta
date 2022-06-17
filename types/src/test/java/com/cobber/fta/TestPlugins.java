@@ -3129,6 +3129,7 @@ public class TestPlugins {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("FUND_ID");
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("FUND_ID", "Fund Identifier", null, null, null, FUND_REGEXP,
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 90, FUND_REGEXP) }, false, 98, FTAType.STRING));

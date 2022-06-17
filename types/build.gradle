@@ -15,6 +15,7 @@ dependencies {
 	implementation libs.jacksonDataType
 	implementation libs.googlePhoneNumber
 	implementation libs.commonsText
+	implementation libs.automaton
 	implementation libs.xeger
 	implementation libs.slf4jAPI
 	implementation libs.guava

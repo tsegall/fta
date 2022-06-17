@@ -1770,7 +1770,12 @@ public class TextAnalyzer {
 
 			if (level0patternInfo == null) {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
-					if (logical.isMatch(level0pattern)) {
+					// Check that the samples match the pattern we are looking for and the pattern returned.
+					// For example to be an IDENTITY.EIN_US you need to match
+					//    "regExpsToMatch": [ "\\d{2}-\\d{7}" ],
+					// as well as
+					//    "regExpReturned": "(0[1-6]|1[0-6]|2[0-7]|3[0-9]|4[0-8]|5[0-9]|6[0-8]|7[1-7]|8[0-8]|9[01234589])-\\d{7}",
+					if (logical.isMatch(level0pattern) &&  tokenStreams.matches(logical.getRegExp(), logical.getThreshold()) != 0) {
 						level0patternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						break;
 					}
@@ -2881,16 +2886,15 @@ public class TextAnalyzer {
 			if (logical.acceptsBaseType(FTAType.STRING)) {
 				for (final PluginMatchEntry entry : logical.getMatchEntries()) {
 					long newMatchCount = facts.matchCount;
-					for (final String re : entry.getRegExpsToMatch()) {
-						if ((facts.matchPatternInfo.regexp.equals(re) || (newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0) &&
-								logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-							logical.setMatchEntry(entry);
-							facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-							facts.matchCount = newMatchCount;
-							debug("Type determination - updated to Regular Expression logical type {}", facts.matchPatternInfo);
-							facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
-							return true;
-						}
+					final String re = entry.getRegExpReturned();
+					if (((newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0) &&
+							logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+						logical.setMatchEntry(entry);
+						facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+						facts.matchCount = newMatchCount;
+						debug("Type determination - updated to Regular Expression logical type {}", facts.matchPatternInfo);
+						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+						return true;
 					}
 				}
 			}

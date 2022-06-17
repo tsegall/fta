@@ -24,6 +24,7 @@ import static org.testng.Assert.fail;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -927,22 +928,28 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testMMM_enCA_false() throws IOException {
-		final String input = "1999-Aug.-11";
-		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.CANADA).withNoAbbreviationPunctuation(false);
-		final String format = dtp.determineFormatString(input);
+		String[] shortMonths = new DateFormatSymbols(Locale.CANADA).getShortMonths();
 
-		if (!"yyyy-MMM-dd".equals(format))
-			System.err.println("format = " + format);
-		assertEquals(format, "yyyy-MMM-dd", format);
+		// Java 8 has the Short Month as 'Aug', Java 11 & 18 has 'Aug.'
+		// This test is to check the behavior when the period is present - so skip if it is not
+		if (shortMonths[7].length() == 4) {
+			final String input = "1999-Aug.-11";
+			final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.CANADA).withNoAbbreviationPunctuation(false);
+			final String format = dtp.determineFormatString(input);
 
-		DateTimeFormatter dtf = dtp.ofPattern(format);
+			if (!"yyyy-MMM-dd".equals(format))
+				System.err.println("format = " + format);
+			assertEquals(format, "yyyy-MMM-dd", format);
 
-		try {
-			LocalDate.parse(input, dtf);
-		}
-		catch (DateTimeParseException e) {
-			System.err.println(e.getMessage());
-			fail(e.getMessage());
+			DateTimeFormatter dtf = dtp.ofPattern(format);
+
+			try {
+				LocalDate.parse(input, dtf);
+			}
+			catch (DateTimeParseException e) {
+				System.err.println(e.getMessage());
+				fail(e.getMessage());
+			}
 		}
 	}
 

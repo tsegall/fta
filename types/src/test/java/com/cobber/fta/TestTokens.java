@@ -31,6 +31,11 @@ import com.cobber.fta.token.Token;
 import com.cobber.fta.token.TokenStream;
 import com.cobber.fta.token.TokenStreams;
 
+import dk.brics.automaton.Automaton;
+import dk.brics.automaton.DatatypesAutomatonProvider;
+import dk.brics.automaton.RegExp;
+import dk.brics.automaton.RunAutomaton;
+
 public class TestTokens {
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void tooLong() throws IOException, FTAException {
@@ -236,9 +241,31 @@ public class TestTokens {
 		ts.track("00:a9:b8:07:04:60", 1);
 		ts.track("00:39:33:17:04:44", 1);
 		ts.track("00:19:8c:0F:04:00", 1);
-		ts.track("00:04:08:1E:01:GG", 1);
+		ts.track("00:04:08:1E:01:GG", 1);		// GG is not Hex!
 
 		assertEquals(ts.matches("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}", 100), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
+	public void testID() throws IOException, FTAException {
+		final TokenStreams ts = new TokenStreams(10);
+		ts.track("BFLGXF682X", 1);
+		ts.track("BFLGXF682W", 1);
+		ts.track("SVAXRA5JCJ", 1);
+		ts.track("PNUJWNGCFQ", 1);
+
+		assertEquals(ts.matches("[\\p{IsAlphabetic}\\d]{10}", 100), 4);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
+	public void testAutomaton() throws IOException, FTAException {
+	    Automaton automaton = new RegExp("[0-9a-fA-F]{2}", RegExp.AUTOMATON).toAutomaton(new DatatypesAutomatonProvider());
+	    RunAutomaton runAutomaton = new RunAutomaton(automaton);
+	    assertTrue(runAutomaton.run("0F"));
+
+	    automaton = new RegExp("[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}", RegExp.AUTOMATON).toAutomaton(new DatatypesAutomatonProvider());
+	    runAutomaton = new RunAutomaton(automaton);
+	    assertTrue(runAutomaton.run("00:04:08:1E:01:FF"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })

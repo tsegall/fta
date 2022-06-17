@@ -254,13 +254,14 @@ EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
 FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|de, en, fr
-GENDER.TEXT_&lt;Language&gt;|Gender|bg, ca, cn, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr
+GENDER.TEXT_&lt;Language&gt;|Gender|bg, ca, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr, zh
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HASH.SHA1_HEX|SHA1 Hash - hexadecimal|*
 HASH.SHA256_HEX|SHA256 Hash - hexadecimal|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN
 IDENTITY.DUNS|Data Universal Numbering System (Dun & Bradstreet)|*
+IDENTITY.EIN_US|Employer Identification Number|en-US
 IDENTITY.NHS_UK|NHS Number|en-UK
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH

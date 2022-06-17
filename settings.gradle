@@ -5,13 +5,13 @@ include 'cli'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-		     version('fta', '9.0.2')
+		     version('fta', '9.0.3')
 		     version('jacoco', '0.8.8')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
 		     library('univocity', 'com.univocity:univocity-parsers:2.9.1')
-// https://mvnrepository.com/artifact/javax.mail/javax.mail-api
-		     library('javaxMailAPI', 'com.sun.mail:javax.mail:1.6.2')
+// https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail
+		     library('javaxMailAPI', 'com.sun.mail:jakarta.mail:2.0.1')
 // https://mvnrepository.com/artifact/commons-validator/commons-validator
 		     library('commonsValidator', 'commons-validator:commons-validator:1.7')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
@@ -24,6 +24,8 @@ dependencyResolutionManagement {
 		     library('commonsText', 'org.apache.commons:commons-text:1.9')
 // https://mvnrepository.com/artifact/com.github.krraghavan/xeger
 		     library('xeger', 'com.github.krraghavan:xeger:1.0.0-RELEASE')
+// https://mvnrepository.com/artifact/dk.brics.automaton/automaton
+		     library('automaton', 'dk.brics:automaton:1.12-4')
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 		     library('slf4jAPI', 'org.slf4j:slf4j-api:1.7.36')
 // https://mvnrepository.com/artifact/com.google.guava/guava

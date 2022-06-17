@@ -45,32 +45,34 @@ public class TestIdentity {
 		String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
-		samples[0] = "000-00-0000";
-		int i = 1;
-		while (i < samples.length - 1) {
-			b.setLength(0);
-			final int component = random.nextInt(899) + 1;
-			if (component == 666)
-				continue;
-			b.append(String.format("%03d", component));
-			b.append('-');
-			b.append(String.format("%02d", random.nextInt(99) + 1));
-			b.append('-');
-			b.append(String.format("%04d", random.nextInt(9999) + 1));
-			samples[i] = b.toString();
-			i++;
+		for (int i = 0; i < samples.length; i++) {
+			if (i == 100)
+				samples[i] = "000-00-0000";
+			else if (i == 200)
+				samples[i] = "943-00-1067";
+			else {
+				b.setLength(0);
+				int component = random.nextInt(899) + 1;
+				if (component == 666)
+					component = 667;
+				b.append(String.format("%03d", component));
+				b.append('-');
+				b.append(String.format("%02d", random.nextInt(99) + 1));
+				b.append('-');
+				b.append(String.format("%04d", random.nextInt(9999) + 1));
+				samples[i] = b.toString();
+			}
 		}
-		samples[samples.length - 1] = "943-00-1067";
 
 		final TextAnalyzer analysis = new TextAnalyzer("possibleSSN");
 		analysis.configure(Feature.LENGTH_QUALIFIER, false);
-		for (final String sample : samples) {
+		for (final String sample : samples)
 			analysis.train(sample);
-		}
 
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
 
+		assertEquals(result.getTypeQualifier(), "SSN");
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getMatchCount(), samples.length - 2);
 		assertEquals(result.getBlankCount(), 0);
@@ -78,12 +80,12 @@ public class TestIdentity {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}");
 		assertTrue(result.isLogicalType());
-		assertEquals(result.getTypeQualifier(), "SSN");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("SSN").signature);
 		assertEquals(result.getConfidence(), 0.998);
 
-		for (int l = 1; l < samples.length - 1; l++) {
-			assertTrue(samples[l].matches(result.getRegExp()));
+		for (int l = 0; l < samples.length; l++) {
+			if (l != 100 && l != 200)
+				assertTrue(samples[l].matches(result.getRegExp()));
 		}
 	}
 
