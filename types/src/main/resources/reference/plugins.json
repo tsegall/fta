@@ -339,7 +339,7 @@
 			{ "localeTag":  "hr", "headerRegExps": [ { "regExp": ".*(?i)(Gender).*", "confidence": 90 } ] },
 			{ "localeTag":  "it", "headerRegExps": [ { "regExp": ".*(?i)(Gender|genere|sesso).*", "confidence": 90 } ] },
 			{ "localeTag":  "ms", "headerRegExps": [ { "regExp": ".*(?i)(Gender|jantina).*", "confidence": 90 } ] },
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Geslach|Geslacht).*", "confidence": 90 } ] },
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sexe|Geslach|Geslacht).*", "confidence": 90 } ] },
 			{ "localeTag":  "pl", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Płeć|P³eæ).*", "confidence": 90 } ] },
 			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Gênero|Sexo).*", "confidence": 90 } ] },
 			{ "localeTag":  "ro", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
@@ -1323,8 +1323,8 @@
 				} ]
 			},
 			{
-				"localeTag": "ca,de,es,fr,it,ja,ro,ru,zh",
-				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|breitengrad|latitudine|latitud|Широта|緯度|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 99, "mandatory": true } ],
+				"localeTag": "ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh",
+				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|leveysaste|breddegrad|breitengrad|latitudine|latitud|Широта|緯度|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [
 				{
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
@@ -1360,8 +1360,8 @@
 				} ]
 			},
 			{
-				"localeTag": "ca,de,es,fr,it,ja,ro,ru,zh",
-				"headerRegExps": [ { "regExp": ".*(?i)(?u)(longitude|längengrad|laengengrad|longitudine|longitud|Долгота|經度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 99, "mandatory": true } ],
+				"localeTag": "ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh",
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(longitude|pituusaste|længde|längengrad|laengengrad|longitudine|longitud|Долгота|經度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [
 				{
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],

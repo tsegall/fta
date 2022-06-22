@@ -17,6 +17,7 @@ package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -28,6 +29,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -2818,7 +2820,7 @@ public class TestDates {
 	public void localeDateTest() throws IOException, FTAException {
 
 		final Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] {Locale.forLanguageTag("rw")};
+//		Locale[] locales = new Locale[] {Locale.forLanguageTag("nn")};
 
 		final String testCases[] = {
 				"yyyy MM dd", "yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
@@ -2829,10 +2831,10 @@ public class TestDates {
 				"d-MMM-yy", "dd/MMM/yy", "d/MMM/yy",
 				"yyyyMMdd'T'HHmmss.SSSxx", "yyyyMMdd'T'HHmmss.SSSxx", "dd/MMM/yy h:mm a",
 				"dd/MMM/yy hh:mm a",
-				 "MMM dd',' yyyy", "MMM d',' yyyy",
-					"MMMM dd',' yyyy",
+				 "MMM dd, yyyy", "MMM d, yyyy",
+					"MMMM dd, yyyy",
 				"MMM dd yyyy", "MMM d yyyy", "MMM-dd-yyyy", "MMM-d-yyyy",
-				"MMMM d',' yyyy", "MMMM dd yyyy", "MMMM d yyyy", "MMMM-dd-yyyy", "MMMM-d-yyyy",
+				"MMMM d, yyyy", "MMMM dd yyyy", "MMMM d yyyy", "MMMM-dd-yyyy", "MMMM-d-yyyy",
 //				"EEE MMM dd HH:mm:ss OOOO yyyy"
 //				"EEE MMM dd HH:mm:ss z yyyy"
 		};
@@ -2900,6 +2902,11 @@ public class TestDates {
 
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(testCase, locale);
 				final FTAType type = SimpleDateMatcher.getType(testCase);
+
+				if (type == null)
+					System.err.println("TestCase: " + testCase + ", Locale: " + locale + ", country: " + locale.getCountry() +
+							", language: " + locale.getDisplayLanguage() + ", name: " + locale.toLanguageTag());
+				assertNotNull(type);
 
 				if (type.equals(FTAType.LOCALDATE))
 					localDate = LocalDate.now();
@@ -3838,7 +3845,7 @@ public class TestDates {
 		results.put("MM/dd/yy", new SimpleResult("\\d{2}/\\d{2}/\\d{2}", "MM/dd/yy", "LocalDate"));
 		results.put("dd-MMM-yy", new SimpleResult("\\d{2}-\\p{IsAlphabetic}{3}-\\d{2}", "dd-MMM-yy", "LocalDate"));
 		results.put("dd-MMM-yyyy", new SimpleResult("\\d{2}-\\p{IsAlphabetic}{3}-\\d{4}", "dd-MMM-yyyy", "LocalDate"));
-		results.put("MMMM dd, yyyy", new SimpleResult("\\p{IsAlphabetic}{3,9} \\d{2}, \\d{4}", "MMMM dd',' yyyy", "LocalDate"));
+		results.put("MMMM dd, yyyy", new SimpleResult("\\p{IsAlphabetic}{3,9} \\d{2}, \\d{4}", "MMMM dd, yyyy", "LocalDate"));
 		results.put("yyyy-MM-dd", new SimpleResult("\\d{4}-\\d{2}-\\d{2}", "yyyy-MM-dd", "LocalDate"));
 		results.put("EEEE, MMMM, dd, yyyy", new SimpleResult(", \\p{IsAlphabetic}{3,9}, \\d{2}, \\d{4}", "EEEE, MMMM, dd, yyyy", "LocalDate"));
 		results.put("yyyy MMM dd", new SimpleResult("\\d{4} \\p{IsAlphabetic}{3} \\d{2}", "yyyy MMM dd", "LocalDate"));
@@ -3978,7 +3985,7 @@ public class TestDates {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertEquals(result.getTypeQualifier(), "MMMM d',' yyyy");
+		assertEquals(result.getTypeQualifier(), "MMMM d, yyyy");
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -3988,8 +3995,35 @@ public class TestDates {
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
+			assertNull(checkParseable(result, input));
 		}
 	}
+
+	protected static String checkParseable(TextAnalysisResult result, String input) {
+		final String formatString = result.getTypeQualifier();
+		final FTAType type = result.getType();
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
+
+		try {
+			if (FTAType.LOCALTIME.equals(type))
+				LocalTime.parse(input, formatter);
+			else if (FTAType.LOCALDATE.equals(type))
+				LocalDate.parse(input, formatter);
+			else if (FTAType.LOCALDATETIME.equals(type))
+				LocalDateTime.parse(input, formatter);
+			else if (FTAType.ZONEDDATETIME.equals(type))
+				ZonedDateTime.parse(input, formatter);
+			else
+				OffsetDateTime.parse(input, formatter);
+		}
+		catch (DateTimeParseException exc) {
+			return "Java Should have successfully parsed: " + input;
+		}
+
+		return null;
+	}
+
+
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicDDMMMMYYYY() throws IOException, FTAException {

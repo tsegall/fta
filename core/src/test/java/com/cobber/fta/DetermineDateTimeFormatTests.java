@@ -499,8 +499,8 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(dtp.determineFormatString("7 June 2017"), "d MMMM yyyy");
 		assertEquals(dtp.determineFormatString("7-June-2017"), "d-MMMM-yyyy");
 
-		assertEquals(dtp.determineFormatString("June 23, 2017"), "MMMM dd',' yyyy");
-		assertEquals(dtp.determineFormatString("August 8, 2017"), "MMMM d',' yyyy");
+		assertEquals(dtp.determineFormatString("June 23, 2017"), "MMMM dd, yyyy");
+		assertEquals(dtp.determineFormatString("August 8, 2017"), "MMMM d, yyyy");
 		assertEquals(dtp.determineFormatString("August 18 2017"), "MMMM dd yyyy");
 		assertEquals(dtp.determineFormatString("December 9 2017"), "MMMM d yyyy");
 		assertEquals(dtp.determineFormatString("January-14-2017"), "MMMM-dd-yyyy");
@@ -981,37 +981,14 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParserResult result = checkSerialization(dtp).getResult();
 
 		final String formatString = result.getFormatString();
-		final FTAType type = result.getType();
 
-		assertEquals(formatString, "MMM d',' yyyy");
+		assertEquals(formatString, "MMM d, yyyy");
 
 		final String regExp = result.getRegExp();
 		assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3} \\d{1,2}, \\d{4}");
 		assertTrue(trimmed.matches(regExp));
 
-		try {
-			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
-			if (FTAType.LOCALTIME.equals(type))
-				LocalTime.parse(trimmed, formatter);
-			else if (FTAType.LOCALDATE.equals(type))
-				LocalDate.parse(trimmed, formatter);
-			else if (FTAType.LOCALDATETIME.equals(type))
-				LocalDateTime.parse(trimmed, formatter);
-			else if (FTAType.ZONEDDATETIME.equals(type))
-				ZonedDateTime.parse(trimmed, formatter);
-			else
-				OffsetDateTime.parse(trimmed, formatter);
-		}
-		catch (DateTimeParseException exc) {
-			fail("Java Should have successfully parsed: " + trimmed);
-		}
-
-		try {
-			result.parse(trimmed);
-		}
-		catch (DateTimeParseException e) {
-			fail("Should have successfully parsed: " + trimmed);
-		}
+		assertNull(checkParseable(result, trimmed));
 
 		assertTrue(result.isValid8("Jun 30, 2023"));
 		assertTrue(result.isValid("Jun 30, 2023"));
@@ -1024,6 +1001,38 @@ public class DetermineDateTimeFormatTests {
 		// Invalid but not detected!!
 		assertTrue(result.isValid("Jun 31, 2023"));
 		assertTrue(result.isValid8("Jun 31, 2023"));
+	}
+
+	private static String checkParseable(DateTimeParserResult result, String input) {
+		final String formatString = result.getFormatString();
+		final FTAType type = result.getType();
+
+		try {
+			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
+			if (FTAType.LOCALTIME.equals(type))
+				LocalTime.parse(input, formatter);
+			else if (FTAType.LOCALDATE.equals(type))
+				LocalDate.parse(input, formatter);
+			else if (FTAType.LOCALDATETIME.equals(type))
+				LocalDateTime.parse(input, formatter);
+			else if (FTAType.ZONEDDATETIME.equals(type))
+				ZonedDateTime.parse(input, formatter);
+			else
+				OffsetDateTime.parse(input, formatter);
+			formatter.parse(input);
+		}
+		catch (DateTimeParseException exc) {
+			return "Java Should have successfully parsed: " + input;
+		}
+
+		try {
+			result.parse(input);
+		}
+		catch (DateTimeParseException e) {
+			return "Should have successfully parsed: " + input;
+		}
+
+		return null;
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1080,8 +1089,7 @@ public class DetermineDateTimeFormatTests {
 		DateTimeParserResult result = DateTimeParserResult.asResult(fmt, DateResolutionMode.None, dtp.getConfig());
 		assertEquals(fmt, result.getFormatString());
 		assertEquals(result.getFormatString(), "dd/MM/yy ppH:mm:ss");
-		DateTimeFormatter formatter = dtp.ofPattern(fmt);
-		formatter.parse(PADDED_INPUT);
+		assertNull(checkParseable(result, PADDED_INPUT));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1767,6 +1775,7 @@ public class DetermineDateTimeFormatTests {
 		final String regExp = result.getRegExp();
 		assertEquals(regExp, "\\d{4} \\d{1,2} \\d{1,2}");
 		assertTrue(sample.matches(regExp));
+		assertNull(checkParseable(result, sample));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1781,6 +1790,39 @@ public class DetermineDateTimeFormatTests {
 		final String regExp = result.getRegExp();
 		assertEquals(regExp, "\\d{1,2}:\\d{2} \\d{1,2}/\\d{1,2}/\\d{2}");
 		assertTrue(sample.matches(regExp));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue5() {
+		final String[] months = { "March 26, 2015", "August 5, 2006", "May 10, 2014" };
+
+		DateTimeParser dtp = new DateTimeParser()
+		   .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+		    .withStrictMode(true);
+
+		for (final String s : months)
+			dtp.train(s);
+
+		DateTimeParserResult result = dtp.getResult();
+		assertEquals(result.getFormatString(), "MMMM d, yyyy");
+
+		for (final String s : months)
+			assertNull(checkParseable(result, s));
+
+		final String[] monthAbbr = { "25 Sep, 2018", "21 Mar, 2015", "2 Sep, 2010" };
+
+		dtp = new DateTimeParser()
+		    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+		    .withStrictMode(true);
+
+		for (final String s : monthAbbr)
+			dtp.train(s);
+
+		result = dtp.getResult();
+		assertEquals(result.getFormatString(), "d MMM, yyyy");
+
+		for (final String s : monthAbbr)
+			assertNull(checkParseable(result, s));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

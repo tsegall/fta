@@ -243,7 +243,7 @@ COORDINATE.NORTHING|Coordinate - Northing|*
 COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|*
 COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2|*
 COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|*
-COUNTRY.TEXT_EN|Country as a string (English language)|en
+COUNTRY.TEXT_&lt;Language&gt;|Country as a string|de, en
 CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|*
 CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|*
 CURRENCY.TEXT_EN|Currency Name|en
@@ -287,6 +287,7 @@ POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|en-AU, en-CA, nl-NL, en-UK, 
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US
+STATE_PROVINCE.COMMUNE_IT|Italian Commune|it-IT
 STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-UK, en-US, hu-HU
 STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|pt-PT
 STATE_PROVINCE.MUNICIPALITY_BR|Brazilian Municipality|pt-BR
@@ -594,4 +595,6 @@ Semantic Data Type Detection (https://arxiv.org/pdf/1905.10688.pdf)
 Types using Open-source Code (https://congyan.org/autotype.pdf)
 * T2Dv2 Gold Standard for Matching Web Tables to DBpedia (http://webdatacommons.org/webtables/goldstandardV2.html)
 * VizNet Towards a Visualization Learning and Benchmarking Repository (https://viznet.media.mit.edu/)
+* Semantic Type Detection: Why It Matters, Current Approaches, and How to Improve It (https://megagon.ai/blog/semantic-type-detection-why-it-matters-current-approaches-and-how-to-improve-it)
+* Auto-Type: Synthesizing Type-Detection Logic for Rich Semantic Data Types using Open-source Code (https://www.microsoft.com/en-us/research/publication/synthesizing-type-detection-logic-rich-semantic-data-types-using-open-source-code/)
 

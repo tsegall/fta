@@ -145,7 +145,7 @@ public class Gender extends LogicalTypeFinite {
 		case "FR":
 			// French
 			genderData = new GenderData(
-					new String[][] { new String[] { "FEMME", "HOMME" }, new String[] { "FÉMININ", "MASCULIN" } },
+					new String[][] { new String[] { "FEMME", "HOMME" }, new String[] { "FEMMES", "HOMMES" }, new String[] { "FÉMININ", "MASCULIN" } },
 					new String[][] { new String[] { "F", "H" }, new String[] { "F", "M" } } );
 			break;
 		case "HR":
@@ -213,7 +213,7 @@ public class Gender extends LogicalTypeFinite {
 		case "EN":
 			// English
 			genderData = new GenderData(
-					new String[][] { new String[] { "FEMALE", "MALE" } },
+					new String[][] { new String[] { "FEMALE", "MALE" }, new String[] { "FEMALES", "MALES" } },
 					new String[][] { new String[] { "F", "M" } } );
 			break;
 		}

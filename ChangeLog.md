@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 9.0.4
+ - ENH: I18N - Improve Coordinate detection in Dutch
+ - ENH: Improve consistency wrt to quoting ',' in returned Date formats
+
 ### 9.0.3
  - ENH: I18N - Initial support for Latvian
  - ENH: I18N - Enhance Croatian

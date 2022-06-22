@@ -84,15 +84,15 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleFacts("d{2}/MMM/d{2}", "dd/MMM/yy", FTAType.LOCALDATE));
 		matchers.add(new SimpleFacts("d/MMM/d{2}", "d/MMM/yy", FTAType.LOCALDATE));
 
-		matchers.add(new SimpleFacts("MMM d{2}, d{4}", "MMM dd',' yyyy", FTAType.LOCALDATE));
-		matchers.add(new SimpleFacts("MMM d, d{4}", "MMM d',' yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMM d{2}, d{4}", "MMM dd, yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMM d, d{4}", "MMM d, yyyy", FTAType.LOCALDATE));
 		matchers.add(new SimpleFacts("MMM d{2} d{4}", "MMM dd yyyy", FTAType.LOCALDATE));
 		matchers.add(new SimpleFacts("MMM d d{4}", "MMM d yyyy", FTAType.LOCALDATE));
 		matchers.add(new SimpleFacts("MMM-d{2}-d{4}", "MMM-dd-yyyy", FTAType.LOCALDATE));
 		matchers.add(new SimpleFacts("MMM-d-d{4}", "MMM-d-yyyy", FTAType.LOCALDATE));
 
-		matchers.add(new SimpleFacts("MMMM d{2}, d{4}", "MMMM dd',' yyyy", FTAType.LOCALDATE));
-		matchers.add(new SimpleFacts("MMMM d, d{4}", "MMMM d',' yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMMM d{2}, d{4}", "MMMM dd, yyyy", FTAType.LOCALDATE));
+		matchers.add(new SimpleFacts("MMMM d, d{4}", "MMMM d, yyyy", FTAType.LOCALDATE));
 		matchers.add(new SimpleFacts("MMMM d{2} d{4}", "MMMM dd yyyy", FTAType.LOCALDATE));
 		matchers.add(new SimpleFacts("MMMM d d{4}", "MMMM d yyyy", FTAType.LOCALDATE));
 		matchers.add(new SimpleFacts("MMMM-d{2}-d{4}", "MMMM-dd-yyyy", FTAType.LOCALDATE));
