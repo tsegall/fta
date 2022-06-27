@@ -197,11 +197,11 @@ The following fields are *not* calculated by FTA (but may be set on the Analyzer
  * totalCount - The total number of elements in the Data Stream (-1 unless set explicitly).
 
 Note 1: The value of the typeQualifier is dependent on the Base Type as follows:
- * BOOLEAN - options are "TRUE_FALSE", "YES_NO", "ONE_ZERO"
- * STRING - options are "BLANK", "BLANKORNULL", "NULL"
- * LONG - options are "GROUPING", "SIGNED", "SIGNED_TRAILING" ("GROUPING" and "SIGNED" are independent and can both be present).
- * DOUBLE - options are "GROUPING", "SIGNED", "SIGNED_TRAILING", "NON_LOCALIZED" ("GROUPING" and "SIGNED" are independent and can both be present).
- * DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The qualifier is the detailed date format string (See Java DateTimeFormatter for format details).
+ * Boolean - options are "TRUE_FALSE", "YES_NO", "ONE_ZERO"
+ * String - options are "BLANK", "BLANKORNULL", "NULL"
+ * Long - options are "GROUPING", "SIGNED", "SIGNED_TRAILING" ("GROUPING" and "SIGNED" are independent and can both be present).
+ * Double - options are "GROUPING", "SIGNED", "SIGNED_TRAILING", "NON_LOCALIZED" ("GROUPING" and "SIGNED" are independent and can both be present).
+ * LocalDate, LocalTime, LocalDateTime, ZonedDateTime, OffsetDateTime - The qualifier is the detailed date format string (See Java DateTimeFormatter for format details).
  * If any Logical plugins are installed - then additional Qualifiers may be returned. For example, if the LastName plugin is installed and a Last Name is detected then the Base Type will be STRING, and the qualifier will be "NAME.LAST".
 
 Note 2: This field may be set on the Analyzer - and if so FTA attempts no further analysis.
