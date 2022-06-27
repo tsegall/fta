@@ -51,7 +51,6 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cobber.fta.core.FTAMergeException;
@@ -146,8 +145,6 @@ public class TextAnalyzer {
 	private int internalErrors;
 
 	private final static String insufficient = "Insufficient digits in input (";
-
-	private Logger logger = null;
 
 	private Collator collator;
 
@@ -1575,7 +1572,7 @@ public class TextAnalyzer {
 					candidateCounts[c]++;
 			}
 			catch (Exception e) {
-				logger.error("Plugin: %s, issue: %s.", logical.getQualifier(), e.getMessage());
+				LoggerFactory.getLogger("com.cobber.fta").error("Plugin: %s, issue: %s.", logical.getQualifier(), e.getMessage());
 			}
 			c++;
 		}
@@ -1730,11 +1727,8 @@ public class TextAnalyzer {
 	}
 
 	void debug(final String format, final Object... arguments) {
-		if (analysisConfig.getDebug() >= 2) {
-			if (logger == null)
-				logger = LoggerFactory.getLogger("com.cobber.fta");
-			logger.debug(format, arguments);
-		}
+		if (analysisConfig.getDebug() >= 2)
+			LoggerFactory.getLogger("com.cobber.fta").debug(format, arguments);
 	}
 
 	/**

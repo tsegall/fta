@@ -168,7 +168,11 @@
 		"pluginType": "java",
 		"signature": "NBx2UhY9b1E8PKjEPXxorgBew1s=",
 		"clazz": "com.cobber.fta.plugins.PostalCodeFR",
-		"validLocales": [ { "localeTag":  "fr-FR" } ],
+		"validLocales": [
+			{
+				"localeTag":  "fr-FR",
+				"headerRegExps": [ { "regExp": ".*(?i)(code.postal).*", "confidence": 95 } ]
+			} ],
 		"priority": 66
 	},
 	{
@@ -329,19 +333,19 @@
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.Gender",
 		"validLocales": [
-			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": "(?i)(?u)(Gender|пол|пол .*)", "confidence": 90 } ] },
+			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": "(?i)(?u)(Gender|пол).*", "confidence": 90 } ] },
 			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sexe).*", "confidence": 90 } ] },
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(Gender|sex)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
 			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex|geschlecht).*", "confidence": 90 } ] },
-			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
+			{ "localeTag":  "es", "headerRegExps": [ { "regExp": "(?i)(Gender|Sexo)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
 			{ "localeTag":  "fi", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Genre|Sukupuoli).*", "confidence": 90 } ] },
-			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Genre|Sexe).*", "confidence": 90 } ] },
+			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": "(?i)(Gender|Genre|Sexe)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Genre|Sexe).*", "confidence": 90 } ] },
 			{ "localeTag":  "hr", "headerRegExps": [ { "regExp": ".*(?i)(Gender).*", "confidence": 90 } ] },
-			{ "localeTag":  "it", "headerRegExps": [ { "regExp": ".*(?i)(Gender|genere|sesso).*", "confidence": 90 } ] },
+			{ "localeTag":  "it", "headerRegExps": [ { "regExp": "(?i)(Gender|genere|sesso)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|genere|sesso).*", "confidence": 90 } ] },
 			{ "localeTag":  "ms", "headerRegExps": [ { "regExp": ".*(?i)(Gender|jantina).*", "confidence": 90 } ] },
 			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sexe|Geslach|Geslacht).*", "confidence": 90 } ] },
 			{ "localeTag":  "pl", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Płeć|P³eæ).*", "confidence": 90 } ] },
-			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Gênero|Sexo).*", "confidence": 90 } ] },
+			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": "(?i)(Gender|Sexo)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
 			{ "localeTag":  "ro", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
 			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Пол).*", "confidence": 90 } ] },
 			{ "localeTag":  "sv", "headerRegExps": [ { "regExp": ".*(?i)(Gender|kon|kön).*", "confidence": 90 } ] }
@@ -387,6 +391,32 @@
 		"backout": ".*",
 		"baseType" : "STRING",
 		"priority": 82
+	},
+	{
+		"qualifier" : "PERSON.AGE",
+		"description": "Age (person)",
+		"pluginType": "java",
+		"signature": "4IK7tmSs276PtQDC39Ggz27RB1g=",
+		"clazz": "com.cobber.fta.plugins.person.Age",
+		"validLocales": [
+			{
+				"localeTag":  "en,fr",
+				"headerRegExps": [ { "regExp": "(?i)(age)", "confidence": 90, "mandatory": true } ]
+			},
+			{
+				"localeTag":  "es",
+				"headerRegExps": [ { "regExp": "(?i)(edad)", "confidence": 90, "mandatory": true } ]
+			},
+			{
+				"localeTag":  "it",
+				"headerRegExps": [ { "regExp": "(?i)(?u)(età)", "confidence": 90, "mandatory": true } ]
+			},
+			{
+				"localeTag":  "pt",
+				"headerRegExps": [ { "regExp": "(?i)(idade)", "confidence": 90, "mandatory": true } ]
+			}
+		],
+		"priority": 83
 	},
 	{
 		"qualifier": "NATIONALITY_EN",

@@ -25,7 +25,7 @@ import com.cobber.fta.core.FTAPluginException;
  */
 public abstract class LogicalTypeFactory {
 	/**
-	 * Return a Logical Type based on a Plugin Definition in a particular locale.
+	 * Return a Logical Type based on a Plugin Definition with an associated AnalysisConfig.
 	 *
 	 * @param plugin The Definition for this plugin
 	 * @param analysisConfig The Analysis configuration used for this analysis

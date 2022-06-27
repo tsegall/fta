@@ -201,7 +201,7 @@ Note 1: The value of the typeQualifier is dependent on the Base Type as follows:
  * STRING - options are "BLANK", "BLANKORNULL", "NULL"
  * LONG - options are "GROUPING", "SIGNED", "SIGNED_TRAILING" ("GROUPING" and "SIGNED" are independent and can both be present).
  * DOUBLE - options are "GROUPING", "SIGNED", "SIGNED_TRAILING", "NON_LOCALIZED" ("GROUPING" and "SIGNED" are independent and can both be present).
- * DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The qualifier is the detailed date format string.
+ * DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The qualifier is the detailed date format string (See Java DateTimeFormatter for format details).
  * If any Logical plugins are installed - then additional Qualifiers may be returned. For example, if the LastName plugin is installed and a Last Name is detected then the Base Type will be STRING, and the qualifier will be "NAME.LAST".
 
 Note 2: This field may be set on the Analyzer - and if so FTA attempts no further analysis.
@@ -283,7 +283,8 @@ NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, nl, pr
 NAME.MIDDLE|Middle Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.MIDDLE_INITIAL|Middle Initial|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NATIONALITY_EN|Nationality|en
-POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|en-AU, en-CA, nl-NL, en-UK, es-ES, es-MX, es-UY, fr-FR, ja, pt-PT, sv-SE
+PERSON.AGE|Age (Person)|en, es, fr, es, it, pt
+POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, FR, JA, NL, UK, ES, MX, PT, SE, UY
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US

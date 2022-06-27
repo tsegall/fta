@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 9.0.5
+ - ENH: Add new Semantic Types - PERSON.AGE
+ - ENH: I18N - Improve French Post Code detection
+
 ### 9.0.4
  - ENH: I18N - Improve Coordinate detection in Dutch
  - ENH: Improve consistency wrt to quoting ',' in returned Date formats
