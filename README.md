@@ -266,6 +266,7 @@ IDENTITY.NHS_UK|NHS Number|en-UK
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH
 IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number (Japan)|ja
+IDENTITY.VAT_&lt;COUNTRY&gt;|Value-added Tax Identification Number|de-AT, ca-ES, es-ES, fr-FR, it-IT, en-GB, en-UK, pl-PL
 INDUSTRY_EN|Industry Name|en
 IPADDRESS.IPV4|IP V4 Address|*
 IPADDRESS.IPV6|IP V6 Address|*
@@ -283,6 +284,8 @@ NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, nl, pr
 NAME.MIDDLE|Middle Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.MIDDLE_INITIAL|Middle Initial|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NATIONALITY_EN|Nationality|en
+PERIOD.HALF|Half (Year)|*
+PERIOD.QUARTER|Quarter (Year)|*
 PERSON.AGE|Age (Person)|en, es, fr, es, it, pt
 POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, FR, JA, NL, UK, ES, MX, PT, SE, UY
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
@@ -299,8 +302,9 @@ STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA, en-US
 STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
 STATE_PROVINCE.PROVINCE_ZA|South African Province Code|en-ZA
 STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name|en-CA, en-US
-STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
+STATE_PROVINCE.PROVINCE_NAME_EC|Ecuadorian Province Name|es-EC
 STATE_PROVINCE.PROVINCE_NAME_ES|Spanish Province Name|es-ES
+STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
 STATE_PROVINCE.PROVINCE_NAME_NL|Dutch Province Name|nl-NL
 STATE_PROVINCE.PROVINCE_NAME_ZA|South African Province Name|en-ZA
 STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA, en-US, es-MX

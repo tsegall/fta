@@ -8,7 +8,14 @@
 
 # Field attributes
  - Improve PII detection (e.g. DOB, Age, ...)
- - Improve Semantic Type detection (e.g. Age field as AGE or AGE_RANGE, Race)
+ - Improve Semantic Type detection
+	- IDENTITY.VAT_<COUNTRY>
+	- PERSON.DOB
+	- PERSON.AGE_RANGE
+	- PERSON.RACE
+	- PERSON.AGE
+	- Mime Type
+	- UserAgent
  - Outlier detection in numeric fields
  - Improved anomaly detection (see https://www.sciencedirect.com/science/article/pii/S0925231217309864)
  - Add Filename detection

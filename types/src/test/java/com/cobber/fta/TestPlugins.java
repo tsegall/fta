@@ -349,6 +349,259 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void VAT_AT() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("UID");
+		analysis.setLocale(Locale.forLanguageTag("de-AT"));
+
+		final String[] inputs = {
+				"ATU11111116", "ATU22222226", "ATU33333336", "ATU44444446", "ATU55555553",
+				"ATU66666663", "ATU77777773", "ATU88888883", "ATU99999993", "ATU12345675",
+				"ATU00000024", "ATU00000033", "ATU00000042", "ATU00000060", "ATU00000079",
+				"ATU00000088", "ATU00000104", "ATU00000113", "ATU00000122", "ATU00000140",
+				"ATU00000159", "ATU00000168", "ATU00000186", "ATU00000195", "ATU00000202",
+				"ATU00000202", "ATU10223006", "ATU12011204", "ATU15110001",
+				"ATU15394605", "ATU15416707", "ATU15662209", "ATU16370905", "ATU23224909",
+				"ATU25775505", "ATU28560205", "ATU28609707", "ATU28617100", "ATU29288909",
+				"ATU37675002", "ATU37785508", "ATU37830200", "ATU38420507", "ATU38516405",
+				"ATU39364503", "ATU42527002", "ATU43666001", "ATU43716207", "ATU45766309",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_AT");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "(AT)?U\\d{8}");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()), input);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void VAT_FR() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("TVA");
+		analysis.setLocale(Locale.forLanguageTag("fr-FR"));
+
+		final String[] inputs = {
+				"FR00000000190", "FR00300076965", "FR00303656847", "FR19000000067", "FR20562016774",
+				"FR01000000158", "FR03512803495", "FR03552081317", "FR03784359069", "FR04494487341",
+				"FR05442977302", "FR13393892815", "FR14722057460", "FR17000000034", "FR22528117732",
+				"FR25000000166", "FR25432701258", "FR27514868827", "FR29312010820", "FR31387589179",
+				"FR38438710865", "FR39412658767", "FR40303265045", "FR40391895109", "FR40402628838",
+				"FR41000000042", "FR41343848552", "FR42403335904", "FR42504207853", "FR90524670213",
+				"FR43000000075", "FR44527865992", "FR45395080138", "FR45542065305", "FR46400477089",
+				"FR47000000141", "FR47323875187", "FR47323875187", "FR48000000109", "FR53418304010",
+				"FR54000000208", "FR55338966385", "FR55440243988", "FR55480081306", "FR56439795816",
+				"FR57609803416", "FR58399360817", "FR58499528255", "FR61300986619", "FR61954506077",
+				"FR64518539093", "FR65489465542", "FR67000000083", "FR71383076817", "FR72000000117",
+				"FR73000000182", "FR74532287844", "FR82494628696", "FR82542065479", "FR83404833048",
+				"FR85418228102", "FR88414997130", "FR89540090917", "FR90000000026", "FR96000000125"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_FR");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "(FR)?\\d{11}");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()), input);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void VAT_UK1() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("VAT Registration Number");
+		analysis.setLocale(Locale.forLanguageTag("en-UK"));
+
+		final String[] inputs = {
+				"654434043", "654961603", "902905932", "902905932", "902905932",
+				"902905932", "902905932", "483797387", "654434043", "654434043",
+				"654434729", "654434043", "654434043", "654434729", "673426621",
+				"768362492", "654434729", "902905932", "902905932", "902905932",
+				"902905932", "902905932", "896107201", "669318888", "654434729",
+				"654943996", "873342418", "768362492", "768362492", "768362492",
+				"654943996", "654943996", "654434729", "654434043", "654434043",
+				"902905932", "902905932", "902905932", "902905932", "902905932",
+				"781498779", "781498779", "654434043", "654434043", "654434729",
+				"902905932", "902905932", "902905932", "902905932", "902905932",
+				"902905932", "902905932", "902905932", "902905932", "902905932",
+				"902905932", "902905932", "902905932", "902905932", "902905932",
+				"902905932", "902905932", "902905932", "902905932", "902905932",
+				"902905932", "902905932", "902905932", "313651680", "654943996",
+				"902905932", "902905932", "902905932", "902905932", "902905932",
+				"902905932", "654961603", "673426621", "125483810"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_UK");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[ \\d]{9}");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()), input);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void VAT_UK2() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("VAT Registration Number");
+		analysis.setLocale(Locale.forLanguageTag("en-UK"));
+
+		final String[] inputs = {
+				"GB654430839", "GB654430839", "GB654430839", "GB654430839", "GB654430839",
+				"GB654430839", "GB654430839", "GB654430839", "GB654430839", "GB654430839",
+				"GB654430839", "GB654430839", "GB654430839", "GB654430839", "GB654430839",
+				"GB654430839", "GB654430839", "GB654430839", "GB654430839", "GB654430839",
+				"GB654430839", "GB654430839", "GB654430839", "GB654430839", "GB654430839",
+				"GB654430839", "GB654430839", "654966000", "915970991", "GB 654442045",
+				"GB 654442045", "GB 654442045", "GB 654442045", "GB 654442045", "GB 654442045",
+				"218180129", "654435138", "654435138", "654435138", "654435138",
+				"654435138", "218788662", "218788662", "218788662", "GB654430839",
+				"906917408", "218180129", "GB654951509", "654923319", "GB654951509",
+				"915970991", "GB654430839", "GB654430839", "GB654430839"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_UK");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "(GB)?[ \\d]{9}");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void VAT_PL() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("NIP");
+		analysis.setLocale(Locale.forLanguageTag("pl-PL"));
+
+		final String[] inputs = {
+				"5250008318", "5260250995", "5861014302", "6430000299", "6310200736",
+				"6351011280", "6370102776", "6442211079", "5261040567", "9441251003",
+				"6431720328", "6342840172", "6442995827", "6291201739", "5272647089",
+				"9570968370", "6340014168", "5221005607", "6340253861", "6340253861",
+				"6340125382", "6272473827", "5272706082", "9542732017", "5250007313",
+				"5210088682", "6110202860", "5420304637", "6262098291", "5272647089",
+				"5861014302", "6340253861", "6310200736", "6340014168", "5221005607",
+				"1132779593", "9491924705", "9570968370", "5422737719", "6370102776",
+				"5422758029", "5250008318", "5470049288", "7773206954", "7773156972",
+				"5272521678", "7272746817", "5210527710", "9542388146", "9691297176",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_PL");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{10}");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void VAT_IT() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("IVA");
+		analysis.setLocale(Locale.forLanguageTag("it-IT"));
+
+		final String[] inputs = {
+				"00673580221", "02400290223", "02209460225", "02018300224", "00106510225",
+				"02271060226", "02167060223", "00227460227", "01867580225", "01981650227",
+				"02046850224", "02459690224", "02141050225", "00051370229", "00983840224",
+				"01989590227", "00075750224", "00337140222", "01855780225", "02099830222",
+				"00142960228", "01384990220", "02345010223", "01720000221", "01947280226",
+				"00166280222", "01889730220", "02046780223", "00921280244", "01648950226",
+				"01856020225", "00828140228", "02030200220", "00814060224", "00971660220",
+				"00401660220", "02304350222", "02787520168", "01718290222", "01731500227",
+				"02331550224", "01743260224", "01887120226", "01226750220", "01323250223",
+				"01813150222", "01783350224", "01273520229", "01594610220", "01611170224"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_IT");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{11}");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()), input);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void VAT_ES() throws IOException, FTAException {
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(true);
+		String[] header;
+		String[] row;
+		TextAnalyzer[] analysis;
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/VAT_ES.csv"), StandardCharsets.UTF_8))) {
+
+			final CsvParser parser = new CsvParser(settings);
+			parser.beginParsing(in);
+
+			header = parser.getRecordMetadata().headers();
+			analysis = new TextAnalyzer[header.length];
+			for (int i = 0; i < header.length; i++) {
+				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "VAT_ES.csv", header));
+				analysis[i].setLocale(Locale.forLanguageTag("es-ES"));
+			}
+			while ((row = parser.parseNext()) != null) {
+				for (int i = 0; i < row.length; i++) {
+					analysis[i].train(row[i]);
+				}
+			}
+		}
+
+		final TextAnalysisResult result = analysis[0].getResult();
+		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_ES");
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getSampleCount(), 1194);
+		assertEquals(result.getMatchCount(), 1193);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getOutlierCount(), 1);
+		Entry<String, Long> only = result.getOutlierDetails().entrySet().iterator().next();
+		assertEquals(only.getKey(), "X02469358");
+		assertEquals(only.getValue(), 1);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPostalCodeNL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("P_PCODE");
 		analysis.setLocale(Locale.forLanguageTag("nl-NL"));

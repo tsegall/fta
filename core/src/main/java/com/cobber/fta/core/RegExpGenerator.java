@@ -304,12 +304,14 @@ public class RegExpGenerator {
 		toSimplifyFull.put("\\p{IsAlphabetic}", "<L>");
 		toSimplifyFull.put("\\d", "<Nd>");
 		toSimplifyFull.put("#", "\\#");
+		toSimplifyFull.put("(?i)", "");
 
 		toSimplifyASCII.put("[\\p{IsAlphabetic}\\d]", "[A-Za-z0-9]");
 		toSimplifyASCII.put("\\p{XDigit}", "[0-9A-Fa-f]");
 		toSimplifyASCII.put("\\p{IsAlphabetic}", "[A-Za-z]");
 		toSimplifyASCII.put("\\d", "[0-9]");
 		toSimplifyASCII.put("#", "\\#");
+		toSimplifyASCII.put("(?i)", "");
 	}
 
 	/**

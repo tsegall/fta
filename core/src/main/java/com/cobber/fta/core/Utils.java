@@ -144,6 +144,24 @@ public final class Utils {
 		return true;
 	}
 
+	/**
+	 * Test if the supplied character is numeric (0-9).
+	 * @param ch Character to test.
+	 * @return True if the character is in the range [0-9].
+	 */
+	public static boolean isSimpleNumeric(final char ch) {
+		return ch >= '0' && ch <= '9';
+	}
+
+	/**
+	 * Test if the supplied character is alphaNumeric (A-Za-z0-9).
+	 * @param ch Character to test.
+	 * @return True if the character is in the range [A-Za-z0-9].
+	 */
+	public static boolean isSimpleAlphaNumeric(final char ch) {
+		return ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z';
+	}
+
 	public static String getBaseName(final String fileName) {
 		final int index = fileName.lastIndexOf('.');
 		return index == -1 ? fileName : fileName.substring(0, index);

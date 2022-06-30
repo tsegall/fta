@@ -109,7 +109,6 @@
 				"localeTag":  "en-US,en-CA,fr-CA",
 				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d" ],
 					"regExpReturned": "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d",
 					"isRegExpComplete": true
 				} ]
@@ -148,11 +147,9 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 95 }, { "regExp": ".*(?i)(code).*", "confidence": 75 } ],
 				"matchEntries": [
 					{
-						"regExpsToMatch": [ "\\d{4}\\p{IsAlphabetic}{2}" ],
 						"regExpReturned": "\\d{4}\\p{IsAlphabetic}{2}"
 					},
 					{
-						"regExpsToMatch": [ "\\d{4} \\p{IsAlphabetic}{2}" ],
 						"regExpReturned": "\\d{4} \\p{IsAlphabetic}{2}"
 					}
 				 ]
@@ -194,7 +191,6 @@
 				"localeTag":  "pt-PT",
 				"headerRegExps": [ { "regExp": ".*(?i)(código|postal).*", "confidence": 95 } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d{4}-\\d{3}" ],
 					"regExpReturned": "\\d{4}-\\d{3}"
 				} ]
 			}
@@ -510,6 +506,40 @@
 		"clazz": "com.cobber.fta.plugins.DOWFull",
 		"validLocales": [ { "localeTag":  "*" } ],
 		"priority": 103
+	},
+	{
+		"qualifier": "PERIOD.QUARTER",
+		"description": "Quarter (Year)",
+		"pluginType": "regex",
+		"signature": "H0LOGKpMF3InUXIIU5pCKHEReTo=",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(quarter).*", "confidence": 99 } ],
+				"matchEntries": [ {
+					"regExpReturned": "(?i)(Q1|Q2|Q3|Q4)",
+					"isRegExpComplete": true
+				} ]
+			}
+		],
+		"priority": 104
+	},
+	{
+		"qualifier": "PERIOD.HALF",
+		"description": "Half (Year)",
+		"pluginType": "regex",
+		"signature": "lc0Ep9P3R6hDY6EIlSvRtjjvfbc=",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(half).*", "confidence": 99 } ],
+				"matchEntries": [ {
+					"regExpReturned": "(?i)(H1|H2)",
+					"isRegExpComplete": true
+				} ]
+			}
+		],
+		"priority": 105
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
@@ -962,6 +992,25 @@
 		"priority": 136
 	},
 	{
+		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_EC",
+		"description": "Ecuadorian Province Name",
+		"pluginType": "list",
+		"signature": "",
+		"validLocales": [
+			{
+				"localeTag": "es-EC",
+				"headerRegExps": [ { "regExp": ".*(?i)(provincia).*", "confidence": 90 } ],
+				"matchEntries": [ {
+					"regExpReturned": "[ \\p{IsAlphabetic}]+"
+				} ]
+			}
+		],
+		"content": "/reference/ec_provinces_full.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 137
+	},
+	{
 		"qualifier": "STATE_PROVINCE.DISTRICT_NAME_PT",
 		"description": "Portuguese District Name",
 		"pluginType": "list",
@@ -978,7 +1027,7 @@
 		"content": "/reference/pt_districts_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 137
+		"priority": 138
 	},
 	{
 		"qualifier": "STATE_PROVINCE.MUNICIPALITY_BR",
@@ -991,7 +1040,7 @@
 		"content": "/reference/br_municipalities.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 138
+		"priority": 139
 	},
 	{
 		"qualifier": "STATE_PROVINCE.REGION_IT",
@@ -1004,7 +1053,7 @@
 		"content": "/reference/it_regions.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 139
+		"priority": 140
 	},
 	{
 		"qualifier": "STATE_PROVINCE.COMMUNE_IT",
@@ -1018,7 +1067,7 @@
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"threshold": 85,
-		"priority": 140
+		"priority": 141
 	},
 	{
 		"qualifier": "STATE_PROVINCE.COUNTY_HU",
@@ -1031,7 +1080,7 @@
 		"content": "/reference/hu_counties.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 141
+		"priority": 142
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
@@ -1445,7 +1494,6 @@
 				"localeTag": "en",
 				"headerRegExps": [ { "regExp": ".*(?i)(easting).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d+" ],
 					"regExpReturned": "\\d+",
 					"isRegExpComplete": true
 				} ]
@@ -1466,7 +1514,6 @@
 				"localeTag": "en",
 				"headerRegExps": [ { "regExp": ".*(?i)(northing).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d+" ],
 					"regExpReturned": "\\d+",
 					"isRegExpComplete": true
 				} ]
@@ -1675,7 +1722,6 @@
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(DUNS|D-U-N-S).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d{9}" ],
 					"regExpReturned": "\\d{9}",
 					"isRegExpComplete": false
 				} ]
@@ -1685,12 +1731,29 @@
 		"priority": 236
 	},
 	{
+		"qualifier": "IDENTITY.VAT_<COUNTRY>",
+		"description": "VAT",
+		"pluginType": "java",
+		"signature": "",
+		"clazz": "com.cobber.fta.plugins.identity.VAT",
+		"validLocales": [
+			{ "localeTag": "en-GB,en-UK", "headerRegExps": [ { "regExp": ".*(?i)(VAT).*", "confidence": 95, "mandatory": true } ] },
+			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(IVA).*", "confidence": 95, "mandatory": true } ] },
+			{ "localeTag": "es-ES,ca-ES", "headerRegExps": [ { "regExp": ".*(?i)(NIF|CIF).*", "confidence": 95, "mandatory": true } ] },
+			{ "localeTag": "pl-PL", "headerRegExps": [ { "regExp": ".*(?i)(NIP).*", "confidence": 95, "mandatory": true } ] },
+			{ "localeTag": "de-AT", "headerRegExps": [ { "regExp": "(?i)(UID)", "confidence": 95, "mandatory": true } ] },
+			{ "localeTag": "fr-FR", "headerRegExps": [ { "regExp": "(?i)(TVA)", "confidence": 95, "mandatory": true } ] }
+		],
+		"threshold": 95,
+		"priority": 237
+	},
+	{
 		"qualifier": "LANGUAGE.ISO-639-2",
 		"description": "Language code - ISO 639, two character",
 		"pluginType": "list",
 		"signature": "oh7DsTF4qDUm+o+JPy7jAIoU+1Y=",
 		"validLocales": [
-			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(language|639|3066).*", "confidence": 90 }, { "regExp": ".*(?i)(lang).*", "confidence": 60 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(language|lingua|639|3066).*", "confidence": 90 }, { "regExp": ".*(?i)(lang).*", "confidence": 60 } ] }
 		],
 		"content": "/reference/ISO-639-2.csv",
 		"contentType": "resource",
@@ -1799,7 +1862,6 @@
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(timestamp)", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d{10}" ],
 					"regExpReturned": "\\d{10}",
 					"isRegExpComplete": false
 				} ]
@@ -1821,7 +1883,6 @@
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(timestamp)", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d{13}" ],
 					"regExpReturned": "\\d{13}",
 					"isRegExpComplete": false
 				} ]
@@ -1956,7 +2017,6 @@
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(SHA1|hash).*", "confidence": 99 } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "\\p{XDigit}{40}" ],
 					"regExpReturned": "\\p{XDigit}{40}",
 					"isRegExpComplete": true
 				} ]
@@ -1976,7 +2036,6 @@
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(SHA256|hash).*", "confidence": 99 } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "\\p{XDigit}{64}" ],
 					"regExpReturned": "\\p{XDigit}{64}",
 					"isRegExpComplete": true
 				} ]
@@ -1996,7 +2055,6 @@
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(SHA1|hash).*", "confidence": 90 } ],
 				"matchEntries": [ {
-					"regExpsToMatch": [ "#\\p{XDigit}{6}" ],
 					"regExpReturned": "#\\p{XDigit}{6}",
 					"isRegExpComplete": true
 				} ]

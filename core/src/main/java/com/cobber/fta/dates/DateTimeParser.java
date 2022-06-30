@@ -1523,6 +1523,16 @@ public class DateTimeParser {
 		if (dtpResult == null || !dtpResult.isValid(trimmed))
 			return null;
 
+		// Add a relatively naive check to see if we have any characters that make it look unlikely this is an actual date.
+		for (int i = 0; i < compressed.length(); i++) {
+			char ch = compressed.charAt(i);
+			boolean possiblePatternCharacter = (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+			if (possiblePatternCharacter &&
+					ch != 'E' && ch != 'H' && ch != 'M' && ch != 'S' &&
+					ch != 'a' && ch != 'd' && ch != 'h' && ch != 'm' && ch != 'p' && ch != 's' & ch != 'x' && ch != 'y' && ch != 'z')
+				return null;
+		}
+
 		// So before we declare ultimate success - check that Java is happy with our conclusion
 		try {
 			new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(compressed).toFormatter(config.locale);

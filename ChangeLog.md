@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 9.0.7
+ - BUG: Date detection is sometimes overly aggressive, for example, Q4 2008-12
+ - ENH: Add new Semantic Types - PERIOD.QUARTER, PERIOD.HALF
+ - ENH: Add new Semantic Types - IDENTITY.VAT_<COUNTRY> (Countries supported AT, ES, FR, IT, PL, UK)
+ - ENH: Add new Semantic Types - STATE_PROVINCE.PROVINCE_NAME_EC (Ecuador)
+
 ### 9.0.6
  - BUG: Address incorrectly collapsing time formats when both date and time needed collapsing (See Issue #6)
  - ENH: Bump google phonenumber
