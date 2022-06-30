@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 9.0.6
+ - BUG: Address incorrectly collapsing time formats when both date and time needed collapsing (See Issue #6)
+ - ENH: Bump google phonenumber
+
 ### 9.0.5
  - ENH: Add new Semantic Types - PERSON.AGE
  - ENH: I18N - Improve French Post Code detection

@@ -411,8 +411,14 @@ public class DateTimeParser {
 									final int start = answerResult.timeFieldOffsets[i];
 									final int len = answerResult.timeFieldLengths[i].getMin();
 									answerResult.timeFieldLengths[i].setMin(result.timeFieldLengths[i].getMin());
+
+									// Need to reset all the offsets in the answerResult
 									for (int j = i + 1; j < result.timeFieldLengths.length; j++)
 										answerResult.timeFieldOffsets[j]--;
+									if (result.dateElements != -1 && answerResult.timeFieldOffsets[0] < answerResult.dateFieldOffsets[0])
+										for (int j = 0; j < result.dateFieldLengths.length; j++)
+											answerResult.dateFieldOffsets[j]--;
+
 									// Fix up the String
 									answerBuffer.replace(start, start + len, Utils.repeat(answerBuffer.charAt(start), result.timeFieldLengths[i].getMin()));
 								}
@@ -494,9 +500,14 @@ public class DateTimeParser {
 								else
 									continue;
 
+								// Need to reset all the offsets in the answerResult
 								final int delta = was.length() - replacement.length();
 								for (int j = i + 1; j < result.dateFieldLengths.length; j++)
 									 answerResult.dateFieldOffsets[j] -= delta;
+								if (result.timeFieldLengths != null && answerResult.dateFieldOffsets[0] < answerResult.timeFieldOffsets[0])
+									for (int j = 0; j < result.timeFieldLengths.length; j++)
+										answerResult.timeFieldOffsets[j] -= delta;
+
 								answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
 								answerBuffer.replace(start, start + len, replacement);
 							}
