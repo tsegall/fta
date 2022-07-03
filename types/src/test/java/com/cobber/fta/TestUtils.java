@@ -127,7 +127,6 @@ public class TestUtils {
 			"324 North Lancaster Dr."
 	};
 
-
 	static String
 	getNegativePrefix(final Locale locale) {
 		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);

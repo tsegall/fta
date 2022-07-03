@@ -323,7 +323,7 @@
 		"priority": 77
 	},
 	{
-		"qualifier": "GENDER.TEXT_<LOCALE>",
+		"qualifier": "GENDER.TEXT_<LANGUAGE>",
 		"description": "Gender",
 		"pluginType": "java",
 		"signature": "[NONE]",
@@ -2072,7 +2072,9 @@
 		"clazz": "com.cobber.fta.plugins.FreeText",
 		"validLocales": [
 			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(bezeichnung|anmerkungen|bemerkungen).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descripción|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": ".*(?i)(description|remarques|commentaire|raison).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "it", "headerRegExps": [ { "regExp": ".*(?i)(descrizione|nota|Annotazioni|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comment|reason).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 70,

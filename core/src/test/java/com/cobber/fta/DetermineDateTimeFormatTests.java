@@ -185,6 +185,8 @@ public class DetermineDateTimeFormatTests {
 	public void intuitDateOnlySlash() {
 		final DateTimeParser dtp = new DateTimeParser();
 
+		assertEquals(dtp.determineFormatString("2015/9/9"), "yyyy/?/?");
+		assertEquals(dtp.determineFormatString("2015/9/10"), "yyyy/?/??");
 		assertEquals(dtp.determineFormatString("2/12/98"), "?/??/yy");
 		assertEquals(dtp.determineFormatString("2/2/02"), "?/?/yy");
 		assertNull(dtp.determineFormatString("2/31/02"));

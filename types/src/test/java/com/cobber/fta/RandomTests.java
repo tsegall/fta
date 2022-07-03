@@ -2449,7 +2449,7 @@ public class RandomTests {
 			final String typeQualifier = result.getTypeQualifier();
 			assertNotNull(typeQualifier, semanticType);
 			if (!typeQualifier.equals(semanticType) &&
-					!typeQualifier.equals(semanticType.replaceAll("<LOCALE>", "EN")) &&
+					!typeQualifier.equals(semanticType.replaceAll("<LANGUAGE>", "EN")) &&
 					!typeQualifier.equals(semanticType.replaceAll("<LOCALE>", "en-US")))
 					fail("Input: " + semanticType + ", Result: " + typeQualifier);
 		}
@@ -2531,7 +2531,7 @@ public class RandomTests {
 	private static String someSemanticTypes[] = {
 			"EMAIL", "URI.URL", "IPADDRESS.IPV4", "IPADDRESS.IPV6", "TELEPHONE", "GUID",
 			"POSTAL_CODE.ZIP5_US", "POSTAL_CODE.POSTAL_CODE_CA",
-			"STREET_ADDRESS_EN", "GENDER.TEXT_<LOCALE>", "COUNTRY.TEXT_EN",
+			"STREET_ADDRESS_EN", "GENDER.TEXT_<LANGUAGE>", "COUNTRY.TEXT_EN",
 			"STATE_PROVINCE.PROVINCE_CA", "STATE_PROVINCE.STATE_US", "STATE_PROVINCE.STATE_PROVINCE_NA",
 			"CURRENCY_CODE.ISO-4217", "COUNTRY.ISO-3166-3", "COUNTRY.ISO-3166-2",
 			"AIRPORT_CODE.IATA", "CITY", "SSN",

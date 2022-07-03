@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 9.0.8
+ - ENH: CLI set totalCount in Bulk mode
+ - ENH: I18N - Add FREE_TEXT support for Spanish and Italian
+ - BUG: I18N - Chinese detection should be enabled for language 'zh' (not 'cn')
+ - BUG: I18N - Date (Pass 2) was not being detected for 2015/9/9 (e.g. single digit day), picked up in Pass 3 for anything other than Japanese/Chinese
+
 ### 9.0.7
  - BUG: Date detection is sometimes overly aggressive, for example, Q4 2008-12
  - ENH: Add new Semantic Types - PERIOD.QUARTER, PERIOD.HALF

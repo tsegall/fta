@@ -644,8 +644,8 @@ public class DateTimeParser {
 		if (formatPassTwo != null)
 			return formatPassTwo;
 
-		if ("ja".equals(config.locale.getLanguage()) || "cn".equals(config.locale.getLanguage()))
-			return passJaCn(trimmed, matcher, resolutionMode);
+		if ("ja".equals(config.locale.getLanguage()) || "zh".equals(config.locale.getLanguage()))
+			return passJaZh(trimmed, matcher, resolutionMode);
 
 		// Third and final pass is brute force by elimination
 		return passThree(trimmed, matcher, resolutionMode);
@@ -671,7 +671,7 @@ public class DateTimeParser {
 		}
 	}
 
-	private String passJaCn(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
+	private String passJaZh(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
 		final int yearIndex = trimmed.indexOf('年');
 		final int hourIndex = trimmed.indexOf('時');
 		if (yearIndex == -1 && hourIndex == -1)
@@ -689,6 +689,10 @@ public class DateTimeParser {
 		final int len = input.length();
 		char workingOn = '¶';
 		int digits = 0;
+
+		// If we have a year then try to weed out some rubbish by insisting that the year is up front
+		if (yearIndex != -1 && !(yearIndex == 0 || Character.isDigit(trimmed.charAt(0))))
+			return null;
 
 		StringBuffer result = new StringBuffer(len);
 		for (int i = len - 1; i >= 0; i--) {
@@ -1151,7 +1155,7 @@ public class DateTimeParser {
 		if (dateTracker.seen() && !dateTracker.isClosed()) {
 			// Need to close out the date
 			if (yearInDateFirst) {
-				if (digits != 2)
+				if (digits != 1 && digits != 2)
 					return null;
 			}
 			else {

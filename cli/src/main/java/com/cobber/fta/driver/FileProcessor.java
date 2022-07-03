@@ -96,6 +96,7 @@ class FileProcessor {
 			numFields = header.length;
 
 			long thisRecord = 0;
+			long totalCount = 0;
 			String[] row;
 			while ((row = parser.parseNext()) != null) {
 				thisRecord++;
@@ -108,13 +109,16 @@ class FileProcessor {
 				name = row[1];
 				final String fieldValue = row[2];
 				final Long fieldCount = Long.valueOf(row[3].trim());
+				totalCount += fieldCount;
 				if (previousKey == null || !key.equals(previousKey)) {
 					if (!bulkMap.isEmpty()) {
 						analyzer = new TextAnalyzer(previousName);
 						options.apply(analyzer);
 						analyzer.trainBulk(bulkMap);
+						analyzer.setTotalCount(totalCount);
 						result = analyzer.getResult();
 						logger.printf("Field '%s' - %s%n", sanitize(analyzer.getStreamName()), result.asJSON(options.pretty, options.verbose));
+						totalCount = 0;
 					}
 					bulkMap.clear();
 					previousKey = key;
@@ -127,6 +131,7 @@ class FileProcessor {
 				analyzer = new TextAnalyzer(name);
 				options.apply(analyzer);
 				analyzer.trainBulk(bulkMap);
+				analyzer.setTotalCount(totalCount);
 				result = analyzer.getResult();
 				logger.printf("Field '%s' - %s%n", sanitize(analyzer.getStreamName()), result.asJSON(options.pretty, options.verbose));
 			}

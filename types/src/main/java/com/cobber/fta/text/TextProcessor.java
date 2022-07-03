@@ -184,7 +184,7 @@ public class TextProcessor {
 				));
 		// German configuration
 		allConfigData.put("DE", new TextConfig(
-				26,				// Choose something that is reasonable
+				26,				// Maximum word length - choose something that is reasonable
 				3.0, 10.0,		// Average word length is ~6.5, so choose a reasonable lower and upper bound
 				30,				// The percentage of 'alpha' characters that we expect to be present
 				80,				// The percentage of 'reasonable' characters that we expect to be present
@@ -218,9 +218,47 @@ public class TextProcessor {
 						"wa", "wä", "we", "wi", "wo", "wu", "wü", "ww",
 						"za", "ze", "zi", "zo", "zu", "zw" }
 				));
+		// Spanish configuration
+		allConfigData.put("ES", new TextConfig(
+				26,				// Maximum word length - choose something that is reasonable
+				3.0, 9.0,		// Average word length is ~5, so choose a reasonable lower and upper bound
+				30,				// The percentage of 'alpha' characters that we expect to be present
+				80,				// The percentage of 'reasonable' characters that we expect to be present
+				140,			// Only analyze the first <n> characters
+				".!?",			// Sentence Break characters
+				", /();:.!?",	// Word Break characters
+				",\"'-();:.!?",	// Punctuation character
+				new String[] {
+						"aa", "ab", "áb", "ac", "ác", "ad", "ae", "aé", "af", "áf", "ag", "ág", "ah", "ai", "aj", "al", "ál", "am", "an", "añ", "án", "ap", "aq", "ar", "ár", "as", "at", "át", "au", "aú", "av", "ax", "ay", "az",
+						"ba", "bá", "be", "bé", "bi", "bl", "bo", "bó", "br", "bu", "bú", "by",
+						"ca", "cá", "cd", "ce", "cé", "ch", "ci", "cí", "cj", "cl", "cm", "co", "có", "cr", "cu", "cú", "cy",
+						"da", "dá", "dc", "de", "dé", "di", "dí", "dj", "do", "dó", "dr", "du", "dw", "dy",
+						"ea", "eb", "ec", "ed", "ee", "ef", "eg", "eh", "ei", "éi", "ej", "el", "él", "em", "en", "ep", "ép", "eq", "er", "ér", "es", "és", "et", "ét", "eu", "ev", "ex", "éx", "ey",
+						"fa", "fá", "fb", "fe", "fé", "fi", "fí", "fl", "fo", "fó", "fr", "fu", "fú", "fü",
+						"ga", "ge", "gé", "gi", "gl", "go", "gr", "gu", "gw", "gy",
+						"ha", "há", "he", "hé", "hi", "hí", "hm", "ho", "hu",
+						"ia", "ib", "íb", "id", "íd", "ie", "ig", "ii", "il", "im", "in", "io", "ir", "is", "it", "iu", "iv", "iz",
+						"ja", "je", "ji", "jo", "jó", "jr", "ju",
+						"ka", "ke", "kg", "ki", "kl", "km", "kn", "ko", "kr", "ku", "ky",
+						"la", "lá", "le", "li", "lí", "ll", "lo", "ló", "lr", "lu", "ly",
+						"ma", "má", "mc", "me", "mé", "mg", "mi", "mí", "mj", "mm", "mo", "mó", "mr", "mu", "mú", "my",
+						"na", "ná", "ne", "ni", "no", "ns", "nu", "nú",
+						"ob", "oc", "od", "oe", "of", "og", "oh", "oi", "oí", "oj", "ok", "ol", "om", "on", "oo", "op", "óp", "or", "ór", "os", "ot", "ov", "ow", "ox", "oy", "oz",
+						"pa", "pá", "pe", "pé", "ph", "pi", "pí", "pl", "pm", "po", "pó", "pr", "ps", "pu", "pú",
+						"qa", "qi", "qu",
+						"ra", "rá", "re", "ré", "ri", "rí", "rj", "ro", "ru", "ry",
+						"sa", "sá", "sc", "sd", "se", "sé", "sg", "sh", "si", "sí", "sk", "sl", "sm", "sn", "so", "só", "sp", "sr", "ss", "st", "su", "sú", "sw", "sy",
+						"ta", "tá", "te", "té", "th", "ti", "tí", "tj", "to", "tó", "tr", "tt", "tu", "tú", "tv", "ty",
+						"ub", "ud", "ue", "uh", "úi", "ul", "úl", "um", "un", "uñ", "ún", "ur", "us", "ut", "út", "uu",
+						"va", "vá", "vd", "ve", "vé", "vi", "ví", "vo", "vu",
+						"wa", "we", "wh", "wi", "wo", "wy",
+						"xe", "xi",
+						"ya", "ye", "yo", "yu", "yy",
+						"za", "ze", "zé", "zh", "zo", "zu" }
+				));
 		// French configuration
 		allConfigData.put("FR", new TextConfig(
-				26,				// Choose something that is reasonable
+				26,				// Maximum word length - choose something that is reasonable
 				3.0, 9.0,		// Average word length is ~5, so choose a reasonable lower and upper bound
 				30,				// The percentage of 'alpha' characters that we expect to be present
 				80,				// The percentage of 'reasonable' characters that we expect to be present
@@ -253,6 +291,44 @@ public class TextProcessor {
 						"va", "ve", "vé", "vi", "vo", "vr", "vu",
 						"wa",
 						"ya" }
+				));
+		// Italian configuration
+		allConfigData.put("IT", new TextConfig(
+				26,				// Maximum word length - choose something that is reasonable
+				3.0, 9.0,		// Average word length is ~5, so choose a reasonable lower and upper bound
+				30,				// The percentage of 'alpha' characters that we expect to be present
+				80,				// The percentage of 'reasonable' characters that we expect to be present
+				140,			// Only analyze the first <n> characters
+				".!?",			// Sentence Break characters
+				", /();:.!?",	// Word Break characters
+				",\"'-();:.!?",	// Punctuation character
+				new String[] {
+						"aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "al", "am", "an", "ap", "aq", "ar", "as", "at", "au", "av", "ax", "az",
+						"ba", "be", "bè", "bi", "bl", "bo", "br", "bu", "by",
+						"ca", "cd", "ce", "ch", "ci", "cl", "cm", "co", "cr", "cu", "cy",
+						"da", "dà", "de", "di", "dí", "dì", "dj", "dl", "dn", "do", "dr", "du", "dv", "dw", "dy",
+						"ea", "eb", "ec", "ed", "ef", "eg", "eh", "ei", "el", "em", "en", "ep", "eq", "er", "es", "et", "eu", "ev", "ex", "ez",
+						"fa", "fb", "fc", "fe", "fi", "fl", "fo", "fr", "fu",
+						"ga", "ge", "gh", "gi", "gl", "go", "gp", "gr", "gu", "gw",
+						"ha", "he", "hi", "hm", "ho", "hu",
+						"ia", "ic", "id", "ie", "ig", "ii", "il", "íl", "im", "in", "în", "io", "ip", "ir", "is", "it", "iv", "iz",
+						"ja", "je", "ji", "jj", "jo", "ju",
+						"ka", "ke", "kg", "kh", "ki", "kl", "km", "kn", "ko", "ku", "ky",
+						"la", "là", "le", "li", "lì", "ll", "ln", "lo", "lu", "ly",
+						"ma", "mc", "me", "mh", "mi", "mm", "mo", "mr", "mu", "my",
+						"na", "nc", "nd", "ne", "né", "nè", "ni", "no", "ns", "nu",
+						"ob", "oc", "od", "of", "og", "oh", "ok", "ol", "om", "on", "oo", "op", "or", "os", "ot", "ou", "ov", "ow", "ox", "oz",
+						"pa", "pe", "ph", "pi", "pl", "po", "pò", "pr", "ps", "pu",
+						"qu",
+						"ra", "re", "ri", "ro", "ru", "ry",
+						"sa", "sb", "sc", "se", "sé", "sè", "sf", "sg", "sh", "si", "sí", "sì", "sk", "sl", "sm", "so", "sp", "sq", "sr", "st", "su", "sv", "sy",
+						"ta", "te", "tè", "th", "ti", "to", "tr", "tu", "tv", "tw", "ty",
+						"ub", "uc", "ud", "uf", "ug", "uh", "ul", "um", "un", "uo", "up", "ur", "us", "ut", "uv",
+						"va", "ve", "vi", "vo", "vu",
+						"wa", "we", "wh", "wi", "wo", "wu", "wy",
+						"xe",
+						"ya", "ye", "yi", "yo", "yu",
+						"za", "ze", "zi", "zo", "zu" }
 				));
 	}
 
