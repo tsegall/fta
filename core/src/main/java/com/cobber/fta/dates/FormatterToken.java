@@ -225,27 +225,52 @@ class FormatterToken {
 				break;
 
 			case 'z':
-				ret.add(new FormatterToken(Token.TIMEZONE));
+				ret.add(new FormatterToken(Token.TIMEZONE_NAME));
+				break;
+
+			case 'Z':
+				int countZ = 1;
+				while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
+					countZ++;
+					i++;
+				}
+				ret.add(new FormatterToken(Token.TIMEZONE_OFFSET_Z, countZ));
 				break;
 
 			case '\'':
-				// Quotes in format string are either '' which indicates a single quote or 'x' which indicates the character x
-				i++;
-				final char constantChar = formatString.charAt(i);
-				ret.add(new FormatterToken(Token.CONSTANT_CHAR, constantChar));
-				if (constantChar != '\'') {
-					if (i + 1 >= formatLength || formatString.charAt(i + 1) != '\'') {
-						throw new DateTimeParseException("Unterminated quote in format String", formatString, i);
-					}
-					i++;
+				// Quotes in format strings are either '' which indicates a single quote or 'xyz' which indicates the constant string "xyz"
+				if (i + 1 == formatLength)
+					throw new DateTimeParseException("Unterminated quote in format String", formatString, i);
+				if (formatString.charAt(i + 1) == '\'')
+					ret.add(new FormatterToken(Token.CONSTANT_CHAR, '\''));
+				else {
+					ret.add(new FormatterToken(Token.QUOTE));
+					do {
+						ret.add(new FormatterToken(Token.CONSTANT_CHAR, formatString.charAt(++i)));
+					} while (i + 1 < formatLength && formatString.charAt(i + 1) != '\'');
+					ret.add(new FormatterToken(Token.QUOTE));
 				}
+				if (i + 1 == formatLength)
+					throw new DateTimeParseException("Unterminated quote in format String", formatString, i);
+				i++;
 				break;
 
 			case 'a':
 				ret.add(new FormatterToken(Token.AMPM));
 				break;
 
+			case 'G':
+				int countG = 1;
+				while (i + 1 < formatLength && formatString.charAt(i + 1) == ch) {
+					countG++;
+					i++;
+				}
+				ret.add(new FormatterToken(Token.ERA, countG));
+				break;
+
 			default:
+				// Strictly speaking (according to the spec) it is good practice to enclose random characters in quotes.
+				// However, it is is not required - so if we do not recognize the character just assume it is a constant character.
 				ret.add(new FormatterToken(Token.CONSTANT_CHAR, ch));
 			}
 		}

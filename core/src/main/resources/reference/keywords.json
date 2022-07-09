@@ -25,6 +25,8 @@
 				"headerRegExps": [ { "regExp": "(?i).*(godina|year).*", "confidence": 90 } ] },
 			{ "localeTag": "it",
 				"headerRegExps": [ { "regExp": "(?i).*(anno|year).*", "confidence": 90 } ] },
+			{ "localeTag": "ja",
+				"headerRegExps": [ { "regExp": "(?i).*(年|year).*", "confidence": 90 } ] },
 			{ "localeTag": "nl",
 				"headerRegExps": [ { "regExp": "(?i).*(jaar|year).*", "confidence": 90 } ] },
 			{ "localeTag": "pl",
@@ -42,7 +44,7 @@
 			{ "localeTag": "tr",
 				"headerRegExps": [ { "regExp": "(?i).*(yıl|year).*", "confidence": 90 } ] },
 			{ "localeTag": "zh",
-				"headerRegExps": [ { "regExp": "(?i).*(年度|year).*", "confidence": 90 } ] }
+				"headerRegExps": [ { "regExp": "(?i).*(年|year).*", "confidence": 90 } ] }
 		]
 	},
 	{
@@ -71,6 +73,8 @@
 				"headerRegExps": [ { "regExp": "(?i).*(date|datum).*", "confidence": 90 } ] },
 			{ "localeTag": "it",
 				"headerRegExps": [ { "regExp": "(?i).*(date).*", "confidence": 90 } ] },
+			{ "localeTag": "ja",
+				"headerRegExps": [ { "regExp": "(?i).*(日期|date).*", "confidence": 90 } ] },
 			{ "localeTag": "nl",
 				"headerRegExps": [ { "regExp": "(?i).*(datum|date).*", "confidence": 90 } ] },
 			{ "localeTag": "pl",

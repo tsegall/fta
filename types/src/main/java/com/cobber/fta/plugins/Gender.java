@@ -39,7 +39,7 @@ public class Gender extends LogicalTypeFinite {
 
 	private static final String BACKOUT_REGEX = "\\p{IsAlphabetic}+";
 
-	private Map<String, String> opposites = null;
+	private Map<String, String> opposites;
 
 	private String happyRegex = BACKOUT_REGEX;
 	private String language;
@@ -257,11 +257,11 @@ public class Gender extends LogicalTypeFinite {
 	}
 
 	@Override
-	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		final boolean positiveStreamName = getHeaderConfidence(context.getStreamName()) != 0;
-
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (cardinality.isEmpty())
 			return new PluginAnalysis(BACKOUT_REGEX);
+
+		final boolean positiveStreamName = getHeaderConfidence(context.getStreamName()) != 0;
 
 		if (positiveStreamName) {
 			for (GenderPair candidate : genderData.getAll()) {

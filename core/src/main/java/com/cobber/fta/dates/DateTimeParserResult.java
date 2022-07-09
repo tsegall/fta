@@ -125,12 +125,14 @@ public class DateTimeParserResult {
 		AMPM("a"),
 		CLOCK24_1_OR_2("k"), CLOCK24_2("kk"),
 		CONSTANT_CHAR,
+		QUOTE("'"),
 		DAYS_1_OR_2("d"), DAYS_2("dd"), DAY_OF_WEEK("EEEE"), DAY_OF_WEEK_ABBR("EEE"),
 		DIGITS_1_OR_2("?"), DIGITS_2("??"),
+		ERA("G"),
 		MONTHS_1_OR_2("M"), MONTHS_2("MM"), MONTH("MMMM"), MONTH_ABBR("MMM"),
 		HOURS12_1_OR_2("h"), HOURS12_2("hh"), HOURS24_1_OR_2("H"), HOURS24_2("HH"), MINS_2("mm"), PAD_2("p"), SECS_2("ss"), FRACTION("S"),
 		YEARS_2("yy"), YEARS_4("yyyy"),
-		TIMEZONE("z"),
+		TIMEZONE_NAME("z"), TIMEZONE_OFFSET_Z("Z"),
 		LOCALIZED_TIMEZONE_OFFSET("O"),
 		TIMEZONE_OFFSET("x"), TIMEZONE_OFFSET_ZERO("X");
 
@@ -680,6 +682,11 @@ public class DateTimeParserResult {
 				padding = 1;
 				break;
 
+			case QUOTE:
+				// Quote's are used to encapsulate a constant string - so we just ignore them on parsing
+				// and process the embedded sequence of CONSTANT_CHAR's that follow until the next QUOTE.
+				break;
+
 			case CONSTANT_CHAR:
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting constant char, end of input", input, upto);
@@ -747,7 +754,7 @@ public class DateTimeParserResult {
 				}
 				break;
 
-			case TIMEZONE:
+			case TIMEZONE_NAME:
 				start = upto;
 				while (upto < inputLength && input.charAt(upto) != ' ')
 					upto++;
@@ -821,20 +828,21 @@ public class DateTimeParserResult {
 	 *  "DateTime", "ZonedDateTime" or "OffsetDateTime".
 	 */
 	public FTAType getType() {
-		if (timeElements == -1)
-			return FTAType.LOCALDATE;
-		if (dateElements == -1)
-			return FTAType.LOCALTIME;
-
 		if (tokenized == null)
 			tokenized =  FormatterToken.tokenize(formatString);
 
 		for (final FormatterToken t : tokenized) {
-			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_ZERO) || t.getType().equals(Token.LOCALIZED_TIMEZONE_OFFSET))
+			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_ZERO) ||
+					t.getType().equals(Token.LOCALIZED_TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_Z))
 				return FTAType.OFFSETDATETIME;
-			if (t.getType().equals(Token.TIMEZONE))
+			if (t.getType().equals(Token.TIMEZONE_NAME))
 				return FTAType.ZONEDDATETIME;
 		}
+
+		if (timeElements == -1)
+			return FTAType.LOCALDATE;
+		if (dateElements == -1)
+			return FTAType.LOCALTIME;
 
 		return FTAType.LOCALDATETIME;
 	}
@@ -873,10 +881,11 @@ public class DateTimeParserResult {
 			formatString = getFormatString();
 
 		for (final FormatterToken token : FormatterToken.tokenize(formatString)) {
-			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.PAD_2 ||
+			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.QUOTE ||
+					token.getType() == Token.PAD_2 ||
 					token.getType() == Token.MONTH || token.getType() == Token.MONTH_ABBR ||
 					token.getType() == Token.DAY_OF_WEEK || token.getType() == Token.DAY_OF_WEEK_ABBR ||
-					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE ||
+					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE_NAME ||
 					token.getType() == Token.TIMEZONE_OFFSET || token.getType() == Token.TIMEZONE_OFFSET_ZERO ||
 					token.getType() == Token.LOCALIZED_TIMEZONE_OFFSET) {
 				if (digitsMin != 0) {
@@ -884,6 +893,12 @@ public class DateTimeParserResult {
 					digitsMin = digitsMax = padding = 0;
 				}
 				switch (token.getType()) {
+				case QUOTE:
+					// Quote's are used to encapsulate constant strings e.g. we will see
+					// QUOTE, CONSTANT_CHAR('T'), QUOTE in the case of an ISO 8601 date ('T') in this case
+					// the Regular Expression is only concerned with the T and we can ignore the quotes.
+					break;
+
 				case CONSTANT_CHAR:
 					ret.append(RegExpGenerator.slosh(token.getValue()));
 					break;
@@ -912,7 +927,7 @@ public class DateTimeParserResult {
 					ret.append(localeInfo.getAMPMRegExp());
 					break;
 
-				case TIMEZONE:
+				case TIMEZONE_NAME:
 					ret.append(".*");
 					break;
 
@@ -1091,9 +1106,10 @@ public class DateTimeParserResult {
 			case MONTHS_2:
 			case MONTH_ABBR:
 			case SECS_2:
-			case TIMEZONE:
+			case TIMEZONE_NAME:
 			case YEARS_2:
 			case YEARS_4:
+			case QUOTE:
 				ret.append(nextToken.getRepresentation());
 				break;
 			case FRACTION:

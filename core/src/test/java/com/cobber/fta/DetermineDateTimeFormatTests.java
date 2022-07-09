@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -182,6 +183,23 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void japanese() {
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.JAPAN);
+
+		assertNull(dtp.determineFormatString("資料：農林水産省「食育推進計画調査報告書」（平成29（2017）年3月公表）"));
+		// No ERA support - so this should fail
+		assertNull(dtp.determineFormatString("平成26（2014）年３月"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void chinese() {
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.CHINA);
+
+		// This is really incorrect - since '上午' is AM and so we really should have "yyyy/M/d a HH:mm:ss"
+		assertEquals(dtp.determineFormatString("2015/1/5 上午 12:00:00"), "yyyy/M/d 上午 HH:mm:ss");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitDateOnlySlash() {
 		final DateTimeParser dtp = new DateTimeParser();
 
@@ -206,6 +224,15 @@ public class DetermineDateTimeFormatTests {
 		assertNull(dtp.determineFormatString("12/023/12"));
 		assertNull(dtp.determineFormatString("12/02/"));
 		assertNull(dtp.determineFormatString("12/02-99"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void stackOverflow_69360498() {
+		final DateTimeParser dtp = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+
+		assertEquals(dtp.determineFormatString("1970-01-01T00:00:00.00Z"), "yyyy-MM-dd'T'HH:mm:ss.SSX");
+		assertEquals(dtp.determineFormatString("2021-09-20T17:27:00.000Z+02:00"), "yyyy-MM-dd'T'HH:mm:ss.SSSX");
+		assertEquals(dtp.determineFormatString("08/07/2021"), "dd/MM/yyyy");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -410,6 +437,53 @@ public class DetermineDateTimeFormatTests {
 
 		for (final String input : inputs)
 			assertTrue(input.matches(regExp), regExp);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	/*
+	 * So you would have thought that 'yyyy-MM-ddX' would have successfully round-tripped.  But it appears that it is happy to output
+	 * a 'Z' when the h/m/s is zero but it is not happy to roundtrip if you use X and provide it as input a date like '1995-02-28Z'.
+	 * This 'hack' returns a quoted Z which works on both the input and the output - with the consequence that you are told it is
+	 * a LocalDate as opposed to a ZonedDateTime.
+	 */
+	public void inputZ() {
+		final String DATE_FORMAT = "yyyy-MM-dd'Z'";
+		final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+		ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+		String formattedString = zonedDateTime.format(dateFormatter);
+		System.err.println(formattedString);
+
+		LocalDate roundTrip = LocalDate.parse("2022-07-06Z", dateFormatter);
+
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.forLanguageTag("nl-NL"));
+		final String[] inputs = {
+				"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
+				"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
+				"2001-02-28Z", "1993-02-28Z", "1995-02-28Z", "1996-02-29Z", "1995-02-28Z",
+				"1993-02-28Z", "1998-02-28Z", "2004-02-29Z", "2007-02-28Z", "1990-02-28Z",
+				"2008-05-31Z", "1996-02-29Z", "1990-02-28Z", "2006-02-28Z", "2010-12-31Z",
+				"2006-02-28Z", "1998-02-28Z", "2001-02-28Z", "1965-02-28Z", "1995-02-28Z",
+				"2006-02-28Z", "1990-02-28Z", "2007-10-31Z", "1969-12-31Z", "2009-12-31Z",
+				"1985-02-28Z", "1986-02-28Z", "1987-02-28Z", "1988-02-29Z", "2001-02-28Z",
+				"1988-02-29Z", "1965-02-28Z", "2001-02-28Z", "2003-02-28Z", "2009-02-28Z",
+				"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
+		};
+
+		for (String input : inputs)
+			det.train(input);
+
+		final DateTimeParserResult result = det.getResult();
+		final String formatString = result.getFormatString();
+
+		assertEquals(formatString, "yyyy-MM-dd'Z'");
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+
+		final String regExp = result.getRegExp();
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(regExp), regExp);
+			assertNull(checkParseable(result, input));
+		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1537,7 +1611,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testDTPResult_Date() {
-		final String[] tests = { "MM", "MMM", "MMMM", "dd", "yy", "yyyy", "xxx", "x", "EEE", "z", "a" };
+		final String[] tests = { "MM", "MMM", "MMMM", "dd", "yy", "yyyy", "EEE", "a" };
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, new DateTimeParserConfig());
@@ -1587,7 +1661,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void testDTPResult_Unknown() {
-		final String[] tests = { "W", "V", "G", "u", "L", "Q", "e", "c", "K", "n", "N", "O" };
+		final String[] tests = { "W", "V", "G", "u", "L", "Q", "e", "c", "K", "n", "N" };
 
 		for (final String test : tests) {
 			final DateTimeParserResult det = DateTimeParserResult.asResult(test, DateResolutionMode.Auto, new DateTimeParserConfig());

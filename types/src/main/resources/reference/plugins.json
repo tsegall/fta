@@ -821,6 +821,19 @@
 		"priority": 127
 	},
 	{
+		"qualifier": "STATE_PROVINCE.INSEE_CODE_FR",
+		"description": "French Insee Code (5 digit)",
+		"pluginType": "java",
+		"signature": "",
+		"clazz": "com.cobber.fta.plugins.InseeCodeFR",
+		"validLocales": [
+			{ "localeTag": "fr-FR", "headerRegExps": [ { "regExp": ".*(?i)(insee).*", "confidence": 95 } ] }
+		],
+		"baseType": "LONG",
+		"backout": "\\d{5}",
+		"priority": 128
+	},
+	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_IT",
 		"description": "Italian Province Name",
 		"pluginType": "list",
@@ -837,7 +850,7 @@
 		"content": "/reference/it_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 128
+		"priority": 129
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_ES",
@@ -856,7 +869,7 @@
 		"content": "/reference/es_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 129
+		"priority": 130
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_NL",
@@ -875,7 +888,7 @@
 		"content": "/reference/nl_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[- \\p{IsAlphabetic}]+",
-		"priority": 130
+		"priority": 131
 	},
 	{
 		"qualifier": "STATE_PROVINCE.COUNTY_US",
@@ -894,7 +907,7 @@
 		"content": "/reference/us_counties_full.csv",
 		"contentType": "resource",
 		"backout": "[-,\\.,' \\p{IsAlphabetic}]+",
-		"priority": 131
+		"priority": 132
 	},
 	{
 		"qualifier": "STATE_PROVINCE.COUNTY_UK",
@@ -913,7 +926,7 @@
 		"content": "/reference/gb_counties_full.csv",
 		"contentType": "resource",
 		"backout": "[-,& \\p{IsAlphabetic}]+",
-		"priority": 132
+		"priority": 133
 	},
 	{
 		"qualifier": "STATE_PROVINCE.CANTON_NAME_CH",
@@ -932,7 +945,7 @@
 		"content": "/reference/ch_cantons_full.csv",
 		"contentType": "resource",
 		"backout": "[-\\. \\p{IsAlphabetic}]+",
-		"priority": 133
+		"priority": 134
 	},
 	{
 		"qualifier": "STATE_PROVINCE.STATE_NAME_BR",
@@ -951,7 +964,7 @@
 		"content": "/reference/br_states_full.csv",
 		"contentType": "resource",
 		"backout": "[-\\. \\p{IsAlphabetic}]+",
-		"priority": 134
+		"priority": 135
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PREFECTURE_NAME_JA",
@@ -970,7 +983,7 @@
 		"content": "/reference/ja_prefectures_full.csv",
 		"contentType": "resource",
 		"backout": "[-\\. \\p{IsAlphabetic}]+",
-		"priority": 135
+		"priority": 136
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_ZA",
@@ -989,7 +1002,7 @@
 		"content": "/reference/za_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 136
+		"priority": 137
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_EC",
@@ -1008,7 +1021,7 @@
 		"content": "/reference/ec_provinces_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 137
+		"priority": 138
 	},
 	{
 		"qualifier": "STATE_PROVINCE.DISTRICT_NAME_PT",
@@ -1027,7 +1040,7 @@
 		"content": "/reference/pt_districts_full.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 138
+		"priority": 139
 	},
 	{
 		"qualifier": "STATE_PROVINCE.MUNICIPALITY_BR",
@@ -1040,7 +1053,7 @@
 		"content": "/reference/br_municipalities.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 139
+		"priority": 140
 	},
 	{
 		"qualifier": "STATE_PROVINCE.REGION_IT",
@@ -1053,7 +1066,7 @@
 		"content": "/reference/it_regions.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 140
+		"priority": 14
 	},
 	{
 		"qualifier": "STATE_PROVINCE.COMMUNE_IT",
@@ -1067,7 +1080,7 @@
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"threshold": 85,
-		"priority": 141
+		"priority": 142
 	},
 	{
 		"qualifier": "STATE_PROVINCE.COUNTY_HU",
@@ -1080,7 +1093,7 @@
 		"content": "/reference/hu_counties.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 142
+		"priority": 143
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
@@ -2071,10 +2084,15 @@
 		"signature": "7WbjWLZJ8Zdm+U8po/igrvDH3yE=",
 		"clazz": "com.cobber.fta.plugins.FreeText",
 		"validLocales": [
-			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(bezeichnung|anmerkungen|bemerkungen).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": ".*(?i)(?u)(описание|Бележки|Забележки|коментар|причина|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descripció|comentar|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(bezeichnung|anmerkungen|bemerkungen|description).*", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descripción|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": ".*(?i)(description|remarques|commentaire|raison).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "it", "headerRegExps": [ { "regExp": ".*(?i)(descrizione|nota|Annotazioni|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(omschrijving|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descrição|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(описание|description).*", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comment|reason).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 70,

@@ -1,8 +1,17 @@
 
 ## Changes ##
 
+### 9.0.9
+ - ENH: I18N - Add FREE_TEXT support for Bulgarian, Catalan, Dutch, Portuguese, and Russian
+ - ENH: I18N - Improve Japanese date detection
+ - ENH: I18N - Improve Bulgarian date support - in particular support "14.02.2017г."
+ - ENH: I18N - Add new Semantic Types - STATE_PROVINCE.INSEE_CODE_FR ("French Insee Code (5 digit)")
+ - ENH: CLI - support --skip <n> to skip the first <n> lines
+ - BUG: Handle dates of the form - "1995-02-28Z", will return "yyyy-MM-dd'Z'" (which can be used with LocalDate.parse) - used to return "yyyy-MM-ddZ"
+ - BUG: Fix IDENTITY.VAT_GB - mixup with UK vs GB (locale is en-GB)
+
 ### 9.0.8
- - ENH: CLI set totalCount in Bulk mode
+ - ENH: CLI - set totalCount in Bulk mode
  - ENH: I18N - Add FREE_TEXT support for Spanish and Italian
  - BUG: I18N - Chinese detection should be enabled for language 'zh' (not 'cn')
  - BUG: I18N - Date (Pass 2) was not being detected for 2015/9/9 (e.g. single digit day), picked up in Pass 3 for anything other than Japanese/Chinese
@@ -36,7 +45,7 @@
  - ENH: Improve Job Title detection
  - BUG: Switch GENDER.TEXT_CN to GENDER.TEXT_ZH (and change localeTag to 'zh')
  - INT: Switch to jakarta.mail from javax.mail
- - INT: Fixup dependencies for CLI
+ - INT: CLI - Fixup dependencies
 
 ### 9.0.2
  - INT: Switch to Gradle 7 way of versioning stuff
@@ -73,7 +82,7 @@
  - ENH: Decrease false positives on NAME.LAST_FIRST
 
 ### 8.0.27
- - INT: Move CLI to separate jar
+ - INT: CLI - Move to separate jar
  - INT: Improve examples and README
 
 ### 8.0.26
@@ -86,7 +95,7 @@
  - ENH: I18N - FREE_TEXT - improve German samples
  - ENH: I18N - Add new Semantic Types - POSTAL_CODE.POSTAL_CODE_UY, POSTAL_CODE.POSTAL_CODE_MX
  - BUG: Do not die if tracing is on and the fieldName is extremely long
- - INT: Support setting Trace options from the CLI
+ - INT: CLI - Support setting Trace options
  - INT: Support adjusting Max Columns (Univocity option) from the command line
  - INT: Improve code coverage
 
@@ -594,7 +603,7 @@
  - ENH: Add Semantic Types - GENDER.TEXT_JP, STATE_PROVINCE.DEPARTMENT_FR, STATE_PROVINCE.REGION_FR, STATE_PROVINCE.STATE_NAME_DE
 
 ### 4.5.16
- - ENH: Improve error message from CLI if plugin file not found
+ - ENH: CLI - Improve error message if plugin file not found
  - BUG: Fix rejection of Finite plugins with a small number of members
 
 ### 4.5.15

@@ -158,15 +158,15 @@ public class AddressEN extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
-		double confidence = (double)matchCount/realSamples;
-		int headerConfidence = getHeaderConfidence(dataStreamName);
-
 		// We really don't want to classify Line 2/Line 3 of an address as a Line 1
 		if (dataStreamName.length() > 1) {
-			char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
+			final char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
 			if (Character.isDigit(lastChar) && lastChar != '1')
 				return 0;
 		}
+
+		final int headerConfidence = getHeaderConfidence(dataStreamName);
+		double confidence = (double)matchCount/realSamples;
 
 		// Boost based on how much we like the header
 		if (headerConfidence >= 99)

@@ -6,14 +6,14 @@ Key objectives of the library include:
 * Sufficiently fast to be used inline.   See Performance notes below.
 * Usable in either Streaming or Bulk mode.
 * Minimal false positives for Semantic type detection.
-* Support for non-English languages.
+* Broad country/language support - including US, Canada, Mexico, Brazil, UK, Australia, much of Europe, Japan and China.
 * Support for sharded analysis (i.e. Analysis results can be merged)
 
 Notes:
-* By default analysis is performed on the initial 4096 characters (adjustable via setMaxInputLength())
+* By default analysis is performed on the initial 4096 characters (adjustable via setMaxInputLength()).
 * Semantic Type detection is typically predicated on plausible input data, for example, a field that contains data that looks
 like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
-* Date detection has no support for non-Gregorian calendars or non-Arabic numerals
+* Date detection supports ~750 locales (no support for locales using non-Gregorian calendars or non-Arabic numerals).
 
 Streaming example:
 ```java

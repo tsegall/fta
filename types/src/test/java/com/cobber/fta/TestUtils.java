@@ -177,9 +177,9 @@ public class TestUtils {
 		return false;
 	}
 
-	protected static void checkSerialization(TextAnalyzer toCheck) throws FTAException {
-		String originalSerialized = toCheck.serialize();
-		TextAnalyzer hydrated = TextAnalyzer.deserialize(originalSerialized);
+	protected static void checkSerialization(final TextAnalyzer toCheck) throws FTAException {
+		final String originalSerialized = toCheck.serialize();
+		final TextAnalyzer hydrated = TextAnalyzer.deserialize(originalSerialized);
 		if (!hydrated.serialize().equals(originalSerialized)) {
 			System.err.println("Original:\n" + originalSerialized);
 			System.err.println("Hydrated:\n" + hydrated.serialize());

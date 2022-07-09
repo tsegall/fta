@@ -165,6 +165,12 @@ class FileProcessor {
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
+			// Skip the first <n> lines if requested
+			if (options.skip != 0) {
+				for (int i = 0; i < options.skip; i++)
+					in.readLine();
+			}
+
 			final CsvParser parser = new CsvParser(settings);
 			parser.beginParsing(in);
 

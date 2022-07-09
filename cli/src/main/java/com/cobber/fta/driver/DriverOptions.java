@@ -52,6 +52,7 @@ class DriverOptions {
 	protected DateResolutionMode resolutionMode = DateResolutionMode.Auto;
 	protected boolean samples;
 	protected boolean signature;
+	protected int skip;
 	protected int threshold = -1;
 	protected String trace;
 	protected boolean validate;

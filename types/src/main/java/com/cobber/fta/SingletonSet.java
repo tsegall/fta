@@ -95,7 +95,7 @@ public class SingletonSet {
 						throw new IllegalArgumentException("Internal error: Issues with 'file' content: " + content, e);
 					}
 				else if ("resource".equals(contentType)) {
-					InputStream stream = LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content);
+					final InputStream stream = LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(content);
 					if (stream == null)
 						throw new IllegalArgumentException("Internal error: Issues with 'resource' content: " + content);
 					reader = new InputStreamReader(stream, StandardCharsets.UTF_8);

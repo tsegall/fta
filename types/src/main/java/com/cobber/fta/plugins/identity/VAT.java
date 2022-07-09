@@ -44,7 +44,7 @@ public class VAT extends LogicalTypeInfinite {
 	private static final String BACKOUT_REGEXP = ".*";
 
 	private String country;
-	private long prefixPresent = 0;
+	private long prefixPresent;
 	private String prefix = "";
 	protected CheckDigit validator;
 
@@ -67,7 +67,10 @@ public class VAT extends LogicalTypeInfinite {
 		super.initialize(analysisConfig);
 
 		country = locale.getCountry().toUpperCase(Locale.ROOT);
-		prefix = "UK".equals(country) ? "GB" : country;
+		if ("UK".equals(country))
+			country = "GB";
+
+		prefix = country;
 
 		if ("IT".equals(country))
 			validator = new LuhnCheckDigit();
@@ -88,14 +91,14 @@ public class VAT extends LogicalTypeInfinite {
 		if ("FR".equals(country))
 			return ret + random.nextInt(1_000_000_000) + random.nextInt(100);
 
+		if ("GB".equals(country))
+			return ret + random.nextInt(1_000_000_000);
+
 		if ("IT".equals(country))
 			return ret + random.nextInt(1_000_000_000) + random.nextInt(100);
 
 		if ("PL".equals(country))
 			return ret + random.nextInt(1_000_000_000) + random.nextInt(100);
-
-		if ("UK".equals(country))
-			return ret + random.nextInt(1_000_000_000);
 
 		return null;
 	}
@@ -110,22 +113,22 @@ public class VAT extends LogicalTypeInfinite {
 		String ret = prefixPresent != 0 ? "(" + prefix + ")?" : "";
 
 		if ("AT".equals(country))
-			return ret += "U\\d{8}";
+			return ret + "U\\d{8}";
 
 		if ("ES".equals(country))
-			return ret += "[A-Za-z0-9]\\d{7}[A-Za-z0-9]";
+			return ret + "[A-Za-z0-9]\\d{7}[A-Za-z0-9]";
 
 		if ("FR".equals(country))
-			return ret += "\\d{11}";
+			return ret + "\\d{11}";
+
+		if ("GB".equals(country))
+			return ret + "[ \\d]{9}";
 
 		if ("IT".equals(country))
-			return ret += "\\d{11}";
+			return ret + "\\d{11}";
 
 		if ("PL".equals(country))
-			return ret += "\\d{10}";
-
-		if ("UK".equals(country))
-			return ret += "[ \\d]{9}";
+			return ret + "\\d{10}";
 
 		return null;
 	}
@@ -160,6 +163,9 @@ public class VAT extends LogicalTypeInfinite {
 		if ("ES".equals(country))
 			return isValidES(toCheck);
 
+		if ("GB".equals(country))
+			return isValidGB(toCheck);
+
 		if ("FR".equals(country))
 			return isValidFR(toCheck);
 
@@ -168,9 +174,6 @@ public class VAT extends LogicalTypeInfinite {
 
 		if ("PL".equals(country))
 			return isValidPL(toCheck);
-
-		if ("UK".equals(country))
-			return isValidUK(toCheck);
 
 		return false;
 	}
@@ -182,7 +185,7 @@ public class VAT extends LogicalTypeInfinite {
 
 		final int[] multipliers = { 1, 2, 1, 2, 1, 2, 1 };
 		long total = 0;
-		long temp = 0;
+		long temp;
 
 		// Extract the next digit and multiply by the appropriate multiplier.
 		for (int i = 0; i < 7; i++) {
@@ -215,7 +218,7 @@ public class VAT extends LogicalTypeInfinite {
 
 		final int[] multipliers = { 2, 1, 2, 1, 2, 1, 2 };
 		long total = 0;
-		long temp = 0;
+		long temp;
 		char first = input.charAt(0);
 
 		if (nationalJuridical.indexOf(first) != -1 && Utils.isSimpleAlphaNumeric(input.charAt(8))) {
@@ -224,39 +227,39 @@ public class VAT extends LogicalTypeInfinite {
 				return false;
 
 			// Extract the next digit and multiply by the counter.
-		    for (int i = 0; i < 7; i++) {
-		      temp = (input.charAt(i+1) - '0') * multipliers[i];
-		      if (temp > 9)
-		    	  total += temp/10 + temp%10;
-		      else
-		    	  total += temp;
-		    }
+			for (int i = 0; i < 7; i++) {
+				temp = (input.charAt(i+1) - '0') * multipliers[i];
+				if (temp > 9)
+					total += temp/10 + temp%10;
+				else
+					total += temp;
+			}
 
-		    // Now calculate the check digit itself.
-		    total = 10 - total % 10;
-		    if (total == 10)
-		    	total = 0;
+			// Now calculate the check digit itself.
+			total = 10 - total % 10;
+			if (total == 10)
+				total = 0;
 
-		    // Compare it with the last character of the VAT number
-		    return total == input.charAt(8) - '0';
+			// Compare it with the last character of the VAT number
+			return total == input.charAt(8) - '0';
 		}
 
 		if (otherJuridical.indexOf(first) != -1) {
 			// Juridical entities other than national ones
 
 			// Extract the next digit and multiply by the counter.
-		    for (int i = 0; i < 7; i++) {
-		    	temp = (input.charAt(i+1) - '0') * multipliers[i];
-		    	if (temp > 9)
-		    		total += Math.floor(temp/10) + temp%10;
-		    	else
-		    		total += temp;
-		    }
+			for (int i = 0; i < 7; i++) {
+				temp = (input.charAt(i+1) - '0') * multipliers[i];
+				if (temp > 9)
+					total += temp/10 + temp%10;
+				else
+					total += temp;
+			}
 
-		    total = 10 - total % 10;
+			total = 10 - total % 10;
 
-		    // Compare it with the last character of the VAT number
-		    return ('@' + total) == input.charAt(8);
+			// Compare it with the last character of the VAT number
+			return ('@' + total) == input.charAt(8);
 		}
 
 		final String personalCheckDigit = "TRWAGMYFPDXBNJZSQVHLCKE";
@@ -298,6 +301,20 @@ public class VAT extends LogicalTypeInfinite {
 		return total == Integer.valueOf(input.substring(0, 2));
 	}
 
+	// Validate a UK VAT number
+	private boolean isValidGB(final String input) {
+		String toCheck = input;
+
+		// Commonly formatted as 999 9999 99 (or 999-9999-99)
+		if (toCheck.length() == 11) {
+			toCheck = toCheck.replace(" ", "");
+			if (toCheck.length() == 11)
+				toCheck = toCheck.replace("-", "");
+		}
+
+		return toCheck.length() == 9 && Utils.isNumeric(toCheck);
+	}
+
 	// Validate a Polish VAT number
 	private boolean isValidPL(final String input) {
 		if (input.length() != 10)
@@ -318,20 +335,6 @@ public class VAT extends LogicalTypeInfinite {
 
 		// Validate that the last digit is indeed the Check Digit
 		return total + '0' == input.charAt(9);
-	}
-
-	// Validate a UK VAT number
-	private boolean isValidUK(final String input) {
-		String toCheck = input;
-
-		// Commonly formatted as 999 9999 99 (or 999-9999-99)
-		if (toCheck.length() == 11) {
-			toCheck = toCheck.replace(" ", "");
-			if (toCheck.length() == 11)
-				toCheck = toCheck.replace("-", "");
-		}
-
-		return toCheck.length() == 9 && Utils.isNumeric(toCheck);
 	}
 
 	@Override

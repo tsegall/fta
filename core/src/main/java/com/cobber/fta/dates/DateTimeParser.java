@@ -19,9 +19,11 @@ import static com.cobber.fta.dates.DateTimeParserResult.FRACTION_INDEX;
 import static com.cobber.fta.dates.DateTimeParserResult.HOUR_INDEX;
 
 import java.io.IOException;
+import java.time.chrono.JapaneseEra;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +40,7 @@ import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.MinMax;
 import com.cobber.fta.core.Utils;
+import com.cobber.fta.dates.TimeDateElement.TimeDateElementType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,15 +84,6 @@ public class DateTimeParser {
 		MonthFirst,
 		/** Auto will choose DayFirst or MonthFirst based on the Locale. */
 		Auto
-	}
-
-	enum TimeDateElement {
-		Time,
-		Date,
-		AMPM,
-		WhiteSpace,
-		TimeZone,
-		Indicator_8601
 	}
 
 	protected static final Set<String> timeZones = new HashSet<>();
@@ -619,9 +613,10 @@ public class DateTimeParser {
 		len -= start;
 
 		final String trimmed = input.substring(start, len + start);
+		final int codePoint0 = trimmed.codePointAt(0);
 
 		// Fail fast if we can
-		if (len < 4 || len > 70 || (!Character.isDigit(trimmed.codePointAt(0)) && !Character.isAlphabetic(trimmed.codePointAt(0))))
+		if (len < 4 || len > 70 || (!Character.isDigit(codePoint0) && !Character.isAlphabetic(codePoint0)))
 			return null;
 
 		if (trimmed.indexOf('¶') != -1)
@@ -634,8 +629,10 @@ public class DateTimeParser {
 		if (formatPassOne != null)
 			return formatPassOne;
 
+		boolean jaOrZh = "ja".equals(config.locale.getLanguage()) || "zh".equals(config.locale.getLanguage());
+
 		// Fail fast if we can
-		if (matcher.getComponentCount() < 2 || !Character.isLetterOrDigit(trimmed.charAt(0)))
+		if (!jaOrZh && (matcher.getComponentCount() < 2 || !Character.isLetterOrDigit(codePoint0)))
 			return null;
 
 		// Second pass is an attempt to 'parse' the provided input string and derive a format
@@ -644,8 +641,11 @@ public class DateTimeParser {
 		if (formatPassTwo != null)
 			return formatPassTwo;
 
-		if ("ja".equals(config.locale.getLanguage()) || "zh".equals(config.locale.getLanguage()))
-			return passJaZh(trimmed, matcher, resolutionMode);
+		if (jaOrZh) {
+			final String jaZh = passJaZh(trimmed, matcher, resolutionMode);
+			if (jaZh != null)
+				return jaZh;
+		}
 
 		// Third and final pass is brute force by elimination
 		return passThree(trimmed, matcher, resolutionMode);
@@ -686,15 +686,13 @@ public class DateTimeParser {
 					input = Utils.replaceAt(trimmed, find, s.length(), "a");
 			}
 
-		final int len = input.length();
 		char workingOn = '¶';
 		int digits = 0;
+		int unknown = 0;
 
-		// If we have a year then try to weed out some rubbish by insisting that the year is up front
-		if (yearIndex != -1 && !(yearIndex == 0 || Character.isDigit(trimmed.charAt(0))))
-			return null;
-
+		final int len = input.length();
 		StringBuffer result = new StringBuffer(len);
+		// Work backwards down the input!!
 		for (int i = len - 1; i >= 0; i--) {
 			char ch = input.charAt(i);
 			if (Character.isDigit(ch))
@@ -724,11 +722,34 @@ public class DateTimeParser {
 				digits++;
 				break;
 			default:
+				boolean foundEra = false;
 				if (digits != 0) {
 					result.append(Utils.repeat(workingOn, digits));
+					// Need to check if this is an Era formatted date
+					if (workingOn == 'y' && i >= 1) {
+						String maybeEra = String.valueOf(input.charAt(i - 1)) + String.valueOf(ch);
+						for (JapaneseEra c : JapaneseEra.values()) {
+							String era = c.getDisplayName(TextStyle.FULL, config.locale);
+							if (era.equals(maybeEra)) {
+								result.append("GGGG");
+								i--;
+								foundEra = true;
+								break;
+							}
+						}
+					}
 					digits = 0;
 				}
-				result.append(ch);
+				else {
+					// Attempt to weed out most rubbish by insisting there are at most 2 'unmapped' characters
+					unknown++;
+					if (unknown > 2)
+						return null;
+				}
+
+				if (!foundEra)
+					result.append(ch);
+
 				break;
 			}
 		}
@@ -768,6 +789,18 @@ public class DateTimeParser {
 			return null;
 
 		return simpleFacts.getFormat();
+	}
+
+	private class Tracker {
+		int digits;
+		int value;
+		int padding;
+		boolean yearInDateFirst;
+		boolean fourDigitYear;
+
+		public void reset() {
+			digits = value = padding = 0;
+		}
 	}
 
 	class DateTimeTracker {
@@ -870,18 +903,14 @@ public class DateTimeParser {
 	private String passTwo(final String trimmed, final DateResolutionMode resolutionMode) {
 		final List<TimeDateElement> timeDateElements = new ArrayList<>();
 		final int len = trimmed.length();
-		int digits = 0;
-		int value = 0;
 		final DateTracker dateTracker = new DateTracker();
 		final TimeTracker timeTracker = new TimeTracker();
 		char dateSeparator = '_';
 		int hourLength = -1;
-		boolean yearInDateFirst = false;
-		boolean fourDigitYear = false;
 		String timeZone = "";
 		boolean ampmDetected = false;
 		boolean iso8601 = false;
-		int padding = 0;
+		Tracker tracker = new Tracker();
 
 		int lastCh = '¶';
 		for (int i = 0; i < len && timeZone.length() == 0; i++) {
@@ -889,7 +918,7 @@ public class DateTimeParser {
 
 			// Two spaces in a row implies padding
 			if (lastCh == ' ' && ch == ' ') {
-				padding++;
+				tracker.padding++;
 				continue;
 			}
 			lastCh = ch;
@@ -905,9 +934,9 @@ public class DateTimeParser {
 			case '7':
 			case '8':
 			case '9':
-				value = value * 10 + ch - '0';
-				digits++;
-				if (digits > 9)
+				tracker.value = tracker.value * 10 + ch - '0';
+				tracker.digits++;
+				if (tracker.digits > 9)
 					return null;
 				break;
 
@@ -915,21 +944,21 @@ public class DateTimeParser {
 				if ((dateTracker.seen() && !dateTracker.isClosed()) || (timeTracker.seen() && timeTracker.isClosed()) || timeTracker.components() == 3)
 					return null;
 
-				if (!timeTracker.setComponent(value, digits, padding))
+				if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
 					return null;
 
 				if (timeTracker.lastSet() == 0) {
-					if (digits != 1 && digits != 2)
+					if (tracker.digits != 1 && tracker.digits != 2)
 						return null;
-					hourLength = digits;
+					hourLength = tracker.digits;
 				}
-				if (timeTracker.lastSet() == 1 && digits != 2)
+				if (timeTracker.lastSet() == 1 && tracker.digits != 2)
 					return null;
 				if (timeTracker.lastSet() == 2)
 					return null;
-				digits = 0;
-				value = 0;
-				padding = 0;
+				tracker.digits = 0;
+				tracker.value = 0;
+				tracker.padding = 0;
 				break;
 
 			case '+':
@@ -969,9 +998,9 @@ public class DateTimeParser {
 
 					if (timeTracker.seen() && !timeTracker.isClosed()) {
 						// Need to close out the time before we can add the TimeZone
-						if (!timeTracker.setComponent(value, digits, padding))
+						if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
 							return null;
-						digits = 0;
+						tracker.digits = 0;
 						timeTracker.close();
 						timeDateElements.add(TimeDateElement.Time);
 					}
@@ -1003,63 +1032,59 @@ public class DateTimeParser {
 				if (timeTracker.seen() && !timeTracker.isClosed())
 					return null;
 
-				if (!dateTracker.setComponent(value, digits, padding))
+				if (!dateTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
 					return null;
 
 				if (dateTracker.lastSet() == 0) {
 					dateSeparator = ch;
-					fourDigitYear = digits == 4;
-					yearInDateFirst = fourDigitYear || (digits == 2 && value > 31);
-					if (!yearInDateFirst && digits != 1 && digits != 2)
+					tracker.fourDigitYear = tracker.digits == 4;
+					tracker.yearInDateFirst = tracker.fourDigitYear || (tracker.digits == 2 && tracker.value > 31);
+					if (!tracker.yearInDateFirst && tracker.digits != 1 && tracker.digits != 2)
 						return null;
 				} else if (dateTracker.lastSet() == 1) {
 					if (ch != dateSeparator)
 						return null;
-					if (digits != 1 && digits != 2)
+					if (tracker.digits != 1 && tracker.digits != 2)
 						return null;
 				}
 
-				digits = 0;
-				value = 0;
-				padding = 0;
+				tracker.reset();
 				break;
 
 			case '.':
 				// If we are not processing the time component
 				if ((!timeTracker.seen() || timeTracker.isClosed())) {
 					// Expecting a 'dotted' date - e.g. 9.12.2008
-					if (!dateTracker.setComponent(value, digits, padding))
+					if (!dateTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
 						return null;
 
 					if (dateTracker.lastSet() == 0) {
 						dateSeparator = ch;
-						fourDigitYear = digits == 4;
-						yearInDateFirst = fourDigitYear || (digits == 2 && value > 31);
-						if (!yearInDateFirst && digits != 1 && digits != 2)
+						tracker.fourDigitYear = tracker.digits == 4;
+						tracker.yearInDateFirst = tracker.fourDigitYear || (tracker.digits == 2 && tracker.value > 31);
+						if (!tracker.yearInDateFirst && tracker.digits != 1 && tracker.digits != 2)
 							return null;
 					} else if (dateTracker.lastSet() == 1) {
 						if (ch != dateSeparator)
 							return null;
-						if (digits != 1 && digits != 2)
+						if (tracker.digits != 1 && tracker.digits != 2)
 							return null;
 					}
 				}
 				else {
-					if ((dateTracker.seen() && !dateTracker.isClosed()) || (timeTracker.seen() && timeTracker.isClosed()) || timeTracker.components() != 2 || digits != 2)
+					if ((dateTracker.seen() && !dateTracker.isClosed()) || (timeTracker.seen() && timeTracker.isClosed()) || timeTracker.components() != 2 || tracker.digits != 2)
 						return null;
-					if (!timeTracker.setComponent(value, digits, padding))
+					if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
 						return null;
 				}
-				digits = 0;
-				value = 0;
-				padding = 0;
+				tracker.reset();
 				break;
 
 			case ' ':
 				if (!dateTracker.seen() && !timeTracker.seen())
 					return null;
 				if (timeTracker.seen() && !timeTracker.isClosed()) {
-					if (!timeTracker.setComponent(value, digits, padding))
+					if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
 						return null;
 					timeTracker.close();
 					timeDateElements.add(TimeDateElement.Time);
@@ -1067,19 +1092,16 @@ public class DateTimeParser {
 				else if (dateTracker.seen() && !dateTracker.isClosed()) {
 					if (dateTracker.components() != 2)
 						return null;
-					if (!(digits == 2 || (!yearInDateFirst && digits == 4)))
+					if (!(tracker.digits == 2 || (!tracker.yearInDateFirst && tracker.digits == 4)))
 						return null;
-					if (!fourDigitYear)
-						fourDigitYear = digits == 4;
-					dateTracker.setComponent(value, digits, padding);
+					if (!tracker.fourDigitYear)
+						tracker.fourDigitYear = tracker.digits == 4;
+					dateTracker.setComponent(tracker.value, tracker.digits, tracker.padding);
 					dateTracker.close();
 					timeDateElements.add(TimeDateElement.Date);
 				}
 				timeDateElements.add(TimeDateElement.WhiteSpace);
-
-				digits = 0;
-				value = 0;
-				padding = 0;
+				tracker.reset();
 				break;
 
 			default:
@@ -1091,9 +1113,9 @@ public class DateTimeParser {
 					for (final String s : localeInfo.getAMPMStrings()) {
 						if (rest.startsWith(s)) {
 							if (!timeTracker.isClosed()) {
-								if (!timeTracker.setComponent(value, digits, padding))
+								if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
 									return null;
-								digits = 0;
+								tracker.digits = 0;
 								timeTracker.close();
 								timeDateElements.add(TimeDateElement.Time);
 							}
@@ -1111,9 +1133,9 @@ public class DateTimeParser {
 
 					if (!ampmDetected) {
 						if (!timeTracker.isClosed()) {
-							if (!timeTracker.setComponent(value, digits, padding))
+							if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
 								return null;
-							digits = 0;
+							tracker.digits = 0;
 							timeTracker.close();
 							timeDateElements.add(TimeDateElement.Time);
 						}
@@ -1129,18 +1151,40 @@ public class DateTimeParser {
 					}
 				}
 				else {
+					if (!dateTracker.seen() || dateTracker.isClosed())
+						return null;
 					if (ch == 'T') {
 						// ISO 8601
-						if (!dateTracker.seen() || dateTracker.isClosed() || digits != 2 || dateSeparator != '-' || !fourDigitYear || !yearInDateFirst)
+						if (tracker.digits != 2 || dateSeparator != '-' || !tracker.fourDigitYear || !tracker.yearInDateFirst)
 							return null;
 						iso8601 = true;
-						dateTracker.setComponent(value, digits, padding);
-						dateTracker.close();
+
+						if (!closeDate(tracker, dateTracker))
+							return null;
+
 						timeDateElements.add(TimeDateElement.Date);
 						timeDateElements.add(TimeDateElement.Indicator_8601);
-						digits = 0;
-						value = 0;
-						padding = 0;
+					}
+					else if (ch == 'Z') {
+						// We are looking at a 'Z' but have seen no time components - so we are looking at something like "1995-02-28Z".
+						// You would have thought that 'yyyy-MM-ddX' would have successfully round-tripped.  But it appears that it is happy to output
+						// a 'Z' when the h/m/s is zero but it is not happy to parse if you use X and provide it as input a date like '1995-02-28Z'.
+						// This 'hack' returns a quoted Z which works on both the input and the output - with the consequence that you are told it is
+						// a LocalDate as opposed to a ZonedDateTime.
+						if (!closeDate(tracker, dateTracker))
+							return null;
+
+						timeDateElements.add(TimeDateElement.Date);
+						timeDateElements.add(new TimeDateElement(TimeDateElementType.Constant, "'Z'"));
+					}
+					else if ("bg".equals(config.locale.getLanguage()) && ch == 'г' && i + 1 < len && trimmed.charAt(i + 1) == '.') {
+						// Bulgarian years are often written with a trailing 'г.', for example "18/03/2018г."
+						if (!closeDate(tracker, dateTracker))
+							return null;
+
+						timeDateElements.add(TimeDateElement.Date);
+						timeDateElements.add(new TimeDateElement(TimeDateElementType.Constant, "'г.'"));
+						i++;
 					}
 					else
 						return null;
@@ -1153,34 +1197,22 @@ public class DateTimeParser {
 			return null;
 
 		if (dateTracker.seen() && !dateTracker.isClosed()) {
-			// Need to close out the date
-			if (yearInDateFirst) {
-				if (digits != 1 && digits != 2)
-					return null;
-			}
-			else {
-				if (digits != 2 && digits != 4)
-					return null;
-			}
-			fourDigitYear = digits == 4;
-			if (dateTracker.components() != 2)
+			if (!closeDate(tracker, dateTracker))
 				return null;
-			dateTracker.setComponent(value, digits, padding);
-			digits = 0;
-			padding = 0;
+
 			timeDateElements.add(TimeDateElement.Date);
 		}
 		if (timeTracker.seen() && !timeTracker.isClosed()) {
 			// Need to close out the time
-			if ((timeTracker.components() != 3 && digits != 2) || (timeTracker.components() == 3 && (digits > 9)))
+			if ((timeTracker.components() != 3 && tracker.digits != 2) || (timeTracker.components() == 3 && (tracker.digits > 9)))
 				return null;
-			if (!timeTracker.setComponent(value, digits, padding))
+			if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
 				return null;
-			digits = 0;
+			tracker.reset();
 			timeDateElements.add(TimeDateElement.Time);
 		}
 
-		if (digits != 0)
+		if (tracker.digits != 0)
 			return null;
 
 		if (iso8601 && timeTracker.components() == 0)
@@ -1221,7 +1253,7 @@ public class DateTimeParser {
 			final boolean freePass = config.lenient && dateTracker.getValue(0) == 0 && dateTracker.getValue(1) == 0 && dateTracker.getValue(2) == 0;
 			if ((!freePass && dateTracker.getValue(1) == 0) || dateTracker.getValue(1) > 31)
 				return null;
-			if (yearInDateFirst) {
+			if (tracker.yearInDateFirst) {
 				if (iso8601 || dateTracker.getValue(2) > 12) {
 					if (!plausibleDate(dateTracker, new int[] {2,1,0}))
 						return null;
@@ -1236,7 +1268,7 @@ public class DateTimeParser {
 					dateAnswer = dateFormat(dateTracker, dateSeparator, resolutionMode, true, true);
 			}
 			else {
-				if (fourDigitYear) {
+				if (tracker.fourDigitYear) {
 					// Year is the last field - attempt to determine which is the month
 					if (dateTracker.getValue(0) > 12) {
 						if (!plausibleDate(dateTracker, new int[] {0,1,2}))
@@ -1294,29 +1326,48 @@ public class DateTimeParser {
 
 		final StringBuilder ret = new StringBuilder();
 		for (final TimeDateElement elt : timeDateElements) {
-			switch (elt) {
+			switch (elt.getType()) {
 			case Time:
 				ret.append(timeAnswer);
 				break;
 			case Date:
 				ret.append(dateAnswer);
 				break;
-			case WhiteSpace:
-				ret.append(' ');
-				break;
-			case Indicator_8601:
-				ret.append("'T'");
-				break;
 			case TimeZone:
 				ret.append(timeZone);
 				break;
+			case Constant:
+			case WhiteSpace:
+			case Indicator_8601:
 			case AMPM:
-				ret.append('a');
+				ret.append(elt.getRepresentation());
 				break;
 			}
 		}
 
 		return ret.toString();
+	}
+
+	private boolean closeDate(Tracker tracker, DateTracker dateTracker) {
+		// Need to close out the date
+		if (tracker.yearInDateFirst) {
+			if (tracker.digits != 1 && tracker.digits != 2)
+				return false;
+		}
+		else {
+			tracker.fourDigitYear = tracker.digits == 4;
+			if (tracker.digits != 2 && tracker.digits != 4)
+				return false;
+		}
+		if (dateTracker.components() != 2)
+			return false;
+
+		dateTracker.setComponent(tracker.value, tracker.digits, tracker.padding);
+		dateTracker.close();
+
+		tracker.reset();
+
+		return true;
 	}
 
 	/**
@@ -1528,18 +1579,29 @@ public class DateTimeParser {
 			return null;
 
 		// Add a relatively naive check to see if we have any characters that make it look unlikely this is an actual date.
+		int suspect = 0;
 		for (int i = 0; i < compressed.length(); i++) {
 			char ch = compressed.charAt(i);
-			boolean possiblePatternCharacter = (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+			boolean possiblePatternCharacter = Character.isLetter(ch);
 			if (possiblePatternCharacter &&
 					ch != 'E' && ch != 'H' && ch != 'M' && ch != 'S' &&
-					ch != 'a' && ch != 'd' && ch != 'h' && ch != 'm' && ch != 'p' && ch != 's' & ch != 'x' && ch != 'y' && ch != 'z')
-				return null;
+					ch != 'a' && ch != 'd' && ch != 'h' && ch != 'm' && ch != 'p' && ch != 's' & ch != 'x' && ch != 'y' && ch != 'z' &&
+					// Chinese/Japanese dates embed characters for year/month/day/hour/minute/second in the date/time
+					ch != '年' &&  ch != '月' && ch != '日' && ch !=  '号' && ch != '時' && ch != '分' && ch !='秒' &&
+					// Bulgarian years are commonly written with a trailing 'г.' after the year
+					ch != 'г') {
+				if (++suspect > 3)
+					return null;
+			}
 		}
 
 		// So before we declare ultimate success - check that Java is happy with our conclusion
 		try {
+			// Check that the pattern we have determined can be used by Java
 			new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(compressed).toFormatter(config.locale);
+			// If we have any suspect characters then do a real check by attempting to parse the input
+			if (suspect != 0 && !dtpResult.isValid8(trimmed))
+				return null;
 		}
 		catch (IllegalArgumentException e) {
 			return null;

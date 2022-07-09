@@ -119,9 +119,9 @@ public class FreeText extends LogicalTypeInfinite {
 
 		if (locale == null)
 			locale = Locale.getDefault();
-		String language = this.locale.getLanguage().toUpperCase(Locale.ROOT);
+		final String language = this.locale.getLanguage().toUpperCase(Locale.ROOT);
 
-		List<String> pronouns = new ArrayList<>(Arrays.asList("DE".equals(language) ? de_base_pronouns : en_base_pronouns));
+		final List<String> pronouns = new ArrayList<>(Arrays.asList("DE".equals(language) ? de_base_pronouns : en_base_pronouns));
 
 		for (int i = 3; i < 100; i++) {
 			final String name = logicalFirst.nextRandom();
@@ -131,7 +131,7 @@ public class FreeText extends LogicalTypeInfinite {
 			pronouns.add(initialCap);
 		}
 
-		SimpleSamples simpleSample = new SimpleSamples(language, new ArrayList<>(Arrays.asList("DE".equals(language) ? de_verbs : en_verbs)), pronouns,
+		final SimpleSamples simpleSample = new SimpleSamples(language, new ArrayList<>(Arrays.asList("DE".equals(language) ? de_verbs : en_verbs)), pronouns,
 				new ArrayList<>(Arrays.asList("DE".equals(language) ? de_nouns : en_nouns)));
 		simpleSamples.put(language, simpleSample);
 
@@ -157,7 +157,7 @@ public class FreeText extends LogicalTypeInfinite {
 		final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
 		// The FreeText Plugin is pseudo supported by any locale, however, if we are generating
 		// random entries we use the first name plugins (which may not be supported by the current locale)
-		AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
+		final AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
 		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, pluginConfig);
 
 		return true;
@@ -225,7 +225,7 @@ public class FreeText extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
-		double confidence = (double)matchCount/realSamples;
+		final double confidence = (double)matchCount/realSamples;
 
 		if (getHeaderConfidence(dataStreamName) != 0)
 			return Math.min(1.2 * confidence, 1.0);

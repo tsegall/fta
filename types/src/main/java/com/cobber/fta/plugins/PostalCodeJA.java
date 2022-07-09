@@ -43,8 +43,7 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP_POSTAL_CODE = "\\d{3}-\\d{4}";
 
-	/** The Regular Expression for this Semantic type. */
-	private BloomFilter<CharSequence> zipsRef;
+	private BloomFilter<CharSequence> reference;
 	private static final String examples[] = {
 			"004-0063", "004-0064", "004-0065", "004-0068", "004-0069", "004-0071", "004-0072", "004-0073", "014-0051", "014-0052", "018-4271",
 			"018-4272", "024-0051", "024-0052", "028-8351", "028-8352", "036-0162", "036-0162", "038-3525", "038-3531", "041-0407", "041-0408",
@@ -79,7 +78,7 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 		super.initialize(analysisConfig);
 
 		try (InputStream filterStream = PostalCodeJA.class.getResourceAsStream("/reference/ja_postal_code.bf")) {
-			zipsRef = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
+			reference = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			throw new FTAPluginException("Failed to load BloomFilter", e);
 		}
@@ -114,7 +113,7 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 		if (len != 8)
 			return false;
 
-		return zipsRef.mightContain(input);
+		return reference.mightContain(input);
 	}
 
 	private String backout() {

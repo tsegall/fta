@@ -32,18 +32,18 @@ import dk.brics.automaton.Transition;
 
 public class TestAutomaton {
 
-	boolean plausible(String input, State state) {
-		// Get a list of transitions ordered by (min, reverse max, to)
-		List<Transition> transitions = state.getSortedTransitions(false);
-
+	boolean plausible(final String input, final State state) {
 		if (input.isEmpty() && state.isAccept())
 			return true;
+
+		// Get a list of transitions ordered by (min, reverse max, to)
+		final List<Transition> transitions = state.getSortedTransitions(false);
 
 		if (transitions.isEmpty())
             return input.isEmpty();
 
-		char ch = input.charAt(0);
-		for (Transition transition : transitions)
+		final char ch = input.charAt(0);
+		for (final Transition transition : transitions)
 			if (ch >= transition.getMin() && ch <= transition.getMax())
 				return plausible(input.substring(1), transition.getDest());
 
@@ -52,36 +52,36 @@ public class TestAutomaton {
 
 	@Test(groups = { TestGroups.ALL, "automaton" })
 	public void testSimple() throws IOException, FTAException {
-		Automaton automaton = new RegExp("[0-9]:").toAutomaton();
-		String input = "7:";
+		final Automaton automaton = new RegExp("[0-9]:").toAutomaton();
+		final String input = "7:";
 		assertTrue(plausible(input, automaton.getInitialState()));
 	}
 
 	@Test(groups = { TestGroups.ALL, "automaton" })
 	public void testExcess() throws IOException, FTAException {
-		Automaton automaton = new RegExp("[0-9]:").toAutomaton();
-		String input = "7: ";
+		final Automaton automaton = new RegExp("[0-9]:").toAutomaton();
+		final String input = "7: ";
 		assertFalse(plausible(input, automaton.getInitialState()));
 	}
 
 	@Test(groups = { TestGroups.ALL, "automaton" })
 	public void testCounting() throws IOException, FTAException {
-		Automaton automaton = new RegExp("[0-9]{2,3}").toAutomaton();
-		String input = "79";
+		final Automaton automaton = new RegExp("[0-9]{2,3}").toAutomaton();
+		final String input = "79";
 		assertTrue(plausible(input, automaton.getInitialState()));
 	}
 
 	@Test(groups = { TestGroups.ALL, "automaton" })
 	public void testCountingExcess() throws IOException, FTAException {
-		Automaton automaton = new RegExp("[0-9]{2,3}").toAutomaton();
-		String input = "7979";
+		final Automaton automaton = new RegExp("[0-9]{2,3}").toAutomaton();
+		final String input = "7979";
 		assertFalse(plausible(input, automaton.getInitialState()));
 	}
 
 	@Test(groups = { TestGroups.ALL, "automaton" })
 	public void testTwoBranch() throws IOException, FTAException {
-		Automaton automaton = new RegExp("([0-6]=)|([7-9]:)").toAutomaton();
-		String input = "7:";
+		final Automaton automaton = new RegExp("([0-6]=)|([7-9]:)").toAutomaton();
+		final String input = "7:";
 		assertTrue(plausible(input, automaton.getInitialState()));
 	}
 }

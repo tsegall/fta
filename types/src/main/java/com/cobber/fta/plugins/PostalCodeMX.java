@@ -46,8 +46,7 @@ public class PostalCodeMX extends LogicalTypeInfinite {
 
 	private String regExp = REGEXP_POSTAL_CODE_5;
 
-	/** The Regular Expression for this Semantic type. */
-	private BloomFilter<CharSequence> zipsRef;
+	private BloomFilter<CharSequence> reference;
 	private static final String examples[] = {
 			"80279", "80302", "80347", "80377", "80380", "80415", "80419", "80466", "80537", "80553",
 			"29957", "30129", "30134", "30136", "30362", "30396", "30409", "30441", "30503", "30533",
@@ -79,7 +78,7 @@ public class PostalCodeMX extends LogicalTypeInfinite {
 		super.initialize(analysisConfig);
 
 		try (InputStream filterStream = PostalCodeMX.class.getResourceAsStream("/reference/mx_postal_code.bf")) {
-			zipsRef = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
+			reference = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			throw new FTAPluginException("Failed to load BloomFilter", e);
 		}
@@ -116,10 +115,10 @@ public class PostalCodeMX extends LogicalTypeInfinite {
 
 		if (len == 4) {
 			regExp = REGEXP_POSTAL_CODE_45;
-			return zipsRef.mightContain("0" + input);
+			return reference.mightContain("0" + input);
 		}
 
-		return zipsRef.mightContain(input);
+		return reference.mightContain(input);
 	}
 
 	private String backout() {

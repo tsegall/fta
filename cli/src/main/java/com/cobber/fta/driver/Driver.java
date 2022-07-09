@@ -113,6 +113,7 @@ public class Driver {
 				logger.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
 				logger.println(" --samples <n> - Set the size of the sample window");
 				logger.println(" --signature - Output the Signature for the supplied pluginName");
+				logger.println(" --skip <n> - Skip the initial <n> rows of the input");
 				logger.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
 				logger.println(" --trace <trace_options> - Set trace options");
 				logger.println(" --validate - Validate the result of the analysis by reprocessing file against results");
@@ -177,6 +178,8 @@ public class Driver {
 				options.samples = true;
 			else if ("--signature".equals(args[idx]))
 				options.signature = true;
+			else if ("--skip".equals(args[idx]))
+				options.skip = Integer.valueOf(args[++idx]);
 			else if ("--threshold".equals(args[idx]))
 				options.threshold = Integer.valueOf(args[++idx]);
 			else if ("--trace".equals(args[idx]))

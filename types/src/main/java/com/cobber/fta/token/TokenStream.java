@@ -523,7 +523,7 @@ public class TokenStream {
 	 * @param transition The Transition to test
 	 * @return
 	 */
-	private static boolean isCoveredBy(Range range, Transition transition) {
+	private static boolean isCoveredBy(final Range range, final Transition transition) {
 		return transition.getMin() <= range.getMin() && range.getMax() <= transition.getMax();
 	}
 
@@ -534,8 +534,8 @@ public class TokenStream {
 	 * @param transition The Transition to test
 	 * @return A Set with the input range split into two (one covered by this transition and one not)
 	 */
-	private static Set<Range> isPartiallyCoveredBy(Range range, Transition transition) {
-		Set<Range> ret = new HashSet<>();
+	private static Set<Range> isPartiallyCoveredBy(final Range range, final Transition transition) {
+		final Set<Range> ret = new HashSet<>();
 		///  R             -----------------------
 		///  T       ----------------------
 		if (transition.getMin() < range.getMin()) {

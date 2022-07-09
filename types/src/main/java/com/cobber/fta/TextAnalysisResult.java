@@ -443,10 +443,10 @@ public class TextAnalysisResult {
 				new Comparator<Map.Entry<K,V>>() {
 					@Override public int compare(final Map.Entry<K,V> e1, final Map.Entry<K,V> e2) {
 						final int res = e2.getValue().compareTo(e1.getValue());
-						final int keyRes = e1.getKey().compareTo(e2.getKey());
 						if (e1.getKey().equals(e2.getKey()))
 							return res;
 
+						final int keyRes = e1.getKey().compareTo(e2.getKey());
 						return res != 0 ? res : keyRes;
 					}
 				}

@@ -90,14 +90,14 @@ public class AnalyzerContext {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AnalyzerContext other = (AnalyzerContext) obj;
+		final AnalyzerContext other = (AnalyzerContext) obj;
 		return Objects.equals(compositeName, other.compositeName)
 				&& Arrays.equals(compositeStreamNames, other.compositeStreamNames)
 				&& dateResolutionMode == other.dateResolutionMode && Objects.equals(streamName, other.streamName);

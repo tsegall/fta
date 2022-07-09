@@ -100,12 +100,12 @@ public class SSN_US extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input) {
-		String trimmed = input.trim();
+		final String trimmed = input.trim();
 		if (trimmed.length() != SSN_LENGTH)
 			return false;
 
 		for (int i = 0; i < SSN_LENGTH; i++) {
-			char ch = trimmed.charAt(i);
+			final char ch = trimmed.charAt(i);
 			if (i == 3 || i == 6) {
 				if (ch != '-')
 					return false;
@@ -116,18 +116,16 @@ public class SSN_US extends LogicalTypeInfinite {
 			}
 		}
 
-		int first = Utils.getValue(trimmed, 0, 3, 3);
+		final int first = Utils.getValue(trimmed, 0, 3, 3);
 		if (first == 0 || first == 666 || first >= 900)
 			return false;
 
-		int second = Utils.getValue(trimmed, 4, 2, 2);
+		final int second = Utils.getValue(trimmed, 4, 2, 2);
 		if (second == 0)
 			return false;
 
-		int third = Utils.getValue(trimmed, 7, 4, 4);
-		if (third == 0)
-			return false;
-		return true;
+		final int third = Utils.getValue(trimmed, 7, 4, 4);
+		return third != 0;
 	}
 
 	@Override

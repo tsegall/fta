@@ -153,7 +153,7 @@ public class JobTitleEN extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
-		double confidence = (double)matchCount/realSamples;
+		final double confidence = (double)matchCount/realSamples;
 
 		if (getHeaderConfidence(dataStreamName) >= 99)
 			return 1.0;

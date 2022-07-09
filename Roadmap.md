@@ -20,7 +20,7 @@
  - Improved anomaly detection (see https://www.sciencedirect.com/science/article/pii/S0925231217309864)
  - Add Filename detection
  - Add ContentFormat attribute: e.g. JSON, XML, base64 encoded, encrypted?
- - Add Distribution attribute: uniform, normal, random
+ - Add Distribution attribute: uniform, normal, log-normal, exponential, other? (Kolmogorov-Smirnov test?)
  - Distinguish between HOME/WORK attributes (e.g. EMAIL, PHONE, ADDRESS)
 
 # Broaden Identity supported

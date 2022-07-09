@@ -390,6 +390,9 @@ public class SimpleDateMatcher {
 
 		for (final FormatterToken token : FormatterToken.tokenize(format)) {
 			switch (token.getType()) {
+			case QUOTE:
+				break;
+
 			case CONSTANT_CHAR:
 				if (eating.length() == 0 || eating.charAt(0) != token.getValue())
 					return false;
@@ -461,7 +464,7 @@ public class SimpleDateMatcher {
 					return false;
 				break;
 
-			case TIMEZONE:
+			case TIMEZONE_NAME:
 			case LOCALIZED_TIMEZONE_OFFSET:
 				while (eating.length() > 0 && eating.charAt(0) != ' ')
 					eating.deleteCharAt(0);

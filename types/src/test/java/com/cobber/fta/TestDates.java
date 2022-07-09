@@ -3999,6 +3999,244 @@ public class TestDates {
 		}
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void inputZ() throws FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("inputZ");
+		final String[] inputs = {
+				"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
+				"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
+				"2001-02-28Z", "1993-02-28Z", "1995-02-28Z", "1996-02-29Z", "1995-02-28Z",
+				"1993-02-28Z", "1998-02-28Z", "2004-02-29Z", "2007-02-28Z", "1990-02-28Z",
+				"2008-05-31Z", "1996-02-29Z", "1990-02-28Z", "2006-02-28Z", "2010-12-31Z",
+				"2006-02-28Z", "1998-02-28Z", "2001-02-28Z", "1965-02-28Z", "1995-02-28Z",
+				"2006-02-28Z", "1990-02-28Z", "2007-10-31Z", "1969-12-31Z", "2009-12-31Z",
+				"1985-02-28Z", "1986-02-28Z", "1987-02-28Z", "1988-02-29Z", "2001-02-28Z",
+				"1988-02-29Z", "1965-02-28Z", "2001-02-28Z", "2003-02-28Z", "2009-02-28Z",
+				"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
+		};
+
+		for (String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeQualifier(),  "yyyy-MM-dd'Z'");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}Z");
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+			assertNull(checkParseable(result, input));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void basicJapanese() throws FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicJapanese");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		final String[] inputs = {
+				"2018年10月6日", "2019年4月30日", "2017年3月12日", "2008年4月30日", "2087年5月20日",
+				"2019年6月10日", "2019年7月30日", "2019年4月30日", "2017年8月12日", "2019年4月30日",
+				"2017年3月12日", "2008年4月30日", "2087年5月20日", "2019年6月10日", "2019年7月30日",
+				"2019年4月30日", "2017年8月12日", "2019年4月30日", "2017年3月12日", "2008年4月30日",
+				"2087年5月20日", "2019年6月10日", "2019年7月30日", "2019年4月30日", "2017年8月12日",
+				"2019年4月30日", "2017年3月12日", "2008年4月30日", "2087年5月20日", "2019年6月10日",
+				"2019年7月30日", "2019年4月30日", "2017年8月12日"
+		};
+
+		for (String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeQualifier(), "yyyy年M月d日");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}年\\d{1,2}月\\d{1,2}日");
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+			assertNull(checkParseable(result, input));
+		}
+	}
+
+//	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void japaneseEra() throws FTAException {
+
+		final TextAnalyzer analysis = new TextAnalyzer("japaneseEra");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		final String[] inputs = {
+				"平成12年", "平成13年", "平成14年",
+				"平成15年", "平成16年", "明治23年",
+				"昭和22年", "令和5年"
+		};
+
+		for (String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeQualifier(), "yyyy年M月d日");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}年\\d{1,2}月\\d{1,2}日");
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+			assertNull(checkParseable(result, input));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void chineseAM() throws FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("japaneseEra");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		final String[] inputs = {
+				"2015/1/5 上午 12:00:00", "2015/1/30 上午 12:00:00", "2014/12/30 上午 12:00:00",
+				"2015/1/13 上午 12:00:00", "2015/1/20 上午 12:00:00", "2014/12/24 上午 12:00:00",
+				"2014/12/29 上午 12:00:00", "2015/2/11 上午 12:00:00", "2015/1/6 上午 12:00:00",
+				"2015/1/23 上午 12:00:00", "2015/1/28 上午 12:00:00", "2015/2/4 上午 12:00:00",
+				"2015/1/28 上午 12:00:00", "2015/1/5 上午 12:00:00", "2015/1/15 上午 12:00:00",
+				"2015/2/26 上午 12:00:00", "2014/12/24 上午 12:00:00", "2013/11/14 上午 12:00:00",
+				"2015/2/24 上午 12:00:00"
+		};
+
+		for (String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getTypeQualifier(), "yyyy/M/d 上午 HH:mm:ss");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}/\\d{1,2}/\\d{1,2} 上午 \\d{2}:\\d{2}:\\d{2}");
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+			assertNull(checkParseable(result, input));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void bulgarianddMMyyyy() throws FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("bulgarian");
+		analysis.setLocale(Locale.forLanguageTag("bg-BG"));
+		final String[] inputs = {
+				"14.02.2017г.", "10.01.2017г.", "02.02.2017г.", "07.02.2017г.", "16.02.2017г.",
+				"28.02.2017г.", "01.03.2017г.", "23.03.2017г.", "28.03.2017г.", "30.03.2017г.",
+				"04.04.2017г.", "06.04.2017г.", "11.04.2017г.", "18.04.2017г.", "20.04.2017г.",
+				"20.04.2047г.", "20.04.2017г.", "25.04.2017г.", "02.05.2017г.", "03.05.2017г.",
+				"04.05.2017г.", "22.05.2017г.", "05.06.2017г.", "06.06.2017г.", "08.06.2017г.",
+				"15.06.2017г.", "18.07.2017г.", "25.07.2017г.", "03.08.2017г.", "10.08.2017г.",
+				"18.08.2017г.", "21.08.2017г.", "04.09.2017г.", "07.09.2017г.", "21.09.2017г.",
+				"26.09.2017г.", "28.09.2017г.", "12.10.2017г.", "17.10.2017г.", "24.10.2017г.",
+				"26.10.2017г."
+				//, "31.10.2017", "13.11.2017", "14.11.2017", "21.11.2017", "28.11.2017",
+		};
+
+		for (String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeQualifier(), "dd.MM.yyyy'г.'");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{2}\\.\\d{2}\\.\\d{4}г\\.");
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+			assertNull(checkParseable(result, input));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void bulgariandNonDate() throws FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("bulgarian");
+		analysis.setLocale(Locale.forLanguageTag("bg-BG"));
+		final String[] inputs = {
+				"A12/1174/16", "A12/1175/16", "A12/1176/16", "A12/1177/16", "A12/1178/16",
+				"A12/1179/16", "A12/1180/16", "A12/1181/16", "A12/1182/16", "A12/1183/16",
+				"A12/1184/16", "A12/1185/16", "A12/1186/16", "A12/1187/16", "A11/0086/16",
+				"INFO/0139/16", "A12/0745/16", "A12/1120/16", "A12/1117/16", "A12/1115/16",
+				"A12/1112/16", "A12/1111/16", "A12/1116/16", "A12/1110/16", "A11/0085/16",
+				"INFO/0135/16", "INFO/0136/16", "INFO/0137/16", "A12/1137/16", "A12/1138/16"
+		};
+
+		for (String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.STRING);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void bulgarianddMMyy() throws FTAException {
+		Locale bulgarian = Locale.forLanguageTag("bg-BG");
+		final TextAnalyzer analysis = new TextAnalyzer("bulgarian", DateResolutionMode.DayFirst);
+		analysis.setLocale(bulgarian);
+		final String[] inputs = {
+				"26.01.12г.", "05.04.05г.", "10.05.10г.", "05.04.05г.", "17.06.10г.",
+				"05.04.05г.", "10.06.08г.", "05.04.05г.", "26.04.07г.", "05.04.05г.",
+				"09.06.06г.", "05.04.05г.", "25.10.11г.", "26.09.06г.", "06.04.05г.",
+				"26.06.12г.", "17.03.09г.", "06.04.05г.", "07.04.05г.", "27.10.09г.",
+				"07.04.05г.", "26.02.08г.", "07.04.05г.", "06.07.10г.", "07.04.05г.",
+				"15.06.11г.", "03.02.17г.", "12.08.16г.", "07.04.05г.", "08.04.05г.",
+		};
+
+		final DateTimeParser dtp = new DateTimeParser().withLocale(bulgarian).withDateResolutionMode(DateResolutionMode.DayFirst);
+		for (String input : inputs) {
+			assertEquals(dtp.determineFormatString(input), "dd.MM.yy'г.'");
+			analysis.train(input);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeQualifier(), "dd.MM.yy'г.'");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{2}\\.\\d{2}\\.\\d{2}г\\.");
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()), input);
+			assertNull(checkParseable(result, input));
+		}
+	}
+
+
 	protected static String checkParseable(TextAnalysisResult result, String input) {
 		final String formatString = result.getTypeQualifier();
 		final FTAType type = result.getType();

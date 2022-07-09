@@ -17,7 +17,6 @@ package com.cobber.fta.plugins;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
@@ -29,21 +28,19 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
 
 /**
- * Plugin to detect valid Swedish Postal Codes.
+ * Plugin to detect valid 5-digit Insee Codes.
  */
-public class PostalCodeSE extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_SE";
-
+public class InseeCodeFR extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
-	public static final String REGEXP_POSTAL_CODE = "\\d{3} \\d{2}";
+	public static final String REGEXP_INSEE_CODE = "\\d{5}";
 
-	private BloomFilter<CharSequence> reference;
+	private BloomFilter<Integer> reference;
 	private static final String examples[] = {
 			"186 00", "186 01", "186 03", "186 21", "186 22", "186 23", "186 24", "186 25", "186 26", "186 30",
 			"186 31", "186 32", "186 33", "186 34", "186 35", "186 36", "186 37", "186 38", "186 39", "186 40",
@@ -64,24 +61,24 @@ public class PostalCodeSE extends LogicalTypeInfinite {
 	};
 
 	/**
-	 * Construct a Swedish Postal code plugin based on the Plugin Definition.
+	 * Construct a Insee  code plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public PostalCodeSE(final PluginDefinition plugin) {
+	public InseeCodeFR(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return REGEXP_POSTAL_CODE.equals(compressed.toString()) || "\\d{5}".equals(compressed.toString());
+		return REGEXP_INSEE_CODE.equals(compressed.toString());
 	}
 
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		try (InputStream filterStream = PostalCodeSE.class.getResourceAsStream("/reference/se_postal_code.bf")) {
-			reference = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
+		try (InputStream filterStream = InseeCodeFR.class.getResourceAsStream("/reference/fr_insee_code.bf")) {
+			reference = BloomFilter.readFrom(filterStream, Funnels.integerFunnel());
 		} catch (IOException e) {
 			throw new FTAPluginException("Failed to load BloomFilter", e);
 		}
@@ -96,27 +93,27 @@ public class PostalCodeSE extends LogicalTypeInfinite {
 
 	@Override
 	public String getQualifier() {
-		return SEMANTIC_TYPE;
+		return defn.qualifier;
 	}
 
 	@Override
 	public String getRegExp() {
-		return REGEXP_POSTAL_CODE;
+		return REGEXP_INSEE_CODE;
 	}
 
 	@Override
 	public FTAType getBaseType() {
-		return FTAType.STRING;
+		return defn.baseType;
 	}
 
 	@Override
 	public boolean isValid(final String input) {
 		final int len = input.length();
 
-		if (len < 5 || len > 6)
+		if (len != 5 || !Utils.isNumeric(input))
 			return false;
 
-		return len == 5 ? reference.mightContain(input.substring(0, 3) + " " + input.substring(3)) : reference.mightContain(input);
+		return reference.mightContain(Integer.valueOf(input));
 	}
 
 	private String backout() {

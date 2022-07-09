@@ -452,7 +452,7 @@ public class TestPlugins {
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_UK");
+		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_GB");
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "[ \\d]{9}");
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -465,7 +465,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void VAT_UK2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("VAT Registration Number");
-		analysis.setLocale(Locale.forLanguageTag("en-UK"));
+		analysis.setLocale(Locale.forLanguageTag("en-GB"));
 
 		final String[] inputs = {
 				"GB654430839", "GB654430839", "GB654430839", "GB654430839", "GB654430839",
@@ -488,7 +488,7 @@ public class TestPlugins {
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_UK");
+		assertEquals(result.getTypeQualifier(), "IDENTITY.VAT_GB");
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "(GB)?[ \\d]{9}");
 		assertEquals(result.getMatchCount(), inputs.length);

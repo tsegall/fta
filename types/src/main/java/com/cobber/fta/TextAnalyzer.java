@@ -178,7 +178,7 @@ public class TextAnalyzer {
 	 * @param feature The feature to be set.
 	 * @param state The new state of the feature.
 	 */
-	public void configure(Feature feature, final boolean state) {
+	public void configure(final Feature feature, final boolean state) {
 		if (trainingStarted)
 			throw new IllegalArgumentException("Cannot adjust feature '" + feature.toString() + "' once training has started");
 
@@ -190,7 +190,7 @@ public class TextAnalyzer {
 	 * @param feature The feature to be tested.
 	 * @return Whether the identified feature is enabled.
 	 */
-	public boolean isEnabled(Feature feature) {
+	public boolean isEnabled(final Feature feature) {
 		return analysisConfig.isEnabled(feature);
 	}
 
@@ -749,7 +749,7 @@ public class TextAnalyzer {
 			}
 		} catch (NumberFormatException e) {
 			final ParsePosition pos = new ParsePosition(0);
-			String cleaned = firstCh == '+' ? trimmed.substring(1) : trimmed;
+			final String cleaned = firstCh == '+' ? trimmed.substring(1) : trimmed;
 			final Number n = longFormatter.parse(cleaned, pos);
 			if (n == null || cleaned.length() != pos.getIndex())
 				return false;
@@ -1173,7 +1173,7 @@ public class TextAnalyzer {
 	}
 
 	private StringBuilder[]
-	determineNumericPattern(final SignStatus signStatus, final int numericDecimalSeparators, final int possibleExponentSeen, boolean nonLocalizedDouble) {
+	determineNumericPattern(final SignStatus signStatus, final int numericDecimalSeparators, final int possibleExponentSeen, final boolean nonLocalizedDouble) {
 		StringBuilder[] result = new StringBuilder[2];
 
 		if (signStatus == SignStatus.TRAILING_MINUS) {
@@ -2323,7 +2323,6 @@ public class TextAnalyzer {
 
 		final Map<String, Long> newOutliers = new HashMap<>();
 		final Map<String, Long> addMatches = new HashMap<>();
-		final Map<String, Long> minusMatches = new HashMap<>();
 		final double missThreshold = 1.0 - logical.getThreshold()/100.0;
 		long validCount = 0;
 
@@ -2342,6 +2341,8 @@ public class TextAnalyzer {
 		// Sweep the balance and check they are part of the set
 		if ((double) missCount / realSamples > missThreshold)
 			return new FiniteMatchResult();
+
+		final Map<String, Long> minusMatches = new HashMap<>();
 
 		for (final Map.Entry<String, Long> entry : cardinalityUpper.entrySet()) {
 			if (logical.isValid(entry.getKey()))
@@ -2583,7 +2584,7 @@ public class TextAnalyzer {
 			// Sort the results so that we consider the most frequent first (we will hopefully fail faster)
 			cardinalityUpper = Utils.sortByValue(cardinalityUpper);
 
-			double scoreToBeat = facts.matchPatternInfo.isLogicalType() ? facts.confidence : -1.0;
+			final double scoreToBeat = facts.matchPatternInfo.isLogicalType() ? facts.confidence : -1.0;
 
 			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
 			final LogicalTypeFinite logical = matchFiniteTypes(FTAType.STRING, cardinalityUpper, scoreToBeat);
@@ -2954,7 +2955,7 @@ public class TextAnalyzer {
 			facts.matchPatternInfo = new PatternInfo(facts.matchPatternInfo);
 			facts.matchPatternInfo.regexp = freezeNumeric(facts.matchPatternInfo.regexp);
 
-			double scoreToBeat = facts.matchPatternInfo.isLogicalType() ? facts.confidence : -1.0;
+			final double scoreToBeat = facts.matchPatternInfo.isLogicalType() ? facts.confidence : -1.0;
 
 			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
 			final LogicalTypeFinite logicalFinite = matchFiniteTypes(FTAType.LONG, facts.cardinality, scoreToBeat);
@@ -3030,7 +3031,7 @@ public class TextAnalyzer {
 		if (facts.matchPatternInfo == null)
 			determineType();
 
-		TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(analysisConfig, context, facts.calculateFacts());
+		final TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(analysisConfig, context, facts.calculateFacts());
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		try {
 			return mapper.writeValueAsString(mapper.convertValue(wrapper, JsonNode.class));
@@ -3048,13 +3049,13 @@ public class TextAnalyzer {
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
 	 */
-	public static TextAnalyzer deserialize(String serialized) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException {
+	public static TextAnalyzer deserialize(final String serialized) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException {
 		final ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		TextAnalyzer ret = null;
 
 		try {
-			TextAnalyzerWrapper wrapper = mapper.readValue(serialized, TextAnalyzerWrapper.class);
+			final TextAnalyzerWrapper wrapper = mapper.readValue(serialized, TextAnalyzerWrapper.class);
 			ret = new TextAnalyzer(wrapper.analyzerContext);
 			ret.analysisConfig = wrapper.analysisConfig;
 			ret.facts = wrapper.facts;
@@ -3083,7 +3084,7 @@ public class TextAnalyzer {
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
 	 */
-	public static TextAnalyzer merge(TextAnalyzer first, TextAnalyzer second) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException  {
+	public static TextAnalyzer merge(final TextAnalyzer first, final TextAnalyzer second) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException  {
 		TextAnalyzer ret = new TextAnalyzer(first.context);
 
 		// If we have a locale set make sure to set it on the TextAnalyzer
@@ -3096,10 +3097,10 @@ public class TextAnalyzer {
 		ret.analysisConfig = first.analysisConfig;
 
 		// Train using all the non-null/non-blank elements
-		Map<String, Long>merged = new HashMap<>();
+		final Map<String, Long>merged = new HashMap<>();
 
 		// Prime the merged set with the first set (real and outliers which are non-overlapping)
-		Facts firstFacts = first.facts.calculateFacts();
+		final Facts firstFacts = first.facts.calculateFacts();
 		merged.putAll(firstFacts.cardinality);
 		merged.putAll(firstFacts.outliers);
 		// Preserve the top and bottom values - even if they were not captured in the cardinality set
@@ -3107,7 +3108,7 @@ public class TextAnalyzer {
 		addToMap(merged, firstFacts.bottomK, first);
 
 		// Merge in the second set
-		Facts secondFacts = second.facts.calculateFacts();
+		final Facts secondFacts = second.facts.calculateFacts();
 		for (final Map.Entry<String, Long>entry : secondFacts.cardinality.entrySet()) {
 			final Long seen = firstFacts.cardinality.get(entry.getKey());
 			if (seen == null) {
@@ -3198,7 +3199,7 @@ public class TextAnalyzer {
 	 * then the bottomK will be 0,2,4,6 so 0 will not appear in the cardinality set but will appear in the bottomK set.
 	 * Note: this routine is not fast if the extremes are not in the cardinality set, but it is only used when we are merging two analyses.
 	 */
-	private static void addToMap(Map<String, Long>merged, Set<String> extremes, TextAnalyzer analyzer) {
+	private static void addToMap(final Map<String, Long>merged, final Set<String> extremes, final TextAnalyzer analyzer) {
 		if (extremes == null)
 			return;
 
@@ -3208,13 +3209,13 @@ public class TextAnalyzer {
 			// If we already have it in the merged set then we are done
 			if (merged.get(e) != null)
 				continue;
-			Object extreme = analyzer.facts.getValue(e);
+			final Object extreme = analyzer.facts.getValue(e);
 			if (extreme == null)
 				continue;
 			boolean found = false;
 			for (final String m : merged.keySet()) {
 				// Check for equality of value not of format - e.g. "00" will equal "0" once both are converted to Longs
-				Object mValue = analyzer.facts.getValue(m);
+				final Object mValue = analyzer.facts.getValue(m);
 				if (mValue != null && mValue.equals(extreme)) {
 					found = true;
 					break;
@@ -3226,18 +3227,18 @@ public class TextAnalyzer {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		return equals(obj, 0.0);
 	}
 
-	public boolean equals(Object obj, double epsilon) {
+	public boolean equals(final Object obj, final double epsilon) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TextAnalyzer other = (TextAnalyzer) obj;
+		final TextAnalyzer other = (TextAnalyzer) obj;
 		return Objects.equals(analysisConfig, other.analysisConfig) && Objects.equals(context, other.context)
 				&& facts.equals(other.facts, epsilon);
 	}

@@ -202,7 +202,7 @@ public class AnalysisConfig {
 		return maxOutliers;
 	}
 
-	public int setMaxOutliers(int maxOutliers) {
+	public int setMaxOutliers(final int maxOutliers) {
 		final int ret = this.maxOutliers;
 		this.maxOutliers = maxOutliers;
 		return ret;
