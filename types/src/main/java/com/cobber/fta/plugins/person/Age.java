@@ -34,9 +34,6 @@ import com.cobber.fta.token.TokenStreams;
 * Plugin to detect Age (Person).
 */
 public class Age extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "PERSON.AGE";
-
 	/** The Regular Express for this Semantic type. */
 	public static final String REGEXP = "\\d{1,3}";
 
@@ -66,7 +63,7 @@ public class Age extends LogicalTypeInfinite {
 
 	@Override
 	public String getQualifier() {
-		return SEMANTIC_TYPE;
+		return defn.qualifier;
 	}
 
 	@Override

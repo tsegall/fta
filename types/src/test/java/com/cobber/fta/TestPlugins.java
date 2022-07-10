@@ -602,6 +602,36 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicRace() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicRace");
+		final String[] inputs = {
+				"UNK", "BLACK", "WHITE", "EAST INDIAN", "METIS", "BLACK",
+				"NORTH AMERICAN", "CHINESE", "FILIPINO", "LATIN AMERICAN", "S. E. ASIAN",
+				"ASIAN-SOUTH", "MULTIRAC/ETHNIC", "BLACK", "WHITE", "NORTH AMERICAN",
+				"SOUTH ASIAN", "S. E. ASIAN", "WHITE", "METIS", "NORTH AMERICAN",
+				"S. E. ASIAN", "WHITE", "BLACK", "WHITE", "LATIN AMERICAN",
+				"UNK", "BLACK", "WHITE", "EAST INDIAN", "METIS",
+				"NORTH AMERICAN", "OTHER", "CHINESE", "LATIN AMERICAN", "S. E. ASIAN",
+				"ASI-E/SOUTHEAST", "ASIAN-SOUTH", "EURO.-SOUTHERN", "MULTIRAC/ETHNIC"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getTypeQualifier(), "PERSON.RACE");
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("PERSON.RACE").signature);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getOutlierCount(), 0);
+
+		for (final String input : inputs)
+			assertTrue(input.trim().matches(result.getRegExp()), input);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPostalCodeNL() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("P_PCODE");
 		analysis.setLocale(Locale.forLanguageTag("nl-NL"));

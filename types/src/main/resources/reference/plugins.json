@@ -415,6 +415,20 @@
 		"priority": 83
 	},
 	{
+		"qualifier" : "PERSON.RACE",
+		"description": "Race/Ethinicity (person)",
+		"pluginType": "java",
+		"signature": "V748loqJ6KsRRAedrRrKDsDpxV4=",
+		"clazz": "com.cobber.fta.plugins.person.Race",
+		"validLocales": [
+			{
+				"localeTag":  "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(race|ethnic).*", "confidence": 95, "mandatory": true } ]
+			}
+		],
+		"priority": 84
+	},
+	{
 		"qualifier": "NATIONALITY_EN",
 		"description": "Nationality (English Language)",
 		"pluginType": "list",
@@ -824,7 +838,7 @@
 		"qualifier": "STATE_PROVINCE.INSEE_CODE_FR",
 		"description": "French Insee Code (5 digit)",
 		"pluginType": "java",
-		"signature": "",
+		"signature": "2dBxTIccKcNhE+xvma/5fTAfhiw=",
 		"clazz": "com.cobber.fta.plugins.InseeCodeFR",
 		"validLocales": [
 			{ "localeTag": "fr-FR", "headerRegExps": [ { "regExp": ".*(?i)(insee).*", "confidence": 95 } ] }

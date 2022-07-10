@@ -12,8 +12,8 @@
 	- IDENTITY.VAT_<COUNTRY>
 	- PERSON.DOB
 	- PERSON.AGE_RANGE
-	- PERSON.RACE
-	- PERSON.AGE
+	- PERSON.RACE (Done)
+	- PERSON.AGE (Done)
 	- Mime Type
 	- UserAgent
  - Outlier detection in numeric fields

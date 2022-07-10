@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 9.0.10
+ - ENH: Add new Semantic Type - PERSON.RACE
+
 ### 9.0.9
  - ENH: I18N - Add FREE_TEXT support for Bulgarian, Catalan, Dutch, Portuguese, and Russian
  - ENH: I18N - Improve Japanese date detection
@@ -19,15 +22,15 @@
 ### 9.0.7
  - BUG: Date detection is sometimes overly aggressive, for example, Q4 2008-12
  - ENH: Add new Semantic Types - PERIOD.QUARTER, PERIOD.HALF
- - ENH: Add new Semantic Types - IDENTITY.VAT_<COUNTRY> (Countries supported AT, ES, FR, IT, PL, UK)
- - ENH: Add new Semantic Types - STATE_PROVINCE.PROVINCE_NAME_EC (Ecuador)
+ - ENH: Add new Semantic Type - IDENTITY.VAT_<COUNTRY> (Countries supported AT, ES, FR, IT, PL, UK)
+ - ENH: Add new Semantic Type - STATE_PROVINCE.PROVINCE_NAME_EC (Ecuador)
 
 ### 9.0.6
  - BUG: Address incorrectly collapsing time formats when both date and time needed collapsing (See Issue #6)
  - ENH: Bump google phonenumber
 
 ### 9.0.5
- - ENH: Add new Semantic Types - PERSON.AGE
+ - ENH: Add new Semantic Type - PERSON.AGE
  - ENH: I18N - Improve French Post Code detection
 
 ### 9.0.4
@@ -53,7 +56,7 @@
 ### 9.0.1
  - ENH: I18N - Initial Greek support (Dates, Yes/No, PhoneNumbers)
  - ENH: I18N - Improve Chinese support
- - ENH: I18N - Add new Semantic Types - COUNTRY.TEXT_DE
+ - ENH: I18N - Add new Semantic Type - COUNTRY.TEXT_DE
  - BUG: Outliers were not being correctly tracked for late detected RegExp types
 
 ### 9.0.0

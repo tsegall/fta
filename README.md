@@ -253,7 +253,7 @@ DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-U
 EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
-FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|de, en, fr
+FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|bg, ca, de, en, es, fr, it, nl, pt, ru
 GENDER.TEXT_&lt;Language&gt;|Gender|bg, ca, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr, zh
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HASH.SHA1_HEX|SHA1 Hash - hexadecimal|*
@@ -287,6 +287,7 @@ NATIONALITY_EN|Nationality|en
 PERIOD.HALF|Half (Year)|*
 PERIOD.QUARTER|Quarter (Year)|*
 PERSON.AGE|Age (Person)|en, es, fr, es, it, pt
+PERSON.RACE|Race/Ethinicity (person)|*
 POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, FR, JA, NL, UK, ES, MX, PT, SE, UY
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
@@ -310,6 +311,7 @@ STATE_PROVINCE.PROVINCE_NAME_ZA|South African Province Name|en-ZA
 STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA, en-US, es-MX
 STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
 STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
+STATE_PROVINCE.INSEE_CODE_FR|French Insee Code (5 digit)|fr-FR
 STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH, fr-CH, it-CH
 STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH, fr-CH, it-CH
 STATE_PROVINCE.PREFECTURE_NAME_JP|Japanese Prefecture Name|ja
