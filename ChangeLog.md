@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 9.0.11
+ - ENH: I18N - zip is a synonym for postleitzahl in Germany
+ - ENH: Improve US County detection by adding some common misspellings
+ - ENH: CLI - field names should be trimmed
+ - BUG: CLI - if delimiter is specified, need to turn off autodetection
+
 ### 9.0.10
  - ENH: Add new Semantic Type - PERSON.RACE
 

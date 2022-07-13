@@ -56,8 +56,10 @@ class FileProcessor {
 		settings.setIgnoreTrailingWhitespaces(false);
 		settings.setNullValue("");
 		settings.setEmptyValue("");
-		if (options.delimiter != null)
+		if (options.delimiter != null) {
 			settings.getFormat().setDelimiter(options.delimiter.charAt(0));
+			settings.setDelimiterDetectionEnabled(false);
+		}
 		else
 			settings.setDelimiterDetectionEnabled(true, ',', '\t', '|', ';');
 		if (options.xMaxCharsPerColumn != -1)
@@ -273,7 +275,7 @@ class FileProcessor {
 					analyzer.setTotalCount(thisRecord);
 
 				result = analyzer.getResult();
-				logger.printf("Field '%s' (%d) - %s%n", sanitize(header[i]), i, result.asJSON(options.pretty, options.verbose));
+				logger.printf("Field '%s' (%d) - %s%n", sanitize(analyzer.getStreamName()), i, result.asJSON(options.pretty, options.verbose));
 				if (options.pluginDefinition) {
 					final String pluginDefinition = result.asPlugin();
 					if (pluginDefinition != null)

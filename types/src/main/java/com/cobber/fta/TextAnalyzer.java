@@ -2929,7 +2929,7 @@ public class TextAnalyzer {
 			// If we are collecting statistics - we need to generate the topK and bottomK
 			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 				generateTopBottom();
-		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > 1800 && facts.maxLong < 2041 &&
+		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > 1800 && facts.maxLong <= 2050 &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
 						keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) >= 90 ||
 						keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90)) {

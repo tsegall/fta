@@ -25,7 +25,6 @@ import java.util.Set;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -53,8 +52,8 @@ public class Race extends LogicalTypeInfinite {
 		keywordsHash.addAll(Arrays.asList(raceWords));
 	}
 
-	private String regExp = KnownPatterns.PATTERN_ALPHA_VARIABLE;
-	private Set<String> rejected = new HashSet<>();
+	private String regExp = "[\\p{IsAlphabetic} /]+";
+	private final Set<String> rejected = new HashSet<>();
 
 	/**
 	 * Construct an Race plugin based on the Plugin Definition.
@@ -97,11 +96,11 @@ public class Race extends LogicalTypeInfinite {
 	}
 
 	private static List<String> splitIntoWords(final String input) {
-		ArrayList<String> ret = new ArrayList<>();
+		final ArrayList<String> ret = new ArrayList<>();
 
 		int start = -1;
 		for (int i = 0; i < input.length(); i++) {
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			if (Character.isLetter(ch)) {
 				if (start == -1)
 					start = i;
@@ -125,9 +124,9 @@ public class Race extends LogicalTypeInfinite {
 		if (keywordsHash.contains(input.toUpperCase(locale)))
 			return true;
 
-		List<String> words = splitIntoWords(input);
+		final List<String> words = splitIntoWords(input);
 
-		for (String word : words)
+		for (final String word : words)
 			// Good if any of the words in in the list of happy words
 			if (keywordsHash.contains(word.toUpperCase(locale)))
 				return true;
@@ -147,7 +146,7 @@ public class Race extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
-		double confidence = (double)matchCount/realSamples;
+		final double confidence = (double)matchCount/realSamples;
 		if (confidence >= getThreshold() / 100.0)
 			return confidence;
 
@@ -165,7 +164,7 @@ public class Race extends LogicalTypeInfinite {
 		final RegExpGenerator re = new RegExpGenerator(cardinality.size() + outliers.size(), locale);
 		cardinality.putAll(outliers);
 		outliers.clear();
-		for (String item : cardinality.keySet())
+		for (final String item : cardinality.keySet())
 			re.train(item);
 		regExp = re.getResult();
 

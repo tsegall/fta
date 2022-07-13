@@ -54,7 +54,7 @@ public class Processor {
 
 		for (int i = 0; i < fieldNames.length; i++) {
 			if (options.col == -1 || options.col == i) {
-				analyzers[i] = new TextAnalyzer(new AnalyzerContext(fieldNames[i], options.resolutionMode, compositeName, fieldNames));
+				analyzers[i] = new TextAnalyzer(new AnalyzerContext(fieldNames[i].trim(), options.resolutionMode, compositeName, fieldNames));
 				options.apply(analyzers[i]);
 			}
 		}
