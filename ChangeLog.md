@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 9.0.12
+ - ENH: Address Issue #7 - Allow setting secondary (actually an infinite number) locale for DateTimeParser determination
+ - ENG: Support for 9 digit Zip + 4's
+
 ### 9.0.11
  - ENH: I18N - zip is a synonym for postleitzahl in Germany
  - ENH: Improve US County detection by adding some common misspellings

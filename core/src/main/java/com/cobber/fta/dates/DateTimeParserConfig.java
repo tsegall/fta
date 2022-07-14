@@ -26,8 +26,10 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 public class DateTimeParserConfig {
 	/** When we have ambiguity - should we prefer to conclude day first, month first or unspecified. */
 	public DateResolutionMode resolutionMode;
-	/** The Locale the input is in. */
-	public Locale locale;
+	/** The list of Locales to test. */
+	public Locale[] locales;
+	/** The locale determined - will be one from the set above. */
+	private Locale locale;
 	/** If Strict mode is set, any input to train() that would not pass the current 'best' guess will return null. */
 	public boolean strictMode;
 	/** If noAbbreviationPunctuation is set we should use Month Abbreviations without periods, for example for the
@@ -36,13 +38,38 @@ public class DateTimeParserConfig {
 	/** lenient allows dates of the form 00/00/00 etc to be viewed as valid for the purpose of Format detection. */
 	public boolean lenient = true;
 
-	public DateTimeParserConfig(final Locale locale) {
-		this.locale = locale;
+	public DateTimeParserConfig(final Locale... locales) {
+		setLocales(locales);
 	}
 
 	public DateTimeParserConfig() {
-		this.locale = Locale.getDefault();
 		resolutionMode = DateResolutionMode.None;
+	}
+
+	public void setLocales(final Locale... locales) {
+		this.locales = locales;
+		if (locales.length == 1)
+			this.locale = this.locales[0];
+	}
+
+	protected void setLocale(final Locale locale) {
+		this.locale = locale;
+	}
+
+	/**
+	 * Get the current active Locale.  If the set of locales has not been initialized then this will
+	 * return the current default Java Locale.  If the set of locales has only one member then this will be returned.
+	 * In the case where there are multiple locales - then this will return null, until setLocale() is invoked.
+	 * @return The current active Locale.
+	 */
+	public Locale getLocale() {
+		if (locale != null)
+			return locale;
+
+		if (locales == null)
+			locales = new Locale[] { Locale.getDefault() };
+
+		return locales.length == 1 ? locales[0] : null;
 	}
 
 	@Override
@@ -58,4 +85,3 @@ public class DateTimeParserConfig {
 				&& strictMode == other.strictMode;
 	}
 }
-

@@ -487,6 +487,178 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue7A() {
+		final String[] french = { "Mars 25, 2021", "Févr 5, 2020", "Avr 1, 1999" };
+		final String[] english = { "Mar 25, 2021", "Feb 5, 2020", "Apr 1, 1999" };
+
+		// Simple French test
+		final DateTimeParser dtpFrench = new DateTimeParser()
+		    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+		    .withLocale(Locale.FRENCH)
+		    .withStrictMode(true);
+
+		for (final String input : french)
+			dtpFrench.train(input);
+
+		final DateTimeParserResult frenchResult = dtpFrench.getResult();
+		assertEquals(frenchResult.getFormatString(), "MMM d, yyyy");
+		assertEquals(frenchResult.getLocale().toLanguageTag(), "fr");
+
+		// Simple English test
+		final DateTimeParser dtpEnglish = new DateTimeParser()
+			    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+			    .withLocale(Locale.ENGLISH)
+			    .withStrictMode(true);
+
+		for (String input : english)
+			dtpEnglish.train(input);
+
+		final DateTimeParserResult englishResult = dtpEnglish.getResult();
+		assertEquals(englishResult.getFormatString(), "MMM d, yyyy");
+		assertEquals(englishResult.getLocale().toLanguageTag(), "en");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue7B() {
+		final String[] french = { "Mars 25, 2021", "Févr 5, 2020", "Avr 1, 1999" };
+
+		// French input with French, then English as the locale
+		final DateTimeParser dtpFrenchEnglish = new DateTimeParser()
+			    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+			    .withLocale(Locale.FRENCH, Locale.ENGLISH)
+			    .withStrictMode(true);
+
+		for (String input : french)
+			dtpFrenchEnglish.train(input);
+
+		final DateTimeParserResult frenchEnglishResult = dtpFrenchEnglish.getResult();
+		assertEquals(frenchEnglishResult.getFormatString(), "MMM d, yyyy");
+		assertEquals(frenchEnglishResult.getLocale().toLanguageTag(), "fr");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue7B_Det() {
+		// French input with French, then English as the locale
+		final DateTimeParser dtpFrenchEnglish = new DateTimeParser()
+			    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+			    .withLocale(Locale.FRENCH, Locale.ENGLISH)
+			    .withStrictMode(true);
+
+		assertEquals(dtpFrenchEnglish.determineFormatString("Mars 25, 2021"), "MMM dd, yyyy");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue7C() {
+		final String[] english = { "Mar 25, 2021", "Feb 5, 2020", "Apr 1, 1999" };
+
+		// English input with French, then English as the locale
+		final DateTimeParser dtpFrenchEnglish = new DateTimeParser()
+			    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+			    .withLocale(Locale.FRENCH, Locale.ENGLISH)
+			    .withStrictMode(true);
+
+		for (String input : english)
+			dtpFrenchEnglish.train(input);
+
+		final DateTimeParserResult frenchEnglishResult = dtpFrenchEnglish.getResult();
+		assertEquals(frenchEnglishResult.getFormatString(), "MMM d, yyyy");
+		assertEquals(frenchEnglishResult.getLocale().toLanguageTag(), "en");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue7C_Det() {
+		// English input with French, then English as the locale
+		final DateTimeParser dtpFrenchEnglish = new DateTimeParser()
+			    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+			    .withLocale(Locale.FRENCH, Locale.ENGLISH)
+			    .withStrictMode(true);
+
+		assertEquals(dtpFrenchEnglish.determineFormatString("Mar 25, 2021"), "MMM dd, yyyy");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue7D() {
+		final String[] french = { "Mars 25, 2021", "Févr 5, 2020", "Avr 1, 1999" };
+
+		// French input with English, then French as the locale
+		final DateTimeParser dtpEnglishFrench = new DateTimeParser()
+			    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+			    .withLocale(Locale.ENGLISH, Locale.FRENCH)
+			    .withStrictMode(true);
+
+		for (String input : french)
+			dtpEnglishFrench.train(input);
+
+		final DateTimeParserResult englishFrenchResult = dtpEnglishFrench.getResult();
+		assertEquals(englishFrenchResult.getFormatString(), "MMM d, yyyy");
+		assertEquals(englishFrenchResult.getLocale().toLanguageTag(), "fr");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue7E() {
+		final String[] english = { "Mar 25, 2021", "Feb 5, 2020", "Apr 1, 1999" };
+
+		// English input with English, then French as the locale
+		final DateTimeParser dtpEnglishFrench = new DateTimeParser()
+			    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+			    .withLocale(Locale.ENGLISH, Locale.FRENCH)
+			    .withStrictMode(true);
+
+		for (String input : english)
+			dtpEnglishFrench.train(input);
+
+		final DateTimeParserResult englishFrenchResult = dtpEnglishFrench.getResult();
+		assertEquals(englishFrenchResult.getFormatString(), "MMM d, yyyy");
+		assertEquals(englishFrenchResult.getLocale().toLanguageTag(), "en");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue7F() {
+		final String[] english = { "Mar 25, 2021", "Feb 5, 2020", "Apr 1, 1999" };
+
+		// English input with German, then French as the locale
+		final DateTimeParser dtpGermanFrench = new DateTimeParser()
+			    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+			    .withLocale(Locale.GERMAN, Locale.FRENCH)
+			    .withStrictMode(true);
+
+		for (String input : english)
+			dtpGermanFrench.train(input);
+
+		final DateTimeParserResult englishFrenchResult = dtpGermanFrench.getResult();
+		assertNull(englishFrenchResult);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue7F_Det() {
+		// English input with German, then French as the locale
+		final DateTimeParser dtpGermanFrench = new DateTimeParser()
+			    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+			    .withLocale(Locale.GERMAN, Locale.FRENCH)
+			    .withStrictMode(true);
+
+		assertNull(dtpGermanFrench.determineFormatString("Mar 25, 2021"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue7G() {
+		final String[] english = { "Mar 25, 2021", "Feb 5, 2020", "Apr 1, 1999" };
+
+		// English input with German, then French as the locale
+		final DateTimeParser dtpGermanFrench = new DateTimeParser()
+			    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
+			    .withLocale(Locale.GERMAN, Locale.FRENCH, Locale.ENGLISH)
+			    .withStrictMode(true);
+
+		for (String input : english)
+			dtpGermanFrench.train(input);
+
+		final DateTimeParserResult englishFrenchResult = dtpGermanFrench.getResult();
+		assertEquals(englishFrenchResult.getFormatString(), "MMM d, yyyy");
+		assertEquals(englishFrenchResult.getLocale().toLanguageTag(), "en");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void xx() {
 		final String pipedInput = "2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:11:58+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-10-10T17:12:06+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2016-11-18T12:42:45+0000|2017-08-09T15:29:22+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2017-11-16T13:03:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|2018-04-03T00:00:00+0000|";
 		final String inputs[] = pipedInput.split("\\|");

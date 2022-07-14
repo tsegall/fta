@@ -76,8 +76,8 @@ public class DateTimeParserResult {
 		this.formatString = formatString;
 		this.resolutionMode = resolutionMode;
 		this.config = config;
-		this.locale = config.locale;
-		this.localeInfo = LocaleInfo.getInstance(config.locale, config.noAbbreviationPunctuation);
+		this.locale = config.getLocale();
+		this.localeInfo = LocaleInfo.getInstance(config.getLocale(), config.noAbbreviationPunctuation);
 		this.timeElements = timeElements;
 		this.timeFieldLengths = timeFieldLengths;
 		this.timeFieldOffsets = timeFieldOffsets;
@@ -201,6 +201,14 @@ public class DateTimeParserResult {
 	}
 
 	/**
+	 * Return the locale that we have decided on.
+	 * @return The locale that the input is in.
+	 */
+	public Locale getLocale() {
+		return locale;
+	}
+
+	/**
 	 * Determine whether a string input matches this DateTimeParserResult.
 	 * @param input The string to validate (stripped of whitespace.
 	 * @return A boolean indicating if the input is valid.
@@ -223,7 +231,7 @@ public class DateTimeParserResult {
 	 * @return The corresponding DateTimeParserResult
 	 */
 	public static DateTimeParserResult asResult(final String formatString, final DateResolutionMode resolutionMode, final DateTimeParserConfig config) {
-		final String key = resolutionMode.name() + '#' + config.locale + '#' + formatString + '#' + config.noAbbreviationPunctuation;
+		final String key = resolutionMode.name() + '#' + config.getLocale() + '#' + formatString + '#' + config.noAbbreviationPunctuation;
 		DateTimeParserResult ret = dtpCache.get(key);
 		if (ret != null)
 			return newInstance(ret);

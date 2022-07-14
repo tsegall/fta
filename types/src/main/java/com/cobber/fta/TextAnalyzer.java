@@ -1844,21 +1844,23 @@ public class TextAnalyzer {
 					int count = 0;
 					final PatternInfo candidate = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 					for (final String sample : raw) {
-						if (logical.acceptsBaseType(FTAType.STRING)) {
+						switch (logical.getBaseType()) {
+						case STRING:
 							if (trackString(sample, sample.trim(),  candidate, false))
 								count++;
-						}
-						else if (logical.acceptsBaseType(FTAType.LONG)) {
+							break;
+						case LONG:
 							if (trackLong(sample.trim(), candidate, false, 1))
 								count++;
-						}
-						else if (logical.acceptsBaseType(FTAType.DOUBLE)) {
+							break;
+						case DOUBLE:
 							if (trackDouble(sample, candidate, false, 1))
 								count++;
-						}
-						else if (candidate.isDateType()) {
+							break;
+						default:
 							if (trackDateTime(sample, candidate, false))
 								count++;
+							break;
 						}
 					}
 

@@ -130,7 +130,6 @@ public class DateTimeParser {
 	 */
 	public DateTimeParser() {
 		config.resolutionMode = DateResolutionMode.None;
-		config.locale = Locale.getDefault();
 	}
 
 	/**
@@ -141,7 +140,6 @@ public class DateTimeParser {
 	@Deprecated
 	public DateTimeParser(final DateResolutionMode resolutionMode) {
 		config.resolutionMode = resolutionMode;
-		config.locale = Locale.getDefault();
 	}
 
 	/**
@@ -153,7 +151,7 @@ public class DateTimeParser {
 	@Deprecated
 	public DateTimeParser(final DateResolutionMode resolutionMode, final Locale locale) {
 		config.resolutionMode = resolutionMode;
-		config.locale = locale;
+		config.setLocales(new Locale[] { locale });
 	}
 
 	/**
@@ -167,12 +165,12 @@ public class DateTimeParser {
 	}
 
 	/**
-	 * Set the Locale on the Parser.
-	 * @param locale Locale the input string is in
+	 * Set the Locales on the Parser.  The locales will be tested in the order provided and locked on the first match.
+	 * @param locales The Locale array to test for valid input
 	 * @return The DateTimeParser
 	 */
-	public DateTimeParser withLocale(final Locale locale) {
-		config.locale = locale;
+	public DateTimeParser withLocale(final Locale ... locales) {
+		config.setLocales(locales);
 		return this;
 	}
 
@@ -222,7 +220,7 @@ public class DateTimeParser {
 	 * @return The corresponding DateTimeFormatter (note - this will be a case-insensitive parser).
 	 */
 	public DateTimeFormatter ofPattern(final String formatString) {
-		final String cacheKey = config.locale.toLanguageTag() + "---" + formatString + "---" + config.noAbbreviationPunctuation;
+		final String cacheKey = config.getLocale().toLanguageTag() + "---" + formatString + "---" + config.noAbbreviationPunctuation;
 		DateTimeFormatter formatter = formatterCache.get(cacheKey);
 
 		if (formatter != null)
@@ -237,7 +235,7 @@ public class DateTimeParser {
 			final int upto = offset + minMax.getPatternLength();
 			if (upto < formatString.length())
 				builder.appendPattern(formatString.substring(upto));
-			formatter = builder.toFormatter(config.locale);
+			formatter = builder.toFormatter(config.getLocale());
 		}
 		else if ("yyyy".equals(formatString))
             // The default formatter with "yyyy" will not default the month/day, make it so!
@@ -246,15 +244,15 @@ public class DateTimeParser {
             .parseCaseInsensitive()
             .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
             .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
-            .toFormatter(config.locale);
+            .toFormatter(config.getLocale());
 		else if ("MM/yyyy".equals(formatString) || "MM-yyyy".equals(formatString) || "yyyy/MM".equals(formatString) || "yyyy-MM".equals(formatString))
 			formatter = new DateTimeFormatterBuilder()
 			.parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
 			.append(DateTimeFormatter.ofPattern(formatString))
-			.toFormatter(config.locale);
+			.toFormatter(config.getLocale());
 		else if (config.noAbbreviationPunctuation && (offset = formatString.indexOf("MMM")) != -1 && offset != formatString.indexOf("MMMM")) {
 			if (localeInfo == null)
-				localeInfo = LocaleInfo.getInstance(config.locale, config.noAbbreviationPunctuation);
+				localeInfo = LocaleInfo.getInstance(config.getLocale(), config.noAbbreviationPunctuation);
 
 			// Setup the Monthly abbreviations, in Java some countries (e.g. Canada) have the short months defined with a
 			// period after them, for example 'AUG.' - we compensate by removing the punctuation
@@ -270,10 +268,10 @@ public class DateTimeParser {
 			final int upto = offset + "MMM".length();
 			if (upto < formatString.length())
 				builder.appendPattern(formatString.substring(upto));
-			formatter = builder.toFormatter(config.locale);
+			formatter = builder.toFormatter(config.getLocale());
 		}
 		else
-			formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(formatString).toFormatter(config.locale);
+			formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(formatString).toFormatter(config.getLocale());
 
 		formatterCache.put(cacheKey, formatter);
 
@@ -288,9 +286,6 @@ public class DateTimeParser {
 	 * @return A String representing the DateTime detected for this input (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public String train(final String input) {
-		if (localeInfo == null)
-			localeInfo = LocaleInfo.getInstance(config.locale, config.noAbbreviationPunctuation);
-
 		if (config.strictMode && state.invalidCount != 0)
 			return null;
 
@@ -596,9 +591,27 @@ public class DateTimeParser {
 	 * @return A String representing the DateTime detected (Using DateTimeFormatter Patterns) or null if no match.
 	 */
 	public String determineFormatString(final String input, final DateResolutionMode resolutionMode) {
-		if (localeInfo == null)
-			localeInfo = LocaleInfo.getInstance(config.locale, config.noAbbreviationPunctuation);
+		// If there is only one Locale then it is simple - just test it and call it a day
+		if (config.getLocale() != null) {
+			if (localeInfo == null)
+				localeInfo = LocaleInfo.getInstance(config.getLocale(), config.noAbbreviationPunctuation);
+			return determineFormatStringCore(input, resolutionMode);
+		}
 
+		// If we have a set of Locales to check, then take them one by one and test them and if we succeed
+		// then declare this to be the locale (effectively freezing it), and return the answer.
+		for (final Locale locale : config.locales) {
+			config.setLocale(locale);
+			localeInfo = LocaleInfo.getInstance(locale, config.noAbbreviationPunctuation);
+			String ret = determineFormatStringCore(input, resolutionMode);
+			if (ret != null)
+				return ret;
+		}
+
+		return null;
+	}
+
+	private String determineFormatStringCore(final String input, final DateResolutionMode resolutionMode) {
 		int len = input.length();
 
 		// Remove leading spaces
@@ -629,7 +642,7 @@ public class DateTimeParser {
 		if (formatPassOne != null)
 			return formatPassOne;
 
-		boolean jaOrZh = "ja".equals(config.locale.getLanguage()) || "zh".equals(config.locale.getLanguage());
+		boolean jaOrZh = "ja".equals(config.getLocale().getLanguage()) || "zh".equals(config.getLocale().getLanguage());
 
 		// Fail fast if we can
 		if (!jaOrZh && (matcher.getComponentCount() < 2 || !Character.isLetterOrDigit(codePoint0)))
@@ -729,7 +742,7 @@ public class DateTimeParser {
 					if (workingOn == 'y' && i >= 1) {
 						String maybeEra = String.valueOf(input.charAt(i - 1)) + String.valueOf(ch);
 						for (JapaneseEra c : JapaneseEra.values()) {
-							String era = c.getDisplayName(TextStyle.FULL, config.locale);
+							String era = c.getDisplayName(TextStyle.FULL, config.getLocale());
 							if (era.equals(maybeEra)) {
 								result.append("GGGG");
 								i--;
@@ -1109,7 +1122,7 @@ public class DateTimeParser {
 					return null;
 
 				if (timeTracker.seen()) {
-					final String rest = trimmed.substring(i).toUpperCase(config.locale);
+					final String rest = trimmed.substring(i).toUpperCase(config.getLocale());
 					for (final String s : localeInfo.getAMPMStrings()) {
 						if (rest.startsWith(s)) {
 							if (!timeTracker.isClosed()) {
@@ -1177,7 +1190,7 @@ public class DateTimeParser {
 						timeDateElements.add(TimeDateElement.Date);
 						timeDateElements.add(new TimeDateElement(TimeDateElementType.Constant, "'Z'"));
 					}
-					else if ("bg".equals(config.locale.getLanguage()) && ch == 'г' && i + 1 < len && trimmed.charAt(i + 1) == '.') {
+					else if ("bg".equals(config.getLocale().getLanguage()) && ch == 'г' && i + 1 < len && trimmed.charAt(i + 1) == '.') {
 						// Bulgarian years are often written with a trailing 'г.', for example "18/03/2018г."
 						if (!closeDate(tracker, dateTracker))
 							return null;
@@ -1598,7 +1611,7 @@ public class DateTimeParser {
 		// So before we declare ultimate success - check that Java is happy with our conclusion
 		try {
 			// Check that the pattern we have determined can be used by Java
-			new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(compressed).toFormatter(config.locale);
+			new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(compressed).toFormatter(config.getLocale());
 			// If we have any suspect characters then do a real check by attempting to parse the input
 			if (suspect != 0 && !dtpResult.isValid8(trimmed))
 				return null;

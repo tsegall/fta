@@ -37,9 +37,12 @@ import com.cobber.fta.token.TokenStreams;
 public class USZipPlus4 extends LogicalTypeInfinite {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_PLUS4_US";
-	public static final String REGEXP_ZIP_PLUS4 = "\\d{5}-\\d{4}";
-	public static final String REGEXP_VARIABLE = "\\d{5}(-\\d{4})?";
-	private int minLength = 10;
+	public static final String REGEXP_ZIP_PLUS4_HYPHEN = "\\d{5}-\\d{4}";
+	public static final String REGEXP_ZIP_PLUS4 = "\\d{9}";
+	public static final String REGEXP_VARIABLE_HYPHEN = "\\d{5}(-\\d{4})?";
+	public static final String REGEXP_VARIABLE = "\\d{5}|\\d{9}";
+	private int minLength = Integer.MAX_VALUE;
+	private int maxLength = Integer.MIN_VALUE;
 	private SingletonSet zipsRef;
 	private Set<String> zips;
 
@@ -54,13 +57,15 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		final int len = trimmed.length();
-		if (len != 10 && len != 5)
+		if (len != 10 && len != 9 && len != 5)
 			return false;
 
 		final int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
 				charCounts['5'] + charCounts['6'] + charCounts['7'] + charCounts['8'] + charCounts['9'];
 		if (len == 5)
 			return digits == 5;
+		if (len == 9)
+			return digits == 9;
 
 		return len == 10 && trimmed.charAt(5) == '-' && digits == 9;
 	}
@@ -87,7 +92,10 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return minLength == 5 ? REGEXP_VARIABLE : REGEXP_ZIP_PLUS4;
+		if (minLength == 5)
+			return maxLength == 10 ? REGEXP_VARIABLE_HYPHEN : REGEXP_VARIABLE;
+
+		return minLength == 9 ? REGEXP_ZIP_PLUS4 : REGEXP_ZIP_PLUS4_HYPHEN;
 	}
 
 	@Override
@@ -96,16 +104,24 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	}
 
 	@Override
+	public boolean acceptsBaseType(final FTAType type) {
+		return type == FTAType.STRING || type == FTAType.LONG;
+	}
+
+	@Override
 	public boolean isValid(String input) {
 		final int len = input.length();
 
-		if (len != 10 && len != 5)
+		if (len != 10 && len != 9 && len != 5)
 			return false;
 
-		if (len == 10)
+		if (len == 9 || len == 10)
 			input = input.substring(0, 5);
-		else
-			minLength = 5;
+
+		if (len < minLength)
+			minLength = len;
+		if (len > maxLength)
+			maxLength = len;
 
 		return zips.contains(input);
 	}
@@ -129,6 +145,10 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
 		double confidence = (double)matchCount/realSamples;
+
+		// If we do not have an embedded '-' then insist that the header is good
+		if (maxLength == 9 && getHeaderConfidence(dataStreamName) == 0)
+			return 0;
 
 		// Boost by up to 20% if we like the header
 		if (getHeaderConfidence(dataStreamName) != 0)
