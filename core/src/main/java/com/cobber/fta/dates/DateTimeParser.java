@@ -87,7 +87,7 @@ public class DateTimeParser {
 	}
 
 	protected static final Set<String> timeZones = new HashSet<>();
-	private static final int[] monthDays = {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	private static final int[] monthDays = {-1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 	static {
 		// Cache the set of available Time Zones
@@ -181,6 +181,16 @@ public class DateTimeParser {
 	 */
 	public DateTimeParser withStrictMode(final boolean strict) {
 		config.strictMode = strict;
+		return this;
+	}
+
+	/**
+	 * Set Numeric mode on the Parser - if set, any numeric-only input to train() will be tested to see if it appears to be a date.
+	 * @param numeric The new value for Numeric mode
+	 * @return The DateTimeParser
+	 */
+	public DateTimeParser withNumericMode(final boolean numeric) {
+		config.numericMode = numeric;
 		return this;
 	}
 
@@ -539,13 +549,33 @@ public class DateTimeParser {
 		if (lenient && year == 0 && month == 0 && day == 0)
 			return true;
 
-		if (year == 0 && yearLength == 4)
-			return false;
-		if (month == 0 || month > 12)
+		// If the 2-digit year is greater than or equal to 40, the century used is 1900, otherwise 2000.
+		if (yearLength == 2)
+			return year >= 40 ? isValidDate(1900 + year, month, day) : isValidDate(2000 + year, month, day);
+
+		return isValidDate(year, month, day);
+	}
+
+	/**
+	 * Test if the year/month/day is a valid date.
+	 * @param year The Year to test
+	 * @param month The Month to test
+	 * @param day The Day to test
+	 * @return True if the year/month/day reflects a valid date.
+	 */
+	public static boolean isValidDate(int year, int month, int day) {
+		if (year == 0 || month == 0 || day == 0 || month > 12 || day > 31)
 			return false;
 
-		return day != 0 && day <= monthDays[month];
+		int leap = 0;
+		if (month == 2 && year%4 == 0)
+			if (year%100 == 0)
+				leap = year%400 == 0 ? 1 : 0;
+			else
+				leap = 1;
+		return day <= monthDays[month] + leap;
 	}
+
 
 	private static String dateFormat(final DateTracker tracker, final char separator, final DateResolutionMode resolutionMode, final boolean yearKnown, final boolean yearFirst) {
 		if (yearFirst)
@@ -638,10 +668,17 @@ public class DateTimeParser {
 		final SimpleDateMatcher matcher = new SimpleDateMatcher(trimmed, localeInfo);
 
 		// Initial pass is a simple match against a set of known patterns
-		final String formatPassOne = passOne(matcher);
-		if (formatPassOne != null)
-			return formatPassOne;
+		String format = passOne(matcher);
+		if (format != null)
+			return format;
 
+		if (config.numericMode) {
+			format = passNumeric(trimmed, matcher, resolutionMode);
+			if (format != null)
+				return format;
+		}
+
+		// We have special case handling for Japanese and Chinese
 		boolean jaOrZh = "ja".equals(config.getLocale().getLanguage()) || "zh".equals(config.getLocale().getLanguage());
 
 		// Fail fast if we can
@@ -649,15 +686,15 @@ public class DateTimeParser {
 			return null;
 
 		// Second pass is an attempt to 'parse' the provided input string and derive a format
-		final String formatPassTwo = passTwo(trimmed, resolutionMode);
+		format = passTwo(trimmed, resolutionMode);
 
-		if (formatPassTwo != null)
-			return formatPassTwo;
+		if (format != null)
+			return format;
 
 		if (jaOrZh) {
-			final String jaZh = passJaZh(trimmed, matcher, resolutionMode);
-			if (jaZh != null)
-				return jaZh;
+			format = passJaZh(trimmed, matcher, resolutionMode);
+			if (format != null)
+				return format;
 		}
 
 		// Third and final pass is brute force by elimination
@@ -682,6 +719,67 @@ public class DateTimeParser {
 		default:
 			return '¶';
 		}
+	}
+
+	private String passNumeric(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
+		final String compressed = matcher.getCompressed();
+
+		if ("d{4}".equals(compressed)) {
+			// We arbitrarily decide that to be detected as a year it must be in 1800-2099
+			int century = Utils.getValue(trimmed, 0, 2, 2);
+			return century == 18 || century == 19 || century == 20 ? "yyyy" : null;
+		}
+
+		// 8 digits so we are looking should be looking at yyyyMMdd, MMddyyyy, or ddMMyyyy
+		if ("d{8}".equals(compressed)) {
+			// Split input digits (AABBCCDD) into four ints AA, BB, CC, DD
+			int one = Utils.getValue(trimmed, 0, 2, 2);
+			int two = Utils.getValue(trimmed, 2, 2, 2);
+			int three = Utils.getValue(trimmed, 4, 2, 2);
+			int four = Utils.getValue(trimmed, 6, 2, 2);
+
+			// In general assume the Century is either 19 or 20
+			if ((one == 20 || one == 19) && isValidDate(one * 100 + two, three, four))
+				return "yyyyMMdd";
+			if ((three == 20 || three == 19) && one != 0 && one <= 31 && two != 0 && two <= 31) {
+				// Theoretically we have either MMddyyyy or ddMMyyyy
+				if (one > 12 && two <= 12)
+					return isValidDate(three * 100 + four, two, one) ? "ddMMyyyy" : null;
+				if (two > 12 && one <= 12)
+					return isValidDate(three * 100 + four, one, two) ? "MMddyyyy" : null;
+
+				if (one > 12 && two > 12)
+					return null;
+
+				// At this stage it could be either
+				switch (resolutionMode) {
+				case DayFirst:
+					return "ddMMyyyy";
+				case MonthFirst:
+					return "MMddyyyy";
+				case None:
+					return "????yyyy";
+				}
+			}
+			return null;
+		}
+
+		// 12 or 14 digits so we are looking at yyyyMMddHHmm (12) or yyyyMMddHHmmss (14)
+		if ("d{12}".equals(compressed) || "d{14}".equals(compressed)) {
+			final int yyyy = Utils.getValue(trimmed, 0, 4, 4);
+			final int MM = Utils.getValue(trimmed, 4, 2, 2);
+			final int dd = Utils.getValue(trimmed, 6, 2, 2);
+			final int HH = Utils.getValue(trimmed, 8, 2, 2);
+			final int mm = Utils.getValue(trimmed, 10, 2, 2);
+			if (yyyy < 1900 || yyyy >= 2100 || MM > 12 || dd > 31 || HH >= 24 || mm >= 60)
+				return null;
+			if (!isValidDate(yyyy, MM, dd))
+				return null;
+			if (compressed.charAt(3) == '2')
+				return "yyyyMMddHHmm";
+			return Utils.getValue(trimmed, 12, 2, 2) < 60 ? "yyyyMMddHHmmss" : null;
+		}
+		return null;
 	}
 
 	private String passJaZh(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {

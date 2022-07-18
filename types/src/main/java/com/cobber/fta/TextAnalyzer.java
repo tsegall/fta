@@ -1154,6 +1154,7 @@ public class TextAnalyzer {
 		dateTimeParser = new DateTimeParser()
 				.withDateResolutionMode(context.getDateResolutionMode())
 				.withLocale(locale)
+				.withNumericMode(false)
 				.withNoAbbreviationPunctuation(analysisConfig.isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION));
 
 		// If no trace options already set then pick them up from the environment (if set)
@@ -2501,8 +2502,10 @@ public class TextAnalyzer {
 		return best;
 	}
 
+	private final static int EARLY_LONG_YYYY = 1800;
+	private final static int LATE_LONG_YYYY = 2050;
 	private final static int EARLY_LONG_YYYYMMDD = 19000101;
-	private final static int LATE_LONG_YYYYMMDD = 20410101;
+	private final static int LATE_LONG_YYYYMMDD = 20510101;
 
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
@@ -2931,7 +2934,7 @@ public class TextAnalyzer {
 			// If we are collecting statistics - we need to generate the topK and bottomK
 			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 				generateTopBottom();
-		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > 1800 && facts.maxLong <= 2050 &&
+		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > EARLY_LONG_YYYY && facts.maxLong <= LATE_LONG_YYYY &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
 						keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) >= 90 ||
 						keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90)) {

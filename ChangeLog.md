@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 9.0.13
+ - ENH: Date processing - add detection for numeric only detection of dates (e.g. 2022, 20220712, 202207121830, 20220712183000) - default on, disable via withNumericMode(false)
+
 ### 9.0.12
  - ENH: Address Issue #7 - Allow setting secondary (actually an infinite number) locale for DateTimeParser determination
  - ENG: Support for 9 digit Zip + 4's

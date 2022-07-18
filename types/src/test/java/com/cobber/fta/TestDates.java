@@ -2182,10 +2182,10 @@ public class TestDates {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "0+|\\d{4}");
-		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyy");
+		assertEquals(result.getRegExp(), "0+|\\d{4}");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -2823,7 +2823,8 @@ public class TestDates {
 //		Locale[] locales = new Locale[] {Locale.forLanguageTag("nn")};
 
 		final String testCases[] = {
-				"yyyy MM dd", "yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
+				"yyyy MM dd"
+				, "yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
 				"dd MMM yyyy", "d MMM yyyy", "dd-MMM-yyyy", "d-MMM-yyyy", "dd/MMM/yyyy", "d/MMM/yyyy",
 				"yyyyMMdd'T'HHmmss'Z'", "yyyyMMdd'T'HHmmss", "yyyyMMdd'T'HHmmssxx", "yyyyMMdd'T'HHmmssxx",
 				"dd MMMM yyyy", "d MMMM yyyy", "dd-MMMM-yyyy", "d-MMMM-yyyy",

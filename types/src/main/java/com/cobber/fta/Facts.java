@@ -179,7 +179,7 @@ public class Facts {
 		final DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
 		localeDecimalSeparator = symbols.getDecimalSeparator();
 
-		dateTimeParser = new DateTimeParser().withLocale(locale);
+		dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false);
 	}
 
 	@JsonIgnore

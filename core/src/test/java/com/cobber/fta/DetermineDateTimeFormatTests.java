@@ -271,6 +271,105 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void digits4() {
+		final DateTimeParser dtp = new DateTimeParser();
+
+		assertEquals(dtp.determineFormatString("2013"), "yyyy");
+		assertEquals(dtp.determineFormatString("1913"), "yyyy");
+		assertEquals(dtp.determineFormatString("1813"), "yyyy");
+		assertNull(dtp.determineFormatString("1713"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void digits8() {
+		final DateTimeParser dtpNumericDayFirst = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+
+		assertEquals(dtpNumericDayFirst.determineFormatString("12122013"), "ddMMyyyy");
+		assertEquals(dtpNumericDayFirst.determineFormatString("12182013"), "MMddyyyy");
+		assertNull(dtpNumericDayFirst.determineFormatString("31112013"));
+		assertNull(dtpNumericDayFirst.determineFormatString("11312013"));
+		assertNull(dtpNumericDayFirst.determineFormatString("13282013"));
+		assertNull(dtpNumericDayFirst.determineFormatString("18121812"));
+		assertEquals(dtpNumericDayFirst.determineFormatString("18122013"), "ddMMyyyy");
+		assertEquals(dtpNumericDayFirst.determineFormatString("20121213"), "yyyyMMdd");
+		assertEquals(dtpNumericDayFirst.determineFormatString("19121213"), "yyyyMMdd");
+		assertEquals(dtpNumericDayFirst.determineFormatString("20140722105203"), "yyyyMMddHHmmss");
+		assertNull(dtpNumericDayFirst.determineFormatString("20121312"));
+
+		final DateTimeParser dtpNumericMonthFirst = new DateTimeParser().withDateResolutionMode(DateResolutionMode.MonthFirst);
+
+		assertEquals(dtpNumericMonthFirst.determineFormatString("12122013"), "MMddyyyy");
+		assertEquals(dtpNumericMonthFirst.determineFormatString("12182013"), "MMddyyyy");
+		assertEquals(dtpNumericMonthFirst.determineFormatString("18122013"), "ddMMyyyy");
+		assertEquals(dtpNumericMonthFirst.determineFormatString("20121213"), "yyyyMMdd");
+		assertEquals(dtpNumericMonthFirst.determineFormatString("20140722105203"), "yyyyMMddHHmmss");
+		assertNull(dtpNumericMonthFirst.determineFormatString("20121312"));
+
+		final DateTimeParser dtpNumericNone = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None);
+
+		assertEquals(dtpNumericNone.determineFormatString("12122013"), "????yyyy");
+		assertEquals(dtpNumericNone.determineFormatString("12182013"), "MMddyyyy");
+		assertEquals(dtpNumericNone.determineFormatString("18122013"), "ddMMyyyy");
+		assertEquals(dtpNumericNone.determineFormatString("20121213"), "yyyyMMdd");
+		assertEquals(dtpNumericDayFirst.determineFormatString("20140722105203"), "yyyyMMddHHmmss");
+		assertNull(dtpNumericDayFirst.determineFormatString("20121312"));
+
+		final DateTimeParser dtpNonNumeric = new DateTimeParser().withNumericMode(false);
+
+		assertNull(dtpNonNumeric.determineFormatString("20121213"));
+		assertNull(dtpNonNumeric.determineFormatString("20140722105203"), "yyyyMMddHHmmss");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void digits8Harder() {
+		final DateTimeParser dtpNumericDayFirst = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+
+		final String[] bad = { "13132000", "20000230", "20000230", "20010229", "20000431", "20000631", "20000931", "20001131" };
+		for (final String test : bad)
+			assertNull(dtpNumericDayFirst.determineFormatString(test));
+
+		final String[] good = { "20001213", "20000229", "20010228", "20000430", "20000430", "20000630", "20000930", "20001130" };
+		for (final String test : good)
+			assertEquals(dtpNumericDayFirst.determineFormatString(test), "yyyyMMdd");
+
+		assertEquals(dtpNumericDayFirst.determineFormatString("12302013"), "MMddyyyy");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void digits12Harder() {
+		final DateTimeParser dtpNumericDayFirst = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+
+		final String[] good = { "200012131212", "200002291212", "200102281212", "200004301212", "200004301212",
+				"200006301212", "200009301212", "200011301212" };
+
+		for (final String test : good)
+			assertEquals(dtpNumericDayFirst.determineFormatString(test), "yyyyMMddHHmm");
+
+		final String[] bad = { "200002301212", "200002301212", "200002301212", "200102291212", "200004311212",
+				"200006311212", "200009311212", "200011311212", "200012132412", "200012132360", "189912132312", "210112132312" };
+
+		for (final String test : bad)
+			assertNull(dtpNumericDayFirst.determineFormatString(test));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void digits14Harder() {
+		final DateTimeParser dtpNumericDayFirst = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+
+		final String[] good = { "20001213121200", "20000229121200", "20010228121200",
+				"20000430121200", "20000430121200", "20000630121200", "20000930121200", "20001130121200" };
+
+		for (final String test : good)
+			assertEquals(dtpNumericDayFirst.determineFormatString(test), "yyyyMMddHHmmss");
+
+		final String[] bad = { "20000230121200", "20000230121200", "20000230121200", "20010229121200", "20000431121200",
+				"20000631121200", "20000931121200", "20001131121200", "20001213241200", "20001213235960" };
+
+		for (final String test : bad)
+			assertNull(dtpNumericDayFirst.determineFormatString(test));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuit8601DD() {
 		final DateTimeParser dtp = new DateTimeParser();
 
