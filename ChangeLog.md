@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 9.0.14
+ - ENH: I18N - Add new Semantic Types - STATE_PROVINCE.COUNTY_IE, STATE_PROVINCE.PROVINCE_NAME_IE
+ - ENH: Bump google phonenumber
+ - INT: Bump gradle to 7.5
+
 ### 9.0.13
  - ENH: Date processing - add detection for numeric only detection of dates (e.g. 2022, 20220712, 202207121830, 20220712183000) - default on, disable via withNumericMode(false)
 

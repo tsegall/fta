@@ -1110,6 +1110,32 @@
 		"priority": 143
 	},
 	{
+		"qualifier": "STATE_PROVINCE.COUNTY_IE",
+		"description": "Irish County",
+		"pluginType": "list",
+		"signature": "umrsnOd/JEy0ddIXpTD9iNBe7w8=",
+		"validLocales": [
+			{ "localeTag": "en-IE,ga-IE", "headerRegExps": [ { "regExp": ".*(?i)(county|contae).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/ie_counties.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 144
+	},
+	{
+		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_IE",
+		"description": "Irish Province",
+		"pluginType": "list",
+		"signature": "x5yTiBlrSflCR2o91jz1tILKp9c=",
+		"validLocales": [
+			{ "localeTag": "en-IE", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/ie_provinces_full.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 145
+	},
+	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
 		"description": "Currency as defined by ISO 4217",
 		"pluginType": "list",

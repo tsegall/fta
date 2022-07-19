@@ -293,7 +293,7 @@ POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US
 STATE_PROVINCE.COMMUNE_IT|Italian Commune|it-IT
-STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-UK, en-US, hu-HU
+STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-IE, en-UK, en-US, ga-IE, hu-HU
 STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|pt-PT
 STATE_PROVINCE.MUNICIPALITY_BR|Brazilian Municipality|pt-BR
 STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US
@@ -305,6 +305,7 @@ STATE_PROVINCE.PROVINCE_ZA|South African Province Code|en-ZA
 STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name|en-CA, en-US
 STATE_PROVINCE.PROVINCE_NAME_EC|Ecuadorian Province Name|es-EC
 STATE_PROVINCE.PROVINCE_NAME_ES|Spanish Province Name|es-ES
+STATE_PROVINCE.PROVINCE_NAME_IE|Irish Province Name|en-IE
 STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
 STATE_PROVINCE.PROVINCE_NAME_NL|Dutch Province Name|nl-NL
 STATE_PROVINCE.PROVINCE_NAME_ZA|South African Province Name|en-ZA
@@ -502,7 +503,7 @@ Fastest way to get started is to review the examples included.
 ## Releasing a new version ##
 
 ### Compile ###
-`$ gradle wrapper --gradle-version 7.4.2`
+`$ gradle wrapper --gradle-version 7.5`
 
 `$ ./gradlew clean build installDist`
 
