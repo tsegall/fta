@@ -323,6 +323,33 @@
 		"priority": 77
 	},
 	{
+		"qualifier": "STREET_ADDRESS_<LANGUAGE>",
+		"description": "Street Address",
+		"pluginType": "java",
+		"signature": "",
+		"clazz": "com.cobber.fta.plugins.AddressOther",
+		"validLocales": [
+			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": "(?i)(?u)^адрес$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": "(?i)(?u)^(adreça|adresse.*1)$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "da", "headerRegExps": [ { "regExp": "(?i)^(adresse|adresse.*1)$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "de", "headerRegExps": [ { "regExp": "(?i)^(adresse|adresse.*1|anschrift)$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "es", "headerRegExps": [ { "regExp": "(?i)(?u)^dirección$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "fi", "headerRegExps": [ { "regExp": "(?i)^(katuosoite|osoite)$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": "(?i)^(adresse|adresse.*1)$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "hr", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "it", "headerRegExps": [ { "regExp": "(?i)^indirizzo$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "lv", "headerRegExps": [ { "regExp": "(?i)^adrese$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)^adres$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "pl", "headerRegExps": [ { "regExp": "(?i)^adres$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": "(?i)(?u)^endereço$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "ro", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": "(?i)(?u)^адрес$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "sk", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] }
+		],
+		"threshold": 90,
+		"priority": 78
+	},
+	{
 		"qualifier": "GENDER.TEXT_<LANGUAGE>",
 		"description": "Gender",
 		"pluginType": "java",
@@ -1625,7 +1652,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": "^(?i)(city|town)$|^.*[ _](city|town)$|^(city|town)[ _].*$|(?-i).*[a-z](City|Town)$", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": "^(?i)(city|town)$|^.*[ _](city|town)$|^(city|town)[ _]name$|(?-i).*[a-z](City|Town)$", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 					"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",

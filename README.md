@@ -316,7 +316,7 @@ STATE_PROVINCE.INSEE_CODE_FR|French Insee Code (5 digit)|fr-FR
 STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH, fr-CH, it-CH
 STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH, fr-CH, it-CH
 STATE_PROVINCE.PREFECTURE_NAME_JP|Japanese Prefecture Name|ja
-STREET_ADDRESS_EN|Street Address (English Language)|en
+STREET_ADDRESS_&lt;Language&gt;|Street Address|bg, ca, da, de, en, es, fi, fr, hr, it, lv, nl, pl, pt, ro, ru, sk
 STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
 STREET_MARKER_EN| Street Suffix (English Language)|en
 TELEPHONE|Telephone Number (Generic)|*
