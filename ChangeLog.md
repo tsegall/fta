@@ -5,7 +5,7 @@
  - ENH: Support YR as a synonym for Year
  - ENH: Improve US County detection
  - ENH: Improve City detection (fix a set of false positives)
- = ENH: I18N - Add support for STREET_ADDRESS for bg, ca, da, de, es, fi, fr, hr, it, lv, nl, pl, pt, ro, ru, sk
+ - ENH: I18N - Add support for STREET_ADDRESS for bg, ca, da, de, es, fi, fr, hr, it, lv, nl, pl, pt, ro, ru, sk
 
 ### 9.0.14
  - ENH: I18N - Add new Semantic Types - STATE_PROVINCE.COUNTY_IE, STATE_PROVINCE.PROVINCE_NAME_IE

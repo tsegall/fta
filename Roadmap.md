@@ -38,7 +38,7 @@
  - "regExpsToMatch", "regExpReturned", "isRegExpComplete" should be per locale (DONE)
  - Gender support needs rework (DONE)
  - Need to support a concept of a non-localized Double (e.g. for example latitude which commonly does not use locale specific decimal separator) (DONE)
- - Address detection in Western Europe
+ - Address detection in Western Europe (DONE)
  - Should support localized true/false?
  - Broaden languages supported for FREE_TEXT
  - Add Japanese Postal Code support (DONE)
