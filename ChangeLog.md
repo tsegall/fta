@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 9.0.16
+ - ENH: I18N - Japanese - add Prefecture names without 'Prefecture' to list
+ - ENH: I18N - Mexico - add State names without diacritic marks
+ - ENH: I18N - Mexico - add locale es-MX for Mexican State names
+ - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.MUNICIPALITY_MX (Mexican Municipality)
+ - BUG: Add a set of missing signatures
+
 ### 9.0.15
  - ENH: Support YR as a synonym for Year
  - ENH: Improve US County detection

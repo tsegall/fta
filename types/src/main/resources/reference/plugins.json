@@ -274,7 +274,7 @@
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_BG",
 		"description": "Postal Code (BG)",
 		"pluginType": "list",
-		"signature": "",
+		"signature": "vf445LWLa0dN+AZtiaxv3WlOrDc=",
 		"validLocales": [
 			{ "localeTag":  "bg-BG", "headerRegExps": [ { "regExp": ".*(?i)(Пощ код|Пощенски код).*", "confidence": 99 } ] }
 		],
@@ -326,7 +326,7 @@
 		"qualifier": "STREET_ADDRESS_<LANGUAGE>",
 		"description": "Street Address",
 		"pluginType": "java",
-		"signature": "",
+		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.AddressOther",
 		"validLocales": [
 			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": "(?i)(?u)^адрес$", "confidence": 99, "mandatory": true } ] },
@@ -503,7 +503,7 @@
 		"qualifier": "COUNTRY.TEXT_DE",
 		"description": "Country as a string (German)",
 		"pluginType": "list",
-		"signature": "",
+		"signature": "Rs6U63buoAAlnITZdPtJuxUrgNg=",
 		"validLocales": [
 			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
 		],
@@ -601,7 +601,7 @@
 		"pluginType": "list",
 		"signature": "h565UW3Wl3GYzYAriMJM6T1LsmY=",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-CA,fr-CA,en-MX", "headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ] }
+			{ "localeTag":  "en-US,en-CA,fr-CA,en-MX,es-MX", "headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ] }
 		],
 		"content": "/reference/mx_states.csv",
 		"contentType": "resource",
@@ -735,7 +735,7 @@
 		"signature": "f5Bx+omlv1xMG6Oq8XQo5RkrtmU=",
 		"validLocales": [
 			{
-				"localeTag": "en-US,en-CA,fr-CA,en-MX",
+				"localeTag": "en-US,en-CA,fr-CA,en-MX,es-MX",
 				"headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ],
 				"matchEntries": [ {
 					"regExpReturned": "[ \\p{IsAlphabetic}]+"
@@ -1049,7 +1049,7 @@
 		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_EC",
 		"description": "Ecuadorian Province Name",
 		"pluginType": "list",
-		"signature": "",
+		"signature": "rre1QxKeEKPUbmo5hHdo62LHQKg=",
 		"validLocales": [
 			{
 				"localeTag": "es-EC",
@@ -1113,7 +1113,7 @@
 		"qualifier": "STATE_PROVINCE.COMMUNE_IT",
 		"description": "Italian Commune",
 		"pluginType": "list",
-		"signature": "",
+		"signature": "3QajzO92Nvv5D9haTofNgKJ6HNo=",
 		"validLocales": [
 			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(comune).*", "confidence": 95 } ] }
 		],
@@ -1161,6 +1161,19 @@
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 145
+	},
+	{
+		"qualifier": "STATE_PROVINCE.MUNICIPALITY_MX",
+		"description": "Mexican Municipality",
+		"pluginType": "list",
+		"signature": "kepJbVnP+P/TSoxgry2mxiQFOg4=",
+		"validLocales": [
+			{ "localeTag": "es-MX", "headerRegExps": [ { "regExp": ".*(?i)(município).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/mx_municipalities.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 146
 	},
 	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
@@ -1814,7 +1827,7 @@
 		"qualifier": "IDENTITY.VAT_<COUNTRY>",
 		"description": "VAT",
 		"pluginType": "java",
-		"signature": "",
+		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.identity.VAT",
 		"validLocales": [
 			{ "localeTag": "en-GB,en-UK", "headerRegExps": [ { "regExp": ".*(?i)(VAT).*", "confidence": 95, "mandatory": true } ] },
