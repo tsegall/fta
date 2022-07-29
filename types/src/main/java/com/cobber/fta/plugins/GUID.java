@@ -34,7 +34,7 @@ public class GUID extends LogicalTypeInfinite {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "GUID";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
 
 	private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };

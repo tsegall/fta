@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.util.Set;
 
 import com.cobber.fta.core.FTAPluginException;
+import com.cobber.fta.core.Utils;
 
 /**
  * All Logical Types that consist of a constrained domain, for example, a finite (small) number of elements should
@@ -39,7 +40,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	 */
 	@Override
 	public boolean isValid(final String input) {
-		final String trimmedUpper = input.trim().toUpperCase(locale);
+		final String trimmedUpper = Utils.cleanse(input.trim()).toUpperCase(locale);
 		return trimmedUpper.length() >= minLength && trimmedUpper.length() <= maxLength && getMembers().contains(trimmedUpper);
 	}
 

@@ -41,7 +41,7 @@ public class EmailLT extends LogicalTypeInfinite {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "EMAIL";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}";
 
 	private LogicalTypeCode logicalFirst;

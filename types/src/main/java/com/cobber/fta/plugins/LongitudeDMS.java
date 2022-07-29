@@ -25,7 +25,7 @@ public class LongitudeDMS extends CoordinateDMS {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "COORDINATE.LONGITUDE_DMS";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	private static final String REGEXP = "(\\d{5,7}|\\d{1,2} \\d{1,2} \\d{1,2} ?)[EeWw]";
 	private static final char[] DIRECTION = { 'E', 'W', 'e', 'w' };
 	private static final int MAX_DEGREES = 180;

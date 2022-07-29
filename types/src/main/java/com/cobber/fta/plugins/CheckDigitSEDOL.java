@@ -27,7 +27,7 @@ public class CheckDigitSEDOL extends CheckDigitLT {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.SEDOL";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "[\\p{IsAlphabetic}\\d]{6}\\d";
 
 	private final static String[] SAMPLES = {

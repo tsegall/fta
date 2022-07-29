@@ -35,7 +35,7 @@ public class VIN extends LogicalTypeInfinite {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "VIN";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "[A-HJ-NPR-Z0-9]{17}";
 
 	private static final int VIN_LENGTH = 17;

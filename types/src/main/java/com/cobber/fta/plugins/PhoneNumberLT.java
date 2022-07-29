@@ -38,10 +38,9 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "TELEPHONE";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = ".*";
 
-	/** The Regular Express for this Semantic type. */
 	private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
 	/**

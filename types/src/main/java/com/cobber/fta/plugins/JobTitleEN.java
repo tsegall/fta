@@ -37,7 +37,7 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "JOB_TITLE_EN";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = ".+";
 
 	private SingletonSet titleStartersRef;

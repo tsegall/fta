@@ -26,7 +26,7 @@ public class CheckDigitUPC extends CheckDigitLT {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.UPC";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "\\d{12}";
 
 	private final static String[] SAMPLES = {

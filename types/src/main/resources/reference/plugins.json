@@ -168,8 +168,9 @@
 		"validLocales": [
 			{
 				"localeTag":  "fr-FR",
-				"headerRegExps": [ { "regExp": ".*(?i)(code.postal).*", "confidence": 95 } ]
+				"headerRegExps": [ { "regExp": ".*(?i)(code.postal|cp).*", "confidence": 95 } ]
 			} ],
+		"threshold": 98,
 		"priority": 66
 	},
 	{
@@ -189,7 +190,7 @@
 		"validLocales": [
 			{
 				"localeTag":  "pt-PT",
-				"headerRegExps": [ { "regExp": ".*(?i)(código|postal).*", "confidence": 95 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(código.postal).*", "confidence": 95, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\d{4}-\\d{3}"
 				} ]
@@ -205,7 +206,7 @@
 		"pluginType": "list",
 		"signature": "7Q/NP19OT3uFsdQkhdDLsBJdZck=",
 		"validLocales": [
-			{ "localeTag":  "de-DE", "headerRegExps": [ { "regExp": ".*(?i)(postleitzahl|zip).*", "confidence": 99 } ] }
+			{ "localeTag":  "de-DE", "headerRegExps": [ { "regExp": ".*(?i)(postleitzahl|zip|plz).*", "confidence": 99, "mandatory": true } ] }
 		],
 		"content": "/reference/de_postal_code.csv",
 		"contentType": "resource",
@@ -220,7 +221,7 @@
 		"pluginType": "list",
 		"signature": "wme+qdk/tsdr4Fb4qfCyAaicpmE=",
 		"validLocales": [
-			{ "localeTag":  "es-ES", "headerRegExps": [ { "regExp": ".*(?i)(postal).*", "confidence": 95 } ] }
+			{ "localeTag":  "es-ES", "headerRegExps": [ { "regExp": ".*(?i)(postal).*", "confidence": 95, "mandatory": true } ] }
 		],
 		"content": "/reference/es_postal_code.csv",
 		"contentType": "resource",
@@ -551,18 +552,14 @@
 	{
 		"qualifier": "PERIOD.QUARTER",
 		"description": "Quarter (Year)",
-		"pluginType": "regex",
+		"pluginType": "java",
 		"signature": "H0LOGKpMF3InUXIIU5pCKHEReTo=",
+		"clazz": "com.cobber.fta.plugins.PeriodQuarter",
 		"validLocales": [
 			{
-				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(quarter).*", "confidence": 99 } ],
-				"matchEntries": [ {
-					"regExpReturned": "(?i)(Q1|Q2|Q3|Q4)",
-					"isRegExpComplete": true
-				} ]
-			}
-		],
+				"localeTag":  "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(quarter|qtr).*", "confidence": 99 } ]
+			} ],
 		"priority": 104
 	},
 	{
@@ -581,6 +578,15 @@
 			}
 		],
 		"priority": 105
+	},
+	{
+		"qualifier": "PERIOD.YEAR_RANGE",
+		"description": "Year Range",
+		"pluginType": "java",
+		"signature": "nA7JzkjHCLvvRAfhvJv12v4FNgU=",
+		"clazz": "com.cobber.fta.plugins.PeriodYearRange",
+		"validLocales": [ { "localeTag":  "*" } ],
+		"priority": 106
 	},
 	{
 		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
@@ -831,7 +837,7 @@
 		"validLocales": [
 			{
 				"localeTag": "fr-FR",
-				"headerRegExps": [ { "regExp": ".*(?i)(region|région).*", "confidence": 90 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(region|région).*", "confidence": 90 } ],
 				"matchEntries": [ {
 					"regExpReturned": "[-' \\p{IsAlphabetic}]+"
 				} ]
@@ -1115,7 +1121,7 @@
 		"pluginType": "list",
 		"signature": "3QajzO92Nvv5D9haTofNgKJ6HNo=",
 		"validLocales": [
-			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(comune).*", "confidence": 95 } ] }
+			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(comune|comuni).*", "confidence": 95 } ] }
 		],
 		"content": "/reference/it_comuni.csv",
 		"contentType": "resource",
@@ -1236,7 +1242,7 @@
 		"pluginType": "list",
 		"signature": "AYkvNH/jCNxWHK4uLso7vEbNh5U=",
 		"validLocales": [
-			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(zone).*", "confidence": 90 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(timezone|olson).*", "confidence": 99 }, { "regExp": ".*(?i)(zone).*", "confidence": 90 } ] }
 		],
 		"content": "/reference/timezones.csv",
 		"contentType": "resource",
@@ -1285,6 +1291,40 @@
 		"backout": "\\p{IsAlphabetic}{3}",
 		"threshold": 97,
 		"priority": 167
+	},
+	{
+		"qualifier": "AIRLINE.IATA_CODE",
+		"description": "IATA Airline Code",
+		"pluginType": "list",
+		"signature": "DFUIUVTe2c6xa7beZSL16iYFj2Q=",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(iata|air).*", "confidence": 99, "mandatory": true } ]
+			}
+		],
+		"content": "/reference/IATA_airline.csv",
+		"contentType": "resource",
+		"backout": "\\p{Alnum}{2}",
+		"threshold": 97,
+		"priority": 168
+	},
+	{
+		"qualifier": "AIRLINE.TEXT_EN",
+		"description": "Airline Name",
+		"pluginType": "list",
+		"signature": "pE1aMtjAkbETBURTHyhqlYPTuPQ=",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(airline).*", "confidence": 99 } ]
+			}
+		],
+		"content": "/reference/en_airlines.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"threshold": 97,
+		"priority": 169
 	},
 	{
 		"qualifier": "NAME.FIRST",
@@ -1378,7 +1418,7 @@
 			},
 			{
 				"localeTag": "fr",
-				"headerRegExps": [ { "regExp": ".*(?i)(prénom|prenom).*", "confidence": 90 }, { "regExp": "(?i)(nom|name)", "confidence": 60 } ],
+				"headerRegExps": [ { "regExp": "(?i)(nom|name)", "confidence": 60 } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
 				} ]
@@ -1664,8 +1704,26 @@
 		"signature": "mz6raYadjSZxxvo+j66/fQXbhf8=",
 		"validLocales": [
 			{
+				"localeTag": "de",
+				"headerRegExps": [ { "regExp": "^(?i)(ort)$", "confidence": 99, "mandatory": true } ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
+					"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
+					"isRegExpComplete": false
+				} ]
+			},
+			{
 				"localeTag": "en",
 				"headerRegExps": [ { "regExp": "^(?i)(city|town)$|^.*[ _](city|town)$|^(city|town)[ _]name$|(?-i).*[a-z](City|Town)$", "confidence": 99, "mandatory": true } ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
+					"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
+					"isRegExpComplete": false
+				} ]
+			},
+			{
+				"localeTag": "fr",
+				"headerRegExps": [ { "regExp": "^(?i)(ville)$", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 					"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
@@ -2082,7 +2140,7 @@
 		"signature": "6IKfzTa++cfQDm7aehEqSaJ/rek=",
 		"clazz": "com.cobber.fta.plugins.JobTitleEN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(job title).*", "confidence": 99 }, { "regExp": ".*(?i)(title|position).*", "confidence": 90 } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(job title).*", "confidence": 99 }, { "regExp": ".*(?i)(title|position|occupation|profession|role).*", "confidence": 90 } ] }
 		],
 		"threshold": 60,
 		"priority": 300

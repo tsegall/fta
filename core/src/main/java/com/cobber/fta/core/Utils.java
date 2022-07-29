@@ -167,6 +167,32 @@ public final class Utils {
 		return index == -1 ? fileName : fileName.substring(0, index);
 	}
 
+	/**
+	 * Clean a string replacing evil characters like LEFT/RIGHT SINGLE QUOTATION MARK - with a standard quote.
+	 * Note: We delay allocating a StringBuilder until we find out it is required.
+	 * @param input String to cleanse
+	 * @return The original String if no cleansing required - or a cleansed copy if necessary.
+	 */
+	public static String cleanse(final String input) {
+		final int len = input.length();
+		StringBuilder b = null;
+
+		for (int i = 0; i < len; i++) {
+			final char ch = input.charAt(i);
+			// (U+2018) LEFT SINGLE QUOTATION MARK
+			// (U+2019) RIGHT SINGLE QUOTATION MARK
+			if (ch == '\u2018' || ch == '\u2019') {
+				if (b == null)
+					b = new StringBuilder(input.substring(0, i));
+				b.append('\'');
+			}
+			else if (b != null)
+				b.append(ch);
+		}
+
+		return b != null ? b.toString() : input;
+	}
+
 	private static String version = Utils.class.getPackage().getImplementationVersion();
 
 	/**

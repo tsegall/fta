@@ -3,7 +3,7 @@
 #003 Brazil, Germany, Italy, France, Portugal, Spain, Mexico, Netherlands, Dominican Republic, Puerto Rico, Guatemala, Norway, Finland
 #004
 #100
-#101 Copyright 2017-2021 Tim Segall
+#101 Copyright 2017-2022 Tim Segall
 #102
 #103 Licensed under the Apache License, Version 2.0 (the "License");
 #104 you may not use this file except in compliance with the License.

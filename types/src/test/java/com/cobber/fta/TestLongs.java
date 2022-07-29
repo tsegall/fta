@@ -1318,8 +1318,8 @@ public class TestLongs {
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
 
-		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
+		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getSampleCount(), 5 * SAMPLE_SIZE);
 		assertEquals(result.getMatchCount(), 5 * SAMPLE_SIZE);
 		assertEquals(result.getNullCount(), 0);

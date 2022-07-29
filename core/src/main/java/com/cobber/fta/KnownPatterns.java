@@ -81,7 +81,7 @@ public class KnownPatterns {
 	public static final String PATTERN_BOOLEAN_YES_NO = "(?i)(NO|YES)";
 	public static String PATTERN_BOOLEAN_YES_NO_LOCALIZED;
 	public static final String PATTERN_BOOLEAN_Y_N = "(?i)(N|Y)";
-	public static final String PATTERN_BOOLEAN_ONE_ZERO = "[0|1]";
+	public static final String PATTERN_BOOLEAN_ONE_ZERO = "(0|1)";
 
 	private String EXPONENT_REGEXP;
 

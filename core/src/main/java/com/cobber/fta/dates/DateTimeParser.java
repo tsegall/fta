@@ -68,6 +68,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * </pre>
  */
 public class DateTimeParser {
+	public final static int EARLY_LONG_YYYY = 1800;
+	public final static int LATE_LONG_YYYY = 2050;
+
 	private static final String TIME_ONLY_HHMMSS = "d{2}:d{2}:d{2}";
 	private static final String TIME_ONLY_HMMSS = "d:d{2}:d{2}";
 	private static final String TIME_ONLY_HHMM = "d{2}:d{2}";
@@ -725,12 +728,12 @@ public class DateTimeParser {
 		final String compressed = matcher.getCompressed();
 
 		if ("d{4}".equals(compressed)) {
-			// We arbitrarily decide that to be detected as a year it must be in 1800-2099
-			int century = Utils.getValue(trimmed, 0, 2, 2);
-			return century == 18 || century == 19 || century == 20 ? "yyyy" : null;
+			// To assume it is a year it needs to be in the range [EARLY_LONG_YYYY,LATE_LONG_YYYY]
+			int year = Utils.getValue(trimmed, 0, 4, 4);
+			return year >= EARLY_LONG_YYYY && year <= LATE_LONG_YYYY  ? "yyyy" : null;
 		}
 
-		// 8 digits so we are looking should be looking at yyyyMMdd, MMddyyyy, or ddMMyyyy
+		// 8 digits so should be looking at yyyyMMdd, MMddyyyy, or ddMMyyyy
 		if ("d{8}".equals(compressed)) {
 			// Split input digits (AABBCCDD) into four ints AA, BB, CC, DD
 			int one = Utils.getValue(trimmed, 0, 2, 2);

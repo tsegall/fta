@@ -17,64 +17,56 @@ package com.cobber.fta.plugins;
 
 import java.util.Map;
 
-import org.apache.commons.validator.routines.InetAddressValidator;
-
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.Keywords;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
+import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * Plugin to detect IPV6 addresses.
+ * Plugin to detect Year Ranges, for example 2016-2019.
  */
-public class IPV6Address extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "IPADDRESS.IPV6";
-
+public class PeriodYearRange extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
-	private static final String REGEXP = "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))";
+	public static final String REGEXP = "\\d{4}-\\d{4}";
 
-	private static InetAddressValidator validator;
-	static {
-		validator = InetAddressValidator.getInstance();
-	}
+	private final Keywords keywords = new Keywords();
 
 	/**
-	 * Construct an IPV6 Address plugin based on the Plugin Definition.
+	 * Construct a plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public IPV6Address(final PluginDefinition plugin) {
+	public PeriodYearRange(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
+		keywords.initialize(analysisConfig.getLocale());
 
 		return true;
 	}
 
 	@Override
 	public String nextRandom() {
-		final StringBuilder ret = new StringBuilder(40);
+		final StringBuilder ret = new StringBuilder(9);
 
-		for (int i = 0; i < 7; i++) {
-			ret.append(String.format("%x", random.nextInt(0xFFFF)));
-			ret.append(':');
-		}
-		ret.append(String.format("%x", random.nextInt(0xFFFF)));
-
-		return ret.toString();
+		int yearOne = 1980 + random.nextInt(40);
+		int yearTwo = yearOne + random.nextInt(20);
+		return ret.append(yearOne).append('-').append(yearTwo).toString();
 	}
 
 	@Override
 	public String getQualifier() {
-		return SEMANTIC_TYPE;
+		return defn.qualifier;
 	}
 
 	@Override
@@ -94,18 +86,28 @@ public class IPV6Address extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input) {
-		return validator.isValidInet6Address(input);
+		if (input.length() != 9 || input.charAt(4) != '-' || input.chars().filter(Character::isDigit).count() != 8)
+			return false;
+		int yearOne = Utils.getValue(input, 0, 4, 4);
+		int yearTwo = Utils.getValue(input, 0, 5, 4);
+
+		return yearOne >= DateTimeParser.EARLY_LONG_YYYY && yearOne <= DateTimeParser.LATE_LONG_YYYY &&
+				yearTwo >= DateTimeParser.EARLY_LONG_YYYY && yearTwo <= DateTimeParser.LATE_LONG_YYYY &&
+				yearOne <= yearTwo;
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return validator.isValidInet6Address(trimmed);
+		return trimmed.length() == 9 && trimmed.charAt(4) == '-' &&  "\\d{4}-\\d{4}".equals(compressed.toString());
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
-	}
+		if (keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) < 90 &&
+				keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) < 90)
+			return PluginAnalysis.SIMPLE_NOT_OK;
 
+		return (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
+	}
 }

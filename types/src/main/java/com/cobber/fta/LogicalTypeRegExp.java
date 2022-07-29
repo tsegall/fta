@@ -315,7 +315,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		if (!xegerCompatible)
 			return null;
 
-		// If the Regular Express is complete - then anything generated is valid and so we are done
+		// If the Regular Expression is complete - then anything generated is valid and so we are done
 		if (isRegExpComplete())
 			return generator.generate();
 

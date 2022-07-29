@@ -2502,8 +2502,6 @@ public class TextAnalyzer {
 		return best;
 	}
 
-	private final static int EARLY_LONG_YYYY = 1800;
-	private final static int LATE_LONG_YYYY = 2050;
 	private final static int EARLY_LONG_YYYYMMDD = 19000101;
 	private final static int LATE_LONG_YYYYMMDD = 20510101;
 
@@ -2552,7 +2550,7 @@ public class TextAnalyzer {
 			final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
 			if (!pluginAnalysis.isValid()) {
 				if (logical.acceptsBaseType(FTAType.STRING) || logical.acceptsBaseType(FTAType.LONG)) {
-					if (logical.acceptsBaseType(FTAType.STRING))
+					if (logical.getBaseType() == FTAType.STRING)
 						backoutToPattern(realSamples, pluginAnalysis.getNewPattern());
 					else
 						backoutLogicalLongType(logical, realSamples);
@@ -2934,7 +2932,7 @@ public class TextAnalyzer {
 			// If we are collecting statistics - we need to generate the topK and bottomK
 			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 				generateTopBottom();
-		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > EARLY_LONG_YYYY && facts.maxLong <= LATE_LONG_YYYY &&
+		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > DateTimeParser.EARLY_LONG_YYYY && facts.maxLong <= DateTimeParser.LATE_LONG_YYYY &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
 						keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) >= 90 ||
 						keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90)) {

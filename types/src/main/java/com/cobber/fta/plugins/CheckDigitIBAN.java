@@ -27,7 +27,7 @@ public class CheckDigitIBAN extends CheckDigitLT {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.IBAN";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "([A-Z]{2}[ \\-]?[0-9]{2})(?=(?:[ \\-]?[A-Z0-9]){9,30}$)((?:[ \\-]?[A-Z0-9]{3,5}){2,7})([ \\-]?[A-Z0-9]{1,3})";
 
 	private final static String[] SAMPLES = {

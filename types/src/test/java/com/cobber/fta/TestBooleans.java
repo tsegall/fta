@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
@@ -394,6 +395,9 @@ public class TestBooleans {
 		assertEquals(result.getMaxValue(), "1");
 		assertTrue(inputs[0].matches(result.getRegExp()));
 
+		assertTrue("0".matches(result.getRegExp()));
+		assertTrue("1".matches(result.getRegExp()));
+		assertFalse("|".matches(result.getRegExp()));
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 		}

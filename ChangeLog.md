@@ -1,6 +1,15 @@
 
 ## Changes ##
 
+### 9.0.17
+ - ENH: Add new Semantic Types - PERIOD.YEAR_RANGE, AIRLINE.IATA_CODE, "AIRLINE.TEXT_EN"
+ - ENH: Re-implement PERIOD.QUARTER in Java (was RegExp) to improve Recall (Sensitivity)
+ - ENH: Cleanse strings by replacing left/right quotes by ' to improve list matching
+ - ENH: I18N - plz is a synonym for postleitzahl in Germany
+ - ENH: I18N - Improve non-English detection of CITY
+ - ENH: I18N - Improved Precision of some non-English Postcode detection
+ - BUG: Pattern for YES_NO was [0|1] should have been (0|1)
+
 ### 9.0.16
  - ENH: I18N - Japanese - add Prefecture names without 'Prefecture' to list
  - ENH: I18N - Mexico - add State names without diacritic marks

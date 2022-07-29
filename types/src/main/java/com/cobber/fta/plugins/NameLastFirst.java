@@ -38,7 +38,7 @@ public class NameLastFirst extends LogicalTypeInfinite {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "NAME.LAST_FIRST";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	private static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*, ?[- \\p{IsAlphabetic}]+";
 	private static final String BACKOUT = ".+";
 	private LogicalTypeFiniteSimple logicalFirst;

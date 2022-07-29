@@ -20,7 +20,7 @@
 			{ "localeTag": "fi",
 				"headerRegExps": [ { "regExp": "(?i).*(vuosi|year).*", "confidence": 90 } ] },
 			{ "localeTag": "fr",
-				"headerRegExps": [ { "regExp": "(?i)(?u).*(année|year).*", "confidence": 90 }, { "regExp": "(?i)an", "confidence": 90 } ] },
+				"headerRegExps": [ { "regExp": "(?i)(?u).*(année|annee|year).*", "confidence": 90 }, { "regExp": "(?i)an", "confidence": 90 } ] },
 			{ "localeTag": "hr",
 				"headerRegExps": [ { "regExp": "(?i).*(godina|year).*", "confidence": 90 } ] },
 			{ "localeTag": "it",

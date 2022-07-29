@@ -27,7 +27,7 @@ public class CheckDigitABA extends CheckDigitLT {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "CHECKDIGIT.ABA";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	private static final String REGEXP = "\\d{9}";
 
 	private final static String[] SAMPLES = {

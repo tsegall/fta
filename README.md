@@ -219,6 +219,8 @@ Detection of some Semantic Types is dependent on the current locale as indicated
 
 Semantic Type|Description|Locale|
 ---------|-------------|--------|
+AIRLINE.IATA_CODE|IATA Airline Code|*
+AIRLINE.TEXT_EN|Airline Name|*
 AIRPORT_CODE.IATA|IATA Airport Code|*
 CHECKDIGIT.ABA|ABA Number (or Routing Transit Number (RTN))|*
 CHECKDIGIT.CUSIP|North American Security Identifier|*
@@ -286,6 +288,7 @@ NAME.MIDDLE_INITIAL|Middle Initial|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NATIONALITY_EN|Nationality|en
 PERIOD.HALF|Half (Year)|*
 PERIOD.QUARTER|Quarter (Year)|*
+PERIOD.YEAR_RANGE|Year Range|*
 PERSON.AGE|Age (Person)|en, es, fr, es, it, pt
 PERSON.RACE|Race/Ethinicity (person)|*
 POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, FR, JA, NL, UK, ES, MX, PT, SE, UY

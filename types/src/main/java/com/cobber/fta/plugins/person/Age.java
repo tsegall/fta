@@ -14,7 +14,6 @@
 */
 package com.cobber.fta.plugins.person;
 
-
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
@@ -34,7 +33,7 @@ import com.cobber.fta.token.TokenStreams;
 * Plugin to detect Age (Person).
 */
 public class Age extends LogicalTypeInfinite {
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "\\d{1,3}";
 
 	private LogicalTypeFinite logicalGender;

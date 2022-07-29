@@ -22,6 +22,7 @@ import java.util.Set;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -51,7 +52,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	public boolean isMember(final String input) {
-		return getMembers().contains(input.trim().toUpperCase(locale));
+		return getMembers().contains(Utils.cleanse(input.trim()).toUpperCase(locale));
 	}
 
 	@Override
@@ -104,10 +105,14 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		int maxOutliers = Math.max(1, baseOutliers / 2);
 		int minCardinality = Math.min(getSize(), 4);
 		int minSamples = 20;
+		int threshold = getThreshold();
 		if (headerConfidence != 0) {
 			minCardinality = 1;
 			minSamples = headerConfidence < 99 ? 4 : 1;
 			maxOutliers =  headerConfidence < 90 ? Math.max(4, baseOutliers) : getSize() / 2;
+			if (headerConfidence >= 99)
+				threshold -= 1;
+
 		}
 
 		if (outliers.size() > maxOutliers)
@@ -117,7 +122,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		if (realSamples < minSamples)
 			return new PluginAnalysis(backout);
 
-		if ((double)matchCount / realSamples >= getThreshold()/100.0)
+		if ((double)matchCount / realSamples >= threshold/100.0)
 			return PluginAnalysis.OK;
 
 		return new PluginAnalysis(backout);

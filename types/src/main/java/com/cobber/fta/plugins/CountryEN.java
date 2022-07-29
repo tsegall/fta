@@ -32,7 +32,7 @@ public class CountryEN extends LogicalTypeFiniteSimple {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "COUNTRY.TEXT_EN";
 
-	/** The Regular Express for this Semantic type. */
+	/** The Regular Expression for this Semantic type. */
 	private static final String BACKOUT = ".+";
 
 	/**
