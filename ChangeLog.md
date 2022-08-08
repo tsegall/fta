@@ -1,8 +1,13 @@
 
 ## Changes ##
 
+### 9.0.18
+ - BUG: DateTimeParser with DateResolutionMode.Auto works as MonthFirst for all locales (Issue #10)
+ - ENH: Minor improvements to Name detection
+ - ENH: Bump google phonenumber
+
 ### 9.0.17
- - ENH: Add new Semantic Types - PERIOD.YEAR_RANGE, AIRLINE.IATA_CODE, "AIRLINE.TEXT_EN"
+ - ENH: Add new Semantic Types - PERIOD.YEAR_RANGE, AIRLINE.IATA_CODE, AIRLINE.TEXT_EN
  - ENH: Re-implement PERIOD.QUARTER in Java (was RegExp) to improve Recall (Sensitivity)
  - ENH: Cleanse strings by replacing left/right quotes by ' to improve list matching
  - ENH: I18N - plz is a synonym for postleitzahl in Germany

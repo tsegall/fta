@@ -87,6 +87,12 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 			return false;
 		if (getMembers().contains(trimmedUpper))
 			return true;
+
+		int space = trimmedUpper.indexOf(' ');
+		if (space != -1 && getMembers().contains(trimmedUpper.substring(0, space)) &&
+					getMembers().contains(trimmedUpper.substring(space + 1)))
+			return true;
+
 		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
 		for (int i = 0; i < trimmedUpper.length(); i++) {
 			if (!Character.isAlphabetic(trimmedUpper.charAt(i)))

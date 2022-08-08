@@ -31,4 +31,37 @@ public class FirstName extends PersonName {
 	public FirstName(final PluginDefinition plugin) {
 		super(plugin, "firstnames.txt");
 	}
+
+	/*
+	 * Note: The input String will be both trimmed and converted to upper Case
+	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
+	 */
+	@Override
+	public boolean isValid(final String input) {
+		final String trimmedUpper = input.trim().toUpperCase(locale);
+		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength)
+			return false;
+		if (getMembers().contains(trimmedUpper))
+			return true;
+
+		int space = trimmedUpper.indexOf(' ');
+		if (space != -1 && getMembers().contains(trimmedUpper.substring(0, space)) && Character.isAlphabetic(trimmedUpper.charAt(space + 1))) {
+			int len = trimmedUpper.length();
+			if (len == space + 2 ||
+					(len == space + 3 && trimmedUpper.charAt(space + 2) == '.') ||
+					getMembers().contains(trimmedUpper.substring(space + 1)))
+			return true;
+		}
+
+		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
+		for (int i = 0; i < trimmedUpper.length(); i++) {
+			if (!Character.isAlphabetic(trimmedUpper.charAt(i)))
+				return false;
+		}
+
+		// Assume 40% of the remaining are good - hopefully this will not bias the determination excessively.
+		// Use hashCode as opposed to random() to ensure that a given data set gives the same results from one run to another.
+		return input.hashCode() % 10 < 4;
+	}
+
 }

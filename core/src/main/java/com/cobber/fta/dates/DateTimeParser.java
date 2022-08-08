@@ -19,6 +19,8 @@ import static com.cobber.fta.dates.DateTimeParserResult.FRACTION_INDEX;
 import static com.cobber.fta.dates.DateTimeParserResult.HOUR_INDEX;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.chrono.JapaneseEra;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -339,6 +341,15 @@ public class DateTimeParser {
 				state.invalidCount++;
 				return null;
 			}
+		}
+
+		// If Resolution mode is auto then set DayFirst or MonthFirst based on the Locale
+		if (config.resolutionMode == DateResolutionMode.Auto) {
+			final DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, config.getLocale());
+			final String pattern = ((SimpleDateFormat)df).toPattern();
+			final int dayIndex = pattern.indexOf('d');
+			final int monthIndex = pattern.indexOf('M');
+			config.resolutionMode = dayIndex == -1 || monthIndex == -1 || dayIndex < monthIndex ? DateResolutionMode.DayFirst : DateResolutionMode.MonthFirst;
 		}
 
 		return ret;

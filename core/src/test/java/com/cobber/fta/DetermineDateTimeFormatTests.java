@@ -450,6 +450,28 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue10() {
+		Locale english = Locale.forLanguageTag("en-GB");
+
+		final String value = "02.02.2020";
+		DateTimeParser dateTimeParser = new DateTimeParser()
+				.withLocale(english)
+				.withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto);
+        dateTimeParser.train(value);
+        DateTimeParserResult result = dateTimeParser.getResult();
+        assertEquals(result.getFormatString(), "dd.MM.yyyy");
+
+        Locale us = Locale.forLanguageTag("en-US");
+
+        dateTimeParser = new DateTimeParser()
+                .withLocale(us)
+                .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto);
+        dateTimeParser.train(value);
+        result = dateTimeParser.getResult();
+        assertEquals(result.getFormatString(), "MM.dd.yyyy");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void manyEyes2() {
 		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
 		final String[] inputs = {

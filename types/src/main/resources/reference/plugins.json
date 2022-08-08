@@ -1396,8 +1396,8 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-			 	"headerRegExps": [ { "regExp": ".*(?i)(surname|last.?name|lname|maiden.?name).*", "confidence": 90 },
-					{ "regExp": "(?i)(last)", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(surname|last.?name|lname|maiden.?name|name.?last).*", "confidence": 90 },
+					{ "regExp": "(?i)(last)", "confidence": 90 }, { "regExp": "(?i)(name|.*last.*)", "confidence": 60 } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
 				} ]

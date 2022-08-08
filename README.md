@@ -506,7 +506,7 @@ Fastest way to get started is to review the examples included.
 ## Releasing a new version ##
 
 ### Compile ###
-`$ gradle wrapper --gradle-version 7.5`
+`$ gradle wrapper --gradle-version 7.5.1`
 
 `$ ./gradlew clean build installDist`
 
