@@ -2,6 +2,9 @@
 ## Changes ##
 
 ### 9.0.18
+ - BUG: fta-core should have been declared as an API (not implementation) dependency of fta
+
+### 9.0.18
  - BUG: DateTimeParser with DateResolutionMode.Auto works as MonthFirst for all locales (Issue #10)
  - ENH: Minor improvements to Name detection
  - ENH: Bump google phonenumber

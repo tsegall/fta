@@ -6,7 +6,7 @@ tasks.distZip.enabled = false
 tasks.distTar.enabled = false
 
 dependencies {
-	implementation project(':core')
+	api project(':core')
 
 	implementation libs.univocity
 	implementation libs.javaxMailAPI
