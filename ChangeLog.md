@@ -1,7 +1,7 @@
 
 ## Changes ##
 
-### 9.0.18
+### 9.0.19
  - BUG: fta-core should have been declared as an API (not implementation) dependency of fta
 
 ### 9.0.18
