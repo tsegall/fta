@@ -39,6 +39,9 @@ public class GUID extends LogicalTypeInfinite {
 
 	private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
+	private int len36 = 0;
+	private int len32 = 0;
+
 	/**
 	 * Construct a plugin to detect GUIDs (Gloabally Unique Identifiers) based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
@@ -90,14 +93,25 @@ public class GUID extends LogicalTypeInfinite {
 	@Override
 	public boolean isValid(final String input) {
 		final int len = input.length();
-		if (len != 36)
+
+		if (len == 36) {
+			len36++;
+			if (len32 != 0)
+				return false;
+		}
+		else if (len == 32) {
+			len32++;
+			if (len36 != 0)
+				return false;
+		}
+		else
 			return false;
 
-		if (input.charAt(8) != '-' || input.charAt(13) != '-' || input.charAt(18) != '-' || input.charAt(23) != '-')
+		if (len == 36 && (input.charAt(8) != '-' || input.charAt(13) != '-' || input.charAt(18) != '-' || input.charAt(23) != '-'))
 			return false;
 
 		for (int i = 0; i < len; i++) {
-			if (i == 8 || i == 13 || i == 18 || i == 23)
+			if (len == 36 && (i == 8 || i == 13 || i == 18 || i == 23))
 				continue;
 			final char ch = input.charAt(i);
 			if ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))
@@ -110,12 +124,19 @@ public class GUID extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return trimmed.length() == 36 && charCounts['-'] == 4;
+		return trimmed.length() == 36 && charCounts['-'] == 4 || trimmed.length() == 32;
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+		if (len36 != 0 && len32 != 0)
+			return PluginAnalysis.SIMPLE_NOT_OK;
+
+		// Insist on a plausible header if it is just 32 hex digits
+		if (len32 != 0 && getHeaderConfidence(context.getStreamName()) == 0)
+			return PluginAnalysis.SIMPLE_NOT_OK;
+
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 }

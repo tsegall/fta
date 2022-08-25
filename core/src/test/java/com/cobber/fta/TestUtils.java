@@ -18,6 +18,7 @@ package com.cobber.fta;
 import static org.testng.Assert.assertEquals;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.testng.annotations.Test;
 
@@ -66,5 +67,21 @@ public class TestUtils {
 
 		String result = Utils.determineStreamFormat(mapper, cardinality);
 		assertEquals(result, "HTML");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void wordsHelloWorld() {
+		final List<String> words = Utils.asWords("Hello world!");
+		assertEquals(words.get(0), "Hello");
+		assertEquals(words.get(1), "world");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void wordsCount() {
+		final List<String> words = Utils.asWords("   One, two, three,four!");
+		assertEquals(words.get(0), "One");
+		assertEquals(words.get(1), "two");
+		assertEquals(words.get(2), "three");
+		assertEquals(words.get(3), "four");
 	}
 }

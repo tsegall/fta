@@ -15,6 +15,7 @@
  */
 package com.cobber.fta.plugins;
 
+import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.PluginDefinition;
 
 /**
@@ -64,4 +65,15 @@ public class FirstName extends PersonName {
 		return input.hashCode() % 10 < 4;
 	}
 
+
+	@Override
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
+		double confidence = (double)matchCount/realSamples;
+
+		// Boost by up to 20% if we like the header
+		if (getHeaderConfidence(context.getStreamName()) != 0)
+			confidence = Math.min(confidence * 1.2, 1.0);
+
+		return confidence;
+	}
 }

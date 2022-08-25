@@ -66,12 +66,22 @@ public class MiddleName extends FirstName {
 	@Override
 	public boolean isValid(final String input) {
 		final String trimmedUpper = input.trim().toUpperCase(locale);
-		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength)
+		final int length = trimmedUpper.length();
+
+		if (length < minLength && length > maxLength)
 			return false;
 		if (getMembers().contains(trimmedUpper))
 			return true;
+
+		// We are prepared to accepted X or X. as a middle name
+		if (length == 1 || length == 2) {
+			if (!Character.isAlphabetic(trimmedUpper.charAt(0)))
+				return false;
+			return length == 1 || trimmedUpper.charAt(1) == '.';
+		}
+
 		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
-		for (int i = 0; i < trimmedUpper.length(); i++) {
+		for (int i = 0; i < length; i++) {
 			if (!Character.isAlphabetic(trimmedUpper.charAt(i)))
 				return false;
 		}
@@ -84,6 +94,10 @@ public class MiddleName extends FirstName {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (context.getCompositeStreamNames() == null)
+			return PluginAnalysis.SIMPLE_NOT_OK;
+
+		// If it is consistently short - then reject and detect as MIDDLE_INITIAL
+		if (facts.maxTrimmedLength <= 2)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// We have 'Middle Name' or MiddleName'

@@ -224,10 +224,10 @@ public class FreeText extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double confidence = (double)matchCount/realSamples;
 
-		if (getHeaderConfidence(dataStreamName) != 0)
+		if (getHeaderConfidence(context.getStreamName()) != 0)
 			return Math.min(1.2 * confidence, 1.0);
 
 		// Header is not recognized so return the lowest threshold we would accept

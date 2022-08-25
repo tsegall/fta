@@ -15,6 +15,7 @@
  */
 package com.cobber.fta.plugins;
 
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -40,6 +42,19 @@ public class AddressEN extends LogicalTypeInfinite {
 	private boolean multiline;
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
+
+	private static HashSet<String> directions = new HashSet<>();
+
+	static {
+		directions.add("N");
+		directions.add("NE");
+		directions.add("NW");
+		directions.add("S");
+		directions.add("SE");
+		directions.add("SW");
+		directions.add("E");
+		directions.add("W");
+	}
 
 	/**
 	 * Construct a plugin to detect an Address based on the Plugin Definition.
@@ -104,22 +119,29 @@ public class AddressEN extends LogicalTypeInfinite {
 		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1)))
 			return true;
 
-		// Look for some variant of P.O. BOX
-		if (inputUpper.replace(".", "").replace(" ", "").indexOf("POBOX") != -1)
+		if (inputUpper.contains("BOX") || inputUpper.contains("SUITE") || inputUpper.contains("FLOOR"))
 			return true;
 
 		// Accept something of the form, initial digit followed by an address marker word (e.g. Road, Street, etc).
 		if (inputUpper.length() < 5 || !Character.isDigit(inputUpper.charAt(0)))
 			return false;
 
-		final String[] words = inputUpper.replaceAll("[,\\.]", "").split(" ");
+		return validation(inputUpper);
+	}
+
+	private boolean validation(final String input) {
+		final String[] words = input.replaceAll("[,\\.]", " ").split(" ");
 		if (words.length < 3)
 			return false;
 
-		for (int i = 1; i < words.length  - 1; i++) {
+		for (int i = 1; i <= words.length - 1; i++) {
 			if (addressMarkers.contains(words[i]))
 				return true;
 		}
+
+		// If it looks like '1280 SE XXXXX' declare it good
+		if (Utils.isNumeric(words[0]) && directions.contains(words[1]))
+				return true;
 
 		return false;
 	}
@@ -136,33 +158,46 @@ public class AddressEN extends LogicalTypeInfinite {
 		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1, inputUpper.length())))
 			return true;
 
-		if (inputUpper.contains("BOX"))
+		if (inputUpper.contains("BOX") || inputUpper.contains("SUITE"))
 			return true;
 
 		if (!Character.isDigit(inputUpper.charAt(0)) || charCounts[' '] < 2)
 			return false;
 
-		final String[] words = inputUpper.replace(",", "").split(" ");
-		for (int i = 1; i < words.length  - 1; i++) {
-			if (addressMarkers.contains(words[i]))
-				return true;
-		}
-
-		return false;
+		return validation(inputUpper);
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		return getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
+		return getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
+		final String dataStreamName = context.getStreamName();
+
 		// We really don't want to classify Line 2/Line 3 of an address as a Line 1
 		if (dataStreamName.length() > 1) {
 			final char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
 			if (Character.isDigit(lastChar) && lastChar != '1')
-				return 0;
+				return 0.0;
+		}
+
+		// If we have all the headers then we can check if this one is less likely to be the primary address field than the previous one
+		if (context.getCompositeStreamNames() != null) {
+			// Find the index of the of the current field
+			int current = -1;
+			for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
+				if (context.getStreamName().equals(context.getCompositeStreamNames()[i])) {
+					current = i;
+					break;
+				}
+			}
+
+			// Does the previous field look like it might be the real address field
+			if (current >= 1 &&
+					getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) > getHeaderConfidence(dataStreamName))
+				return 0.0;
 		}
 
 		final int headerConfidence = getHeaderConfidence(dataStreamName);
@@ -170,7 +205,7 @@ public class AddressEN extends LogicalTypeInfinite {
 
 		// Boost based on how much we like the header
 		if (headerConfidence >= 99)
-			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.30), 1.0);
+			confidence = Math.min(confidence + 0.20, 1.0);
 		else if (headerConfidence >= 90)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.15), 1.0);
 

@@ -18,6 +18,7 @@
 package com.cobber.fta.driver;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,13 +26,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.Normalizer;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -43,6 +47,7 @@ import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.LogicalTypeRegExp;
+import com.cobber.fta.SingletonSet;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
@@ -66,7 +71,7 @@ public class Driver {
 			if ("--abbreviationPunctuation".equals(args[idx]))
 				options.abbreviationPunctuation = true;
 			else if ("--bloomfilter".equals(args[idx])) {
-				createBloomOutput(args[idx + 1], args[idx + 2], args[idx + 3]);
+				createBloomOutput(args[idx + 1], args[idx + 2]);
 				System.exit(0);
 			}
 			else if ("--bulk".equals(args[idx]))
@@ -87,7 +92,7 @@ public class Driver {
 				logger.println("Usage: fta [OPTIONS] file ...");
 				logger.println("Valid OPTIONS are:");
 				logger.println(" --abbreviationPunctuation - Disable NO_ABBREVIATION_PUNCTUATION mode");
-				logger.println(" --bloomfilter <input> <output> <type> - Create Bloom Filter, type: 'integer'|'string'");
+				logger.println(" --bloomfilter <input> <type> - Create Bloom Filter from CSV input, type: 'integer'|'string'");
 				logger.println(" --bulk - Enable bulk mode");
 				logger.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				logger.println(" --col <n> - Only analyze column <n>");
@@ -101,6 +106,7 @@ public class Driver {
 				logger.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
 				logger.println(" --maxInputLength <n> - Set the Maximum Input length supported");
 				logger.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
+				logger.println(" --normalize <input> - Create Normalized output from CSV input");
 				logger.println(" --noAnalysis - Do not do analysis");
 				logger.println(" --noLogicalTypes - Do not register any Logical Types");
 				logger.println(" --noPretty - Do not pretty print analysis");
@@ -139,6 +145,10 @@ public class Driver {
 				options.maxInputLength = Integer.valueOf(args[++idx]);
 			else if ("--maxOutlierCardinality".equals(args[idx]))
 				options.maxOutlierCardinality = Integer.valueOf(args[++idx]);
+			else if ("--normalize".equals(args[idx])) {
+				createNormalizedOutput(args[idx + 1]);
+				System.exit(0);
+			}
 			else if ("--noAnalysis".equals(args[idx]))
 				options.noAnalysis = true;
 			else if ("--noLogicalTypes".equals(args[idx]))
@@ -359,9 +369,46 @@ public class Driver {
 		return  analysis;
 	}
 
-	private static void createBloomOutput(final String inputName, final String outputName, final String funnelType) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+	private static void createNormalizedOutput(final String inputName) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+		final File source = new File(inputName);
+		final File baseDirectory = source.getParentFile();
+		final String baseName = Utils.getBaseName(source.getName());
+		final SingletonSet memberSet;
+
+		memberSet = new SingletonSet("file", inputName);
+		final Set<String> newSet = new TreeSet<>(memberSet.getMembers());
+
+		for (String member : memberSet.getMembers()) {
+			if (!Normalizer.isNormalized(member, Normalizer.Form.NFKD)) {
+				String cleaned = Normalizer.normalize(member, Normalizer.Form.NFKD).replaceAll("\\p{M}", "");
+				newSet.add(cleaned);
+			}
+		}
+
+		if (newSet.size() != memberSet.getMembers().size()) {
+			final File newFile = new File(baseDirectory, baseName + "_new.csv");
+
+			try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newFile), "UTF-8"))) {
+				for (String member : newSet)
+					out.write(member + "\n");
+			}
+		}
+		else
+			System.err.println("Error: no new entries generated!");
+	}
+
+	private static void createBloomOutput(final String inputName, final String funnelType) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+		// Desired sample size
+		final int SAMPLE_SIZE = 200;
+
+		final File source = new File(inputName);
+		final File baseDirectory = source.getParentFile();
+		final String baseName = Utils.getBaseName(source.getName());
+		final File bloomFile = new File(baseDirectory, baseName + ".bf");
+		final File sampleFile = new File(baseDirectory, baseName + "_s.csv");
 		int lineCount = 0;
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(inputName)), "UTF-8"))) {
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(source), "UTF-8"))) {
 			String input;
 			while ((input = in.readLine()) != null) {
 				final String trimmed = input.trim();
@@ -371,9 +418,13 @@ public class Driver {
 			}
 		}
 
+		final int samplingFrequency = (lineCount + SAMPLE_SIZE - 1) / SAMPLE_SIZE;
 
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(inputName)), "UTF-8"))) {
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(source), "UTF-8"))) {
+			ArrayList<String> samples = new ArrayList<>(SAMPLE_SIZE);
 			String input;
+			int recordCount = 0;
+
 			if ("integer".equalsIgnoreCase(funnelType)) {
 				final BloomFilter<Integer> filter = BloomFilter.create(Funnels.integerFunnel(), lineCount, 0.005);
 
@@ -382,9 +433,11 @@ public class Driver {
 					if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
 						continue;
 					filter.put(Integer.valueOf(trimmed));
+					if (++recordCount%samplingFrequency == 0)
+						samples.add(trimmed);
 				}
 
-				try (OutputStream filterStream = new FileOutputStream(new File(outputName))) {
+				try (OutputStream filterStream = new FileOutputStream(bloomFile)) {
 					filter.writeTo(filterStream);
 				}
 			}
@@ -396,11 +449,18 @@ public class Driver {
 					if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
 						continue;
 					filter.put(trimmed);
+					if (++recordCount%samplingFrequency == 0)
+						samples.add(trimmed);
 				}
 
-				try (OutputStream filterStream = new FileOutputStream(new File(outputName))) {
+				try (OutputStream filterStream = new FileOutputStream(bloomFile)) {
 					filter.writeTo(filterStream);
 				}
+			}
+
+			try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(sampleFile), "UTF-8"))) {
+				for (final String sample : samples)
+					out.write(sample + "\n");
 			}
 		}
 	}

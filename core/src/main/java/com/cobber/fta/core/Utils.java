@@ -17,9 +17,12 @@ package com.cobber.fta.core;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -193,6 +196,30 @@ public final class Utils {
 		return b != null ? b.toString() : input;
 	}
 
+	public static List<String> asWords(final String input) {
+		ArrayList<String> ret = new ArrayList<>();
+
+		int start = -1;
+		for (int i = 0; i < input.length(); i++) {
+			char ch = input.charAt(i);
+			if (Character.isAlphabetic(ch)) {
+				if (start == -1)
+					start = i;
+			}
+			else {
+				if (start != -1) {
+					ret.add(input.substring(start, i));
+					start = -1;
+				}
+			}
+		}
+
+		if (start != -1)
+			ret.add(input.substring(start, input.length()));
+
+		return ret;
+	}
+
 	private static String version = Utils.class.getPackage().getImplementationVersion();
 
 	/**
@@ -201,6 +228,15 @@ public final class Utils {
 	 */
 	public static String getVersion() {
 		return version;
+	}
+
+	// Get a random digit string of length len digits, first must not be a zero
+	public static String getRandomDigits(final SecureRandom random, final int len) {
+		final StringBuilder b = new StringBuilder(len);
+		b.append(random.nextInt(9) + 1);
+		for (int i = 1; i < len; i++)
+			b.append(random.nextInt(10));
+		return b.toString();
 	}
 
 	public static String determineStreamFormat(final ObjectMapper mapper, final Map<String, Long> cardinality) {

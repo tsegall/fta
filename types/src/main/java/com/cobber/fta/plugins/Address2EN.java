@@ -101,8 +101,25 @@ public class Address2EN extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if (context.getCompositeStreamNames() == null)
-			return PluginAnalysis.SIMPLE_NOT_OK;
+		return PluginAnalysis.OK;
+	}
+
+	@Override
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
+		final String dataStreamName = context.getStreamName();
+		final int headerConfidence = getHeaderConfidence(dataStreamName);
+
+		// If we don't like the header, or we have no header context or this is better header for an Address Line 1 than an Address Line 2 then bail
+		if (headerConfidence < 95 || context.getCompositeStreamNames() == null || context.getCompositeStreamNames().length < 2 ||
+				logicalAddressLine1.getHeaderConfidence(dataStreamName) > headerConfidence)
+			return 0.0;
+
+		// We really don't want to classify Line 1/Line 3 of an address as a Line 2
+		if (dataStreamName.length() > 1) {
+			final char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
+			if (Character.isDigit(lastChar) && lastChar != '2')
+				return 0.0;
+		}
 
 		// Find the index of the of the current field
 		int current = -1;
@@ -114,18 +131,13 @@ public class Address2EN extends LogicalTypeInfinite {
 		}
 
 		// Does the previous field look like an Address Line 1?
-		if (current >= 1 && logicalAddressLine1.getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) > 90)
-			return PluginAnalysis.OK;
+		if (current == 0 || logicalAddressLine1.getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) < 90)
+			return 0.0;
 
-		return PluginAnalysis.SIMPLE_NOT_OK;
-	}
-
-	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
 		// If all the samples match and the header looks perfect then we are in great shape
-		if (matchCount == realSamples && getHeaderConfidence(dataStreamName) >= 95)
+		if (matchCount == realSamples && headerConfidence >= 95)
 			return 1.0;
 
-		return (double)getHeaderConfidence(dataStreamName) / 100;
+		return (double)headerConfidence / 100;
 	}
 }

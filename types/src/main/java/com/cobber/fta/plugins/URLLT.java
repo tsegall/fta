@@ -130,14 +130,14 @@ public class URLLT extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		return getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
+		return getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		double confidence = (double)matchCount/realSamples;
 		// Boost by up to 5% if we like the header, drop by 5% if we have only seen items with no protocol
-		if (getHeaderConfidence(dataStreamName) != 0)
+		if (getHeaderConfidence(context.getStreamName()) != 0)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.05), 1.0);
 		else if (protocol[0] == 0)
 			confidence = Math.max(confidence - 0.05, 0.0);

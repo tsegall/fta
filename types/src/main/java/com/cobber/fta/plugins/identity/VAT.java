@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.validator.routines.checkdigit.CheckDigit;
+import org.apache.commons.validator.routines.checkdigit.CheckDigitException;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 
 import com.cobber.fta.AnalysisConfig;
@@ -29,6 +30,7 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
@@ -36,10 +38,7 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Value-added Tax (VAT) identification numbers.
  */
 public class VAT extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "IDENTITY.VAT_";
-
-	private static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static final String SEMANTIC_TYPE = "IDENTITY.VAT_";
 
 	private static final String BACKOUT_REGEXP = ".*";
 
@@ -82,23 +81,36 @@ public class VAT extends LogicalTypeInfinite {
 	public String nextRandom() {
 		String ret = prefixPresent != 0 ? prefix : "";
 
-		if ("AT".equals(country))
-			return ret += "U" + random.nextInt(100_000_000);
+		if ("AT".equals(country)) {
+			String noCheckDigit = Utils.getRandomDigits(random, 7);
+			return ret += "U" + noCheckDigit + getCheckDigitAT(noCheckDigit);
+		}
 
-		if ("ES".equals(country))
-			return ret + ALPHA.charAt(random.nextInt(ALPHA.length())) + random.nextInt(10_000_000) + ALPHA.charAt(random.nextInt(ALPHA.length()));
+		if ("ES".equals(country)) {
+			final String tester = "0123456789KLMNOPQRSWXYZ";
+			String noCheckDigit = tester.charAt(random.nextInt(tester.length())) + Utils.getRandomDigits(random, 7);
+			return ret + noCheckDigit + getCheckDigitES(noCheckDigit);
+		}
 
-		if ("FR".equals(country))
-			return ret + random.nextInt(1_000_000_000) + random.nextInt(100);
+		if ("FR".equals(country)) {
+			String noCheckDigit = Utils.getRandomDigits(random, 9);
+			return ret + getCheckDigitFR(noCheckDigit) + noCheckDigit;
+		}
 
 		if ("GB".equals(country))
-			return ret + random.nextInt(1_000_000_000);
+			return ret + Utils.getRandomDigits(random, 9);
 
-		if ("IT".equals(country))
-			return ret + random.nextInt(1_000_000_000) + random.nextInt(100);
+		if ("IT".equals(country)) {
+			String noCheckDigit = Utils.getRandomDigits(random, 10);
+			try {
+				return ret + noCheckDigit + validator.calculate(noCheckDigit);
+			} catch (CheckDigitException e) {
+				throw new InternalErrorException("Should not have happened: " + random);
+			}
+		}
 
 		if ("PL".equals(country))
-			return ret + random.nextInt(1_000_000_000) + random.nextInt(100);
+			return ret + Utils.getRandomDigits(random, 9) + random.nextInt(100);
 
 		return null;
 	}
@@ -183,6 +195,13 @@ public class VAT extends LogicalTypeInfinite {
 		if (input.length() != 8 || !Utils.isNumeric(input))
 			return false;
 
+		String checkDigit = getCheckDigitAT(input.substring(0, 7));
+
+		// Check digit should be the same as the last digit
+		return checkDigit.charAt(0) == input.charAt(7);
+	}
+
+	private String getCheckDigitAT(final String input) {
 		final int[] multipliers = { 1, 2, 1, 2, 1, 2, 1 };
 		long total = 0;
 		long temp;
@@ -201,20 +220,30 @@ public class VAT extends LogicalTypeInfinite {
 		if (total == 10)
 			total = 0;
 
-		// Check digit should be the same as the last digit
-		return total + '0' == input.charAt(7);
+		return String.valueOf((char)('0' + total));
 	}
 
 	// Validate a Spanish VAT number
 	private boolean isValidES(final String input) {
+		if (input.length() != 9)
+			return false;
+
+
+		String checkDigit = getCheckDigitES(input);
+
+		if (checkDigit == null)
+			return false;
+
+		// Check digit should be the same as the last digit
+		return checkDigit.charAt(0) == input.charAt(8);
+	}
+
+	private String getCheckDigitES(final String input) {
 		// There are four separate cases
 		final String nationalJuridical = "ABCDEFGHJUV";
 		final String otherJuridical = "ABCDEFGHNOPQRSW";
 		final String personalOne = "0123456789YZ";
 		final String personalTwo = "KLMX";
-
-		if (input.length() != 9)
-			return false;
 
 		final int[] multipliers = { 2, 1, 2, 1, 2, 1, 2 };
 		long total = 0;
@@ -224,7 +253,7 @@ public class VAT extends LogicalTypeInfinite {
 		if (nationalJuridical.indexOf(first) != -1 && Utils.isSimpleAlphaNumeric(input.charAt(8))) {
 			// National juridical entities
 			if (!Utils.isNumeric(input.substring(1)))
-				return false;
+				return null;
 
 			// Extract the next digit and multiply by the counter.
 			for (int i = 0; i < 7; i++) {
@@ -240,8 +269,7 @@ public class VAT extends LogicalTypeInfinite {
 			if (total == 10)
 				total = 0;
 
-			// Compare it with the last character of the VAT number
-			return total == input.charAt(8) - '0';
+			return String.valueOf((char)('0' + total));
 		}
 
 		if (otherJuridical.indexOf(first) != -1) {
@@ -258,8 +286,7 @@ public class VAT extends LogicalTypeInfinite {
 
 			total = 10 - total % 10;
 
-			// Compare it with the last character of the VAT number
-			return ('@' + total) == input.charAt(8);
+			return String.valueOf((char)('@' + total));
 		}
 
 		final String personalCheckDigit = "TRWAGMYFPDXBNJZSQVHLCKE";
@@ -275,15 +302,15 @@ public class VAT extends LogicalTypeInfinite {
 			else
 				newNumber = input.substring(0, 8);
 
-			return input.charAt(8) == personalCheckDigit.charAt(Integer.valueOf(newNumber) % personalCheckDigit.length());
+			return String.valueOf(personalCheckDigit.charAt(Integer.valueOf(newNumber) % personalCheckDigit.length()));
 		}
 
 		if (personalTwo.indexOf(first) != -1) {
 			// Personal number (NIF) (starting with K, L, M, or X)
-			return input.charAt(8) == personalCheckDigit.charAt(Integer.valueOf(input.substring(1, 8)) % personalCheckDigit.length());
+			return String.valueOf(personalCheckDigit.charAt(Integer.valueOf(input.substring(1, 8)) % personalCheckDigit.length()));
 		}
 
-		return false;
+		return null;
 	}
 
 	// Validate a French VAT number
@@ -291,14 +318,21 @@ public class VAT extends LogicalTypeInfinite {
 		if (input.length() != 11 || !Utils.isNumeric(input))
 			return false;
 
-		// Extract the last nine digits as an integer
-		long total = Integer.valueOf(input.substring(2));
+		// Calculate the CheckSum based on the last 9 digits
+		String checkDigit = getCheckDigitFR(input.substring(2));
+
+		// Compare the calculated check digits with the first two digits of the input
+		return checkDigit.equals(input.substring(0, 2));
+	}
+
+	private String getCheckDigitFR(final String input) {
+
+		long total = Integer.valueOf(input);
 
 		// Calculate check digit
 		total = (12 + 3 * (total % 97)) % 97;
 
-		// Compare the calculated check digits with the first two digits of the input
-		return total == Integer.valueOf(input.substring(0, 2));
+		return total < 10 ? "0" + total : String.valueOf(total);
 	}
 
 	// Validate a UK VAT number
@@ -338,11 +372,11 @@ public class VAT extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost based on how much we like the header
-		if (getHeaderConfidence(dataStreamName) >= 90)
+		if (getHeaderConfidence(context.getStreamName()) >= 90)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.30), 1.0);
 
 		return confidence;
@@ -350,7 +384,7 @@ public class VAT extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if (getConfidence(matchCount, realSamples, context.getStreamName()) < getThreshold()/100.0)
+		if (getConfidence(matchCount, realSamples, context) < getThreshold()/100.0)
 			return new PluginAnalysis(BACKOUT_REGEXP);
 
 		return PluginAnalysis.OK;

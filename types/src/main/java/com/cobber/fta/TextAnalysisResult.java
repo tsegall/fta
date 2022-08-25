@@ -548,7 +548,7 @@ public class TextAnalysisResult {
 	 * @return A String SHA-1 hash that reflects the structure of the data stream.
 	 */
 	public String getStructureSignature() {
-		String structureSignature = facts.matchPatternInfo.getBaseType().toString() + ":";
+		String structureSignature = getSignatureBaseType().toString() + ":";
 
 		if (isLogicalType())
 			structureSignature += getTypeQualifier();
@@ -565,6 +565,17 @@ public class TextAnalysisResult {
 
 		final byte[] signature = structureSignature.getBytes(StandardCharsets.UTF_8);
 		return Base64.getEncoder().encodeToString(md.digest(signature));
+	}
+
+	private FTAType getSignatureBaseType() {
+		if (!isLogicalType())
+			return facts.matchPatternInfo.getBaseType();
+
+		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(getTypeQualifier());
+		if (pluginDefinition != null && pluginDefinition.baseType != null)
+			return pluginDefinition.baseType;
+
+		return facts.matchPatternInfo.getBaseType();
 	}
 
 	/**

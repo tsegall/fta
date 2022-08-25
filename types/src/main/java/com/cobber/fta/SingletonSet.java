@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -122,7 +123,8 @@ public class SingletonSet {
 		}
 	}
 
-	public String getAt(final int i) {
-		return MEMBER_CACHE.get(key).get(i);
+	public String getRandom(final SecureRandom random) {
+		int size = getMembers().size();
+		return MEMBER_CACHE.get(key).get(random.nextInt(size));
 	}
 }

@@ -20,14 +20,17 @@ import java.util.Map;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.PhoneNumberUtil.ValidationResult;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
@@ -35,13 +38,15 @@ import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
  * Plugin to detect Phone Numbers.
  */
 public class PhoneNumberLT extends LogicalTypeInfinite  {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "TELEPHONE";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = ".*";
 
 	private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+
+	private String country;
+	private boolean localNumbersValid;
+	private int nonLocal;
+	private boolean onlyDigits = true;
 
 	/**
 	 * Construct a Phone Number plugin based on the Plugin Definition.
@@ -49,15 +54,6 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	 */
 	public PhoneNumberLT(final PluginDefinition plugin) {
 		super(plugin);
-	}
-
-	// Get a random digit string of length len digits, first must not be a zero
-	private String getRandomDigits(final int len) {
-		final StringBuilder b = new StringBuilder(len);
-		b.append(random.nextInt(9) + 1);
-		for (int i = 1; i < len; i++)
-			b.append(random.nextInt(10));
-		return b.toString();
 	}
 
 	@Override
@@ -72,7 +68,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 		String attempt;
 		Phonenumber.PhoneNumber phoneNumber;
 		do {
-			attempt = getRandomDigits(nationalSignificantNumber.length());
+			attempt = Utils.getRandomDigits(random, nationalSignificantNumber.length());
 			try {
 				phoneNumber = phoneUtil.parse(attempt, country);
 			} catch (NumberParseException e) {
@@ -87,17 +83,22 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
+
+		country = locale.getCountry();
+
+		localNumbersValid = "CO".equals(country);
+
 		return true;
 	}
 
 	@Override
 	public String getQualifier() {
-		return SEMANTIC_TYPE;
+		return defn.qualifier;
 	}
 
 	@Override
 	public FTAType getBaseType() {
-		return FTAType.STRING;
+		return onlyDigits ? FTAType.LONG : FTAType.STRING;
 	}
 
 	@Override
@@ -120,14 +121,37 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 		try {
 			// The Google library is very permissive and generally strips punctuation, we want to be
 			// a little more discerning so that we don't treat ordinary numbers as phone numbers
-			if (input.indexOf(',') != -1 || input.chars().filter(ch -> ch == '.').count() == 1)
+			if (input == null || input.indexOf(',') != -1 || input.chars().filter(ch -> ch == '.').count() == 1)
 				return false;
-			final PhoneNumber phoneNumber = phoneUtil.parse(input, locale.getCountry());
-			return phoneUtil.isValidNumber(phoneNumber);
+
+			return validTest(input);
 		}
 		catch (NumberParseException e) {
 			return false;
 		}
+	}
+
+	private boolean validTest(final String input) throws NumberParseException {
+		final PhoneNumber number = phoneUtil.parse(input, country);
+
+		final boolean ret = phoneUtil.isValidNumber(number);
+		if (!localNumbersValid || ret) {
+			if (ret && onlyDigits)
+				onlyDigits = Utils.isNumeric(input);
+			return ret;
+		}
+
+		// Some countries (e.g. Colombia) often record Phone Numbers in their local-only format, if this
+		// is the case check whether the number is valid as a local number.
+		ValidationResult result = phoneUtil.isPossibleNumberWithReason(number);
+		if (result == ValidationResult.IS_POSSIBLE_LOCAL_ONLY) {
+			nonLocal++;
+			if (onlyDigits)
+				onlyDigits = Utils.isNumeric(input);
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -137,17 +161,21 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if (getHeaderConfidence(context.getStreamName()) == 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, context.getStreamName()) < getThreshold()/100.0)
-			return new PluginAnalysis(REGEXP);
+		// If we are allowing local-only numbers then insist on some signal from the header
+		if (localNumbersValid && nonLocal != 0 && getHeaderConfidence(context.getStreamName()) == 0)
+			return new PluginAnalysis(onlyDigits ? KnownPatterns.PATTERN_NUMERIC_VARIABLE : REGEXP);
+
+		if (getHeaderConfidence(context.getStreamName()) == 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, context) < getThreshold()/100.0)
+			return new PluginAnalysis(onlyDigits ? KnownPatterns.PATTERN_NUMERIC_VARIABLE : REGEXP);
 
 		return PluginAnalysis.OK;
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		double is = (double)matchCount/realSamples;
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(dataStreamName) != 0)
+		if (getHeaderConfidence(context.getStreamName()) != 0)
 			is = Math.min(is * 1.2, 1.0);
 
 		return is;
