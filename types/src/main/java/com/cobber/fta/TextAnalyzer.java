@@ -1841,7 +1841,7 @@ public class TextAnalyzer {
 			int i = 0;
 			double bestConfidence = 0.0;
 			for (final LogicalTypeInfinite logical : infiniteTypes) {
-				if (logical.acceptsBaseType(facts.matchPatternInfo.getBaseType()) && logical.getConfidence(candidateCounts[i], raw.size(), context.getStreamName())  >= logical.getThreshold()/100.0) {
+				if (logical.acceptsBaseType(facts.matchPatternInfo.getBaseType()) && logical.getConfidence(candidateCounts[i], raw.size(), context)  >= logical.getThreshold()/100.0) {
 					int count = 0;
 					final PatternInfo candidate = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 					for (final String sample : raw) {
@@ -1866,7 +1866,7 @@ public class TextAnalyzer {
 					}
 
 					// If a reasonable number look genuine then we are convinced
-					final double currentConfidence = logical.getConfidence(count, raw.size(), context.getStreamName());
+					final double currentConfidence = logical.getConfidence(count, raw.size(), context);
 					if (currentConfidence > bestConfidence && currentConfidence >= logical.getThreshold()/100.0) {
 						facts.matchPatternInfo = candidate;
 						bestConfidence = currentConfidence;
@@ -2362,10 +2362,10 @@ public class TextAnalyzer {
 		for (final String elt : minusMatches.keySet())
 			newCardinality.remove(elt);
 
-		if (!logical.analyzeSet(context, validCount, realSamples, facts.matchPatternInfo.regexp, null, newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
+		if (!logical.analyzeSet(context, validCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
 			return new FiniteMatchResult();
 
-		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context.getStreamName()), validCount, newOutliers, newCardinality);
+		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context), validCount, newOutliers, newCardinality);
 	}
 
 	private String lengthQualifier(final int min, final int max) {
@@ -2562,7 +2562,7 @@ public class TextAnalyzer {
 			else {
 				// Update our Regular Expression - since it may have changed based on all the data observed
 				facts.matchPatternInfo.regexp = logical.getRegExp();
-				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 			}
 		}
 
@@ -2592,7 +2592,7 @@ public class TextAnalyzer {
 			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
 			final LogicalTypeFinite logical = matchFiniteTypes(FTAType.STRING, cardinalityUpper, scoreToBeat);
 			if (logical != null)
-				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 
 			// Fixup any likely enums
 			if (facts.matchPatternInfo.typeQualifier == null && cardinalityUpper.size() < MAX_ENUM_SIZE && !facts.outliers.isEmpty() && facts.outliers.size() < 10) {
@@ -2764,7 +2764,7 @@ public class TextAnalyzer {
 								logical.isMatch(facts.matchPatternInfo.regexp) &&
 								logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
 							facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-							facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+							facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 							break;
 						}
 					}
@@ -2781,7 +2781,7 @@ public class TextAnalyzer {
 							logical.analyzeSet(context, best.getOccurrences(), realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
 						facts.matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						facts.matchCount = best.getOccurrences();
-						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 						updated = true;
 						break;
 					}
@@ -2891,7 +2891,7 @@ public class TextAnalyzer {
 						facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
 						facts.matchCount = newMatchCount;
 						debug("Type determination - updated to Regular Expression logical type {}", facts.matchPatternInfo);
-						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 						return true;
 					}
 				}
@@ -2963,7 +2963,7 @@ public class TextAnalyzer {
 			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
 			final LogicalTypeFinite logicalFinite = matchFiniteTypes(FTAType.LONG, facts.cardinality, scoreToBeat);
 			if (logicalFinite != null)
-				facts.confidence = logicalFinite.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+				facts.confidence = logicalFinite.getConfidence(facts.matchCount, realSamples, context);
 
 			if (!facts.matchPatternInfo.isLogicalType())
 				for (final LogicalTypeRegExp logical : regExpTypes) {
@@ -2971,7 +2971,7 @@ public class TextAnalyzer {
 							logical.isMatch(facts.matchPatternInfo.regexp) &&
 							logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
 						facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 						debug("Type determination - was LONG, matchPatternInfo - {}", facts.matchPatternInfo);
 						break;
 					}
@@ -3007,7 +3007,7 @@ public class TextAnalyzer {
 					logical.isMatch(facts.matchPatternInfo.regexp) &&
 					logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
 				facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context.getStreamName());
+				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 				break;
 			}
 		}

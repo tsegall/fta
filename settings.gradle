@@ -5,7 +5,7 @@ include 'cli'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-		     version('fta', '9.0.19')
+		     version('fta', '10.0.0')
 		     version('jacoco', '0.8.8')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
@@ -19,7 +19,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
 		     library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3')
 // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-		     library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.12.53')
+		     library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.12.54')
 // https://mvnrepository.com/artifact/org.apache.commons/commons-text
 		     library('commonsText', 'org.apache.commons:commons-text:1.9')
 // https://mvnrepository.com/artifact/com.github.krraghavan/xeger

@@ -82,7 +82,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return zipsRef.getAt(random.nextInt(zips.size()));
+		return zipsRef.getRandom(random);
 	}
 
 	@Override
@@ -136,14 +136,15 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 		if (headerConfidence == 0 && cardinality.size() < 5)
 			return new PluginAnalysis(backout());
 
-		if (getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0)
+		if (getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0)
 			return PluginAnalysis.OK;
 
 		return new PluginAnalysis(backout());
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
+		final String dataStreamName = context.getStreamName();
 		double confidence = (double)matchCount/realSamples;
 
 		// If we do not have an embedded '-' then insist that the header is good

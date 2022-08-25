@@ -105,12 +105,12 @@ public class AddressOther extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		return getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
+		return getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
-		final int headerConfidence = getHeaderConfidence(dataStreamName);
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
+		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 		double confidence = (double)matchCount/realSamples;
 
 		// We really want to see a great header

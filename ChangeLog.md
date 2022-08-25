@@ -1,6 +1,21 @@
 
 ## Changes ##
 
+### 10.0.0
+ - *** Plugin definition has changed with 10.0 (getConfidence() now receives the full context, not just the StreamName)
+ - ENH: Add new Semantic Type - LANGUAGE.ISO-639-1 - three letter country code
+ - ENH: Add new Semantic Type - NAME.SUFFIX - Name Suffix (e.g. I, II, JR., ...)
+ - ENH: Add new Semantic Type - COLOR.TEXT_EN - Color Name
+ - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.SUBURB_AU - Australian Suburb (generalize BloomFilter support)
+ - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.MUNICIPALITY_CO - Colombian Municipality
+ - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.DEPARTMENT_CO - Colombian Department
+ - ENH: I18N - Add new Semantic Type - POSTAL_CODE.POSTAL_CODE_CO - Colombian Postal Code
+ - ENH: Should add a wrapper task to indicate the version of Gradle required
+ - ENH: Improve MiddleName/MiddleInitial detection
+ - ENH: Improve Street Address detection
+ - ENH: Improve Company Name detection
+ - ENH: Improve Person Age detection
+
 ### 9.0.19
  - BUG: fta-core should have been declared as an API (not implementation) dependency of fta
 

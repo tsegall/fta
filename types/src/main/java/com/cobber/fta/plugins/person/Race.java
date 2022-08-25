@@ -41,8 +41,8 @@ public class Race extends LogicalTypeInfinite {
 
 	private static final String[] raceWords = {
 			"ABORIGINAL", "AFRICAN", "AMERICAN", "ARAB", "ASIAN", "ASIATIC", "BAME", "BLACK", "CARIBBEAN", "CAUCASIAN", "CHINESE",
-			"FILIPINO", "HAWAIIAN", "HISPANIC", "INDIAN", "INUIT", "JAPANESE", "KOREAN", "LATINO", "METIS", "MIDDLE EASTERN",
-			"NATIVE", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "WHITE",
+			"FILIPINO", "HAWAIIAN", "HISPANIC", "INDIAN", "INUIT", "JAPANESE", "KOREAN", "LATINO", "LATINX", "METIS", "MIDDLE EASTERN",
+			"NATIVE", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "VIETNAMESE", "WHITE",
 
 			"N/A", "NA", "OTHER", "UNK", "UNKNOWN"
 	};
@@ -145,7 +145,7 @@ public class Race extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double confidence = (double)matchCount/realSamples;
 		if (confidence >= getThreshold() / 100.0)
 			return confidence;
@@ -156,7 +156,7 @@ public class Race extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if (getConfidence(matchCount, realSamples, context.getStreamName()) < getThreshold() / 100.0)
+		if (getConfidence(matchCount, realSamples, context) < getThreshold() / 100.0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Generate the RE using all the elements in the set, we assume the outliers are also good just not detected

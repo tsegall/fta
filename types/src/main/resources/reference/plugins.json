@@ -43,7 +43,8 @@
 		"pluginType": "java",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
 		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|Mobiel|telephone|telefon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|Mobiel|móvil|movil|telephone|telefono|telefon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
+		"baseType": "STRING",
 		"priority": 40
 	},
 	{
@@ -53,6 +54,9 @@
 		"signature": "AtovlR1okrAJUeTCpYUUTXow4yM=",
 		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.GUID",
+		"validLocales": [
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(guid).*", "confidence": 99 } ] }
+		],
 		"threshold": 99,
 		"priority": 50
 	},
@@ -63,7 +67,7 @@
 		"signature": "JLD6IQMMMoQZTZH7OyHsGRuSoTQ=",
 		"validLocales": [ { "localeTag":  "*" } ],
 		"clazz": "com.cobber.fta.plugins.VIN",
-		"threshold": 99,
+		"threshold": 98,
 		"priority": 51
 	},
 	{
@@ -75,6 +79,7 @@
 		"validLocales": [
 			{ "localeTag":  "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 } ] }
 		],
+		"baseType": "LONG",
 		"threshold": 90,
 		"priority": 60
 	},
@@ -170,6 +175,7 @@
 				"localeTag":  "fr-FR",
 				"headerRegExps": [ { "regExp": ".*(?i)(code.postal|cp).*", "confidence": 95 } ]
 			} ],
+		"baseType": "LONG",
 		"threshold": 98,
 		"priority": 66
 	},
@@ -268,7 +274,7 @@
 			{ "localeTag":  "es-MX", "headerRegExps": [ { "regExp": ".*(?i)(c.digo.*postal).*", "confidence": 99 } ] }
 		],
 		"threshold": 99,
-		"baseType": "STRING",
+		"baseType": "LONG",
 		"priority": 72
 	},
 	{
@@ -287,13 +293,29 @@
 		"priority": 73
 	},
 	{
+		"qualifier": "POSTAL_CODE.POSTAL_CODE_CO",
+		"description": "Postal Code (CO)",
+		"pluginType": "java",
+		"signature": "nb4TdG9sqJZTuLyvoOUywb1lA4s=",
+		"clazz": "com.cobber.fta.plugins.PostalCodeCO",
+		"validLocales": [
+			{
+				"localeTag":  "es-CO",
+				"headerRegExps": [ { "regExp": ".*(?i)(codigo.postal).*", "confidence": 95 }, { "regExp": ".*(?i)(postal).*", "confidence": 85 } ]
+			} ],
+		"baseType": "LONG",
+		"threshold": 98,
+		"priority": 74
+	},
+	
+	{
 		"qualifier": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
 		"pluginType": "java",
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
 		"clazz": "com.cobber.fta.plugins.AddressEN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(address|address.*1)", "confidence": 99 }, { "regExp": ".*(?i)(addr).*", "confidence": 95 } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(address|addr.*1)", "confidence": 99 }, { "regExp": ".*(?i)(addr).*", "confidence": 95 } ] }
 		],
 		"threshold": 90,
 		"priority": 75
@@ -305,7 +327,7 @@
 		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
 		"clazz": "com.cobber.fta.plugins.Address2EN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr).*2", "confidence": 95 } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr).*2", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 95 } ] }
 		],
 		"threshold": 90,
 		"priority": 76
@@ -361,7 +383,7 @@
 			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sexe).*", "confidence": 90 } ] },
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(Gender|sex)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
 			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex|geschlecht).*", "confidence": 90 } ] },
-			{ "localeTag":  "es", "headerRegExps": [ { "regExp": "(?i)(Gender|Sexo)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
+			{ "localeTag":  "es", "headerRegExps": [ { "regExp": "(?i)(Gender|genero|Sexo)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
 			{ "localeTag":  "fi", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Genre|Sukupuoli).*", "confidence": 90 } ] },
 			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": "(?i)(Gender|Genre|Sexe)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Genre|Sexe).*", "confidence": 90 } ] },
 			{ "localeTag":  "hr", "headerRegExps": [ { "regExp": ".*(?i)(Gender).*", "confidence": 90 } ] },
@@ -425,7 +447,7 @@
 		"validLocales": [
 			{
 				"localeTag":  "en,fr",
-				"headerRegExps": [ { "regExp": "(?i)(age)", "confidence": 90, "mandatory": true } ]
+				"headerRegExps": [ { "regExp": "(?i)(age|age[_ ].*)", "confidence": 90, "mandatory": true } ]
 			},
 			{
 				"localeTag":  "es",
@@ -440,6 +462,7 @@
 				"headerRegExps": [ { "regExp": "(?i)(idade)", "confidence": 90, "mandatory": true } ]
 			}
 		],
+		"baseType" : "LONG",
 		"priority": 83
 	},
 	{
@@ -1182,6 +1205,46 @@
 		"priority": 146
 	},
 	{
+		"qualifier": "STATE_PROVINCE.SUBURB_AU",
+		"description": "Australian Suburb",
+		"pluginType": "java",
+		"signature": "VR2/cf7EOxcm7ed9eGp8A2j1fn4=",
+		"clazz": "com.cobber.fta.plugins.SuburbAU",
+		"validLocales": [
+			{ "localeTag": "en-AU", "headerRegExps": [ { "regExp": ".*(?i)(suburb).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/au_suburbs",
+		"contentType": "resource",
+		"backout": "[' \\p{IsAlphabetic}]+",
+		"priority": 147
+	},
+	{
+		"qualifier": "STATE_PROVINCE.MUNICIPALITY_CO",
+		"description": "Colombian Municipality",
+		"pluginType": "list",
+		"signature": "w7YfMi7yPXuoePHgfnM7RDyb6UE=",
+		"validLocales": [
+			{ "localeTag": "es-CO", "headerRegExps": [ { "regExp": ".*(?i)(municipio).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/co_municipalities.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 148
+	},
+	{
+		"qualifier": "STATE_PROVINCE.DEPARTMENT_CO",
+		"description": "Colombian Department",
+		"pluginType": "list",
+		"signature": "V3LTco+XmMy0HMMj8+HljXecDyU=",
+		"validLocales": [
+			{ "localeTag": "es-CO", "headerRegExps": [ { "regExp": ".*(?i)(departamento).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/co_departments.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 149
+	},
+	{
 		"qualifier": "CURRENCY_CODE.ISO-4217",
 		"description": "Currency as defined by ISO 4217",
 		"pluginType": "list",
@@ -1323,7 +1386,7 @@
 		"content": "/reference/en_airlines.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"threshold": 97,
+		"threshold": 85,
 		"priority": 169
 	},
 	{
@@ -1335,8 +1398,8 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(first.?name|fname|given.?name|forename).*", "confidence": 90 },
-					{ "regExp": "(?i)(first)", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(first.?name|fname|given.?name|forename|first_nm).*", "confidence": 95 },
+					{ "regExp": "(?i)(name|.*first.*)", "confidence": 60 } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
 				} ]
@@ -1396,8 +1459,8 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(surname|last.?name|lname|maiden.?name|name.?last).*", "confidence": 90 },
-					{ "regExp": "(?i)(last)", "confidence": 90 }, { "regExp": "(?i)(name|.*last.*)", "confidence": 60 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(surname|last.?name|lname|maiden.?name|name.?last|last_nm).*", "confidence": 90 },
+					{ "regExp": "(?i)(name|.*last.*)", "confidence": 60 } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
 				} ]
@@ -1483,23 +1546,6 @@
 		"priority": 173
 	},
 	{
-		"qualifier": "NAME.MIDDLE",
-		"description": "Middle Name",
-		"pluginType": "java",
-		"signature": "3UGho+Z93uiqi9L8+qjAQ1pb0qQ=",
-		"clazz": "com.cobber.fta.plugins.MiddleName",
-		"validLocales": [
-			{
-				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(middlename|middle name).*", "confidence": 99 }, { "regExp": ".*(?i)(middle).*", "confidence": 90 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			}
-		],
-		"priority": 174
-	},
-	{
 		"qualifier": "NAME.MIDDLE_INITIAL",
 		"description": "Middle Initial",
 		"pluginType": "regex",
@@ -1507,7 +1553,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(middle).*|(?i)(mi)", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(middle.?init).*|(?i)(mi|middle)", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\p{IsAlphabetic}", "\\p{IsAlphabetic}\\." ],
 					"regExpReturned": "\\p{IsAlphabetic}\\.?",
@@ -1517,7 +1563,42 @@
 		],
 		"threshold": 98,
 		"baseType": "STRING",
+		"priority": 174
+	},
+	{
+		"qualifier": "NAME.MIDDLE",
+		"description": "Middle Name",
+		"pluginType": "java",
+		"signature": "3UGho+Z93uiqi9L8+qjAQ1pb0qQ=",
+		"clazz": "com.cobber.fta.plugins.MiddleName",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [ { "regExp": ".*(?i)(middle.?name).*|(?i)(mi|middle)", "confidence": 99, "mandatory": true } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			}
+		],
 		"priority": 175
+	},
+	{
+		"qualifier": "NAME.SUFFIX",
+		"description": "Name Suffix",
+		"pluginType": "list",
+		"signature": "O8pdYhB+VqM6qvj6Yc7Wt3JPhy0=",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [ { "regExp": "(?i)(suffix|.*[_ ]suffix)", "confidence": 99, "mandatory": true } ]
+			}
+		],
+		"content": "/reference/en_name_suffix.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}.]+",
+		"threshold": 98,
+		"baseType": "STRING",
+		"priority": 176
 	},
 	{
 		"qualifier": "COORDINATE.LATITUDE_DECIMAL",
@@ -1744,7 +1825,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": "^(?i)(company|company.name)$", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": "^(?i)(company|company.name|business.name)$", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 					"regExpReturned": "[-/()',& \\.\\p{IsAlphabetic}\\d]*",
@@ -1912,9 +1993,23 @@
 		"priority": 240
 	},
 	{
+		"qualifier": "LANGUAGE.ISO-639-1",
+		"description": "Language code - ISO 639, three character",
+		"pluginType": "list",
+		"signature": "5f6VjpTf8QQ4BjI0GVI1e7z9o3U=",
+		"validLocales": [
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(language|lingua|639|3066).*", "confidence": 90 }, { "regExp": ".*(?i)(lang).*", "confidence": 60 } ] }
+		],
+		"content": "/reference/ISO-639-1.csv",
+		"contentType": "resource",
+		"backout": "\\p{IsAlphabetic}{3}",
+		"priority": 241
+	},
+	{
 		"qualifier": "LANGUAGE.TEXT_EN",
 		"description": "Language name, e.g. English, French, ...",
 		"pluginType": "list",
+		"pluginOptions": "words=all",
 		"signature": "XCjtEvkiEs1eLR9wqzgkxxgosg0=",
 		"validLocales": [
 			{
@@ -2052,6 +2147,7 @@
 		"signature": "ySEbGrpJCO/yoMiVxyK5vi9sBtU=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitLuhn",
 		"validLocales": [ { "localeTag":  "*" } ],
+		"baseType": "LONG",
 		"priority": 290
 	},
 	{
@@ -2095,6 +2191,7 @@
 		"signature": "AP6Bjl97rR4D1ogsqPqXGoD5Dq4=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitEAN13",
 		"validLocales": [ { "localeTag":  "*" } ],
+		"baseType": "LONG",
 		"priority": 294
 	},
 	{
@@ -2104,6 +2201,7 @@
 		"signature": "L88o6zYDCyR84UYMe+O/ua0Kfcg=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitUPC",
 		"validLocales": [ { "localeTag":  "*" } ],
+		"baseType": "LONG",
 		"priority": 295
 	},
 	{
@@ -2122,6 +2220,7 @@
 		"signature": "z/uWdWQDM6Ln80wNSIshhGV5et4=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitABA",
 		"validLocales": [ { "localeTag":  "*" } ],
+		"baseType": "LONG",
 		"priority": 297
 	},
 	{
@@ -2140,7 +2239,7 @@
 		"signature": "6IKfzTa++cfQDm7aehEqSaJ/rek=",
 		"clazz": "com.cobber.fta.plugins.JobTitleEN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(job title).*", "confidence": 99 }, { "regExp": ".*(?i)(title|position|occupation|profession|role).*", "confidence": 90 } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(job.title).*", "confidence": 99 }, { "regExp": ".*(?i)(title|position|occupation|profession|role).*", "confidence": 90 } ] }
 		],
 		"threshold": 60,
 		"priority": 300
@@ -2204,7 +2303,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(SHA1|hash).*", "confidence": 90 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(color|colour).*", "confidence": 90 } ],
 				"matchEntries": [ {
 					"regExpReturned": "#\\p{XDigit}{6}",
 					"isRegExpComplete": true
@@ -2214,6 +2313,20 @@
 		"threshold": 99,
 		"baseType": "STRING",
 		"priority": 304
+	},
+	{
+		"qualifier": "COLOR.TEXT_EN",
+		"description": "Color name",
+		"pluginType": "list",
+		"pluginOptions": "words=all",
+		"signature": "CIsljBWEmutE4EulPJgCkQZyzMU=",
+		"validLocales": [
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(color|colour).*", "confidence": 90, "mandatory": true } ] }
+		],
+		"content": "/reference/en_color.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 305
 	},
 	{
 		"qualifier": "FREE_TEXT",

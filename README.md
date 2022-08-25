@@ -233,6 +233,7 @@ CHECKDIGIT.SEDOL|UK/Ireland Security Identifier|*
 CHECKDIGIT.UPC|Universal Product Code|*
 CITY|City/Town|en
 COLOR.HEX|Hex Color code|*
+COLOR.TEXT_EN|Color name|*
 COMPANY_NAME|Company Name|en
 CONTINENT.CODE_EN|Continent Code|en
 CONTINENT.TEXT_EN|Continent Name|en
@@ -273,6 +274,7 @@ INDUSTRY_EN|Industry Name|en
 IPADDRESS.IPV4|IP V4 Address|*
 IPADDRESS.IPV6|IP V6 Address|*
 JOB_TITLE_EN|Job Title|en
+LANGUAGE.ISO-639-1|Language code - ISO 639, three character|*
 LANGUAGE.ISO-639-2|Language code - ISO 639, two character|*
 LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...|en
 MACADDRESS|MAC Address|*
@@ -285,23 +287,28 @@ NAME.LAST|Last Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.MIDDLE|Middle Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.MIDDLE_INITIAL|Middle Initial|br, de, do, en, es, fr, gt, mx, nl, pr, pt
+NAME.SUFFIX|Name Suffix|en
 NATIONALITY_EN|Nationality|en
 PERIOD.HALF|Half (Year)|*
 PERIOD.QUARTER|Quarter (Year)|*
 PERIOD.YEAR_RANGE|Year Range|*
 PERSON.AGE|Age (Person)|en, es, fr, es, it, pt
 PERSON.RACE|Race/Ethinicity (person)|*
-POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, FR, JA, NL, UK, ES, MX, PT, SE, UY
+POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, CO, FR, JA, NL, UK, ES, MX, PT, SE, UY
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
 SSN|Social Security Number (US)|en-US
+STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH, fr-CH, it-CH
+STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH, fr-CH, it-CH
 STATE_PROVINCE.COMMUNE_IT|Italian Commune|it-IT
 STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-IE, en-UK, en-US, ga-IE, hu-HU
+STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
+STATE_PROVINCE.DEPARTMENT_CO|Colombian Department|es-CO
 STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|pt-PT
+STATE_PROVINCE.INSEE_CODE_FR|French Insee Code (5 digit)|fr-FR
 STATE_PROVINCE.MUNICIPALITY_BR|Brazilian Municipality|pt-BR
-STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US
-STATE_PROVINCE.STATE_NAME_&lt;Country&gt;|State Name|en-AU, pt-BR, de-DE, es-MX, en-US
-STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA, en-US, es-MX
+STATE_PROVINCE.MUNICIPALITY_CO|Colombian Municipality|es-CO
+STATE_PROVINCE.PREFECTURE_NAME_JP|Japanese Prefecture Name|ja
 STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA, en-US
 STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
 STATE_PROVINCE.PROVINCE_ZA|South African Province Code|en-ZA
@@ -312,13 +319,12 @@ STATE_PROVINCE.PROVINCE_NAME_IE|Irish Province Name|en-IE
 STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
 STATE_PROVINCE.PROVINCE_NAME_NL|Dutch Province Name|nl-NL
 STATE_PROVINCE.PROVINCE_NAME_ZA|South African Province Name|en-ZA
-STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA, en-US, es-MX
-STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
 STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
-STATE_PROVINCE.INSEE_CODE_FR|French Insee Code (5 digit)|fr-FR
-STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH, fr-CH, it-CH
-STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH, fr-CH, it-CH
-STATE_PROVINCE.PREFECTURE_NAME_JP|Japanese Prefecture Name|ja
+STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US
+STATE_PROVINCE.STATE_NAME_&lt;Country&gt;|State Name|en-AU, pt-BR, de-DE, es-MX, en-US
+STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA, en-US, es-MX
+STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA, en-US, es-MX
+STATE_PROVINCE.SUBURB_AU|Australian Suburb|en-AU
 STREET_ADDRESS_&lt;Language&gt;|Street Address|bg, ca, da, de, en, es, fi, fr, hr, it, lv, nl, pl, pt, ro, ru, sk
 STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
 STREET_MARKER_EN| Street Suffix (English Language)|en

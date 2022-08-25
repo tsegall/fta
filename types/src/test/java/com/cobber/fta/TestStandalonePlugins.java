@@ -157,20 +157,32 @@ public class TestStandalonePlugins {
 	public void randomSupport() throws IOException, FTAPluginException {
 		final int SAMPLE_SIZE = 100;
 		final Locale[] locales = {
-				Locale.forLanguageTag("de-DE"), Locale.forLanguageTag("de-CH"),
-				Locale.forLanguageTag("en-US"), Locale.forLanguageTag("en-GB"), Locale.forLanguageTag("en-AU"),
-				Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("es-MX"),
-				Locale.forLanguageTag("fr-CH"), Locale.forLanguageTag("fr-FR"),
+// TODO			Locale.forLanguageTag("bg-BG"),
+				Locale.forLanguageTag("da-DK"),
+				Locale.forLanguageTag("de-CH"), Locale.forLanguageTag("de-DE"),
+				Locale.forLanguageTag("en-AU"), Locale.forLanguageTag("en-CA"), Locale.forLanguageTag("en-GB"), Locale.forLanguageTag("en-IE"), Locale.forLanguageTag("en-US"),
+				Locale.forLanguageTag("es-CO"), Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("es-MX"), Locale.forLanguageTag("es-UY"),
+// TODO				Locale.forLanguageTag("fi-FI"),
+				Locale.forLanguageTag("fr-CA"), Locale.forLanguageTag("fr-CH"), Locale.forLanguageTag("fr-FR"),
+				Locale.forLanguageTag("ga-IE"),
+				Locale.forLanguageTag("hr-HR"),
+				Locale.forLanguageTag("hu-HU"),
 				Locale.forLanguageTag("it-CH"), Locale.forLanguageTag("it-IT"),
 				Locale.forLanguageTag("jp-JP"),
+				Locale.forLanguageTag("lv-LV"),
 				Locale.forLanguageTag("nl-NL"),
-				Locale.forLanguageTag("pt-BR"),
+				Locale.forLanguageTag("pt-BR"), Locale.forLanguageTag("pt-PT"),
+				Locale.forLanguageTag("ro-RO"),
+//	TODO		Locale.forLanguageTag("ru-RU"),
+				Locale.forLanguageTag("sk-SK"),
+				Locale.forLanguageTag("sv-SE"),
 				Locale.forLanguageTag("tr-TR")
 		};
 
 		for (final Locale locale : locales) {
 			// Create an Analyzer to retrieve the Logical Types (magically will be all - since passed in '*')
 			final TextAnalyzer analyzer = new TextAnalyzer("*");
+			analyzer.setLocale(locale);
 			// Load the default set of plugins for Logical Type detection (normally done by a call to train())
 			analyzer.registerDefaultPlugins(analyzer.getConfig());
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
@@ -178,7 +190,12 @@ public class TestStandalonePlugins {
 			for (int iters = 0; iters < 10; iters++) {
 				for (final LogicalType logical : registered) {
 
-					final String pluginSignature = logical.getPluginDefinition().signature;
+					PluginDefinition definition = logical.getPluginDefinition();
+					// TODO
+					if ("STATE_PROVINCE.COMMUNE_IT".equals(definition.qualifier))
+						continue;
+
+					final String pluginSignature = definition.signature;
 					if (!"[NONE]".equals(pluginSignature) && !logical.getSignature().equals(logical.getPluginDefinition().signature))
 						logger.warn("WARNING: Signature incorrect for '{}'.  LogicalType = '{}', Plugin = '{}'.",
 								logical.getQualifier(), logical.getSignature(), logical.getPluginDefinition().signature);

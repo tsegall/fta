@@ -15,6 +15,7 @@
  */
 package com.cobber.fta;
 
+import java.util.List;
 import java.util.Set;
 
 import com.cobber.fta.core.FTAPluginException;
@@ -41,7 +42,30 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	@Override
 	public boolean isValid(final String input) {
 		final String trimmedUpper = Utils.cleanse(input.trim()).toUpperCase(locale);
-		return trimmedUpper.length() >= minLength && trimmedUpper.length() <= maxLength && getMembers().contains(trimmedUpper);
+
+		if (trimmedUpper.length() < minLength)
+			return false;
+
+		if (trimmedUpper.length() <= maxLength && getMembers().contains(trimmedUpper))
+			return true;
+
+		String value = defn.getOptions().get("words");
+		if (value != null) {
+			boolean any = value.equalsIgnoreCase("any");
+			boolean all = value.equalsIgnoreCase("all");
+			boolean first = value.equalsIgnoreCase("first");
+
+			List<String> words = Utils.asWords(trimmedUpper);
+			boolean found = false;
+			for (final String word : words) {
+				found = getMembers().contains(Utils.cleanse(word).toUpperCase(locale));
+				if (first || (any && found) || (all && !found))
+					return found;
+			}
+			return all && found;
+		}
+
+		return false;
 	}
 
 	@Override

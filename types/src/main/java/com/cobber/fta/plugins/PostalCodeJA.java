@@ -126,18 +126,18 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 		if (headerConfidence == 0 && cardinality.size() < 5)
 			return new PluginAnalysis(backout());
 
-		if (getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0)
+		if (getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0)
 			return PluginAnalysis.OK;
 
 		return new PluginAnalysis(backout());
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(dataStreamName) != 0)
+		if (getHeaderConfidence(context.getStreamName()) != 0)
 			confidence = Math.min(confidence * 1.2, 1.0);
 
 		return confidence;

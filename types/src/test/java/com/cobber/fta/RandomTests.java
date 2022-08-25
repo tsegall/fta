@@ -2472,9 +2472,9 @@ public class RandomTests {
 					semanticType.equals("COORDINATE.LONGITUDE_DECIMAL") ||
 					semanticType.equals("SSN")
 					) {
-//				System.err.printf("%s: %d%n", semanticType, index);
 				continue;
 			}
+			System.err.printf("%s: %d%n", semanticType, index);
 			final TextAnalyzer analysis = new TextAnalyzer(heading);
 			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
 			final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, analysis.getConfig());

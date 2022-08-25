@@ -164,10 +164,10 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * Typically this will be the number of matches divided by the number of real samples.
 	 * @param matchCount Number of matches (as determined by isValid())
 	 * @param realSamples Number of samples observed - does not include either nulls or blanks
-	 * @param dataStreamName Name of the Data Stream
+	 * @param context Context we are operating under (includes data stream name(s))
 	 * @return Confidence as a percentage.
 	 */
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		return (double)matchCount/realSamples;
 	}
 
@@ -188,7 +188,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @return A String SHA-1 hash that reflects the structure of the data stream.
 	 */
 	public String getSignature() {
-		String structureSignature = getBaseType() + ":";
+		String structureSignature = getSignatureBaseType() + ":";
 
 		structureSignature += getQualifier();
 
@@ -201,6 +201,10 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 		final byte[] signature = structureSignature.getBytes(StandardCharsets.UTF_8);
 		return Base64.getEncoder().encodeToString(md.digest(signature));
+	}
+
+	private FTAType getSignatureBaseType() {
+		return defn.baseType;
 	}
 
 	/**
