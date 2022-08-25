@@ -2027,6 +2027,32 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void totalTest() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("totalTest");
+		long sum = 0;
+		for (int i = 0; i < 1000; i++) {
+			sum += 0;
+			if (i < 100)
+				analysis.train(String.valueOf(i));
+		}
+
+		analysis.setTotalCount(1000);
+		analysis.setTotalMinValue("0");
+		analysis.setTotalMaxValue("999");
+		analysis.setTotalMean((double)sum/1000);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), 100);
+		assertEquals(result.getTotalCount(), 1000);
+
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getTotalMinValue(), "0");
+		assertEquals(result.getMaxValue(), "99");
+		assertEquals(result.getTotalMaxValue(), "999");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void keyFieldString() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("keyFieldString");
 		final int start = 100000;

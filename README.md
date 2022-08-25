@@ -194,7 +194,15 @@ There are a large number of metrics detected, which vary based on the type of th
  * decimalSeparator (Double type only) - The character used to separate the integral component from the fractional component
 
 The following fields are *not* calculated by FTA (but may be set on the Analyzer).
- * totalCount - The total number of elements in the Data Stream (-1 unless set explicitly).
+ * totalCount - The total number of elements in the entire data stream (-1 unless set explicitly).
+ * totalNullCount - The number of null elements in the entire data stream (-1 unless set explicitly).
+ * totalBlankCount - The number of blank elements in the entire data stream (-1 unless set explicitly).
+ * totalMean - The mean for Numeric types (Long, Double) across the entire data stream (null unless set explicitly).
+ * totalStandardDeviation - The standard deviation for Numeric types (Long, Double) across the entire data stream (null unless set explicitly).
+ * totalMinValue - The minimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
+ * totalMaxValue - The manimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
+ * totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
+ * totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
 
 Note 1: The value of the typeQualifier is dependent on the Base Type as follows:
  * Boolean - options are "TRUE_FALSE", "YES_NO", "ONE_ZERO"

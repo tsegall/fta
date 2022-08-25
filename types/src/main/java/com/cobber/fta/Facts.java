@@ -134,8 +134,6 @@ public class Facts {
 	public long sampleCount;
 	/** The number of samples that match the patternInfo. */
 	public long matchCount;
-	/** The total number of samples in the stream (typically -1 to indicate unknown). */
-	public long totalCount = -1;
 	/** The number of nulls seen in the sample set. */
 	public long nullCount;
 	/** The number of blanks seen in the sample set. */
@@ -160,6 +158,17 @@ public class Facts {
 	public Set<String> topK;
 	/** The bottom 10  values. */
 	public Set<String> bottomK;
+
+	/** The total number of samples in the stream (typically -1 to indicate unknown). */
+	public long totalCount = -1;
+	public long totalNullCount = -1;
+	public long totalBlankCount = -1;
+	public Double totalMean;
+	public Double totalStandardDeviation;
+	public String totalMinValue;
+	public String totalMaxValue;
+	public int totalMinLength;
+	public int totalMaxLength;
 
 	public String streamFormat;
 
@@ -584,7 +593,12 @@ public class Facts {
 				&& monotonicDecreasing == other.monotonicDecreasing && monotonicIncreasing == other.monotonicIncreasing
 				&& multiline == other.multiline && nullCount == other.nullCount
 				&& Objects.equals(outliers, other.outliers) && sampleCount == other.sampleCount
-				&& totalCount == other.totalCount && trailingWhiteSpace == other.trailingWhiteSpace
+				&& trailingWhiteSpace == other.trailingWhiteSpace
+				&& totalCount == other.totalCount
+				&& totalNullCount == other.totalNullCount && totalBlankCount == other.totalBlankCount
+				&& totalMean == other.totalMean && totalStandardDeviation == other.totalStandardDeviation
+				&& totalMinValue == other.totalMinValue && totalMaxValue == other.totalMaxValue
+				&& totalMinLength == other.totalMinLength && totalMaxLength == other.totalMaxLength
 				&& Objects.equals(uniqueness, other.uniqueness)
 				&& Objects.equals(distinctCount, other.distinctCount)
 				&& Objects.equals(streamFormat, other.streamFormat)

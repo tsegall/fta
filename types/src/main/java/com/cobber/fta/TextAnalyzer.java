@@ -664,11 +664,86 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Set the total number of elements in the Data Stream (if known).
+	 * Set the total number of elements in the Data Stream.
+	 * Only used when there is an external source that has visibility into the entire data stream.
 	 * @param totalCount The total number of elements, as opposed to the number sampled.
 	 */
 	public void setTotalCount(final long totalCount) {
 		facts.totalCount = totalCount;
+	}
+
+	/**
+	 * Set the count of all null elements in the entire data stream.
+	 * Only used when there is an external source that has visibility into the entire data stream.
+	 * @param totalNullCount The total number of null elements, as opposed to the number of nulls in the sample set.
+	 */
+	public void setTotalNullCount(final long totalNullCount) {
+		facts.totalNullCount = totalNullCount;
+	}
+
+	/**
+	 * Set the count of all blank elements in the entire data stream.
+	 * Only used when there is an external source that has visibility into the entire data stream.
+	 * @param totalBlankCount The total number of blank elements, as opposed to the number of blanks in the sample set.
+	 */
+	public void setTotalBlankCount(final long totalBlankCount) {
+		facts.totalBlankCount = totalBlankCount;
+	}
+
+	/**
+	 * Set the mean for Numeric types (Long, Double) across the entire data stream.
+	 * Only used when there is an external source that has visibility into the entire data stream.
+	 * @param totalMean The mean of all elements in the data stream, as opposed to the mean of the sampled set.
+	 */
+	public void setTotalMean(final Double totalMean) {
+		facts.totalMean = totalMean;
+	}
+
+	/**
+	 * Get the Standard Deviation for Numeric types (Long, Double) across the entire data stream (if known).
+	 * Only used when there is an external source that has visibility into the entire data stream.
+	 * @param totalStandardDeviation The Standard Deviation of all elements in the data stream, as opposed to the Standard Deviation of the sampled set.
+	 */
+	public void setTotalStandardDeviation(final Double totalStandardDeviation) {
+		facts.totalStandardDeviation = totalStandardDeviation;
+	}
+
+	/**
+	 * Set the minimum value for Numeric, Boolean and String types across the entire data stream.
+	 * Only used when there is an external source that has visibility into the entire data stream.
+	 * @param totalMinValue The minimum value of all elements in the data stream, as opposed to the minimum of the sampled set.
+	 */
+	public void setTotalMinValue(final String totalMinValue) {
+		facts.totalMinValue = totalMinValue;
+	}
+
+	/**
+	 * Set the maximum value for Numeric, Boolean and String across the entire data stream.
+	 * Only used when there is an external source that has visibility into the entire data stream.
+	 * @param totalMaxValue The manimum value of all elements in the data stream, as opposed to the manimum of the sampled set.
+	 */
+	public void setTotalMaxValue(final String totalMaxValue) {
+		facts.totalMaxValue = totalMaxValue;
+	}
+
+	/**
+	 * Set the minimum length for Numeric, Boolean and String across the entire data stream.
+	 * Only used when there is an external source that has visibility into the entire data stream.
+	 * Note: For String and Boolean types this length includes any whitespace.
+	 * @param totalMinLength The minimum length of all elements in the data stream, as opposed to the minimum length of the sampled set.
+	 */
+	public void setTotalMinLength(final int totalMinLength) {
+		facts.totalMinLength = totalMinLength;
+	}
+
+	/**
+	 * Set the maximum length for Numeric, Boolean and String across the entire data stream.
+	 * Only used when there is an external source that has visibility into the entire data stream.
+	 * Note: For String and Boolean types this length includes any whitespace.
+	 * @param totalMaxLength The manimum length of all elements in the data stream, as opposed to the manimum length of the sampled set.
+	 */
+	public void setTotalMaxLength(final int totalMaxLength) {
+		facts.totalMaxLength = totalMaxLength;
 	}
 
 	/**
