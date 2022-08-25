@@ -751,10 +751,9 @@ public class TextAnalysisResult {
 		analysis.put("trailingWhiteSpace", getTrailingWhiteSpace());
 		analysis.put("multiline", getMultiline());
 
-		// If an external source has set totalCount and it differs from sampleCount then
-		// output all the total* attributes (which will presumably also have been set by the external source).
-		// We assume that if we have seen all the records - then the truth is as defined by FTA.
-		if (facts.totalCount != -1 && facts.totalCount != facts.sampleCount) {
+		// If an external source has set totalCount then output all the total* attributes (which
+		// will presumably also have been set by the external source).
+		if (facts.totalCount != -1) {
 			analysis.put("totalNullCount", facts.totalNullCount);
 			analysis.put("totalBlankCount", facts.totalBlankCount);
 			if (facts.totalMean != null)
