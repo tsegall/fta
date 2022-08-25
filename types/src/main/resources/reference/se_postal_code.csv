@@ -6,7 +6,7 @@
 #006 https://creativecommons.org/licenses/by/4.0/
 #007
 #008 Note: The file actually used is a serialized bloom filter created from this file using the following:
-#009 types --bloomfilter types/src/main/resources/reference/se_postal_code.csv  types/src/main/resources/reference/se_postal_code.bf string
+#009 types --bloomfilter types/src/main/resources/reference/se_postal_code.csv  string
 #010
 186 00
 186 01

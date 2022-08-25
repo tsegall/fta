@@ -310,7 +310,7 @@ public class LogicalTypeRegExp extends LogicalType {
 
 		// We have samples so use them
 		if (samples != null)
-			return samples.getAt(random.nextInt(samples.getMembers().size()));
+			return samples.getRandom(random);
 
 		if (!xegerCompatible)
 			return null;

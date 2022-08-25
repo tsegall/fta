@@ -35,12 +35,9 @@ import com.cobber.fta.token.TokenStreams;
  * Note: we used an Infinite :-) Logical Type since the domains is so large.
  */
 public class PostalCodeFR extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_FR";
-
 	private static final String REGEXP_POSTAL_CODE = "\\d{5}";
-	private SingletonSet zipsRef;
-	private Set<String> zips;
+	private SingletonSet postalRef;
+	private Set<String> postals;
 
 	/**
 	 * Construct a French Postal code plugin based on the Plugin Definition.
@@ -66,20 +63,20 @@ public class PostalCodeFR extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		zipsRef = new SingletonSet("resource", "/reference/fr_postal_code.csv");
-		zips = zipsRef.getMembers();
+		postalRef = new SingletonSet("resource", "/reference/fr_postal_code.csv");
+		postals = postalRef.getMembers();
 
 		return true;
 	}
 
 	@Override
 	public String nextRandom() {
-		return zipsRef.getAt(random.nextInt(zips.size()));
+		return postalRef.getRandom(random);
 	}
 
 	@Override
 	public String getQualifier() {
-		return SEMANTIC_TYPE;
+		return defn.qualifier;
 	}
 
 	@Override
@@ -99,7 +96,7 @@ public class PostalCodeFR extends LogicalTypeInfinite {
 		if (len != 5)
 			return false;
 
-		return zips.contains(input);
+		return postals.contains(input);
 	}
 
 	private String backout() {
@@ -112,18 +109,18 @@ public class PostalCodeFR extends LogicalTypeInfinite {
 		if (headerConfidence == 0 && cardinality.size() < 5)
 			return new PluginAnalysis(backout());
 
-		if (getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0)
+		if (getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0)
 			return PluginAnalysis.OK;
 
 		return new PluginAnalysis(backout());
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(dataStreamName) != 0)
+		if (getHeaderConfidence(context.getStreamName()) != 0)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.20), 1.0);
 
 		return confidence;

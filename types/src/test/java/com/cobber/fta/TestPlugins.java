@@ -675,7 +675,7 @@ public class TestPlugins {
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), PhoneNumberLT.SEMANTIC_TYPE);
+		assertEquals(result.getTypeQualifier(), "TELEPHONE");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("TELEPHONE").signature);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
@@ -708,7 +708,7 @@ public class TestPlugins {
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), PhoneNumberLT.SEMANTIC_TYPE);
+		assertEquals(result.getTypeQualifier(), "TELEPHONE");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("TELEPHONE").signature);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
@@ -743,7 +743,7 @@ public class TestPlugins {
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), PhoneNumberLT.SEMANTIC_TYPE);
+		assertEquals(result.getTypeQualifier(), "TELEPHONE");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("TELEPHONE").signature);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);

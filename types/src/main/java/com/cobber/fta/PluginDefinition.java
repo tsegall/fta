@@ -19,9 +19,11 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.core.FTAPluginException;
@@ -50,6 +52,8 @@ public class PluginDefinition {
 	public String description;
 	/** Type of the plugin - can be 'java', 'list', or 'regex' */
 	public String pluginType;
+	/** Plugin-specific options - format key1=value1, key2=value2, ... */
+	public String pluginOptions;
 	/** Signature (structure) - the MD5 Hash of the Qualifier and the Base Type. */
 	public String signature;
 	/** locales this plugin applies to - empty set, implies all locales.  Can use just language instead of tag, e.g. "en" rather than "en_US". */
@@ -82,6 +86,8 @@ public class PluginDefinition {
 	public int minSamples = -1;
 	/** Need to see both the minimum and maximum values to declare success. */
 	public boolean minMaxPresent;
+
+	private Map<String, String> options = null;
 
 	public PluginDefinition() {
 	}
@@ -191,5 +197,24 @@ public class PluginDefinition {
 			ret.append(validLocales[i].toString());
 
 		return ret.toString();
+	}
+
+	public Map<String, String> getOptions() {
+		if (options == null) {
+			synchronized(this){
+				if (options == null) {
+					options = new HashMap<>();
+					if (pluginOptions != null) {
+						String[] entries = pluginOptions.split("\\s*,\\s*");
+						for (final String entry : entries) {
+							int separator = entry.indexOf('=');
+							options.put(entry.substring(0,separator), entry.substring(separator + 1));
+						}
+					}
+				}
+			}
+		}
+
+		return options;
 	}
 }

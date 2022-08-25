@@ -78,7 +78,7 @@ public class USZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return zipsRef.getAt(random.nextInt(zips.size()));
+		return zipsRef.getRandom(random);
 	}
 
 	@Override
@@ -121,18 +121,18 @@ public class USZip5 extends LogicalTypeInfinite {
 		if (headerConfidence == 0 && cardinality.size() < 5)
 			return new PluginAnalysis(backout());
 
-		if (getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0)
+		if (getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0)
 			return PluginAnalysis.OK;
 
 		return new PluginAnalysis(backout());
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(dataStreamName) != 0)
+		if (getHeaderConfidence(context.getStreamName()) != 0)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.20), 1.0);
 
 		return confidence;

@@ -201,16 +201,16 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		if (realSamples < minSamples)
 			return new PluginAnalysis(BACKOUT);
 
-		if (getConfidence(matchCount, realSamples, context.getStreamName()) >= getThreshold()/100.0)
+		if (getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0)
 			return PluginAnalysis.OK;
 
 		return new PluginAnalysis(BACKOUT);
 	}
 
 	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final String dataStreamName) {
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double is = (double)matchCount/realSamples;
-		if (matchCount == realSamples || getHeaderConfidence(dataStreamName) == 0)
+		if (matchCount == realSamples || getHeaderConfidence(context.getStreamName()) == 0)
 			return is;
 
 		return is + (1.0 - is)/2;

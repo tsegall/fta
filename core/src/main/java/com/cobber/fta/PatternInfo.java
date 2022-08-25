@@ -23,9 +23,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * The PatternInfo class maintains a set of information about a simple pattern.
- * This is used to derive a Type from a pattern. For example, new
- * PatternInfo("(?i)true|false", null, "", "Boolean", null) indicates that a
- * case insensitive match for true or false indicates a boolean type
+ * This is used to derive a Type from a pattern. For example,
+ *  new PatternInfo("(?i)true|false", null, "", "Boolean", null)
+ * indicates that a case insensitive match for true or false indicates a boolean type
  * ("BOOLEAN").
  */
 public class PatternInfo {

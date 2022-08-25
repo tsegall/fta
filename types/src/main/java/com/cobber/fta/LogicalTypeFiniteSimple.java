@@ -59,7 +59,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	public String nextRandom() {
 		String result;
 		do {
-			result = memberSet.getAt(random.nextInt(getMembers().size()));
+			result = memberSet.getRandom(random);
 		} while ("FTAFTAFTA".equals(result));
 		return result;
 	}
@@ -112,7 +112,6 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 			maxOutliers =  headerConfidence < 90 ? Math.max(4, baseOutliers) : getSize() / 2;
 			if (headerConfidence >= 99)
 				threshold -= 1;
-
 		}
 
 		if (outliers.size() > maxOutliers)

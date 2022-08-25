@@ -14,11 +14,13 @@
 */
 package com.cobber.fta.plugins.person;
 
+import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.LogicalTypeInfinite;
@@ -37,6 +39,7 @@ public class Age extends LogicalTypeInfinite {
 	public static final String REGEXP = "\\d{1,3}";
 
 	private LogicalTypeFinite logicalGender;
+	private LogicalTypeCode logicalFirst;
 
 	/**
 	 * Construct an Age plugin based on the Plugin Definition.
@@ -51,6 +54,10 @@ public class Age extends LogicalTypeInfinite {
 		super.initialize(analysisConfig);
 
 		logicalGender = (LogicalTypeFinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("GENDER.TEXT_<LANGUAGE>"), analysisConfig);
+
+		final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
+		final AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
+		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, pluginConfig);
 
 		return true;
 	}
@@ -100,15 +107,20 @@ public class Age extends LogicalTypeInfinite {
 		if (getHeaderConfidence(context.getStreamName()) == 0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		// Find a gender field (highly correlated with the presence of age)
+		// Find a gender or first name field (both highly correlated with the presence of age)
 		int gender = -1;
+		int firstName = -1;
 		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
 			if (logicalGender.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 99) {
 				gender = i;
 				break;
 			}
+			if (logicalFirst.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 95) {
+				firstName = i;
+				break;
+			}
 		}
 
-		return gender != -1 && (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
+		return (gender != -1 || firstName != -1) && (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 }
