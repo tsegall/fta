@@ -2027,6 +2027,104 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void totalTestSet() throws IOException, FTAException {
+		final int ENTIRE_SET = 1000;
+		final int SAMPLES = 100;
+
+		final TextAnalyzer analysis = new TextAnalyzer("totalTest");
+		long sum = 0;
+		for (int i = 0; i < ENTIRE_SET; i++) {
+			sum += i;
+			if (i < SAMPLES)
+				analysis.train(String.valueOf(i));
+		}
+		analysis.train(" ");
+		analysis.train(null);
+		analysis.train(null);
+
+		analysis.setTotalCount(ENTIRE_SET + 3);
+		analysis.setTotalNullCount(2);
+		analysis.setTotalBlankCount(1);
+		analysis.setTotalMinValue("0");
+		analysis.setTotalMaxValue("999");
+
+		analysis.setTotalMinLength(1);
+		analysis.setTotalMaxLength(3);
+
+		analysis.setTotalMean((double)sum/ENTIRE_SET);
+		analysis.setTotalStandardDeviation(288.8194361);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), SAMPLES + 3);
+		assertEquals(result.getTotalCount(), ENTIRE_SET + 3);
+
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getTotalNullCount(), 2);
+
+		assertEquals(result.getBlankCount(), 1);
+		assertEquals(result.getTotalBlankCount(), 1);
+
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getTotalMinValue(), "0");
+		assertEquals(result.getMaxValue(), "99");
+		assertEquals(result.getTotalMaxValue(), "999");
+
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getTotalMinLength(), 1);
+		assertEquals(result.getMaxLength(), 2);
+		assertEquals(result.getTotalMaxLength(), 3);
+
+		assertEquals(result.getMean(), 49.5);
+		assertEquals(result.getTotalMean(), 499.5);
+
+		assertEquals(result.getStandardDeviation(), 28.86607004772212);
+		assertEquals(result.getTotalStandardDeviation(), 288.8194361);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void totalTestUnset() throws IOException, FTAException {
+		final int ENTIRE_SET = 1000;
+		final int SAMPLES = 100;
+
+		final TextAnalyzer analysis = new TextAnalyzer("totalTest");
+		for (int i = 0; i < ENTIRE_SET; i++) {
+			if (i < SAMPLES)
+				analysis.train(String.valueOf(i));
+		}
+		analysis.train(" ");
+		analysis.train(null);
+		analysis.train(null);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), SAMPLES + 3);
+		assertEquals(result.getTotalCount(), -1);
+
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getTotalNullCount(), -1);
+
+		assertEquals(result.getBlankCount(), 1);
+		assertEquals(result.getTotalBlankCount(), -1);
+
+
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getTotalMinValue(), null);
+		assertEquals(result.getMaxValue(), "99");
+		assertEquals(result.getTotalMaxValue(), null);
+
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getTotalMinLength(), -1);
+		assertEquals(result.getMaxLength(), 2);
+		assertEquals(result.getTotalMaxLength(), -1);
+
+		assertEquals(result.getMean(), 49.5);
+		assertEquals(result.getTotalMean(), null);
+		assertEquals(result.getTotalStandardDeviation(), null);
+
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void keyFieldString() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("keyFieldString");
 		final int start = 100000;

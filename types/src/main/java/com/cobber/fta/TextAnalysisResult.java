@@ -299,11 +299,86 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the total number of elements in the Data Stream (if known).
-	 * @return total number of elements in the Data Stream (if known) - -1 if not.
+	 * Get the total number of elements in the entire data stream (if known).
+	 * @return total number of elements in the entire data stream (-1 if not known).
 	 */
 	public long getTotalCount() {
 		return facts.totalCount;
+	}
+
+	/**
+	 * Get the count of all null elements in the entire data stream (if known).
+	 * Use {@link #getNullCount() getNullCount()} for the equivalent on the sample set.
+	 * @return Count of all null elements in the entire data stream (-1 if not known).
+	 */
+	public long getTotalNullCount() {
+		return facts.totalNullCount;
+	}
+
+	/**
+	 * Get the count of all blank elements in the entire data stream (if known).
+	 * Note: any number (including zero) of spaces are Blank.
+	 * Use {@link #getBlankCount() getBlankCount()} for the equivalent on the sample set.
+	 * @return Count of all blank samples in the entire data stream (-1 if not known).
+	 */
+	public long getTotalBlankCount() {
+		return facts.totalBlankCount;
+	}
+
+	/**
+	 * Get the mean for Numeric types (Long, Double) across the entire data stream (if known).
+	 * Use {@link #getMean() getMean()} for the equivalent on the sample set.
+	 * @return The mean across the entire data stream (null if not known).
+	 */
+	public Double getTotalMean() {
+		return facts.totalMean;
+	}
+
+	/**
+	 * Get the standard deviation for Numeric types (Long, Double) across the entire data stream (if known).
+	 * Use {@link #getStandardDeviation() getStandardDeviation()} for the equivalent on the sample set.
+	 * @return The Standard Deviation across the entire data stream (null if not known).
+	 */
+	public Double getTotalStandardDeviation() {
+		return facts.totalStandardDeviation;
+	}
+
+	/**
+	 * Get the minimum value for Numeric, Boolean and String types across the entire data stream (if known).
+	 * Use {@link #getMinValue() getMinValue()} for the equivalent on the sample set.
+	 * @return The minimum value as a String (null if not known).
+	 */
+	public String getTotalMinValue() {
+		return facts.totalMinValue;
+	}
+
+	/**
+	 * Get the maximum value for Numeric, Boolean and String across the entire data stream (if known).
+	 * Use {@link #getMaxValue() getMaxValue()} for the equivalent on the sample set.
+	 * @return The maximum value as a String (null if not known).
+	 */
+	public String getTotalMaxValue() {
+		return facts.totalMaxValue;
+	}
+
+	/**
+	 * Get the minimum length for Numeric, Boolean and String across the entire data stream (if known).
+	 * Note: For String and Boolean types this length includes any whitespace.
+	 * Use {@link #getMinLength() getMinLength()} for the equivalent on the sample set.
+	 * @return The minimum length in the entire Data Stream (-1 if not known).
+	 */
+	public int getTotalMinLength() {
+		return facts.totalMinLength;
+	}
+
+	/**
+	 * Get the maximum length for Numeric, Boolean and String across the entire data stream (if known).
+	 * Note: For String and Boolean types this length includes any whitespace.
+	 * Use {@link #getMaxLength() getMaxLength()} for the equivalent on the sample set.
+	 * @return The maximum length in the entire Data Stream (-1 if not known).
+	 */
+	public int getTotalMaxLength() {
+		return facts.totalMaxLength;
 	}
 
 	/**
@@ -422,8 +497,8 @@ public class TextAnalysisResult {
 
 	/**
 	 * Return the distinct number of valid values in this stream.
-	 * Note: Typically only supported if the cardinality presented is less than Max Cardinality.  Can be set
-	 * by an external source.
+	 * Note: Typically only supported if the cardinality presented is less than Max Cardinality.
+	 * May be set by an external source.
 	 * @return A long with the number of distinct values in this stream or -1 if unknown.
 	 */
 	public long getDistinctCount() {
@@ -675,6 +750,24 @@ public class TextAnalysisResult {
 		analysis.put("leadingWhiteSpace", getLeadingWhiteSpace());
 		analysis.put("trailingWhiteSpace", getTrailingWhiteSpace());
 		analysis.put("multiline", getMultiline());
+
+		// If an external source has set totalCount and it differs from sampleCount then
+		// output all the total* attributes (which will presumably also have been set by the external source).
+		// We assume that if we have seen all the records - then the truth is as defined by FTA.
+		if (facts.totalCount != -1 && facts.totalCount != facts.sampleCount) {
+			analysis.put("totalNullCount", facts.totalNullCount);
+			analysis.put("totalBlankCount", facts.totalBlankCount);
+			if (facts.totalMean != null)
+				analysis.put("toalMean", facts.totalMean);
+			if (facts.totalStandardDeviation != null)
+				analysis.put("totalStandardDeviation", facts.totalStandardDeviation);
+			if (facts.totalMinValue != null)
+				analysis.put("totalMin", facts.totalMinValue);
+			if (facts.totalMaxValue != null)
+				analysis.put("totalMax", facts.totalMaxValue);
+			analysis.put("totalMinLength", facts.totalMinLength);
+			analysis.put("totalMaxLength", facts.totalMaxLength);
+		}
 
 		if (facts.matchPatternInfo.isDateType())
 			analysis.put("dateResolutionMode", getDateResolutionMode().toString());

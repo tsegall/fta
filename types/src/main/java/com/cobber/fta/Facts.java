@@ -134,8 +134,6 @@ public class Facts {
 	public long sampleCount;
 	/** The number of samples that match the patternInfo. */
 	public long matchCount;
-	/** The total number of samples in the stream (typically -1 to indicate unknown). */
-	public long totalCount = -1;
 	/** The number of nulls seen in the sample set. */
 	public long nullCount;
 	/** The number of blanks seen in the sample set. */
@@ -160,6 +158,25 @@ public class Facts {
 	public Set<String> topK;
 	/** The bottom 10  values. */
 	public Set<String> bottomK;
+
+	/** The total number of samples in the stream (typically -1 to indicate unknown). */
+	public long totalCount = -1;
+	/** The number of null elements in the entire data stream (-1 unless set explicitly). */
+	public long totalNullCount = -1;
+	/** totalBlankCount - The number of blank elements in the entire data stream (-1 unless set explicitly). */
+	public long totalBlankCount = -1;
+	/** totalMean - The mean for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
+	public Double totalMean;
+	/** totalStandardDeviation - The standard deviation for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
+	public Double totalStandardDeviation;
+	/** totalMinValue - The minimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly). */
+	public String totalMinValue;
+	/** totalMaxValue - The manimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly). */
+	public String totalMaxValue;
+	/** totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
+	public int totalMinLength = -1;
+	/** totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
+	public int totalMaxLength = -1;
 
 	public String streamFormat;
 
@@ -584,7 +601,12 @@ public class Facts {
 				&& monotonicDecreasing == other.monotonicDecreasing && monotonicIncreasing == other.monotonicIncreasing
 				&& multiline == other.multiline && nullCount == other.nullCount
 				&& Objects.equals(outliers, other.outliers) && sampleCount == other.sampleCount
-				&& totalCount == other.totalCount && trailingWhiteSpace == other.trailingWhiteSpace
+				&& trailingWhiteSpace == other.trailingWhiteSpace
+				&& totalCount == other.totalCount
+				&& totalNullCount == other.totalNullCount && totalBlankCount == other.totalBlankCount
+				&& totalMean == other.totalMean && totalStandardDeviation == other.totalStandardDeviation
+				&& totalMinValue == other.totalMinValue && totalMaxValue == other.totalMaxValue
+				&& totalMinLength == other.totalMinLength && totalMaxLength == other.totalMaxLength
 				&& Objects.equals(uniqueness, other.uniqueness)
 				&& Objects.equals(distinctCount, other.distinctCount)
 				&& Objects.equals(streamFormat, other.streamFormat)
