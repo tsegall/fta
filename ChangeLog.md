@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 9.1.0
+
+ - INT: No change - other than bumping the version number.
+
 ### 9.0.21
  - ENH: if totalCount is set (i.e. != -1) then output the total* fields.
 
