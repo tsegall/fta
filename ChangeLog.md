@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 9.0.21
+ - ENH: if totalCount is set (i.e. != -1) then output the total* fields.
+
 ### 9.0.20
  - ENH: Add support for Totals (i.e. the ability to set BlankCount, NullCount, Min/Max Value, Min/Max Length, Mean/SD for the entire set)
 
