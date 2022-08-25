@@ -200,9 +200,9 @@ The following fields are *not* calculated by FTA (but may be set on the Analyzer
  * totalMean - The mean for Numeric types (Long, Double) across the entire data stream (null unless set explicitly).
  * totalStandardDeviation - The standard deviation for Numeric types (Long, Double) across the entire data stream (null unless set explicitly).
  * totalMinValue - The minimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
- * totalMaxValue - The manimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
- * totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
- * totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
+ * totalMaxValue - The maximum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
+ * totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly).
+ * totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly).
 
 Note 1: The value of the typeQualifier is dependent on the Base Type as follows:
  * Boolean - options are "TRUE_FALSE", "YES_NO", "ONE_ZERO"

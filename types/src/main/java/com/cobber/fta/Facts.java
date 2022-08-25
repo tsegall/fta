@@ -161,14 +161,22 @@ public class Facts {
 
 	/** The total number of samples in the stream (typically -1 to indicate unknown). */
 	public long totalCount = -1;
+	/** The number of null elements in the entire data stream (-1 unless set explicitly). */
 	public long totalNullCount = -1;
+	/** totalBlankCount - The number of blank elements in the entire data stream (-1 unless set explicitly). */
 	public long totalBlankCount = -1;
+	/** totalMean - The mean for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
 	public Double totalMean;
+	/** totalStandardDeviation - The standard deviation for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
 	public Double totalStandardDeviation;
+	/** totalMinValue - The minimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly). */
 	public String totalMinValue;
+	/** totalMaxValue - The manimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly). */
 	public String totalMaxValue;
-	public int totalMinLength;
-	public int totalMaxLength;
+	/** totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
+	public int totalMinLength = -1;
+	/** totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
+	public int totalMaxLength = -1;
 
 	public String streamFormat;
 
