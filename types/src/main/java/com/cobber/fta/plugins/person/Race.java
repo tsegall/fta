@@ -39,20 +39,20 @@ import com.cobber.fta.token.TokenStreams;
 public class Race extends LogicalTypeInfinite {
 	private static Set<String> keywordsHash;
 
-	private static final String[] raceWords = {
-			"ABORIGINAL", "AFRICAN", "AMERICAN", "ARAB", "ASIAN", "ASIATIC", "BAME", "BLACK", "CARIBBEAN", "CAUCASIAN", "CHINESE",
-			"FILIPINO", "HAWAIIAN", "HISPANIC", "INDIAN", "INUIT", "JAPANESE", "KOREAN", "LATINO", "LATINX", "METIS", "MIDDLE EASTERN",
-			"NATIVE", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "VIETNAMESE", "WHITE",
+	private static final String[] raceWordsEN = {
+			"ABORIGINAL", "AFRICAN", "AMERICAN", "ANGLO", "ARAB", "ASIAN", "ASIATIC", "BAME", "BLACK", "BLK", "CARIBBEAN", "CAUCASIAN", "CHINESE",
+			"FILIPINO", "HAWAIIAN", "HISP", "HISPANIC", "INDIAN", "INUIT", "JAPANESE", "KOREAN", "LATINO", "LATINX", "METIS", "MIDDLE EASTERN",
+			"NATIVE", "NON-HISPANIC", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "VIETNAMESE", "WHITE", "WHT",
 
-			"N/A", "NA", "OTHER", "UNK", "UNKNOWN"
+			"N/A", "NA", "OTHER", "OTH", "UNK", "UNANSWERED", "UNKNOWN"
 	};
 
 	static {
 		keywordsHash = new HashSet<>();
-		keywordsHash.addAll(Arrays.asList(raceWords));
+		keywordsHash.addAll(Arrays.asList(raceWordsEN));
 	}
 
-	private String regExp = "[\\p{IsAlphabetic} /]+";
+	private String regExp = "[-\\p{IsAlphabetic} /]+";
 	private final Set<String> rejected = new HashSet<>();
 
 	/**
@@ -72,7 +72,7 @@ public class Race extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return raceWords[random.nextInt(raceWords.length)];
+		return raceWordsEN[random.nextInt(raceWordsEN.length)];
 	}
 
 	@Override

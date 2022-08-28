@@ -3,6 +3,7 @@
 
 ### 10.0.0
  - *** Plugin definition has changed with 10.0 (getConfidence() now receives the full context, not just the StreamName)
+ - *** BUG: Changed PERSON.RACE to PERSON.RACE_EN (not backward compatible)
  - ENH: Add new Semantic Type - LANGUAGE.ISO-639-1 - three letter country code
  - ENH: Add new Semantic Type - NAME.SUFFIX - Name Suffix (e.g. I, II, JR., ...)
  - ENH: Add new Semantic Type - COLOR.TEXT_EN - Color Name
@@ -15,6 +16,11 @@
  - ENH: Improve Street Address detection
  - ENH: Improve Company Name detection
  - ENH: Improve Person Age detection
+ - ENH: Improve Person Race detection
+ - ENH: Improve Person Gender detection
+ - ENG: Improve NAME.SUFFIX detection
+ - ENH: Bump slf4j (2.0.0) and logback-classic (1.4.0)
+ - BUG: Should have cleansed and trimmed input before checking it in isValid()
 
 ### 9.1.1
  - BUG: Don't output totalNullCount, totalBlankCount, totalMinLength, totalMaxLength if they are unset

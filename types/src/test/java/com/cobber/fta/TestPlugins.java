@@ -622,8 +622,8 @@ public class TestPlugins {
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "PERSON.RACE");
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("PERSON.RACE").signature);
+		assertEquals(result.getTypeQualifier(), "PERSON.RACE_EN");
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("PERSON.RACE_EN").signature);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getOutlierCount(), 0);
 

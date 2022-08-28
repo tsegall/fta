@@ -55,7 +55,7 @@ public class PluginMatchEntry {
 
 	public boolean matches(String regExp) {
 		for (final String re : getRegExpsToMatch()) {
-			if (regExp.equals(re))
+			if (".+".equals(re) || regExp.equals(re))
 				return true;
 		}
 

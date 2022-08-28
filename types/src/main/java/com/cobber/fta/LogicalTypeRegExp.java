@@ -25,6 +25,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 import nl.flotsam.xeger.Xeger;
@@ -163,7 +164,7 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	@Override
 	public boolean isValid(final String input) {
-		if (!getPattern().matcher(input).matches())
+		if (!getPattern().matcher(Utils.cleanse(input.trim())).matches())
 			return false;
 
 		if (defn.minimum != null || defn.maximum != null)
@@ -250,7 +251,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	 * Test if the Regular Expression is in the current MatchEntry if we have already decided
 	 * which one we match or in all the entries if no decision made yet.  Note: if we had not already
 	 * decided which entry - then it will be set as a side-effect if the Regular Expression is found.
-	 * @param regExp The Regular expression we are search for
+	 * @param regExp The Regular expression we are searching for
 	 * @return True if the Regular Expression matches the current Match Entry
 	 */
 	public boolean isMatch(final String regExp) {
