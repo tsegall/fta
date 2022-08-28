@@ -466,10 +466,10 @@
 		"priority": 83
 	},
 	{
-		"qualifier" : "PERSON.RACE",
+		"qualifier" : "PERSON.RACE_EN",
 		"description": "Race/Ethinicity (person)",
 		"pluginType": "java",
-		"signature": "V748loqJ6KsRRAedrRrKDsDpxV4=",
+		"signature": "20Jx6q02Vkew5xiX87Cnvi2EVf4=",
 		"clazz": "com.cobber.fta.plugins.person.Race",
 		"validLocales": [
 			{
@@ -1590,7 +1590,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": "(?i)(suffix|.*[_ ]suffix)", "confidence": 99, "mandatory": true } ]
+				"headerRegExps": [ { "regExp": "(?i)(suffix|.*[_ ]suffix)", "confidence": 99 }, { "regExp": "(?i).*suffix", "confidence": 85 } ]
 			}
 		],
 		"content": "/reference/en_name_suffix.csv",
@@ -1828,7 +1828,7 @@
 				"headerRegExps": [ { "regExp": "^(?i)(company|company.name|business.name)$", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
-					"regExpReturned": "[-/()',& \\.\\p{IsAlphabetic}\\d]*",
+					"regExpReturned": "[-/()',&# \\.\\p{IsAlphabetic}\\d]*",
 					"isRegExpComplete": false
 				} ]
 			}

@@ -27,7 +27,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/dk.brics.automaton/automaton
 		     library('automaton', 'dk.brics:automaton:1.12-4')
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-		     library('slf4jAPI', 'org.slf4j:slf4j-api:1.7.36')
+		     library('slf4jAPI', 'org.slf4j:slf4j-api:2.0.0')
 // https://mvnrepository.com/artifact/com.google.guava/guava
 		     library('guava', 'com.google.guava:guava:31.1-jre')
 		}
@@ -35,7 +35,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/org.testng/testng
 			 library('testng', 'org.testng:testng:7.5')
 // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-			 library('logbackClassic', 'ch.qos.logback:logback-classic:1.2.11')
+			 library('logbackClassic', 'ch.qos.logback:logback-classic:1.4.0')
 		}
 	}
 }
