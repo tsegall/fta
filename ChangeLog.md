@@ -27,6 +27,7 @@
 
 ### 9.0.20
  - ENH: Add support for Totals (i.e. the ability to set BlankCount, NullCount, Min/Max Value, Min/Max Length, Mean/SD for the entire set)
+
 ### 9.0.19
  - BUG: fta-core should have been declared as an API (not implementation) dependency of fta
 

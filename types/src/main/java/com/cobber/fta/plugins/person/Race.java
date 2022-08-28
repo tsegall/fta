@@ -39,10 +39,11 @@ import com.cobber.fta.token.TokenStreams;
 public class Race extends LogicalTypeInfinite {
 	private static Set<String> keywordsHash;
 
-	private static final String[] raceWordsEN = {
+	private static final String[] raceWords = {
 			"ABORIGINAL", "AFRICAN", "AMERICAN", "ANGLO", "ARAB", "ASIAN", "ASIATIC", "BAME", "BLACK", "BLK", "CARIBBEAN", "CAUCASIAN", "CHINESE",
 			"FILIPINO", "HAWAIIAN", "HISP", "HISPANIC", "INDIAN", "INUIT", "JAPANESE", "KOREAN", "LATINO", "LATINX", "METIS", "MIDDLE EASTERN",
 			"NATIVE", "NON-HISPANIC", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "VIETNAMESE", "WHITE", "WHT",
+			"NATIVE", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "VIETNAMESE", "WHITE",
 
 			"N/A", "NA", "OTHER", "OTH", "UNK", "UNANSWERED", "UNKNOWN"
 	};
