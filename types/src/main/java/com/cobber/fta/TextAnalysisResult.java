@@ -754,8 +754,10 @@ public class TextAnalysisResult {
 		// If an external source has set totalCount then output all the total* attributes (which
 		// will presumably also have been set by the external source).
 		if (facts.totalCount != -1) {
-			analysis.put("totalNullCount", facts.totalNullCount);
-			analysis.put("totalBlankCount", facts.totalBlankCount);
+			if (facts.totalNullCount != -1)
+				analysis.put("totalNullCount", facts.totalNullCount);
+			if (facts.totalBlankCount != -1)
+				analysis.put("totalBlankCount", facts.totalBlankCount);
 			if (facts.totalMean != null)
 				analysis.put("toalMean", facts.totalMean);
 			if (facts.totalStandardDeviation != null)
@@ -764,8 +766,10 @@ public class TextAnalysisResult {
 				analysis.put("totalMin", facts.totalMinValue);
 			if (facts.totalMaxValue != null)
 				analysis.put("totalMax", facts.totalMaxValue);
-			analysis.put("totalMinLength", facts.totalMinLength);
-			analysis.put("totalMaxLength", facts.totalMaxLength);
+			if (facts.totalMinLength != -1)
+				analysis.put("totalMinLength", facts.totalMinLength);
+			if (facts.totalMaxLength != -1)
+				analysis.put("totalMaxLength", facts.totalMaxLength);
 		}
 
 		if (facts.matchPatternInfo.isDateType())

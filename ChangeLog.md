@@ -1,8 +1,10 @@
 
 ## Changes ##
 
-### 9.1.0
+### 9.1.1
+ - BUG: Don't output totalNullCount, totalBlankCount, totalMinLength, totalMaxLength if they are unset
 
+### 9.1.0
  - INT: No change - other than bumping the version number.
 
 ### 9.0.21
