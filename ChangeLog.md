@@ -11,16 +11,19 @@
  - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.MUNICIPALITY_CO - Colombian Municipality
  - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.DEPARTMENT_CO - Colombian Department
  - ENH: I18N - Add new Semantic Type - POSTAL_CODE.POSTAL_CODE_CO - Colombian Postal Code
- - ENH: Should add a wrapper task to indicate the version of Gradle required
+ - ENH: Add a wrapper task to indicate the version of Gradle required (Issue #11)
+ - ENH: Add ability to create Normalized file to capture both words with and without diacritical marks
  - ENH: Improve MiddleName/MiddleInitial detection
  - ENH: Improve Street Address detection
  - ENH: Improve Company Name detection
  - ENH: Improve Person Age detection
  - ENH: Improve Person Race detection
  - ENH: Improve Person Gender detection
- - ENG: Improve NAME.SUFFIX detection
+ - ENH: Improve NAME.SUFFIX detection
+ - ENH: Add support for pluginOptions
  - ENH: Bump slf4j (2.0.0) and logback-classic (1.4.0)
  - BUG: Should have cleansed and trimmed input before checking it in isValid()
+ - BUG: Samples returned by VAT routines were typically not Vlaid
 
 ### 9.1.1
  - BUG: Don't output totalNullCount, totalBlankCount, totalMinLength, totalMaxLength if they are unset
@@ -34,7 +37,6 @@
 ### 9.0.20
  - ENH: Add support for Totals (i.e. the ability to set BlankCount, NullCount, Min/Max Value, Min/Max Length, Mean/SD for the entire set)
 
->>>>>>> efdc3b8 (10.0 - first cut)
 ### 9.0.19
  - BUG: fta-core should have been declared as an API (not implementation) dependency of fta
 
