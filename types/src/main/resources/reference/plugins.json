@@ -1828,7 +1828,7 @@
 				"headerRegExps": [ { "regExp": "^(?i)(company|company.name|business.name)$", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
-					"regExpReturned": "[-/()',&# \\.\\p{IsAlphabetic}\\d]*",
+					"regExpReturned": "[-:/()',&# \\.\\p{IsAlphabetic}\\d]*",
 					"isRegExpComplete": false
 				} ]
 			}
