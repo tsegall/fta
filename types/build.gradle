@@ -20,6 +20,7 @@ dependencies {
 	implementation libs.slf4jAPI
 	implementation libs.guava
 
+	testImplementation libs.logbackClassic
+
 	testImplementation testLibs.testng
-	testImplementation testLibs.logbackClassic
 }

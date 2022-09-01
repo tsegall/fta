@@ -29,6 +29,7 @@ dependencies {
 	implementation libs.jacksonDataBind
 	implementation libs.guava
 
+	implementation libs.logbackClassic
+
 	testImplementation testLibs.testng
-	testImplementation testLibs.logbackClassic
 }

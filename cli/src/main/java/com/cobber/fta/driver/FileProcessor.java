@@ -33,6 +33,7 @@ import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
+import com.univocity.parsers.common.TextParsingException;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
@@ -159,7 +160,10 @@ class FileProcessor {
 	}
 
 	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException {
-		final long start = System.currentTimeMillis();
+		final long startTime = System.currentTimeMillis();
+		long initializedTime = -1;
+		long consumedTime = -1;
+		long resultsTime = -1;
 		Processor processor = null;
 		String[] header = null;
 		int numFields = 0;
@@ -192,6 +196,7 @@ class FileProcessor {
 			}
 
 			processor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
+			initializedTime = System.currentTimeMillis();
 
 			String[] row;
 
@@ -208,9 +213,14 @@ class FileProcessor {
 					break;
 				}
 			}
+			consumedTime = System.currentTimeMillis();
 		}
 		catch (FileNotFoundException e) {
 			logger.printf("ERROR: Filename '%s' not found.%n", filename);
+			System.exit(1);
+		}
+		catch (TextParsingException|java.lang.ArrayIndexOutOfBoundsException e) {
+			logger.printf("ERROR: Filename '%s' Univocity exception. %s%n", filename, e.getMessage());
 			System.exit(1);
 		}
 
@@ -301,12 +311,13 @@ class FileProcessor {
 				}
 			}
 		}
+		resultsTime = System.currentTimeMillis();
 
 		analyzeRecord(processor.getAnalyzers());
 
 	    final Runtime instance = Runtime.getRuntime();
 		final double usedMemory = (instance.totalMemory() - instance.freeMemory()) / (1024 * 1024);
-		final long duration = System.currentTimeMillis() - start;
+		final long durationTime = System.currentTimeMillis() - startTime;
 		if (options.col == -1) {
 			final double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;
 			logger.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d, Used Memory: %.2f.%n",
@@ -318,7 +329,8 @@ class FileProcessor {
 					(typesDetected == 1 ? "yes" : "no"), matchCount,
 					sampleCount, confidence*100, usedMemory);
 		}
-		logger.printf("Execution time: %dms%n", duration);
+		logger.printf("Execution time (#fields: %d, #records: %d): initialization: %dms, consumption: %dms, results: %dms, total: %dms%n",
+				numFields, thisRecord, initializedTime - startTime, consumedTime - initializedTime, resultsTime - consumedTime, durationTime);
 	}
 
 	// HONORIFIC_EN, NAME.FIRST, NAME.LAST, NAME.MIDDLE -> FULL_NAME [PERSON]

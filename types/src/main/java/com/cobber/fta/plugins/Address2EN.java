@@ -20,11 +20,10 @@ import java.util.Map;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
-import com.cobber.fta.LogicalType;
-import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.PluginLocaleEntry;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
@@ -36,7 +35,7 @@ public class Address2EN extends LogicalTypeInfinite {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "STREET_ADDRESS2_EN";
 
-	private LogicalType logicalAddressLine1;
+	private PluginLocaleEntry addressLine1Entry;
 
 	/**
 	 * Construct a plugin to detect the second line of an Address based on the Plugin Definition.
@@ -64,9 +63,7 @@ public class Address2EN extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		final PluginDefinition pluginAddress = PluginDefinition.findByQualifier("STREET_ADDRESS_EN");
-
-		logicalAddressLine1 = LogicalTypeFactory.newInstance(pluginAddress, analysisConfig);
+		addressLine1Entry = PluginDefinition.findByQualifier("STREET_ADDRESS_EN").getLocaleEntry(locale);
 
 		return true;
 	}
@@ -111,7 +108,7 @@ public class Address2EN extends LogicalTypeInfinite {
 
 		// If we don't like the header, or we have no header context or this is better header for an Address Line 1 than an Address Line 2 then bail
 		if (headerConfidence < 95 || context.getCompositeStreamNames() == null || context.getCompositeStreamNames().length < 2 ||
-				logicalAddressLine1.getHeaderConfidence(dataStreamName) > headerConfidence)
+				addressLine1Entry.getHeaderConfidence(dataStreamName) > headerConfidence)
 			return 0.0;
 
 		// We really don't want to classify Line 1/Line 3 of an address as a Line 2
@@ -131,7 +128,7 @@ public class Address2EN extends LogicalTypeInfinite {
 		}
 
 		// Does the previous field look like an Address Line 1?
-		if (current == 0 || logicalAddressLine1.getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) < 90)
+		if (current == 0 || addressLine1Entry.getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) < 90)
 			return 0.0;
 
 		// If all the samples match and the header looks perfect then we are in great shape

@@ -581,7 +581,7 @@
 		"validLocales": [
 			{
 				"localeTag":  "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(quarter|qtr).*", "confidence": 99 } ]
+				"headerRegExps": [ { "regExp": ".*(?i)(quarter|qtr).*", "confidence": 99, "mandatory": true } ]
 			} ],
 		"priority": 104
 	},
@@ -2055,47 +2055,36 @@
 	{
 		"qualifier": "MONTH.DIGITS",
 		"description": "Numeric Month",
-		"pluginType": "regex",
+		"pluginType": "java",
 		"signature": "dFlMU1F4av5mccH3zIeKaRe67SY=",
+		"clazz": "com.cobber.fta.plugins.MonthDigits",
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(month)|(i?)(month).*", "confidence": 99, "mandatory": true } ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d{1,2}" ],
-					"regExpReturned": "[1-9]|0[1-9]|1[012]",
-					"isRegExpComplete": true
-				} ]
+				"headerRegExps": [ { "regExp": ".*(?i)(month)|(i?)(month).*", "confidence": 99, "mandatory": true } ]
 			}
 		],
 		"threshold": 98,
 		"baseType": "LONG",
-		"minimum": "1",
-		"maximum": "12",
 		"priority": 270
 	},
 	{
 		"qualifier": "DAY.DIGITS",
 		"description": "Numeric Day of Month",
-		"pluginType": "regex",
+		"pluginType": "java",
 		"signature": "1C6IAjixbGXDfrkL4dEndXg65BQ=",
+		"clazz": "com.cobber.fta.plugins.DayDigits",
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(day|cycle).*", "confidence": 99, "mandatory": true } ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d{1,2}" ],
-					"regExpReturned": "[1-9]|0[1-9]|[12]\\d|3[01]",
-					"isRegExpComplete": true
-				} ]
+				"headerRegExps": [
+					{ "regExp": "(?i)day", "confidence": 99, "mandatory": true },
+					{ "regExp": ".*(?i)(day|cycle).*", "confidence": 90, "mandatory": true }
+				]
 			}
 		],
 		"threshold": 98,
 		"baseType": "LONG",
-		"minimum": "1",
-		"maximum": "31",
-		"minSamples": 1000,
-		"minMaxPresent": true,
 		"priority": 271
 	},
 	{

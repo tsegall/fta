@@ -572,9 +572,10 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 		ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("UTC"));
 		String formattedString = zonedDateTime.format(dateFormatter);
-		System.err.println(formattedString);
+		assertEquals(formattedString.charAt(formattedString.length()-1), 'Z');
 
 		LocalDate roundTrip = LocalDate.parse("2022-07-06Z", dateFormatter);
+		assertEquals(roundTrip.getDayOfMonth(), 6);
 
 		final DateTimeParser det = new DateTimeParser().withLocale(Locale.forLanguageTag("nl-NL"));
 		final String[] inputs = {
@@ -1134,10 +1135,11 @@ public class DetermineDateTimeFormatTests {
 		}
 	}
 
-	//@Test(groups = { TestGroups.ALL, TestGroups.DATETIME }) FIX
+//	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicAMPM_viVN() {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
 		final DateTimeParser dtp = new DateTimeParser();
+		dtp.withLocale(locale);
 
 		assertEquals(dtp.determineFormatString("09/thg 3/17 3:14 SA"), "dd/MMM/yy h:mm a");
 

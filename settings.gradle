@@ -5,37 +5,37 @@ include 'cli'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-		     version('fta', '10.0.0')
-		     version('jacoco', '0.8.8')
+			version('fta', '10.0.0')
+			version('jacoco', '0.8.8')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
-		     library('univocity', 'com.univocity:univocity-parsers:2.9.1')
+			library('univocity', 'com.univocity:univocity-parsers:2.9.1')
 // https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail
-		     library('javaxMailAPI', 'com.sun.mail:jakarta.mail:2.0.1')
+			library('javaxMailAPI', 'com.sun.mail:jakarta.mail:2.0.1')
 // https://mvnrepository.com/artifact/commons-validator/commons-validator
-		     library('commonsValidator', 'commons-validator:commons-validator:1.7')
+			library('commonsValidator', 'commons-validator:commons-validator:1.7')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-		     library('jacksonDataBind', 'com.fasterxml.jackson.core:jackson-databind:2.13.3')
+			library('jacksonDataBind', 'com.fasterxml.jackson.core:jackson-databind:2.13.3')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
-		     library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3')
+			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3')
 // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-		     library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.12.54')
+			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.12.54')
 // https://mvnrepository.com/artifact/org.apache.commons/commons-text
-		     library('commonsText', 'org.apache.commons:commons-text:1.9')
+			library('commonsText', 'org.apache.commons:commons-text:1.9')
 // https://mvnrepository.com/artifact/com.github.krraghavan/xeger
-		     library('xeger', 'com.github.krraghavan:xeger:1.0.0-RELEASE')
+			library('xeger', 'com.github.krraghavan:xeger:1.0.0-RELEASE')
 // https://mvnrepository.com/artifact/dk.brics.automaton/automaton
-		     library('automaton', 'dk.brics:automaton:1.12-4')
+			library('automaton', 'dk.brics:automaton:1.12-4')
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-		     library('slf4jAPI', 'org.slf4j:slf4j-api:2.0.0')
+			library('slf4jAPI', 'org.slf4j:slf4j-api:2.0.0')
 // https://mvnrepository.com/artifact/com.google.guava/guava
-		     library('guava', 'com.google.guava:guava:31.1-jre')
+			library('guava', 'com.google.guava:guava:31.1-jre')
+// https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+			library('logbackClassic', 'ch.qos.logback:logback-classic:1.4.0')
 		}
 		testLibs {
 // https://mvnrepository.com/artifact/org.testng/testng
-			 library('testng', 'org.testng:testng:7.5')
-// https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-			 library('logbackClassic', 'ch.qos.logback:logback-classic:1.4.0')
+			library('testng', 'org.testng:testng:7.5')
 		}
 	}
 }

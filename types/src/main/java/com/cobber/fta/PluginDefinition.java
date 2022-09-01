@@ -153,11 +153,16 @@ public class PluginDefinition {
 		if (localeEntry.headerRegExps == null)
 			return false;
 
-		for (final HeaderEntry entry : localeEntry.headerRegExps)
-			if (entry.mandatory && !entry.matches(streamName))
-				return true;
+		// If there are any mandatory entries - then they are effectively all mandatory (and one must be present)
+		boolean mandatory = false;
+		for (final HeaderEntry entry : localeEntry.headerRegExps) {
+			if (entry.mandatory)
+				mandatory = true;
+			if (entry.matches(streamName))
+				return false;
+		}
 
-		return false;
+		return mandatory;
 
 	}
 

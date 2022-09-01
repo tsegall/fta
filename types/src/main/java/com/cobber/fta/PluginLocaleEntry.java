@@ -114,6 +114,21 @@ public class PluginLocaleEntry {
 		return ret;
 	}
 
+	/**
+	 * Determine the confidence that the name of the data stream is likely a valid header for this PluginLocaleEntry.
+	 * @param dataStreamName The name of this data stream
+	 * @return An integer between 0 and 100 reflecting the confidence that this stream name is a valid header.
+	 */
+	public int getHeaderConfidence(final String dataStreamName) {
+		if (headerRegExps != null)
+			for (final HeaderEntry headerEntry : headerRegExps) {
+				if (headerEntry.matches(dataStreamName))
+					return headerEntry.confidence;
+			}
+
+		return 0;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder ret = new StringBuilder();

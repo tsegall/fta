@@ -97,7 +97,9 @@ class DriverOptions {
 						System.err.println("ERROR: Failed to read Logical Types file: " + this.logicalTypes);
 						System.exit(1);
 					}
-					analyzer.getPlugins().registerPlugins(new FileReader(this.logicalTypes), analyzer.getStreamName(), analyzer.getConfig());
+					try (FileReader logicalTypes = new FileReader(this.logicalTypes)) {
+						analyzer.getPlugins().registerPlugins(logicalTypes, analyzer.getStreamName(), analyzer.getConfig());
+					}
 				}
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
 					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | FTAPluginException e) {

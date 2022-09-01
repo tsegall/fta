@@ -5,7 +5,8 @@ jar {
 dependencies {
 	implementation libs.jacksonDataBind
 
+	testImplementation libs.logbackClassic
+
 	testImplementation testLibs.testng
-	testImplementation testLibs.logbackClassic
 }
 
