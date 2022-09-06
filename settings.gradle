@@ -15,9 +15,9 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/commons-validator/commons-validator
 			library('commonsValidator', 'commons-validator:commons-validator:1.7')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-			library('jacksonDataBind', 'com.fasterxml.jackson.core:jackson-databind:2.13.3')
+			library('jacksonDataBind', 'com.fasterxml.jackson.core:jackson-databind:2.13.4')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
-			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3')
+			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4')
 // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
 			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.12.54')
 // https://mvnrepository.com/artifact/org.apache.commons/commons-text

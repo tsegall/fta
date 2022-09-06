@@ -537,6 +537,21 @@
 		"priority": 91
 	},
 	{
+		"qualifier": "COUNTRY.TEXT_ES",
+		"description": "Country as a string (Spanish)",
+		"pluginType": "list",
+		"signature": "",
+		"clazz": "com.cobber.fta.plugins.CountryES",
+		"validLocales": [
+			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(pais).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/es_countries.csv",
+		"contentType": "resource",
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 92
+	},
+	{
 		"qualifier": "MONTH.ABBR_<LOCALE>",
 		"description": "Month Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"pluginType": "java",
@@ -1819,13 +1834,13 @@
 	},
 	{
 		"qualifier": "COMPANY_NAME",
-		"description": "Company Name",
+		"description": "Organization/Company Name",
 		"pluginType": "regex",
 		"signature": "gTynrjgOpvdzfWdVMRddP2Ksv8k=",
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": "^(?i)(company|company.name|business.name)$", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": "^(?i)(company|company.?name|business.?name|organization.?name)$", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 					"regExpReturned": "[-:/()',&# \\.\\p{IsAlphabetic}\\d]*",
