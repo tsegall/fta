@@ -540,7 +540,7 @@
 		"qualifier": "COUNTRY.TEXT_ES",
 		"description": "Country as a string (Spanish)",
 		"pluginType": "list",
-		"signature": "",
+		"signature": "fot3XHPIh18wTcBDyeN3DlY7LYY=",
 		"clazz": "com.cobber.fta.plugins.CountryES",
 		"validLocales": [
 			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(pais).*", "confidence": 90 } ] }
