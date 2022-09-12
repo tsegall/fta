@@ -108,7 +108,7 @@ public class URLLT extends LogicalTypeInfinite {
 			index = 1;
 		}
 
-		final boolean ret = validator.isValid(input);
+		final boolean ret = validator.isValid(input.trim());
 		if (ret)
 			protocol[index]++;
 

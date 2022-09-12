@@ -1882,17 +1882,13 @@
 	{
 		"qualifier": "IDENTITY.EIN_US",
 		"description": "Employer Identification Number (US)",
-		"pluginType": "regex",
+		"pluginType": "java",
 		"signature": "XwD3tlpcRPsH1AXfYE5z7XPvrjA=",
+		"clazz": "com.cobber.fta.plugins.identity.EIN",
 		"validLocales": [
 			{
 				"localeTag": "en-US",
-				"headerRegExps": [ { "regExp": ".*(?i)(EIN).*", "confidence": 90 }, { "regExp": ".*(?i)(Employer).*", "confidence": 70 } ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ "\\d{2}-\\d{7}" ],
-					"regExpReturned": "(0[1-6]|1[0-6]|2[0-7]|3[0-9]|4[0-8]|5[0-9]|6[0-8]|7[1-7]|8[0-8]|9[01234589])-\\d{7}",
-					"isRegExpComplete": false
-				} ]
+				"headerRegExps": [ { "regExp": ".*(?i)(EIN).*", "confidence": 95 }, { "regExp": ".*(?i)(Tax|Employer).*", "confidence": 70 } ]
 			}
 		],
 		"threshold": 98,

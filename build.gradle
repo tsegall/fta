@@ -1,17 +1,9 @@
-apply plugin: "com.github.ben-manes.versions"
+plugins {
+	id "com.github.ben-manes.versions"
+}
 
 wrapper {
 	gradleVersion = '7.5.1'
-}
-
-buildscript {
-	repositories {
-		gradlePluginPortal()
-	}
-
-	dependencies {
-		classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
-	}
 }
 
 subprojects {

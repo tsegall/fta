@@ -7,6 +7,7 @@
  - ENH: Add new Semantic Type - LANGUAGE.ISO-639-1 - three letter country code
  - ENH: Add new Semantic Type - NAME.SUFFIX - Name Suffix (e.g. I, II, JR., ...)
  - ENH: Add new Semantic Type - COLOR.TEXT_EN - Color Name
+ - ENH: Reimplemnent EIN as a Java plugin
  - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.SUBURB_AU - Australian Suburb (generalize BloomFilter support)
  - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.MUNICIPALITY_CO - Colombian Municipality
  - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.DEPARTMENT_CO - Colombian Department
@@ -21,12 +22,15 @@
  - ENH: Improve Person Age detection
  - ENH: Improve Person Race detection
  - ENH: Improve Person Gender detection
+ - ENH: Improve english Country detection
  - ENH: Improve NAME.SUFFIX detection
  - ENH: Add support for pluginOptions
  - ENH: Bump slf4j (2.0.0) and logback-classic (1.4.0)
+ - ENH: Bump google phone number library
  - ENH: Bump jackson
  - BUG: Should have cleansed and trimmed input before checking it in isValid()
  - BUG: Samples returned by VAT routines were typically not Valid
+ - BUG: URL plugin was not trim()'ing input
 
 ### 9.1.1
  - BUG: Don't output totalNullCount, totalBlankCount, totalMinLength, totalMaxLength if they are unset
