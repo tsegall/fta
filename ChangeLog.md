@@ -2,8 +2,9 @@
 ## Changes ##
 
 ### 10.0.0
- - *** Plugin definition has changed with 10.0 (getConfidence() now receives the full context, not just the StreamName)
+ - *** ENH: New Feature.NULL_AS_TEXT is enabled by default ("Null" - will be treated as a NULL record)
  - *** BUG: Changed PERSON.RACE to PERSON.RACE_EN (not backward compatible)
+ - *** INT: Plugin definition has changed with 10.0 (getConfidence() now receives the full context, not just the StreamName)
  - ENH: Add new Semantic Type - LANGUAGE.ISO-639-1 - three letter country code
  - ENH: Add new Semantic Type - NAME.SUFFIX - Name Suffix (e.g. I, II, JR., ...)
  - ENH: Add new Semantic Type - COLOR.TEXT_EN - Color Name

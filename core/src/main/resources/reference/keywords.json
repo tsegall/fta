@@ -94,6 +94,15 @@
 		]
 	},
 	{
+		"keytag": "NO_DATA",
+		"keyType": "HEADER",
+		"validLocales": [
+			{ "localeTag": "*",
+				"headerRegExps": [ { "regExp": "(?i)(null|no data)", "confidence": 100 } ]
+			}
+		]
+	},
+	{
 		"keytag": "YES",
 		"keyType": "WORD",
 		"wordLocales": [

@@ -170,7 +170,9 @@ public class TextAnalyzer {
 		 * uses 'AUG.' for the month abbreviation, and similarly for the AM/PM string which are defined as A.M and P.M.
 		 * Feature is enabled by default.
 		 */
-		NO_ABBREVIATION_PUNCTUATION
+		NO_ABBREVIATION_PUNCTUATION,
+		/** Indicate whether we should treat "NULL" (and similar) as Null values. Feature is enabled by default. */
+		NULL_AS_TEXT
 	}
 
 	/**
@@ -1415,7 +1417,7 @@ public class TextAnalyzer {
 
 		final FTAType matchType = facts.matchPatternInfo != null ? facts.matchPatternInfo.getBaseType() : null;
 
-		if (rawInput == null) {
+		if (rawInput == null || (analysisConfig.isEnabled(TextAnalyzer.Feature.NULL_AS_TEXT) && keywords.match(rawInput, "NO_DATA", Keywords.MatchStyle.EQUALS) == 100)) {
 			facts.nullCount++;
 			return matchType != null;
 		}

@@ -91,6 +91,9 @@ public class AnalysisConfig {
 	 * similarly for the AM/PM string which are defined in Canada as A.M and P.M. */
 	private boolean noAbbreviationPunctuation = true;
 
+	/** Should we should treat "NULL" (and similar) as Null values. */
+	private boolean nullAsText = true;
+
 	public AnalysisConfig() {
 		this(Locale.getDefault());
 	}
@@ -115,6 +118,7 @@ public class AnalysisConfig {
 		this.formatDetection = other.formatDetection;
 		this.lengthQualifier = other.lengthQualifier;
 		this.noAbbreviationPunctuation = other.noAbbreviationPunctuation;
+		this.nullAsText = other.nullAsText;
 	}
 
 	/**
@@ -142,6 +146,9 @@ public class AnalysisConfig {
 		case NO_ABBREVIATION_PUNCTUATION:
 			noAbbreviationPunctuation = state;
 			break;
+		case NULL_AS_TEXT:
+			nullAsText = state;
+			break;
 		}
 	}
 
@@ -164,6 +171,8 @@ public class AnalysisConfig {
 			return lengthQualifier;
 		case NO_ABBREVIATION_PUNCTUATION:
 			return noAbbreviationPunctuation;
+		case NULL_AS_TEXT:
+			return nullAsText;
 		}
 		return false;
 	}
