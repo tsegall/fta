@@ -117,21 +117,16 @@ public class DayDigits extends LogicalTypeInfinite {
 		if (facts.maxLong <= 7)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		final int columns = context.getCompositeStreamNames().length;
-		// If we have no real context - then nothing we can really do
-		if (columns == 1)
-			return PluginAnalysis.SIMPLE_NOT_OK;
-
 		// Locate the current column
-		int myIndex = -1;
-		for (int i = 0; i < columns; i++)
-			if (streamName.equals(context.getCompositeStreamNames()[i]))
-				myIndex = i;
+		int current = context.getStreamIndex();
+		// If we have no real context - then nothing we can really do
+		if (current == -1)
+			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Check the previous column for either a day, month, or year to boost our confidence
 		// We check for day as some times month as a number is adjacent to day as a string
-		if (myIndex >= 1) {
-			String previousStreamName = context.getCompositeStreamNames()[myIndex - 1];
+		if (current >= 1) {
+			String previousStreamName = context.getCompositeStreamNames()[current - 1];
 			if (monthEntry.getHeaderConfidence(previousStreamName) >= 99)
 				return PluginAnalysis.OK;
 			if (keywords.match(previousStreamName, "YEAR", Keywords.MatchStyle.EQUALS) >= 90)
@@ -141,8 +136,8 @@ public class DayDigits extends LogicalTypeInfinite {
 		}
 
 		// Check the next column for either a day, month, or year to boost our confidence
-		if (myIndex < columns - 1) {
-			String nextStreamName = context.getCompositeStreamNames()[myIndex + 1];
+		if (current < context.getCompositeStreamNames().length - 1) {
+			String nextStreamName = context.getCompositeStreamNames()[current + 1];
 			if (monthEntry.getHeaderConfidence(nextStreamName) >= 99)
 				return PluginAnalysis.OK;
 			if (keywords.match(nextStreamName, "YEAR", Keywords.MatchStyle.EQUALS) >= 90)

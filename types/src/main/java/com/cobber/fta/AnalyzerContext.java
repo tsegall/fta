@@ -33,6 +33,8 @@ public class AnalyzerContext {
 	private String compositeName;
 	/** The name of all of the members of the composite (including this stream), for example the column names if we are processing a column of a table. */
 	private String[] compositeStreamNames;
+	/** The index of this stream name in the list of all field names - or -1 if it is not present (or no column names provided). */
+	private int streamIndex;
 
 	AnalyzerContext() {
 	}
@@ -41,11 +43,18 @@ public class AnalyzerContext {
 		this.streamName = streamName == null ? "anonymous" : streamName;
 		this.dateResolutionMode = dateResolutionMode == null ? DateResolutionMode.None : dateResolutionMode;
 		this.compositeName = compositeName;
-		if (compositeStreamNames == null)
+		if (compositeStreamNames == null) {
 			this.compositeStreamNames = null;
+			this.streamIndex = -1;
+		}
 		else {
 			this.compositeStreamNames = new String[compositeStreamNames.length];
 			System.arraycopy(compositeStreamNames, 0, this.compositeStreamNames, 0, compositeStreamNames.length);
+			for (int i = 0; i < getCompositeStreamNames().length; i++)
+				if (getStreamName().equals(getCompositeStreamNames()[i].trim())) {
+					this.streamIndex = i;
+					break;
+				}
 		}
 	}
 
@@ -55,6 +64,14 @@ public class AnalyzerContext {
 	 */
 	public String getStreamName() {
 		return streamName;
+	}
+
+	/**
+	 * Retrieve the index of the stream name from the list of all stream names.
+	 * @return The index of this data stream (or -1 if not found).
+	 */
+	public int getStreamIndex() {
+		return streamIndex;
 	}
 
 	/**

@@ -2,7 +2,7 @@
 ## Changes ##
 
 ### 10.0.0
- - *** ENH: New Feature.NULL_AS_TEXT is enabled by default ("Null" - will be treated as a NULL record)
+ - *** ENH: New Feature.NULL_AS_TEXT is enabled by default ("Null" (also No Data) - will be treated as a NULL record)
  - *** BUG: Changed PERSON.RACE to PERSON.RACE_EN (not backward compatible)
  - *** INT: Plugin definition has changed with 10.0 (getConfidence() now receives the full context, not just the StreamName)
  - ENH: Add new Semantic Type - LANGUAGE.ISO-639-1 - three letter country code
@@ -32,6 +32,7 @@
  - BUG: Should have cleansed and trimmed input before checking it in isValid()
  - BUG: Samples returned by VAT routines were typically not Valid
  - BUG: URL plugin was not trim()'ing input
+ - BUG: Fix bug in Address2 if stream name not found in list of all field names
 
 ### 9.1.1
  - BUG: Don't output totalNullCount, totalBlankCount, totalMinLength, totalMaxLength if they are unset

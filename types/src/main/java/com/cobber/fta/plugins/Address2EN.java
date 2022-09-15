@@ -118,17 +118,11 @@ public class Address2EN extends LogicalTypeInfinite {
 				return 0.0;
 		}
 
-		// Find the index of the of the current field
-		int current = -1;
-		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
-			if (context.getStreamName().equals(context.getCompositeStreamNames()[i])) {
-				current = i;
-				break;
-			}
-		}
+		// Get the index of the of the current field
+		int current = context.getStreamIndex();
 
-		// Does the previous field look like an Address Line 1?
-		if (current == 0 || addressLine1Entry.getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) < 90)
+		// Does the previous field exist and look like an Address Line 1?
+		if (current < 1 || addressLine1Entry.getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) < 90)
 			return 0.0;
 
 		// If all the samples match and the header looks perfect then we are in great shape

@@ -112,6 +112,9 @@ public class Keywords {
 	}
 
 	private boolean isMatch(final String validLocale) {
+		if ("*".equals(validLocale))
+			return true;
+
 		final String languageTag = locale.toLanguageTag();
 		final String language = locale.getLanguage();
 

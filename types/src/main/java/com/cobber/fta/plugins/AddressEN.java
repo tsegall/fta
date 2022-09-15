@@ -184,21 +184,9 @@ public class AddressEN extends LogicalTypeInfinite {
 		}
 
 		// If we have all the headers then we can check if this one is less likely to be the primary address field than the previous one
-		if (context.getCompositeStreamNames() != null) {
-			// Find the index of the of the current field
-			int current = -1;
-			for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
-				if (context.getStreamName().equals(context.getCompositeStreamNames()[i])) {
-					current = i;
-					break;
-				}
-			}
-
-			// Does the previous field look like it might be the real address field
-			if (current >= 1 &&
-					getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) > getHeaderConfidence(dataStreamName))
-				return 0.0;
-		}
+		int current = context.getStreamIndex();
+		if (current >= 1 && getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) > getHeaderConfidence(dataStreamName))
+			return 0.0;
 
 		final int headerConfidence = getHeaderConfidence(dataStreamName);
 		double confidence = (double)matchCount/realSamples;
