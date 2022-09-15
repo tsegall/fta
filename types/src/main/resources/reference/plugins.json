@@ -1294,7 +1294,7 @@
 		"pluginType": "list",
 		"signature": "WyaPkc1jgevOXlDl5bt1Za4j8ko=",
 		"validLocales": [
-			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country).*", "confidence": 70 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country|pais).*", "confidence": 70 } ] }
 		],
 		"content": "/reference/ISO-3166-3.csv",
 		"contentType": "resource",
