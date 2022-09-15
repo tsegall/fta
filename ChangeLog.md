@@ -26,7 +26,7 @@
  - ENH: Improve english Country detection
  - ENH: Improve NAME.SUFFIX detection
  - ENH: Add support for pluginOptions
- - ENH: Bump slf4j (2.0.0) and logback-classic (1.4.0)
+ - ENH: Bump slf4j (2.0.1) and logback-classic (1.4.1)
  - ENH: Bump google phone number library
  - ENH: Bump jackson
  - BUG: Should have cleansed and trimmed input before checking it in isValid()
