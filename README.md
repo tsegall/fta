@@ -3,7 +3,7 @@
 Analyze Text data to determine Base Type and Semantic type information and other key metrics associated with a text stream.
 Key objectives of the library include:
 * Large set of built-in Semantic Types (extensible via JSON defined plugins).  See list below.
-* Sufficiently fast to be used inline.   See Performance notes below.
+* Sufficiently fast to be used inline.   See Speed notes below.
 * Usable in either Streaming or Bulk mode.
 * Minimal false positives for Semantic type detection.
 * Broad country/language support - including US, Canada, Mexico, Brazil, UK, Australia, much of Europe, Japan and China.
@@ -580,9 +580,22 @@ Repository](https://mvnrepository.com/artifact/com.cobber.fta/fta) or [Maven.org
 
 Javadoc is automatically updated to reflect the latest release at http://javadoc.io/doc/com.cobber.fta/fta/.
 
-## Performance  ##
+## Performance (Semantic Type Detection) ##
 
-Indicative performance on an Intel 2.6Ghz i7.
+The performance of Semantic Type determination is based on a large sample of inputs from open data portals.
+The data set can be found at [semantic-types](https://github.com/tsegall/semantic-types).
+
+Based on this set the Precision is estimated at 99.90%, the Recall at 98.64% with an F1-Score of 99.26%.
+
+Precision == True Positives / (True Positives + False Positives)
+
+Recall (Sensitivity) == True Positives / All Positives (i.e. True Positives + False Negatives)
+
+F1-Score == 2 * ((Precision * Recall) / (Precision + Recall))
+
+## Speed  ##
+
+Indicative speed on an Intel 2.6Ghz i7.
 
 * ~0.5 million dates/sec
 * ~0.75 million doubles/sec
