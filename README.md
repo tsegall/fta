@@ -582,7 +582,7 @@ Javadoc is automatically updated to reflect the latest release at http://javadoc
 
 ## Performance (Semantic Type Detection) ##
 
-The performance of Semantic Type determination is based on a large sample of inputs from open data portals.
+The English-language performance of Semantic Type determination is based on a large sample of inputs from open data portals.
 The data set can be found at [semantic-types](https://github.com/tsegall/semantic-types).
 
 Based on this set the Precision is estimated at 99.90%, the Recall at 98.64% with an F1-Score of 99.26%.
