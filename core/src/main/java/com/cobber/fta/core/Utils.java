@@ -148,7 +148,7 @@ public final class Utils {
 	}
 
 	/**
-	 * Test if the supplied character is numeric (0-9).
+	 * Test if the supplied character is numeric [0-9].
 	 * @param ch Character to test.
 	 * @return True if the character is in the range [0-9].
 	 */
@@ -157,7 +157,16 @@ public final class Utils {
 	}
 
 	/**
-	 * Test if the supplied character is alphaNumeric (A-Za-z0-9).
+	 * Test if the supplied character is alpha [A-Za-z].
+	 * @param ch Character to test.
+	 * @return True if the character is in the range [A-Za-z].
+	 */
+	public static boolean isSimpleAlpha(final char ch) {
+		return ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z';
+	}
+
+	/**
+	 * Test if the supplied character is alphaNumeric [A-Za-z0-9].
 	 * @param ch Character to test.
 	 * @return True if the character is in the range [A-Za-z0-9].
 	 */

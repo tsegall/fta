@@ -40,9 +40,9 @@ public class Race extends LogicalTypeInfinite {
 	private static Set<String> keywordsHash;
 
 	private static final String[] raceWordsEN = {
-			"ABORIGINAL", "AFRICAN", "AMERICAN", "ANGLO", "ARAB", "ASIAN", "ASIATIC", "BAME", "BLACK", "BLK", "CARIBBEAN", "CAUCASIAN", "CHINESE",
-			"FILIPINO", "HAWAIIAN", "HISP", "HISPANIC", "INDIAN", "INUIT", "ISLANDER", "JAPANESE", "KOREAN", "LATINO", "LATINX", "METIS", "MIDDLE EASTERN",
-			"MULTIRACIAL", "MULTI-RACIAL", "NATIVE", "NON-HISPANIC", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "VIETNAMESE", "WHITE", "WHT",
+			"ABORIGINAL", "AFRICAN", "ALLRACE", "AMERICAN", "ANGLO", "ARAB", "ASIAN", "ASIATIC", "BAME", "BLACK", "BLK", "CARIBBEAN", "CAUCASIAN", "CHINESE",
+			"FILIPINO", "HAWAIIAN", "HISP", "HISPANIC", "INDIAN", "INUIT", "ISLANDER", "JAPANESE", "KOREAN", "LATINA", "LATINO", "LATINX", "METIS", "MIDDLE EASTERN",
+			"MULTIRACIAL", "MULTI-RACIAL", "NATIVE", "NON-HISPANIC", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "RACES", "VIETNAMESE", "WHITE", "WHT",
 
 			"N/A", "NA", "NO DATA", "NONE", "OTHER", "OTH", "UNK", "UNANSWERED", "UNKNOWN"
 	};
@@ -127,7 +127,7 @@ public class Race extends LogicalTypeInfinite {
 		final List<String> words = splitIntoWords(input);
 
 		for (final String word : words)
-			// Good if any of the words in in the list of happy words
+			// Good if any of the words is in the list of happy words
 			if (keywordsHash.contains(word.toUpperCase(locale)))
 				return true;
 

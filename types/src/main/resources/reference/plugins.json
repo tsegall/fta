@@ -100,23 +100,20 @@
 		"description": "Postal Code (UK)",
 		"pluginType": "java",
 		"signature": "0m+ny+TVuhGGP1RGw3XKoni4Qyo=",
-		"clazz": "com.cobber.fta.plugins.UKPostalCode",
+		"clazz": "com.cobber.fta.plugins.PostalCodeUK",
 		"validLocales": [ { "localeTag":  "en-GB,en-UK" } ],
 		"priority": 62
 	},
 	{
 		"qualifier": "POSTAL_CODE.POSTAL_CODE_CA",
 		"description": "Postal Code (CA)",
-		"pluginType": "regex",
+		"pluginType": "java",
 		"signature": "PJdCrn71buwdG4wyhlOpLSrc1+M=",
+		"clazz": "com.cobber.fta.plugins.PostalCodeCA",
 		"validLocales": [
 			{
 				"localeTag":  "en-US,en-CA,fr-CA",
-				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 99, "mandatory": true } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}\\d\\p{IsAlphabetic} \\d\\p{IsAlphabetic}\\d",
-					"isRegExpComplete": true
-				} ]
+				"headerRegExps": [ { "regExp": ".*(?i)(post|zip).*", "confidence": 99, "mandatory": true } ]
 			}
 		],
 		"threshold": 95,

@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 10.0.1
+ - ENH: Improve PERSON.RACE_EN detection
+ - ENH: Improve COLOR.TEXT_EN detection
+ - ENH: Reimplemnent POSTAL_CODE.POSTAL_CODE_CA as a Java plugin (Recall now at 100% against Suite)
+
 ### 10.0.0
  - *** ENH: New Feature.NULL_AS_TEXT is enabled by default ("Null" (also No Data) - will be treated as a NULL record)
  - *** BUG: Changed PERSON.RACE to PERSON.RACE_EN (not backward compatible)

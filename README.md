@@ -301,7 +301,7 @@ PERIOD.HALF|Half (Year)|*
 PERIOD.QUARTER|Quarter (Year)|*
 PERIOD.YEAR_RANGE|Year Range|*
 PERSON.AGE|Age (Person)|en, es, fr, es, it, pt
-PERSON.RACE|Race/Ethinicity (person)|*
+PERSON.RACE_EN|Race/Ethinicity (person)|*
 POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, CO, FR, JA, NL, UK, ES, MX, PT, SE, UY
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
@@ -350,6 +350,21 @@ Any of the above Semantic Types suffixed with one of the following are locale-se
 
 
 </details>
+
+### Performance ###
+
+The English-language performance of Semantic Type determination is based on a large sample of inputs from open data portals.
+The data set can be found at [semantic-types](https://github.com/tsegall/semantic-types).
+
+Based on this set the Precision is estimated at 99.90%, the Recall at 98.64% with an F1-Score of 99.26%.
+
+Precision == True Positives / (True Positives + False Positives)
+
+Recall (Sensitivity) == True Positives / All Positives (i.e. True Positives + False Negatives)
+
+F1-Score == 2 * ((Precision * Recall) / (Precision + Recall))
+
+### Additional user-defined Semantic Types ###
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
 * Code - captures any complex type (e.g. Even numbers, Credit Cards numbers).  Implemented via a Java Class.
@@ -579,19 +594,6 @@ Repository](https://mvnrepository.com/artifact/com.cobber.fta/fta) or [Maven.org
 ## Javadoc ##
 
 Javadoc is automatically updated to reflect the latest release at http://javadoc.io/doc/com.cobber.fta/fta/.
-
-## Performance (Semantic Type Detection) ##
-
-The English-language performance of Semantic Type determination is based on a large sample of inputs from open data portals.
-The data set can be found at [semantic-types](https://github.com/tsegall/semantic-types).
-
-Based on this set the Precision is estimated at 99.90%, the Recall at 98.64% with an F1-Score of 99.26%.
-
-Precision == True Positives / (True Positives + False Positives)
-
-Recall (Sensitivity) == True Positives / All Positives (i.e. True Positives + False Negatives)
-
-F1-Score == 2 * ((Precision * Recall) / (Precision + Recall))
 
 ## Speed  ##
 
