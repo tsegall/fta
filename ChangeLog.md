@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 10.1.0
+ - ENH: Add new Semantic Type - PERSON.MARITAL_STATUS_EN
+
 ### 10.0.1
  - ENH: Improve PERSON.RACE_EN detection
  - ENH: Improve COLOR.TEXT_EN detection

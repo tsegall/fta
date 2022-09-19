@@ -477,6 +477,20 @@
 		"priority": 84
 	},
 	{
+		"qualifier" : "PERSON.MARITAL_STATUS_EN",
+		"description": "Marital Status (person)",
+		"pluginType": "java",
+		"signature": "BHhRzS4WZnSye7mgRa+J3L1fEWQ=",
+		"clazz": "com.cobber.fta.plugins.person.MaritalStatus",
+		"validLocales": [
+			{
+				"localeTag":  "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(marital.?status).*", "confidence": 95, "mandatory": true } ]
+			}
+		],
+		"priority": 85
+	},
+	{
 		"qualifier": "NATIONALITY_EN",
 		"description": "Nationality (English Language)",
 		"pluginType": "list",
@@ -2231,7 +2245,7 @@
 	},
 	{
 		"qualifier": "JOB_TITLE_EN",
-		"description": "Job Title (English Language)",
+		"description": "Job Title/Occupation (English Language)",
 		"pluginType": "java",
 		"signature": "6IKfzTa++cfQDm7aehEqSaJ/rek=",
 		"clazz": "com.cobber.fta.plugins.JobTitleEN",

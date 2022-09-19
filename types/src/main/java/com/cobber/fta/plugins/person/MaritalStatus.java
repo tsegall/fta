@@ -14,26 +14,27 @@
 */
 package com.cobber.fta.plugins.person;
 
+
 import com.cobber.fta.PluginDefinition;
 
 /**
-* Plugin to detect Race (Person).
+* Plugin to detect Marital Status (Person).
 */
-public class Race extends SimpleWords {
-	public Race(PluginDefinition plugin) {
+public class MaritalStatus extends SimpleWords {
+	public MaritalStatus(PluginDefinition plugin) {
 		super(plugin);
 	}
 
-	private static final String[] raceWordsEN = {
-			"ABORIGINAL", "AFRICAN", "ALLRACE", "AMERICAN", "ANGLO", "ARAB", "ASIAN", "ASIATIC", "BAME", "BLACK", "BLK", "CARIBBEAN", "CAUCASIAN", "CHINESE",
-			"FILIPINO", "HAWAIIAN", "HISP", "HISPANIC", "INDIAN", "INUIT", "ISLANDER", "JAPANESE", "KOREAN", "LATINA", "LATINO", "LATINX", "METIS", "MIDDLE EASTERN",
-			"MULTIRACIAL", "MULTI-RACIAL", "NATIVE", "NON-HISPANIC", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "RACES", "VIETNAMESE", "WHITE", "WHT",
+	private static final String[] marriageWordsEN = {
+			"COMMON-LAW", "DIVORCED", "PARTNER", "MARRIED", "SINGLE",
+			"SEPARATED", "SINGLE", "UNMARRIED",
+			"WIDOW", "WIDOWED", "WIDOWER",
 
-			"N/A", "NA", "NO DATA", "NONE", "OTHER", "OTH", "UNK", "UNANSWERED", "UNKNOWN"
+			"NO RESPONSE", "REFUSED", "UNDISCLOSED",
 	};
 
 	@Override
 	String[] getWords() {
-		return raceWordsEN;
+		return marriageWordsEN;
 	}
 }
