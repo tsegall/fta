@@ -43,9 +43,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
@@ -172,7 +174,9 @@ public class TextAnalyzer {
 		 */
 		NO_ABBREVIATION_PUNCTUATION,
 		/** Indicate whether we should treat "NULL" (and similar) as Null values. Feature is enabled by default. */
-		NULL_AS_TEXT
+		NULL_AS_TEXT,
+		/** Indicate whether we should track quantiles. Feature is enabled by default. */
+		QUANTILES
 	}
 
 	/**
@@ -327,24 +331,6 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Indicate whether to collect statistics or not.
-	 *
-     * @param collectStatistics
-     *            A boolean indicating the desired state
-	 * @return The previous value of this parameter.
-	 * @deprecated Since 8.X, use {@link #configure(Feature, boolean)}
-	 */
-	@Deprecated
-	public boolean setCollectStatistics(final boolean collectStatistics) {
-		if (trainingStarted)
-			throw new IllegalArgumentException("Cannot adjust statistics collection once training has started");
-
-		final boolean ret = analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS);
-		analysisConfig.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
-		return ret;
-	}
-
-	/**
 	 * Internal Only.  Enable internal debugging.
 	 *
 	 * @param debug The debug level.
@@ -371,46 +357,6 @@ public class TextAnalyzer {
 		if (traceOptions == null || traceOptions.isEmpty())
 			throw new TraceException("Argument to setTrace must be non-null");
 		analysisConfig.setTraceOptions(traceOptions);
-	}
-
-	/**
-	 * Indicates whether to collect statistics or not.
-	 *
-	 * @return Whether Statistics collection is enabled.
-	 * @deprecated Since 8.X, use {@link #isEnabled(Feature)}
-	 */
-	@Deprecated
-	public boolean getCollectStatistics() {
-		return analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS);
-	}
-
-	/**
-	 * Indicate whether to enable default Logical Type processing.
-	 *
-	 * @param logicalTypeDetection
-	 *            A boolean indicating the desired state
-	 * @return The previous value of this parameter.
-	 * @deprecated Since 8.X, use {@link #configure(Feature, boolean)}
-	 */
-	@Deprecated
-	public boolean setDefaultLogicalTypes(final boolean logicalTypeDetection) {
-		if (trainingStarted)
-			throw new IllegalArgumentException("Cannot adjust Logical Type detection once training has started");
-
-		final boolean ret = logicalTypeDetection;
-		analysisConfig.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, logicalTypeDetection);
-		return ret;
-	}
-
-	/**
-	 * Indicates whether to enable default Logical Type processing or not.
-	 *
-	 * @return Whether default Logical Type processing collection is enabled.
-	 * @deprecated Since 8.X, use {@link #isEnabled(Feature)}
-	 */
-	@Deprecated
-	public boolean getDefaultLogicalTypes() {
-		return analysisConfig.isEnabled(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES);
 	}
 
 	/**
@@ -460,31 +406,6 @@ public class TextAnalyzer {
 	 */
 	public int getPluginThreshold() {
 		return pluginThreshold;
-	}
-
-	/**
-	 * If true enable Numeric widening - that is, if we see lots of integers then some doubles call it a double.
-	 * <p>Note: Defaults to true.
-	 * @param numericWidening The new value for numericWidening.
-	 * @deprecated Since 8.X, use {@link #configure(Feature, boolean)}
-	 */
-	@Deprecated
-	public void setNumericWidening(final boolean numericWidening) {
-		if (trainingStarted)
-			throw new IllegalArgumentException("Cannot adjust NumericWidening once training has started");
-
-		analysisConfig.configure(TextAnalyzer.Feature.NUMERIC_WIDENING, numericWidening);
-	}
-
-	/**
-	 * Get the current value for numeric widening.
-	 *
-	 * @return The current value.
-	 * @deprecated Since 8.X, use {@link #isEnabled(Feature)}
-	 */
-	@Deprecated
-	public boolean getNumericWidening() {
-		return analysisConfig.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING);
 	}
 
 	/**
@@ -608,34 +529,6 @@ public class TextAnalyzer {
 	 */
 	public int getMaxOutliers() {
 		return analysisConfig.getMaxOutliers();
-	}
-
-	/**
-	 * Indicate whether we should qualify the size of the RegExp.
-	 * For example "\d{3,6}" vs. "\d+"
-	 * <p>Note: This only impacts simple Numerics/Alphas/AlphaNumerics.
-	 *
-	 * @param newLengthQualifier The new value.
-	 *
-	 * @return The previous value of this parameter.
-	 * @deprecated Since 8.X, use {@link #configure(Feature, boolean)}
-	 */
-	@Deprecated
-	public boolean setLengthQualifier(final boolean newLengthQualifier) {
-		final boolean ret = analysisConfig.isEnabled(TextAnalyzer.Feature.LENGTH_QUALIFIER);
-		analysisConfig.configure(TextAnalyzer.Feature.LENGTH_QUALIFIER, newLengthQualifier);
-		return ret;
-	}
-
-	/**
-	 * Indicates whether the size of the RegExp pattern is being defined.
-	 *
-	 * @return True if lengths are being qualified.
-	 * @deprecated Since 8.X, use {@link #isEnabled(Feature)}
-	 */
-	@Deprecated
-	public boolean getLengthQualifier() {
-		return analysisConfig.isEnabled(TextAnalyzer.Feature.LENGTH_QUALIFIER);
 	}
 
 	/**
@@ -764,6 +657,29 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Gets the relative-error guarantee for quantiles.
+	 * @return The relative-error guarantee for quantiles (relevant only if cardinality &gt; maxCardinality).
+	 */
+	public double getQuantileRelativeAccuracy() {
+		return analysisConfig.getQuantileRelativeAccuracy();
+	}
+
+	/**
+	 * Sets the relative-error guarantee for quantiles.
+	 * Default is {@link AnalysisConfig#QUANTILE_RELATIVE_ACCURACY_DEFAULT}.
+	 * @param quantileRelativeAccuracy The relative-error guarantee desired for quantile determination, note smaller values require more memory!
+	 *
+	 * @return The previous value of this parameter.
+	 */
+	public double setQuantileRelativeAccuracy(final double quantileRelativeAccuracy) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot change quantileRelativeAccuracy once training has started");
+		if (quantileRelativeAccuracy < 0.0 || quantileRelativeAccuracy > 1.0)
+			throw new IllegalArgumentException("Invalid value for quantileRelativeAccuracy (must be <= 1.0)");
+		return analysisConfig.setQuantileRelativeAccuracy(quantileRelativeAccuracy);
+	}
+
+	/**
 	 * Gets the current maximum input length for sampling.
 	 * @return The current maximum length before an input sample is truncated.
 	 */
@@ -833,9 +749,9 @@ public class TextAnalyzer {
 			l = n.longValue();
 			if (trimmed.indexOf(localeGroupingSeparator) != -1) {
 				facts.groupingSeparators++;
-				if (!facts.matchPatternInfo.isLogicalType() && !KnownPatterns.hasGrouping(facts.matchPatternInfo.id)) {
-					facts.matchPatternInfo = knownPatterns.grouping(facts.matchPatternInfo.regexp);
-					debug("Type determination - now with grouping {}", facts.matchPatternInfo);
+				if (!facts.getMatchPatternInfo().isLogicalType() && !KnownPatterns.hasGrouping(facts.getMatchPatternInfo().id)) {
+					facts.setMatchPatternInfo(knownPatterns.grouping(facts.getMatchPatternInfo().regexp));
+					debug("Type determination - now with grouping {}", facts.getMatchPatternInfo());
 				}
 			}
 			digits = trimmed.length();
@@ -939,9 +855,9 @@ public class TextAnalyzer {
 	private boolean updateStats(final String cleaned) {
 		final int len = cleaned.trim().length();
 
-		if (facts.matchPatternInfo.getMinLength() != -1 && len < facts.matchPatternInfo.getMinLength())
+		if (facts.getMatchPatternInfo().getMinLength() != -1 && len < facts.getMatchPatternInfo().getMinLength())
 			return false;
-		if (facts.matchPatternInfo.getMaxLength() != -1 && len > facts.matchPatternInfo.getMaxLength())
+		if (facts.getMatchPatternInfo().getMaxLength() != -1 && len > facts.getMatchPatternInfo().getMaxLength())
 			return false;
 
 		if (facts.minString == null || facts.minString.compareTo(cleaned) > 0)
@@ -978,7 +894,7 @@ public class TextAnalyzer {
 				d = Double.parseDouble(input);
 		} catch (NumberFormatException e) {
 			// If we think we are a Non Localized number then no point in using the locale-aware parsing
-			if (KnownPatterns.isNonLocalized(facts.matchPatternInfo.id))
+			if (KnownPatterns.isNonLocalized(facts.getMatchPatternInfo().id))
 				return false;
 			// Failed to parse using the naive parseDouble, so use the locale-sensitive Numberformat.parse
 			final ParsePosition pos = new ParsePosition(0);
@@ -1415,7 +1331,7 @@ public class TextAnalyzer {
 
 		facts.sampleCount++;
 
-		final FTAType matchType = facts.matchPatternInfo != null ? facts.matchPatternInfo.getBaseType() : null;
+		final FTAType matchType = facts.getMatchPatternInfo() != null ? facts.getMatchPatternInfo().getBaseType() : null;
 
 		if (rawInput == null || (analysisConfig.isEnabled(TextAnalyzer.Feature.NULL_AS_TEXT) && keywords.match(rawInput, "NO_DATA", Keywords.MatchStyle.EQUALS) == 100)) {
 			facts.nullCount++;
@@ -1459,7 +1375,7 @@ public class TextAnalyzer {
 		trackResult(rawInput, trimmed, true, count);
 
 		// If we have determined a type, no need to further train
-		if (facts.matchPatternInfo != null && facts.matchPatternInfo.getBaseType() != null)
+		if (facts.getMatchPatternInfo() != null && facts.getMatchPatternInfo().getBaseType() != null)
 			return true;
 
 		raw.add(rawInput);
@@ -1646,7 +1562,7 @@ public class TextAnalyzer {
 		int c = 0;
 		for (final LogicalTypeInfinite logical : infiniteTypes) {
 			try {
-				if ((facts.matchPatternInfo == null || logical.acceptsBaseType(facts.matchPatternInfo.getBaseType())) && logical.isCandidate(trimmed, compressedl0, charCounts, lastIndex))
+				if ((facts.getMatchPatternInfo() == null || logical.acceptsBaseType(facts.getMatchPatternInfo().getBaseType())) && logical.isCandidate(trimmed, compressedl0, charCounts, lastIndex))
 					candidateCounts[c]++;
 			}
 			catch (Exception e) {
@@ -1686,7 +1602,7 @@ public class TextAnalyzer {
 
 		detectWindowEscalations.add(escalation);
 
-		return facts.matchPatternInfo != null && facts.matchPatternInfo.getBaseType() != null;
+		return facts.getMatchPatternInfo() != null && facts.getMatchPatternInfo().getBaseType() != null;
 	}
 
 	private Map.Entry<String, Integer> getBest(final int levelIndex) {
@@ -1815,7 +1731,7 @@ public class TextAnalyzer {
 	 */
 	private void determineType() {
 		if (facts.sampleCount == 0) {
-			facts.matchPatternInfo = knownPatterns.getByRegExp(KnownPatterns.PATTERN_ANY_VARIABLE);
+			facts.setMatchPatternInfo(knownPatterns.getByRegExp(KnownPatterns.PATTERN_ANY_VARIABLE));
 			return;
 		}
 
@@ -1848,7 +1764,7 @@ public class TextAnalyzer {
 					// as well as
 					//    "regExpReturned": "(0[1-6]|1[0-6]|2[0-7]|3[0-9]|4[0-8]|5[0-9]|6[0-8]|7[1-7]|8[0-8]|9[01234589])-\\d{7}",
 					if (logical.isMatch(level0pattern) &&  tokenStreams.matches(logical.getRegExp(), logical.getThreshold()) != 0) {
-						level0patternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+						level0patternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 						break;
 					}
 				}
@@ -1866,12 +1782,12 @@ public class TextAnalyzer {
 		}
 
 		if (best != null) {
-			facts.matchPatternInfo = level0patternInfo;
+			facts.setMatchPatternInfo(level0patternInfo);
 
 			// Take any 'reasonable' (80%) level 1 with something we recognize or a better count
 			if (level1 != null && (double)level1value/raw.size() >= 0.8 && (level0patternInfo == null || level1value > level0value)) {
 				best = level1;
-				facts.matchPatternInfo = level1patternInfo;
+				facts.setMatchPatternInfo(level1patternInfo);
 			}
 
 			// Take any level 2 if
@@ -1881,18 +1797,18 @@ public class TextAnalyzer {
 			// - we have different keys, two numeric types and an improvement of at least 5%
 			// - we have different keys, different types and an improvement of at least 10% and we are below the threshold
 			if (level2 != null &&
-					((facts.matchPatternInfo == null && level2patternInfo != null)
+					((facts.getMatchPatternInfo() == null && level2patternInfo != null)
 					|| (best.getKey().equals(level2pattern) && level2value > best.getValue())
 					|| (!best.getKey().equals(level2pattern) && level2patternInfo != null
-							&& facts.matchPatternInfo.getBaseType().equals(level2patternInfo.getBaseType())
+							&& facts.getMatchPatternInfo().getBaseType().equals(level2patternInfo.getBaseType())
 							&& level2value > best.getValue())
 					|| (!best.getKey().equals(level2pattern) && level2patternInfo != null
-							&& facts.matchPatternInfo.isNumeric()
+							&& facts.getMatchPatternInfo().isNumeric()
 							&& level2patternInfo.isNumeric()
 							&& level2value >= 1.05 * best.getValue())
 					|| (!best.getKey().equals(level2pattern) && (double)best.getValue()/raw.size() < (double)analysisConfig.getThreshold()/100
 							&& level2value >= 1.10 * best.getValue()))) {
-				facts.matchPatternInfo = level2patternInfo;
+				facts.setMatchPatternInfo(level2patternInfo);
 			}
 
 			if (possibleDateTime != 0 && possibleDateTime + 1 >= raw.size()) {
@@ -1905,22 +1821,22 @@ public class TextAnalyzer {
 
 					final DateTimeParserResult result = dateTimeParser.getResult();
 					final String formatString = result.getFormatString();
-					facts.matchPatternInfo = new PatternInfo(null, result.getRegExp(), result.getType(), formatString, false, false, -1, -1, null, formatString);
+					facts.setMatchPatternInfo(new PatternInfo(null, result.getRegExp(), result.getType(), formatString, false, -1, -1, null, formatString));
 				}
 				catch (RuntimeException e) {
 				    debug("Internal error: {}", e);
 				}
 			}
 
-			debug("Type determination - initial, matchPatternInfo - {}", facts.matchPatternInfo);
+			debug("Type determination - initial, matchPatternInfo - {}", facts.getMatchPatternInfo());
 
 			// Check to see if it might be one of the known Infinite Logical Types
 			int i = 0;
 			double bestConfidence = 0.0;
 			for (final LogicalTypeInfinite logical : infiniteTypes) {
-				if (logical.acceptsBaseType(facts.matchPatternInfo.getBaseType()) && logical.getConfidence(candidateCounts[i], raw.size(), context)  >= logical.getThreshold()/100.0) {
+				if (logical.acceptsBaseType(facts.getMatchPatternInfo().getBaseType()) && logical.getConfidence(candidateCounts[i], raw.size(), context)  >= logical.getThreshold()/100.0) {
 					int count = 0;
-					final PatternInfo candidate = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+					final PatternInfo candidate = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null);
 					for (final String sample : raw) {
 						switch (logical.getBaseType()) {
 						case STRING:
@@ -1945,9 +1861,9 @@ public class TextAnalyzer {
 					// If a reasonable number look genuine then we are convinced
 					final double currentConfidence = logical.getConfidence(count, raw.size(), context);
 					if (currentConfidence > bestConfidence && currentConfidence >= logical.getThreshold()/100.0) {
-						facts.matchPatternInfo = candidate;
+						facts.setMatchPatternInfo(candidate);
 						bestConfidence = currentConfidence;
-						debug("Type determination - infinite type, matchPatternInfo - {}", facts.matchPatternInfo);
+						debug("Type determination - infinite type, matchPatternInfo - {}", facts.getMatchPatternInfo());
 					}
 				}
 				i++;
@@ -1955,10 +1871,10 @@ public class TextAnalyzer {
 
 			// Try a regExp match nice and early - we can always back out
 			for (final LogicalTypeRegExp logical : regExpTypes) {
-				if (logical.acceptsBaseType(facts.matchPatternInfo.getBaseType()) &&
-						logical.isMatch(facts.matchPatternInfo.regexp)) {
-					facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
-					debug("Type determination - was '{}', matchPatternInfo - {}", facts.matchPatternInfo.getBaseType(), facts.matchPatternInfo);
+				if (logical.acceptsBaseType(facts.getMatchPatternInfo().getBaseType()) &&
+						logical.isMatch(facts.getMatchPatternInfo().regexp)) {
+					facts.setMatchPatternInfo(new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null));
+					debug("Type determination - was '{}', matchPatternInfo - {}", facts.getMatchPatternInfo().getBaseType(), facts.getMatchPatternInfo());
 					break;
 				}
 			}
@@ -1973,6 +1889,11 @@ public class TextAnalyzer {
 		if (seen == null) {
 			if (facts.cardinality.size() < analysisConfig.getMaxCardinality())
 				facts.cardinality.put(input, count);
+			else {
+				// Cardinality blown, so track remaining set in a Sketch
+				if (analysisConfig.isEnabled(TextAnalyzer.Feature.QUANTILES) && !facts.getMatchPatternInfo().getBaseType().equals(FTAType.STRING))
+					facts.getSketch().accept(input, count);
+			}
 		}
 		else
 			facts.cardinality.put(input, seen + count);
@@ -2094,7 +2015,7 @@ public class TextAnalyzer {
 			}
 		}
 		// If we are currently Numeric and the only errors are doubles then convert to double
-		else if (!facts.matchPatternInfo.isLogicalType() && facts.outliers.size() == analysis.doubles && FTAType.LONG.equals(current.getBaseType())) {
+		else if (!facts.getMatchPatternInfo().isLogicalType() && facts.outliers.size() == analysis.doubles && FTAType.LONG.equals(current.getBaseType())) {
 			KnownPatterns.ID id;
 			if (analysis.exponent)
 				id = analysis.negative ? KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT;
@@ -2117,7 +2038,7 @@ public class TextAnalyzer {
 
 		// If it is not one of our known types then construct a suitable PatternInfo
 		if (newPatternInfo == null)
-			newPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, null, false, false, -1, -1, null, null);
+			newPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, null, false, -1, -1, null, null);
 
 		backoutToPatternInfo(realSamples, newPatternInfo);
 	}
@@ -2141,9 +2062,9 @@ public class TextAnalyzer {
 
 		// If it is not one of our known types then construct a suitable PatternInfo
 		if (newPatternInfo == null)
-			newPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, null, false, false, -1, -1, null, null);
+			newPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, null, false, -1, -1, null, null);
 
-		facts.matchPatternInfo = newPatternInfo;
+		facts.setMatchPatternInfo(newPatternInfo);
 
 		for (final String s : facts.cardinality.keySet())
 			trackString(s, s.trim(), newPatternInfo, false);
@@ -2154,26 +2075,26 @@ public class TextAnalyzer {
 
 	private void backoutToPatternInfo(final long realSamples, final PatternInfo newPatternInfo) {
 		facts.matchCount = realSamples;
-		facts.matchPatternInfo = newPatternInfo;
+		facts.setMatchPatternInfo(newPatternInfo);
 
 		// All outliers are now part of the cardinality set and there are now no outliers
 		facts.cardinality.putAll(facts.outliers);
 
 		// Need to update stats to reflect any outliers we previously ignored
-		if (facts.matchPatternInfo.getBaseType().equals(FTAType.STRING)) {
+		if (facts.getMatchPatternInfo().getBaseType().equals(FTAType.STRING)) {
 			for (final String s : facts.cardinality.keySet())
 				trackString(s, s.trim(), newPatternInfo, false);
 		}
-		else if (facts.matchPatternInfo.getBaseType().equals(FTAType.DOUBLE)) {
+		else if (facts.getMatchPatternInfo().getBaseType().equals(FTAType.DOUBLE)) {
 			facts.minDouble = facts.minLong;
 			facts.maxDouble = facts.maxLong;
 			for (final Map.Entry<String, Long> entry : facts.outliers.entrySet())
-				trackDouble(entry.getKey(), facts.matchPatternInfo, true, entry.getValue());
+				trackDouble(entry.getKey(), facts.getMatchPatternInfo(), true, entry.getValue());
 		}
 
 		facts.outliers.clear();
 		outliersSmashed.clear();
-		debug("Type determination - backing out, matchPatternInfo - {}", facts.matchPatternInfo);
+		debug("Type determination - backing out, matchPatternInfo - {}", facts.getMatchPatternInfo());
 	}
 
 	/**
@@ -2205,7 +2126,7 @@ public class TextAnalyzer {
 
 		facts.matchCount += otherLongs;
 		if ((double) facts.matchCount / realSamples > analysisConfig.getThreshold()/100.0)
-			facts.matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_LONG);
+			facts.setMatchPatternInfo(knownPatterns.getByID(KnownPatterns.ID.ID_LONG));
 		else
 			backoutToPatternID(realSamples, KnownPatterns.ID.ID_ANY_VARIABLE);
 	}
@@ -2246,10 +2167,10 @@ public class TextAnalyzer {
 			trackLengthAndShape(rawInput, trimmed, count);
 
 		// If the detect window cache is full and we have not determined a type compute one
-		if ((facts.matchPatternInfo == null || facts.matchPatternInfo.getBaseType() == null) && facts.sampleCount - (facts.nullCount + facts.blankCount) > analysisConfig.getDetectWindow())
+		if ((facts.getMatchPatternInfo() == null || facts.getMatchPatternInfo().getBaseType() == null) && facts.sampleCount - (facts.nullCount + facts.blankCount) > analysisConfig.getDetectWindow())
 			determineType();
 
-		if (facts.matchPatternInfo == null || facts.matchPatternInfo.getBaseType() == null)
+		if (facts.getMatchPatternInfo() == null || facts.getMatchPatternInfo().getBaseType() == null)
 			return;
 
 		final long realSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
@@ -2257,24 +2178,24 @@ public class TextAnalyzer {
 
 		final String input = rawInput.length() > getMaxInputLength() ? rawInput.substring(0, getMaxInputLength()) : rawInput;
 
-		switch (facts.matchPatternInfo.getBaseType()) {
+		switch (facts.getMatchPatternInfo().getBaseType()) {
 		case BOOLEAN:
 			if (trackBoolean(trimmed))
 				valid = true;
 			break;
 
 		case LONG:
-			if (trackLong(trimmed, facts.matchPatternInfo, true, count))
+			if (trackLong(trimmed, facts.getMatchPatternInfo(), true, count))
 				valid = true;
 			break;
 
 		case DOUBLE:
-			if (trackDouble(input, facts.matchPatternInfo, true, count))
+			if (trackDouble(input, facts.getMatchPatternInfo(), true, count))
 				valid = true;
 			break;
 
 		case STRING:
-			if (trackString(input, trimmed, facts.matchPatternInfo, true))
+			if (trackString(input, trimmed, facts.getMatchPatternInfo(), true))
 				valid = true;
 			break;
 
@@ -2284,13 +2205,13 @@ public class TextAnalyzer {
 		case OFFSETDATETIME:
 		case ZONEDDATETIME:
 			try {
-				trackDateTime(input, facts.matchPatternInfo, true);
+				trackDateTime(input, facts.getMatchPatternInfo(), true);
 				valid = true;
 			}
 			catch (DateTimeParseException reale) {
 				// The real parse threw an Exception, this does not give us enough facts to usefully determine if there are any
 				// improvements to our assumptions we could make to do better, so re-parse and handle our more nuanced exception
-				DateTimeParserResult result = DateTimeParserResult.asResult(facts.matchPatternInfo.format, context.getDateResolutionMode(), new DateTimeParserConfig(locale));
+				DateTimeParserResult result = DateTimeParserResult.asResult(facts.getMatchPatternInfo().format, context.getDateResolutionMode(), new DateTimeParserConfig(locale));
 				boolean success = false;
 				do {
 					try {
@@ -2309,33 +2230,33 @@ public class TextAnalyzer {
 
 						String newFormatString = null;
 						if (ditch != '?') {
-							final int offset = facts.matchPatternInfo.format.indexOf(ditch);
+							final int offset = facts.getMatchPatternInfo().format.indexOf(ditch);
 
 							// S is a special case (unlike H, H, M, d) and is *NOT* handled by the default DateTimeFormatter.ofPattern
 							if (ditch == 'S') {
 								// The input is shorter than we expected so set the minimum length to 1 and then update
 								final int len = result.timeFieldLengths[FRACTION_INDEX].getPatternLength();
 								result.timeFieldLengths[FRACTION_INDEX].setMin(1);
-								newFormatString = Utils.replaceAt(facts.matchPatternInfo.format, offset, len,
+								newFormatString = Utils.replaceAt(facts.getMatchPatternInfo().format, offset, len,
 										result.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
 							}
 							else
-								newFormatString = new StringBuffer(facts.matchPatternInfo.format).deleteCharAt(offset).toString();
+								newFormatString = new StringBuffer(facts.getMatchPatternInfo().format).deleteCharAt(offset).toString();
 
 							updated = true;
 						}
 						else if (e.getMessage().equals("Expecting end of input, extraneous input found, last token (FRACTION)")) {
-							final int offset = facts.matchPatternInfo.format.indexOf('S');
+							final int offset = facts.getMatchPatternInfo().format.indexOf('S');
 							final int oldLength = result.timeFieldLengths[FRACTION_INDEX].getPatternLength();
 							result.timeFieldLengths[FRACTION_INDEX].set(result.timeFieldLengths[FRACTION_INDEX].getMin(),
 									result.timeFieldLengths[FRACTION_INDEX].getMax() + 1);
-							newFormatString = Utils.replaceAt(facts.matchPatternInfo.format, offset, oldLength,
+							newFormatString = Utils.replaceAt(facts.getMatchPatternInfo().format, offset, oldLength,
 									result.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
 							updated = true;
 						}
 						else if (e.getMessage().equals("Invalid value for hours: 24 (expected 0-23)")) {
-							final int offset = facts.matchPatternInfo.format.indexOf('H');
-							newFormatString = Utils.replaceAt(facts.matchPatternInfo.format, offset, result.timeFieldLengths[HOUR_INDEX].getMin(),
+							final int offset = facts.getMatchPatternInfo().format.indexOf('H');
+							newFormatString = Utils.replaceAt(facts.getMatchPatternInfo().format, offset, result.timeFieldLengths[HOUR_INDEX].getMin(),
 									result.timeFieldLengths[HOUR_INDEX].getMin() == 1 ? "k" : "kk");
 							updated = true;
 						}
@@ -2344,12 +2265,12 @@ public class TextAnalyzer {
 							break;
 
 						result = DateTimeParserResult.asResult(newFormatString, context.getDateResolutionMode(), new DateTimeParserConfig(locale));
-						facts.matchPatternInfo = new PatternInfo(null, result.getRegExp(), facts.matchPatternInfo.getBaseType(), newFormatString, false, false, -1, -1, null, newFormatString);
+						facts.setMatchPatternInfo(new PatternInfo(null, result.getRegExp(), facts.getMatchPatternInfo().getBaseType(), newFormatString, false, -1, -1, null, newFormatString));
 					}
 				} while (!success);
 
 				try {
-					trackDateTime(input, facts.matchPatternInfo, true);
+					trackDateTime(input, facts.getMatchPatternInfo(), true);
 					valid = true;
 				}
 				catch (DateTimeParseException eIgnore) {
@@ -2366,21 +2287,21 @@ public class TextAnalyzer {
 		}
 		else {
 			outlier(input, count);
-			if (!facts.matchPatternInfo.isDateType() && facts.outliers.size() == analysisConfig.getMaxOutliers()) {
-				if (facts.matchPatternInfo.isLogicalType()) {
+			if (!facts.getMatchPatternInfo().isDateType() && facts.outliers.size() == analysisConfig.getMaxOutliers()) {
+				if (facts.getMatchPatternInfo().isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
-					final LogicalType logical = plugins.getRegistered(facts.matchPatternInfo.typeQualifier);
-					final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
+					final LogicalType logical = plugins.getRegistered(facts.getMatchPatternInfo().typeQualifier);
+					final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchPatternInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
 					if (!pluginAnalysis.isValid())
-						if (FTAType.LONG.equals(facts.matchPatternInfo.getBaseType()) && facts.matchPatternInfo.typeQualifier != null)
+						if (FTAType.LONG.equals(facts.getMatchPatternInfo().getBaseType()) && facts.getMatchPatternInfo().typeQualifier != null)
 							backoutLogicalLongType(logical, realSamples);
-						else if (FTAType.STRING.equals(facts.matchPatternInfo.getBaseType()) && facts.matchPatternInfo.typeQualifier != null)
+						else if (FTAType.STRING.equals(facts.getMatchPatternInfo().getBaseType()) && facts.getMatchPatternInfo().typeQualifier != null)
 							backoutToPattern(realSamples, pluginAnalysis.getNewPattern());
 				}
 				else {
 
 					// Need to evaluate if we got this wrong
-					conditionalBackoutToPattern(realSamples, facts.matchPatternInfo);
+					conditionalBackoutToPattern(realSamples, facts.getMatchPatternInfo());
 				}
 			}
 		}
@@ -2439,7 +2360,7 @@ public class TextAnalyzer {
 		for (final String elt : minusMatches.keySet())
 			newCardinality.remove(elt);
 
-		if (!logical.analyzeSet(context, validCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
+		if (!logical.analyzeSet(context, validCount, realSamples, facts.getMatchPatternInfo().regexp, facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
 			return new FiniteMatchResult();
 
 		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context), validCount, newOutliers, newCardinality);
@@ -2551,9 +2472,9 @@ public class TextAnalyzer {
 		facts.outliers = bestResult.newOutliers;
 		facts.cardinality = bestResult.newCardinality;
 		facts.matchCount = bestResult.validCount;
-		facts.matchPatternInfo = new PatternInfo(null, bestResult.logical.getRegExp(), FTAType.STRING, bestResult.logical.getQualifier(), true, false, -1, -1, null, null);
+		facts.setMatchPatternInfo(new PatternInfo(null, bestResult.logical.getRegExp(), FTAType.STRING, bestResult.logical.getQualifier(), true, -1, -1, null, null));
 
-		debug("Type determination - new matchPatternInfo - {}", facts.matchPatternInfo);
+		debug("Type determination - new matchPatternInfo - {}", facts.getMatchPatternInfo());
 
 		return bestResult.logical;
 	}
@@ -2596,7 +2517,7 @@ public class TextAnalyzer {
 			initialize();
 
 		// If we have not already determined the type, now we need to
-		if (facts.matchPatternInfo == null)
+		if (facts.getMatchPatternInfo() == null)
 			determineType();
 
 		// Compute our confidence
@@ -2605,11 +2526,11 @@ public class TextAnalyzer {
 		// Check to see if we are all blanks or all nulls
 		if (facts.blankCount == facts.sampleCount || facts.nullCount == facts.sampleCount || facts.blankCount + facts.nullCount == facts.sampleCount) {
 			if (facts.nullCount == facts.sampleCount)
-				facts.matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_NULL);
+				facts.setMatchPatternInfo(knownPatterns.getByID(KnownPatterns.ID.ID_NULL));
 			else if (facts.blankCount == facts.sampleCount)
-				facts.matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BLANK);
+				facts.setMatchPatternInfo(knownPatterns.getByID(KnownPatterns.ID.ID_BLANK));
 			else
-				facts.matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BLANKORNULL);
+				facts.setMatchPatternInfo(knownPatterns.getByID(KnownPatterns.ID.ID_BLANKORNULL));
 			facts.confidence = facts.sampleCount >= 10 ? 1.0 : 0.0;
 		}
 		else {
@@ -2621,10 +2542,10 @@ public class TextAnalyzer {
 		// Do we need to back out from any of our Logical type determinations.  Most of the time this backs out of
 		// Infinite type determinations (since we have not yet declared it to be a Finite type).  However it is possible
 		// that this is a subsequent call to getResult()!!
-		if (facts.matchPatternInfo.isLogicalType()) {
-			final LogicalType logical = plugins.getRegistered(facts.matchPatternInfo.typeQualifier);
+		if (facts.getMatchPatternInfo().isLogicalType()) {
+			final LogicalType logical = plugins.getRegistered(facts.getMatchPatternInfo().typeQualifier);
 
-			final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
+			final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchPatternInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
 			if (!pluginAnalysis.isValid()) {
 				if (logical.acceptsBaseType(FTAType.STRING) || logical.acceptsBaseType(FTAType.LONG)) {
 					if (logical.getBaseType() == FTAType.STRING)
@@ -2638,20 +2559,20 @@ public class TextAnalyzer {
 			}
 			else {
 				// Update our Regular Expression - since it may have changed based on all the data observed
-				facts.matchPatternInfo.regexp = logical.getRegExp();
+				facts.getMatchPatternInfo().regexp = logical.getRegExp();
 				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 			}
 		}
 
 		Map<String, Long> cardinalityUpper = new HashMap<>();
 
-		if (KnownPatterns.isLong(facts.matchPatternInfo.id))
+		if (KnownPatterns.isLong(facts.getMatchPatternInfo().id))
 			handleLong(realSamples);
-		else if (FTAType.BOOLEAN.equals(facts.matchPatternInfo.getBaseType()) && facts.matchPatternInfo.id == KnownPatterns.ID.ID_BOOLEAN_Y_N && facts.cardinality.size() == 1)
+		else if (FTAType.BOOLEAN.equals(facts.getMatchPatternInfo().getBaseType()) && facts.getMatchPatternInfo().id == KnownPatterns.ID.ID_BOOLEAN_Y_N && facts.cardinality.size() == 1)
 			handleBoolean(realSamples);
-		else if (FTAType.DOUBLE.equals(facts.matchPatternInfo.getBaseType()) && !facts.matchPatternInfo.isLogicalType())
+		else if (FTAType.DOUBLE.equals(facts.getMatchPatternInfo().getBaseType()) && !facts.getMatchPatternInfo().isLogicalType())
 			handleDouble(realSamples);
-		else if (FTAType.STRING.equals(facts.matchPatternInfo.getBaseType())) {
+		else if (FTAType.STRING.equals(facts.getMatchPatternInfo().getBaseType())) {
 			// Build Cardinality map ignoring case (and white space)
 			for (final Map.Entry<String, Long> entry : facts.cardinality.entrySet()) {
 				final String key = entry.getKey().toUpperCase(locale).trim();
@@ -2664,7 +2585,7 @@ public class TextAnalyzer {
 			// Sort the results so that we consider the most frequent first (we will hopefully fail faster)
 			cardinalityUpper = Utils.sortByValue(cardinalityUpper);
 
-			final double scoreToBeat = facts.matchPatternInfo.isLogicalType() ? facts.confidence : -1.0;
+			final double scoreToBeat = facts.getMatchPatternInfo().isLogicalType() ? facts.confidence : -1.0;
 
 			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
 			final LogicalTypeFinite logical = matchFiniteTypes(FTAType.STRING, cardinalityUpper, scoreToBeat);
@@ -2672,7 +2593,7 @@ public class TextAnalyzer {
 				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 
 			// Fixup any likely enums
-			if (facts.matchPatternInfo.typeQualifier == null && cardinalityUpper.size() < MAX_ENUM_SIZE && !facts.outliers.isEmpty() && facts.outliers.size() < 10) {
+			if (facts.getMatchPatternInfo().typeQualifier == null && cardinalityUpper.size() < MAX_ENUM_SIZE && !facts.outliers.isEmpty() && facts.outliers.size() < 10) {
 				boolean updated = false;
 
 				final Set<String> killSet = new HashSet<>();
@@ -2736,8 +2657,8 @@ public class TextAnalyzer {
 			}
 
 			// Need to evaluate if we got the type wrong
-			if (facts.matchPatternInfo.typeQualifier == null && !facts.outliers.isEmpty() && facts.matchPatternInfo.isAlphabetic() && realSamples >= reflectionSamples) {
-				conditionalBackoutToPattern(realSamples, facts.matchPatternInfo);
+			if (facts.getMatchPatternInfo().typeQualifier == null && !facts.outliers.isEmpty() && facts.getMatchPatternInfo().isAlphabetic() && realSamples >= reflectionSamples) {
+				conditionalBackoutToPattern(realSamples, facts.getMatchPatternInfo());
 				facts.confidence = (double) facts.matchCount / realSamples;
 
 				// Rebuild the cardinalityUpper Map
@@ -2754,16 +2675,16 @@ public class TextAnalyzer {
 		}
 
 		// We would really like to say something better than it is a String!
-		if (FTAType.STRING.equals(facts.matchPatternInfo.getBaseType()) && facts.matchPatternInfo.typeQualifier == null) {
+		if (FTAType.STRING.equals(facts.getMatchPatternInfo().getBaseType()) && facts.getMatchPatternInfo().typeQualifier == null) {
 			boolean updated = false;
 
 			// If we are currently matching everything then flip to a better Regular Expression based on Stream analysis if possible
 			if (facts.matchCount == realSamples && !tokenStreams.isAnyShape()) {
 				final String newRegExp = tokenStreams.getRegExp(false);
 				if (newRegExp != null) {
-					facts.matchPatternInfo = new PatternInfo(null, newRegExp, FTAType.STRING, null, false, false,
-							facts.minTrimmedLength, facts.maxTrimmedLength, null, null);
-					debug("Type determination - updated based on Stream analysis {}", facts.matchPatternInfo);
+					facts.setMatchPatternInfo(new PatternInfo(null, newRegExp, FTAType.STRING, null, false, facts.minTrimmedLength,
+							facts.maxTrimmedLength, null, null));
+					debug("Type determination - updated based on Stream analysis {}", facts.getMatchPatternInfo());
 				}
 			}
 
@@ -2831,16 +2752,16 @@ public class TextAnalyzer {
 							gen.train(elt);
 					}
 
-					facts.matchPatternInfo = new PatternInfo(null, gen.getResult(), FTAType.STRING, facts.matchPatternInfo.typeQualifier, false, false,
-							facts.minTrimmedLength, facts.maxTrimmedLength, null, null);
+					facts.setMatchPatternInfo(new PatternInfo(null, gen.getResult(), FTAType.STRING, facts.getMatchPatternInfo().typeQualifier, false, facts.minTrimmedLength,
+							facts.maxTrimmedLength, null, null));
 					updated = true;
 
 					// Now we have mapped to an enum we need to check again if this should be matched to a logical type
 					for (final LogicalTypeRegExp logical : regExpTypes) {
 						if (logical.acceptsBaseType(FTAType.STRING) &&
-								logical.isMatch(facts.matchPatternInfo.regexp) &&
-								logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-							facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+								logical.isMatch(facts.getMatchPatternInfo().regexp) &&
+								logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchPatternInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+							facts.setMatchPatternInfo(new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null));
 							facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 							break;
 						}
@@ -2855,8 +2776,8 @@ public class TextAnalyzer {
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.STRING) &&
 							logical.isMatch(regExp) &&
-							logical.analyzeSet(context, best.getOccurrences(), realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-						facts.matchPatternInfo = new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+							logical.analyzeSet(context, best.getOccurrences(), realSamples, facts.getMatchPatternInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+						facts.setMatchPatternInfo(new PatternInfo(null, regExp, logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null));
 						facts.matchCount = best.getOccurrences();
 						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 						updated = true;
@@ -2866,19 +2787,19 @@ public class TextAnalyzer {
 			}
 
 			// Qualify Alpha or Alnum with a min and max length
-			if (!updated && (KnownPatterns.PATTERN_ALPHA_VARIABLE.equals(facts.matchPatternInfo.regexp) || KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE.equals(facts.matchPatternInfo.regexp))) {
-				String newPattern = facts.matchPatternInfo.regexp;
+			if (!updated && (KnownPatterns.PATTERN_ALPHA_VARIABLE.equals(facts.getMatchPatternInfo().regexp) || KnownPatterns.PATTERN_ALPHANUMERIC_VARIABLE.equals(facts.getMatchPatternInfo().regexp))) {
+				String newPattern = facts.getMatchPatternInfo().regexp;
 				newPattern = newPattern.substring(0, newPattern.length() - 1) + lengthQualifier(facts.minTrimmedLength, facts.maxTrimmedLength);
-				facts.matchPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, facts.matchPatternInfo.typeQualifier, false, false,
-						facts.minTrimmedLength, facts.maxTrimmedLength, null, null);
+				facts.setMatchPatternInfo(new PatternInfo(null, newPattern, FTAType.STRING, facts.getMatchPatternInfo().typeQualifier, false, facts.minTrimmedLength,
+						facts.maxTrimmedLength, null, null));
 				updated = true;
 			}
 
 			// Qualify random string with a min and max length
-			if (!updated && KnownPatterns.PATTERN_ANY_VARIABLE.equals(facts.matchPatternInfo.regexp)) {
+			if (!updated && KnownPatterns.PATTERN_ANY_VARIABLE.equals(facts.getMatchPatternInfo().regexp)) {
 				final String newPattern = KnownPatterns.freezeANY(facts.minTrimmedLength, facts.maxTrimmedLength, facts.minRawNonBlankLength, facts.maxRawNonBlankLength, facts.leadingWhiteSpace, facts.trailingWhiteSpace, facts.multiline);
-				facts.matchPatternInfo = new PatternInfo(null, newPattern, FTAType.STRING, facts.matchPatternInfo.typeQualifier, false, false,
-						facts.minRawLength, facts.maxRawLength, null, null);
+				facts.setMatchPatternInfo(new PatternInfo(null, newPattern, FTAType.STRING, facts.getMatchPatternInfo().typeQualifier, false, facts.minRawLength,
+						facts.maxRawLength, null, null));
 				updated = true;
 			}
 		}
@@ -2890,10 +2811,10 @@ public class TextAnalyzer {
 			if (facts.sampleCount > MIN_SAMPLES_FOR_KEY && analysisConfig.getMaxCardinality() >= MIN_SAMPLES_FOR_KEY / 2 &&
 					(facts.cardinality.size() == analysisConfig.getMaxCardinality() || facts.cardinality.size() == facts.sampleCount) &&
 					facts.blankCount == 0 && facts.nullCount == 0 &&
-					((facts.matchPatternInfo.typeQualifier != null && facts.matchPatternInfo.typeQualifier.equals("GUID")) ||
-					(facts.matchPatternInfo.typeQualifier == null &&
-					((FTAType.STRING.equals(facts.matchPatternInfo.getBaseType()) && facts.minRawLength == facts.maxRawLength && facts.minRawLength < 32)
-							|| FTAType.LONG.equals(facts.matchPatternInfo.getBaseType()))))) {
+					((facts.getMatchPatternInfo().typeQualifier != null && facts.getMatchPatternInfo().typeQualifier.equals("GUID")) ||
+					(facts.getMatchPatternInfo().typeQualifier == null &&
+					((FTAType.STRING.equals(facts.getMatchPatternInfo().getBaseType()) && facts.minRawLength == facts.maxRawLength && facts.minRawLength < 32)
+							|| FTAType.LONG.equals(facts.getMatchPatternInfo().getBaseType()))))) {
 				facts.keyConfidence = 0.9;
 
 				if (facts.cardinality.size() == analysisConfig.getMaxCardinality())
@@ -2921,7 +2842,7 @@ public class TextAnalyzer {
 				}
 				facts.uniqueness = (double)uniques/facts.cardinality.size();
 			}
-			else if (FTAType.LONG.equals(facts.matchPatternInfo.getBaseType()) && (facts.monotonicIncreasing || facts.monotonicDecreasing)) {
+			else if (FTAType.LONG.equals(facts.getMatchPatternInfo().getBaseType()) && (facts.monotonicIncreasing || facts.monotonicDecreasing)) {
 				facts.uniqueness = 1.0;
 			}
 			else
@@ -2933,7 +2854,7 @@ public class TextAnalyzer {
 		if (facts.distinctCount == null) {
 			if (facts.cardinality.size() < analysisConfig.getMaxCardinality())
 				facts.distinctCount = (long)facts.cardinality.size();
-			else if (FTAType.LONG.equals(facts.matchPatternInfo.getBaseType()) && (facts.monotonicIncreasing || facts.monotonicDecreasing))
+			else if (FTAType.LONG.equals(facts.getMatchPatternInfo().getBaseType()) && (facts.monotonicIncreasing || facts.monotonicDecreasing))
 				facts.distinctCount = facts.matchCount;
 			else
 				facts.distinctCount = -1L;
@@ -2963,11 +2884,11 @@ public class TextAnalyzer {
 					long newMatchCount = facts.matchCount;
 					final String re = entry.getRegExpReturned();
 					if (((newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0) &&
-							logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+							logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchPatternInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
 						logical.setMatchEntry(entry);
-						facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+						facts.setMatchPatternInfo(new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null));
 						facts.matchCount = newMatchCount;
-						debug("Type determination - updated to Regular Expression logical type {}", facts.matchPatternInfo);
+						debug("Type determination - updated to Regular Expression logical type {}", facts.getMatchPatternInfo());
 						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 						return true;
 					}
@@ -2985,24 +2906,40 @@ public class TextAnalyzer {
 		for (final String s : facts.cardinality.keySet())
 			if (Integer.valueOf(s.trim()) != 0)
 				try {
-					trackDateTime(s, facts.matchPatternInfo, true);
+					trackDateTime(s, facts.getMatchPatternInfo(), true);
 				}
 				catch (DateTimeException e) {
 					// Swallow - any we lost are no good so will not be in the top/bottom set!
 				}
 	}
 
+	private void killZeroes() {
+		if (facts.minLongNonZero != facts.minLong) {
+			// Need to remove '0' (and similar friends) from cardinality map and put in outlier map
+			Iterator<Entry<String, Long>> it = facts.cardinality.entrySet().iterator();
+
+			while (it.hasNext()) {
+				Entry<String, Long> entry = it.next();
+				if (Long.parseLong(entry.getKey()) == 0) {
+					facts.outliers.put(entry.getKey(), entry.getValue());
+					it.remove();
+				}
+			 }
+		}
+	}
+
 	void handleLong(final long realSamples) {
-		if (KnownPatterns.ID.ID_LONG == facts.matchPatternInfo.id && facts.matchPatternInfo.typeQualifier == null && facts.minLong < 0)
-			facts.matchPatternInfo = knownPatterns.negation(facts.matchPatternInfo.regexp);
+		if (KnownPatterns.ID.ID_LONG == facts.getMatchPatternInfo().id && facts.getMatchPatternInfo().typeQualifier == null && facts.minLong < 0)
+			facts.setMatchPatternInfo(knownPatterns.negation(facts.getMatchPatternInfo().regexp));
 
 		// Sometimes a Long is not a Long but it is really a date
 		if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > EARLY_LONG_YYYYMMDD && facts.maxLong < LATE_LONG_YYYYMMDD &&
 				DateTimeParser.plausibleDateCore(false, (int)facts.minLongNonZero%100, ((int)facts.minLongNonZero/100)%100, (int)facts.minLongNonZero/10000, 4)  &&
 				DateTimeParser.plausibleDateCore(false, (int)facts.maxLong%100, ((int)facts.maxLong/100)%100, (int)facts.maxLong/10000, 4)  &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("date"))) {
-			facts.matchPatternInfo = new PatternInfo(null, (facts.minLongNonZero == facts.minLong || tokenStreams.size() == 1) ? "\\d{8}" : "0|\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, false, 8, 8, null, "yyyyMMdd");
-			final DateTimeFormatter dtf = dateTimeParser.ofPattern(facts.matchPatternInfo.format);
+			facts.setMatchPatternInfo(new PatternInfo(null, "\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd"));
+			killZeroes();
+			final DateTimeFormatter dtf = dateTimeParser.ofPattern(facts.getMatchPatternInfo().format);
 			facts.minLocalDate = LocalDate.parse(String.valueOf(facts.minLongNonZero), dtf);
 			facts.maxLocalDate = LocalDate.parse(String.valueOf(facts.maxLong), dtf);
 
@@ -3013,7 +2950,8 @@ public class TextAnalyzer {
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
 						keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) >= 90 ||
 						keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90)) {
-			facts.matchPatternInfo = new PatternInfo(null, facts.minLongNonZero == facts.minLong ? "\\d{4}" : "0+|\\d{4}", FTAType.LOCALDATE, "yyyy", false, false, 4, 4, null, "yyyy");
+			facts.setMatchPatternInfo(new PatternInfo(null, "\\d{4}", FTAType.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy"));
+			killZeroes();
 			facts.minLocalDate = LocalDate.of((int)facts.minLongNonZero, 1, 1);
 			facts.maxLocalDate = LocalDate.of((int)facts.maxLong, 1, 1);
 
@@ -3024,41 +2962,41 @@ public class TextAnalyzer {
 			// boolean by any other name
 			facts.minBoolean = "0";
 			facts.maxBoolean = "1";
-			facts.matchPatternInfo = knownPatterns.getByID(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO);
+			facts.setMatchPatternInfo(knownPatterns.getByID(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO));
 		} else {
-			if (facts.groupingSeparators != 0 && !KnownPatterns.hasGrouping(facts.matchPatternInfo.id)) {
-				facts.matchPatternInfo = knownPatterns.grouping(facts.matchPatternInfo.regexp);
-				debug("Type determination - now with grouping {}", facts.matchPatternInfo);
+			if (facts.groupingSeparators != 0 && !KnownPatterns.hasGrouping(facts.getMatchPatternInfo().id)) {
+				facts.setMatchPatternInfo(knownPatterns.grouping(facts.getMatchPatternInfo().regexp));
+				debug("Type determination - now with grouping {}", facts.getMatchPatternInfo());
 			}
 
 			// Create a new PatternInfo - we don't want to change a predefined one!
-			facts.matchPatternInfo = new PatternInfo(facts.matchPatternInfo);
-			facts.matchPatternInfo.regexp = freezeNumeric(facts.matchPatternInfo.regexp);
+			facts.setMatchPatternInfo(new PatternInfo(facts.getMatchPatternInfo()));
+			facts.getMatchPatternInfo().regexp = freezeNumeric(facts.getMatchPatternInfo().regexp);
 
-			final double scoreToBeat = facts.matchPatternInfo.isLogicalType() ? facts.confidence : -1.0;
+			final double scoreToBeat = facts.getMatchPatternInfo().isLogicalType() ? facts.confidence : -1.0;
 
 			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
 			final LogicalTypeFinite logicalFinite = matchFiniteTypes(FTAType.LONG, facts.cardinality, scoreToBeat);
 			if (logicalFinite != null)
 				facts.confidence = logicalFinite.getConfidence(facts.matchCount, realSamples, context);
 
-			if (!facts.matchPatternInfo.isLogicalType())
+			if (!facts.getMatchPatternInfo().isLogicalType())
 				for (final LogicalTypeRegExp logical : regExpTypes) {
 					if (logical.acceptsBaseType(FTAType.LONG) &&
-							logical.isMatch(facts.matchPatternInfo.regexp) &&
-							logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-						facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+							logical.isMatch(facts.getMatchPatternInfo().regexp) &&
+							logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchPatternInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+						facts.setMatchPatternInfo(new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null));
 						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
-						debug("Type determination - was LONG, matchPatternInfo - {}", facts.matchPatternInfo);
+						debug("Type determination - was LONG, matchPatternInfo - {}", facts.getMatchPatternInfo());
 						break;
 					}
 				}
 
-			if (!facts.matchPatternInfo.isLogicalType() && realSamples >= analysisConfig.getDetectWindow() &&
+			if (!facts.getMatchPatternInfo().isLogicalType() && realSamples >= analysisConfig.getDetectWindow() &&
 					(facts.confidence < analysisConfig.getThreshold()/100.0 ||
-							(analysisConfig.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING) && !facts.outliers.isEmpty() && (new OutlierAnalysis(facts.outliers, facts.matchPatternInfo)).doubles == facts.outliers.size()))) {
+							(analysisConfig.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING) && !facts.outliers.isEmpty() && (new OutlierAnalysis(facts.outliers, facts.getMatchPatternInfo())).doubles == facts.outliers.size()))) {
 				// We thought it was an integer field, but on reflection it does not feel like it
-				conditionalBackoutToPattern(realSamples, facts.matchPatternInfo);
+				conditionalBackoutToPattern(realSamples, facts.getMatchPatternInfo());
 				facts.confidence = (double) facts.matchCount / realSamples;
 			}
 		}
@@ -3072,18 +3010,18 @@ public class TextAnalyzer {
 
 	private void handleDouble(final long realSamples) {
 		if (facts.minDouble < 0.0)
-			facts.matchPatternInfo = knownPatterns.negation(facts.matchPatternInfo.regexp);
+			facts.setMatchPatternInfo(knownPatterns.negation(facts.getMatchPatternInfo().regexp));
 
-		if (facts.groupingSeparators != 0 && !KnownPatterns.hasGrouping(facts.matchPatternInfo.id)) {
-			facts.matchPatternInfo = knownPatterns.grouping(facts.matchPatternInfo.regexp);
-			debug("Type determination - now with grouping {}", facts.matchPatternInfo);
+		if (facts.groupingSeparators != 0 && !KnownPatterns.hasGrouping(facts.getMatchPatternInfo().id)) {
+			facts.setMatchPatternInfo(knownPatterns.grouping(facts.getMatchPatternInfo().regexp));
+			debug("Type determination - now with grouping {}", facts.getMatchPatternInfo());
 		}
 
 		for (final LogicalTypeRegExp logical : regExpTypes) {
 			if (logical.acceptsBaseType(FTAType.DOUBLE) &&
-					logical.isMatch(facts.matchPatternInfo.regexp) &&
-					logical.analyzeSet(context, facts.matchCount, realSamples, facts.matchPatternInfo.regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-				facts.matchPatternInfo = new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, false, -1, -1, null, null);
+					logical.isMatch(facts.getMatchPatternInfo().regexp) &&
+					logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchPatternInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+				facts.setMatchPatternInfo(new PatternInfo(null, logical.getRegExp(), logical.getBaseType(), logical.getQualifier(), true, -1, -1, null, null));
 				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 				break;
 			}
@@ -3108,7 +3046,7 @@ public class TextAnalyzer {
 	 */
 	public String serialize() throws FTAPluginException, FTAUnsupportedLocaleException {
 		// If we have not already determined the type - we need to force the issue
-		if (facts.matchPatternInfo == null)
+		if (facts.getMatchPatternInfo() == null)
 			determineType();
 
 		final TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(analysisConfig, context, facts.calculateFacts());
@@ -3260,7 +3198,7 @@ public class TextAnalyzer {
 			ret.facts.multiline = first.facts.multiline || second.facts.multiline;
 
 			// If we are numeric then we need to synthesize the mean and variance
-			if (ret.facts.matchPatternInfo != null && ret.facts.matchPatternInfo.isNumeric()) {
+			if (ret.facts.getMatchPatternInfo() != null && ret.facts.getMatchPatternInfo().isNumeric()) {
 		        ret.facts.mean = (first.facts.mean*first.facts.matchCount + second.facts.mean*second.facts.matchCount)/(first.facts.matchCount + second.facts.matchCount);
 		        ret.facts.variance = ((first.facts.matchCount - 1)*first.facts.variance + (second.facts.matchCount - 1)*second.facts.variance)/(first.facts.matchCount+second.facts.matchCount-2);
 		        ret.facts.currentM2 = ret.facts.variance * ret.facts.matchCount;
@@ -3289,13 +3227,13 @@ public class TextAnalyzer {
 			// If we already have it in the merged set then we are done
 			if (merged.get(e) != null)
 				continue;
-			final Object extreme = analyzer.facts.getValue(e);
+			final Object extreme = analyzer.facts.getStringParser().getValue(e);
 			if (extreme == null)
 				continue;
 			boolean found = false;
 			for (final String m : merged.keySet()) {
 				// Check for equality of value not of format - e.g. "00" will equal "0" once both are converted to Longs
-				final Object mValue = analyzer.facts.getValue(m);
+				final Object mValue = analyzer.facts.getStringParser().getValue(m);
 				if (mValue != null && mValue.equals(extreme)) {
 					found = true;
 					break;

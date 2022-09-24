@@ -192,6 +192,7 @@ There are a large number of metrics detected, which vary based on the type of th
  * standardDeviation (Numeric types only) - The population standard deviation (Uses Welford's algorithm)
  * leadingZeroCount (Long type only) - The leading number of zeroes
  * decimalSeparator (Double type only) - The character used to separate the integral component from the fractional component
+ * quantiles - access to q-quantiles. See Note 3.
 
 The following fields are *not* calculated by FTA (but may be set on the Analyzer).
  * totalCount - The total number of elements in the entire data stream (-1 unless set explicitly).
@@ -213,6 +214,8 @@ Note 1: The value of the typeQualifier is dependent on the Base Type as follows:
  * If any Logical plugins are installed - then additional Qualifiers may be returned. For example, if the LastName plugin is installed and a Last Name is detected then the Base Type will be STRING, and the qualifier will be "NAME.LAST".
 
 Note 2: This field may be set on the Analyzer - and if so FTA attempts no further analysis.
+
+Note 3: quantiles are exact for any set where the cardinality is less than maxCardinality.  No support for quantiles for String types where maxCardinality is exceeded, for other types the quantiles are estimates that are within the relative-error guarantee.
 
 </details>
 
@@ -637,4 +640,5 @@ Types using Open-source Code (https://congyan.org/autotype.pdf)
 * VizNet Towards a Visualization Learning and Benchmarking Repository (https://viznet.media.mit.edu/)
 * Semantic Type Detection: Why It Matters, Current Approaches, and How to Improve It (https://megagon.ai/blog/semantic-type-detection-why-it-matters-current-approaches-and-how-to-improve-it)
 * Auto-Type: Synthesizing Type-Detection Logic for Rich Semantic Data Types using Open-source Code (https://www.microsoft.com/en-us/research/publication/synthesizing-type-detection-logic-rich-semantic-data-types-using-open-source-code/)
+* DDSketch: A Fast and Fully-Mergeable Quantile Sketch with Relative-Error Guarantees (https://arxiv.org/pdf/1908.10693.pdf)
 
