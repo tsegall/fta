@@ -18,7 +18,6 @@ package com.cobber.fta;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -183,6 +182,9 @@ public class Facts {
 	private AnalysisConfig analysisConfig;
 	private Locale locale;
 	private DateTimeParser dateTimeParser;
+//	@JsonSerialize(using = SketchSerializer.class)
+	private Sketch sketch;
+	private StringConverter stringParser;
 
 	public Locale getLocale() {
 		return locale;
@@ -197,6 +199,22 @@ public class Facts {
 		localeDecimalSeparator = symbols.getDecimalSeparator();
 
 		dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false);
+	}
+
+	public PatternInfo getMatchPatternInfo() {
+		return matchPatternInfo;
+	}
+
+	public void setMatchPatternInfo(final PatternInfo matchPatternInfo) {
+		this.matchPatternInfo = matchPatternInfo;
+		stringParser = null;
+	}
+
+	@JsonIgnore
+	public StringConverter getStringParser() {
+		if (stringParser == null)
+			stringParser = new StringConverter(matchPatternInfo, locale, decimalSeparator, localeDecimalSeparator);
+		return stringParser;
 	}
 
 	@JsonIgnore
@@ -285,6 +303,13 @@ public class Facts {
 
 	public void setMaxValue(final String maxValue) {
 		this.maxValue = maxValue;
+	}
+
+	@JsonIgnore
+	public Sketch getSketch() {
+		if (sketch == null)
+			sketch = new Sketch(matchPatternInfo.getBaseType(), getStringParser(), analysisConfig.getQuantileRelativeAccuracy());
+		return sketch;
 	}
 
 	public Facts calculateFacts() {
@@ -406,48 +431,6 @@ public class Facts {
 		return this;
 	}
 
-	protected Object getValue(final String input) {
-		if (matchPatternInfo == null || input == null)
-			return null;
-
-		switch (matchPatternInfo.getBaseType()) {
-		case LONG:
-			// We cannot use parseLong as it does not cope with localization
-			final NumberFormat longFormatter = NumberFormat.getIntegerInstance(locale);
-	        try {
-                return longFormatter.parse(input).longValue();
-	        } catch (ParseException e) {
-                return null;
-	        }
-		case DOUBLE:
-			final NumberFormat doubleFormatter = NumberFormat.getInstance(decimalSeparator == localeDecimalSeparator ? locale : Locale.ROOT);
-	        try {
-                return doubleFormatter.parse(input).doubleValue();
-	        } catch (ParseException e) {
-                return null;
-	        }
-		case STRING:
-			return input;
-		case LOCALDATE:
-			final DateTimeFormatter dtfLD = dateTimeParser.ofPattern(matchPatternInfo.format);
-			return LocalDate.parse(input, dtfLD);
-		case LOCALTIME:
-			final DateTimeFormatter dtfLT = dateTimeParser.ofPattern(matchPatternInfo.format);
-			return LocalTime.parse(input, dtfLT);
-		case LOCALDATETIME:
-			final DateTimeFormatter dtfLDT = dateTimeParser.ofPattern(matchPatternInfo.format);
-			return LocalDateTime.parse(input, dtfLDT);
-		case ZONEDDATETIME:
-			final DateTimeFormatter dtfZDT = dateTimeParser.ofPattern(matchPatternInfo.format);
-			return ZonedDateTime.parse(input, dtfZDT);
-		case OFFSETDATETIME:
-			final DateTimeFormatter dtfODT = dateTimeParser.ofPattern(matchPatternInfo.format);
-			return OffsetDateTime.parse(input, dtfODT);
-		}
-
-		return null;
-	}
-
 	public void hydrate() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) || matchPatternInfo == null)
 			return;
@@ -456,22 +439,22 @@ public class Facts {
 		case BOOLEAN:
 			break;
 		case LONG:
-			minLong = (Long)getValue(minValue);
-			maxLong = (Long)getValue(maxValue);
+			minLong = (Long)getStringParser().getValue(minValue);
+			maxLong = (Long)getStringParser().getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbLong.observe((Long)getValue(item)));
-				bottomK.forEach(item -> tbLong.observe((Long)getValue(item)));
+				topK.forEach(item -> tbLong.observe((Long)getStringParser().getValue(item)));
+				bottomK.forEach(item -> tbLong.observe((Long)getStringParser().getValue(item)));
 			}
 			break;
 
 		case DOUBLE:
-			minDouble = (Double)getValue(minValue);
-			maxDouble = (Double)getValue(maxValue);
+			minDouble = (Double)getStringParser().getValue(minValue);
+			maxDouble = (Double)getStringParser().getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbDouble.observe((Double)getValue(item)));
-				bottomK.forEach(item -> tbDouble.observe((Double)getValue(item)));
+				topK.forEach(item -> tbDouble.observe((Double)getStringParser().getValue(item)));
+				bottomK.forEach(item -> tbDouble.observe((Double)getStringParser().getValue(item)));
 			}
 			break;
 
@@ -483,52 +466,52 @@ public class Facts {
 			break;
 
 		case LOCALDATE:
-			minLocalDate = (LocalDate)getValue(minValue);
-			maxLocalDate = (LocalDate)getValue(maxValue);
+			minLocalDate = (LocalDate)getStringParser().getValue(minValue);
+			maxLocalDate = (LocalDate)getStringParser().getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbLocalDate.observe((LocalDate)getValue(item)));
-				bottomK.forEach(item -> tbLocalDate.observe((LocalDate)getValue(item)));
+				topK.forEach(item -> tbLocalDate.observe((LocalDate)getStringParser().getValue(item)));
+				bottomK.forEach(item -> tbLocalDate.observe((LocalDate)getStringParser().getValue(item)));
 			}
 			break;
 
 		case LOCALTIME:
-			minLocalTime = (LocalTime)getValue(minValue);
-			maxLocalTime = (LocalTime)getValue(maxValue);
+			minLocalTime = (LocalTime)getStringParser().getValue(minValue);
+			maxLocalTime = (LocalTime)getStringParser().getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbLocalTime.observe((LocalTime)getValue(item)));
-				bottomK.forEach(item -> tbLocalTime.observe((LocalTime)getValue(item)));
+				topK.forEach(item -> tbLocalTime.observe((LocalTime)getStringParser().getValue(item)));
+				bottomK.forEach(item -> tbLocalTime.observe((LocalTime)getStringParser().getValue(item)));
 			}
 			break;
 
 		case LOCALDATETIME:
-			minLocalDateTime = (LocalDateTime)getValue(minValue);
-			maxLocalDateTime = (LocalDateTime)getValue(maxValue);
+			minLocalDateTime = (LocalDateTime)getStringParser().getValue(minValue);
+			maxLocalDateTime = (LocalDateTime)getStringParser().getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbLocalDateTime.observe((LocalDateTime)getValue(item)));
-				bottomK.forEach(item -> tbLocalDateTime.observe((LocalDateTime)getValue(item)));
+				topK.forEach(item -> tbLocalDateTime.observe((LocalDateTime)getStringParser().getValue(item)));
+				bottomK.forEach(item -> tbLocalDateTime.observe((LocalDateTime)getStringParser().getValue(item)));
 			}
 			break;
 
 		case ZONEDDATETIME:
-			minZonedDateTime = (ZonedDateTime)getValue(minValue);
-			maxZonedDateTime = (ZonedDateTime)getValue(maxValue);
+			minZonedDateTime = (ZonedDateTime)getStringParser().getValue(minValue);
+			maxZonedDateTime = (ZonedDateTime)getStringParser().getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbZonedDateTime.observe((ZonedDateTime)getValue(item)));
-				bottomK.forEach(item -> tbZonedDateTime.observe((ZonedDateTime)getValue(item)));
+				topK.forEach(item -> tbZonedDateTime.observe((ZonedDateTime)getStringParser().getValue(item)));
+				bottomK.forEach(item -> tbZonedDateTime.observe((ZonedDateTime)getStringParser().getValue(item)));
 			}
 			break;
 
 		case OFFSETDATETIME:
-			minOffsetDateTime = (OffsetDateTime)getValue(minValue);
-			maxOffsetDateTime = (OffsetDateTime)getValue(maxValue);
+			minOffsetDateTime = (OffsetDateTime)getStringParser().getValue(minValue);
+			maxOffsetDateTime = (OffsetDateTime)getStringParser().getValue(maxValue);
 
 			if (topK != null) {
-				topK.forEach(item -> tbOffsetDateTime.observe((OffsetDateTime)getValue(item)));
-				bottomK.forEach(item -> tbOffsetDateTime.observe((OffsetDateTime)getValue(item)));
+				topK.forEach(item -> tbOffsetDateTime.observe((OffsetDateTime)getStringParser().getValue(item)));
+				bottomK.forEach(item -> tbOffsetDateTime.observe((OffsetDateTime)getStringParser().getValue(item)));
 			}
 			break;
 		}

@@ -58,6 +58,7 @@ public class TextAnalysisResult {
 	private final DateResolutionMode resolutionMode;
 	private final AnalysisConfig analysisConfig;
 	private final TokenStreams shape;
+	private Sketch ordered;
 
 	/**
 	 * @param name The name of the data stream being analyzed.
@@ -101,7 +102,7 @@ public class TextAnalysisResult {
 	 * @return The Type of the data stream.
 	 */
 	public FTAType getType() {
-		return facts.matchPatternInfo.getBaseType();
+		return facts.getMatchPatternInfo().getBaseType();
 	}
 
 	/**
@@ -120,7 +121,7 @@ public class TextAnalysisResult {
 	 * @return The Type Qualifier for the Type.
 	 */
 	public String getTypeQualifier() {
-		return facts.matchPatternInfo.typeQualifier;
+		return facts.getMatchPatternInfo().typeQualifier;
 	}
 
 	/**
@@ -129,7 +130,7 @@ public class TextAnalysisResult {
 	 * @return True if this is a Logical Type.
 	 */
 	public boolean isLogicalType() {
-		return facts.matchPatternInfo.isLogicalType();
+		return facts.getMatchPatternInfo().isLogicalType();
 	}
 
 	/**
@@ -195,7 +196,7 @@ public class TextAnalysisResult {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 
-		return facts.matchPatternInfo.isNumeric() ? facts.mean : null;
+		return facts.getMatchPatternInfo().isNumeric() ? facts.mean : null;
 	}
 
 	/**
@@ -206,7 +207,53 @@ public class TextAnalysisResult {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 
-		return facts.matchPatternInfo.isNumeric() ? Math.sqrt(facts.variance) : null;
+		return facts.getMatchPatternInfo().isNumeric() ? Math.sqrt(facts.variance) : null;
+	}
+
+	/**
+	 * Get the value at the requested quantile.
+	 * @param quantile a double between 0.0 and 1.0 (both included)
+	 * @return the value at the specified quantile
+	 */
+	public String getValueAtQuantile(final double quantile) {
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.QUANTILES))
+			throw new IllegalArgumentException(NOT_ENABLED);
+
+		if (ordered == null) {
+			ordered = facts.getSketch();
+			ordered.addAll(facts.cardinality);
+		}
+
+		return ordered.getValueAtQuantile(quantile);
+	}
+
+	/**
+	 * Get the values at the requested quantiles.
+	 * Note: The input array must be ordered.
+	 * @param quantiles a array of doubles between 0.0 and 1.0 (both included)
+	 * @return the values at the specified quantiles
+	 */
+	public String[] getValuesAtQuantiles(final double[] quantiles) {
+		if (quantiles == null || quantiles.length == 0)
+			throw new IllegalArgumentException("Quantiles array must be non-null and of non-zero length.");
+
+		// Check we have an ordered list
+		Double last = null;
+		for (double d : quantiles) {
+			if (last == null) {
+				last = d;
+				continue;
+			}
+			if (d < last)
+				throw new IllegalArgumentException("Quantiles array must be ordered.");
+		}
+
+		String[] ret = new String[quantiles.length];
+
+		for (int i = 0; i < quantiles.length; i++)
+			ret[i] = getValueAtQuantile(quantiles[i]);
+
+		return ret;
 	}
 
 	/**
@@ -237,17 +284,17 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression.
 	 */
 	public String getRegExp() {
-		if (facts.matchPatternInfo.isLogicalType() || (!facts.leadingWhiteSpace && !facts.trailingWhiteSpace))
-			return facts.matchPatternInfo.regexp;
+		if (facts.getMatchPatternInfo().isLogicalType() || (!facts.leadingWhiteSpace && !facts.trailingWhiteSpace))
+			return facts.getMatchPatternInfo().regexp;
 
 		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
 		String answer = "";
 		if (facts.leadingWhiteSpace)
 			answer = KnownPatterns.PATTERN_WHITESPACE;
-		final boolean optional = facts.matchPatternInfo.regexp.indexOf('|') != -1;
+		final boolean optional = facts.getMatchPatternInfo().regexp.indexOf('|') != -1;
 		if (optional)
 			answer += "(";
-		answer += facts.matchPatternInfo.regexp;
+		answer += facts.getMatchPatternInfo().regexp;
 		if (optional)
 			answer += ")";
 		if (facts.trailingWhiteSpace)
@@ -262,7 +309,7 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression reflecting the non-white space data.
 	 */
 	public String getDataRegExp() {
-		return facts.matchPatternInfo.regexp;
+		return facts.getMatchPatternInfo().regexp;
 	}
 
 	/**
@@ -569,13 +616,13 @@ public class TextAnalysisResult {
 
 	private FTAType getSignatureBaseType() {
 		if (!isLogicalType())
-			return facts.matchPatternInfo.getBaseType();
+			return facts.getMatchPatternInfo().getBaseType();
 
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(getTypeQualifier());
 		if (pluginDefinition != null && pluginDefinition.baseType != null)
 			return pluginDefinition.baseType;
 
-		return facts.matchPatternInfo.getBaseType();
+		return facts.getMatchPatternInfo().getBaseType();
 	}
 
 	/**
@@ -604,6 +651,12 @@ public class TextAnalysisResult {
 		}
 	}
 
+	private void outputArray(final ArrayNode detail, final String[] array) {
+		for (final String s : array) {
+			detail.add(s);
+		}
+	}
+
 	private void outputDetails(final ObjectMapper mapper, final ArrayNode detail, final Map<String, Long> details, final int verbose) {
 		int records = 0;
 		for (final Map.Entry<String,Long> entry : entriesSortedByValues(details)) {
@@ -627,7 +680,7 @@ public class TextAnalysisResult {
 	 */
 	public String asPlugin() {
 		// Already a logical type or date type - so nothing interesting to report as a Plugin
-		if (isLogicalType() || facts.matchPatternInfo.isDateType())
+		if (isLogicalType() || facts.getMatchPatternInfo().isDateType())
 			return null;
 
 		// Check to see if the Regular Expression is too boring to report - e.g. '.*' or '.{3,31}'
@@ -656,7 +709,7 @@ public class TextAnalysisResult {
 				plugin.put("maximum", facts.getMaxValue());
 		}
 
-		plugin.put("baseType", facts.matchPatternInfo.getBaseType().toString());
+		plugin.put("baseType", facts.getMatchPatternInfo().getBaseType().toString());
 
 		try {
 			return writer.writeValueAsString(plugin);
@@ -700,15 +753,15 @@ public class TextAnalysisResult {
 			//			if (!streamRegExps.isEmpty())
 			//				outputArray(regExpStream, streamRegExps);
 			analysis.put("confidence", facts.confidence);
-			analysis.put("type", facts.matchPatternInfo.getBaseType().toString());
+			analysis.put("type", facts.getMatchPatternInfo().getBaseType().toString());
 
-			if (facts.matchPatternInfo.typeQualifier != null)
-				analysis.put("typeQualifier", facts.matchPatternInfo.typeQualifier);
+			if (facts.getMatchPatternInfo().typeQualifier != null)
+				analysis.put("typeQualifier", facts.getMatchPatternInfo().typeQualifier);
 			if (analysisConfig.isEnabled(TextAnalyzer.Feature.FORMAT_DETECTION))
 				analysis.put("contentFormat", facts.streamFormat);
 		}
 
-		if (FTAType.DOUBLE == facts.matchPatternInfo.getBaseType())
+		if (FTAType.DOUBLE == facts.getMatchPatternInfo().getBaseType())
 			analysis.put("decimalSeparator", String.valueOf(facts.decimalSeparator));
 
 		if (statisticsEnabled()) {
@@ -722,9 +775,9 @@ public class TextAnalysisResult {
 		analysis.put("maxLength", facts.maxRawLength);
 
 		if (statisticsEnabled()) {
-			if (facts.matchPatternInfo.isNumeric())
+			if (facts.getMatchPatternInfo().isNumeric())
 				analysis.put("mean", facts.mean);
-			if (facts.matchPatternInfo.isNumeric())
+			if (facts.getMatchPatternInfo().isNumeric())
 				analysis.put("standardDeviation", getStandardDeviation());
 			if (facts.topK != null) {
 				final ArrayNode detail = analysis.putArray("topK");
@@ -736,7 +789,7 @@ public class TextAnalysisResult {
 			}
 		}
 
-		if (facts.matchPatternInfo.isNumeric())
+		if (facts.getMatchPatternInfo().isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
 		analysis.put("cardinality", facts.cardinality.size() < analysisConfig.getMaxCardinality() ? facts.cardinality.size() : -1);
@@ -756,6 +809,22 @@ public class TextAnalysisResult {
 		if (!shape.getShapes().isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("shapesDetail");
 			outputDetails(MAPPER, detail, shape.getShapes(), verbose);
+		}
+
+		// We have support for arbitrary quantiles - but output percentiles in the JSON, and only if we have some data
+		if (analysisConfig.isEnabled(TextAnalyzer.Feature.QUANTILES) && facts.matchCount != 0 &&
+				FTAType.STRING != facts.getMatchPatternInfo().getBaseType()) {
+			final ArrayNode detail = analysis.putArray("percentiles");
+			// 101 because we want 0.0 and 1.0 plus everything in between
+			double[] percentiles = new double[101];
+			double value = 0.0;
+			for (int i = 0; i < 100; i++) {
+				percentiles[i] = value;
+				value += .01;
+			}
+			// Make sure the last one is precisely 1.0
+			percentiles[100] = 1.0;
+			outputArray(detail, getValuesAtQuantiles(percentiles));
 		}
 
 		analysis.put("leadingWhiteSpace", getLeadingWhiteSpace());
@@ -783,7 +852,7 @@ public class TextAnalysisResult {
 				analysis.put("totalMaxLength", facts.totalMaxLength);
 		}
 
-		if (facts.matchPatternInfo.isDateType())
+		if (facts.getMatchPatternInfo().isDateType())
 			analysis.put("dateResolutionMode", getDateResolutionMode().toString());
 
 		if (target != SignatureTarget.DATA_SIGNATURE) {

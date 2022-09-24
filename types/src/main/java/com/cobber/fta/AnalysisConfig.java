@@ -29,6 +29,9 @@ public class AnalysisConfig {
 	/** The default value for the maximum Cardinality tracked. */
 	public static final int MAX_CARDINALITY_DEFAULT = 12_000;
 
+	/** The default value for the quantile relative-accuracy guarantee. */
+	public static final double QUANTILE_RELATIVE_ACCURACY_DEFAULT = .01;
+
 	/** The default value for the maximum # of outliers tracked. */
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
 
@@ -49,6 +52,9 @@ public class AnalysisConfig {
 
 	/** The maximum Cardinality tracked. */
 	private int maxCardinality = MAX_CARDINALITY_DEFAULT;
+
+	/** The quantile relative-accuracy guarantee. */
+	private double quantileRelativeAccuracy = QUANTILE_RELATIVE_ACCURACY_DEFAULT;
 
 	/** The maximum number of outliers tracked. */
 	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
@@ -94,6 +100,9 @@ public class AnalysisConfig {
 	/** Should we should treat "NULL" (and similar) as Null values. */
 	private boolean nullAsText = true;
 
+	/** Should track quantiles. */
+	private boolean quantiles = true;
+
 	public AnalysisConfig() {
 		this(Locale.getDefault());
 	}
@@ -104,6 +113,7 @@ public class AnalysisConfig {
 
 	public AnalysisConfig(final AnalysisConfig other) {
 		this.maxCardinality = other.maxCardinality;
+		this.quantileRelativeAccuracy = other.quantileRelativeAccuracy;
 		this.maxOutliers = other.maxOutliers;
 		this.maxShapes = other.maxShapes;
 		this.threshold = other.threshold;
@@ -119,6 +129,7 @@ public class AnalysisConfig {
 		this.lengthQualifier = other.lengthQualifier;
 		this.noAbbreviationPunctuation = other.noAbbreviationPunctuation;
 		this.nullAsText = other.nullAsText;
+		this.quantiles = other.quantiles;
 	}
 
 	/**
@@ -149,6 +160,9 @@ public class AnalysisConfig {
 		case NULL_AS_TEXT:
 			nullAsText = state;
 			break;
+		case QUANTILES:
+			quantiles = state;
+			break;
 		}
 	}
 
@@ -173,6 +187,8 @@ public class AnalysisConfig {
 			return noAbbreviationPunctuation;
 		case NULL_AS_TEXT:
 			return nullAsText;
+		case QUANTILES:
+			return quantiles;
 		}
 		return false;
 	}
@@ -184,6 +200,16 @@ public class AnalysisConfig {
 	public int setDetectWindow(final int detectWindow) {
 		final int ret = this.detectWindow;
 		this.detectWindow = detectWindow;
+		return ret;
+	}
+
+	public double getQuantileRelativeAccuracy() {
+		return quantileRelativeAccuracy;
+	}
+
+	public double setQuantileRelativeAccuracy(final double quantileRelativeAccuracy) {
+		final double ret = this.quantileRelativeAccuracy;
+		this.quantileRelativeAccuracy = quantileRelativeAccuracy;
 		return ret;
 	}
 
@@ -283,9 +309,10 @@ public class AnalysisConfig {
 		if (getClass() != obj.getClass())
 			return false;
 		final AnalysisConfig other = (AnalysisConfig) obj;
-		return detectWindow == other.detectWindow && enableDefaultLogicalTypes == other.enableDefaultLogicalTypes
-				&& Objects.equals(localeTag, other.localeTag) && maxCardinality == other.maxCardinality
-				&& maxInputLength == other.maxInputLength && maxOutliers == other.maxOutliers
-				&& maxShapes == other.maxShapes && threshold == other.threshold && numericWidening == other.numericWidening;
+		return detectWindow == other.detectWindow && enableDefaultLogicalTypes == other.enableDefaultLogicalTypes &&
+				Objects.equals(localeTag, other.localeTag) &&
+				maxCardinality == other.maxCardinality && this.quantileRelativeAccuracy == other.quantileRelativeAccuracy &&
+				maxInputLength == other.maxInputLength && maxOutliers == other.maxOutliers &&
+				maxShapes == other.maxShapes && threshold == other.threshold && numericWidening == other.numericWidening;
 	}
 }

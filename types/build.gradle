@@ -19,6 +19,7 @@ dependencies {
 	implementation libs.xeger
 	implementation libs.slf4jAPI
 	implementation libs.guava
+	implementation libs.sketches
 
 	testImplementation libs.logbackClassic
 

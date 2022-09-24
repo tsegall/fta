@@ -2184,12 +2184,11 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyy");
-		assertEquals(result.getRegExp(), "0+|\\d{4}");
+		assertEquals(result.getRegExp(), "\\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
-			assertTrue(input.matches(result.getRegExp()));
-		}
+		for (final Map.Entry<String, Long> entry : result.getCardinalityDetails().entrySet())
+			assertTrue(entry.getKey().matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -3213,7 +3212,7 @@ public class TestDates {
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyyMMdd");
-		assertEquals(result.getRegExp(), "0|\\d{8}");
+		assertEquals(result.getRegExp(), "\\d{8}");
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 1);
 		assertEquals(result.getSampleCount(), inputs.length);
@@ -3221,7 +3220,7 @@ public class TestDates {
 		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
-			if (!input.isEmpty())
+			if (!input.isEmpty() && !"0".equals(input))
 				assertTrue(input.matches(result.getRegExp()), input);
 		}
 	}

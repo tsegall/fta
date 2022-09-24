@@ -25,6 +25,7 @@ public class TestGroups {
 	public static final String LONGS = "longs";
 	public static final String MERGE = "merge";
 	public static final String PERFORMANCE = "performance";
+	public static final String QUANTILES = "quantiles";
 	public static final String PLUGINS = "plugins";
 	public static final String RANDOM = "random";
 	public static final String STRINGS = "strings";

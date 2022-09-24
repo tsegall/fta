@@ -39,11 +39,13 @@ import com.univocity.parsers.csv.CsvParserSettings;
 
 class FileProcessor {
 	private final DriverOptions options;
-	private final PrintStream logger;
+	private final PrintStream output;
+	private final PrintStream error;
 	private final String filename;
 
-	FileProcessor(final PrintStream logger, final String filename, final DriverOptions options) {
-		this.logger = logger;
+	FileProcessor(final PrintStream output, final PrintStream error, final String filename, final DriverOptions options) {
+		this.output = output;
+		this.error = error;
 		this.filename = filename;
 		this.options = options;
 	}
@@ -92,7 +94,7 @@ class FileProcessor {
 			header = parser.getRecordMetadata().headers();
 
 			if (header.length != 4) {
-				logger.printf("ERROR: Expected input with four columns (key,fieldName,fieldValue,fieldCount).  %d field(s) in input.%n", header.length);
+				error.printf("ERROR: Expected input with four columns (key,fieldName,fieldValue,fieldCount).  %d field(s) in input.%n", header.length);
 				System.exit(1);
 			}
 
@@ -104,7 +106,7 @@ class FileProcessor {
 			while ((row = parser.parseNext()) != null) {
 				thisRecord++;
 				if (row.length != numFields) {
-					logger.printf("Record %d has %d fields, expected %d, skipping%n",
+					error.printf("ERROR: Record %d has %d fields, expected %d, skipping%n",
 							thisRecord, row.length, numFields);
 					continue;
 				}
@@ -120,7 +122,7 @@ class FileProcessor {
 						analyzer.trainBulk(bulkMap);
 						analyzer.setTotalCount(totalCount);
 						result = analyzer.getResult();
-						logger.printf("Field '%s' - %s%n", sanitize(analyzer.getStreamName()), result.asJSON(options.pretty, options.verbose));
+						output.printf("Field '%s' - %s%n", sanitize(analyzer.getStreamName()), result.asJSON(options.pretty, options.verbose));
 						totalCount = 0;
 					}
 					bulkMap.clear();
@@ -136,7 +138,7 @@ class FileProcessor {
 				analyzer.trainBulk(bulkMap);
 				analyzer.setTotalCount(totalCount);
 				result = analyzer.getResult();
-				logger.printf("Field '%s' - %s%n", sanitize(analyzer.getStreamName()), result.asJSON(options.pretty, options.verbose));
+				output.printf("Field '%s' - %s%n", sanitize(analyzer.getStreamName()), result.asJSON(options.pretty, options.verbose));
 			}
 		}
 	}
@@ -182,12 +184,12 @@ class FileProcessor {
 
 			header = parser.getRecordMetadata().headers();
 			if (header == null) {
-				logger.printf("ERROR: Cannot parse header for file '%s'%n", filename);
+				error.printf("ERROR: Cannot parse header for file '%s'%n", filename);
 				System.exit(1);
 			}
 			numFields = header.length;
 			if (options.col > numFields) {
-				logger.printf("ERROR: Column %d does not exist.  Only %d field(s) in input.%n", options.col, numFields);
+				error.printf("ERROR: Column %d does not exist.  Only %d field(s) in input.%n", options.col, numFields);
 				System.exit(1);
 			}
 			for (int i = 0; i < numFields; i++) {
@@ -203,7 +205,7 @@ class FileProcessor {
 			while ((row = parser.parseNext()) != null) {
 				thisRecord++;
 				if (row.length != numFields) {
-					logger.printf("Record %d has %d fields, expected %d, skipping%n",
+					error.printf("ERROR: Record %d has %d fields, expected %d, skipping%n",
 							thisRecord, row.length, numFields);
 					continue;
 				}
@@ -216,11 +218,11 @@ class FileProcessor {
 			consumedTime = System.currentTimeMillis();
 		}
 		catch (FileNotFoundException e) {
-			logger.printf("ERROR: Filename '%s' not found.%n", filename);
+			error.printf("ERROR: Filename '%s' not found.%n", filename);
 			System.exit(1);
 		}
 		catch (TextParsingException|java.lang.ArrayIndexOutOfBoundsException e) {
-			logger.printf("ERROR: Filename '%s' Univocity exception. %s%n", filename, e.getMessage());
+			error.printf("ERROR: Filename '%s' Univocity exception. %s%n", filename, e.getMessage());
 			System.exit(1);
 		}
 
@@ -278,6 +280,8 @@ class FileProcessor {
 		long matchCount = 0;
 		long sampleCount = 0;
 		TextAnalysisResult result = null;
+		if (options.json)
+			output.printf("[%n");
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
 				final TextAnalyzer analyzer = processor.getAnalyzer(i);
@@ -285,11 +289,17 @@ class FileProcessor {
 					analyzer.setTotalCount(thisRecord);
 
 				result = analyzer.getResult();
-				logger.printf("Field '%s' (%d) - %s%n", sanitize(analyzer.getStreamName()), i, result.asJSON(options.pretty, options.verbose));
+				if (options.json) {
+					if (i != 0 && options.col == -1)
+						output.printf(",");
+				}
+				else
+					output.printf("Field '%s' (%d) - ", sanitize(analyzer.getStreamName()), i);
+				output.printf("%s%n", result.asJSON(options.pretty, options.verbose));
 				if (options.pluginDefinition) {
 					final String pluginDefinition = result.asPlugin();
 					if (pluginDefinition != null)
-						logger.printf("Plugin Definition - %s%n", pluginDefinition);
+						output.printf("Plugin Definition - %s%n", pluginDefinition);
 				}
 				if (result.getType() != null)
 					typesDetected++;
@@ -298,19 +308,21 @@ class FileProcessor {
 				if (options.validate && matched[i] != result.getMatchCount()) {
 					if (result.isLogicalType())
 						if (matched[i] > result.getMatchCount())
-							logger.printf("\t*** Warning: Match Count via RegExp (%d) > LogicalType match analysis (%d) ***%n", matched[i], result.getMatchCount());
+							error.printf("\t*** Warning: Match Count via RegExp (%d) > LogicalType match analysis (%d) ***%n", matched[i], result.getMatchCount());
 						else
-							logger.printf("\t*** Error: Match Count via RegExp (%d) < LogicalType match analysis (%d) ***%n", matched[i], result.getMatchCount());
+							error.printf("\t*** Error: Match Count via RegExp (%d) < LogicalType match analysis (%d) ***%n", matched[i], result.getMatchCount());
 					else
-						logger.printf("\t*** Error: Match Count via RegExp (%d) does not match analysis (%d) ***%n", matched[i], result.getMatchCount());
+						error.printf("\t*** Error: Match Count via RegExp (%d) does not match analysis (%d) ***%n", matched[i], result.getMatchCount());
 					if (options.verbose != 0) {
-						logger.println("Failed to match:");
+						error.println("Failed to match:");
 						for (final String failure : failures)
-							logger.println("\t" + failure);
+							error.println("\t" + failure);
 					}
 				}
 			}
 		}
+		if (options.json)
+			output.printf("]%n");
 		resultsTime = System.currentTimeMillis();
 
 		analyzeRecord(processor.getAnalyzers());
@@ -318,19 +330,22 @@ class FileProcessor {
 	    final Runtime instance = Runtime.getRuntime();
 		final double usedMemory = (instance.totalMemory() - instance.freeMemory()) / (1024 * 1024);
 		final long durationTime = System.currentTimeMillis() - startTime;
-		if (options.col == -1) {
-			final double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;
-			logger.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d, Used Memory: %.2f.%n",
-					filename, typesDetected, numFields, percentage, matchCount, sampleCount, usedMemory);
+
+		if (!options.json) {
+			if (options.col == -1) {
+				final double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;
+				error.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d, Used Memory: %.2f.%n",
+						filename, typesDetected, numFields, percentage, matchCount, sampleCount, usedMemory);
+			}
+			else {
+				final double confidence = result == null ? 0 : result.getConfidence();
+				error.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%), Used Memory: %.2f.%n",
+						(typesDetected == 1 ? "yes" : "no"), matchCount,
+						sampleCount, confidence*100, usedMemory);
+			}
+			error.printf("Execution time (#fields: %d, #records: %d): initialization: %dms, consumption: %dms, results: %dms, total: %dms%n",
+					numFields, thisRecord, initializedTime - startTime, consumedTime - initializedTime, resultsTime - consumedTime, durationTime);
 		}
-		else {
-			final double confidence = result == null ? 0 : result.getConfidence();
-			logger.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%), Used Memory: %.2f.%n",
-					(typesDetected == 1 ? "yes" : "no"), matchCount,
-					sampleCount, confidence*100, usedMemory);
-		}
-		logger.printf("Execution time (#fields: %d, #records: %d): initialization: %dms, consumption: %dms, results: %dms, total: %dms%n",
-				numFields, thisRecord, initializedTime - startTime, consumedTime - initializedTime, resultsTime - consumedTime, durationTime);
 	}
 
 	// HONORIFIC_EN, NAME.FIRST, NAME.LAST, NAME.MIDDLE -> FULL_NAME [PERSON]

@@ -1036,10 +1036,10 @@ public class TestDoubles {
 			final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 			final DecimalFormat df = new DecimalFormat("#E0", formatSymbols);
 
-			final String grp = RegExpGenerator.slosh(formatSymbols.getGroupingSeparator());
-			final String dec = RegExpGenerator.slosh(formatSymbols.getDecimalSeparator());
-			logger.debug("Locale '{}', grouping: '{}', decimal: '{}', negPrefix: '{}', negSuffix: '{}'.",
-					locale, grp, dec, TestUtils.getNegativePrefix(locale), TestUtils.getNegativeSuffix(locale));
+//			final String grp = RegExpGenerator.slosh(formatSymbols.getGroupingSeparator());
+//			final String dec = RegExpGenerator.slosh(formatSymbols.getDecimalSeparator());
+//			logger.debug("Locale '{}', grouping: '{}', decimal: '{}', negPrefix: '{}', negSuffix: '{}'.",
+//					locale, grp, dec, TestUtils.getNegativePrefix(locale), TestUtils.getNegativeSuffix(locale));
 
 			final Set<String> samples = new HashSet<>();
 			try {
