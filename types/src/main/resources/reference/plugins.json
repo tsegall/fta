@@ -480,7 +480,7 @@
 		"qualifier" : "PERSON.RACE_ABBR_EN",
 		"description": "Race/Ethnicity (person)",
 		"pluginType": "java",
-		"signature": "",
+		"signature": "exN+QvGFqAfnTL793VLPx85wmQ0=",
 		"clazz": "com.cobber.fta.plugins.person.RaceAbbr",
 		"validLocales": [
 			{
