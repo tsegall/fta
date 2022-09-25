@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 10.2.1
+ - ENH: Add new Semantic Type - PERSON.RACE_ABBR_EN
+
 ### 10.2.0
  - ENH: Add support for quantile determination. See getValueAtQuantile, getValuesAtQuantiles, and get/setQuantileRelativeAccuracy().
  - ENH: CLI - Add --json to output true JSON from command line

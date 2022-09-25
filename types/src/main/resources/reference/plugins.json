@@ -464,7 +464,7 @@
 	},
 	{
 		"qualifier" : "PERSON.RACE_EN",
-		"description": "Race/Ethinicity (person)",
+		"description": "Race/Ethnicity (person)",
 		"pluginType": "java",
 		"signature": "20Jx6q02Vkew5xiX87Cnvi2EVf4=",
 		"clazz": "com.cobber.fta.plugins.person.Race",
@@ -475,6 +475,20 @@
 			}
 		],
 		"priority": 84
+	},
+	{
+		"qualifier" : "PERSON.RACE_ABBR_EN",
+		"description": "Race/Ethnicity (person)",
+		"pluginType": "java",
+		"signature": "",
+		"clazz": "com.cobber.fta.plugins.person.RaceAbbr",
+		"validLocales": [
+			{
+				"localeTag":  "*",
+				"headerRegExps": [ { "regExp": "(?i)(race|ethnic).*|.*(?i)(race|ethnicity)", "confidence": 95, "mandatory": true } ]
+			}
+		],
+		"priority": 85
 	},
 	{
 		"qualifier" : "PERSON.MARITAL_STATUS_EN",
@@ -488,7 +502,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(marital.?status).*", "confidence": 95, "mandatory": true } ]
 			}
 		],
-		"priority": 85
+		"priority": 86
 	},
 	{
 		"qualifier": "NATIONALITY_EN",
