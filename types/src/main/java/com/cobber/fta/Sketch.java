@@ -20,7 +20,6 @@ import java.time.OffsetDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -29,45 +28,52 @@ import com.datadoghq.sketch.ddsketch.DDSketch;
 import com.datadoghq.sketch.ddsketch.DDSketches;
 
 /*
- * This class is used to track data once the cardinality has been exceeded.
+ * This class is used encapsulate a Sketch to provide Quantile data.  If the data fits in the cardinality set
+ * then it simply uses a map to generate the cardinality.  Once the cardinality exceeds maxCardinality then the
+ * data is tracked via DDSketch which provides for a specifiable relative-accuracy quantile sketch algorithms.
  */
 public class Sketch {
 	private TreeMap<String, Long> basis;
-	private long totalMapEntries;
-	private long totalSketchEntries;
+	protected long totalMapEntries;
+	protected long totalSketchEntries;
 	private DDSketch ddSketch;
-	private StringConverter stringConverter;
+	protected FTAType type;
+	protected StringConverter stringConverter;
+	protected double relativeAccuracy;
+	private boolean isComplete = false;
 
 	Sketch(final FTAType type, final StringConverter stringConverter, final double relativeAccuracy) {
+		this.type = type;
 		this.stringConverter = stringConverter;
+		this.relativeAccuracy = relativeAccuracy;
 
 		switch (type) {
 		case BOOLEAN:
 			basis = new TreeMap<>();
 			break;
 		case DOUBLE:
-			basis = new TreeMap<>(new CommonComparator<Double>());
+			basis = new TreeMap<>(new CommonComparator<Double>(stringConverter));
 			break;
 		case LOCALDATE:
-			basis = new TreeMap<>(new CommonComparator<ChronoLocalDate>());
+			basis = new TreeMap<>(new CommonComparator<ChronoLocalDate>(stringConverter));
 			break;
 		case LOCALDATETIME:
-			basis = new TreeMap<>(new CommonComparator<ChronoLocalDateTime<?>>());
+			basis = new TreeMap<>(new CommonComparator<ChronoLocalDateTime<?>>(stringConverter));
 			break;
 		case LOCALTIME:
-			basis = new TreeMap<>(new CommonComparator<LocalTime>());
+			basis = new TreeMap<>(new CommonComparator<LocalTime>(stringConverter));
 			break;
 		case LONG:
-			basis = new TreeMap<>(new CommonComparator<Long>());
+			basis = new TreeMap<>(new CommonComparator<Long>(stringConverter));
 			break;
 		case OFFSETDATETIME:
-			basis = new TreeMap<>(new CommonComparator<OffsetDateTime>());
+			basis = new TreeMap<>(new CommonComparator<OffsetDateTime>(stringConverter));
 			break;
 		case STRING:
 			basis = new TreeMap<>();
 			break;
 		case ZONEDDATETIME:
-			basis = new TreeMap<>(new CommonComparator<ChronoZonedDateTime<?>>());
+			basis = new TreeMap<>(new CommonComparator<ChronoZonedDateTime<?>>(stringConverter));
 			break;
 		default:
 			break;
@@ -85,10 +91,16 @@ public class Sketch {
 		return totalSketchEntries != 0;
 	}
 
-	public void addAll(Map<String, Long> map) {
+	public boolean isComplete() {
+		return isComplete;
+	}
+
+	public void complete(Map<String, Long> map) {
 		for (Map.Entry<String, Long> e : map.entrySet()) {
-			if (isCardinalityExceeded())
+			if (isCardinalityExceeded()) {
 				ddSketch.accept(stringConverter.toDouble(e.getKey().trim()), e.getValue());
+				totalSketchEntries += e.getValue();
+			}
 			else {
 				// Cardinality map - has entries that differ only based on whitespace, so for example it may include
 				// "47" 10 times and " 47" 20 times, for the purposes of calculating quantiles we want these to be coalesced
@@ -101,6 +113,7 @@ public class Sketch {
 				totalMapEntries += e.getValue();
 			}
         }
+		isComplete = true;
 	}
 
 	/**
@@ -125,22 +138,9 @@ public class Sketch {
 		return null;
 	}
 
-    public class CommonComparator<T extends Comparable> implements Comparator<String> {
-        @Override
-        public int compare(String input1, String input2) {
-        	T val1 = (T)stringConverter.getValue(input1);
-        	T val2 = (T)stringConverter.getValue(input2);
-            int value =  val1.compareTo(val2);
-
-            if (value < 0)
-                return -1;
-
-            if (value > 0)
-                return 1;
-
-            return 0;
-        }
-    }
+    protected void setDdSketch(final DDSketch ddSketch) {
+		this.ddSketch = ddSketch;
+	}
 
 	protected DDSketch getDdSketch() {
 		return ddSketch;

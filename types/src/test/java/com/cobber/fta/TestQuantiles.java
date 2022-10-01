@@ -33,7 +33,7 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser;
 
 /**
- * Tests for the following Data Types
+ * Quantile Tests for the following Data Types
  *
  * BOOLEAN (DONE)
  * DOUBLE (DONE)
@@ -43,7 +43,7 @@ import com.cobber.fta.dates.DateTimeParser;
  * LOCALDATETIME
  * LOCALTIME
  * OFFSETDATETIME
- * ZONEDDATETIME:
+ * ZONEDDATETIME (pretends to be an OFFSETDATETIME)
  *
  * STRING  (Note: no support for Quantile determination once the Cardinality Cache is exceeded)
  */
@@ -57,7 +57,6 @@ public class TestQuantiles {
 
 		// Test pre getResult()
 		String serialized = analysis.serialize();
-//		System.err.println(serialized);
 		final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, hydrated.serialize());
 
@@ -122,19 +121,19 @@ public class TestQuantiles {
 		baseLong(10_000, .001);
 	}
 
-//	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
 	public void long15K() throws IOException, FTAException {
 		baseLong(15_000, .01);
 		baseLong(15_000, .001);
 	}
 
-//	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
 	public void long100K() throws IOException, FTAException {
 		baseLong(100_000, .01);
 		baseLong(100_000, .001);
 	}
 
-//	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
 	public void long1M() throws IOException, FTAException {
 		baseLong(1_000_000, .01);
 		baseLong(1_000_000, .001);
@@ -189,8 +188,21 @@ public class TestQuantiles {
 		for (int i = 0; i < size; i++)
 			analysis.train(String.valueOf(1.0 * i));
 
-		final TextAnalysisResult result = analysis.getResult();
-//		TestUtils.checkSerialization(analysis);
+		// Test pre getResult()
+		String serialized = analysis.serialize();
+		final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, hydrated.serialize());
+
+		// Test a hydrated object
+		serialized = hydrated.serialize();
+		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, rehydrated.serialize());
+
+		TextAnalysisResult result = rehydrated.getResult();
+
+		// Test post getResult()
+		serialized = rehydrated.serialize();
+		assertEquals(serialized, TextAnalyzer.deserialize(serialized).serialize());
 
 		assertEquals(result.getSampleCount(), size);
 		assertEquals(result.getNullCount(), 0);
@@ -265,8 +277,21 @@ public class TestQuantiles {
 
 		analysis.train("0");
 
-		final TextAnalysisResult result = analysis.getResult();
-//		TestUtils.checkSerialization(analysis);
+		// Test pre getResult()
+		String serialized = analysis.serialize();
+		final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, hydrated.serialize());
+
+		// Test a hydrated object
+		serialized = hydrated.serialize();
+		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, rehydrated.serialize());
+
+		TextAnalysisResult result = rehydrated.getResult();
+
+		// Test post getResult()
+		serialized = rehydrated.serialize();
+		assertEquals(serialized, TextAnalyzer.deserialize(serialized).serialize());
 
 		assertEquals(result.getSampleCount(), size + 1);
 		assertEquals(result.getNullCount(), 0);
@@ -315,7 +340,21 @@ public class TestQuantiles {
 		for (String testCase : testCases)
 			analysis.train(testCase);
 
-		final TextAnalysisResult result = analysis.getResult();
+		// Test pre getResult()
+		String serialized = analysis.serialize();
+		final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, hydrated.serialize());
+
+		// Test a hydrated object
+		serialized = hydrated.serialize();
+		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, rehydrated.serialize());
+
+		TextAnalysisResult result = rehydrated.getResult();
+
+		// Test post getResult()
+		serialized = rehydrated.serialize();
+		assertEquals(serialized, TextAnalyzer.deserialize(serialized).serialize());
 
 		assertEquals(result.getSampleCount(), testCases.length);
 		assertEquals(result.getNullCount(), 0);
@@ -354,8 +393,22 @@ public class TestQuantiles {
 			if (i + 1 < size)
 				ldt = ldt.minusHours(25).minusMinutes(25).minusSeconds(25);
 		}
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
+
+		// Test pre getResult()
+		String serialized = analysis.serialize();
+		final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, hydrated.serialize());
+
+		// Test a hydrated object
+		serialized = hydrated.serialize();
+		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, rehydrated.serialize());
+
+		TextAnalysisResult result = rehydrated.getResult();
+
+		// Test post getResult()
+		serialized = rehydrated.serialize();
+		assertEquals(serialized, TextAnalyzer.deserialize(serialized).serialize());
 
 		assertEquals(result.getSampleCount(), size);
 		assertEquals(result.getOutlierCount(), 0);
@@ -521,8 +574,21 @@ public class TestQuantiles {
 		for (int i = 0; i < size; i++)
 			analysis.train(i < size/10 ? "true" : "false");
 
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
+		// Test pre getResult()
+		String serialized = analysis.serialize();
+		final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, hydrated.serialize());
+
+		// Test a hydrated object
+		serialized = hydrated.serialize();
+		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, rehydrated.serialize());
+
+		TextAnalysisResult result = rehydrated.getResult();
+
+		// Test post getResult()
+		serialized = rehydrated.serialize();
+		assertEquals(serialized, TextAnalyzer.deserialize(serialized).serialize());
 
 		assertEquals(result.getSampleCount(), size);
 		assertEquals(result.getOutlierCount(), 0);
@@ -563,8 +629,22 @@ public class TestQuantiles {
 			if (i + 1 < size)
 				lt = size > 86400 ? lt.plusNanos(1_000_000) : lt.plusSeconds(1);
 		}
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
+
+		// Test pre getResult()
+		String serialized = analysis.serialize();
+		final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, hydrated.serialize());
+
+		// Test a hydrated object
+		serialized = hydrated.serialize();
+		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, rehydrated.serialize());
+
+		TextAnalysisResult result = rehydrated.getResult();
+
+		// Test post getResult()
+		serialized = rehydrated.serialize();
+		assertEquals(serialized, TextAnalyzer.deserialize(serialized).serialize());
 
 		assertEquals(result.getSampleCount(), size);
 		assertEquals(result.getOutlierCount(), 0);
@@ -659,7 +739,7 @@ public class TestQuantiles {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), testCases.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "([+-]?([0-9]|[0-8][0-9])\\.\\d+)|[+-]?90\\.0+");
+		assertEquals(result.getRegExp(), "([+-]?([0-9]|[0-8][0-9])\\.\\d+)|[+-]?90\\.0+|0");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
@@ -682,7 +762,21 @@ public class TestQuantiles {
 		for (int i = 0; i < SIZE; i++)
 			analysis.train(String.valueOf(random.nextGaussian()*100));
 
-		final TextAnalysisResult result = analysis.getResult();
+		// Test pre getResult()
+		String serialized = analysis.serialize();
+		final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, hydrated.serialize());
+
+		// Test a hydrated object
+		serialized = hydrated.serialize();
+		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
+		assertEquals(serialized, rehydrated.serialize());
+
+		TextAnalysisResult result = rehydrated.getResult();
+
+		// Test post getResult()
+		serialized = rehydrated.serialize();
+		assertEquals(serialized, TextAnalyzer.deserialize(serialized).serialize());
 
 		assertEquals(result.getSampleCount(), SIZE);
 		assertEquals(result.getOutlierCount(), 0);
@@ -726,5 +820,50 @@ public class TestQuantiles {
 			double high = Double.parseDouble(answers[100 - i]);
 //			System.err.printf("low: %f, high: %f\n", low, high);
 		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	public void mergeTest() throws IOException, FTAException {
+		final double RELATIVE_ACCURACY = 0.01;
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		final int size = 100000;
+
+		for (long i = 0; i < size; i++)
+			shardOne.train(String.valueOf(i));
+		shardOne.setTotalCount(size);
+		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOne.serialize());
+
+		for (int i = size; i <= 2 * size; i++)
+			shardTwo.train(String.valueOf(i));
+		shardTwo.setTotalCount(size);
+		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwo.serialize());
+
+		// Merge the two hydrated TextAnalyzers
+		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
+
+		TextAnalysisResult result = merged.getResult();
+
+
+		assertEquals(result.getTotalCount(), 2 * size);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getMaxValue(), "200000");
+		assertNull(result.getTypeQualifier(), "SIGNED");
+
+		assertEquals(result.getMean(), 100000.0);
+
+		String q0_0 = result.getValueAtQuantile(0);
+		String q0_5 = result.getValueAtQuantile(.5);
+		String q1_0 = result.getValueAtQuantile(1.0);
+
+		assertEquals(Long.valueOf(q0_0), 0);
+		assertEquals(Long.valueOf(q1_0), 200000.0, 200000 * RELATIVE_ACCURACY);
+
+		// Median should be seriously close to 0
+		assertEquals(Long.valueOf(q0_5), 100000.0, 100000 * RELATIVE_ACCURACY);
 	}
 }

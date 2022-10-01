@@ -15,7 +15,6 @@
  */
 package com.cobber.fta;
 
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,11 +22,8 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.dates.DateTimeParser;
 
 /**
  * Based on the FTA Type support the ability to convert from a String to an instance of the Type, or from an instance of
@@ -37,32 +33,15 @@ import com.cobber.fta.dates.DateTimeParser;
  * the ordering of the FTAType instance.
  */
 public class StringConverter {
-	private NumberFormat longFormatter;
-	private NumberFormat doubleFormatter;
-	private DateTimeFormatter dateTimeFormatter;
-	private FTAType type;
+	public TypeFormatter typeFormatter;
+	public FTAType type;
 
-	StringConverter(final PatternInfo matchPatternInfo, final Locale locale, final char decimalSeparator, final char localeDecimalSeparator) {
-		this.type = matchPatternInfo.getBaseType();
+	StringConverter() {
+	}
 
-		switch (type) {
-		case LONG:
-			longFormatter = NumberFormat.getIntegerInstance(locale);
-			longFormatter.setGroupingUsed(KnownPatterns.hasGrouping(matchPatternInfo.id));
-			break;
-		case DOUBLE:
-			doubleFormatter = NumberFormat.getInstance(decimalSeparator == localeDecimalSeparator ? locale : Locale.ROOT);
-			doubleFormatter.setGroupingUsed(KnownPatterns.hasGrouping(matchPatternInfo.id));
-			break;
-		case LOCALDATE:
-		case LOCALTIME:
-		case LOCALDATETIME:
-		case ZONEDDATETIME:
-		case OFFSETDATETIME:
-			DateTimeParser dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false);
-			dateTimeFormatter = dateTimeParser.ofPattern(matchPatternInfo.format);
-			break;
-		}
+	StringConverter(final FTAType type, final TypeFormatter typeFormatter) {
+		this.type = type;
+		this.typeFormatter = typeFormatter;
 	}
 
 	protected Object getValue(final String input) {
@@ -75,28 +54,28 @@ public class StringConverter {
 		case LONG:
 			// We cannot use parseLong as it does not cope with localization
 	        try {
-                return longFormatter.parse(input).longValue();
+                return typeFormatter.getNumericalFormatter().parse(input.charAt(0) == '+' ? input.substring(1) : input).longValue();
 	        } catch (ParseException e) {
                 return null;
 	        }
 		case DOUBLE:
-	        try {
-	        	return  doubleFormatter.parse(input.charAt(0) == '+' ? input.substring(1) : input).doubleValue();
-	        } catch (ParseException e) {
-                return null;
-	        }
+			try {
+				return  typeFormatter.getNumericalFormatter().parse(input.charAt(0) == '+' ? input.substring(1) : input).doubleValue();
+			} catch (ParseException e) {
+				return null;
+			}
 		case STRING:
 			return input;
 		case LOCALDATE:
-			return LocalDate.parse(input, dateTimeFormatter);
+			return LocalDate.parse(input, typeFormatter.getDateFormatter());
 		case LOCALTIME:
-			return LocalTime.parse(input, dateTimeFormatter);
+			return LocalTime.parse(input, typeFormatter.getDateFormatter());
 		case LOCALDATETIME:
-			return LocalDateTime.parse(input, dateTimeFormatter);
+			return LocalDateTime.parse(input, typeFormatter.getDateFormatter());
 		case ZONEDDATETIME:
-			return ZonedDateTime.parse(input, dateTimeFormatter);
+			return ZonedDateTime.parse(input, typeFormatter.getDateFormatter());
 		case OFFSETDATETIME:
-			return OffsetDateTime.parse(input, dateTimeFormatter);
+			return OffsetDateTime.parse(input, typeFormatter.getDateFormatter());
 		}
 
 		return null;
@@ -107,21 +86,21 @@ public class StringConverter {
 		case BOOLEAN:
 			return String.valueOf((toFix));
 		case LONG:
-			return longFormatter.format((long)toFix);
+			return typeFormatter.getNumericalFormatter().format((long)toFix);
 		case DOUBLE:
-			return doubleFormatter.format((double)toFix);
+			return typeFormatter.getNumericalFormatter().format((double)toFix);
 		case STRING:
 			return (String)toFix;
 		case LOCALDATE:
-			return ((LocalDate)toFix).format(dateTimeFormatter);
+			return ((LocalDate)toFix).format(typeFormatter.getDateFormatter());
 		case LOCALTIME:
-			return ((LocalTime)toFix).format(dateTimeFormatter);
+			return ((LocalTime)toFix).format(typeFormatter.getDateFormatter());
 		case LOCALDATETIME:
-			return ((LocalDateTime)toFix).format(dateTimeFormatter);
+			return ((LocalDateTime)toFix).format(typeFormatter.getDateFormatter());
 		case ZONEDDATETIME:
-			return ((ZonedDateTime)toFix).format(dateTimeFormatter);
+			return ((ZonedDateTime)toFix).format(typeFormatter.getDateFormatter());
 		case OFFSETDATETIME:
-			return ((OffsetDateTime)toFix).format(dateTimeFormatter);
+			return ((OffsetDateTime)toFix).format(typeFormatter.getDateFormatter());
 		}
 
 		return null;

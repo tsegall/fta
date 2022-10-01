@@ -25,6 +25,7 @@ import java.util.Map;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.FiniteMap;
 import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
@@ -194,7 +195,7 @@ public class FreeText extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
-			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams,
+			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams,
 			final AnalysisConfig analysisConfig) {
 
 		// If we are below the threshold reject

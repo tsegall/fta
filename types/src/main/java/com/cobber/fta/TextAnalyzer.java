@@ -132,7 +132,7 @@ public class TextAnalyzer {
 	private boolean hasNegativePrefix;
 	private char negativeSuffix;
 	private boolean hasNegativeSuffix;
-	private final Map<String, Long> outliersSmashed = new HashMap<>();
+	private final FiniteMap outliersSmashed = new FiniteMap();
 	private List<String> raw; // 0245-11-98
 	// 0: d{4}-d{2}-d{2} 1: d{+}-d{+}-d{+} 2: d{+}-d{+}-d{+}
 	// 0: d{4} 1: d{+} 2: [-]d{+}
@@ -680,6 +680,15 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Return the full path to the trace file, or null if no tracing configured.
+	 * Note: This will only be valid (i.e. non-null) after the first invocation of train() or trainBulk().
+	 * @return The Path to the trace file.
+	 */
+	public String getTraceFilePath() {
+		return traceConfig == null ? null : traceConfig.getFilename();
+	}
+
+	/**
 	 * Gets the current maximum input length for sampling.
 	 * @return The current maximum length before an input sample is truncated.
 	 */
@@ -909,13 +918,6 @@ public class TextAnalyzer {
 				facts.decimalSeparator = localeDecimalSeparator;
 		}
 
-		if (patternInfo.isLogicalType()) {
-			// If it is a registered Infinite Logical Type then validate it
-			final LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
-			if (logical.acceptsBaseType(FTAType.DOUBLE) && !logical.isValid(input))
-				return false;
-		}
-
 		// If it is NaN/Infinity then we are all done
 		if (Double.isNaN(d) || Double.isInfinite(d))
 			return true;
@@ -938,6 +940,13 @@ public class TextAnalyzer {
 				}
 
 			facts.tbDouble.observe(d);
+		}
+
+		if (patternInfo.isLogicalType()) {
+			// If it is a registered Infinite Logical Type then validate it
+			final LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
+			if (logical.acceptsBaseType(FTAType.DOUBLE) && !logical.isValid(input))
+				return false;
 		}
 
 		return true;
@@ -1162,6 +1171,8 @@ public class TextAnalyzer {
 
 		// Now that we have initialized these facts cannot change, so set them on the Facts object
 		this.facts.setConfig(analysisConfig);
+
+		outliersSmashed.setMaxCapacity(analysisConfig.getMaxOutliers());
 
 		initialized = true;
 	}
@@ -1689,12 +1700,7 @@ public class TextAnalyzer {
 			final Map<String, Integer> keyFrequency = new HashMap<>();
 			for (final Map.Entry<Integer, Integer> entry : observedFrequency.entrySet()) {
 				final Escalation escalation = observedSet.get(entry.getKey());
-				final String key = escalation.level[i].toString();
-				final Integer seen = keyFrequency.get(key);
-				if (seen == null)
-					keyFrequency.put(key, entry.getValue());
-				else
-					keyFrequency.put(key, seen + entry.getValue());
+				keyFrequency.merge(escalation.level[i].toString(), entry.getValue(), Integer::sum);
 			}
 
 			// If it makes sense rewrite our sample data switching numeric/alpha matches to alphanumeric matches
@@ -1879,27 +1885,18 @@ public class TextAnalyzer {
 				}
 			}
 
-			for (final String sample : raw)
-				trackResult(sample, sample.trim(), false, 1);
+			raw.forEach((value) -> trackResult(value, value.trim(), false, 1));
 		}
 	}
 
 	private void addValid(final String input, final long count) {
-		final Long seen = facts.cardinality.get(input);
-		if (seen == null) {
-			if (facts.cardinality.size() < analysisConfig.getMaxCardinality())
-				facts.cardinality.put(input, count);
-			else {
-				// Cardinality blown, so track remaining set in a Sketch
-				if (analysisConfig.isEnabled(TextAnalyzer.Feature.QUANTILES) && !facts.getMatchPatternInfo().getBaseType().equals(FTAType.STRING))
-					facts.getSketch().accept(input, count);
-			}
-		}
-		else
-			facts.cardinality.put(input, seen + count);
+		final boolean added = facts.cardinality.mergeIfSpace(input, count, Long::sum);
+		// If Cardinality blown track remaining set in a Sketch
+		if (!added && analysisConfig.isEnabled(TextAnalyzer.Feature.QUANTILES) && !facts.getMatchPatternInfo().getBaseType().equals(FTAType.STRING))
+			facts.getSketch().accept(input, count);
 	}
 
-	private void outlier(final String input, final long count) {
+	private void addOutlier(final String input, final long count) {
 		final String cleaned = input.trim();
 		final int trimmedLength = cleaned.length();
 
@@ -1914,22 +1911,9 @@ public class TextAnalyzer {
 		if (facts.maxOutlierString == null || facts.maxOutlierString.compareTo(cleaned) < 0)
 			facts.maxOutlierString = cleaned;
 
-		final String smashed = Token.generateKey(input);
-		Long seen = outliersSmashed.get(smashed);
-		if (seen == null) {
-			if (outliersSmashed.size() < analysisConfig.getMaxOutliers())
-				outliersSmashed.put(smashed, count);
-		} else {
-			outliersSmashed.put(smashed, seen + count);
-		}
+		outliersSmashed.mergeIfSpace(Token.generateKey(input), count, Long::sum);
 
-		seen = facts.outliers.get(input);
-		if (seen == null) {
-			if (facts.outliers.size() < analysisConfig.getMaxOutliers())
-				facts.outliers.put(input, count);
-		} else {
-			facts.outliers.put(input, seen + count);
-		}
+		facts.outliers.mergeIfSpace(input, count, Long::sum);
 	}
 
 	class OutlierAnalysis {
@@ -2098,35 +2082,66 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Backout from a mistaken logical type whose base type was long
+	 * Backout from a mistaken logical type whose base type was DOUBLE
+	 * @param logical The Logical type we are backing out from
+	 * @param realSamples The number of real samples we have seen.
+	 */
+	private void backoutLogicalDoubleType(final LogicalType logical, final long realSamples) {
+		facts.setMatchPatternInfo(knownPatterns.getByID(KnownPatterns.ID.ID_DOUBLE));
+	}
+
+	/**
+	 * Backout from a mistaken logical type whose base type was LONG
 	 * @param logical The Logical type we are backing out from
 	 * @param realSamples The number of real samples we have seen.
 	 */
 	private void backoutLogicalLongType(final LogicalType logical, final long realSamples) {
 		long otherLongs = 0;
+		long otherDoubles = 0;
 
-		final Map<String, Long> outliersCopy = new HashMap<>(facts.outliers);
+		final Map<String, Long> longOutliers = new HashMap<>();
+		final Map<String, Long> doubleOutliers = new HashMap<>();
 
 		// Sweep the current outliers and check they are part of the set
-		for (final Map.Entry<String, Long> entry : outliersCopy.entrySet()) {
-			boolean isLong = true;
+		for (final Map.Entry<String, Long> entry : facts.outliers.entrySet()) {
 			try {
 				Long.parseLong(entry.getKey());
-			} catch (NumberFormatException e) {
-				isLong = false;
-			}
-
-			if (isLong) {
-				if (facts.cardinality.size() < analysisConfig.getMaxCardinality())
-					facts.cardinality.put(entry.getKey(), entry.getValue());
-				facts.outliers.remove(entry.getKey(), entry.getValue());
 				otherLongs += entry.getValue();
+				longOutliers.put(entry.getKey(), entry.getValue());
+			} catch (NumberFormatException el) {
+				try {
+					Double.parseDouble(entry.getKey());
+					otherDoubles += entry.getValue();
+					doubleOutliers.put(entry.getKey(), entry.getValue());
+				}
+				catch (NumberFormatException ed) {
+					// Swallow
+				}
 			}
 		}
 
+		// Move the longs from the outlier set to the cardinality set
 		facts.matchCount += otherLongs;
-		if ((double) facts.matchCount / realSamples > analysisConfig.getThreshold()/100.0)
+		facts.outliers.entrySet().removeAll(longOutliers.entrySet());
+		for (final Map.Entry<String, Long> entry : longOutliers.entrySet())
+			addValid(entry.getKey(), entry.getValue());
+
+		if ((double) facts.matchCount / realSamples > analysisConfig.getThreshold()/100.0) {
 			facts.setMatchPatternInfo(knownPatterns.getByID(KnownPatterns.ID.ID_LONG));
+		}
+		else if ((double)(facts.matchCount + otherDoubles) / realSamples > analysisConfig.getThreshold()/100.0) {
+			facts.setMatchPatternInfo(knownPatterns.getByID(KnownPatterns.ID.ID_DOUBLE));
+			facts.outliers.entrySet().removeAll(doubleOutliers.entrySet());
+			for (final Map.Entry<String, Long> entry : doubleOutliers.entrySet())
+				addValid(entry.getKey(), entry.getValue());
+
+			// Recalculate the world since we now 'know' it is a double
+	        facts.mean = 0.0;
+	        facts.variance = 0.0;
+	        facts.currentM2 = 0.0;
+
+	        facts.cardinality.forEach((k, v) -> trackDouble(k, facts.getMatchPatternInfo(), true, v));
+		}
 		else
 			backoutToPatternID(realSamples, KnownPatterns.ID.ID_ANY_VARIABLE);
 	}
@@ -2286,7 +2301,7 @@ public class TextAnalyzer {
 			trackTrimmedLengthAndWhiteSpace(rawInput, trimmed);
 		}
 		else {
-			outlier(input, count);
+			addOutlier(input, count);
 			if (!facts.getMatchPatternInfo().isDateType() && facts.outliers.size() == analysisConfig.getMaxOutliers()) {
 				if (facts.getMatchPatternInfo().isLogicalType()) {
 					// Do we need to back out from any of our Infinite type determinations
@@ -2318,11 +2333,11 @@ public class TextAnalyzer {
 	 * @param logical The Logical type we are testing
 	 * @return A MatchResult that indicates the quality of the match against the provided data
 	 */
-	private FiniteMatchResult checkFiniteSet(final Map<String, Long> cardinalityUpper, final Map<String, Long> outliers, final LogicalTypeFinite logical) {
+	private FiniteMatchResult checkFiniteSet(final FiniteMap cardinalityUpper, final FiniteMap outliers, final LogicalTypeFinite logical) {
 		final long realSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
 		long missCount = 0;				// count of number of misses
 
-		final Map<String, Long> newOutliers = new HashMap<>();
+		final FiniteMap newOutliers = new FiniteMap(outliers.getMaxCapacity());
 		final Map<String, Long> addMatches = new HashMap<>();
 		final double missThreshold = 1.0 - logical.getThreshold()/100.0;
 		long validCount = 0;
@@ -2355,7 +2370,8 @@ public class TextAnalyzer {
 			}
 		}
 
-		final Map<String, Long> newCardinality = new HashMap<>(cardinalityUpper);
+		final FiniteMap newCardinality = new FiniteMap(cardinalityUpper.getMaxCapacity());
+		newCardinality.putAll(cardinalityUpper);
 		newCardinality.putAll(addMatches);
 		for (final String elt : minusMatches.keySet())
 			newCardinality.remove(elt);
@@ -2411,8 +2427,8 @@ public class TextAnalyzer {
 	private class FiniteMatchResult {
 		LogicalTypeFinite logical;
 		double score;
-		Map<String, Long> newOutliers;
-		Map<String, Long> newCardinality;
+		FiniteMap newOutliers;
+		FiniteMap newCardinality;
 		long validCount;
 		boolean isMatch;
 
@@ -2420,7 +2436,7 @@ public class TextAnalyzer {
 			return isMatch;
 		}
 
-		FiniteMatchResult(final LogicalTypeFinite logical, final double score, final long validCount, final Map<String, Long> newOutliers, final Map<String, Long> newCardinality) {
+		FiniteMatchResult(final LogicalTypeFinite logical, final double score, final long validCount, final FiniteMap newOutliers, final FiniteMap newCardinality) {
 			this.logical = logical;
 			this.score = score;
 			this.validCount = validCount;
@@ -2435,7 +2451,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	private LogicalTypeFinite matchFiniteTypes(final FTAType type, final Map<String, Long> cardinalityUpper, final double scoreToBeat) {
+	private LogicalTypeFinite matchFiniteTypes(final FTAType type, final FiniteMap cardinalityUpper, final double scoreToBeat) {
 		FiniteMatchResult bestResult = null;
 		double bestScore = scoreToBeat;
 
@@ -2547,11 +2563,13 @@ public class TextAnalyzer {
 
 			final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchPatternInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
 			if (!pluginAnalysis.isValid()) {
-				if (logical.acceptsBaseType(FTAType.STRING) || logical.acceptsBaseType(FTAType.LONG)) {
+				if (logical.acceptsBaseType(FTAType.STRING) || logical.acceptsBaseType(FTAType.LONG) || logical.acceptsBaseType(FTAType.DOUBLE)) {
 					if (logical.getBaseType() == FTAType.STRING)
 						backoutToPattern(realSamples, pluginAnalysis.getNewPattern());
-					else
+					else if (logical.getBaseType() == FTAType.LONG)
 						backoutLogicalLongType(logical, realSamples);
+// TODO				else
+//						backoutLogicalDoubleType(logical, realSamples);
 					facts.confidence = (double) facts.matchCount / realSamples;
 					if (logical instanceof LogicalTypeRegExp)
 						backedOutRegExp = true;
@@ -2564,7 +2582,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		Map<String, Long> cardinalityUpper = new HashMap<>();
+		FiniteMap cardinalityUpper = new FiniteMap(facts.cardinality.getMaxCapacity());
 
 		if (KnownPatterns.isLong(facts.getMatchPatternInfo().id))
 			handleLong(realSamples);
@@ -2576,14 +2594,10 @@ public class TextAnalyzer {
 			// Build Cardinality map ignoring case (and white space)
 			for (final Map.Entry<String, Long> entry : facts.cardinality.entrySet()) {
 				final String key = entry.getKey().toUpperCase(locale).trim();
-				final Long seen = cardinalityUpper.get(key);
-				if (seen == null) {
-					cardinalityUpper.put(key, entry.getValue());
-				} else
-					cardinalityUpper.put(key, seen + entry.getValue());
+				cardinalityUpper.merge(key, entry.getValue(), Long::sum);
 			}
 			// Sort the results so that we consider the most frequent first (we will hopefully fail faster)
-			cardinalityUpper = Utils.sortByValue(cardinalityUpper);
+			cardinalityUpper.sortByValue();
 
 			final double scoreToBeat = facts.getMatchPatternInfo().isLogicalType() ? facts.confidence : -1.0;
 
@@ -2599,7 +2613,7 @@ public class TextAnalyzer {
 				final Set<String> killSet = new HashSet<>();
 
 				// Sort the outliers so that we consider the most frequent first
-				facts.outliers = Utils.sortByValue(facts.outliers);
+				facts.outliers.sortByValue();
 
 				// Iterate through the outliers adding them to the core cardinality set if we think they are reasonable.
 				for (final Map.Entry<String, Long> entry : facts.outliers.entrySet()) {
@@ -2632,11 +2646,7 @@ public class TextAnalyzer {
 						skip = false;
 
 					if (!skip) {
-						final Long value = cardinalityUpper.get(keyUpper);
-						if (value == null)
-							cardinalityUpper.put(keyUpper, entry.getValue());
-						else
-							cardinalityUpper.put(keyUpper, value + entry.getValue());
+						cardinalityUpper.merge(keyUpper, entry.getValue(), Long::sum);
 						killSet.add(key);
 						updated = true;
 					}
@@ -2645,7 +2655,7 @@ public class TextAnalyzer {
 				// If we updated the set then we need to remove the outliers we OK'd and
 				// also update the pattern to reflect the looser definition
 				if (updated) {
-					final Map<String, Long> remainingOutliers = new HashMap<>();
+					final FiniteMap remainingOutliers = new FiniteMap(facts.outliers.getMaxCapacity());
 					remainingOutliers.putAll(facts.outliers);
 					for (final String elt : killSet)
 						remainingOutliers.remove(elt);
@@ -2663,14 +2673,8 @@ public class TextAnalyzer {
 
 				// Rebuild the cardinalityUpper Map
 				cardinalityUpper.clear();
-				for (final Map.Entry<String, Long> entry : facts.cardinality.entrySet()) {
-					final String key = entry.getKey().toUpperCase(locale).trim();
-					final Long seen = cardinalityUpper.get(key);
-					if (seen == null) {
-						cardinalityUpper.put(key, entry.getValue());
-					} else
-						cardinalityUpper.put(key, seen + entry.getValue());
-				}
+				for (final Map.Entry<String, Long> entry : facts.cardinality.entrySet())
+					cardinalityUpper.merge(entry.getKey().toUpperCase(locale).trim(), entry.getValue(), Long::sum);
 			}
 		}
 
@@ -3202,7 +3206,6 @@ public class TextAnalyzer {
 		        ret.facts.mean = (first.facts.mean*first.facts.matchCount + second.facts.mean*second.facts.matchCount)/(first.facts.matchCount + second.facts.matchCount);
 		        ret.facts.variance = ((first.facts.matchCount - 1)*first.facts.variance + (second.facts.matchCount - 1)*second.facts.variance)/(first.facts.matchCount+second.facts.matchCount-2);
 		        ret.facts.currentM2 = ret.facts.variance * ret.facts.matchCount;
-
 			}
 		}
 
@@ -3227,13 +3230,13 @@ public class TextAnalyzer {
 			// If we already have it in the merged set then we are done
 			if (merged.get(e) != null)
 				continue;
-			final Object extreme = analyzer.facts.getStringParser().getValue(e);
+			final Object extreme = analyzer.facts.getStringConverter().getValue(e);
 			if (extreme == null)
 				continue;
 			boolean found = false;
 			for (final String m : merged.keySet()) {
 				// Check for equality of value not of format - e.g. "00" will equal "0" once both are converted to Longs
-				final Object mValue = analyzer.facts.getStringParser().getValue(m);
+				final Object mValue = analyzer.facts.getStringConverter().getValue(m);
 				if (mValue != null && mValue.equals(extreme)) {
 					found = true;
 					break;

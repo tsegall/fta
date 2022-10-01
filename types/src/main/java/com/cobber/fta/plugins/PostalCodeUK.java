@@ -18,13 +18,13 @@ package com.cobber.fta.plugins;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.FiniteMap;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -129,7 +129,7 @@ public class PostalCodeUK extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		final String upperDataStreamName = context.getStreamName().toUpperCase(Locale.ROOT);
 		if ((cardinality.size() < 5 && !upperDataStreamName.contains("POST")) || (double)matchCount/realSamples < getThreshold()/100.0)
 			return new PluginAnalysis(REGEXP);

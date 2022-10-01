@@ -15,8 +15,6 @@
  */
 package com.cobber.fta;
 
-import java.util.Map;
-
 import org.apache.commons.validator.routines.CreditCardValidator;
 
 import com.cobber.fta.core.FTAPluginException;
@@ -74,7 +72,7 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
-			final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		return (double)matchCount/realSamples >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 }

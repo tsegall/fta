@@ -1,6 +1,14 @@
 
 ## Changes ##
 
+### 10.3.0
+ - ENH: I18N - Add a few more Colombian Municipalities to improve detection
+ - ENH: Add support for retrieving the path to the Trace file (Issue #17)
+ - ENH: Bump commons-text, slf4j-api
+ - BUG: Serialization now works with Quantiles
+ - BUG: Some doubles were not capturing min/max/topK/bottomK (if logical type detected)
+ - INT: Run tests in parallel (also speed up date tests - or more accurately only do 10% of locales each run)
+
 ### 10.2.1
  - ENH: Add new Semantic Type - PERSON.RACE_ABBR_EN
 

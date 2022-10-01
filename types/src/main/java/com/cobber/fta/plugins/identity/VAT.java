@@ -16,7 +16,6 @@
 package com.cobber.fta.plugins.identity;
 
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.validator.routines.checkdigit.CheckDigit;
 import org.apache.commons.validator.routines.checkdigit.CheckDigitException;
@@ -25,6 +24,7 @@ import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.FiniteMap;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -383,7 +383,7 @@ public class VAT extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (getConfidence(matchCount, realSamples, context) < getThreshold()/100.0)
 			return new PluginAnalysis(BACKOUT_REGEXP);
 

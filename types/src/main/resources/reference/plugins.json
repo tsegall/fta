@@ -444,7 +444,7 @@
 		"validLocales": [
 			{
 				"localeTag":  "en,fr",
-				"headerRegExps": [ { "regExp": "(?i)(age|age[_ ].*)", "confidence": 90, "mandatory": true } ]
+				"headerRegExps": [ { "regExp": "(?i)(age|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true } ]
 			},
 			{
 				"localeTag":  "es",
@@ -1651,7 +1651,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
-					"regExpReturned": "([+-]?([0-9]|[0-8][0-9])\\.\\d+)|[+-]?90\\.0+",
+					"regExpReturned": "([+-]?([0-9]|[0-8][0-9])\\.\\d+)|[+-]?90\\.0+|0",
 					"isRegExpComplete": true
 				} ]
 			},

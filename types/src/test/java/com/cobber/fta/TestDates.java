@@ -25,6 +25,7 @@ import static org.testng.Assert.fail;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -2194,6 +2195,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void randomFormats() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("randomFormats");
+
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 
 		final String[] inputs = {
@@ -2817,13 +2819,12 @@ public class TestDates {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void localeDateTest() throws IOException, FTAException {
-
+		final int testSet = new SecureRandom().nextInt(10);
 		final Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] {Locale.forLanguageTag("nn")};
 
 		final String testCases[] = {
-				"yyyy MM dd"
-				, "yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
+				"yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
 				"dd MMM yyyy", "d MMM yyyy", "dd-MMM-yyyy", "d-MMM-yyyy", "dd/MMM/yyyy", "d/MMM/yyyy",
 				"yyyyMMdd'T'HHmmss'Z'", "yyyyMMdd'T'HHmmss", "yyyyMMdd'T'HHmmssxx", "yyyyMMdd'T'HHmmssxx",
 				"dd MMMM yyyy", "d MMMM yyyy", "dd-MMMM-yyyy", "d-MMMM-yyyy",
@@ -2831,16 +2832,15 @@ public class TestDates {
 				"d-MMM-yy", "dd/MMM/yy", "d/MMM/yy",
 				"yyyyMMdd'T'HHmmss.SSSxx", "yyyyMMdd'T'HHmmss.SSSxx", "dd/MMM/yy h:mm a",
 				"dd/MMM/yy hh:mm a",
-				 "MMM dd, yyyy", "MMM d, yyyy",
-					"MMMM dd, yyyy",
-				"MMM dd yyyy", "MMM d yyyy", "MMM-dd-yyyy", "MMM-d-yyyy",
-				"MMMM d, yyyy", "MMMM dd yyyy", "MMMM d yyyy", "MMMM-dd-yyyy", "MMMM-d-yyyy",
+				"MMM dd, yyyy", "MMM d, yyyy", "MMM dd yyyy", "MMM d yyyy", "MMM-dd-yyyy", "MMM-d-yyyy",
+				"MMMM dd, yyyy", "MMMM d, yyyy", "MMMM dd yyyy", "MMMM d yyyy", "MMMM-dd-yyyy", "MMMM-d-yyyy",
 //				"EEE MMM dd HH:mm:ss OOOO yyyy"
 //				"EEE MMM dd HH:mm:ss z yyyy"
 		};
 
 		final Set <String> problems = new HashSet<>();
 		int countTests = 0;
+		Set<String> localesTested = new HashSet<>();
 		int countNotGregorian = 0;
 		int countNotArabicNumerals = 0;
 		int	countNoMonthAbbreviations = 0;
@@ -2855,6 +2855,9 @@ public class TestDates {
 			nextLocale:
 			for (final Locale locale : locales) {
 				if (unsupportedLocales.contains(locale.toLanguageTag()))
+					continue;
+				// Only test one in 10 locales each run to speed up test!
+				if (locale.hashCode() % 10 != testSet)
 					continue;
 				final Set<String> samples = new HashSet<>();
 				LocalDate localDate = null;
@@ -2899,6 +2902,7 @@ public class TestDates {
 //						", language: " + locale.getDisplayLanguage() + ", name: " + locale.toLanguageTag());
 
 				countTests++;
+				localesTested.add(locale.toLanguageTag());
 
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(testCase, locale);
 				final FTAType type = SimpleDateMatcher.getType(testCase);
@@ -3014,7 +3018,7 @@ public class TestDates {
 		}
 
 		logger.debug("{} locales tested, {} not Gregorian (skipped), {} not Arabic numerals, {} no Month abbr. (skipped), {} locales not supported, {} locales, {} failures (of {} tests).",
-				locales.length, countNotGregorian, countNotArabicNumerals, countNoMonthAbbreviations, countNotSupported, locales.length, countProblems, countTests);
+				localesTested.size(), countNotGregorian, countNotArabicNumerals, countNoMonthAbbreviations, countNotSupported, locales.length, countProblems, countTests);
 
 		assertEquals(countProblems, 0);
 	}

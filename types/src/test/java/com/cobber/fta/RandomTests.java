@@ -390,6 +390,8 @@ public class RandomTests {
 				"FN944133090";
 		final String inputs[] = pipedInput.split("\\|");
 
+		assertNull(analysis.getTraceFilePath());
+
 		try {
 			for (final String input : inputs)
 				analysis.train(input);
@@ -397,6 +399,9 @@ public class RandomTests {
 		catch (InternalErrorException e) {
 			// We expect this to happen ...
 		}
+
+		assertNotNull(analysis.getTraceFilePath());
+		assertNotEquals(analysis.getTraceFilePath().indexOf("employeeNumber.fta"), -1);
 
 		final TextAnalysisResult result = analysis.getResult();
 

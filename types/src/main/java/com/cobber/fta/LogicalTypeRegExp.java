@@ -18,7 +18,6 @@ package com.cobber.fta;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.cobber.fta.core.FTAPluginException;
@@ -201,7 +200,7 @@ public class LogicalTypeRegExp extends LogicalType {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
-			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		final String backout = currentRegExp;
 

@@ -879,13 +879,13 @@ public class TestDoubles {
 		final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 
 		if (!simple) {
-			logger.debug("Skipping locale '{}' as it does not use Arabic numerals.", locale);
+//			logger.debug("Skipping locale '{}' as it does not use Arabic numerals.", locale);
 			return true;
 		}
 
 		final Calendar cal = GregorianCalendar.getInstance(locale);
 		if (!(cal instanceof GregorianCalendar)) {
-			logger.debug("Skipping locale '{}' as it does not use the Gregorian calendar.", locale);
+//			logger.debug("Skipping locale '{}' as it does not use the Gregorian calendar.", locale);
 			return true;
 		}
 
@@ -893,20 +893,20 @@ public class TestDoubles {
 		final String negSuffix = TestUtils.getNegativeSuffix(locale);
 
 		if (negPrefix.isEmpty() && negSuffix.isEmpty()) {
-			logger.debug("Skipping locale '{}' as it has empty negPrefix and negSuffix.", locale);
+//			logger.debug("Skipping locale '{}' as it has empty negPrefix and negSuffix.", locale);
 			return true;
 		}
 
 		final String variant = locale.getDisplayVariant();
 		if (variant != null && !variant.isEmpty()) {
-			logger.debug("Skipping locale '{}' as it has a Variant: '{}'.", locale, variant);
+//			logger.debug("Skipping locale '{}' as it has a Variant: '{}'.", locale, variant);
 			return true;
 		}
 
 		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 		final String getExponentSeparator = formatSymbols.getExponentSeparator();
 		if (getExponentSeparator.length() != 1 || (getExponentSeparator.charAt(0) != 'e' &&  getExponentSeparator.charAt(0) != 'E')) {
-			logger.debug("Skipping locale '{}' as it uses a non-standard exponentiaion character ({}).", locale, getExponentSeparator);
+//			logger.debug("Skipping locale '{}' as it uses a non-standard exponentiaion character ({}).", locale, getExponentSeparator);
 			return true;
 		}
 
@@ -1467,9 +1467,9 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+)|[+-]?180\\.0+");
 		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getDecimalSeparator(), '.');
 		assertEquals(result.getMinValue(), "13.40948033");
 		assertEquals(result.getMaxValue(), "13.41310555");
-		assertEquals(result.getDecimalSeparator(), '.');
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));

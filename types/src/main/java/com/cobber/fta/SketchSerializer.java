@@ -15,10 +15,11 @@
  */
 package com.cobber.fta;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Base64;
 
+import com.datadoghq.sketch.ddsketch.encoding.Output;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -27,10 +28,33 @@ import com.fasterxml.jackson.databind.SerializerProvider;
  * The DDSketch serializer uses protobuf so convert it so we can use our JSON representation.
  */
 public class SketchSerializer extends JsonSerializer<Sketch> {
+
+	public class SimpleOutput implements Output {
+		ByteArrayOutputStream buffer;
+
+		SimpleOutput() {
+			this.buffer = new ByteArrayOutputStream();
+		}
+
+		@Override
+		public void writeByte(byte value) {
+			buffer.write(value);
+		}
+	}
+
 	@Override
 	public void serialize(Sketch value,  JsonGenerator generator, SerializerProvider serializers) throws IOException {
-		ByteBuffer buffer = value.getDdSketch().serialize();
-		byte[] encoded = Base64.getEncoder().encode(buffer.array());
-		generator.writeString(new String(encoded));
+		generator.writeStartObject();
+		generator.writeStringField("ftaType", value.type.name());
+		generator.writeNumberField("totalSketchEntries", value.totalSketchEntries);
+		generator.writeNumberField("relativeAccuracy", value.relativeAccuracy);
+		serializers.defaultSerializeField("stringConverter", value.stringConverter, generator);
+
+		SimpleOutput output = new SimpleOutput();
+		value.getDdSketch().encode(output, false);
+
+		byte[] encoded = Base64.getEncoder().encode(output.buffer.toByteArray());
+		generator.writeStringField("ddSketch", new String(encoded));
+		generator.writeEndObject();
 	}
 }

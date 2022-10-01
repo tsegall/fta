@@ -17,11 +17,11 @@ package com.cobber.fta.plugins;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
-import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.FiniteMap;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
@@ -136,7 +136,7 @@ public class EmailLT extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		return getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 

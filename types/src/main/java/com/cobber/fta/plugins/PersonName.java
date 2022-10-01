@@ -16,11 +16,11 @@
 package com.cobber.fta.plugins;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.FiniteMap;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -106,7 +106,7 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
-			final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 

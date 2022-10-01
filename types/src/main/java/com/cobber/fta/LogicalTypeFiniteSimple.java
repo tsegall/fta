@@ -17,7 +17,6 @@ package com.cobber.fta;
 
 import java.io.Reader;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import com.cobber.fta.core.FTAPluginException;
@@ -98,7 +97,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
-			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 		final int baseOutliers = ((100 - getThreshold()) * getSize())/100;
 

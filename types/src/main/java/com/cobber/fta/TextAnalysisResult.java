@@ -58,7 +58,6 @@ public class TextAnalysisResult {
 	private final DateResolutionMode resolutionMode;
 	private final AnalysisConfig analysisConfig;
 	private final TokenStreams shape;
-	private Sketch ordered;
 
 	/**
 	 * @param name The name of the data stream being analyzed.
@@ -219,12 +218,10 @@ public class TextAnalysisResult {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.QUANTILES))
 			throw new IllegalArgumentException(NOT_ENABLED);
 
-		if (ordered == null) {
-			ordered = facts.getSketch();
-			ordered.addAll(facts.cardinality);
-		}
+		if (!facts.getSketch().isComplete())
+			facts.getSketch().complete(facts.cardinality);
 
-		return ordered.getValueAtQuantile(quantile);
+		return facts.getSketch().getValueAtQuantile(quantile);
 	}
 
 	/**

@@ -20,7 +20,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Locale;
-import java.util.Map;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -222,7 +221,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @param analysisConfig The Configuration of the current analysis
 	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
 	 */
-	public abstract PluginAnalysis analyzeSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp, Facts facts, Map<String, Long> cardinality, Map<String, Long> outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig);
+	public abstract PluginAnalysis analyzeSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp, Facts facts, FiniteMap cardinality, FiniteMap outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig);
 
 	/**
 	 * Does the set of members enumerated reflect the entire set.  For example any of the ISO sets are reference sets and

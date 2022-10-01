@@ -729,19 +729,19 @@ public class TestLongs {
 			final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 
 			if (!simple) {
-				logger.debug("Skipping locale '{}' as it does not use Arabic numerals.", locale);
+//				logger.debug("Skipping locale '{}' as it does not use Arabic numerals.", locale);
 				continue;
 			}
 
 			final Calendar cal = GregorianCalendar.getInstance(locale);
 			if (!(cal instanceof GregorianCalendar)) {
-				logger.debug("Skipping locale '{}' as it does not use the Gregorian calendar.", locale);
+//				logger.debug("Skipping locale '{}' as it does not use the Gregorian calendar.", locale);
 				continue;
 			}
 
 			final String variant = locale.getDisplayVariant();
 			if (variant != null && !variant.isEmpty()) {
-				logger.debug("Skipping locale '{}' as it has a Variant: '{}'.", locale, variant);
+//				logger.debug("Skipping locale '{}' as it has a Variant: '{}'.", locale, variant);
 				continue;
 			}
 

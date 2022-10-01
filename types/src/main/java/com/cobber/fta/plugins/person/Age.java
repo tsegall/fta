@@ -15,11 +15,11 @@
 package com.cobber.fta.plugins.person;
 
 import java.util.Locale;
-import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.FiniteMap;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeFinite;
@@ -92,7 +92,7 @@ public class Age extends LogicalTypeInfinite {
 		if (input.length() > 3 || !Utils.isNumeric(input))
 			return false;
 		final int age = Integer.valueOf(input);
-		return age >= 1 && age < 120;
+		return age >= 0 && age < 120;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class Age extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
-			final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		if (getHeaderConfidence(context.getStreamName()) == 0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
@@ -111,11 +111,11 @@ public class Age extends LogicalTypeInfinite {
 		int gender = -1;
 		int firstName = -1;
 		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
-			if (logicalGender.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 99) {
+			if (logicalGender.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
 				gender = i;
 				break;
 			}
-			if (logicalFirst.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 95) {
+			if (logicalFirst.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
 				firstName = i;
 				break;
 			}

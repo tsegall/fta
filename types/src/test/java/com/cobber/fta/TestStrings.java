@@ -390,12 +390,13 @@ public class TestStrings {
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), iterations + nullIterations);
 		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
-		assertEquals(result.getNullCount(), result.getNullCount());
+		assertEquals(result.getNullCount(), nullIterations);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		final Map<String,Long> details = result.getCardinalityDetails();
+		// Now check that we achieve the same outcome but using trainBulk() instead of train()
+		final Map<String, Long> details = result.getCardinalityDetails();
 		details.put(null, result.getNullCount());
 		final long sum = details.values().stream().collect(Collectors.summingLong(Long::longValue));
 		final TextAnalyzer analysisBulk = new TextAnalyzer("manyConstantLengthStrings_bulk");

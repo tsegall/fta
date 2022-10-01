@@ -42,6 +42,7 @@ public class Trace {
 	private long batchCount;
 	private boolean enabled = true;
 	private	final JsonStringEncoder jsonStringEncoder = JsonStringEncoder.getInstance();
+	private File traceFile;
 
 	public Trace(final String trace, final AnalyzerContext context, final AnalysisConfig analysisConfig) {
 		final String[] traceSettings = trace.split(",");
@@ -91,7 +92,8 @@ public class Trace {
 			filename += ".fta";
 			// There are a lot of characters that Windows does not like in filenames ...
 			filename = filename.replaceAll("[<>:\"/\\\\|\\?\\*]", "_");
-			traceWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(traceDirectory, filename))));
+			traceFile = new File(traceDirectory, filename);
+			traceWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(traceFile)));
 		} catch (FileNotFoundException e) {
 			throw new TraceException("Cannot create file to write", e);
 		}
@@ -111,6 +113,7 @@ public class Trace {
 		} catch (IOException e) {
 			throw new TraceException("Cannot output JSON for the Analysis", e);
 		}
+
 	}
 
 	/**
@@ -199,5 +202,13 @@ public class Trace {
 				throw new TraceException("Cannot write analysis result to trace file", e);
 			}
 		}
+	}
+
+	/**
+	 * Return the full path to the trace file.
+	 * @return The Path to the trace file.
+	 */
+	public String getFilename() {
+		return traceFile != null ? traceFile.getPath() : null;
 	}
 }

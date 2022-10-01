@@ -15,11 +15,10 @@
  */
 package com.cobber.fta.plugins;
 
-import java.util.Map;
-
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
+import com.cobber.fta.FiniteMap;
 import com.cobber.fta.KnownPatterns;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
@@ -160,7 +159,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	}
 
 	@Override
-	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final Map<String, Long> cardinality, final Map<String, Long> outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		// If we are allowing local-only numbers then insist on some signal from the header
 		if (localNumbersValid && nonLocal != 0 && getHeaderConfidence(context.getStreamName()) == 0)
 			return new PluginAnalysis(onlyDigits ? KnownPatterns.PATTERN_NUMERIC_VARIABLE : REGEXP);
