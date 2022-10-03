@@ -19,7 +19,7 @@ include 'cli'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '10.3.0')
+			version('fta', '11.0.0')
 			version('jacoco', '0.8.8')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
@@ -45,7 +45,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/com.google.guava/guava
 			library('guava', 'com.google.guava:guava:31.1-jre')
 // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-			library('logbackClassic', 'ch.qos.logback:logback-classic:1.4.1')
+			library('logbackClassic', 'ch.qos.logback:logback-classic:1.4.3')
 // https://mvnrepository.com/artifact/com.datadoghq/sketches-java
 			library('sketches', 'com.datadoghq:sketches-java:0.8.2')
 		}

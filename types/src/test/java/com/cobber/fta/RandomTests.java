@@ -1889,7 +1889,7 @@ public class RandomTests {
 		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
 		final int start = 10000;
 		final int end = start + AnalysisConfig.MAX_CARDINALITY_DEFAULT + 100;
-		final int outliers = 15;
+		final int invalids = 15;
 		int locked = -1;
 
 		analysis.train("A");
@@ -1916,8 +1916,9 @@ public class RandomTests {
 
 		assertEquals(result.getRegExp(), "\\d{5}");
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getOutlierCount(), outliers);
-		assertEquals(result.getSampleCount(), outliers + end - start);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), invalids);
+		assertEquals(result.getSampleCount(), invalids + end - start);
 		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		assertEquals(result.getKeyConfidence(), 0.9);
 		assertEquals(result.getConfidence(), 1 - (double)15/result.getSampleCount());
@@ -1989,7 +1990,7 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
-	public void setMaxOutliers() throws IOException, FTAException {
+	public void setMaxInvalids() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
 		final int start = 10000;
 		final int end = 12000;
@@ -2729,9 +2730,9 @@ public class RandomTests {
 
 			for (int i = 0; i < 1000; i++) {
 				final String value = logical.nextRandom();
-				if (logical.isRegExpComplete() && !logical.isValid(value)) {
+				if (logical.isRegExpComplete() && !logical.isValid(value, true)) {
 					System.err.println("Issue with LogicalType'" + logical.getDescription() + "', value: " + value + "\n");
-					assertTrue(logical.isValid(value), value);
+					assertTrue(logical.isValid(value, true), value);
 				}
 			}
 		}

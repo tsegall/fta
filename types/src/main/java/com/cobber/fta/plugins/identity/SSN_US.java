@@ -98,7 +98,7 @@ public class SSN_US extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		final String trimmed = input.trim();
 		if (trimmed.length() != SSN_LENGTH)
 			return false;

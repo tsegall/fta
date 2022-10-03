@@ -504,6 +504,26 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * Get the number of distinct invalid entries for the current data stream.
+	 * See {@link com.cobber.fta.TextAnalyzer#setMaxOutliers(int) setMaxOutliers()} method in TextAnalyzer.
+	 * Note: This is not a complete invalid analysis unless the invalid count of the
+	 * data stream is less than the maximum invalid count (Default: {@value com.cobber.fta.AnalysisConfig#MAX_OUTLIERS_DEFAULT}).
+	 * @return Count of the distinct invalid entries.
+	 */
+	public int getInvalidCount() {
+		return facts.invalid.size();
+	}
+
+	/**
+	 * Get the invalid entry details for the current data stream.  This is a Map of Strings and the count
+	 * of occurrences.
+	 * @return A Map of values and their occurrence frequency of the data stream to date.
+	 */
+	public Map<String, Long> getInvalidDetails() {
+		return facts.invalid;
+	}
+
+	/**
 	 * Get the number of distinct shapes for the current data stream.
 	 * Note: This is not a complete shape analysis unless the shape count of the
 	 * data stream is less than the maximum shape count (Default: {@value com.cobber.fta.AnalysisConfig#MAX_SHAPES_DEFAULT}).
@@ -800,6 +820,12 @@ public class TextAnalysisResult {
 		if (!facts.outliers.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("outlierDetail");
 			outputDetails(MAPPER, detail, facts.outliers, verbose);
+		}
+
+		analysis.put("invalidCardinality", facts.invalid.size() < analysisConfig.getMaxOutliers() ? facts.invalid.size() : -1);
+		if (!facts.invalid.isEmpty() && verbose > 0) {
+			final ArrayNode detail = analysis.putArray("invalidDetail");
+			outputDetails(MAPPER, detail, facts.invalid, verbose);
 		}
 
 		analysis.put("shapesCardinality", (shape.getShapes().size() > 0 && shape.getShapes().size() < analysisConfig.getMaxShapes()) ? shape.getShapes().size() : -1);

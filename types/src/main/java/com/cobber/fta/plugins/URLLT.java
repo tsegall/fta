@@ -100,7 +100,7 @@ public class URLLT extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input) {
+	public boolean isValid(String input, boolean detectMode) {
 		int index = 0;
 		if (input.indexOf("://") == -1) {
 			input = "http://" + input;

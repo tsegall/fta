@@ -101,7 +101,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		final String trimmed = input.trim();
 		final int lastSpace = trimmed.lastIndexOf(' ');
 		if (lastSpace == -1)
@@ -163,10 +163,10 @@ public class NameFirstLast extends LogicalTypeInfinite {
 			lastNames.add(lastName);
 
 		// So if we only have a few names insist it is found, otherwise use the isValid() test
-		if (firstNames.size() < 10 ? logicalFirst.isMember(firstName) : logicalFirst.isValid(firstName))
+		if (firstNames.size() < 10 ? logicalFirst.isMember(firstName) : logicalFirst.isValid(firstName, detectMode))
 			return true;
 
-		return lastNames.size() < 10 ? logicalLast.isMember(lastName) : logicalLast.isValid(lastName);
+		return lastNames.size() < 10 ? logicalLast.isMember(lastName) : logicalLast.isValid(lastName, detectMode);
 	}
 
 	@Override

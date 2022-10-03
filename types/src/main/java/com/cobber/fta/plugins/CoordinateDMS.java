@@ -77,7 +77,7 @@ public abstract class CoordinateDMS extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		final int spaceIndex = input.indexOf(' ');
 		if (spaceIndex != -1) {
 			String[] components = input.split(" ");

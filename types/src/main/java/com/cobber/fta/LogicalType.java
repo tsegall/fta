@@ -201,10 +201,21 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 	/**
 	 * Is the supplied String an instance of this logical type?
+	 * Note: this invokes {@link #isValid(String, boolean)} with true to emulate detection mode.
 	 * @param input String to check (trimmed for Numeric base Types, un-trimmed for String base Type)
 	 * @return true iff the supplied String is an instance of this Logical type.
 	 */
-	public abstract boolean isValid(final String input);
+	public boolean isValid(final String input) {
+		return isValid(input, true);
+	}
+
+	/**
+	 * Is the supplied String an instance of this logical type?
+	 * @param input String to check (trimmed for Numeric base Types, un-trimmed for String base Type)
+	 * @param detectMode If true then we are in the process of detection, otherwise it is a simple validity check.
+	 * @return true iff the supplied String is an instance of this Logical type.
+	 */
+	public abstract boolean isValid(final String input, boolean detectMode);
 
 	/**
 	 * Given the data to date as embodied by the arguments return an analysis. If we think this is an instance

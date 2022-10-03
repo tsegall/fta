@@ -45,8 +45,8 @@ public class TestStandalonePlugins {
 	public void randomIPV6Address() throws IOException, FTAPluginException {
 		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("IPADDRESS.IPV6"), new AnalysisConfig());
 
-		assertTrue(logical.isValid("::"), "::");
-		assertTrue(logical.isValid("::1"), "::1");
+		assertTrue(logical.isValid("::", true), "::");
+		assertTrue(logical.isValid("::1", true), "::1");
 		assertTrue("::".matches(logical.getRegExp()), "::");
 		assertTrue("::1".matches(logical.getRegExp()), "::1");
 		for (int i = 0; i < 100; i++) {
@@ -64,7 +64,7 @@ public class TestStandalonePlugins {
 		for (int i = 0; i < 100; i++) {
 			final String sample = logical.nextRandom();
 			assertTrue(sample.matches(logical.getRegExp()));
-			assertTrue(logical.isValid(sample), sample);
+			assertTrue(logical.isValid(sample, true), sample);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class TestStandalonePlugins {
 		for (int i = 0; i < 100; i++) {
 			final String example = logical.nextRandom();
 			assertTrue(example.matches(logical.getRegExp()));
-			assertTrue(logical.isValid(example));
+			assertTrue(logical.isValid(example, true));
 		}
 	}
 
@@ -149,7 +149,7 @@ public class TestStandalonePlugins {
 		for (int i = 0; i < 100; i++) {
 			final String example = logical.nextRandom();
 			assertTrue(example.matches(logical.getRegExp()), example + logical.getRegExp());
-			assertTrue(logical.isValid(example.toLowerCase(Locale.ENGLISH)), example);
+			assertTrue(logical.isValid(example.toLowerCase(Locale.ENGLISH), true), example);
 		}
 	}
 
@@ -212,7 +212,7 @@ public class TestStandalonePlugins {
 					final String[] testCases = new String[SAMPLE_SIZE];
 					for (int i = 0; i < SAMPLE_SIZE; i++) {
 						testCases[i] = logical.nextRandom();
-						assertTrue(logical.isValid(testCases[i]), logical.getQualifier() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
+						assertTrue(logical.isValid(testCases[i], true), logical.getQualifier() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
 					}
 					for (int i = 0; i < SAMPLE_SIZE; i++)
 						assertTrue(testCases[i].matches(logical.getRegExp()), logical.getQualifier() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
@@ -229,12 +229,12 @@ public class TestStandalonePlugins {
 		final String[] validSamples = { "12.43", "13.49", "90.0", "-69.4", "-90.0" };
 
 		for (final String sample : validSamples)
-			assertTrue(logical.isValid(sample), sample);
+			assertTrue(logical.isValid(sample, true), sample);
 
 		final String[] invalidSamples = { "91.0", "-90.2" };
 
 		for (final String sample : invalidSamples)
-			assertFalse(logical.isValid(sample), sample);
+			assertFalse(logical.isValid(sample, true), sample);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -245,12 +245,12 @@ public class TestStandalonePlugins {
 		final String[] validSamples = { "12.43", "13.49", "180.0", "90.0", "-69.4", "-90.0", "-170.0",  };
 
 		for (final String sample : validSamples)
-			assertTrue(logical.isValid(sample), sample);
+			assertTrue(logical.isValid(sample, true), sample);
 
 		final String[] invalidSamples = { "181.0", "-190.2" };
 
 		for (final String sample : invalidSamples)
-			assertFalse(logical.isValid(sample), sample);
+			assertFalse(logical.isValid(sample, true), sample);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -266,11 +266,11 @@ public class TestStandalonePlugins {
 		};
 
 		for (final String sample : validSamples)
-			assertTrue(logical.isValid(sample), sample);
+			assertTrue(logical.isValid(sample, true), sample);
 
 		final String[] invalidSamples = { "2001Olypics" };
 
 		for (final String sample : invalidSamples)
-			assertFalse(logical.isValid(sample), sample);
+			assertFalse(logical.isValid(sample, true), sample);
 	}
 }

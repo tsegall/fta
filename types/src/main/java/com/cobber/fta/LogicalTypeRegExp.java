@@ -162,7 +162,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		if (!getPattern().matcher(Utils.cleanse(input.trim())).matches())
 			return false;
 
@@ -331,7 +331,7 @@ public class LogicalTypeRegExp extends LogicalType {
 			if (retries%10 == 0) {
 				return ret;
 			}
-		} while (!isValid(ret));
+		} while (!isValid(ret, true));
 
 		return ret;
 	}

@@ -90,7 +90,7 @@ public class EIN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		final int originalLen = input.length();
 		int len = originalLen;
 		if (len != 9 && len != 10)
@@ -123,7 +123,7 @@ public class EIN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return isValid(trimmed);
+		return isValid(trimmed, true);
 	}
 
 	@Override

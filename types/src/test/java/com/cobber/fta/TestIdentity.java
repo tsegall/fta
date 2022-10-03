@@ -162,11 +162,12 @@ public class TestIdentity {
 		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
 		assertEquals(result.getTypeQualifier(), "SSN");
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
-		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
 		assertEquals(result.getSampleCount(), samples.length + 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.size(), 1);
-		assertEquals(outliers.get("032--45-0981"), Long.valueOf(1));
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.size(), 1);
+		assertEquals(invalids.get("032--45-0981"), Long.valueOf(1));
 
 		for (final String sample : samples) {
 			assertTrue(sample.matches(result.getRegExp()));

@@ -71,7 +71,7 @@ public class PluginBirthDate extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		return isCandidate(input.trim(), null, null, null);
 	}
 

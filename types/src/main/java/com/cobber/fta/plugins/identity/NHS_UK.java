@@ -123,7 +123,7 @@ public class NHS_UK extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		final String trimmed = input.trim();
 
 		final StringBuilder b = new StringBuilder(LENGTH);

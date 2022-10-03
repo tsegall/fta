@@ -93,7 +93,7 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		final int length = input.length();
 
 		// Attempt to fail fast
@@ -123,7 +123,7 @@ public class JobTitleEN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed);
+		return isValid(trimmed, true);
 	}
 
 	@Override

@@ -66,7 +66,7 @@ public class PluginCreditCard extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		return validator.isValid(input.replaceAll("[\\s\\-]", ""));
 	}
 

@@ -38,8 +38,8 @@ public abstract class Validation {
 		final LogicalType knownLogicalType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
 		// Make sure we like India and do not like Gondwana
-		System.err.println("Is 'elease.campo@gmail.com' valid? " + knownLogicalType.isValid("elease.campo@gmail.com"));
-		System.err.println("Is 'double@at@cobber.com' valid? " + knownLogicalType.isValid("double@at@cobber.com"));
+		System.err.println("Is 'elease.campo@gmail.com' valid? " + knownLogicalType.isValid("elease.campo@gmail.com", true));
+		System.err.println("Is 'double@at@cobber.com' valid? " + knownLogicalType.isValid("double@at@cobber.com", true));
 
 		//
 		// Example for Logical Types ...
@@ -73,8 +73,8 @@ public abstract class Validation {
 		}
 
 		// Make sure we like India and do not like Gondwana
-		System.err.println("Is 'India' valid? " + logicalType.isValid("India"));
-		System.err.println("Is 'Gondwana' valid? " + logicalType.isValid("Gondwana"));
+		System.err.println("Is 'India' valid? " + logicalType.isValid("India", true));
+		System.err.println("Is 'Gondwana' valid? " + logicalType.isValid("Gondwana", true));
 
 		//
 		// Example where no Logical Type detected

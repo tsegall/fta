@@ -198,7 +198,7 @@ public class TestPlugins {
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()), input);
 			final boolean expected = "male".equalsIgnoreCase(input.trim()) || "female".equalsIgnoreCase(input.trim());
-			assertEquals(logicalGender.isValid(input), expected);
+			assertEquals(logicalGender.isValid(input, true), expected);
 		}
 	}
 
@@ -595,8 +595,9 @@ public class TestPlugins {
 		assertEquals(result.getSampleCount(), 1194);
 		assertEquals(result.getMatchCount(), 1193);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getOutlierCount(), 1);
-		Entry<String, Long> only = result.getOutlierDetails().entrySet().iterator().next();
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
+		Entry<String, Long> only = result.getInvalidDetails().entrySet().iterator().next();
 		assertEquals(only.getKey(), "X02469358");
 		assertEquals(only.getValue(), 1);
 	}
@@ -679,11 +680,11 @@ public class TestPlugins {
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("TELEPHONE").signature);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
-		assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		final long outlierCount = outliers.get("(014) 427-4427");
-		assertEquals(outlierCount, 1);
-		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getOutlierCount(), 0);
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		final long invalidCount = invalids.get("(014) 427-4427");
+		assertEquals(invalidCount, 1);
+		assertEquals(result.getMatchCount(), inputs.length - result.getInvalidCount());
 		// Confidence is 1.0 because we got a boost from seeing the valid header - i.e. 'phone'
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -712,11 +713,11 @@ public class TestPlugins {
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("TELEPHONE").signature);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
-		assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		final long outlierCount = outliers.get("(014) 427-4427");
+		assertEquals(result.getOutlierCount(), 0);
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		final long outlierCount = invalids.get("(014) 427-4427");
 		assertEquals(outlierCount, 1);
-		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getMatchCount(), inputs.length - result.getInvalidCount());
 		assertEquals(result.getConfidence(), 1.0 - (double)1/result.getSampleCount());
 
 		for (final String input : inputs) {
@@ -784,7 +785,7 @@ public class TestPlugins {
 		for (final String input : inputs) {
 			assertTrue(input.trim().matches(result.getRegExp()), input);
 			final boolean expected = "male".equalsIgnoreCase(input.trim()) || "female".equalsIgnoreCase(input.trim());
-			assertEquals(logicalGender.isValid(input), expected);
+			assertEquals(logicalGender.isValid(input, true), expected);
 		}
 	}
 
@@ -1064,7 +1065,7 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeQualifier(), "EMAIL");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("EMAIL").signature);
-		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getInvalidCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 2);
 		assertEquals(result.getRegExp(), EmailLT.REGEXP);
@@ -1135,8 +1136,9 @@ public class TestPlugins {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), inputs.length + 1 + result.getNullCount());
-		assertEquals(result.getOutlierCount(), 1);
-		assertEquals(result.getMatchCount(), inputs.length + 1 - result.getOutlierCount());
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
+		assertEquals(result.getMatchCount(), inputs.length + 1 - result.getInvalidCount());
 		assertEquals(result.getNullCount(), 2);
 		assertEquals(result.getRegExp(), URLLT.REGEXP_PROTOCOL + URLLT.REGEXP_RESOURCE);
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
@@ -1403,22 +1405,22 @@ public class TestPlugins {
 		final String valid = "http://www.infogix.com";
 		final String invalid = "www infogix.com";
 
-		assertTrue(logical.isValid(valid));
-		assertFalse(logical.isValid(invalid));
+		assertTrue(logical.isValid(valid, true));
+		assertFalse(logical.isValid(invalid, true));
 
 		logical = analyzer.getPlugins().getRegistered(CountryEN.SEMANTIC_TYPE);
 
 		final String ChinaUpper = "CHINA";
-		assertTrue(logical.isValid(ChinaUpper));
+		assertTrue(logical.isValid(ChinaUpper, true));
 
 		final String ChinaWithSpaces = "  CHINA  ";
-		assertTrue(logical.isValid(ChinaWithSpaces));
+		assertTrue(logical.isValid(ChinaWithSpaces, true));
 
 		final String ChinaCamel = "China";
-		assertTrue(logical.isValid(ChinaCamel));
+		assertTrue(logical.isValid(ChinaCamel, true));
 
 		final String Lemuria = "Lemuria";
-		assertFalse(logical.isValid(Lemuria));
+		assertFalse(logical.isValid(Lemuria, true));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1728,7 +1730,8 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 20);
@@ -1897,11 +1900,11 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_US").signature);
-		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getOutlierCount());
+		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getInvalidCount());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.get("UK"), Long.valueOf(1));
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.get("UK"), Long.valueOf(1));
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 	}
 
@@ -1928,19 +1931,19 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_US").signature);
-		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getMatchCount(), inputs.length - result.getInvalidCount());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.get("SA"), Long.valueOf(1));
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.get("SA"), Long.valueOf(1));
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		final LogicalType logical = analysis.getPlugins().getRegistered("STATE_PROVINCE.STATE_US");
 		for (final String input : inputs) {
 			final String trimmed = input.trim();
 			assertTrue(trimmed.matches(result.getRegExp()), input);
-			final boolean expected = !outliers.containsKey(trimmed);
-			assertEquals(logical.isValid(input), expected);
+			final boolean expected = !invalids.containsKey(trimmed);
+			assertEquals(logical.isValid(input, true), expected);
 		}
 	}
 
@@ -1965,11 +1968,11 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_MX");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_MX").signature);
-		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getOutlierCount());
+		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getInvalidCount());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3}");
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.get("UK"), Long.valueOf(1));
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.get("UK"), Long.valueOf(1));
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 	}
 
@@ -1995,11 +1998,11 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_NAME_AU");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_NAME_AU").signature);
-		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getOutlierCount());
+		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getInvalidCount());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic} ]+");
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.get("UK"), Long.valueOf(1));
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.get("UK"), Long.valueOf(1));
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 
 		for (final String input : inputs) {
@@ -2040,11 +2043,11 @@ public class TestPlugins {
 		assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_PROVINCE_NAME_NA");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_PROVINCE_NAME_NA").signature);
 		assertEquals(result.getMatchCount(),
-				inputs.length - result.getBlankCount() - result.getOutlierCount() - result.getBlankCount());
+				inputs.length - result.getBlankCount() - result.getInvalidCount() - result.getBlankCount());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic} ]+");
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.size(), 5);
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.size(), 5);
 		assertEquals(result.getConfidence(), 0.9696969696969697);
 	}
 
@@ -2119,7 +2122,8 @@ public class TestPlugins {
 		assertEquals(result.getTypeQualifier(), EmailLT.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("EMAIL").signature);
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), EmailLT.REGEXP);
@@ -2150,7 +2154,8 @@ public class TestPlugins {
 		assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_US").signature);
 		assertEquals(result.getSampleCount(), inputs.length + 5);
-		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
@@ -2218,7 +2223,8 @@ public class TestPlugins {
 		assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_US").signature);
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length - 5);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
@@ -2611,10 +2617,10 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeQualifier(), "MONTH.ABBR_de");
 		assertEquals(result.getSampleCount(), iterations * actualMonths + badCount);
-		assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.size(), 1);
-		assertEquals(outliers.get("UNKN"), Long.valueOf(4));
+		assertEquals(result.getOutlierCount(), 0);
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.size(), 1);
+		assertEquals(invalids.get("UNKN"), Long.valueOf(4));
 		assertEquals(result.getMatchCount(), iterations * actualMonths);
 		assertEquals(result.getNullCount(), 0);
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -2709,10 +2715,10 @@ public class TestPlugins {
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.size(), 1);
-		assertEquals(outliers.get("UNK"), Long.valueOf(4));
+		assertEquals(result.getOutlierCount(), 0);
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.size(), 1);
+		assertEquals(invalids.get("UNK"), Long.valueOf(4));
 		assertEquals(result.getMatchCount(), inputs.length - badCount);
 		assertEquals(result.getNullCount(), 0);
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -2764,10 +2770,10 @@ public class TestPlugins {
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.size(), 1);
-		assertEquals(outliers.get("UNK"), Long.valueOf(4));
+		assertEquals(result.getOutlierCount(), 0);
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.size(), 1);
+		assertEquals(invalids.get("UNK"), Long.valueOf(4));
 		assertEquals(result.getMatchCount(), inputs.length - badCount);
 		assertEquals(result.getNullCount(), 0);
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -2800,10 +2806,10 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeQualifier(), "MONTH.ABBR_fr");
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.size(), 1);
-		assertEquals(outliers.get("UNK"), Long.valueOf(4));
+		assertEquals(result.getOutlierCount(), 0);
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.size(), 1);
+		assertEquals(invalids.get("UNK"), Long.valueOf(4));
 		assertEquals(result.getMatchCount(), inputs.length - badCount);
 		assertEquals(result.getNullCount(), 0);
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -2840,10 +2846,10 @@ public class TestPlugins {
 		assertEquals(result.getTypeQualifier(), "STATE_PROVINCE.STATE_US");
 		assertEquals(result.getSampleCount(), inputs.length * iters + UNKNOWN);
 		assertEquals(result.getCardinality(), 5);
-		assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.size(), 1);
-		assertEquals(outliers.get("NA"), Long.valueOf(UNKNOWN));
+		assertEquals(result.getOutlierCount(), 0);
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.size(), 1);
+		assertEquals(invalids.get("NA"), Long.valueOf(UNKNOWN));
 		assertEquals(result.getMatchCount(), inputs.length * iters);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getConfidence(), 1 - (double)UNKNOWN/result.getSampleCount());
@@ -2994,11 +3000,12 @@ public class TestPlugins {
 		assertEquals(re, "(?i)(|EARTH|JUPITER|MARS|MERCURY|NEPTUNE|PLUTO|SATURN|URANUS|VENUS)");
 		assertEquals(result.getTypeQualifier(), "PLANET");
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
-		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
 		assertEquals(result.getSampleCount(), SAMPLES + 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.size(), 1);
-		assertEquals(outliers.get("032--45-0981"), Long.valueOf(1));
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.size(), 1);
+		assertEquals(invalids.get("032--45-0981"), Long.valueOf(1));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3158,7 +3165,7 @@ public class TestPlugins {
 		assertEquals(middleInitial.getStructureSignature(), PluginDefinition.findByQualifier("NAME.MIDDLE_INITIAL").signature);
 
 		final LogicalType logicalFirst = analysis[0].getPlugins().getRegistered(FirstName.SEMANTIC_TYPE);
-		assertTrue(logicalFirst.isValid("Harry"));
+		assertTrue(logicalFirst.isValid("Harry", true));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3391,7 +3398,7 @@ public class TestPlugins {
 
 		// Data Signature is independent of Structure
 		assertEquals(preResult.getDataSignature(), result.getDataSignature());
-		assertEquals(preResult.getDataSignature(), "vIXkwkO9uhB0d5LbnE9RM+B7dgA=");
+		assertEquals(preResult.getDataSignature(), "hiU3XR5WlhejAaWRPuDh0/i2A48=");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3562,11 +3569,11 @@ public class TestPlugins {
 		assertEquals(result.getTypeQualifier(), CountryEN.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("COUNTRY.TEXT_EN").signature);
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.size(), 1);
-		final long outlierCount = outliers.get("GONDWANALAND");
-		assertEquals(result.getMatchCount(), inputs.length - outlierCount);
+		assertEquals(result.getInvalidCount(), 1);
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.size(), 1);
+		final long invalidCount = invalids.get("GONDWANALAND");
+		assertEquals(result.getMatchCount(), inputs.length - invalidCount);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}][-\\p{IsAlphabetic} '\\.(),]+");
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());

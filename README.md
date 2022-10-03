@@ -175,7 +175,8 @@ There are a large number of metrics detected, which vary based on the type of th
  * minLength - The minimum length (in characters) observed (includes whitespace)
  * maxLength - The maximum length (in characters) observed (includes whitespace)
  * cardinality - The cardinality of the valid set (or MaxCardinality if the set is larger than MaxCardinality)
- * outlierCardinality - The cardinality of the invalid set (or MaxOutlierCardinality if the set is larger than MaxOutlierCardinality)
+ * outlierCardinality - The cardinality of the set of outliers (or MaxOutlierCardinality if the set is larger than MaxOutlierCardinality)
+ * invalidCardinality - The cardinality of the set of invalid entries
  * leadingWhiteSpace - Does the observed set have leading white space
  * trailingWhiteSpace - Does the observed set have trailing white space
  * multiline - Does the observed set have leading multiline elements
@@ -468,7 +469,12 @@ The mandatory 'contentType' tag determines how the content is provided (possible
 
 The mandatory 'content' tag is either a file reference if the contentType is 'resource' or 'file' or the actual content if the contentType is 'inline'.  Note: the content is assumed to be UTF-8.
 
-## Outliers ##
+## Invalid Set ##
+
+An invalid entry is one that is not valid for the detected type and/or Semantic type.  For example, if a field is determined to be a LONG then 'bogus' would be invalid.  Similarly, if 
+the Semantic type was detected as a COUNTRY then Gondwanaland would be detected as invalid since it was not a member of the 'Known' set of countries.
+
+## Outlier Set ##
 
 An outlier is a data point that differs significantly from other member of the data set.  There are a set of algorithms used to detect outliers in the input stream:
 - For Finite plugins, the set of valid values is predefined and hence outlier detection is simply those elements not in the set.  For example the Semantic type COUNTRY.ISO-3166-2 is backed by a list of both current and historically valid two letter country codes, and hence the two letter string 'PP' would be detected as an outlier, as would the string 'Unknown'.

@@ -324,8 +324,9 @@ public class TestRegExpPlugins {
 		assertEquals(result.getSampleCount(), 1000);
 		assertEquals(result.getMatchCount(), 999);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getOutlierCount(), 1);
-		Entry<String, Long> only = result.getOutlierDetails().entrySet().iterator().next();
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
+		Entry<String, Long> only = result.getInvalidDetails().entrySet().iterator().next();
 		assertEquals(only.getKey(), "rubbish");
 		assertEquals(only.getValue(), 1);
 		assertEquals(result.getConfidence(), 0.999);
@@ -364,8 +365,9 @@ public class TestRegExpPlugins {
 		assertEquals(result.getSampleCount(), 20000);
 		assertEquals(result.getMatchCount(), 19999);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getOutlierCount(), 1);
-		Entry<String, Long> only = result.getOutlierDetails().entrySet().iterator().next();
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
+		Entry<String, Long> only = result.getInvalidDetails().entrySet().iterator().next();
 		assertEquals(only.getKey(), "rubbish");
 		assertEquals(only.getValue(), 1);
 		assertEquals(result.getConfidence(), 0.99995);

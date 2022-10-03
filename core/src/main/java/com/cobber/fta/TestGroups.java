@@ -22,6 +22,7 @@ public class TestGroups {
 	public static final String DATES = "dates";
 	public static final String DATETIME = "datetime";
 	public static final String DOUBLES = "doubles";
+	public static final String INVALID_SUPPORT = "invalid";
 	public static final String LONGS = "longs";
 	public static final String MERGE = "merge";
 	public static final String PERFORMANCE = "performance";

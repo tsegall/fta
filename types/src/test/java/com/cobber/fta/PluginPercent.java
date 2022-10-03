@@ -64,7 +64,7 @@ public class PluginPercent extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		try {
 			return Double.valueOf(input) < 1.0;
 		}

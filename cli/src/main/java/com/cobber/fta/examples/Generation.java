@@ -45,7 +45,7 @@ public abstract class Generation {
 			for (int i = 0; i < 10; i++) {
 				final String value = logical.nextRandom();
 				System.err.println(value);
-				if (!logical.isValid(value))
+				if (!logical.isValid(value, true))
 					System.err.println("Issue with LogicalType'" + logical.getDescription() + "', value: " + value + "\n");
 			}
 		}

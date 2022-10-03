@@ -456,8 +456,9 @@ public class TestBooleans {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), inputs.length + 2);
-		assertEquals(result.getOutlierCount(), 1);
-		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
+		assertEquals(result.getMatchCount(), inputs.length - result.getInvalidCount());
 		assertEquals(result.getNullCount(), 2);
 		assertEquals(result.getRegExp(), "\\d");
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));

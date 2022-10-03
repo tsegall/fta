@@ -1,6 +1,14 @@
 
 ## Changes ##
 
+### 11.0.0
+ - **ENH:** Behavior has changed with 11.0.0  - there is now a distinction between outliers and invalid entries.
+      For example, with 1, 2, 3, 7, 8, 12, 9, 2, 23, BOGUS, 14 - 'BOGUS' is now an Invalid entry as opposed to an Outlier.
+      See getInvalidCount() and getInvalidDetails().
+
+	  **Note: Data Signatures have changed.**
+ - ENH: Bump logback-classic
+
 ### 10.3.0
  - ENH: I18N - Add a few more Colombian Municipalities to improve detection
  - ENH: Add support for retrieving the path to the Trace file (Issue #17)
@@ -27,9 +35,9 @@
  - ENH: Reimplement POSTAL_CODE.POSTAL_CODE_CA as a Java plugin (Recall now at 100% against Suite)
 
 ### 10.0.0
- - *** ENH: New Feature.NULL_AS_TEXT is enabled by default ("Null" (also No Data) - will be treated as a NULL record)
- - *** BUG: Changed PERSON.RACE to PERSON.RACE_EN (not backward compatible)
- - *** INT: Plugin definition has changed with 10.0 (getConfidence() now receives the full context, not just the StreamName)
+ - **ENH:** New Feature.NULL_AS_TEXT is enabled by default ("Null" (also No Data) - will be treated as a NULL record)
+ - **BUG:** Changed PERSON.RACE to PERSON.RACE_EN (not backward compatible)
+ - **INT:** Plugin definition has changed with 10.0 (getConfidence() now receives the full context, not just the StreamName)
  - ENH: Add new Semantic Type - LANGUAGE.ISO-639-1 - three letter country code
  - ENH: Add new Semantic Type - NAME.SUFFIX - Name Suffix (e.g. I, II, JR., ...)
  - ENH: Add new Semantic Type - COLOR.TEXT_EN - Color Name
@@ -178,7 +186,8 @@
  - BUG: Outliers were not being correctly tracked for late detected RegExp types
 
 ### 9.0.0
- - *** Plugin definition has changed with 9.0 as has DateTimeParser.ofPattern, also new Feature.NO_ABBREVIATION_PUNCTUATION is enabled by default
+ - **Plugin definition has changed with 9.0 as has DateTimeParser.ofPattern.**
+  - **ENH:** New Feature.NO_ABBREVIATION_PUNCTUATION is enabled by default**
  - ENH: I18N - Improve date detection in locales with abbreviations with periods for short-months (and AM/PM strings) (e.g. en-CA, en-AU) - see Feature.NO_ABBREVIATION_PUNCTUATION
  - ENH: I18N - Add support for FREE_TEXT in french
  - ENH: FREE_TEXT implies some level of uniqueness - change to insist on > .1 uniqueness
@@ -356,7 +365,7 @@
  - INT: Improve test coverage on TextAnalyzer serialize()/deserialize()/merge() in particular in non-default locales
 
 ### 8.0.0
- - *** Data Signatures for 8.X are not the same as prior releases, see details below ***
+ - **Data Signatures for 8.X are not the same as prior releases, see details below**
  - ENH: Add Serialize()/Deserialize()/merge() to TextAnalzer
  - ENH: Min/Max on the JSON output now outputs long/double values using the detection locale.
  - ENH: Bump google phonenumber
@@ -387,7 +396,7 @@
  - ENH: Improve JavaDoc
 
 ### 7.0.0
- - ENH: Major version change as Plugin interface has changed (only impacts Plugin authors).
+ - **ENH:** Major version change as Plugin interface has changed (only impacts Plugin authors).
  - BUG: Fix issue related to outlier counting when using Bulk mode
  - BUG: COUNTRY_EN plugin was not honoring threshold from plugins file
 

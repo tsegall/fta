@@ -84,7 +84,7 @@ public class MonthDigits extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		if (input.length() >= 3 || !Utils.isNumeric(input))
 			return false;
 		final int month = Integer.valueOf(input);
@@ -93,7 +93,7 @@ public class MonthDigits extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed);
+		return isValid(trimmed, true);
 	}
 
 	@Override

@@ -27,15 +27,16 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
-import com.cobber.fta.dates.DateTimeParser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -126,6 +127,7 @@ public class Facts {
 
 	public FiniteMap cardinality = new FiniteMap();
 	public FiniteMap outliers = new FiniteMap();
+	public FiniteMap invalid = new FiniteMap();
 
 	public double currentM2 = 0.0;
 
@@ -181,7 +183,6 @@ public class Facts {
 
 	private AnalysisConfig analysisConfig;
 	private Locale locale;
-	private DateTimeParser dateTimeParser;
 	@JsonSerialize(using = SketchSerializer.class)
 	@JsonDeserialize(using = SketchDeserializer.class)
 	private Sketch sketch;
@@ -200,10 +201,9 @@ public class Facts {
 		final DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
 		localeDecimalSeparator = symbols.getDecimalSeparator();
 
-		dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false);
-
 		this.cardinality.setMaxCapacity(analysisConfig.getMaxCardinality());
 		this.outliers.setMaxCapacity(analysisConfig.getMaxOutliers());
+		this.invalid.setMaxCapacity(analysisConfig.getMaxOutliers());
 	}
 
 	public PatternInfo getMatchPatternInfo() {
@@ -327,6 +327,45 @@ public class Facts {
 		if (sketch == null)
 			sketch = new Sketch(matchPatternInfo.getBaseType(), getStringConverter(), analysisConfig.getQuantileRelativeAccuracy());
 		return sketch;
+	}
+
+	// Track basic facts for the field - called for any Valid input
+	public void trackTrimmedLengthAndWhiteSpace(final String input, final String trimmed) {
+		final int trimmedLength = trimmed.length();
+
+		// Determine if there is leading or trailing White space (if not done previously)
+		if (trimmedLength != 0) {
+			if (!leadingWhiteSpace)
+				leadingWhiteSpace = input.charAt(0) == ' ' || input.charAt(0) == '\t';
+			if (!trailingWhiteSpace) {
+				final int length = input.length();
+				trailingWhiteSpace = input.charAt(length - 1) == ' ' || input.charAt(length - 1) == '\t';
+			}
+		}
+
+		if (trimmedLength < minTrimmedLength)
+			minTrimmedLength = trimmedLength;
+		if (trimmedLength > maxTrimmedLength)
+			maxTrimmedLength = trimmedLength;
+
+		// Determine if this is a multi-line field (if not already decided)
+		if (!multiline)
+			multiline = input.indexOf('\n') != -1 || input.indexOf('\r') != -1;
+	}
+
+	public void killZeroes() {
+		if (minLongNonZero != minLong) {
+			// Need to remove '0' (and similar friends) from cardinality map and put in outlier map
+			Iterator<Entry<String, Long>> it = cardinality.entrySet().iterator();
+
+			while (it.hasNext()) {
+				Entry<String, Long> entry = it.next();
+				if (Long.parseLong(entry.getKey()) == 0) {
+					outliers.put(entry.getKey(), entry.getValue());
+					it.remove();
+				}
+			 }
+		}
 	}
 
 	public Facts calculateFacts() {

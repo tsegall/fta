@@ -110,7 +110,7 @@ public class PostalCodeSE extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		final int len = input.length();
 
 		if (len < 5 || len > 6)

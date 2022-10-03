@@ -124,7 +124,7 @@ public class PostalCodeUK extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 	    return validator.matcher(input).matches();
 	}
 

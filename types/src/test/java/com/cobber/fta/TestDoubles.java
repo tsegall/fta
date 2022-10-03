@@ -536,7 +536,7 @@ public class TestDoubles {
 			if (analysis.train(String.valueOf(random.nextDouble())) && locked == -1)
 				locked = i;
 		}
-		// This is an outlier
+		// This is an invalid value
 		analysis.train("Zoomer");
 
 		// These are valid doubles
@@ -552,10 +552,11 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), nullIterations);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertNull(result.getTypeQualifier());
-		assertEquals(result.getOutlierCount(), 1);
-		final Map<String, Long> outliers = result.getOutlierDetails();
-		assertEquals(outliers.size(), 1);
-		assertEquals(outliers.get("Zoomer"), Long.valueOf(1));
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 1);
+		final Map<String, Long> invalids = result.getInvalidDetails();
+		assertEquals(invalids.size(), 1);
+		assertEquals(invalids.get("Zoomer"), Long.valueOf(1));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })

@@ -95,7 +95,7 @@ public class IPV4Address extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		return input.length() <= 15 && validator.isValidInet4Address(input);
 	}
 

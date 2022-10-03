@@ -189,7 +189,7 @@ public class FreeText extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		return input != null && isText(input.trim());
 	}
 

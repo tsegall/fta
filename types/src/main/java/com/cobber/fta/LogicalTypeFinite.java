@@ -40,7 +40,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		final String trimmedUpper = Utils.cleanse(input.trim()).toUpperCase(locale);
 
 		if (trimmedUpper.length() < minLength)

@@ -117,7 +117,7 @@ public class SSN_FR extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		final StringBuilder b = new StringBuilder(SSN_LENGTH);
 
 		int offset = 0;

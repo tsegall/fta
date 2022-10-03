@@ -38,7 +38,7 @@ public class FirstName extends PersonName {
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
-	public boolean isValid(final String input) {
+	public boolean isValid(final String input, boolean detectMode) {
 		final String trimmedUpper = input.trim().toUpperCase(locale);
 		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength)
 			return false;
@@ -60,9 +60,13 @@ public class FirstName extends PersonName {
 				return false;
 		}
 
-		// Assume 40% of the remaining are good - hopefully this will not bias the determination excessively.
-		// Use hashCode as opposed to random() to ensure that a given data set gives the same results from one run to another.
-		return input.hashCode() % 10 < 4;
+		if (detectMode) {
+			// Assume 40% of the remaining are good - hopefully this will not bias the determination excessively.
+			// Use hashCode as opposed to random() to ensure that a given data set gives the same results from one run to another.
+			return input.hashCode() % 10 < 4;
+		}
+		else
+			return input.matches(getRegExp());
 	}
 
 
