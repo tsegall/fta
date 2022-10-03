@@ -22,6 +22,7 @@ import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.testng.annotations.Test;
 
@@ -265,5 +266,31 @@ public class TestInvalidSupport {
 		// New behavior
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), 1);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.INVALID_SUPPORT })
+	public void outlier() throws IOException, FTAException {
+		final TextAnalyzer analyzer = new TextAnalyzer("outlier");
+		final long SIZE = 1000;
+		final Map<String, Long> colors = new HashMap<>();
+		colors.put("RED", SIZE);
+		colors.put("BLUE", SIZE);
+		colors.put("GREEN", SIZE);
+		colors.put("GREEEN", 1L);
+
+		analyzer.trainBulk(colors);
+
+
+		TextAnalysisResult result = analyzer.getResult();
+
+		assertEquals(result.getSampleCount(), SIZE * 3 + 1);
+		assertEquals(result.getMatchCount(), SIZE * 3);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getInvalidCount(), 0);
+		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "(?i)(BLUE|GREEN|RED)");
+		assertNull(result.getTypeQualifier());
 	}
 }

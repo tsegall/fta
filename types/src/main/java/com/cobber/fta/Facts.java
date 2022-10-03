@@ -33,7 +33,9 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
@@ -322,10 +324,42 @@ public class Facts {
 		return sketch != null;
 	}
 
+	public static SortedMap<String, Long> getTypedMap(final FTAType type, final StringConverter stringConverter) {
+		switch (type) {
+		case BOOLEAN:
+			return new TreeMap<>();
+		case DOUBLE:
+			return new TreeMap<>(new CommonComparator<Double>(stringConverter));
+		case LOCALDATE:
+			return new TreeMap<>(new CommonComparator<ChronoLocalDate>(stringConverter));
+		case LOCALDATETIME:
+			return new TreeMap<>(new CommonComparator<ChronoLocalDateTime<?>>(stringConverter));
+		case LOCALTIME:
+			return new TreeMap<>(new CommonComparator<LocalTime>(stringConverter));
+		case LONG:
+			return new TreeMap<>(new CommonComparator<Long>(stringConverter));
+		case OFFSETDATETIME:
+			return new TreeMap<>(new CommonComparator<OffsetDateTime>(stringConverter));
+		case STRING:
+			return new TreeMap<>();
+		case ZONEDDATETIME:
+			return new TreeMap<>(new CommonComparator<ChronoZonedDateTime<?>>(stringConverter));
+		default:
+			return null;
+		}
+	}
+
+	@JsonIgnore
+	public SortedMap<String, Long> getCardinalitySorted() {
+		if (!cardinality.isSorted())
+			cardinality.sortByKey(getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()));
+		return (SortedMap<String, Long>) cardinality.getImpl();
+	}
+
 	@JsonIgnore
 	public Sketch getSketch() {
 		if (sketch == null)
-			sketch = new Sketch(matchPatternInfo.getBaseType(), getStringConverter(), analysisConfig.getQuantileRelativeAccuracy());
+			sketch = new Sketch(matchPatternInfo.getBaseType(), getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()), getStringConverter(), analysisConfig.getQuantileRelativeAccuracy());
 		return sketch;
 	}
 

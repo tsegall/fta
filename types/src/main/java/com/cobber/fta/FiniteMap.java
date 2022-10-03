@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class FiniteMap implements Map<String, Long> {
 	private int maxCapacity;
 	private Map<String, Long> impl;
+	private boolean sorted = false;
 
 	FiniteMap() {
 		impl = new HashMap<>();
@@ -38,6 +40,20 @@ public class FiniteMap implements Map<String, Long> {
 	public void sortByValue() {
 		impl = impl.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).
 				collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+	}
+
+	public void sortByKey(final SortedMap<String, Long> newMap) {
+		newMap.putAll(impl);
+		impl = newMap;
+		sorted = true;
+	}
+
+	public Map<String, Long> getImpl() {
+		return impl;
+	}
+
+	public boolean isSorted() {
+		return sorted;
 	}
 
 	public boolean mergeIfSpace(String key, Long value,

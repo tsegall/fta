@@ -25,6 +25,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -396,7 +397,7 @@ public class TestStrings {
 		assertEquals(result.getConfidence(), 1.0);
 
 		// Now check that we achieve the same outcome but using trainBulk() instead of train()
-		final Map<String, Long> details = result.getCardinalityDetails();
+		final Map<String, Long> details = new HashMap<>(result.getCardinalityDetails());
 		details.put(null, result.getNullCount());
 		final long sum = details.values().stream().collect(Collectors.summingLong(Long::longValue));
 		final TextAnalyzer analysisBulk = new TextAnalyzer("manyConstantLengthStrings_bulk");

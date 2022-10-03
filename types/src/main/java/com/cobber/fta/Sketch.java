@@ -15,13 +15,8 @@
  */
 package com.cobber.fta;
 
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.chrono.ChronoLocalDate;
-import java.time.chrono.ChronoLocalDateTime;
-import java.time.chrono.ChronoZonedDateTime;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.SortedMap;
 
 import com.cobber.fta.core.FTAType;
 import com.datadoghq.sketch.ddsketch.DDSketch;
@@ -33,7 +28,7 @@ import com.datadoghq.sketch.ddsketch.DDSketches;
  * data is tracked via DDSketch which provides for a specifiable relative-accuracy quantile sketch algorithms.
  */
 public class Sketch {
-	private TreeMap<String, Long> basis;
+	private SortedMap<String, Long> typedMap;
 	protected long totalMapEntries;
 	protected long totalSketchEntries;
 	private DDSketch ddSketch;
@@ -42,42 +37,11 @@ public class Sketch {
 	protected double relativeAccuracy;
 	private boolean isComplete = false;
 
-	Sketch(final FTAType type, final StringConverter stringConverter, final double relativeAccuracy) {
+	Sketch(final FTAType type, final SortedMap<String, Long> typedMap, final StringConverter stringConverter, final double relativeAccuracy) {
 		this.type = type;
 		this.stringConverter = stringConverter;
 		this.relativeAccuracy = relativeAccuracy;
-
-		switch (type) {
-		case BOOLEAN:
-			basis = new TreeMap<>();
-			break;
-		case DOUBLE:
-			basis = new TreeMap<>(new CommonComparator<Double>(stringConverter));
-			break;
-		case LOCALDATE:
-			basis = new TreeMap<>(new CommonComparator<ChronoLocalDate>(stringConverter));
-			break;
-		case LOCALDATETIME:
-			basis = new TreeMap<>(new CommonComparator<ChronoLocalDateTime<?>>(stringConverter));
-			break;
-		case LOCALTIME:
-			basis = new TreeMap<>(new CommonComparator<LocalTime>(stringConverter));
-			break;
-		case LONG:
-			basis = new TreeMap<>(new CommonComparator<Long>(stringConverter));
-			break;
-		case OFFSETDATETIME:
-			basis = new TreeMap<>(new CommonComparator<OffsetDateTime>(stringConverter));
-			break;
-		case STRING:
-			basis = new TreeMap<>();
-			break;
-		case ZONEDDATETIME:
-			basis = new TreeMap<>(new CommonComparator<ChronoZonedDateTime<?>>(stringConverter));
-			break;
-		default:
-			break;
-		}
+		this.typedMap = typedMap;
 
 		ddSketch = DDSketches.unboundedDense(relativeAccuracy);
 	}
@@ -105,11 +69,7 @@ public class Sketch {
 				// Cardinality map - has entries that differ only based on whitespace, so for example it may include
 				// "47" 10 times and " 47" 20 times, for the purposes of calculating quantiles we want these to be coalesced
 				String key = e.getKey().trim();
-				final Long seen = basis.get(key);
-				if (seen == null)
-					basis.put(key, e.getValue());
-				else
-					basis.put(key, seen + e.getValue());
+				typedMap.merge(key, e.getValue(), Long::sum);
 				totalMapEntries += e.getValue();
 			}
         }
@@ -129,7 +89,7 @@ public class Sketch {
 		long quest = Math.round(quantile * totalMapEntries);
 
 		long upto = 0;
-		for (Map.Entry<String, Long> e : basis.entrySet()) {
+		for (Map.Entry<String, Long> e : typedMap.entrySet()) {
 			if (quest >= upto && quest <= upto + e.getValue())
 				return e.getKey();
 			upto += e.getValue();

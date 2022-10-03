@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2128,6 +2129,58 @@ public class RandomTests {
 		assertEquals(result.getTotalMean(), null);
 		assertEquals(result.getTotalStandardDeviation(), null);
 
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testCardinalitySortedLong() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testCardinalitySorted");
+		final int start = 1000;
+		final int end = 100;
+
+		for (int i = start; i >= end; i--) {
+			analysis.train(String.valueOf(i));
+		}
+		analysis.train("-2");
+		analysis.train("10000");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), start - end + 3);
+		assertEquals(result.getCardinality(), start - end + 3);
+		assertEquals(result.getRegExp(), "[+-]?\\d{1,5}");
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "-2");
+		assertEquals(result.getMaxValue(), "10000");
+		SortedMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
+		assertEquals(cardinalityDetails.firstKey(), "-2");
+		assertEquals(cardinalityDetails.lastKey(), "10000");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testCardinalitySortedDouble() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testCardinalitySorted");
+		final int start = 1000;
+		final int end = 100;
+
+		for (int i = start; i >= end; i--) {
+			analysis.train(String.valueOf(i) + "." + String.valueOf(i%10));
+		}
+		analysis.train("-2.0");
+		analysis.train("10000.45");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), start - end + 3);
+		assertEquals(result.getCardinality(), start - end + 3);
+		assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "-2.0");
+		assertEquals(result.getMaxValue(), "10000.45");
+		SortedMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
+		assertEquals(cardinalityDetails.firstKey(), "-2.0");
+		assertEquals(cardinalityDetails.lastKey(), "10000.45");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })

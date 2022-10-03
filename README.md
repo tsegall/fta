@@ -471,19 +471,22 @@ The mandatory 'content' tag is either a file reference if the contentType is 're
 
 ## Invalid Set ##
 
-An invalid entry is one that is not valid for the detected type and/or Semantic type.  For example, if a field is determined to be a LONG then 'bogus' would be invalid.  Similarly, if 
-the Semantic type was detected as a COUNTRY then Gondwanaland would be detected as invalid since it was not a member of the 'Known' set of countries.
+An invalid entry is one that is not valid for the detected type and/or Semantic type.
+
+- For Finite plugins, the set of valid values is predefined and hence invalid detection is simply those elements not in the set.  For example the Semantic type COUNTRY.ISO-3166-2 is backed by a list of both current and historically valid two letter country codes, and hence the two letter string 'PP' would be detected as invalid, as would the string 'Unknown'.
+- For RegExp plugins, the set of valid patterns is predefined and hence invalid detection is simply any element which does not match the pattern.
+- For any fields detected as a known Semantic Type then the invalid entries are based on the particular Semantic Type, for example if the Semantic Type is
+detected as a US Phone Number then numbers with invalid area codes or invalid area code exchange pairs will be flagged as invalid.
+- For Code plugins, invalid entries may be detected based on a statistical analysis.  For example if there are 100 valid integers and one 'O' (letter O) then the 'O' would be identified as invalid.
+
+Note: The Regular Expression used to detect a Semantic type may differ from the Regular Expression returned by the Semantic Type.  For example
+"\\d{3}-\\d{2}-\\d{4}" is used to detect an SSN but the Regular Expression "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}" is used to validate and is returned.
 
 ## Outlier Set ##
 
-An outlier is a data point that differs significantly from other member of the data set.  There are a set of algorithms used to detect outliers in the input stream:
-- For Finite plugins, the set of valid values is predefined and hence outlier detection is simply those elements not in the set.  For example the Semantic type COUNTRY.ISO-3166-2 is backed by a list of both current and historically valid two letter country codes, and hence the two letter string 'PP' would be detected as an outlier, as would the string 'Unknown'.
-- For RegExp plugins, the set of valid patterns is predefined and hence outlier detection is simply any element which does not match the pattern.
-Note: The Eegular Expression used to detect a Semantic type may differ from the Regular Expression returned by the Semantic Type.  For example
-"\\d{3}-\\d{2}-\\d{4}" is used to detect an SSN but the Regular Expression "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}" is used to validate and is returned.
-- For any fields detected as a known Semantic Type then the outliers are based on the particular Semantic Type, for example if the Semantic Type is
-detected as a US Phone Number then numbers with invalid area codes or invalid area code exchange pairs will be flagged as outliers.
-- For Code plugins, outliers may be detected based on a statistical analysis. For example if there are 100 valid integers and one 'O' (letter O) then the 'O' would be identified as an outlier.  In other cases, where an enumerated type is detected, for example 100 instances of RED, 100 instances of BLUE, 100 instances of PINK, and one instance of 'P1NK' then the instance of 'P1NK' would be identified as an outlier based on its Levenshtein distance from one of the other elements in the set.
+An outlier is a data point that differs significantly from other member of the data set.  There are a set of algorithms used to detect outliers in the input stream.
+
+- In certain cases, where an enumerated type is detected, for example 1000 instances of RED, 1000 instances of BLUE, 1000 instances of GREEN, and one instance of 'GREEEN' then the instance of 'GREEEN' would be identified as an outlier based on its Levenshtein distance from one of the other elements in the set.
 
 ## Regular Expressions ##
 

@@ -23,6 +23,7 @@ import java.util.Base64;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -478,8 +479,8 @@ public class TextAnalysisResult {
 	 * of occurrences.
 	 * @return A Map of values and their occurrence frequency of the data stream to date.
 	 */
-	public Map<String, Long> getCardinalityDetails() {
-		return facts.cardinality;
+	public SortedMap<String, Long> getCardinalityDetails() {
+		return facts.getCardinalitySorted();
 	}
 
 	/**

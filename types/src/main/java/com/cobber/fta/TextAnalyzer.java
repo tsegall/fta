@@ -2673,11 +2673,8 @@ public class TextAnalyzer {
 					addInvalid(entry.getKey(), entry.getValue());
 			}
 
-			if (recalcConfidence) {
-				double newConfidence = (double) facts.matchCount / realSamples;
-				if (newConfidence > logical.getConfidence(facts.matchCount, realSamples, context))
-					facts.confidence = newConfidence;
-			}
+			if (recalcConfidence)
+				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 			facts.outliers.clear();
 		}
 

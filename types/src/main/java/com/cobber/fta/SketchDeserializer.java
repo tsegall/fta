@@ -70,7 +70,7 @@ public class SketchDeserializer extends JsonDeserializer<Sketch> {
 
 		JsonNode nodeSC = node.get("stringConverter");
 		StringConverter stringConverter = ctx.readTreeAsValue(nodeSC, StringConverter.class);
-		Sketch ret = new Sketch(type, stringConverter, relativeAccuracy);
+		Sketch ret = new Sketch(type, Facts.getTypedMap(type, stringConverter),  stringConverter, relativeAccuracy);
 		ret.setDdSketch(ddSketch);
 		ret.totalSketchEntries = totalSketchEntries;
 

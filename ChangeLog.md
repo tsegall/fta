@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 11.0.2
+ - Change cardinalityDetails to return a SortedMap (Issue #19)
+
 ### 11.0.0
  - **ENH:** Behavior has changed with 11.0.0  - there is now a distinction between outliers and invalid entries.
       For example, with 1, 2, 3, 7, 8, 12, 9, 2, 23, BOGUS, 14 - 'BOGUS' is now an Invalid entry as opposed to an Outlier.
