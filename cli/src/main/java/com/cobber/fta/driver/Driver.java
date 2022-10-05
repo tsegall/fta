@@ -160,8 +160,8 @@ public class Driver {
 				options.noLogicalTypes = true;
 			else if ("--noPretty".equals(args[idx]))
 				options.pretty = false;
-			else if ("--noQuantiles".equals(args[idx]))
-				options.noQuantiles = true;
+			else if ("--noDistributions".equals(args[idx]))
+				options.noDistributions = true;
 			else if ("--noStatistics".equals(args[idx]))
 				options.noStatistics = true;
 			else if ("--output".equals(args[idx]))

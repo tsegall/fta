@@ -60,7 +60,7 @@ public class TestStringConverter {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	void longSigned() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownPatterns knownPatterns = new KnownPatterns();
@@ -70,7 +70,7 @@ public class TestStringConverter {
 		baseTest("longSigned", testCases, locale, knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG));
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	void longSignedGrouping() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownPatterns knownPatterns = new KnownPatterns();
@@ -80,7 +80,7 @@ public class TestStringConverter {
 		baseTest("longSignedGrouping", testCases, locale, knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_LONG_GROUPING));
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	void doubleSigned() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownPatterns knownPatterns = new KnownPatterns();
@@ -90,7 +90,7 @@ public class TestStringConverter {
 		baseTest("doubleSigned", testCases, locale, knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_DOUBLE));
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	void doubleSignedGrouping() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownPatterns knownPatterns = new KnownPatterns();
@@ -100,7 +100,7 @@ public class TestStringConverter {
 		baseTest("doubleSignedGrouping", testCases, locale, knownPatterns.getByID(KnownPatterns.ID.ID_SIGNED_DOUBLE_GROUPING));
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	void localDateTime() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownPatterns knownPatterns = new KnownPatterns();
@@ -111,7 +111,7 @@ public class TestStringConverter {
 		baseTest("localDateTime", testCases, locale, patternInfo);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	void localDate() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownPatterns knownPatterns = new KnownPatterns();
@@ -125,7 +125,7 @@ public class TestStringConverter {
 		baseTest("year", testCases, locale, patternInfo);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	void localTime() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownPatterns knownPatterns = new KnownPatterns();
@@ -139,7 +139,7 @@ public class TestStringConverter {
 		baseTest("localTime", testCases, locale, patternInfo);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	void offsetDateTime() throws IOException, FTAException {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownPatterns knownPatterns = new KnownPatterns();

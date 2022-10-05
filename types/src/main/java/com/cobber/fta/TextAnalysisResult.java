@@ -22,8 +22,8 @@ import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -216,7 +216,7 @@ public class TextAnalysisResult {
 	 * @return the value at the specified quantile
 	 */
 	public String getValueAtQuantile(final double quantile) {
-		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.QUANTILES))
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 
 		if (!facts.getSketch().isComplete())
@@ -252,6 +252,21 @@ public class TextAnalysisResult {
 			ret[i] = getValueAtQuantile(quantiles[i]);
 
 		return ret;
+	}
+
+	/**
+	 * Get the histogram with the supplied number of buckets.
+	 * @param buckets the number of buckets in the Histogram
+	 * @return An array of length 'buckets' that constitutes the Histogram
+	 */
+	public Histogram.Entry[] getHistogram(final int buckets) {
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS))
+			throw new IllegalArgumentException(NOT_ENABLED);
+
+		if (!facts.getHistogram().isComplete())
+			facts.getHistogram().complete(facts.cardinality);
+
+		return facts.getHistogram().getHistogram(buckets);
 	}
 
 	/**
@@ -479,7 +494,7 @@ public class TextAnalysisResult {
 	 * of occurrences.
 	 * @return A Map of values and their occurrence frequency of the data stream to date.
 	 */
-	public SortedMap<String, Long> getCardinalityDetails() {
+	public NavigableMap<String, Long> getCardinalityDetails() {
 		return facts.getCardinalitySorted();
 	}
 
@@ -836,7 +851,7 @@ public class TextAnalysisResult {
 		}
 
 		// We have support for arbitrary quantiles - but output percentiles in the JSON, and only if we have some data
-		if (analysisConfig.isEnabled(TextAnalyzer.Feature.QUANTILES) && facts.matchCount != 0 &&
+		if (analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS) && facts.matchCount != 0 &&
 				FTAType.STRING != facts.getMatchPatternInfo().getBaseType()) {
 			final ArrayNode detail = analysis.putArray("percentiles");
 			// 101 because we want 0.0 and 1.0 plus everything in between

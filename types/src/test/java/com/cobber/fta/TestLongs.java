@@ -222,6 +222,35 @@ public class TestLongs {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void similar() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("trailingMinus");
+		final String[] inputs = { "47", " 47", " 47 ", "47.0", "47.000" };
+
+//		for (int i = 0; i < analysis.getMaxCardinality(); i++)
+//			analysis.train(String.valueOf(i + 100) + ".0");
+
+		for (String input: inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[ 	]*\\d*\\.?\\d+[ 	]*");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getMinValue(), "47.0");
+		assertEquals(result.getMaxValue(), "47.0");
+		assertEquals(result.getCardinality(), 5);
+		assertEquals(result.getValueAtQuantile(.5), "47");
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void leadingZeros() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BL record ID", null);
 

@@ -5,8 +5,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -42,7 +42,7 @@ public class FiniteMap implements Map<String, Long> {
 				collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 
-	public void sortByKey(final SortedMap<String, Long> newMap) {
+	public void sortByKey(final NavigableMap<String, Long> newMap) {
 		newMap.putAll(impl);
 		impl = newMap;
 		sorted = true;

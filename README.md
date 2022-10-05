@@ -194,6 +194,7 @@ There are a large number of metrics detected, which vary based on the type of th
  * leadingZeroCount (Long type only) - The leading number of zeroes
  * decimalSeparator (Double type only) - The character used to separate the integral component from the fractional component
  * quantiles - access to q-quantiles. See Note 3.
+ * histograms - access to the associated histogram. See Note 4.
 
 The following fields are *not* calculated by FTA (but may be set on the Analyzer).
  * totalCount - The total number of elements in the entire data stream (-1 unless set explicitly).
@@ -217,6 +218,8 @@ Note 1: The value of the typeQualifier is dependent on the Base Type as follows:
 Note 2: This field may be set on the Analyzer - and if so FTA attempts no further analysis.
 
 Note 3: quantiles are exact for any set where the cardinality is less than maxCardinality.  No support for quantiles for String types where maxCardinality is exceeded, for other types the quantiles are estimates that are within the relative-error guarantee.
+
+Note 4: Histograms are precise for any set where the cardinality is less than maxCardinality.  No support for histograms for String types where maxCardinality is exceeded, for other types the histograms are estimates - see A Streaming Parallel Decision Tree Algorithm (https://www.jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf) for more details.
 
 </details>
 
@@ -642,13 +645,12 @@ You can replay the trace file (assuming a local build) using:
 ## Background Reading ##
 
 * Extracting Syntactic Patterns from Databases (https://arxiv.org/abs/1710.11528v2)
-* Sherlock: A Deep Learning Approach to
-Semantic Data Type Detection (https://arxiv.org/pdf/1905.10688.pdf)
-* Synthesizing Type-Detection Logic for Rich Semantic Data
-Types using Open-source Code (https://congyan.org/autotype.pdf)
+* Sherlock: A Deep Learning Approach to Semantic Data Type Detection (https://arxiv.org/pdf/1905.10688.pdf)
+* Synthesizing Type-Detection Logic for Rich Semantic Data Types using Open-source Code (https://congyan.org/autotype.pdf)
 * T2Dv2 Gold Standard for Matching Web Tables to DBpedia (http://webdatacommons.org/webtables/goldstandardV2.html)
 * VizNet Towards a Visualization Learning and Benchmarking Repository (https://viznet.media.mit.edu/)
 * Semantic Type Detection: Why It Matters, Current Approaches, and How to Improve It (https://megagon.ai/blog/semantic-type-detection-why-it-matters-current-approaches-and-how-to-improve-it)
 * Auto-Type: Synthesizing Type-Detection Logic for Rich Semantic Data Types using Open-source Code (https://www.microsoft.com/en-us/research/publication/synthesizing-type-detection-logic-rich-semantic-data-types-using-open-source-code/)
 * DDSketch: A Fast and Fully-Mergeable Quantile Sketch with Relative-Error Guarantees (https://arxiv.org/pdf/1908.10693.pdf)
+* A Streaming Parallel Decision Tree Algorithm (https://www.jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf)
 

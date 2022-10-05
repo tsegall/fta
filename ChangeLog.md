@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 11.0.4
+ - ENH: Change interface for getCardinalityDetails() from SortedMap to NavigableMap
+ - ENH: Add support for histograms. See getHistogram().
+
 ### 11.0.3
  - ENH: Performance is slow when using trainBulk() and the counts are large and statistics are being generated
 

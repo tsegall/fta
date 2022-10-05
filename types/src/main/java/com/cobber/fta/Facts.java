@@ -31,9 +31,9 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
@@ -188,6 +188,7 @@ public class Facts {
 	@JsonSerialize(using = SketchSerializer.class)
 	@JsonDeserialize(using = SketchDeserializer.class)
 	private Sketch sketch;
+	private Histogram histogram;
 	private StringConverter stringConverter;
 	private TypeFormatter typeFormatter;
 
@@ -324,7 +325,7 @@ public class Facts {
 		return sketch != null;
 	}
 
-	public static SortedMap<String, Long> getTypedMap(final FTAType type, final StringConverter stringConverter) {
+	public static NavigableMap<String, Long> getTypedMap(final FTAType type, final StringConverter stringConverter) {
 		switch (type) {
 		case BOOLEAN:
 			return new TreeMap<>();
@@ -350,10 +351,10 @@ public class Facts {
 	}
 
 	@JsonIgnore
-	public SortedMap<String, Long> getCardinalitySorted() {
+	public NavigableMap<String, Long> getCardinalitySorted() {
 		if (!cardinality.isSorted())
 			cardinality.sortByKey(getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()));
-		return (SortedMap<String, Long>) cardinality.getImpl();
+		return (NavigableMap<String, Long>) cardinality.getImpl();
 	}
 
 	@JsonIgnore
@@ -361,6 +362,13 @@ public class Facts {
 		if (sketch == null)
 			sketch = new Sketch(matchPatternInfo.getBaseType(), getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()), getStringConverter(), analysisConfig.getQuantileRelativeAccuracy());
 		return sketch;
+	}
+
+	@JsonIgnore
+	public Histogram getHistogram() {
+		if (histogram == null)
+			histogram = new Histogram(matchPatternInfo.getBaseType(), getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()), getStringConverter());
+		return histogram;
 	}
 
 	// Track basic facts for the field - called for any Valid input

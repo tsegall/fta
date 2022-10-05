@@ -100,8 +100,8 @@ public class AnalysisConfig {
 	/** Should we should treat "NULL" (and similar) as Null values. */
 	private boolean nullAsText = true;
 
-	/** Should track quantiles. */
-	private boolean quantiles = true;
+	/** Should track distributions (Quantiles/Histograms). */
+	private boolean distributions = true;
 
 	public AnalysisConfig() {
 		this(Locale.getDefault());
@@ -129,7 +129,7 @@ public class AnalysisConfig {
 		this.lengthQualifier = other.lengthQualifier;
 		this.noAbbreviationPunctuation = other.noAbbreviationPunctuation;
 		this.nullAsText = other.nullAsText;
-		this.quantiles = other.quantiles;
+		this.distributions = other.distributions;
 	}
 
 	/**
@@ -160,8 +160,8 @@ public class AnalysisConfig {
 		case NULL_AS_TEXT:
 			nullAsText = state;
 			break;
-		case QUANTILES:
-			quantiles = state;
+		case DISTRIBUTIONS:
+			distributions = state;
 			break;
 		}
 	}
@@ -187,8 +187,8 @@ public class AnalysisConfig {
 			return noAbbreviationPunctuation;
 		case NULL_AS_TEXT:
 			return nullAsText;
-		case QUANTILES:
-			return quantiles;
+		case DISTRIBUTIONS:
+			return distributions;
 		}
 		return false;
 	}

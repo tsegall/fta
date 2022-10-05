@@ -173,8 +173,8 @@ public class TextAnalyzer {
 		NO_ABBREVIATION_PUNCTUATION,
 		/** Indicate whether we should treat "NULL" (and similar) as Null values. Feature is enabled by default. */
 		NULL_AS_TEXT,
-		/** Indicate whether we should track quantiles. Feature is enabled by default. */
-		QUANTILES
+		/** Indicate whether we should track distributions (Quantiles/Histograms). Feature is enabled by default. */
+		DISTRIBUTIONS
 	}
 
 	/**
@@ -1889,8 +1889,10 @@ public class TextAnalyzer {
 	private void addValid(final String input, final long count) {
 		final boolean added = facts.cardinality.mergeIfSpace(input, count, Long::sum);
 		// If Cardinality blown track remaining set in a Sketch
-		if (!added && analysisConfig.isEnabled(TextAnalyzer.Feature.QUANTILES) && !facts.getMatchPatternInfo().getBaseType().equals(FTAType.STRING))
+		if (!added && analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS) && !facts.getMatchPatternInfo().getBaseType().equals(FTAType.STRING)) {
 			facts.getSketch().accept(input, count);
+			facts.getHistogram().accept(input, count);
+		}
 	}
 
 	private void addOutlier(final String input, final long count) {

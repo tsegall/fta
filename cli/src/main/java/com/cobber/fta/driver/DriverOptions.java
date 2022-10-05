@@ -37,7 +37,7 @@ class DriverOptions {
 	protected boolean json;
 	protected boolean noAnalysis;
 	protected boolean noLogicalTypes;
-	protected boolean noQuantiles;
+	protected boolean noDistributions;
 	protected boolean noStatistics;
 	protected boolean output;
 	protected boolean formatDetection;
@@ -78,8 +78,8 @@ class DriverOptions {
 			analyzer.setPluginThreshold(this.pluginThreshold);
 		if (this.locale != null)
 			analyzer.setLocale(this.locale);
-		if (this.noQuantiles)
-			analyzer.configure(TextAnalyzer.Feature.QUANTILES, false);
+		if (this.noDistributions)
+			analyzer.configure(TextAnalyzer.Feature.DISTRIBUTIONS, false);
 		if (this.noStatistics)
 			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		if (this.noLogicalTypes)

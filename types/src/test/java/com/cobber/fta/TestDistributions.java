@@ -24,16 +24,19 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
 
 /**
- * Quantile Tests for the following Data Types
+ * Distribution (Quantiles/Histograms) Tests for the following Data Types
  *
  * BOOLEAN (DONE)
  * DOUBLE (DONE)
@@ -45,9 +48,9 @@ import com.cobber.fta.dates.DateTimeParser;
  * OFFSETDATETIME
  * ZONEDDATETIME (pretends to be an OFFSETDATETIME)
  *
- * STRING  (Note: no support for Quantile determination once the Cardinality Cache is exceeded)
+ * STRING  (Note: no support for Quantile/Histogram determination once the Cardinality Cache is exceeded)
  */
-public class TestQuantiles {
+public class TestDistributions {
 	public void baseLong(final long size, final double relativeAccuracy) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("baseLong" + size);
 		analysis.setQuantileRelativeAccuracy(relativeAccuracy);
@@ -97,43 +100,43 @@ public class TestQuantiles {
 		assertEquals(result.getMinLength(), 1);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long10() throws IOException, FTAException {
 		baseLong(10, .01);
 		baseLong(10, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long100() throws IOException, FTAException {
 		baseLong(100, .01);
 		baseLong(100, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long1K() throws IOException, FTAException {
 		baseLong(1_000, .01);
 		baseLong(1_000, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long10K() throws IOException, FTAException {
 		baseLong(10_000, .01);
 		baseLong(10_000, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long15K() throws IOException, FTAException {
 		baseLong(15_000, .01);
 		baseLong(15_000, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long100K() throws IOException, FTAException {
 		baseLong(100_000, .01);
 		baseLong(100_000, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long1M() throws IOException, FTAException {
 		baseLong(1_000_000, .01);
 		baseLong(1_000_000, .001);
@@ -175,7 +178,7 @@ public class TestQuantiles {
 		assertEquals(result.getMinLength(), 1);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void netgativeLong10() throws IOException, FTAException {
 		negativeLong(10, .01);
 		negativeLong(10, .001);
@@ -232,37 +235,37 @@ public class TestQuantiles {
 		assertEquals(result.getMinLength(), 3);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void double10() throws IOException, FTAException {
 		baseDouble(10, .01);
 		baseDouble(10, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void double100() throws IOException, FTAException {
 		baseDouble(100, .01);
 		baseDouble(100, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void double1K() throws IOException, FTAException {
 		baseDouble(1_000, .01);
 		baseDouble(1_000, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void double10K() throws IOException, FTAException {
 		baseDouble(10_000, .01);
 		baseDouble(10_000, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void double100K() throws IOException, FTAException {
 		baseDouble(100_000, .01);
 		baseDouble(100_000, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void double1M() throws IOException, FTAException {
 		baseDouble(1_000_000, .01);
 		baseDouble(1_000_000, .001);
@@ -317,17 +320,17 @@ public class TestQuantiles {
 		assertEquals(actual_1_0, expected_1_0, expected_1_0 * RELATIVE_ACCURACY);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void year10() throws IOException, FTAException {
 		baseYYYY(10);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void year100() throws IOException, FTAException {
 		baseYYYY(100);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void baseYYYYMMDD() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Date");
 
@@ -435,19 +438,19 @@ public class TestQuantiles {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void localDateTime10() throws IOException, FTAException {
 		baseLocalDateTime(10, .01);
 		baseLocalDateTime(10, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void localDateTime10K() throws IOException, FTAException {
 		baseLocalDateTime(10_000, .01);
 		baseLocalDateTime(10_000, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void localDateTime100K() throws IOException, FTAException {
 		baseLocalDateTime(100_000, .01);
 		baseLocalDateTime(100_000, .001);
@@ -509,12 +512,12 @@ public class TestQuantiles {
 		assertEquals(q1_0, max);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void string10() throws IOException, FTAException {
 		baseString(10);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void string10K() throws IOException, FTAException {
 		baseString(10_000);
 	}
@@ -546,27 +549,27 @@ public class TestQuantiles {
 		assertEquals(q1_0, input);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void true10K() throws IOException, FTAException {
 		boolean100K(10_000, true);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void false10K() throws IOException, FTAException {
 		boolean100K(10_000, false);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void true100K() throws IOException, FTAException {
 		boolean100K(100_000, true);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void false100K() throws IOException, FTAException {
 		boolean100K(100_000, false);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void booleanMixed100K() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("mixed100K");
 		final int size = 100_000;
@@ -671,25 +674,25 @@ public class TestQuantiles {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void localTime10() throws IOException, FTAException {
 		baseLocalTime(10, .01);
 		baseLocalTime(10, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void localTime10K() throws IOException, FTAException {
 		baseLocalTime(10_000, .01);
 		baseLocalTime(10_000, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void localTime100K() throws IOException, FTAException {
 		baseLocalTime(100_000, .01);
 		baseLocalTime(100_000, .001);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void withSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("withSpaces");
 		final int SIZE = 100;
@@ -718,7 +721,7 @@ public class TestQuantiles {
 		assertEquals(q1_0, "99");
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void leadingPlus() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("latitude");
 		final String testCases[] = {
@@ -753,7 +756,7 @@ public class TestQuantiles {
 		assertEquals(q1_0, "+37.4436377");
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void normalCurve() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("normalCurve");
 		final SecureRandom random = new SecureRandom();
@@ -822,7 +825,7 @@ public class TestQuantiles {
 		}
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.QUANTILES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void mergeTest() throws IOException, FTAException {
 		final double RELATIVE_ACCURACY = 0.01;
 		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
@@ -844,7 +847,6 @@ public class TestQuantiles {
 
 		TextAnalysisResult result = merged.getResult();
 
-
 		assertEquals(result.getTotalCount(), 2 * size);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getNullCount(), 0);
@@ -865,5 +867,112 @@ public class TestQuantiles {
 
 		// Median should be seriously close to 0
 		assertEquals(Long.valueOf(q0_5), 100000.0, 100000 * RELATIVE_ACCURACY);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void simpleHistogramDate() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramDate");
+		final long SIZE = 1000;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		testCase.put("Tue Oct  4 16:04:19 PDT 2022", SIZE);
+		testCase.put("Mon Oct 11 17:01:16 PDT 2021", SIZE);
+		testCase.put("Mon May 18 21:01:27 PDT 1970", SIZE);
+		testCase.put("Wed Dec  9 12:44:29 PDT 1959", SIZE);
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Histogram.Entry[] histogram = result.getHistogram(4);
+
+		for (int i = 0; i < 4; i++)
+			System.err.printf("%s-%s: %d%n", histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void simpleHistogramLong() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramLong");
+		final long SIZE = 1000;
+		final long RECORDS = 1000L;
+		final int BUCKETS = 10;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		for (int i = 0; i <= SIZE; i++)
+			testCase.put(String.valueOf(i), RECORDS);
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Histogram.Entry[] histogram = result.getHistogram(BUCKETS);
+
+		for (int i = 0; i < BUCKETS - 1; i++)
+			assertEquals(histogram[i].getCount(), SIZE / BUCKETS * RECORDS);
+		assertEquals(histogram[BUCKETS - 1].getCount(), SIZE / BUCKETS * RECORDS + RECORDS);
+
+		for (int i = 0; i < BUCKETS; i++)
+			System.err.printf("%s-%s: %d%n", histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void simpleHistogramDouble() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramDouble");
+		final long SIZE = 1000;
+		final long RECORDS = 1000L;
+		final int BUCKETS = 10;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		for (int i = 0; i <= SIZE; i++)
+			testCase.put(String.valueOf(i) + ".0", RECORDS);
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Histogram.Entry[] histogram = result.getHistogram(BUCKETS);
+
+		for (int i = 0; i < BUCKETS - 1; i++)
+			assertEquals(histogram[i].getCount(), SIZE / BUCKETS * RECORDS);
+		assertEquals(histogram[BUCKETS - 1].getCount(), SIZE / BUCKETS * RECORDS + RECORDS);
+
+		for (int i = 0; i < BUCKETS; i++)
+			System.err.printf("%s-%s: %d%n", histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void simpleHistogramGaussian() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramGaussian");
+		final Map<String, Long> testCase = new HashMap<>();
+		final SecureRandom random = new SecureRandom();
+		final int SIZE = 10000;
+
+		for (int i = 0; i < SIZE; i++)
+			analysis.train(String.valueOf(random.nextGaussian()*100));
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		final int WIDTH = 20;
+
+		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+
+		long max = 0;
+		for (int i = 0; i < WIDTH; i++) {
+			System.err.printf("%4.2f: %d%n", Double.valueOf(histogram[i].getHigh()), histogram[i].getCount());
+			if (histogram[i].getCount() > max)
+				max = histogram[i].getCount();
+		}
+		long sizeX = max / 100;
+
+		for (int i = 0; i < WIDTH; i++) {
+			long xCount = histogram[i].getCount()/sizeX;
+			String output = xCount == 0 ? "." : Utils.repeat('X', (int)xCount);
+			System.err.printf("%4.2f: %s%n", Double.valueOf(histogram[i].getHigh()), output);
+		}
 	}
 }

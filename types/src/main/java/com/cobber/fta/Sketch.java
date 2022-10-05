@@ -16,19 +16,19 @@
 package com.cobber.fta;
 
 import java.util.Map;
-import java.util.SortedMap;
+import java.util.NavigableMap;
 
 import com.cobber.fta.core.FTAType;
 import com.datadoghq.sketch.ddsketch.DDSketch;
 import com.datadoghq.sketch.ddsketch.DDSketches;
 
-/*
- * This class is used encapsulate a Sketch to provide Quantile data.  If the data fits in the cardinality set
- * then it simply uses a map to generate the cardinality.  Once the cardinality exceeds maxCardinality then the
+/**
+ * This class is used to encapsulate a Sketch to provide Quantile data.  If the data fits in the cardinality set
+ * then it simply uses a map to generate the quantiles.  Once the cardinality exceeds maxCardinality then the
  * data is tracked via DDSketch which provides for a specifiable relative-accuracy quantile sketch algorithms.
  */
 public class Sketch {
-	private SortedMap<String, Long> typedMap;
+	private NavigableMap<String, Long> typedMap;
 	protected long totalMapEntries;
 	protected long totalSketchEntries;
 	private DDSketch ddSketch;
@@ -37,7 +37,7 @@ public class Sketch {
 	protected double relativeAccuracy;
 	private boolean isComplete = false;
 
-	Sketch(final FTAType type, final SortedMap<String, Long> typedMap, final StringConverter stringConverter, final double relativeAccuracy) {
+	Sketch(final FTAType type, final NavigableMap<String, Long> typedMap, final StringConverter stringConverter, final double relativeAccuracy) {
 		this.type = type;
 		this.stringConverter = stringConverter;
 		this.relativeAccuracy = relativeAccuracy;
@@ -67,9 +67,9 @@ public class Sketch {
 			}
 			else {
 				// Cardinality map - has entries that differ only based on whitespace, so for example it may include
-				// "47" 10 times and " 47" 20 times, for the purposes of calculating quantiles we want these to be coalesced
-				String key = e.getKey().trim();
-				typedMap.merge(key, e.getValue(), Long::sum);
+				// "47" 10 times and " 47" 20 times, for the purposes of calculating quantiles these are coalesced
+				// Similarly 47.0 and 47.000 will be collapsed since the typedMap is type aware and will consider these equal
+				typedMap.merge(e.getKey().trim(), e.getValue(), Long::sum);
 				totalMapEntries += e.getValue();
 			}
         }

@@ -30,8 +30,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
-import java.util.SortedMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2152,7 +2152,7 @@ public class RandomTests {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-2");
 		assertEquals(result.getMaxValue(), "10000");
-		SortedMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
+		NavigableMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
 		assertEquals(cardinalityDetails.firstKey(), "-2");
 		assertEquals(cardinalityDetails.lastKey(), "10000");
 	}
@@ -2178,7 +2178,7 @@ public class RandomTests {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-2.0");
 		assertEquals(result.getMaxValue(), "10000.45");
-		SortedMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
+		NavigableMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
 		assertEquals(cardinalityDetails.firstKey(), "-2.0");
 		assertEquals(cardinalityDetails.lastKey(), "10000.45");
 	}
