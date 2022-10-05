@@ -116,7 +116,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		try {
 			// The Google library is very permissive and generally strips punctuation, we want to be
 			// a little more discerning so that we don't treat ordinary numbers as phone numbers

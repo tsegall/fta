@@ -1636,7 +1636,7 @@
 		"content": "/reference/en_name_suffix.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}.]+",
-		"threshold": 98,
+		"threshold": 90,
 		"baseType": "STRING",
 		"priority": 176
 	},
@@ -1865,10 +1865,10 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": "^(?i)(company|company.?name|business.?name|organization.?name)$", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": "^(?i)(company|company.?name|business.?name|organization.?name|dba.?name)$", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
-					"regExpReturned": "[-:/()',&# \\.\\p{IsAlphabetic}\\d]*",
+					"regExpReturned": "[-+|*:;!@\"/()',&# \\.\\p{IsAlphabetic}\\d]*",
 					"isRegExpComplete": false
 				} ]
 			}

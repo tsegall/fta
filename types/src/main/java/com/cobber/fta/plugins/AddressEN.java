@@ -105,7 +105,7 @@ public class AddressEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		final int length = input.length();
 
 		// Attempt to fail fast

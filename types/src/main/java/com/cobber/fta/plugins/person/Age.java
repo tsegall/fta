@@ -88,7 +88,7 @@ public class Age extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		if (input.length() > 3 || !Utils.isNumeric(input))
 			return false;
 		final int age = Integer.valueOf(input);

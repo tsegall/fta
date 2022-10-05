@@ -77,7 +77,7 @@ public class CheckDigitIBAN extends CheckDigitLT {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		return validator.isValid(input.replaceAll(" ", ""));
 	}
 

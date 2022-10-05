@@ -65,7 +65,7 @@ public class MiddleName extends FirstName {
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		final String trimmedUpper = input.trim().toUpperCase(locale);
 		final int length = trimmedUpper.length();
 

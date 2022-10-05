@@ -72,7 +72,7 @@ public abstract class CheckDigitLT extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		return (length == -1 || input.length() == length) && validator.isValid(input);
 	}
 

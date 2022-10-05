@@ -84,7 +84,7 @@ public class PeriodYearRange extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		if (input.length() != 9 || input.charAt(4) != '-' || input.chars().filter(Character::isDigit).count() != 8)
 			return false;
 		int yearOne = Utils.getValue(input, 0, 4, 4);

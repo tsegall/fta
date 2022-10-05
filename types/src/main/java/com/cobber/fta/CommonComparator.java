@@ -25,10 +25,10 @@ public class CommonComparator<T extends Comparable> implements Comparator<String
 	}
 
 	@Override
-    public int compare(String input1, String input2) {
-    	T val1 = (T)stringConverter.getValue(input1);
-    	T val2 = (T)stringConverter.getValue(input2);
-        int value =  val1.compareTo(val2);
+	public int compare(final String input1, final String input2) {
+		final T val1 = (T)stringConverter.getValue(input1);
+		final T val2 = (T)stringConverter.getValue(input2);
+		final int value =  val1.compareTo(val2);
 
         if (value < 0)
             return -1;

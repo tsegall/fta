@@ -24,7 +24,7 @@ public class FiniteMap implements Map<String, Long> {
 		this.maxCapacity = maxCapacity;
 	}
 
-    public FiniteMap(Map<String, Long> m, final int maxCapacity) {
+    public FiniteMap(final Map<String, Long> m, final int maxCapacity) {
 		impl = new HashMap<>(m);
 		this.maxCapacity = maxCapacity;
     }
@@ -56,10 +56,11 @@ public class FiniteMap implements Map<String, Long> {
 		return sorted;
 	}
 
-	public boolean mergeIfSpace(String key, Long value,
+	public boolean mergeIfSpace(final String key, final Long value,
 			BiFunction<? super Long, ? super Long, ? extends Long> remappingFunction) {
 		final Long oldValue = get(key);
 
+		// If it is not already present and we are full then just return
 		if (oldValue == null && impl.size() >= getMaxCapacity())
 			return false;
 
@@ -81,32 +82,32 @@ public class FiniteMap implements Map<String, Long> {
 	}
 
 	@Override
-	public boolean containsKey(Object key) {
+	public boolean containsKey(final Object key) {
 		return impl.containsKey(key);
 	}
 
 	@Override
-	public boolean containsValue(Object value) {
+	public boolean containsValue(final Object value) {
 		return impl.containsValue(value);
 	}
 
 	@Override
-	public Long get(Object key) {
+	public Long get(final Object key) {
 		return impl.get(key);
 	}
 
 	@Override
-	public Long put(String key, Long value) {
+	public Long put(final String key, final Long value) {
 		return impl.put(key, value);
 	}
 
 	@Override
-	public Long remove(Object key) {
+	public Long remove(final Object key) {
 		return impl.remove(key);
 	}
 
 	@Override
-	public void putAll(Map<? extends String, ? extends Long> m) {
+	public void putAll(final Map<? extends String, ? extends Long> m) {
 		impl.putAll(m);
 	}
 
@@ -130,7 +131,9 @@ public class FiniteMap implements Map<String, Long> {
 		return impl.entrySet();
 	}
 
-	public boolean equals(FiniteMap other) {
-		return impl.equals(other.impl) && maxCapacity == other.maxCapacity;
+	@Override
+	public boolean equals(Object o) {
+		FiniteMap other = (FiniteMap)o;
+		return o != null && impl.equals(other.impl) && maxCapacity == other.maxCapacity;
 	}
 }

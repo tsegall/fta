@@ -383,17 +383,17 @@ public class Facts {
 			maxTrimmedLength = trimmedLength;
 
 		// Determine if this is a multi-line field (if not already decided)
-		if (!multiline)
+		if (FTAType.STRING.equals(matchPatternInfo.getBaseType()) && !multiline)
 			multiline = input.indexOf('\n') != -1 || input.indexOf('\r') != -1;
 	}
 
 	public void killZeroes() {
 		if (minLongNonZero != minLong) {
 			// Need to remove '0' (and similar friends) from cardinality map and put in outlier map
-			Iterator<Entry<String, Long>> it = cardinality.entrySet().iterator();
+			final Iterator<Entry<String, Long>> it = cardinality.entrySet().iterator();
 
 			while (it.hasNext()) {
-				Entry<String, Long> entry = it.next();
+				final Entry<String, Long> entry = it.next();
 				if (Long.parseLong(entry.getKey()) == 0) {
 					outliers.put(entry.getKey(), entry.getValue());
 					it.remove();

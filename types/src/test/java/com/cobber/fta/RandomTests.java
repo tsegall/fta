@@ -2133,7 +2133,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testCardinalitySortedLong() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("testCardinalitySorted");
+		final TextAnalyzer analysis = new TextAnalyzer("testCardinalitySortedLong");
 		final int start = 1000;
 		final int end = 100;
 
@@ -2159,7 +2159,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testCardinalitySortedDouble() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("testCardinalitySorted");
+		final TextAnalyzer analysis = new TextAnalyzer("testCardinalitySortedDouble");
 		final int start = 1000;
 		final int end = 100;
 
@@ -2181,6 +2181,58 @@ public class RandomTests {
 		SortedMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
 		assertEquals(cardinalityDetails.firstKey(), "-2.0");
 		assertEquals(cardinalityDetails.lastKey(), "10000.45");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testExternalUniqueness10K() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testCardinalitySorted");
+		final int SIZE = 10_000;
+
+		for (int i = 0; i < SIZE; i++) {
+			analysis.train(String.valueOf(i));
+			if (i < SIZE/2)
+				analysis.train(String.valueOf(i));
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), SIZE + SIZE/2);
+		assertEquals(result.getCardinality(), SIZE);
+		assertEquals(result.getDistinctCount(), SIZE);
+		assertEquals(result.getUniqueness(), 0.5);
+		assertEquals(result.getRegExp(), "\\d{1,4}");
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getMaxValue(), "9999");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testExternalUniqueness100K() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testCardinalitySorted");
+		final int SIZE = 100_000;
+
+		// External Knowledge applied
+		analysis.setDistinctCount(SIZE);
+		analysis.setUniqueness(0.5);
+
+		for (int i = 0; i < SIZE; i++) {
+			analysis.train(String.valueOf(i));
+			if (i < SIZE/2)
+				analysis.train(String.valueOf(i));
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), SIZE + SIZE/2);
+		assertEquals(result.getCardinality(), analysis.getMaxCardinality());
+		assertEquals(result.getDistinctCount(), SIZE);
+		assertEquals(result.getUniqueness(), 0.5);
+		assertEquals(result.getRegExp(), "\\d{1,5}");
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getMaxValue(), "99999");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })

@@ -118,7 +118,7 @@ public class Aadhar_IN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		final String trimmed = input.trim();
 
 		// Currently numbers starting with 0 & 1 are reserved for future use

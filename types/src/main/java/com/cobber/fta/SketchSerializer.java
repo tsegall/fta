@@ -43,17 +43,17 @@ public class SketchSerializer extends JsonSerializer<Sketch> {
 	}
 
 	@Override
-	public void serialize(Sketch value,  JsonGenerator generator, SerializerProvider serializers) throws IOException {
+	public void serialize(final Sketch value, final JsonGenerator generator, final SerializerProvider serializers) throws IOException {
 		generator.writeStartObject();
 		generator.writeStringField("ftaType", value.type.name());
 		generator.writeNumberField("totalSketchEntries", value.totalSketchEntries);
 		generator.writeNumberField("relativeAccuracy", value.relativeAccuracy);
 		serializers.defaultSerializeField("stringConverter", value.stringConverter, generator);
 
-		SimpleOutput output = new SimpleOutput();
+		final SimpleOutput output = new SimpleOutput();
 		value.getDdSketch().encode(output, false);
 
-		byte[] encoded = Base64.getEncoder().encode(output.buffer.toByteArray());
+		final byte[] encoded = Base64.getEncoder().encode(output.buffer.toByteArray());
 		generator.writeStringField("ddSketch", new String(encoded));
 		generator.writeEndObject();
 	}

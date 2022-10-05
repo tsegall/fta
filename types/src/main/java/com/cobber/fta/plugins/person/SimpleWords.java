@@ -111,7 +111,7 @@ public abstract class SimpleWords extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		if (keywordsHash.contains(input.toUpperCase(locale)))
 			return true;
 

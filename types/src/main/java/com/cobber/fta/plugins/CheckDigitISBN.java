@@ -86,7 +86,7 @@ public class CheckDigitISBN extends CheckDigitLT {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		if (input.length() == DIGIT_LENGTH)
 			return validator.isValid(input);
 

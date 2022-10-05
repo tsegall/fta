@@ -95,7 +95,7 @@ public class NameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		final String trimmed = input.trim();
 		final int comma = trimmed.indexOf(',');
 		if (comma == -1 || comma == 0 || comma == trimmed.length() - 1)

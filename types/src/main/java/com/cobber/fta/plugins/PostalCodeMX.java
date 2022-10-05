@@ -107,7 +107,7 @@ public class PostalCodeMX extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		final int len = input.length();
 
 		if (len < 4 || len > 5)

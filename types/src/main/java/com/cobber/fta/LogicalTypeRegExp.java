@@ -162,7 +162,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		if (!getPattern().matcher(Utils.cleanse(input.trim())).matches())
 			return false;
 
@@ -232,7 +232,7 @@ public class LogicalTypeRegExp extends LogicalType {
 			case STRING:
 				if ((minString != null && facts.getMinValue().compareTo(minString) < 0) ||
 						(maxString != null && facts.getMaxValue().compareTo(maxString) > 0))
-					return new PluginAnalysis(backout);;
+					return new PluginAnalysis(backout);
 					break;
 
 			default:

@@ -83,7 +83,7 @@ public class AddressOther extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		// Calculate the length in Code Points so we do not penalize non-ASCII characters
 		final int length = input.codePointCount(0, input.length());
 

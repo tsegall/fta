@@ -38,7 +38,7 @@ public class FirstName extends PersonName {
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		final String trimmedUpper = input.trim().toUpperCase(locale);
 		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength)
 			return false;

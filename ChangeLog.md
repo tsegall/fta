@@ -1,8 +1,11 @@
 
 ## Changes ##
 
+### 11.0.3
+ - ENH: Performance is slow when using trainBulk() and the counts are large and statistics are being generated
+
 ### 11.0.2
- - Change cardinalityDetails to return a SortedMap (Issue #19)
+ - ENH: Change cardinalityDetails to return a SortedMap (Issue #19)
 
 ### 11.0.0
  - **ENH:** Behavior has changed with 11.0.0  - there is now a distinction between outliers and invalid entries.

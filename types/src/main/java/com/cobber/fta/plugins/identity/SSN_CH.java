@@ -117,7 +117,7 @@ public class SSN_CH extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		final String trimmed = input.trim();
 		if (!trimmed.startsWith("756"))
 			return false;

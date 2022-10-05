@@ -37,7 +37,7 @@ public class SketchDeserializer extends JsonDeserializer<Sketch> {
 		private byte[] buffer;
 		private int offset;
 
-		SimpleInput(byte[] buffer) {
+		SimpleInput(final byte[] buffer) {
 			this.buffer = buffer;
 			this.offset = 0;
 		}
@@ -54,23 +54,22 @@ public class SketchDeserializer extends JsonDeserializer<Sketch> {
 	}
 
 	@Override
-	public Sketch deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
-		JsonNode node = p.getCodec().readTree(p);
-		FTAType type = FTAType.valueOf(node.get("ftaType").asText());
-		long totalSketchEntries = ((IntNode)node.get("totalSketchEntries")).longValue();
-		double relativeAccuracy = ((DoubleNode)node.get("relativeAccuracy")).doubleValue();
-		byte[] bytes = Base64.getDecoder().decode(node.get("ddSketch").asText());
+	public Sketch deserialize(final JsonParser p, final DeserializationContext ctx) throws IOException {
+		final JsonNode node = p.getCodec().readTree(p);
+		final FTAType type = FTAType.valueOf(node.get("ftaType").asText());
+		final long totalSketchEntries = ((IntNode)node.get("totalSketchEntries")).longValue();
+		final double relativeAccuracy = ((DoubleNode)node.get("relativeAccuracy")).doubleValue();
+		final byte[] bytes = Base64.getDecoder().decode(node.get("ddSketch").asText());
 
-		SimpleInput input = new SimpleInput(bytes);
+		final SimpleInput input = new SimpleInput(bytes);
 
-		DDSketch ddSketch = DDSketches.unboundedDense(relativeAccuracy);
+		final DDSketch ddSketch = DDSketches.unboundedDense(relativeAccuracy);
 
 		ddSketch.decodeAndMergeWith(input);
 
-
-		JsonNode nodeSC = node.get("stringConverter");
-		StringConverter stringConverter = ctx.readTreeAsValue(nodeSC, StringConverter.class);
-		Sketch ret = new Sketch(type, Facts.getTypedMap(type, stringConverter),  stringConverter, relativeAccuracy);
+		final JsonNode nodeSC = node.get("stringConverter");
+		final StringConverter stringConverter = ctx.readTreeAsValue(nodeSC, StringConverter.class);
+		final Sketch ret = new Sketch(type, Facts.getTypedMap(type, stringConverter),  stringConverter, relativeAccuracy);
 		ret.setDdSketch(ddSketch);
 		ret.totalSketchEntries = totalSketchEntries;
 

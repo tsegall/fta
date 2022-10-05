@@ -31,6 +31,8 @@
 
 # Generalize Bloom Filter support for large static reference lists
 
+# Add distinction between invalid entries and outliers (DONE)
+
 # Improve Date Detection (DONE)
 
 # Improve Internationalization

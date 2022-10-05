@@ -101,7 +101,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		final String trimmed = input.trim();
 		final int lastSpace = trimmed.lastIndexOf(' ');
 		if (lastSpace == -1)

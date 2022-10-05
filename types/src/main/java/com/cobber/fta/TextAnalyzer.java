@@ -791,15 +791,14 @@ public class TextAnalyzer {
 				facts.monotonicIncreasing = false;
 
 			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
-				// This test avoids the loop if the existing mean is the same as the input
-				if (l != facts.mean)
-					// Calculate the mean & standard deviation using Welford's algorithm
-					for (int i = 0; i < count; i++) {
-						final double delta = l - facts.mean;
-						// matchCount is one low - because we do not 'count' the record until we return from this routine indicating valid
-						facts.mean += delta / (facts.matchCount + i + 1);
-						facts.currentM2 += delta * (l - facts.mean);
-					}
+				// Avoids any work if the existing mean is the same as the input
+				if (l != facts.mean) {
+					// Calculate the mean & standard deviation using Welford's algorithm (weighted)
+					double oldMean = facts.mean;
+					long newCount = facts.matchCount + count;
+					facts.mean += (count * (l - oldMean)) / newCount;
+					facts.currentM2 += count * ((l - facts.mean) * (l - oldMean));
+				}
 
 				facts.tbLong.observe(l);
 			}
@@ -2561,7 +2560,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		FiniteMap cardinalityUpper = new FiniteMap(facts.cardinality.getMaxCapacity());
+		final FiniteMap cardinalityUpper = new FiniteMap(facts.cardinality.getMaxCapacity());
 
 		if (FTAType.LONG.equals(facts.getMatchPatternInfo().getBaseType()))
 			finalizeLong(realSamples);
@@ -2662,7 +2661,7 @@ public class TextAnalyzer {
 			boolean recalcConfidence = false;
 
 			// Sweep the outliers - flipping them to invalid if they do not pass the relaxed isValid definition
-			for (Map.Entry<String, Long> entry : facts.outliers.entrySet()) {
+			for (final Map.Entry<String, Long> entry : facts.outliers.entrySet()) {
 				// Split the outliers to either invalid entries or valid entries
 				if (logical.isValid(entry.getKey(), false)) {
 					addValid(entry.getKey(), entry.getValue());

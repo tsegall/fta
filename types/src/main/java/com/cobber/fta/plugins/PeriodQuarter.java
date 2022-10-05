@@ -124,7 +124,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode) {
 		int len = input.length();
 		if (len == 0)
 			return false;
