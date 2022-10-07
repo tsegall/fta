@@ -1630,7 +1630,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": "(?i)(suffix|.*[_ ]suffix)", "confidence": 99 }, { "regExp": "(?i).*suffix", "confidence": 85 } ]
+				"headerRegExps": [ { "regExp": "(?i)(suffix|.*[_ ]suffix)", "confidence": 99, "mandatory": true }, { "regExp": "(?i).*suffix", "confidence": 85, "mandatory": true } ]
 			}
 		],
 		"content": "/reference/en_name_suffix.csv",

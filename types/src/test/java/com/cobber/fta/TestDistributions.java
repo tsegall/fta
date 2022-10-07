@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import org.testng.annotations.Test;
 
@@ -51,6 +52,8 @@ import com.cobber.fta.dates.DateTimeParser;
  * STRING  (Note: no support for Quantile/Histogram determination once the Cardinality Cache is exceeded)
  */
 public class TestDistributions {
+	final Random random = new Random(314159265);
+
 	public void baseLong(final long size, final double relativeAccuracy) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("baseLong" + size);
 		analysis.setQuantileRelativeAccuracy(relativeAccuracy);
@@ -873,6 +876,7 @@ public class TestDistributions {
 	public void simpleHistogramDate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramDate");
 		final long SIZE = 1000;
+		final int WIDTH = 10;
 
 		final Map<String, Long> testCase = new HashMap<>();
 
@@ -885,9 +889,33 @@ public class TestDistributions {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		Histogram.Entry[] histogram = result.getHistogram(4);
+		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
 
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < WIDTH; i++)
+			System.err.printf("%s-%s: %d%n", histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void simplestHistogramLong() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramDate");
+		final long SIZE = 1000;
+		final int WIDTH = 10;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		testCase.put("0", SIZE);
+		testCase.put("5", SIZE);
+		testCase.put("10", SIZE);
+		testCase.put("90", SIZE);
+		testCase.put("100", SIZE);
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+
+		for (int i = 0; i < WIDTH; i++)
 			System.err.printf("%s-%s: %d%n", histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
 	}
 
@@ -946,12 +974,95 @@ public class TestDistributions {
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void simpleHistogramGaussian() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramGaussian");
-		final Map<String, Long> testCase = new HashMap<>();
-		final SecureRandom random = new SecureRandom();
-		final int SIZE = 10000;
+		final int SIZE = 1000000;
 
 		for (int i = 0; i < SIZE; i++)
 			analysis.train(String.valueOf(random.nextGaussian()*100));
+
+		TextAnalysisResult result = analysis.getResult();
+
+		final int WIDTH = 20;
+
+		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+
+		assertEquals(getTotalCount(histogram), SIZE - 1);
+
+		dumpRaw(histogram);
+		dumpPicture(histogram, getMaxCount(histogram));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void simpleTinyHistogram() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("simpleTinyHistogram");
+
+		analysis.train("1");
+		analysis.train("3");
+		analysis.train("5");
+		analysis.train("7");
+		analysis.train("9");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		final int WIDTH = 20;
+
+		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+
+		assertEquals(getTotalCount(histogram), 5);
+
+		dumpRaw(histogram);
+		dumpPicture(histogram, getMaxCount(histogram));
+	}
+
+	private long getMaxCount(final Histogram.Entry[] histogram) {
+		long max = Long.MIN_VALUE;
+
+		for (int i = 0; i < histogram.length; i++)
+			if (histogram[i].getCount() > max)
+				max = histogram[i].getCount();
+
+		return max;
+	}
+
+	private long getTotalCount(final Histogram.Entry[] histogram) {
+		long total = 0;
+
+		for (int i = 0; i < histogram.length; i++)
+			total += histogram[i].getCount();
+
+		return total;
+	}
+
+	private void dumpRaw(final Histogram.Entry[] histogram) {
+		for (int i = 0; i < histogram.length; i++)
+			System.err.printf("%d: %4.2f-%4.2f: %d%n", i, Double.valueOf(histogram[i].getLow()), Double.valueOf(histogram[i].getHigh()), histogram[i].getCount());
+	}
+
+	private void dumpPicture(final Histogram.Entry[] histogram, long max) {
+		long sizeX = max / 100;
+		if (sizeX == 0)
+			sizeX = max / 10;
+		if (sizeX == 0)
+			sizeX = max / 1;
+
+		for (int i = 0; i < histogram.length; i++) {
+			long xCount = histogram[i].getCount()/sizeX;
+			String output = xCount == 0 ? "." : Utils.repeat('X', (int)xCount);
+			System.err.printf("%d: %4.2f: %s%n", i, Double.valueOf(histogram[i].getHigh()), output);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void simpleHistogramSlope() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramGaussian");
+		final int SIZE = 100000;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		long total = 0;
+		for (long l = 0; l <= SIZE; l++) {
+			testCase.put(String.valueOf(l), l);
+			total += l;
+		}
 
 		analysis.trainBulk(testCase);
 
@@ -960,19 +1071,27 @@ public class TestDistributions {
 		final int WIDTH = 20;
 
 		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		assertEquals(getTotalCount(histogram), total);
 
-		long max = 0;
-		for (int i = 0; i < WIDTH; i++) {
-			System.err.printf("%4.2f: %d%n", Double.valueOf(histogram[i].getHigh()), histogram[i].getCount());
-			if (histogram[i].getCount() > max)
-				max = histogram[i].getCount();
-		}
-		long sizeX = max / 100;
 
-		for (int i = 0; i < WIDTH; i++) {
-			long xCount = histogram[i].getCount()/sizeX;
-			String output = xCount == 0 ? "." : Utils.repeat('X', (int)xCount);
-			System.err.printf("%4.2f: %s%n", Double.valueOf(histogram[i].getHigh()), output);
-		}
+		dumpRaw(histogram);
+//		dumpPicture(histogram, getMaxCount(histogram));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void testHistogramSPDT() throws IOException, FTAException {
+		final int BUCKETS = 20;
+		HistogramSPDT histogram = new HistogramSPDT(BUCKETS);
+
+//		for (int i = 0; i < 25; i++)
+//			histogram.accept(random.nextGaussian()*100, 1L);
+		for (int i = 0; i > -10000; i--)
+			histogram.accept(i, 1L);
+
+		histogram.dump();
+
+//		for (int i = 0; i < BUCKETS; i++)
+//			System.err.printf("%s-%s: %d%n", histogram.getLow(), histogram.getHigh(), histogram.getCount());
+
 	}
 }

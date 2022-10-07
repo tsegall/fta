@@ -32,6 +32,9 @@ public class AnalysisConfig {
 	/** The default value for the quantile relative-accuracy guarantee. */
 	public static final double QUANTILE_RELATIVE_ACCURACY_DEFAULT = .01;
 
+	/** The default value for the number of Histogram bins. */
+	public static final int HISTOGRAM_BINS_DEFAULT = 1000;
+
 	/** The default value for the maximum # of outliers tracked. */
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
 
@@ -55,6 +58,9 @@ public class AnalysisConfig {
 
 	/** The quantile relative-accuracy guarantee. */
 	private double quantileRelativeAccuracy = QUANTILE_RELATIVE_ACCURACY_DEFAULT;
+
+	/** The number of Histogram bins. */
+	private int histogramBins = HISTOGRAM_BINS_DEFAULT;
 
 	/** The maximum number of outliers tracked. */
 	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
@@ -210,6 +216,16 @@ public class AnalysisConfig {
 	public double setQuantileRelativeAccuracy(final double quantileRelativeAccuracy) {
 		final double ret = this.quantileRelativeAccuracy;
 		this.quantileRelativeAccuracy = quantileRelativeAccuracy;
+		return ret;
+	}
+
+	public int getHistogramBins() {
+		return histogramBins;
+	}
+
+	public long setHistogramBins(final int histogramBins) {
+		final int ret = this.histogramBins;
+		this.histogramBins = histogramBins;
 		return ret;
 	}
 

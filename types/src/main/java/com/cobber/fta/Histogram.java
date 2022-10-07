@@ -15,6 +15,7 @@
  */
 package com.cobber.fta;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -62,18 +63,20 @@ public class Histogram {
 	private NavigableMap<String, Long> typedMap;
 	protected long totalMapEntries;
 	protected long totalHistogramEntries;
+	private HistogramSPDT histogramSPDT;
 	protected FTAType type;
 	protected StringConverter stringConverter;
 	private boolean isComplete = false;
 
-	Histogram(final FTAType type, final NavigableMap<String, Long> typedMap, final StringConverter stringConverter) {
+	Histogram(final FTAType type, final NavigableMap<String, Long> typedMap, final StringConverter stringConverter, final int numBins) {
 		this.type = type;
 		this.stringConverter = stringConverter;
 		this.typedMap = typedMap;
+		this.histogramSPDT = new HistogramSPDT(numBins);
 	}
 
 	public void accept(String key, Long count) {
-		// histogram.add(key, count);
+		histogramSPDT.accept(stringConverter.toDouble(key.trim()), count);
 		totalHistogramEntries += count;
 	}
 
@@ -88,7 +91,7 @@ public class Histogram {
 	public void complete(Map<String, Long> map) {
 		for (Map.Entry<String, Long> e : map.entrySet()) {
 			if (isCardinalityExceeded()) {
-//				histogram.accept(stringConverter.toDouble(e.getKey().trim()), e.getValue());
+				histogramSPDT.accept(stringConverter.toDouble(e.getKey().trim()), e.getValue());
 				totalHistogramEntries += e.getValue();
 			}
 			else {
@@ -109,10 +112,20 @@ public class Histogram {
 	 */
 	public Histogram.Entry[] getHistogram(final int buckets) {
 		final Histogram.Entry[] ret = new Entry[buckets];
-		final double low = stringConverter.toDouble(typedMap.firstKey());
-		final double high = stringConverter.toDouble(typedMap.lastKey());
 		final double[] cutPoints = new double[buckets + 1];
-		String[] cutPointStrings = new String[buckets + 1];
+		final String[] cutPointStrings = new String[buckets + 1];
+		double low;
+		double high;
+
+		if (isCardinalityExceeded()) {
+			low = histogramSPDT.getMinValue();
+			high = histogramSPDT.getMaxValue();
+		}
+		else {
+			low = stringConverter.toDouble(typedMap.firstKey());
+			high = stringConverter.toDouble(typedMap.lastKey());
+		}
+
 		final double cutSize = (high - low) / buckets;
 
 		// Set the N+1 cut points
@@ -125,24 +138,50 @@ public class Histogram {
 		for (int i = 0; i < buckets; i++)
 			ret[i] = new Entry(cutPointStrings[i], cutPointStrings[i + 1]);
 
+		Comparator<? super String> c = typedMap.comparator();
+
 		int upto = 0;
 		long count = 0;
-		Comparator<? super String> c = typedMap.comparator();
-		for (Map.Entry<String, Long> e : typedMap.entrySet()) {
-			// All the buckets except for the last are [low, high) the last bucket is [low,high]
-			if ((upto < buckets - 1 && c.compare(e.getKey(), ret[upto].getHigh()) < 0) ||
-					upto == buckets - 1 && c.compare(e.getKey(), ret[upto].getHigh()) <= 0)
-				count += e.getValue();
-			else {
-				ret[upto].setCount(count);
-				upto++;
-				count = e.getValue();
-			}
-        }
 
-		if (upto < buckets)
-			ret[upto].setCount(count);
+		if (isCardinalityExceeded()) {
+			ArrayList<HistogramSPDT.Bin> bins = histogramSPDT.getBins();
+			for (int i = 0; i < bins.size(); i++) {
+				String stringValue = stringConverter.formatted(stringConverter.fromDouble(bins.get(i).value));
+				if (c.compare(stringValue, ret[upto].getHigh()) < 0) {
+					count += bins.get(i).count;
+				}
+				else {
+					ret[upto].setCount(count);
+					upto++;
+					count = bins.get(i).count;
+				}
+			}
+			if (upto < buckets)
+				ret[upto].setCount(count);
+		}
+		else {
+			for (Map.Entry<String, Long> e : typedMap.entrySet()) {
+				// All the buckets except for the last are [low, high) the last bucket is [low,high]
+				while (!inThisBucket(ret[upto], e.getKey(), c, buckets, upto))
+					upto++;
+
+				ret[upto].setCount(ret[upto].getCount() + e.getValue());
+			}
+		}
 
 		return ret;
+	}
+
+	private boolean inThisBucket(final Entry bucket, final String key, final Comparator<? super String> c,
+			final int buckets, final int currentBucket) {
+		// By definition any value cannot be lower than the first bucket low bound
+		if (currentBucket != 0 && c.compare(key, bucket.getLow()) < 0)
+			return false;
+
+		// If this is the last bucket then any value is by definition < the high bound
+		if (currentBucket == buckets - 1)
+			return true;
+
+		return c.compare(key, bucket.getHigh()) < 0;
 	}
 }

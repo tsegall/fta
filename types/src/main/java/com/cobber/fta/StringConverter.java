@@ -138,6 +138,14 @@ public class StringConverter {
 		return 0.0;
 	}
 
+	private long clamp(final long input, final long low, final long high) {
+		if (input < low)
+			return low;
+		if (input > high)
+			return high;
+		return input;
+	}
+
 	// Convert a double representation of a type to its native type
 	// Note: No support for type STRING (no mapping available) or BOOLEAN (no need since cardinality limited)
 	public Object fromDouble(final double value) {
@@ -151,7 +159,9 @@ public class StringConverter {
 		case LOCALDATETIME:
 			return LocalDateTime.ofEpochSecond((long)value, 0, ZoneOffset.UTC);
 		case LOCALTIME:
-			return LocalTime.ofNanoOfDay((long)value);
+			// The Sketch values are only accurate within the relative-error guarantee, so they may be outside the valid
+			// range in the case of a LocalTime, so clamp it to something that is plausible.
+			return LocalTime.ofNanoOfDay(clamp((long)value, 0, 86399999999999L));
 		case LONG:
 			return Math.round(value);
 		case OFFSETDATETIME:

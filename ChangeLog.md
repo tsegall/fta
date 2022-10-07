@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 11.0.5
+ - BUG: Fix Exception related to quantile determination when using LocalTime
+ - BUG: Fix histogram bucketing (and support histograms once cardinality blown)
+
 ### 11.0.4
  - ENH: Change interface for getCardinalityDetails() from SortedMap to NavigableMap
  - ENH: Add support for histograms. See getHistogram().

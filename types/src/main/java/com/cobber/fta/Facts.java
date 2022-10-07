@@ -367,7 +367,7 @@ public class Facts {
 	@JsonIgnore
 	public Histogram getHistogram() {
 		if (histogram == null)
-			histogram = new Histogram(matchPatternInfo.getBaseType(), getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()), getStringConverter());
+			histogram = new Histogram(matchPatternInfo.getBaseType(), getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()), getStringConverter(), analysisConfig.getHistogramBins());
 		return histogram;
 	}
 

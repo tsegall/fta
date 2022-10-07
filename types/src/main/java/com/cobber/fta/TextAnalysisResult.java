@@ -263,6 +263,9 @@ public class TextAnalysisResult {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 
+		if (buckets <= 0)
+			throw new IllegalArgumentException("Number of buckets must be > 0.");
+
 		if (!facts.getHistogram().isComplete())
 			facts.getHistogram().complete(facts.cardinality);
 

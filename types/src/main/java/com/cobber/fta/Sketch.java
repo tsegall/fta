@@ -78,7 +78,7 @@ public class Sketch {
 
 	/**
 	 * Get the value at the requested quantile.
-	 * @param quantile a number between 0 and 1 (both included)
+	 * @param quantile a number between 0.0 and 1.0 (both included)
 	 * @return the value at the specified quantile
 	 */
 	public String getValueAtQuantile(final double quantile) {
