@@ -871,6 +871,27 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void simpleInvalidMerge() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 100;
+
+		final List<String> samplesOne = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesOne.add(String.valueOf(i));
+		samplesOne.add("a");
+
+		final List<String> samplesTwo = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesTwo.add(String.valueOf(i + 50));
+		samplesTwo.add("b");
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "long_long", null, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getInvalidCount(), 2);
+		assertEquals(mergedResult.getMaxValue(), "149");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void NullNullStringTest() throws IOException, FTAException {
 		checkTextAnalyzerMerge(samplesNULL, samplesNULL, "NULL_NULL", null, true);
 	}

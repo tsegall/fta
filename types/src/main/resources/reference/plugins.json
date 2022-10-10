@@ -1873,6 +1873,8 @@
 				} ]
 			}
 		],
+		"content": "/reference/us_companies_samples.csv",
+		"contentType": "resource",
 		"baseType": "STRING",
 		"priority": 211
 	},
@@ -2131,7 +2133,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(timestamp)", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(timestamp).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\d{10}",
 					"isRegExpComplete": false
@@ -2152,7 +2154,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(timestamp)", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(timestamp).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\d{13}",
 					"isRegExpComplete": false

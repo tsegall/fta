@@ -20,6 +20,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.AbstractMap;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -265,6 +266,10 @@ public class TextAnalysisResult {
 
 		if (buckets <= 0)
 			throw new IllegalArgumentException("Number of buckets must be > 0.");
+
+		FTAType baseType = facts.getMatchPatternInfo().getBaseType();
+		if (FTAType.STRING.equals(baseType) || FTAType.BOOLEAN.equals(baseType))
+			throw new IllegalArgumentException("No Histogram support for either STRING or BOOLEAN types.");
 
 		if (!facts.getHistogram().isComplete())
 			facts.getHistogram().complete(facts.cardinality);
@@ -681,16 +686,14 @@ public class TextAnalysisResult {
 		return Base64.getEncoder().encodeToString(md.digest(signature));
 	}
 
-	private void outputArray(final ArrayNode detail, final Set<String> set) {
-		for (final String s : set) {
+	private void outputArray(final ArrayNode detail, final Collection<String> collection) {
+		for (final String s : collection)
 			detail.add(s);
-		}
 	}
 
 	private void outputArray(final ArrayNode detail, final String[] array) {
-		for (final String s : array) {
+		for (final String s : array)
 			detail.add(s);
-		}
 	}
 
 	private void outputDetails(final ObjectMapper mapper, final ArrayNode detail, final Map<String, Long> details, final int verbose) {
@@ -853,10 +856,11 @@ public class TextAnalysisResult {
 			outputDetails(MAPPER, detail, shape.getShapes(), verbose);
 		}
 
-		// We have support for arbitrary quantiles - but output percentiles in the JSON, and only if we have some data
+		// Output any quantile/histogram data
 		if (analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS) && facts.matchCount != 0 &&
-				FTAType.STRING != facts.getMatchPatternInfo().getBaseType()) {
-			final ArrayNode detail = analysis.putArray("percentiles");
+				!FTAType.STRING.equals(facts.getMatchPatternInfo().getBaseType()) && !FTAType.BOOLEAN.equals(facts.getMatchPatternInfo().getBaseType())) {
+			// We have support for arbitrary quantiles - but output percentiles in the JSON
+			final ArrayNode detailQ = analysis.putArray("percentiles");
 			// 101 because we want 0.0 and 1.0 plus everything in between
 			double[] percentiles = new double[101];
 			double value = 0.0;
@@ -866,7 +870,12 @@ public class TextAnalysisResult {
 			}
 			// Make sure the last one is precisely 1.0
 			percentiles[100] = 1.0;
-			outputArray(detail, getValuesAtQuantiles(percentiles));
+			outputArray(detailQ, getValuesAtQuantiles(percentiles));
+
+			final ArrayNode detailH = analysis.putArray("histogram");
+			Histogram.Entry[] histogram = getHistogram(10);
+			for (final Histogram.Entry e : histogram)
+				detailH.add(e.getCount());
 		}
 
 		analysis.put("leadingWhiteSpace", getLeadingWhiteSpace());

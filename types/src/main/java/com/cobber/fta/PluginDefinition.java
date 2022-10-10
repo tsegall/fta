@@ -93,7 +93,7 @@ public class PluginDefinition {
 	}
 
 	// *** Only use this for internal testing ***
-	protected PluginDefinition(final String qualifier, final String clazz) {
+	public PluginDefinition(final String qualifier, final String clazz) {
 		this.qualifier = qualifier;
 		this.clazz = clazz;
 		this.pluginType = "java";

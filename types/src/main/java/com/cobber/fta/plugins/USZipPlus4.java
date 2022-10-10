@@ -82,7 +82,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return zipsRef.getRandom(random);
+		return random.nextInt(10) >= 8 ? zipsRef.getRandom(random) : zipsRef.getRandom(random) + "-" + random.nextInt(10) + random.nextInt(10) + random.nextInt(10) + random.nextInt(10);
 	}
 
 	@Override

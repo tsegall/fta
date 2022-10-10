@@ -91,7 +91,9 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 *  The user-friendly name of the Qualifier.  For example, EMAIL for an email address
 	 *  @return The user-friendly name of the type-qualifier.
 	 */
-	public abstract String getQualifier();
+	public String getQualifier() {
+		return defn.qualifier;
+	}
 
 	/**
 	 *  The user-friendly description of the Qualifier.  For example, 'Australian State' for the qualifier "STATE_PROVINCE.STATE_AU".

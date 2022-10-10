@@ -987,7 +987,7 @@ public class TestDistributions {
 
 		assertEquals(getTotalCount(histogram), SIZE - 1);
 
-		dumpRaw(histogram);
+		dumpRawDouble(histogram);
 		dumpPicture(histogram, getMaxCount(histogram));
 	}
 
@@ -1009,8 +1009,150 @@ public class TestDistributions {
 
 		assertEquals(getTotalCount(histogram), 5);
 
-		dumpRaw(histogram);
+		dumpRawDouble(histogram);
 		dumpPicture(histogram, getMaxCount(histogram));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void singleValueBooleanTrue() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("singleValueBooleanTrue");
+		final long SIZE = 1000;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		testCase.put("true", SIZE);
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+
+		assertEquals(result.getValueAtQuantile(0.0), "true");
+		assertEquals(result.getValueAtQuantile(0.25), "true");
+		assertEquals(result.getValueAtQuantile(0.5), "true");
+		assertEquals(result.getValueAtQuantile(0.75), "true");
+		assertEquals(result.getValueAtQuantile(1.0), "true");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void dualValueBooleanTrueFalse() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("dualValueBooleanTrueFalse");
+		final long SIZE = 1000;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		testCase.put("TRUE", SIZE);
+		testCase.put("true", SIZE);
+		testCase.put("FALSE", SIZE);
+		testCase.put("false", SIZE);
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+
+		assertEquals(result.getValueAtQuantile(0.0), "FALSE");
+		assertEquals(result.getValueAtQuantile(0.25), "FALSE");
+		assertEquals(result.getValueAtQuantile(0.5), "TRUE");
+		assertEquals(result.getValueAtQuantile(0.75), "false");
+		assertEquals(result.getValueAtQuantile(1.0), "true");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void simpleLong() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("dualValueBooleanTrueFalse");
+		final long SIZE = 1000;
+		final int WIDTH = 9;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		for (int i = 0; i <= 9; i++)
+			testCase.put(String.valueOf(i), SIZE);
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.LONG);
+
+		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+
+		for (Histogram.Entry entry : histogram)
+			System.err.printf("%s-%s: %d%n", entry.getLow(), entry.getHigh(), entry.getCount());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void dualValueBooleanYesNo() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("dualValueBooleanYesNo");
+		final long SIZE = 1000;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		testCase.put("YES", SIZE);
+		testCase.put("yes", SIZE);
+		testCase.put("NO", SIZE);
+		testCase.put("no", SIZE);
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+
+		// Alphabetically sorted :-)
+		assertEquals(result.getValueAtQuantile(0.0), "NO");
+		assertEquals(result.getValueAtQuantile(0.25), "NO");
+		assertEquals(result.getValueAtQuantile(0.5), "YES");
+		assertEquals(result.getValueAtQuantile(0.75), "no");
+		assertEquals(result.getValueAtQuantile(1.0), "yes");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void dualValueBoolean10() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("dualValueBoolean10");
+		final long SIZE = 1000;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		testCase.put("1", SIZE);
+		testCase.put("0", SIZE);
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.BOOLEAN);
+
+		assertEquals(result.getValueAtQuantile(0.0), "0");
+		assertEquals(result.getValueAtQuantile(0.25), "0");
+		assertEquals(result.getValueAtQuantile(0.5), "0");
+		assertEquals(result.getValueAtQuantile(0.75), "1");
+		assertEquals(result.getValueAtQuantile(1.0), "1");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void multiValueString() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("multiValueString");
+		final long SIZE = 1000;
+
+		final Map<String, Long> testCase = new HashMap<>();
+
+		testCase.put("Abacus", SIZE);
+		testCase.put("Bogus", SIZE);
+		testCase.put("Trash", SIZE);
+		testCase.put("Confused", SIZE);
+
+		analysis.trainBulk(testCase);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getValueAtQuantile(0.0), "Abacus");
+		assertEquals(result.getValueAtQuantile(0.25), "Abacus");
+		assertEquals(result.getValueAtQuantile(0.5), "Bogus");
+		assertEquals(result.getValueAtQuantile(0.75), "Confused");
+		assertEquals(result.getValueAtQuantile(1.0), "Trash");
 	}
 
 	private long getMaxCount(final Histogram.Entry[] histogram) {
@@ -1033,6 +1175,11 @@ public class TestDistributions {
 	}
 
 	private void dumpRaw(final Histogram.Entry[] histogram) {
+		for (int i = 0; i < histogram.length; i++)
+			System.err.printf("%d: %s-%s: %d%n", i, histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
+	}
+
+	private void dumpRawDouble(final Histogram.Entry[] histogram) {
 		for (int i = 0; i < histogram.length; i++)
 			System.err.printf("%d: %4.2f-%4.2f: %d%n", i, Double.valueOf(histogram[i].getLow()), Double.valueOf(histogram[i].getHigh()), histogram[i].getCount());
 	}
@@ -1074,7 +1221,7 @@ public class TestDistributions {
 		assertEquals(getTotalCount(histogram), total);
 
 
-		dumpRaw(histogram);
+		dumpRawDouble(histogram);
 //		dumpPicture(histogram, getMaxCount(histogram));
 	}
 

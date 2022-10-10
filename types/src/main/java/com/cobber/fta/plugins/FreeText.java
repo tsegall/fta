@@ -62,7 +62,7 @@ public class FreeText extends LogicalTypeInfinite {
 			"Fahrrad", "Motorrad", "Auto", "Himbeere", "Zug", "Flugzeug" };
 
 	private static String[] en_verbs = { "contemplated", "painted", "spotted", "observed", "studied" };
-	private static String[] en_base_pronouns = { "she", "he", "they" };
+	private static String[] en_base_pronouns = { "She", "He", "They" };
 	private static String[] en_nouns = { "banana", "wall", "church", "cathederal", "strawberry", "mango",
 			"bicycle", "motorbike", "car", "raspberry", "train", "plane" };
 
@@ -146,7 +146,12 @@ public class FreeText extends LogicalTypeInfinite {
 	public String nextRandom() {
 		if (samples == null)
 			constructSamples();
-		return samples[random.nextInt(samples.length)];
+
+		StringBuilder result = new StringBuilder(samples[random.nextInt(samples.length)]);
+		for (int i = 0; i < random.nextInt(4); i++)
+			result.append("  ").append(samples[random.nextInt(samples.length)]);
+
+		return result.toString();
 	}
 
 	@Override

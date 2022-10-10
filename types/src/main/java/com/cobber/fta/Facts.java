@@ -188,7 +188,7 @@ public class Facts {
 	@JsonSerialize(using = SketchSerializer.class)
 	@JsonDeserialize(using = SketchDeserializer.class)
 	private Sketch sketch;
-	private Histogram histogram;
+	public Histogram histogram;
 	private StringConverter stringConverter;
 	private TypeFormatter typeFormatter;
 

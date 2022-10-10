@@ -138,7 +138,15 @@ public class StringConverter {
 		return 0.0;
 	}
 
-	private long clamp(final long input, final long low, final long high) {
+	private long clampLong(final long input, final long low, final long high) {
+		if (input < low)
+			return low;
+		if (input > high)
+			return high;
+		return input;
+	}
+
+	private int clampInt(final int input, final int low, final int high) {
 		if (input < low)
 			return low;
 		if (input > high)
@@ -161,14 +169,14 @@ public class StringConverter {
 		case LOCALTIME:
 			// The Sketch values are only accurate within the relative-error guarantee, so they may be outside the valid
 			// range in the case of a LocalTime, so clamp it to something that is plausible.
-			return LocalTime.ofNanoOfDay(clamp((long)value, 0, 86399999999999L));
+			return LocalTime.ofNanoOfDay(clampLong((long)value, 0, 86399999999999L));
 		case LONG:
 			return Math.round(value);
 		case OFFSETDATETIME:
 			long raw = (long)value;
 			long epochSeconds = raw / 1_000_000;
 			long zoneOffsetSeconds = raw - (epochSeconds * 1_000_000) - 64800;
-			ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds((int)zoneOffsetSeconds);
+			ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds(clampInt((int)zoneOffsetSeconds, -18 * 60 * 60, 18 * 60 * 60));
 			return OffsetDateTime.of(LocalDateTime.ofEpochSecond(epochSeconds, 0, zoneOffset), zoneOffset);
 		case ZONEDDATETIME:
 			// Not correct - since ignores Zone

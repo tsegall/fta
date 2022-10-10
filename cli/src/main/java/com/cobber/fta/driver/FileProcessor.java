@@ -57,7 +57,7 @@ class FileProcessor {
 		settings.setLineSeparatorDetectionEnabled(true);
 		settings.setIgnoreLeadingWhitespaces(false);
 		settings.setIgnoreTrailingWhitespaces(false);
-		settings.setNullValue("");
+//		settings.setNullValue("");
 		settings.setEmptyValue("");
 		if (options.delimiter != null) {
 			settings.getFormat().setDelimiter(options.delimiter.charAt(0));

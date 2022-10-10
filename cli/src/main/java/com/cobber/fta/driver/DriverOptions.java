@@ -27,7 +27,7 @@ import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
-class DriverOptions {
+public class DriverOptions {
 	protected boolean abbreviationPunctuation;
 	protected String charset = "UTF-8";
 	protected boolean bulk;
@@ -41,9 +41,10 @@ class DriverOptions {
 	protected boolean noStatistics;
 	protected boolean output;
 	protected boolean formatDetection;
-	protected long recordsToProcess = -1;
+	public long recordsToProcess = -1;
 	protected int detectWindow = -1;
-	protected Locale locale;
+	public String faker;
+	public Locale locale;
 	protected int maxCardinality = -1;
 	protected int maxInputLength = -1;
 	protected int maxOutlierCardinality = -1;

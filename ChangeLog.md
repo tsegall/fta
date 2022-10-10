@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 11.0.6
+ - ENH: Output histograms (10 wide) in JSON
+ - ENH: Add 'faker' support - useful for testing
+ - ENH: Add meaningful samples for COMPANY_NAME
+ - CLI: Switch to return null if we see no data in CSV
+ - BUG: Make sure to clamp values in LocalTime and OffsetDateTime since quantiles are only so accurate and we need to return a valid value
+
 ### 11.0.5
  - BUG: Fix Exception related to quantile determination when using LocalTime
  - BUG: Fix histogram bucketing (and support histograms once cardinality blown)

@@ -17,25 +17,12 @@
  */
 package com.cobber.fta.driver;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.Normalizer;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -47,14 +34,12 @@ import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.LogicalTypeRegExp;
-import com.cobber.fta.SingletonSet;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
-import com.google.common.hash.BloomFilter;
-import com.google.common.hash.Funnels;
+import com.cobber.fta.driver.faker.Faker;
 
 public class Driver {
 
@@ -72,7 +57,7 @@ public class Driver {
 			if ("--abbreviationPunctuation".equals(args[idx]))
 				options.abbreviationPunctuation = true;
 			else if ("--bloomfilter".equals(args[idx])) {
-				createBloomOutput(args[idx + 1], args[idx + 2]);
+				DriverUtils.createBloomOutput(args[idx + 1], args[idx + 2]);
 				System.exit(0);
 			}
 			else if ("--bulk".equals(args[idx]))
@@ -87,6 +72,8 @@ public class Driver {
 				options.delimiter = args[++idx];
 			else if ("--detectWindow".equals(args[idx]))
 				options.detectWindow = Integer.valueOf(args[++idx]);
+			else if ("--faker".equals(args[idx]))
+				options.faker = args[++idx];
 			else if ("--formatDetection".equals(args[idx]))
 				options.formatDetection = true;
 			else if ("--help".equals(args[idx])) {
@@ -100,6 +87,7 @@ public class Driver {
 				error.println(" --debug <n> - Set the debug level to <n>");
 				error.println(" --delimiter <ch> - Set the delimiter to the charactere <ch>");
 				error.println(" --detectWindow <n> - Set the size of the detect window to <n>");
+				error.println(" --faker <header> - Header is a comma separated list of Semantic Types");
 				error.println(" --formatDetection - Enabled Format Detection");
 				error.println(" --help - Print this help");
 				error.println(" --json - Output as JSON");
@@ -151,7 +139,7 @@ public class Driver {
 			else if ("--maxOutlierCardinality".equals(args[idx]))
 				options.maxOutlierCardinality = Integer.valueOf(args[++idx]);
 			else if ("--normalize".equals(args[idx])) {
-				createNormalizedOutput(args[idx + 1]);
+				DriverUtils.createNormalizedOutput(args[idx + 1]);
 				System.exit(0);
 			}
 			else if ("--noAnalysis".equals(args[idx]))
@@ -226,37 +214,26 @@ public class Driver {
 			System.exit(0);
 		}
 
-		// Are we generating samples for a specific Semantic Type or a signature?
-		if (options.pluginName != null && !options.validate) {
-			final long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
-			final TextAnalyzer analyzer = getDefaultAnalysis();
-			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
+		// Are we generating a signature?
+		if (options.signature) {
+			final TextAnalyzer analyzer = DriverUtils.getDefaultAnalysis(options.locale);
 
-			for (final LogicalType logical : registered)
-				if (logical.getQualifier().equals(options.pluginName)) {
-					if (options.signature)
-						error.println(logical.getSignature());
-					else {
-						if (options.samples)
-							error.println(logical.getQualifier());
-						if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
-							error.printf("ERROR: Logical Type (%s) does implement LTRandom interface - however samples may not be useful.%n", logical.getQualifier());
+			LogicalType logical = DriverUtils.getLogicalType(analyzer, options.pluginName);
+			error.println(logical.getSignature());
+			System.exit(0);
+		}
 
-						for (long l = 0; l < ouputRecords; l++)
-							error.println(logical.nextRandom());
-					}
-
-					System.exit(0);
-				}
-
-			error.printf("ERROR: Failed to locate plugin named '%s', use --help%n", options.pluginName);
-			System.exit(1);
+		// Are we generating synthetic data?
+		if (options.faker != null) {
+			Faker faker = new Faker(options, output, error);
+			faker.fake();
+			System.exit(0);
 		}
 
 		// Are we generating all samples?
 		if (options.samples) {
 			final long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
-			final TextAnalyzer analyzer = getDefaultAnalysis();
+			final TextAnalyzer analyzer = DriverUtils.getDefaultAnalysis(options.locale);
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
 			for (final LogicalType logical : registered) {
@@ -274,7 +251,7 @@ public class Driver {
 		}
 
 		if (helpRequested && options.verbose != 0) {
-			final TextAnalyzer analyzer = getDefaultAnalysis();
+			final TextAnalyzer analyzer = DriverUtils.getDefaultAnalysis(options.locale);
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 			final Set<String> qualifiers = new TreeSet<>();
 
@@ -317,7 +294,7 @@ public class Driver {
 					error.printf(", ");
 			}
 
-			output.printf("%n\tShort Months: ");
+			error.printf("%n\tShort Months: ");
 			final String[] shortMonths = dfs.getShortMonths();
 			for (int i = 0; i <= actualMonths; i++) {
 				error.printf("%s", shortMonths[i]);
@@ -364,111 +341,4 @@ public class Driver {
 		}
 	}
 
-	private static TextAnalyzer getDefaultAnalysis() {
-		// Create an Analyzer to retrieve the Logical Types (magically will be all - since passed in '*')
-		final TextAnalyzer analysis = new TextAnalyzer("*");
-		if (options.locale != null)
-			analysis.setLocale(options.locale);
-
-		// Load the default set of plugins for Logical Type detection (normally done by a call to train())
-		analysis.registerDefaultPlugins(analysis.getConfig());
-
-		return  analysis;
-	}
-
-	private static void createNormalizedOutput(final String inputName) throws UnsupportedEncodingException, FileNotFoundException, IOException {
-		final File source = new File(inputName);
-		final File baseDirectory = source.getParentFile();
-		final String baseName = Utils.getBaseName(source.getName());
-		final SingletonSet memberSet;
-
-		memberSet = new SingletonSet("file", inputName);
-		final Set<String> newSet = new TreeSet<>(memberSet.getMembers());
-
-		for (String member : memberSet.getMembers()) {
-			if (!Normalizer.isNormalized(member, Normalizer.Form.NFKD)) {
-				String cleaned = Normalizer.normalize(member, Normalizer.Form.NFKD).replaceAll("\\p{M}", "");
-				newSet.add(cleaned);
-			}
-		}
-
-		if (newSet.size() != memberSet.getMembers().size()) {
-			final File newFile = new File(baseDirectory, baseName + "_new.csv");
-
-			try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newFile), "UTF-8"))) {
-				for (String member : newSet)
-					out.write(member + "\n");
-			}
-		}
-		else
-			System.err.println("Error: no new entries generated!");
-	}
-
-	private static void createBloomOutput(final String inputName, final String funnelType) throws UnsupportedEncodingException, FileNotFoundException, IOException {
-		// Desired sample size
-		final int SAMPLE_SIZE = 200;
-
-		final File source = new File(inputName);
-		final File baseDirectory = source.getParentFile();
-		final String baseName = Utils.getBaseName(source.getName());
-		final File bloomFile = new File(baseDirectory, baseName + ".bf");
-		final File sampleFile = new File(baseDirectory, baseName + "_s.csv");
-		int lineCount = 0;
-
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(source), "UTF-8"))) {
-			String input;
-			while ((input = in.readLine()) != null) {
-				final String trimmed = input.trim();
-				if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
-					continue;
-				lineCount++;
-			}
-		}
-
-		final int samplingFrequency = (lineCount + SAMPLE_SIZE - 1) / SAMPLE_SIZE;
-
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(source), "UTF-8"))) {
-			ArrayList<String> samples = new ArrayList<>(SAMPLE_SIZE);
-			String input;
-			int recordCount = 0;
-
-			if ("integer".equalsIgnoreCase(funnelType)) {
-				final BloomFilter<Integer> filter = BloomFilter.create(Funnels.integerFunnel(), lineCount, 0.005);
-
-				while ((input = in.readLine()) != null) {
-					final String trimmed = input.trim();
-					if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
-						continue;
-					filter.put(Integer.valueOf(trimmed));
-					if (++recordCount%samplingFrequency == 0)
-						samples.add(trimmed);
-				}
-
-				try (OutputStream filterStream = new FileOutputStream(bloomFile)) {
-					filter.writeTo(filterStream);
-				}
-			}
-			else {
-				final BloomFilter<CharSequence> filter = BloomFilter.create(Funnels.stringFunnel(StandardCharsets.UTF_8), lineCount, 0.005);
-
-				while ((input = in.readLine()) != null) {
-					final String trimmed = input.trim();
-					if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
-						continue;
-					filter.put(trimmed);
-					if (++recordCount%samplingFrequency == 0)
-						samples.add(trimmed);
-				}
-
-				try (OutputStream filterStream = new FileOutputStream(bloomFile)) {
-					filter.writeTo(filterStream);
-				}
-			}
-
-			try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(sampleFile), "UTF-8"))) {
-				for (final String sample : samples)
-					out.write(sample + "\n");
-			}
-		}
-	}
 }

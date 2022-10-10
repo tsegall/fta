@@ -50,11 +50,14 @@ public class AnalyzerContext {
 		else {
 			this.compositeStreamNames = new String[compositeStreamNames.length];
 			System.arraycopy(compositeStreamNames, 0, this.compositeStreamNames, 0, compositeStreamNames.length);
-			for (int i = 0; i < getCompositeStreamNames().length; i++)
-				if (getStreamName().equals(getCompositeStreamNames()[i].trim())) {
+			for (int i = 0; i < compositeStreamNames.length; i++) {
+				if (compositeStreamNames[i] == null)
+					compositeStreamNames[i] = "";
+				else if (getStreamName().equals(compositeStreamNames[i].trim())) {
 					this.streamIndex = i;
 					break;
 				}
+			}
 		}
 	}
 
