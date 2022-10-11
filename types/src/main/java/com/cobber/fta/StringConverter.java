@@ -48,34 +48,36 @@ public class StringConverter {
 		if (input == null)
 			return null;
 
+		final String trimmed = input.trim();
+
 		switch (type) {
 		case BOOLEAN:
-			return Boolean.valueOf(input);
+			return Boolean.valueOf(trimmed);
 		case LONG:
 			// We cannot use parseLong as it does not cope with localization
-	        try {
-                return typeFormatter.getNumericalFormatter().parse(input.charAt(0) == '+' ? input.substring(1) : input).longValue();
-	        } catch (ParseException e) {
-                return null;
-	        }
+			try {
+				return typeFormatter.getNumericalFormatter().parse(trimmed.charAt(0) == '+' ? trimmed.substring(1) : trimmed).longValue();
+			} catch (ParseException e) {
+				return null;
+			}
 		case DOUBLE:
 			try {
-				return  typeFormatter.getNumericalFormatter().parse(input.charAt(0) == '+' ? input.substring(1) : input).doubleValue();
+				return  typeFormatter.getNumericalFormatter().parse(trimmed.charAt(0) == '+' ? trimmed.substring(1) : trimmed).doubleValue();
 			} catch (ParseException e) {
 				return null;
 			}
 		case STRING:
 			return input;
 		case LOCALDATE:
-			return LocalDate.parse(input, typeFormatter.getDateFormatter());
+			return LocalDate.parse(trimmed, typeFormatter.getDateFormatter());
 		case LOCALTIME:
-			return LocalTime.parse(input, typeFormatter.getDateFormatter());
+			return LocalTime.parse(trimmed, typeFormatter.getDateFormatter());
 		case LOCALDATETIME:
-			return LocalDateTime.parse(input, typeFormatter.getDateFormatter());
+			return LocalDateTime.parse(trimmed, typeFormatter.getDateFormatter());
 		case ZONEDDATETIME:
-			return ZonedDateTime.parse(input, typeFormatter.getDateFormatter());
+			return ZonedDateTime.parse(trimmed, typeFormatter.getDateFormatter());
 		case OFFSETDATETIME:
-			return OffsetDateTime.parse(input, typeFormatter.getDateFormatter());
+			return OffsetDateTime.parse(trimmed, typeFormatter.getDateFormatter());
 		}
 
 		return null;

@@ -768,6 +768,14 @@ public class TextAnalyzer {
 				digits--;
 		}
 
+		if (patternInfo.isLogicalType()) {
+			// If it is a registered Infinite Logical Type then validate it
+			final LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
+			if (logical.acceptsBaseType(FTAType.LONG) && !logical.isValid(trimmed, true))
+				return false;
+		}
+
+
 		if (register) {
 			if (firstCh == '0' && digits != 1)
 				facts.leadingZeroCount++;
@@ -802,13 +810,6 @@ public class TextAnalyzer {
 
 				facts.tbLong.observe(l);
 			}
-		}
-
-		if (patternInfo.isLogicalType()) {
-			// If it is a registered Infinite Logical Type then validate it
-			final LogicalType logical = plugins.getRegistered(patternInfo.typeQualifier);
-			if (logical.acceptsBaseType(FTAType.LONG))
-				return logical.isValid(trimmed, true);
 		}
 
 		return true;
@@ -917,7 +918,7 @@ public class TextAnalyzer {
 
 		// If it is NaN/Infinity then we are all done
 		if (Double.isNaN(d) || Double.isInfinite(d))
-			return true;
+			return false;
 
 		if (register && analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS)) {
 			if (d < facts.minDouble)
@@ -2927,8 +2928,7 @@ public class TextAnalyzer {
 
 		// Sometimes a Long is not a Long but it is really a date
 		if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > EARLY_LONG_YYYYMMDD && facts.maxLong < LATE_LONG_YYYYMMDD &&
-				DateTimeParser.plausibleDateCore(false, (int)facts.minLongNonZero%100, ((int)facts.minLongNonZero/100)%100, (int)facts.minLongNonZero/10000, 4)  &&
-				DateTimeParser.plausibleDateCore(false, (int)facts.maxLong%100, ((int)facts.maxLong/100)%100, (int)facts.maxLong/10000, 4)  &&
+				DateTimeParser.plausibleDateLong(facts.minLongNonZero, 4) && DateTimeParser.plausibleDateLong(facts.maxLong, 4) &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("date"))) {
 			facts.setMatchPatternInfo(new PatternInfo(null, "\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd"));
 			facts.killZeroes();

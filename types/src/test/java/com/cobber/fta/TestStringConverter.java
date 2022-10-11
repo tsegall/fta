@@ -48,7 +48,7 @@ public class TestStringConverter {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), patternInfo.getBaseType());
 
-		final StringConverter sc = new StringConverter(patternInfo.getBaseType(), new TypeFormatter(patternInfo, locale, decimalSeparator, localeDecimalSeparator));
+		final StringConverter sc = new StringConverter(patternInfo.getBaseType(), new TypeFormatter(patternInfo, analysis.getConfig(), decimalSeparator, localeDecimalSeparator));
 
 		for (final String testCase : testCases) {
 			// Take the String representation of type patternInfo.getBaseType() and convert it to an equivalent double

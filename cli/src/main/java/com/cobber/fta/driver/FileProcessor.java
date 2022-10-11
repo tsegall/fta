@@ -193,7 +193,7 @@ class FileProcessor {
 				System.exit(1);
 			}
 			for (int i = 0; i < numFields; i++) {
-				if ((options.col == -1 || options.col == i) && options.verbose != 0)
+				if ((options.col == -1 || options.col == i) && options.verbose != 0 && options.noAnalysis)
 					System.out.println(header[i]);
 			}
 
@@ -334,12 +334,12 @@ class FileProcessor {
 		if (!options.json) {
 			if (options.col == -1) {
 				final double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;
-				error.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d, Used Memory: %.2f.%n",
+				error.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d, Used Memory: %.2fMB.%n",
 						filename, typesDetected, numFields, percentage, matchCount, sampleCount, usedMemory);
 			}
 			else {
 				final double confidence = result == null ? 0 : result.getConfidence();
-				error.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%), Used Memory: %.2f.%n",
+				error.printf("Summary: Type detected: %s, Matched %d, Samples %d (Confidence: %.2f%%), Used Memory: %.2fMB.%n",
 						(typesDetected == 1 ? "yes" : "no"), matchCount,
 						sampleCount, confidence*100, usedMemory);
 			}

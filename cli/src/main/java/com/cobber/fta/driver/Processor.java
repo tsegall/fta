@@ -63,7 +63,7 @@ public class Processor {
 	public void consume(final String[] row) throws FTAPluginException, FTAUnsupportedLocaleException {
 		for (int i = 0; i < streamCount; i++) {
 			if (options.col == -1 || options.col == i) {
-				if (options.verbose != 0)
+				if (options.verbose != 0 && options.noAnalysis)
 					System.out.printf("\"%s\"%n", row[i]);
 				if (options.pluginName != null && options.validate) {
 					if (!row[i].trim().isEmpty())

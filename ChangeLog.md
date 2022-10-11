@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 11.0.7
+ - ENH: Add cutpoints on Histogram entries returned (as well as the BaseType cuts)
+ - BUG: Various fixes to Histogram details
+ - BUG: Move 0's in date from outliers to invalid (also fix matchCount)
+ - INT: Much improved test coverage on Histogram support
+
 ### 11.0.6
  - ENH: Output histograms (10 wide) in JSON
  - ENH: Add 'faker' support - useful for testing

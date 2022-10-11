@@ -295,7 +295,7 @@ public class RandomTests {
 		analysis.setPluginThreshold(90);
 		int locked = -1;
 		final int COUNT = 46;
-		final int INVALID = 3;
+		final int INVALID = 3;			// 10000, 10015, 10042 are invalid
 
 		for (int i = 10000; i < 10000 + COUNT; i++) {
 			if (analysis.train(String.valueOf(i)) && locked != -1)
@@ -311,7 +311,7 @@ public class RandomTests {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{5}");
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getMinValue(), "10000");
+		assertEquals(result.getMinValue(), "10001");
 		assertEquals(result.getMaxValue(), "10045");
 		assertEquals(result.getConfidence(), 0.9673913043478262);
 

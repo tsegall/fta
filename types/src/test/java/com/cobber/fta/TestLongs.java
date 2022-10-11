@@ -79,6 +79,9 @@ public class TestLongs {
 		assertEquals(result.getMinLength(), 1);
 		assertEquals(result.getMaxLength(), 7);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 		}
@@ -122,9 +125,11 @@ public class TestLongs {
 			assertEquals(result.getMaxValue(), "10000");
 		}
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -160,9 +165,11 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "116789");
 		assertEquals(result.getMaxValue(), "456789");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -188,9 +195,12 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "-2903");
 		assertEquals(result.getMaxValue(), "5234");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		// TODO - Quantile support broken for TRAILING minus case
+		// TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -216,9 +226,11 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "-2903");
 		assertEquals(result.getMaxValue(), "5234");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -243,11 +255,17 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "47.0");
 		assertEquals(result.getMaxValue(), "47.0");
 		assertEquals(result.getCardinality(), 5);
+		for (Map.Entry<String, Long> entry : result.getCardinalityDetails().entrySet()) {
+			System.err.printf("Key: %s, Count: %s\n", entry.getKey(), entry.getValue());
+		}
 		assertEquals(result.getValueAtQuantile(.5), "47");
 
-		for (final String input : inputs) {
+		TestSupport.dumpRaw(result.getHistogram(10));
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -325,7 +343,10 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 59);
 		assertEquals(result.getRegExp(), "\\d{9}");
 		assertEquals(result.getConfidence(), 1.0);
-	}
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void leadingZerosWith0() throws IOException, FTAException {
@@ -350,6 +371,9 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{1,2}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -372,6 +396,9 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -395,6 +422,9 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -419,6 +449,9 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), -1);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -442,6 +475,9 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), 2 * tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -465,6 +501,9 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), 2 * tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -490,6 +529,9 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -517,6 +559,10 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), 2 * tooBig + 1);
 		assertEquals(result.getRegExp(), "[+-]?\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.dumpRaw(result.getHistogram(10));
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -566,9 +612,11 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), regExp);
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String sample : samples) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String sample : samples)
 			assertTrue(sample.matches(regExp), sample);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -630,9 +678,11 @@ public class TestLongs {
 			assertEquals(result.getRegExp(), regExp);
 			assertEquals(result.getConfidence(), 1.0);
 
-			for (final String sample : samples) {
+			TestSupport.checkHistogram(result, 10);
+			TestSupport.checkQuantiles(result);
+
+			for (final String sample : samples)
 				assertTrue(sample.matches(regExp), sample);
-			}
 		}
 	}
 
@@ -666,9 +716,11 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "22.039");
 		assertEquals(result.getMaxValue(), "84.369.774");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -698,6 +750,9 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "[ 	]*[+-]?[\\d\\.]{5,17}[ 	]*");
 		assertEquals(result.getMinValue(), "-1.234.567.890.123");
 		assertEquals(result.getMaxValue(), "1.234.567.890.123");
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
 			if (input == null || input.trim().isEmpty())
@@ -737,6 +792,9 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -845,9 +903,11 @@ public class TestLongs {
 			assertEquals(result.getRegExp(), regExp, locale.toLanguageTag());
 			assertEquals(result.getConfidence(), 1.0);
 
-			for (final String sample : samples) {
+			TestSupport.checkHistogram(result, 10);
+			TestSupport.checkQuantiles(result);
+
+			for (final String sample : samples)
 				assertTrue(sample.matches(regExp), sample + " " + regExp);
-			}
 		}
 	}
 
@@ -891,6 +951,9 @@ public class TestLongs {
 		pattern += "}";
 		assertEquals(result.getRegExp(), pattern);
 		assertEquals(result.getConfidence(), 1 - (double)bad/result.getSampleCount());
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -923,6 +986,9 @@ public class TestLongs {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getRegExp(), "\\d{10}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -951,6 +1017,9 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -979,6 +1048,9 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1012,6 +1084,14 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), samples.length - 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), samples.length - 1);
+		assertEquals(result.getCardinality(), 28);
+		assertEquals(result.getInvalidCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMinValue(), "985491000");
+		assertEquals(result.getMaxValue(), "9452921001");
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1043,9 +1123,11 @@ public class TestLongs {
 		assertEquals(result.getMean(), Double.valueOf(14.5));
 		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "\\d{1,2}");
 
-		for (int i = 0; i < inputs.length; i++) {
-			assertTrue(inputs[i].matches(result.getRegExp()));
-		}
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1071,6 +1153,9 @@ public class TestLongs {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getConfidence(), 0.9166666666666666);
 		assertEquals(result.getMatchCount(), inputs.length - 2);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 
@@ -1100,9 +1185,11 @@ public class TestLongs {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1135,6 +1222,9 @@ public class TestLongs {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), String.valueOf(iterations - 1));
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1176,10 +1266,12 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "200");
 		assertEquals(result.getMaxValue(), "13,000");
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		final String regExp = result.getRegExp();
-		for (final String input : inputs) {
+		for (final String input : inputs)
 			assertTrue(input.matches(regExp), input);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1240,9 +1332,11 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), regExp);
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String sample : samples) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String sample : samples)
 			assertTrue(sample.matches(regExp), sample);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1264,6 +1358,9 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getRegExp(), "\\d+");
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1283,6 +1380,9 @@ public class TestLongs {
 		assertEquals(result.getSampleCount(), iterations);
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1309,6 +1409,9 @@ public class TestLongs {
 		assertEquals(result.getNullCount(), nullIterations);
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1329,6 +1432,9 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE + 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1355,6 +1461,9 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1380,6 +1489,9 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1411,6 +1523,9 @@ public class TestLongs {
 		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
 		dump(result);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1433,6 +1548,9 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1458,6 +1576,9 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1500,6 +1621,9 @@ public class TestLongs {
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
 		assertEquals(referenceResult.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -1528,6 +1652,9 @@ public class TestLongs {
 		assertEquals((shardOneResult.getMean() + shardTwoResult.getMean())/2, mergedResult.getMean(), .1);
 		assertEquals(shardOneResult.getStandardDeviation(), shardTwoResult.getStandardDeviation(), .5);
 		assertEquals(shardOneResult.getStandardDeviation(), mergedResult.getStandardDeviation(), .5);
+
+		TestSupport.checkHistogram(mergedResult, 10);
+		TestSupport.checkQuantiles(mergedResult);
 	}
 
 	private void dump(TextAnalysisResult result) {
@@ -1559,6 +1686,9 @@ public class TestLongs {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeQualifier());
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	public void _longPerf(final boolean statisticsOn) throws IOException, FTAException {

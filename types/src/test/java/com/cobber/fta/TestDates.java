@@ -93,9 +93,11 @@ public class TestDates {
 		assertEquals(result.getMinValue(), "02/22/02");
 		assertEquals(result.getMaxValue(), "02/02/99");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -130,9 +132,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "dd/MMM/yy h:mm a");
 
-		for (final String sample : samples) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()), sample);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -169,9 +173,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "MM/dd/yy h:mm:ss a");
 
-		for (final String sample : samples) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()), sample);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -208,9 +214,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "dd/MMM/yy h:mm a");
 
-		for (final String sample : samples) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()), sample);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -248,9 +256,11 @@ public class TestDates {
 			assertEquals(result.getNullCount(), 0);
 			assertEquals(result.getConfidence(), 1.0);
 
-			for (final String sample : samples) {
+			TestSupport.checkHistogram(result, 10);
+			TestSupport.checkQuantiles(result);
+
+			for (final String sample : samples)
 				assertTrue(sample.matches(result.getRegExp()), sample);
-			}
 		}
 	}
 
@@ -286,9 +296,11 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String sample : samples) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()), sample);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -323,9 +335,11 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d:\\d{2} \\p{IsAlphabetic}|\\d{2}:\\d{2} \\p{IsAlphabetic}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String sample : samples) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()), sample);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -360,9 +374,11 @@ public class TestDates {
 				assertEquals(result.getRegExp(), "\\d{2}:\\d{2} \\d{2}/\\d{1,2}/\\d{2}");
 				assertEquals(result.getConfidence(), 1.0);
 
-				for (final String input : inputs) {
+				TestSupport.checkHistogram(result, 10);
+				TestSupport.checkQuantiles(result);
+
+				for (final String input : inputs)
 					assertTrue(input.matches(result.getRegExp()));
-				}
 			}
 		}
 	}
@@ -473,9 +489,11 @@ public class TestDates {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -498,14 +516,17 @@ public class TestDates {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CCEXPIRES", DateResolutionMode.Auto);
+		analysis.setDebug(1);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput = "12/2025|6/2026|9/2026|9/2023|4/2023|2/2023|3/2023|3/2023|3/2026|7/2025|12/2024|4/2026|12/2023|2/2023|9/2024|8/2026|2/2025|2/2022|9/2024|7/2022|" +
 				"11/2025|11/2022|2/2023|9/2024|10/2026|3/2022|8/2023|10/2026|3/2023|8/2026|9/2022|3/2024|10/2023|7/2025|5/2022|11/2026|12/2024|8/2022|10/2023|";
@@ -528,9 +549,11 @@ public class TestDates {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 
-		for (final String input : inputs) {
+		// TODO TestSupport.checkHistogram(result, 10);
+		// TODO TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -556,6 +579,9 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} [ \\d]\\d \\d{4} \\d{2}:\\d{2}(?i)(AM|PM)");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
 		for (final String input : inputs) {
@@ -587,6 +613,9 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} \\d{2}, \\d{4} \\d{1,2}:\\d{2} (?i)(AM|PM)");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
 		for (final String input : inputs) {
@@ -627,6 +656,9 @@ public class TestDates {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -664,6 +696,9 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} [ \\d]\\d \\d{4} [ \\d]\\d:\\d{2}(?i)(AM|PM)");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
 		for (final String input : inputs) {
@@ -703,6 +738,9 @@ public class TestDates {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeQualifier());
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -738,6 +776,9 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{4}");
 		assertEquals(result.getType(), FTAType.LOCALDATE);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -764,9 +805,11 @@ public class TestDates {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -800,6 +843,9 @@ public class TestDates {
 				matches++;
 		}
 		assertEquals(matches, result.getMatchCount());
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -831,9 +877,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "d/M/yy H:mm");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -887,9 +935,11 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{2} \\d{1,2}:\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -936,6 +986,9 @@ public class TestDates {
 		assertEquals(result.getMinValue(), "19591209");
 		assertEquals(result.getMaxValue(), "20180519");
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(result.getTypeQualifier());
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -979,9 +1032,14 @@ public class TestDates {
 		assertEquals(result.getMinValue(), "14/06/17 11:49");
 		assertEquals(result.getMaxValue(), "23/08/17 03:49");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1009,9 +1067,11 @@ public class TestDates {
 		assertEquals(result.getMinValue(), "1970/05/05");
 		assertEquals(result.getMaxValue(), "2017/31/12");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1040,9 +1100,11 @@ public class TestDates {
 		assertEquals(result.getMinValue(), "05/05/1970");
 		assertEquals(result.getMaxValue(), "31/12/2017");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1072,9 +1134,11 @@ public class TestDates {
 		assertEquals(result.getMinValue(), "0:16");
 		assertEquals(result.getMaxValue(), "21:16");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1107,9 +1171,11 @@ public class TestDates {
 		assertEquals(result.getMinValue(), "1/30/06 22:01");
 		assertEquals(result.getMaxValue(), "1/31/06 3:30");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1137,6 +1203,9 @@ public class TestDates {
 		assertEquals(result.getMinValue(), "1/1/06 0:00");
 		assertEquals(result.getMaxValue(), "1/1/06 0:00");
 		assertTrue(input.matches(result.getRegExp()));
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1163,9 +1232,11 @@ public class TestDates {
 		assertEquals(result.getMinValue(), "11 Dec 1916");
 		assertEquals(result.getMaxValue(), "12 Mar 2019");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1195,9 +1266,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "dd/MM/yy");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1226,6 +1299,9 @@ public class TestDates {
 		assertEquals(result.getTypeQualifier(), "MM/dd/yy");
 
 		assertTrue(input.matches(result.getRegExp()));
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1252,9 +1328,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALTIME);
 		assertEquals(result.getTypeQualifier(), "HH:mm:ss");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1281,9 +1359,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALTIME);
 		assertEquals(result.getTypeQualifier(), "HH:mm");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1321,6 +1401,9 @@ public class TestDates {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), samples.size());
 		assertEquals(result.getNullCount(), 0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		// Even the UNK match the RE
 		for (final String sample : samples)
@@ -1367,6 +1450,9 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), samples.size());
 		assertEquals(result.getNullCount(), 0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		// Even the UNK match the RE
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()), sample);
@@ -1411,6 +1497,9 @@ public class TestDates {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), samples.size());
 		assertEquals(result.getNullCount(), 0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		// Even the UNK match the RE
 		for (final String sample : samples)
@@ -1457,6 +1546,9 @@ public class TestDates {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), samples.size());
 		assertEquals(result.getNullCount(), 0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		// Even the UNK match the RE
 		for (final String sample : samples)
@@ -1523,6 +1615,9 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		final DateTimeFormatter formatter = new DateTimeParser().withLocale(german).ofPattern(result.getTypeQualifier());
 		for (final String sample : samples) {
 			assertTrue(sample.matches(result.getRegExp()), sample);
@@ -1568,6 +1663,9 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (final String sample : samples) {
 			assertTrue(sample.matches(result.getRegExp()));
 		}
@@ -1608,6 +1706,9 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss");
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 
@@ -1651,6 +1752,9 @@ public class TestDates {
 		analysis.train("2008-01-01T00:00:00-05:00");
 		result = analysis.getResult();
 		assertEquals(result.getSampleCount(), 21);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1692,6 +1796,9 @@ public class TestDates {
 		analysis.train("2008-01-01T00:00:00-05:00");
 		result = analysis.getResult();
 		assertEquals(result.getSampleCount(), 21);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1733,6 +1840,9 @@ public class TestDates {
 		analysis.train("2008-01-01T00:00:00-05:00");
 		result = analysis.getResult();
 		assertEquals(result.getSampleCount(), 21);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1776,6 +1886,9 @@ public class TestDates {
 		analysis.train("2008-01-01T00:00:00-05:00");
 		result = analysis.getResult();
 		assertEquals(result.getSampleCount(), 21);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1804,6 +1917,9 @@ public class TestDates {
 		analysis.train("01/25/2012 16:28:42 GMT");
 		result = analysis.getResult();
 		assertEquals(result.getSampleCount(), 7);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1833,6 +1949,9 @@ public class TestDates {
 		analysis.train("01/25/2012 16:28:42 GMT");
 		result = analysis.getResult();
 		assertEquals(result.getSampleCount(), 7);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1861,9 +1980,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "M/d/yy");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1892,9 +2013,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "yyyy-M-dd HH:mm");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1922,9 +2045,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALTIME);
 		assertEquals(result.getTypeQualifier(), "H:mm:ss.S{1,2}");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1951,9 +2076,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALTIME);
 		assertEquals(result.getTypeQualifier(), "H:mm:ss.S{1,2}");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -1980,9 +2107,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALTIME);
 		assertEquals(result.getTypeQualifier(), "k:mm:ss.S{1,2}");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2008,9 +2137,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALTIME);
 		assertEquals(result.getTypeQualifier(), "k:mm:ss.S{1,2}");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2040,9 +2171,11 @@ public class TestDates {
 		assertEquals(result.getTypeQualifier(), "H:mm:ss");
 		assertEquals(analysis.getTrainingSet(), Arrays.asList(Arrays.copyOfRange(inputs, 0, analysis.getDetectWindow())));
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2071,9 +2204,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.ZONEDDATETIME);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm z");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2100,9 +2235,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2132,9 +2269,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyy");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 
 		final TextAnalyzer analysis2 = new TextAnalyzer("dateYYYY_2");
 
@@ -2153,9 +2292,11 @@ public class TestDates {
 		assertEquals(result2.getType(), FTAType.LOCALDATE);
 		assertEquals(result2.getTypeQualifier(), "yyyy");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result2, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result2.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2181,12 +2322,17 @@ public class TestDates {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
+		assertEquals(result.getInvalidCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "yyyy");
 		assertEquals(result.getRegExp(), "\\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		for (final Map.Entry<String, Long> entry : result.getCardinalityDetails().entrySet())
 			assertTrue(entry.getKey().matches(result.getRegExp()));
@@ -2226,6 +2372,9 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}");
 		assertEquals(result.getConfidence(), 0.6);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2253,6 +2402,9 @@ public class TestDates {
 		// 20 total - 7 bad, 5 blank
 		assertEquals(result.getMatchCount(), inputs.length - 12);
 		assertEquals(result.getRegExp(), "[ 	]*\\d{4}-\\d{2}-\\d{2}");
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2284,14 +2436,17 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{1,2}-" + KnownPatterns.PATTERN_ALPHA + "{3}-\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicUnixDateCommand() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicUnixDateCommand");
+		analysis.setDebug(1);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput =
 				"Thu Jul  2 09:48:00 PDT 2020|Thu Jul  1 10:00:56 PDT 2020|Thu Jul  2 04:56:56 PDT 2020|Thu Jul  2 09:48:56 PDT 2020|" +
@@ -2318,14 +2473,17 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} \\p{IsAlphabetic}{3} [ \\d]\\d \\d{2}:\\d{2}:\\d{2} .* \\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		// TODO TestSupport.checkHistogram(result, 10);
+		// TODO TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void badDatesGoodFormat() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicUnixDateCommand");
+		analysis.setDebug(1);
 		// ** Note: June 16 was NOT a Sunday! We still return the 'correct' format.
 		final String[] inputs = {
 				"Sunday, June 16, 2010 23:02:18 UTC", "Sunday, June 16, 2010 22:58:45 UTC", "Sunday, June 16, 2010 22:58:20 UTC",
@@ -2355,6 +2513,9 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{6,9}, \\p{IsAlphabetic}{3,9} \\d{2}, \\d{4} \\d{2}:\\d{2}:\\d{2} .*");
 		assertEquals(result.getConfidence(), 0.0);
+
+		// TODO TestSupport.checkHistogram(result, 10);
+		// TODO TestSupport.checkQuantiles(result);
 
 		// The dates are all invalid BUT they should still match the RE
 		for (final String input : inputs)
@@ -2391,6 +2552,9 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{4}-\\p{IsAlphabetic}{3}-\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
 	}
@@ -2426,6 +2590,9 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{4}-\\p{IsAlphabetic}{3}-\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
 	}
@@ -2458,6 +2625,9 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length - 1 - result.getBlankCount());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{2}/\\p{IsAlphabetic}{3}/\\d{4}");
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2487,9 +2657,11 @@ public class TestDates {
 		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3,9}-\\d{1,2}-\\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2524,9 +2696,11 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2561,9 +2735,11 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2592,6 +2768,9 @@ public class TestDates {
 		assertEquals(result1.getType(), FTAType.LOCALDATE);
 		assertEquals(result1.getTypeQualifier(), "yyyy/MM/dd");
 
+		TestSupport.checkHistogram(result1, 10);
+		TestSupport.checkQuantiles(result1);
+
 		for (final String input2 : inputs2)
 			analysis1.train(input2);
 		final TextAnalysisResult result2 = analysis1.getResult();
@@ -2606,6 +2785,9 @@ public class TestDates {
 
 		assertEquals(structureSignature1, result2.getStructureSignature());
 		assertNotEquals(dateSignature1, result2.getDataSignature());
+
+		// TODO TestSupport.checkHistogram(result2, 10);
+		// TODO TestSupport.checkQuantiles(result2);
 
 		for (final String input1 : inputs1)
 			assertTrue(input1.matches(result1.getRegExp()));
@@ -2634,9 +2816,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "dd-MM-yyyy");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2662,10 +2846,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "d-M-yyyy");
 
-		for (final String input : inputs) {
-			assertTrue(input.matches(result.getRegExp()));
-		}
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2695,9 +2880,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "dd/MM/yyyy");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -2744,14 +2931,17 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{4}");
 		assertEquals(result.getConfidence(), 1 - (double)zeroes/result.getSampleCount());
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void longAsDatewithErrors() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Date");
+		analysis.setDebug(1);
 
 		final String inputs[] = {
 				"20050915", "20050915", "20051020", "20060112", "20060201",
@@ -2777,8 +2967,10 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{8}");
-	}
 
+		// TODO TestSupport.checkHistogram(result, 10);
+		// TODO TestSupport.checkQuantiles(result);
+	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void anotherDateSwitcher() throws IOException, FTAException {
@@ -2812,9 +3004,11 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -3054,9 +3248,11 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -3091,9 +3287,11 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -3125,9 +3323,11 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -3161,9 +3361,11 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -3220,8 +3422,13 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 1);
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getMatchCount(), inputs.length - 1);
+		assertEquals(result.getMatchCount(), inputs.length - 2);
+		assertEquals(result.getInvalidCount(), 1);
+		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
 			if (!input.isEmpty() && !"0".equals(input))
@@ -3260,6 +3467,9 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getConfidence(), 1.0 - (double)1/result.getSampleCount());
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (int i = 0; i < inputs.length - 1; i++)
 			if (!inputs[i].isEmpty())
 				assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
@@ -3295,6 +3505,9 @@ public class TestDates {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
 			if (!input.isEmpty())
@@ -3332,6 +3545,9 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (final String input : inputs) {
 			if (!input.isEmpty())
 				assertTrue(input.matches(result.getRegExp()), input);
@@ -3368,6 +3584,8 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		final DateTimeFormatter formatter = new DateTimeParser().ofPattern(result.getTypeQualifier());
 		for (final String input : inputs) {
@@ -3413,6 +3631,8 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		final DateTimeFormatter formatter = new DateTimeParser().ofPattern(result.getTypeQualifier());
 		for (final String input : inputs) {
@@ -3458,6 +3678,8 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		final DateTimeFormatter formatter = new DateTimeParser().ofPattern(result.getTypeQualifier());
 		for (final String input : inputs) {
@@ -3503,6 +3725,8 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		final DateTimeFormatter formatter = new DateTimeParser().ofPattern(result.getTypeQualifier());
 		for (final String input : inputs) {
@@ -3547,6 +3771,9 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (final String input : inputs) {
 			if (!input.isEmpty())
 				assertTrue(input.matches(result.getRegExp()), input);
@@ -3583,6 +3810,9 @@ public class TestDates {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
 			if (!input.isEmpty())
@@ -3645,6 +3875,9 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{1,2}/\\d{1,2}/\\d{4} \\d{2}:\\d{2}:\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -3681,6 +3914,9 @@ public class TestDates {
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
 			if (!input.isEmpty())
@@ -3731,6 +3967,9 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (final String input : inputs) {
 			if (!input.isEmpty())
 				assertTrue(input.matches(result.getRegExp()), input);
@@ -3769,9 +4008,11 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeQualifier(), "M/dd/yyyy h:mm:ss a");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
@@ -3806,9 +4047,14 @@ public class TestDates {
 		assertEquals(result.getType(), FTAType.LOCALDATE);
 		assertEquals(result.getTypeQualifier(), "M/d/yyyy");
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	class SimpleResult {
@@ -3997,6 +4243,9 @@ public class TestDates {
 		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{1,2}, \\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 			assertNull(checkParseable(result, input));
@@ -4034,6 +4283,9 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}Z");
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 			assertNull(checkParseable(result, input));
@@ -4069,6 +4321,9 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{4}年\\d{1,2}月\\d{1,2}日");
 		assertEquals(result.getConfidence(), 1.0);
 
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 			assertNull(checkParseable(result, input));
@@ -4100,6 +4355,9 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{4}年\\d{1,2}月\\d{1,2}日");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -4135,6 +4393,9 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{4}/\\d{1,2}/\\d{1,2} 上午 \\d{2}:\\d{2}:\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -4173,6 +4434,9 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{2}\\.\\d{2}\\.\\d{4}г\\.");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -4233,6 +4497,9 @@ public class TestDates {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{2}\\.\\d{2}\\.\\d{2}г\\.");
 		assertEquals(result.getConfidence(), 1.0);
+
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -4296,9 +4563,11 @@ public class TestDates {
 		assertEquals(result.getRegExp(), "\\d{1,2} " + KnownPatterns.PATTERN_ALPHA + "{3,9} \\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String input : inputs) {
+		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.PERFORMANCE, TestGroups.DATES })

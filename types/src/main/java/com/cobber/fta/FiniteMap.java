@@ -43,7 +43,9 @@ public class FiniteMap implements Map<String, Long> {
 	}
 
 	public void sortByKey(final NavigableMap<String, Long> newMap) {
-		newMap.putAll(impl);
+		for (Map.Entry<String, Long> entry : impl.entrySet())
+			newMap.merge(entry.getKey(), entry.getValue(), Long::sum);
+
 		impl = newMap;
 		sorted = true;
 	}

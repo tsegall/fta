@@ -89,6 +89,15 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * Get the configuration associated with this TextAnalysisResult.
+	 *
+	 * @return The AnalysisConfig  of the TextAnalysisResult.
+	 */
+	public AnalysisConfig getConfig() {
+		return analysisConfig;
+	}
+
+	/**
 	 * Confidence in the type classification.
 	 * Typically this will be the number of matches divided by the number of real samples.
 	 * Where a real sample does not include either nulls or blanks.

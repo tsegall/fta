@@ -570,6 +570,10 @@ public class DateTimeParser {
 		return isValidDate(year, month, day);
 	}
 
+	public static boolean plausibleDateLong(final long l, final int yearLength) {
+		return plausibleDateCore(false, (int)l%100, ((int)l/100)%100, (int)l/10000, yearLength);
+	}
+
 	/**
 	 * Test if the year/month/day is a valid date.
 	 * @param year The Year to test

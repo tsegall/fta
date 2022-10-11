@@ -229,7 +229,7 @@ public class Facts {
 	@JsonIgnore
 	public TypeFormatter getTypeFormatter() {
 		if (typeFormatter == null)
-			typeFormatter = new TypeFormatter(matchPatternInfo, locale, decimalSeparator, localeDecimalSeparator);
+			typeFormatter = new TypeFormatter(matchPatternInfo, analysisConfig, decimalSeparator, localeDecimalSeparator);
 		return typeFormatter;
 	}
 
@@ -367,7 +367,7 @@ public class Facts {
 	@JsonIgnore
 	public Histogram getHistogram() {
 		if (histogram == null)
-			histogram = new Histogram(matchPatternInfo.getBaseType(), getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()), getStringConverter(), analysisConfig.getHistogramBins());
+			histogram = new Histogram(matchPatternInfo.getBaseType(), getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()), getStringConverter(), analysisConfig);
 		return histogram;
 	}
 
@@ -403,7 +403,8 @@ public class Facts {
 			while (it.hasNext()) {
 				final Entry<String, Long> entry = it.next();
 				if (Long.parseLong(entry.getKey()) == 0) {
-					outliers.put(entry.getKey(), entry.getValue());
+					invalid.put(entry.getKey(), entry.getValue());
+					matchCount--;
 					it.remove();
 				}
 			 }

@@ -4,6 +4,7 @@ import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import com.cobber.fta.TextAnalyzer.Feature;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,19 +17,20 @@ public class TypeFormatter {
 	public boolean hasGrouping;
 	public String format;
 	public Locale locale;
+	public AnalysisConfig analysisConfig;
 
 	TypeFormatter() {
 	}
 
-	TypeFormatter(final PatternInfo matchPatternInfo, final Locale locale, final char decimalSeparator, final char localeDecimalSeparator) {
+	TypeFormatter(final PatternInfo matchPatternInfo, final AnalysisConfig analysisConfig, final char decimalSeparator, final char localeDecimalSeparator) {
 		this.type = matchPatternInfo.getBaseType();
 		this.hasGrouping = KnownPatterns.hasGrouping(matchPatternInfo.id);
 		this.format = matchPatternInfo.format;
-		if (type == FTAType.DOUBLE) {
-			this.locale = decimalSeparator == localeDecimalSeparator ? locale : Locale.ROOT;
-		}
+		this.analysisConfig = analysisConfig;
+		if (type == FTAType.DOUBLE)
+			this.locale = decimalSeparator == localeDecimalSeparator ? analysisConfig.getLocale() : Locale.ROOT;
 		else
-			this.locale = locale;
+			this.locale = analysisConfig.getLocale();
 	}
 
 	@JsonIgnore
@@ -46,7 +48,6 @@ public class TypeFormatter {
 			doubleFormatter.setGroupingUsed(hasGrouping);
 			doubleFormatter.setMinimumFractionDigits(1);
 			doubleFormatter.setMaximumFractionDigits(16);
-
 		}
 		return doubleFormatter;
 	}
@@ -54,7 +55,7 @@ public class TypeFormatter {
 	@JsonIgnore
 	public DateTimeFormatter getDateFormatter() {
 		if (dateTimeFormatter == null) {
-			DateTimeParser dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false);
+			DateTimeParser dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false).withNoAbbreviationPunctuation(analysisConfig.isEnabled(Feature.NO_ABBREVIATION_PUNCTUATION));
 			dateTimeFormatter = dateTimeParser.ofPattern(format);
 		}
 		return dateTimeFormatter;

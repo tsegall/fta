@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.NavigableMap;
 
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.InternalErrorException;
 
 /**
  * This class is used to encapsulate a Histogram to provide Histogram data.  If the data fits in the cardinality set
@@ -36,11 +37,15 @@ public class Histogram {
 	public class Entry {
 		private String low;
 		private String high;
+		private double lowCut;
+		private double highCut;
 		private long count;
 
-		public Entry(final String low, final String high) {
-			this.low = low;
-			this.high = high;
+		public Entry(final double lowCut, final double highCut) {
+			this.lowCut = lowCut;
+			this.highCut = highCut;
+			this.low = stringConverter.formatted(stringConverter.fromDouble(lowCut));
+			this.high = stringConverter.formatted(stringConverter.fromDouble(highCut));
 		}
 
 		public String getLow() {
@@ -49,6 +54,14 @@ public class Histogram {
 
 		public String getHigh() {
 			return high;
+		}
+
+		public double getLowCut() {
+			return lowCut;
+		}
+
+		public double getHighCut() {
+			return highCut;
 		}
 
 		public long getCount() {
@@ -61,6 +74,7 @@ public class Histogram {
 	}
 
 	private NavigableMap<String, Long> typedMap;
+	private AnalysisConfig analysisConfig;
 	protected long totalMapEntries;
 	protected long totalHistogramEntries;
 	private HistogramSPDT histogramSPDT;
@@ -68,11 +82,12 @@ public class Histogram {
 	protected StringConverter stringConverter;
 	private boolean isComplete = false;
 
-	Histogram(final FTAType type, final NavigableMap<String, Long> typedMap, final StringConverter stringConverter, final int numBins) {
+	Histogram(final FTAType type, final NavigableMap<String, Long> typedMap, final StringConverter stringConverter, final AnalysisConfig analysisConfig) {
 		this.type = type;
 		this.stringConverter = stringConverter;
 		this.typedMap = typedMap;
-		this.histogramSPDT = new HistogramSPDT(numBins);
+		this.analysisConfig = analysisConfig;
+		this.histogramSPDT = new HistogramSPDT(analysisConfig.getHistogramBins());
 	}
 
 	public void accept(String key, Long count) {
@@ -89,17 +104,26 @@ public class Histogram {
 	}
 
 	public void complete(Map<String, Long> map) {
-		for (Map.Entry<String, Long> e : map.entrySet()) {
+		for (Map.Entry<String, Long> entry : map.entrySet()) {
 			if (isCardinalityExceeded()) {
-				histogramSPDT.accept(stringConverter.toDouble(e.getKey().trim()), e.getValue());
-				totalHistogramEntries += e.getValue();
+				histogramSPDT.accept(stringConverter.toDouble(entry.getKey().trim()), entry.getValue());
+				totalHistogramEntries += entry.getValue();
 			}
 			else {
 				// Cardinality map - has entries that differ only based on whitespace, so for example it may include
 				// "47" 10 times and " 47" 20 times, for the purposes of calculating histograms these are coalesced
 				// Similarly 47.0 and 47.000 will be collapsed since the typedMap is type aware and will consider these equal
-				typedMap.merge(e.getKey().trim(), e.getValue(), Long::sum);
-				totalMapEntries += e.getValue();
+				// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
+				// if there happens to be an issue then we will lose this entry in the Cardinality map.
+				try {
+					typedMap.merge(entry.getKey().trim(), entry.getValue(), Long::sum);
+					totalMapEntries += entry.getValue();
+				}
+				catch (RuntimeException e) {
+					if (analysisConfig.getDebug() != 0)
+						throw new InternalErrorException(e.getMessage(), e);
+				}
+
 			}
         }
 		isComplete = true;
@@ -113,7 +137,6 @@ public class Histogram {
 	public Histogram.Entry[] getHistogram(final int buckets) {
 		final Histogram.Entry[] ret = new Entry[buckets];
 		final double[] cutPoints = new double[buckets + 1];
-		final String[] cutPointStrings = new String[buckets + 1];
 		double low;
 		double high;
 
@@ -129,14 +152,12 @@ public class Histogram {
 		final double cutSize = (high - low) / buckets;
 
 		// Set the N+1 cut points
-		for (int i = 0; i <= buckets; i++) {
+		for (int i = 0; i <= buckets; i++)
 			cutPoints[i] = low + i * cutSize;
-			cutPointStrings[i] = stringConverter.formatted(stringConverter.fromDouble(cutPoints[i]));
-		}
 
 		// Set the low and high bounds on each bucket
 		for (int i = 0; i < buckets; i++)
-			ret[i] = new Entry(cutPointStrings[i], cutPointStrings[i + 1]);
+			ret[i] = new Entry(cutPoints[i], cutPoints[i + 1]);
 
 		Comparator<? super String> c = typedMap.comparator();
 
@@ -147,7 +168,9 @@ public class Histogram {
 			ArrayList<HistogramSPDT.Bin> bins = histogramSPDT.getBins();
 			for (int i = 0; i < bins.size(); i++) {
 				String stringValue = stringConverter.formatted(stringConverter.fromDouble(bins.get(i).value));
-				if (c.compare(stringValue, ret[upto].getHigh()) < 0) {
+				// All bar the last bin is Closed,Open the last one is Closed,Closed
+				if ((upto != buckets -1 && c.compare(stringValue, ret[upto].getHigh()) < 0) ||
+						c.compare(stringValue, ret[upto].getHigh()) <= 0) {
 					count += bins.get(i).count;
 				}
 				else {

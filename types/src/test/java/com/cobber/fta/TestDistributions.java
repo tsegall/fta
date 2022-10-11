@@ -33,7 +33,6 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
 
 /**
@@ -914,9 +913,10 @@ public class TestDistributions {
 		TextAnalysisResult result = analysis.getResult();
 
 		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
-
-		for (int i = 0; i < WIDTH; i++)
-			System.err.printf("%s-%s: %d%n", histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
+		assertEquals(histogram[0].getCount(), 2000);
+		assertEquals(histogram[1].getCount(), 1000);
+		assertEquals(histogram[9].getCount(), 2000);
+		TestSupport.checkHistogram(result, 10);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -940,9 +940,7 @@ public class TestDistributions {
 		for (int i = 0; i < BUCKETS - 1; i++)
 			assertEquals(histogram[i].getCount(), SIZE / BUCKETS * RECORDS);
 		assertEquals(histogram[BUCKETS - 1].getCount(), SIZE / BUCKETS * RECORDS + RECORDS);
-
-		for (int i = 0; i < BUCKETS; i++)
-			System.err.printf("%s-%s: %d%n", histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
+		TestSupport.checkHistogram(result, 10);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -966,29 +964,27 @@ public class TestDistributions {
 		for (int i = 0; i < BUCKETS - 1; i++)
 			assertEquals(histogram[i].getCount(), SIZE / BUCKETS * RECORDS);
 		assertEquals(histogram[BUCKETS - 1].getCount(), SIZE / BUCKETS * RECORDS + RECORDS);
-
-		for (int i = 0; i < BUCKETS; i++)
-			System.err.printf("%s-%s: %d%n", histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
+		TestSupport.checkHistogram(result, 10);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void simpleHistogramGaussian() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramGaussian");
-		final int SIZE = 1000000;
+		final int SIZE = 10000;
 
 		for (int i = 0; i < SIZE; i++)
 			analysis.train(String.valueOf(random.nextGaussian()*100));
 
 		TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getMatchCount(), SIZE);
 
 		final int WIDTH = 20;
 
 		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		TestSupport.checkHistogram(result, WIDTH);
 
-		assertEquals(getTotalCount(histogram), SIZE - 1);
-
-		dumpRawDouble(histogram);
-		dumpPicture(histogram, getMaxCount(histogram));
+		TestSupport.dumpRawDouble(histogram);
+		TestSupport.dumpPicture(histogram);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -1002,15 +998,45 @@ public class TestDistributions {
 		analysis.train("9");
 
 		TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getMatchCount(), 5);
 
-		final int WIDTH = 20;
+		final int WIDTH = 10;
 
 		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		// Range is 8 split into 10 buckets so each bucket is .8
+		assertEquals(histogram[0].getCount(), 1);
+		assertEquals(histogram[0].getLow(), "1");
+		assertEquals(histogram[0].getLowCut(), 1.0);
+		assertEquals(histogram[0].getHigh(), "2");
+		assertEquals(histogram[0].getHighCut(), 1.8);
+		assertEquals(histogram[3].getCount(), 1);
+		assertEquals(histogram[5].getCount(), 1);
+		assertEquals(histogram[8].getCount(), 1);
+		assertEquals(histogram[9].getCount(), 1);
+		TestSupport.checkHistogram(result, WIDTH);
+	}
 
-		assertEquals(getTotalCount(histogram), 5);
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void bivalueTinyHistogram() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("bivalueTinyHistogram");
 
-		dumpRawDouble(histogram);
-		dumpPicture(histogram, getMaxCount(histogram));
+		analysis.train("1");
+		analysis.train("4");
+
+		TextAnalysisResult result = analysis.getResult();
+
+		TestSupport.checkHistogram(result, 2);
+
+		final int WIDTH = 2;
+
+		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		TestSupport.checkHistogram(result, WIDTH);
+
+		assertEquals(histogram[0].getCount(), 1);
+		assertEquals(histogram[1].getCount(), 1);
+
+		TestSupport.dumpRaw(histogram);
+		TestSupport.dumpPicture(histogram);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -1033,6 +1059,8 @@ public class TestDistributions {
 		assertEquals(result.getValueAtQuantile(0.5), "true");
 		assertEquals(result.getValueAtQuantile(0.75), "true");
 		assertEquals(result.getValueAtQuantile(1.0), "true");
+
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -1058,6 +1086,8 @@ public class TestDistributions {
 		assertEquals(result.getValueAtQuantile(0.5), "TRUE");
 		assertEquals(result.getValueAtQuantile(0.75), "false");
 		assertEquals(result.getValueAtQuantile(1.0), "true");
+
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -1078,9 +1108,9 @@ public class TestDistributions {
 		assertEquals(result.getType(), FTAType.LONG);
 
 		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		TestSupport.dumpRaw(histogram);
 
-		for (Histogram.Entry entry : histogram)
-			System.err.printf("%s-%s: %d%n", entry.getLow(), entry.getHigh(), entry.getCount());
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -1107,6 +1137,8 @@ public class TestDistributions {
 		assertEquals(result.getValueAtQuantile(0.5), "YES");
 		assertEquals(result.getValueAtQuantile(0.75), "no");
 		assertEquals(result.getValueAtQuantile(1.0), "yes");
+
+		TestSupport.checkQuantiles(result);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -1155,49 +1187,6 @@ public class TestDistributions {
 		assertEquals(result.getValueAtQuantile(1.0), "Trash");
 	}
 
-	private long getMaxCount(final Histogram.Entry[] histogram) {
-		long max = Long.MIN_VALUE;
-
-		for (int i = 0; i < histogram.length; i++)
-			if (histogram[i].getCount() > max)
-				max = histogram[i].getCount();
-
-		return max;
-	}
-
-	private long getTotalCount(final Histogram.Entry[] histogram) {
-		long total = 0;
-
-		for (int i = 0; i < histogram.length; i++)
-			total += histogram[i].getCount();
-
-		return total;
-	}
-
-	private void dumpRaw(final Histogram.Entry[] histogram) {
-		for (int i = 0; i < histogram.length; i++)
-			System.err.printf("%d: %s-%s: %d%n", i, histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
-	}
-
-	private void dumpRawDouble(final Histogram.Entry[] histogram) {
-		for (int i = 0; i < histogram.length; i++)
-			System.err.printf("%d: %4.2f-%4.2f: %d%n", i, Double.valueOf(histogram[i].getLow()), Double.valueOf(histogram[i].getHigh()), histogram[i].getCount());
-	}
-
-	private void dumpPicture(final Histogram.Entry[] histogram, long max) {
-		long sizeX = max / 100;
-		if (sizeX == 0)
-			sizeX = max / 10;
-		if (sizeX == 0)
-			sizeX = max / 1;
-
-		for (int i = 0; i < histogram.length; i++) {
-			long xCount = histogram[i].getCount()/sizeX;
-			String output = xCount == 0 ? "." : Utils.repeat('X', (int)xCount);
-			System.err.printf("%d: %4.2f: %s%n", i, Double.valueOf(histogram[i].getHigh()), output);
-		}
-	}
-
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void simpleHistogramSlope() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramGaussian");
@@ -1214,14 +1203,14 @@ public class TestDistributions {
 		analysis.trainBulk(testCase);
 
 		TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getMatchCount(), total);
 
 		final int WIDTH = 20;
 
 		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
-		assertEquals(getTotalCount(histogram), total);
+		TestSupport.checkHistogram(result, WIDTH);
 
-
-		dumpRawDouble(histogram);
+		TestSupport.dumpRawDouble(histogram);
 //		dumpPicture(histogram, getMaxCount(histogram));
 	}
 
