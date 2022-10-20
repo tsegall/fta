@@ -35,7 +35,6 @@ import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
 
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
@@ -135,7 +134,7 @@ public class Facts {
 
 	/** The total number of samples seen. */
 	public long sampleCount;
-	/** The number of samples that match the patternInfo. */
+	/** The number of samples that match the typeInfo. */
 	public long matchCount;
 	/** The number of nulls seen in the sample set. */
 	public long nullCount;
@@ -146,8 +145,8 @@ public class Facts {
 
 	/** The percentage confidence in the analysis. Typically the matchCount divided by the realSamples (facts.sampleCount - (facts.nullCount + facts.blankCount)). */
 	public double confidence;
-	/** The PatternInfo associated with this matchCount. */
-	public PatternInfo matchPatternInfo;
+	/** The TypeInfo associated with this matchCount. */
+	public TypeInfo matchTypeInfo;
 
 	/** The minimum value observed. */
 	private String minValue;
@@ -188,7 +187,7 @@ public class Facts {
 	@JsonSerialize(using = SketchSerializer.class)
 	@JsonDeserialize(using = SketchDeserializer.class)
 	private Sketch sketch;
-	public Histogram histogram;
+	public HistogramSPDT cardinalityOverflow;
 	private StringConverter stringConverter;
 	private TypeFormatter typeFormatter;
 
@@ -206,15 +205,15 @@ public class Facts {
 
 		this.cardinality.setMaxCapacity(analysisConfig.getMaxCardinality());
 		this.outliers.setMaxCapacity(analysisConfig.getMaxOutliers());
-		this.invalid.setMaxCapacity(analysisConfig.getMaxOutliers());
+		this.invalid.setMaxCapacity(analysisConfig.getMaxInvalids());
 	}
 
-	public PatternInfo getMatchPatternInfo() {
-		return matchPatternInfo;
+	public TypeInfo getMatchTypeInfo() {
+		return matchTypeInfo;
 	}
 
-	public void setMatchPatternInfo(final PatternInfo matchPatternInfo) {
-		this.matchPatternInfo = matchPatternInfo;
+	public void setMatchTypeInfo(final TypeInfo matchTypeInfo) {
+		this.matchTypeInfo = matchTypeInfo;
 		typeFormatter = null;
 		stringConverter = null;
 	}
@@ -222,23 +221,23 @@ public class Facts {
 	@JsonIgnore
 	public StringConverter getStringConverter() {
 		if (stringConverter == null)
-			stringConverter = new StringConverter(matchPatternInfo.getBaseType(), getTypeFormatter());
+			stringConverter = new StringConverter(matchTypeInfo.getBaseType(), getTypeFormatter());
 		return stringConverter;
 	}
 
 	@JsonIgnore
 	public TypeFormatter getTypeFormatter() {
 		if (typeFormatter == null)
-			typeFormatter = new TypeFormatter(matchPatternInfo, analysisConfig, decimalSeparator, localeDecimalSeparator);
+			typeFormatter = new TypeFormatter(matchTypeInfo, analysisConfig);
 		return typeFormatter;
 	}
 
 	@JsonIgnore
 	public Object getMin() {
-		if (matchPatternInfo == null)
+		if (matchTypeInfo == null)
 			return null;
 
-		switch (matchPatternInfo.getBaseType()) {
+		switch (matchTypeInfo.getBaseType()) {
 		case BOOLEAN:
 			return minBoolean;
 
@@ -271,10 +270,10 @@ public class Facts {
 
 	@JsonIgnore
 	public Object getMax() {
-		if (matchPatternInfo == null)
+		if (matchTypeInfo == null)
 			return null;
 
-		switch (matchPatternInfo.getBaseType()) {
+		switch (matchTypeInfo.getBaseType()) {
 		case BOOLEAN:
 			return maxBoolean;
 
@@ -325,50 +324,36 @@ public class Facts {
 		return sketch != null;
 	}
 
-	public static NavigableMap<String, Long> getTypedMap(final FTAType type, final StringConverter stringConverter) {
-		switch (type) {
-		case BOOLEAN:
-			return new TreeMap<>();
-		case DOUBLE:
-			return new TreeMap<>(new CommonComparator<Double>(stringConverter));
-		case LOCALDATE:
-			return new TreeMap<>(new CommonComparator<ChronoLocalDate>(stringConverter));
-		case LOCALDATETIME:
-			return new TreeMap<>(new CommonComparator<ChronoLocalDateTime<?>>(stringConverter));
-		case LOCALTIME:
-			return new TreeMap<>(new CommonComparator<LocalTime>(stringConverter));
-		case LONG:
-			return new TreeMap<>(new CommonComparator<Long>(stringConverter));
-		case OFFSETDATETIME:
-			return new TreeMap<>(new CommonComparator<OffsetDateTime>(stringConverter));
-		case STRING:
-			return new TreeMap<>();
-		case ZONEDDATETIME:
-			return new TreeMap<>(new CommonComparator<ChronoZonedDateTime<?>>(stringConverter));
-		default:
-			return null;
-		}
-	}
-
 	@JsonIgnore
 	public NavigableMap<String, Long> getCardinalitySorted() {
 		if (!cardinality.isSorted())
-			cardinality.sortByKey(getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()));
+			cardinality.sortByKey(CommonComparator.getTypedMap(matchTypeInfo.getBaseType(), getStringConverter()));
 		return (NavigableMap<String, Long>) cardinality.getImpl();
 	}
 
 	@JsonIgnore
 	public Sketch getSketch() {
 		if (sketch == null)
-			sketch = new Sketch(matchPatternInfo.getBaseType(), getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()), getStringConverter(), analysisConfig.getQuantileRelativeAccuracy());
+			sketch = new Sketch(matchTypeInfo.getBaseType(), CommonComparator.getTypedMap(matchTypeInfo.getBaseType(), getStringConverter()), getStringConverter(),
+					analysisConfig.getQuantileRelativeAccuracy(), analysisConfig.getDebug());
 		return sketch;
 	}
 
 	@JsonIgnore
 	public Histogram getHistogram() {
-		if (histogram == null)
-			histogram = new Histogram(matchPatternInfo.getBaseType(), getTypedMap(matchPatternInfo.getBaseType(), getStringConverter()), getStringConverter(), analysisConfig);
-		return histogram;
+		Histogram ret = new Histogram(CommonComparator.getTypedMap(matchTypeInfo.getBaseType(), getStringConverter()), getStringConverter(), analysisConfig.getHistogramBins(),  analysisConfig.getDebug());
+		ret.setCardinality(cardinality);
+		ret.setCardinalityOverflow(cardinalityOverflow);
+		return ret;
+	}
+
+	public HistogramSPDT getCardinalityOverflow() {
+		return cardinalityOverflow;
+	}
+
+	public HistogramSPDT createHistogramOverflow(final StringConverter stringConverter) {
+		cardinalityOverflow = new HistogramSPDT(stringConverter, analysisConfig.getHistogramBins());
+		return cardinalityOverflow;
 	}
 
 	// Track basic facts for the field - called for any Valid input
@@ -391,7 +376,7 @@ public class Facts {
 			maxTrimmedLength = trimmedLength;
 
 		// Determine if this is a multi-line field (if not already decided)
-		if (FTAType.STRING.equals(matchPatternInfo.getBaseType()) && !multiline)
+		if (FTAType.STRING.equals(matchTypeInfo.getBaseType()) && !multiline)
 			multiline = input.indexOf('\n') != -1 || input.indexOf('\r') != -1;
 	}
 
@@ -412,11 +397,11 @@ public class Facts {
 	}
 
 	public Facts calculateFacts() {
-		if (matchPatternInfo == null)
+		if (matchTypeInfo == null)
 			return this;
 
 		// We know the type - so calculate a minimum and maximum value
-		switch (matchPatternInfo.getBaseType()) {
+		switch (matchTypeInfo.getBaseType()) {
 		case BOOLEAN:
 			minValue = String.valueOf(minBoolean);
 			maxValue = String.valueOf(maxBoolean);
@@ -431,8 +416,9 @@ public class Facts {
 			break;
 
 		case DOUBLE:
-			if (getTypeFormatter().getNumericalFormatter() instanceof DecimalFormat && KnownPatterns.hasExponent(matchPatternInfo.id)) {
-				final DecimalFormat decimalFormatter = (DecimalFormat)getTypeFormatter().getNumericalFormatter();
+			if (getTypeFormatter().getNumericalFormatter() instanceof DecimalFormat && matchTypeInfo.hasExponent()) {
+				final DecimalFormat decimalFormatter = (DecimalFormat)NumberFormat.getInstance(locale);
+
 				decimalFormatter.applyPattern("#.##################E0");
 				minValue = decimalFormatter.format(minDouble);
 				maxValue = decimalFormatter.format(maxDouble);
@@ -447,9 +433,9 @@ public class Facts {
 			break;
 
 		case STRING:
-			if ("NULL".equals(matchPatternInfo.typeQualifier)) {
+			if (matchTypeInfo.isNull()) {
 				minRawLength = maxRawLength = 0;
-			} else if ("BLANK".equals(matchPatternInfo.typeQualifier)) {
+			} else if (matchTypeInfo.isBlank()) {
 				// If all the fields are blank (i.e. a variable number of spaces) - then we have not saved any of the raw input, so we
 				// need to synthesize the min and max value, as well as the minRawlength if not set.
 				if (minRawLength == Integer.MAX_VALUE)
@@ -515,10 +501,10 @@ public class Facts {
 	}
 
 	public void hydrate() {
-		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) || matchPatternInfo == null)
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) || matchTypeInfo == null)
 			return;
 
-		switch (matchPatternInfo.getBaseType()) {
+		switch (matchTypeInfo.getBaseType()) {
 		case BOOLEAN:
 			break;
 		case LONG:
@@ -662,11 +648,13 @@ public class Facts {
 				&& decimalSeparator == other.decimalSeparator && groupingSeparators == other.groupingSeparators
 				&& Objects.equals(keyConfidence, other.keyConfidence) && leadingWhiteSpace == other.leadingWhiteSpace
 				&& leadingZeroCount == other.leadingZeroCount && Objects.equals(locale, other.locale)
-				&& matchCount == other.matchCount && Objects.equals(matchPatternInfo, other.matchPatternInfo)
+				&& matchCount == other.matchCount && Objects.equals(matchTypeInfo, other.matchTypeInfo)
 				&& maxRawLength == other.maxRawLength
 				&& monotonicDecreasing == other.monotonicDecreasing && monotonicIncreasing == other.monotonicIncreasing
 				&& multiline == other.multiline && nullCount == other.nullCount
-				&& outliers.equals(other.outliers) && sampleCount == other.sampleCount
+				&& outliers.equals(other.outliers)
+				&& invalid.equals(other.invalid)
+				&& sampleCount == other.sampleCount
 				&& trailingWhiteSpace == other.trailingWhiteSpace
 				&& totalCount == other.totalCount
 				&& totalNullCount == other.totalNullCount && totalBlankCount == other.totalBlankCount

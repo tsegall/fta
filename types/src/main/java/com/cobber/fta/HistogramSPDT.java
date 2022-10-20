@@ -19,16 +19,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * This class is used to encapsulate a Histogram to provide Histogram data.  If the data fits in the cardinality set
  * then it simply uses a map to generate the histogram values.  Once the cardinality exceeds maxCardinality then the
  * data is tracked using an algorithm based on Yael Ben-Haim and Elad Tom-Tov, "A streaming parallel decision tree algorithm",
  * J. Machine Learning Research 11 (2010), pp. 849--872
  */
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class HistogramSPDT {
-	class Bin implements Comparable<Object> {
+	@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+	static class Bin implements Comparable<Object> {
 		double value;
 		long count;
+
+		Bin() {
+		}
 
 		Bin(final double value, final long count) {
 			this.value = value;
@@ -49,12 +58,42 @@ public class HistogramSPDT {
 	private double minValue = Double.MAX_VALUE;
 	// Maximum value ever observed
 	private double maxValue = Double.MIN_VALUE;
+	@JsonIgnore
 	private Random random;
+	private long observed;
+	private StringConverter stringConverter;
 
-	HistogramSPDT(final int maxBins) {
+	HistogramSPDT() {
+	}
+
+	HistogramSPDT(final HistogramSPDT toCopy) {
+		// Make a Deep copy
 		this.bins = new ArrayList<>();
+		for (final Bin bin : toCopy.bins)
+			bins.add(new Bin(bin.value, bin.count));
+
+		this.stringConverter = toCopy.stringConverter;
+		this.maxBins = toCopy.maxBins;
+		this.observed = toCopy.observed;
+		this.random = new Random(3141592);
+	}
+
+	HistogramSPDT(StringConverter stringConverter, final int maxBins) {
+		this.bins = new ArrayList<>();
+		this.stringConverter = stringConverter;
 		this.maxBins = maxBins;
 		this.random = new Random(3141592);
+	}
+
+	/**
+	 * Add a new String-valued data point with an associated count to the histogram approximation.
+	 * The String will be converted to a double using the StringConverter passed to the Constructor.
+	 *
+	 * @param value The String data point to add to the histogram approximation.
+	 * @param count The count associated with this data point
+	 */
+	public void accept(String value, long count) {
+		accept(stringConverter.toDouble(value), count);
 	}
 
 	/**
@@ -64,8 +103,7 @@ public class HistogramSPDT {
 	 * @param count The count associated with this data point
 	 */
 	public void accept(double value, long count) {
-//		System.err.printf("accept(%4.2f, %d)%n", value, count);
-
+		observed += count;
 		if (value < minValue)
 			minValue = value;
 		if (value > maxValue)
@@ -157,27 +195,46 @@ public class HistogramSPDT {
 		if (other.getMaxValue() > getMinValue())
 			maxValue = other.getMaxValue();
 
+		observed += other.observed;
+
 		// Chop the merged entity back to our maximum size
 		trim();
 
 		return this;
 	}
 
-	public void dump() {
-		for (int i = 0; i < bins.size(); i++) {
+	private long totalCount() {
+		long totalCount = 0;
+		for (int i = 0; i < bins.size(); i++)
+			totalCount += bins.get(i).count;
+
+		return totalCount;
+	}
+
+	private void dump() {
+		System.err.println("Count: " + totalCount());
+		for (int i = 0; i < bins.size(); i++)
 			System.err.printf("%d: %4.2f, %d%n", i, bins.get(i).value, bins.get(i).count);
-		}
 
 	}
 
 	// Locate the insertion point in the list where this value belongs.
-	private int locateInsertion(final double value) {
-		for (int i = 0; i < bins.size(); i++) {
-			if (value > bins.get(i).value)
-				continue;
-			return i;
+	// The value provided should be inserted before the insertion point returned.
+	protected int locateInsertion(final double value) {
+		int l = 0;
+		int r = bins.size();
+		int bin = 0;
+
+		while (l < r) {
+			bin = (l + r)/2;
+			if (value == bins.get(bin).value)
+				return bin;
+			if (value > bins.get(bin).value)
+				l = ++bin;
+			else
+				r = bin;
 		}
 
-		return bins.size();
+		return bin;
 	}
 }

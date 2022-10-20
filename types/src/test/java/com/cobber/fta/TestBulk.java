@@ -46,7 +46,8 @@ public class TestBulk {
 
 		assertEquals(result.getSampleCount(), 4000000);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(),  Gender.SEMANTIC_TYPE + "EN");
+		assertEquals(result.getSemanticType(),  Gender.SEMANTIC_TYPE + "EN");
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 1000000L);
 		assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE)");
@@ -74,7 +75,8 @@ public class TestBulk {
 
 		assertEquals(result.getSampleCount(), 4000000);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(),  Gender.SEMANTIC_TYPE + "EN");
+		assertEquals(result.getSemanticType(),  Gender.SEMANTIC_TYPE + "EN");
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 1000000L);
 		assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE)");
@@ -100,7 +102,7 @@ public class TestBulk {
 
 		assertEquals(resultBulk.getSampleCount(), 2 * SAMPLE_COUNT);
 		assertEquals(resultBulk.getType(), FTAType.LONG);
-		assertNull(resultBulk.getTypeQualifier());
+		assertNull(resultBulk.getTypeModifier());
 		assertEquals(resultBulk.getNullCount(), 0);
 		assertEquals(resultBulk.getBlankCount(), 0);
 		assertEquals(resultBulk.getRegExp(), "\\d{3}");
@@ -145,7 +147,8 @@ public class TestBulk {
 
 		assertEquals(resultBulk.getSampleCount(), 3 * ITERATIONS);
 		assertEquals(resultBulk.getType(), FTAType.STRING);
-		assertEquals(resultBulk.getTypeQualifier(),  Gender.SEMANTIC_TYPE + "EN");
+		assertEquals(resultBulk.getSemanticType(),  Gender.SEMANTIC_TYPE + "EN");
+		assertNull(result.getTypeModifier());
 		assertEquals(resultBulk.getNullCount(), 0);
 		assertEquals(resultBulk.getRegExp(), "(?i)(FEMALE|MALE)");
 		assertEquals(resultBulk.getMatchCount(), 3 * ITERATIONS);
@@ -177,7 +180,8 @@ public class TestBulk {
 
 		assertEquals(resultBulk.getSampleCount(), SAMPLES);
 		assertEquals(resultBulk.getType(), FTAType.STRING);
-		assertNull(resultBulk.getTypeQualifier());
+		assertNull(resultBulk.getTypeModifier());
+		assertNull(resultBulk.getSemanticType());
 		assertEquals(resultBulk.getNullCount(), 0);
 		assertEquals(resultBulk.getRegExp(), "(?i)(DISCONNECT|DISCONNECT FRACTIONAL|DISCONNECT OTHER|DISCONNECT STILL BILLING|INSTALL FRACTIONAL|INSTALL FRACTIONAL RERATE|RE-RATES|RUN RATE)");
 		assertEquals(resultBulk.getMatchCount(), SAMPLES);
@@ -196,7 +200,8 @@ public class TestBulk {
 
 		assertEquals(resultBulk.getSampleCount(), 109);
 		assertEquals(resultBulk.getType(), FTAType.LOCALDATETIME);
-		assertEquals(resultBulk.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss");
+		assertEquals(resultBulk.getTypeModifier(), "yyyy-MM-dd HH:mm:ss");
+		assertNull(resultBulk.getSemanticType());
 		assertEquals(resultBulk.getNullCount(), 0);
 		assertEquals(resultBulk.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
 		assertEquals(resultBulk.getMatchCount(), 109);
@@ -217,10 +222,11 @@ public class TestBulk {
 
 		assertEquals(result.getSampleCount(), 1000000);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "BLANK");
+		assertEquals(result.getTypeModifier(), "BLANK");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 1000000);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BLANK));
 		assertEquals(result.getMatchCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 0);
@@ -249,7 +255,8 @@ public class TestBulk {
 
 		assertEquals(result.getSampleCount(), SAMPLES);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
-		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
@@ -276,7 +283,8 @@ public class TestBulk {
 
 		assertEquals(result.getSampleCount(), SAMPLES);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
-		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSSSSS");
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd HH:mm:ss.SSSSSS");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{6}");
@@ -305,7 +313,8 @@ public class TestBulk {
 
 		assertEquals(result.getSampleCount(), SAMPLES);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
-		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.SSSSSSS");
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd HH:mm:ss.SSSSSSS");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getNullCount(), 10);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{7}");
@@ -342,7 +351,8 @@ public class TestBulk {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 6);
-		assertEquals(result.getTypeQualifier(), "INDUSTRY_EN");
+		assertEquals(result.getSemanticType(), "INDUSTRY_EN");
+		assertNull(result.getTypeModifier());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -386,7 +396,8 @@ public class TestBulk {
 
 		assertEquals(result.getSampleCount(), GOOD_SAMPLES + BAD_SAMPLES);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "COUNTRY.TEXT_EN");
+		assertEquals(result.getSemanticType(), "COUNTRY.TEXT_EN");
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getMatchCount(), GOOD_SAMPLES);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
@@ -438,6 +449,8 @@ public class TestBulk {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getCardinality(), 23);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
+
 	}
 }

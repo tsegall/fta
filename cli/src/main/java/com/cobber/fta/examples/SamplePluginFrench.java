@@ -41,7 +41,7 @@ public abstract class SamplePluginFrench {
 		analysis.setLocale(locale);
 
 		// Register our new magic plugin
-		final String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_<LANG>\", \"pluginType\": \"java\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"validLocales\": [ \"en-US\", \"fr-FR\" ] } ]";
+		final String colorPlugin = "[ { \"semanticType\": \"CUSTOM_COLOR.TEXT_<LANG>\", \"pluginType\": \"java\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"validLocales\": [ { \"localeTag\": \"en-US,fr-FR\" } ] } ]";
 		try {
 			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", analysis.getConfig());
 		} catch (InvocationTargetException e) {

@@ -260,7 +260,8 @@ public class DateTimeParser {
             .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
             .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
             .toFormatter(config.getLocale());
-		else if ("MM/yyyy".equals(formatString) || "MM-yyyy".equals(formatString) || "yyyy/MM".equals(formatString) || "yyyy-MM".equals(formatString))
+		else if ("MM/yyyy".equals(formatString) || "MM-yyyy".equals(formatString) || "yyyy/MM".equals(formatString) || "yyyy-MM".equals(formatString) ||
+				"M/yyyy".equals(formatString) || "M-yyyy".equals(formatString) || "yyyy/M".equals(formatString) || "yyyy-M".equals(formatString))
 			formatter = new DateTimeFormatterBuilder()
 			.parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
 			.append(DateTimeFormatter.ofPattern(formatString))

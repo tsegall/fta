@@ -4,23 +4,42 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.text.NumberFormat;
-import java.text.ParseException;
 
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 
 public class TestSupport {
-	public static void checkHistogram(final TextAnalysisResult result, int width) {
+
+	public static long countHistogram(final Histogram.Entry[] histogram) {
+		long count = 0;
+		for (Histogram.Entry entry : histogram)
+			count += entry.getCount();
+
+		return count;
+	}
+
+	public static void checkHistogram(final TextAnalysisResult result, int width, boolean checkCounts) {
+		// If no Statistics enabled then not much checking we can do
+		if (!result.getConfig().isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
+			return;
+
 		// No Histogram support for STRING or BOOLEAN types
 		if (FTAType.STRING.equals(result.getType()) || FTAType.BOOLEAN.equals(result.getType()))
 			return;
 
-		Histogram.Entry[] histogram = result.getHistogram(10);
-		long histogramCount = 0;
-		for (Histogram.Entry entry : histogram)
-			histogramCount += entry.getCount();
+		Histogram.Entry[] histogram = result.getHistogram(width);
 
-		assertEquals(histogramCount, result.getMatchCount());
+		if (histogram == null)
+			return;
+
+		if (checkCounts)
+			assertEquals(countHistogram(histogram), result.getMatchCount());
+
+		// The following is not equivalent to result.getDistinctCount() != 1 because a data set which has
+		// 47.0, 47, 47.00 will have a distinctCount() of 3!!!
+		if (!result.getMinValue().equals(result.getMaxValue()))
+			assertTrue(histogram[0].getCount() != 0);
+		assertTrue(histogram[width -1].getCount() != 0);
 	}
 
 	public static void checkQuantiles(final TextAnalysisResult result){
@@ -28,28 +47,31 @@ public class TestSupport {
 		if (!result.getConfig().isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			return;
 
+		if (result.getCardinality() == 0)
+			return;
+
 		if (result.getCardinality() < result.getConfig().getMaxCardinality()) {
 			if (FTAType.LONG.equals(result.getType())) {
 				NumberFormat longFormatter = NumberFormat.getIntegerInstance(result.getConfig().getLocale());
 
-				long min = safeParseLong(result.getMinValue(), longFormatter);
-				long max = safeParseLong(result.getMaxValue(), longFormatter);
+				long min = Utils.parseLong(result.getMinValue(), longFormatter);
+				long max = Utils.parseLong(result.getMaxValue(), longFormatter);
 
-				assertEquals(safeParseLong(result.getValueAtQuantile(0.0), longFormatter), min);
-				assertEquals(safeParseLong(result.getValueAtQuantile(1.0), longFormatter), max);
-				assertEquals(safeParseLong(result.getCardinalityDetails().firstKey(), longFormatter), min);
-				assertEquals(safeParseLong(result.getCardinalityDetails().lastKey(), longFormatter), max);
+				assertEquals(Utils.parseLong(result.getValueAtQuantile(0.0), longFormatter), min);
+				assertEquals(Utils.parseLong(result.getValueAtQuantile(1.0), longFormatter), max);
+				assertEquals(Utils.parseLong(result.getCardinalityDetails().firstKey(), longFormatter), min);
+				assertEquals(Utils.parseLong(result.getCardinalityDetails().lastKey(), longFormatter), max);
 			}
 			else if (FTAType.DOUBLE.equals(result.getType())) {
 				NumberFormat doubleFormatter = NumberFormat.getInstance(result.getConfig().getLocale());
 
-				double min = safeParseDouble(result.getMinValue(), doubleFormatter);
-				double max = safeParseDouble(result.getMaxValue(), doubleFormatter);
+				double min = Utils.parseDouble(result.getMinValue(), doubleFormatter);
+				double max = Utils.parseDouble(result.getMaxValue(), doubleFormatter);
 
-				assertEquals(safeParseDouble(result.getValueAtQuantile(0.0), doubleFormatter), min);
-				assertEquals(safeParseDouble(result.getValueAtQuantile(1.0), doubleFormatter), max);
-				assertEquals(safeParseDouble(result.getCardinalityDetails().firstKey(), doubleFormatter), min);
-				assertEquals(safeParseDouble(result.getCardinalityDetails().lastKey(), doubleFormatter), max);
+				assertEquals(Utils.parseDouble(result.getValueAtQuantile(0.0), doubleFormatter), min);
+				assertEquals(Utils.parseDouble(result.getValueAtQuantile(1.0), doubleFormatter), max);
+				assertEquals(Utils.parseDouble(result.getCardinalityDetails().firstKey(), doubleFormatter), min);
+				assertEquals(Utils.parseDouble(result.getCardinalityDetails().lastKey(), doubleFormatter), max);
 			}
 			else {
 				assertTrue(result.getValueAtQuantile(0.0).equalsIgnoreCase(result.getMinValue()));
@@ -58,42 +80,6 @@ public class TestSupport {
 				assertTrue(result.getCardinalityDetails().lastKey().equalsIgnoreCase(result.getMaxValue()));
 			}
 		}
-	}
-
-	private static long safeParseLong(final String input, final NumberFormat longFormatter) {
-		final String trimmed = input.trim();
-		long ret;
-
-		try {
-			ret = Long.parseLong(trimmed);
-		}
-		catch (NumberFormatException e) {
-			try {
-				ret = longFormatter.parse(trimmed).longValue();
-			} catch (ParseException pe) {
-				throw new NumberFormatException(pe.getMessage());
-			}
-		}
-
-		return ret;
-	}
-
-	private static double safeParseDouble(final String input, final NumberFormat doubleFormatter) {
-		final String trimmed = input.trim();
-		double ret;
-
-		try {
-			ret = Double.parseDouble(trimmed);
-		}
-		catch (NumberFormatException e) {
-			try {
-				ret = doubleFormatter.parse(trimmed.charAt(0) == '+' ? trimmed.substring(1) : trimmed).doubleValue();
-			} catch (ParseException pe) {
-				throw new NumberFormatException(pe.getMessage());
-			}
-		}
-
-		return ret;
 	}
 
 	public static void dumpRaw(final Histogram.Entry[] histogram) {
@@ -119,6 +105,7 @@ public class TestSupport {
 	}
 
 	public static void dumpPicture(final Histogram.Entry[] histogram) {
+		System.err.println("Entries: " + countHistogram(histogram));
 		long max = getMaxCount(histogram);
 		long sizeX = max / 100;
 		if (sizeX == 0)
@@ -128,7 +115,11 @@ public class TestSupport {
 
 		for (int i = 0; i < histogram.length; i++) {
 			long xCount = histogram[i].getCount()/sizeX;
-			String output = xCount == 0 ? "." : Utils.repeat('X', (int)xCount);
+			String output;
+			if (histogram[i].getCount() == 0)
+				output = "";
+			else
+				output = xCount == 0 ? "." : Utils.repeat('X', (int)xCount);
 			System.err.printf("%d: %4.2f: %s%n", i, Double.valueOf(histogram[i].getHigh()), output);
 		}
 	}

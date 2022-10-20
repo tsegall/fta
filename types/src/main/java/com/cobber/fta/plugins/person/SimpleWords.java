@@ -33,7 +33,7 @@ import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.token.TokenStreams;
 
 /**
-* Plugin to detect any Logical Type defined by the presence of a set of words.
+* Plugin to detect any Semantic Type defined by the presence of a set of words.
 */
 public abstract class SimpleWords extends LogicalTypeInfinite {
 	private Set<String> keywordsHash;
@@ -67,8 +67,8 @@ public abstract class SimpleWords extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
-		return defn.qualifier;
+	public String getSemanticType() {
+		return defn.semanticType;
 	}
 
 	@Override

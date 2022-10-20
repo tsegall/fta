@@ -50,7 +50,7 @@ public abstract class SampleDate {
 		// Now prove it works!!
 		// Grab the DateTimeFormatter from fta as this creates a case-insensitive parser and it supports a slightly wider set set of formats
 		// For example, "yyyy" does not work out of the box if you use ofPattern
-		final DateTimeFormatter formatter = new DateTimeParser().ofPattern(result.getTypeQualifier());
+		final DateTimeFormatter formatter = new DateTimeParser().ofPattern(result.getTypeModifier());
 
 		for (final String input : inputs)
 			LocalDateTime.parse(input, formatter);

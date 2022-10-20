@@ -65,7 +65,7 @@ public class DOWFull extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return "DAY.FULL_" + locale.toLanguageTag();
 	}
 

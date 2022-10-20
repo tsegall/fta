@@ -91,16 +91,16 @@ public class Driver {
 				error.println(" --formatDetection - Enabled Format Detection");
 				error.println(" --help - Print this help");
 				error.println(" --json - Output as JSON");
+				error.println(" --legacyJSON - Output legacy JSON - compatible with FTA 11.X or lower");
 				error.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
-				error.println(" --logicalType <JSON representation of Logical Types> - Can be inline or as a File");
 				error.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
 				error.println(" --maxInputLength <n> - Set the Maximum Input length supported");
 				error.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
 				error.println(" --normalize <input> - Create Normalized output from CSV input");
 				error.println(" --noAnalysis - Do not do analysis");
-				error.println(" --noLogicalTypes - Do not register any Logical Types");
 				error.println(" --noPretty - Do not pretty print analysis");
 				error.println(" --noQuantiles - Do not track quantiles");
+				error.println(" --noSemanticTypes - Do not register any Semantic Types");
 				error.println(" --noStatistics - Do not track statistics");
 				error.println(" --pluginDefinition - Output the plugin definitions from the training data set");
 				error.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a signature (record count based on --records)");
@@ -109,6 +109,7 @@ public class Driver {
 				error.println(" --replay <file>.fta - Replay the FTA trace file");
 				error.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
 				error.println(" --samples <n> - Set the size of the sample window");
+				error.println(" --semanticType <JSON representation of Semantic Types> - Can be inline or as a File");
 				error.println(" --signature - Output the Signature for the supplied pluginName");
 				error.println(" --skip <n> - Skip the initial <n> rows of the input");
 				error.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
@@ -130,10 +131,10 @@ public class Driver {
 			}
 			else if ("--json".equals(args[idx]))
 				options.json = true;
-			else if ("--logicalType".equals(args[idx]))
-				options.logicalTypes = args[++idx];
-			else if ("--maxCardinality".equals(args[idx]))
-				options.maxCardinality = Integer.valueOf(args[++idx]);
+			else if ("--json".equals(args[idx]))
+				options.json = true;
+			else if ("--legacyJSON".equals(args[idx]))
+				options.legacyJSON = true;
 			else if ("--maxInputLength".equals(args[idx]))
 				options.maxInputLength = Integer.valueOf(args[++idx]);
 			else if ("--maxOutlierCardinality".equals(args[idx]))
@@ -144,12 +145,12 @@ public class Driver {
 			}
 			else if ("--noAnalysis".equals(args[idx]))
 				options.noAnalysis = true;
-			else if ("--noLogicalTypes".equals(args[idx]))
-				options.noLogicalTypes = true;
 			else if ("--noPretty".equals(args[idx]))
 				options.pretty = false;
 			else if ("--noDistributions".equals(args[idx]))
 				options.noDistributions = true;
+			else if ("--noSemanticTypes".equals(args[idx]))
+				options.noSemanticTypes = true;
 			else if ("--noStatistics".equals(args[idx]))
 				options.noStatistics = true;
 			else if ("--output".equals(args[idx]))
@@ -181,6 +182,8 @@ public class Driver {
 			}
 			else if ("--samples".equals(args[idx]))
 				options.samples = true;
+			else if ("--semanticType".equals(args[idx]))
+				options.semanticTypes = args[++idx];
 			else if ("--signature".equals(args[idx]))
 				options.signature = true;
 			else if ("--skip".equals(args[idx]))
@@ -237,12 +240,12 @@ public class Driver {
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
 			for (final LogicalType logical : registered) {
-				try (PrintStream results = new PrintStream(logical.getQualifier() + ".csv")) {
+				try (PrintStream results = new PrintStream(logical.getSemanticType() + ".csv")) {
 					if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
-						error.printf("ERROR: Logical Type (%s) does implement LTRandom interface - however samples may not be useful.%n", logical.getQualifier());
+						error.printf("ERROR: Semantic Type (%s) does implement LTRandom interface - however samples may not be useful.%n", logical.getSemanticType());
 
 					// Use the Semantic Type as a header!
-					results.println(logical.getQualifier());
+					results.println(logical.getSemanticType());
 					for (long l = 0; l < ouputRecords; l++)
 						results.printf("\"%s\"%n", logical.nextRandom());
 				}
@@ -257,22 +260,22 @@ public class Driver {
 
 			// Sort the registered plugins by Qualifier
 			for (final LogicalType logical : registered)
-				qualifiers.add(logical.getQualifier());
+				qualifiers.add(logical.getSemanticType());
 
 			if (!registered.isEmpty()) {
-				error.println("\nRegistered Logical Types:");
+				error.println("\nRegistered Semantic Types:");
 				for (final String qualifier : qualifiers) {
 					final LogicalType logical = analyzer.getPlugins().getRegistered(qualifier);
 					if (logical instanceof LogicalTypeFinite) {
 						final LogicalTypeFinite finite = (LogicalTypeFinite)logical;
 						error.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d",
-								logical.getQualifier(), logical.getPriority(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
+								logical.getSemanticType(), logical.getPriority(), finite.getSize(), finite.getMaxLength(), finite.getMinLength());
 					}
 					else if (logical instanceof LogicalTypeInfinite)
-						error.printf("\t%s (Infinite): Priority: %d", logical.getQualifier(), logical.getPriority());
+						error.printf("\t%s (Infinite): Priority: %d", logical.getSemanticType(), logical.getPriority());
 					else {
 						error.printf("\t%s (RegExp): Priority: %d, RegExp: '%s'",
-								logical.getQualifier(), logical.getPriority(), logical.getRegExp());
+								logical.getSemanticType(), logical.getPriority(), logical.getRegExp());
 					}
 					error.printf(", Locales: '%s'%n\t\t%s%n", logical.getPluginDefinition().getLocaleDescription(), logical.getDescription());
 				}

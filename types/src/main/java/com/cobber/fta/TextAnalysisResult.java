@@ -112,13 +112,13 @@ public class TextAnalysisResult {
 	 * @return The Type of the data stream.
 	 */
 	public FTAType getType() {
-		return facts.getMatchPatternInfo().getBaseType();
+		return facts.getMatchTypeInfo().getBaseType();
 	}
 
 	/**
-	 * Get the optional Type Qualifier.  Predefined qualifiers are:
+	 * Get the optional Type Modifier (which modifies the Base Type - see {@link#getType}  Predefined qualifiers are:
 	 * <ul>
-	 *  <li>Type: BOOLEAN - "TRUE_FALSE", "YES_NO", "ONE_ZERO"</li>
+	 *  <li>Type: BOOLEAN - "TRUE_FALSE", "YES_NO", "Y_N", "ONE_ZERO"</li>
 	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "NULL"</li>
 	 *  <li>Type: LONG - "GROUPING", "SIGNED", "SIGNED_TRAILING".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
 	 * 	<li>Type: DOUBLE - "GROUPING", "SIGNED", "SIGNED_TRAILING", "NON_LOCALIZED".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
@@ -126,21 +126,31 @@ public class TextAnalysisResult {
 	 * </ul>
 	 *
 	 * Note: Boolean TRUE_FALSE is not localized, i.e. it will only be detected if the field contains true/false respectively.
-	 * Note: Additional Type Qualifiers may be returned if any Logical Type plugins are installed.
-	 * For example: If the Month Abbreviation plugin installed, the Base Type will be STRING, and the Qualifier will be "MONTHABBR".
-	 * @return The Type Qualifier for the Type.
+	 * @return The Type Modifier for the Type.
 	 */
-	public String getTypeQualifier() {
-		return facts.getMatchPatternInfo().typeQualifier;
+	public String getTypeModifier() {
+		return facts.getMatchTypeInfo().typeModifier;
 	}
 
 	/**
-	 * Is this a Logical Type?
+	 * Is this a Semantic Type?
 	 *
-	 * @return True if this is a Logical Type.
+	 * @return True if this is a Semantic Type.
 	 */
-	public boolean isLogicalType() {
-		return facts.getMatchPatternInfo().isLogicalType();
+	public boolean isSemanticType() {
+		return facts.getMatchTypeInfo().isSemanticType();
+	}
+
+	/**
+	 * The Semantic Type detected.
+	 *
+	 * Note: The Semantic Types detected are based on the set of plugins are installed.
+	 * For example: If the Month Abbreviation plugin installed, the Base Type will be STRING, and the Semantic Type will be "MONTHABBR".
+	 *
+	 * @return The Semantic Type detected - only valid if isSemanticType() is true.
+	 */
+	public String getSemanticType() {
+		return facts.getMatchTypeInfo().semanticType;
 	}
 
 	/**
@@ -206,7 +216,7 @@ public class TextAnalysisResult {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 
-		return facts.getMatchPatternInfo().isNumeric() ? facts.mean : null;
+		return facts.getMatchTypeInfo().isNumeric() ? facts.mean : null;
 	}
 
 	/**
@@ -217,7 +227,7 @@ public class TextAnalysisResult {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(NOT_ENABLED);
 
-		return facts.getMatchPatternInfo().isNumeric() ? Math.sqrt(facts.variance) : null;
+		return facts.getMatchTypeInfo().isNumeric() ? Math.sqrt(facts.variance) : null;
 	}
 
 	/**
@@ -276,12 +286,9 @@ public class TextAnalysisResult {
 		if (buckets <= 0)
 			throw new IllegalArgumentException("Number of buckets must be > 0.");
 
-		FTAType baseType = facts.getMatchPatternInfo().getBaseType();
+		FTAType baseType = facts.getMatchTypeInfo().getBaseType();
 		if (FTAType.STRING.equals(baseType) || FTAType.BOOLEAN.equals(baseType))
 			throw new IllegalArgumentException("No Histogram support for either STRING or BOOLEAN types.");
-
-		if (!facts.getHistogram().isComplete())
-			facts.getHistogram().complete(facts.cardinality);
 
 		return facts.getHistogram().getHistogram(buckets);
 	}
@@ -314,21 +321,21 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression.
 	 */
 	public String getRegExp() {
-		if (facts.getMatchPatternInfo().isLogicalType() || (!facts.leadingWhiteSpace && !facts.trailingWhiteSpace))
-			return facts.getMatchPatternInfo().regexp;
+		if (facts.getMatchTypeInfo().isSemanticType() || (!facts.leadingWhiteSpace && !facts.trailingWhiteSpace))
+			return facts.getMatchTypeInfo().regexp;
 
 		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
 		String answer = "";
 		if (facts.leadingWhiteSpace)
-			answer = KnownPatterns.PATTERN_WHITESPACE;
-		final boolean optional = facts.getMatchPatternInfo().regexp.indexOf('|') != -1;
+			answer = KnownTypes.PATTERN_WHITESPACE;
+		final boolean optional = facts.getMatchTypeInfo().regexp.indexOf('|') != -1;
 		if (optional)
 			answer += "(";
-		answer += facts.getMatchPatternInfo().regexp;
+		answer += facts.getMatchTypeInfo().regexp;
 		if (optional)
 			answer += ")";
 		if (facts.trailingWhiteSpace)
-			answer += KnownPatterns.PATTERN_WHITESPACE;
+			answer += KnownTypes.PATTERN_WHITESPACE;
 
 		return answer;
 	}
@@ -339,7 +346,7 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression reflecting the non-white space data.
 	 */
 	public String getDataRegExp() {
-		return facts.getMatchPatternInfo().regexp;
+		return facts.getMatchTypeInfo().regexp;
 	}
 
 	/**
@@ -540,7 +547,7 @@ public class TextAnalysisResult {
 	 * Get the number of distinct invalid entries for the current data stream.
 	 * See {@link com.cobber.fta.TextAnalyzer#setMaxOutliers(int) setMaxOutliers()} method in TextAnalyzer.
 	 * Note: This is not a complete invalid analysis unless the invalid count of the
-	 * data stream is less than the maximum invalid count (Default: {@value com.cobber.fta.AnalysisConfig#MAX_OUTLIERS_DEFAULT}).
+	 * data stream is less than the maximum invalid count (Default: {@value com.cobber.fta.AnalysisConfig#MAX_INVALID_DEFAULT}).
 	 * @return Count of the distinct invalid entries.
 	 */
 	public int getInvalidCount() {
@@ -647,8 +654,8 @@ public class TextAnalysisResult {
 	public String getStructureSignature() {
 		String structureSignature = getSignatureBaseType().toString() + ":";
 
-		if (isLogicalType())
-			structureSignature += getTypeQualifier();
+		if (isSemanticType())
+			structureSignature += getSemanticType();
 		else if (!shape.getShapes().isEmpty())
 			structureSignature += getRegExp() + shape.getShapes().keySet().toString();
 
@@ -665,14 +672,14 @@ public class TextAnalysisResult {
 	}
 
 	private FTAType getSignatureBaseType() {
-		if (!isLogicalType())
-			return facts.getMatchPatternInfo().getBaseType();
+		if (!isSemanticType())
+			return facts.getMatchTypeInfo().getBaseType();
 
-		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(getTypeQualifier());
+		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(getTypeModifier());
 		if (pluginDefinition != null && pluginDefinition.baseType != null)
 			return pluginDefinition.baseType;
 
-		return facts.getMatchPatternInfo().getBaseType();
+		return facts.getMatchTypeInfo().getBaseType();
 	}
 
 	/**
@@ -727,8 +734,8 @@ public class TextAnalysisResult {
 	 * @return A JSON representation of the analysis.
 	 */
 	public String asPlugin() {
-		// Already a logical type or date type - so nothing interesting to report as a Plugin
-		if (isLogicalType() || facts.getMatchPatternInfo().isDateType())
+		// Already a Semantic type or date type - so nothing interesting to report as a Plugin
+		if (isSemanticType() || facts.getMatchTypeInfo().isDateType())
 			return null;
 
 		// Check to see if the Regular Expression is too boring to report - e.g. '.*' or '.{3,31}'
@@ -757,7 +764,7 @@ public class TextAnalysisResult {
 				plugin.put("maximum", facts.getMaxValue());
 		}
 
-		plugin.put("baseType", facts.getMatchPatternInfo().getBaseType().toString());
+		plugin.put("baseType", facts.getMatchTypeInfo().getBaseType().toString());
 
 		try {
 			return writer.writeValueAsString(plugin);
@@ -779,6 +786,7 @@ public class TextAnalysisResult {
 
 	private String internalAsJSON(final boolean pretty, final int verbose, final SignatureTarget target) {
 		final ObjectWriter writer = pretty ? MAPPER.writerWithDefaultPrettyPrinter() : MAPPER.writer();
+		final boolean legacyJSON = analysisConfig.isEnabled(TextAnalyzer.Feature.LEGACY_JSON);
 
 		final ObjectNode analysis = MAPPER.createObjectNode();
 		if (target != SignatureTarget.STRUCTURE_SIGNATURE && target != SignatureTarget.DATA_SIGNATURE)
@@ -801,15 +809,26 @@ public class TextAnalysisResult {
 			//			if (!streamRegExps.isEmpty())
 			//				outputArray(regExpStream, streamRegExps);
 			analysis.put("confidence", facts.confidence);
-			analysis.put("type", facts.getMatchPatternInfo().getBaseType().toString());
+			analysis.put("type", facts.getMatchTypeInfo().getBaseType().toString());
 
-			if (facts.getMatchPatternInfo().typeQualifier != null)
-				analysis.put("typeQualifier", facts.getMatchPatternInfo().typeQualifier);
+			analysis.put(legacyJSON ? "logicalType" : "isSemanticType", isSemanticType());
+			if (legacyJSON) {
+				if (isSemanticType())
+					analysis.put("typeQualifier", facts.getMatchTypeInfo().semanticType);
+				else if (facts.getMatchTypeInfo().typeModifier != null)
+					analysis.put("typeQualifier", facts.getMatchTypeInfo().typeModifier);
+			}
+			else {
+				if (facts.getMatchTypeInfo().typeModifier != null)
+					analysis.put("typeModifier", facts.getMatchTypeInfo().typeModifier);
+				if (isSemanticType())
+					analysis.put("semanticType", facts.getMatchTypeInfo().semanticType);
+			}
 			if (analysisConfig.isEnabled(TextAnalyzer.Feature.FORMAT_DETECTION))
 				analysis.put("contentFormat", facts.streamFormat);
 		}
 
-		if (FTAType.DOUBLE == facts.getMatchPatternInfo().getBaseType())
+		if (FTAType.DOUBLE == facts.getMatchTypeInfo().getBaseType())
 			analysis.put("decimalSeparator", String.valueOf(facts.decimalSeparator));
 
 		if (statisticsEnabled()) {
@@ -823,9 +842,9 @@ public class TextAnalysisResult {
 		analysis.put("maxLength", facts.maxRawLength);
 
 		if (statisticsEnabled()) {
-			if (facts.getMatchPatternInfo().isNumeric())
+			if (facts.getMatchTypeInfo().isNumeric())
 				analysis.put("mean", facts.mean);
-			if (facts.getMatchPatternInfo().isNumeric())
+			if (facts.getMatchTypeInfo().isNumeric())
 				analysis.put("standardDeviation", getStandardDeviation());
 			if (facts.topK != null) {
 				final ArrayNode detail = analysis.putArray("topK");
@@ -837,7 +856,7 @@ public class TextAnalysisResult {
 			}
 		}
 
-		if (facts.getMatchPatternInfo().isNumeric())
+		if (facts.getMatchTypeInfo().isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
 		analysis.put("cardinality", facts.cardinality.size() < analysisConfig.getMaxCardinality() ? facts.cardinality.size() : -1);
@@ -867,7 +886,7 @@ public class TextAnalysisResult {
 
 		// Output any quantile/histogram data
 		if (analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS) && facts.matchCount != 0 &&
-				!FTAType.STRING.equals(facts.getMatchPatternInfo().getBaseType()) && !FTAType.BOOLEAN.equals(facts.getMatchPatternInfo().getBaseType())) {
+				!FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !FTAType.BOOLEAN.equals(facts.getMatchTypeInfo().getBaseType())) {
 			// We have support for arbitrary quantiles - but output percentiles in the JSON
 			final ArrayNode detailQ = analysis.putArray("percentiles");
 			// 101 because we want 0.0 and 1.0 plus everything in between
@@ -912,11 +931,10 @@ public class TextAnalysisResult {
 				analysis.put("totalMaxLength", facts.totalMaxLength);
 		}
 
-		if (facts.getMatchPatternInfo().isDateType())
+		if (facts.getMatchTypeInfo().isDateType())
 			analysis.put("dateResolutionMode", getDateResolutionMode().toString());
 
 		if (target != SignatureTarget.DATA_SIGNATURE) {
-			analysis.put("logicalType", isLogicalType());
 			analysis.put("keyConfidence", facts.keyConfidence);
 			analysis.put("uniqueness", facts.uniqueness);
 			analysis.put("detectionLocale", facts.getLocale().toLanguageTag());

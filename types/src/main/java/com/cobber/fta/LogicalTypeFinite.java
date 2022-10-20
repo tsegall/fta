@@ -22,7 +22,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.Utils;
 
 /**
- * All Logical Types that consist of a constrained domain, for example, a finite (small) number of elements should
+ * All Semantic Types that consist of a constrained domain, for example, a finite (small) number of elements should
  * subclass this abstract class.
  */
 public abstract class LogicalTypeFinite extends LogicalTypeCode {
@@ -94,7 +94,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	}
 
 	/**
-	 * Get the number of members in this Logical Type.
+	 * Get the number of members in this Semantic Type.
 	 * @return The number of members
 	 */
 	public int getSize() {
@@ -102,7 +102,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	}
 
 	/**
-	 * Get the minimum length of instances of this Logical Type.
+	 * Get the minimum length of instances of this Semantic Type.
 	 * @return The minimum length of instances
 	 */
 	public int getMinLength() {
@@ -110,7 +110,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	}
 
 	/**
-	 * Get the maximum length of instances of this Logical Type.
+	 * Get the maximum length of instances of this Semantic Type.
 	 * @return The maximum length of instances
 	 */
 	public int getMaxLength() {

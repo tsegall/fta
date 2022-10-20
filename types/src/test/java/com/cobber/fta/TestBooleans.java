@@ -44,7 +44,7 @@ public class TestBooleans {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), 1);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_TRUE_FALSE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BOOLEAN_TRUE_FALSE));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.BOOLEAN);
 		assertEquals(result.getMinLength(), 4);
@@ -76,12 +76,12 @@ public class TestBooleans {
 		assertEquals(result.getOutlierCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		assertEquals(result.getNullCount(), NULL_COUNT);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
-				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_TRUE_FALSE) + ")" +
-				KnownPatterns.PATTERN_WHITESPACE);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE +
+				"(" + analysis.getRegExp(KnownTypes.ID.ID_BOOLEAN_TRUE_FALSE) + ")" +
+				KnownTypes.PATTERN_WHITESPACE);
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - NULL_COUNT));
 		assertEquals(result.getType(), FTAType.BOOLEAN);
-		assertEquals(result.getTypeQualifier(), "TRUE_FALSE");
+		assertEquals(result.getTypeModifier(), "TRUE_FALSE");
 		assertEquals(result.getMinLength(), 4);
 		assertEquals(result.getMaxLength(), 12);
 		assertEquals(result.getMinValue(), "false");
@@ -118,12 +118,12 @@ public class TestBooleans {
 		assertEquals(result.getOutlierCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		assertEquals(result.getNullCount(), 2);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
-				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO) + ")" +
-				KnownPatterns.PATTERN_WHITESPACE);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE +
+				"(" + analysis.getRegExp(KnownTypes.ID.ID_BOOLEAN_YES_NO) + ")" +
+				KnownTypes.PATTERN_WHITESPACE);
 		assertEquals(result.getConfidence(), .9375);
 		assertEquals(result.getType(), FTAType.BOOLEAN);
-		assertEquals(result.getTypeQualifier(), "YES_NO");
+		assertEquals(result.getTypeModifier(), "YES_NO");
 		assertEquals(result.getMinLength(), 2);
 		assertEquals(result.getMaxLength(), 9);
 		assertEquals(result.getMinValue(), "no");
@@ -160,12 +160,12 @@ public class TestBooleans {
 		assertEquals(result.getOutlierCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		assertEquals(result.getNullCount(), 2);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
-				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO_LOCALIZED) + ")" +
-				KnownPatterns.PATTERN_WHITESPACE);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE +
+				"(" + analysis.getRegExp(KnownTypes.ID.ID_BOOLEAN_YES_NO_LOCALIZED) + ")" +
+				KnownTypes.PATTERN_WHITESPACE);
 		assertEquals(result.getConfidence(), .9375);
 		assertEquals(result.getType(), FTAType.BOOLEAN);
-		assertEquals(result.getTypeQualifier(), "YES_NO");
+		assertEquals(result.getTypeModifier(), "YES_NO");
 		assertEquals(result.getMinLength(), 2);
 		assertEquals(result.getMaxLength(), 9);
 		assertEquals(result.getMinValue(), "no");
@@ -202,12 +202,12 @@ public class TestBooleans {
 		assertEquals(result.getOutlierCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		assertEquals(result.getNullCount(), 2);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
-				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO_LOCALIZED) + ")" +
-				KnownPatterns.PATTERN_WHITESPACE);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE +
+				"(" + analysis.getRegExp(KnownTypes.ID.ID_BOOLEAN_YES_NO_LOCALIZED) + ")" +
+				KnownTypes.PATTERN_WHITESPACE);
 		assertEquals(result.getConfidence(), .9375);
 		assertEquals(result.getType(), FTAType.BOOLEAN);
-		assertEquals(result.getTypeQualifier(), "YES_NO");
+		assertEquals(result.getTypeModifier(), "YES_NO");
 		assertEquals(result.getMinLength(), 3);
 		assertEquals(result.getMaxLength(), 10);
 		assertEquals(result.getMinValue(), "non");
@@ -243,12 +243,12 @@ public class TestBooleans {
 		assertEquals(result.getOutlierCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		assertEquals(result.getNullCount(), 2);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE +
-				"(" + analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_YES_NO) + ")" +
-				KnownPatterns.PATTERN_WHITESPACE);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE +
+				"(" + analysis.getRegExp(KnownTypes.ID.ID_BOOLEAN_YES_NO) + ")" +
+				KnownTypes.PATTERN_WHITESPACE);
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - NULL_COUNT));
 		assertEquals(result.getType(), FTAType.BOOLEAN);
-		assertEquals(result.getTypeQualifier(), "YES_NO");
+		assertEquals(result.getTypeModifier(), "YES_NO");
 		assertEquals(result.getMinLength(), 2);
 		assertEquals(result.getMaxLength(), 9);
 		assertEquals(result.getMinValue(), "no");
@@ -293,10 +293,10 @@ public class TestBooleans {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount() - result.getBlankCount());
 		assertEquals(result.getNullCount(), 2);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_Y_N));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BOOLEAN_Y_N));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.BOOLEAN);
-		assertEquals(result.getTypeQualifier(), "Y_N");
+		assertEquals(result.getTypeModifier(), "Y_N");
 		assertEquals(result.getMinLength(), 1);
 		assertEquals(result.getMaxLength(), 1);
 		assertEquals(result.getMinValue(), "n");
@@ -329,9 +329,9 @@ public class TestBooleans {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), countN + countC);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHA);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getMinLength(), 1);
 		assertEquals(result.getMaxLength(), 1);
 		assertEquals(result.getMinValue(), "C");
@@ -354,10 +354,10 @@ public class TestBooleans {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), COUNT);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHA);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getMinLength(), 1);
 		assertEquals(result.getMaxLength(), 1);
 		assertEquals(result.getMinValue(), "y");
@@ -386,7 +386,7 @@ public class TestBooleans {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length - result.getOutlierCount());
 		assertEquals(result.getNullCount(), 2);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BOOLEAN_ONE_ZERO));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BOOLEAN_ONE_ZERO));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.BOOLEAN);
 		assertEquals(result.getMinLength(), 1);

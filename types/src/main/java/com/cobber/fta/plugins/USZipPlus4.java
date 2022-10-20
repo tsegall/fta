@@ -21,7 +21,7 @@ import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
-import com.cobber.fta.KnownPatterns;
+import com.cobber.fta.KnownTypes;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -32,7 +32,7 @@ import com.cobber.fta.token.TokenStreams;
 
 /**
  * Plugin to detect valid US Zip plus 4 codes.
- * Note: we used an Infinite :-) Logical Type since the domains is so large.
+ * Note: we used an Infinite :-) Semantic Type since the domains is so large.
  */
 public class USZipPlus4 extends LogicalTypeInfinite {
 	/** The Semantic type for this Plugin. */
@@ -86,7 +86,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 
@@ -127,7 +127,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	}
 
 	private String backout() {
-		return KnownPatterns.PATTERN_ANY_VARIABLE;
+		return KnownTypes.PATTERN_ANY_VARIABLE;
 	}
 
 	@Override

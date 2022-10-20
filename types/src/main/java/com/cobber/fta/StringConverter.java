@@ -15,7 +15,6 @@
  */
 package com.cobber.fta;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,6 +23,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 
 /**
  * Based on the FTA Type support the ability to convert from a String to an instance of the Type, or from an instance of
@@ -54,16 +54,17 @@ public class StringConverter {
 		case BOOLEAN:
 			return Boolean.valueOf(trimmed);
 		case LONG:
-			// We cannot use parseLong as it does not cope with localization
 			try {
-				return typeFormatter.getNumericalFormatter().parse(trimmed.charAt(0) == '+' ? trimmed.substring(1) : trimmed).longValue();
-			} catch (ParseException e) {
+				return Utils.parseLong(input, typeFormatter.getNumericalFormatter());
+			}
+			catch (NumberFormatException e) {
 				return null;
 			}
 		case DOUBLE:
 			try {
-				return  typeFormatter.getNumericalFormatter().parse(trimmed.charAt(0) == '+' ? trimmed.substring(1) : trimmed).doubleValue();
-			} catch (ParseException e) {
+				return Utils.parseDouble(input, typeFormatter.getNumericalFormatter());
+			}
+			catch (NumberFormatException e) {
 				return null;
 			}
 		case STRING:

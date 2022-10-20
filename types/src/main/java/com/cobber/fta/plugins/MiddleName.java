@@ -56,7 +56,7 @@ public class MiddleName extends FirstName {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 

@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.cobber.fta.KnownPatterns;
+import com.cobber.fta.KnownTypes;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 
@@ -61,16 +61,15 @@ public class TokenStreams {
 		}
 
 		final TokenStream ts = new TokenStream(trimmed, count);
-
 		final TokenStream current = tokenStreams.get(ts.getKey());
 		if (current == null)
-			// New Stream found - add it if there is room, otherwise call it a day
+            // New Stream found - add it if there is room, otherwise call it a day
 			if (tokenStreams.size() < maxStreams)
-				tokenStreams.put(ts.getKey(), ts);
+				 tokenStreams.put(ts.getKey(), ts);
 			else {
-				tokenStreams.clear();
-				tokenStreams.put(TokenStream.ANYSHAPE.getKey(), TokenStream.ANYSHAPE);
-				anyShape = true;
+                tokenStreams.clear();
+                tokenStreams.put(TokenStream.ANYSHAPE.getKey(), TokenStream.ANYSHAPE);
+                anyShape = true;
 			}
 		else
 			current.merge(ts);
@@ -157,13 +156,13 @@ public class TokenStreams {
 		if (isAlpha || isNumeric || isAlphaNumeric) {
 			String pattern = "";
 			if (isAlpha) {
-				pattern = KnownPatterns.PATTERN_ALPHA;
+				pattern = KnownTypes.PATTERN_ALPHA;
 			}
 			else if (isNumeric) {
-				pattern = KnownPatterns.PATTERN_NUMERIC;
+				pattern = KnownTypes.PATTERN_NUMERIC;
 			}
 			else if (isAlphaNumeric) {
-				pattern = KnownPatterns.PATTERN_ALPHANUMERIC;
+				pattern = KnownTypes.PATTERN_ALPHANUMERIC;
 			}
 			if (tokenStreams.size() == maxLength - minLength + 1)
 				pattern += RegExpSplitter.qualify(minLength, maxLength);

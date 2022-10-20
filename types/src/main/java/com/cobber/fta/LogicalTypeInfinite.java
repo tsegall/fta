@@ -16,7 +16,7 @@
 package com.cobber.fta;
 
 /**
- * All Logical Types that consist of a unconstrained domain, for example, an infinite (or large) number of elements should
+ * All Semantic Types that consist of a unconstrained domain, for example, an infinite (or large) number of elements should
  * subclass this abstract class.
  */
 public abstract class LogicalTypeInfinite extends LogicalTypeCode {
@@ -25,13 +25,13 @@ public abstract class LogicalTypeInfinite extends LogicalTypeCode {
 	}
 
 	/**
-	 * A fast check to see if the supplied String might be an instance of this logical type?
+	 * A fast check to see if the supplied String might be an instance of this Semantic type?
 	 *
 	 * @param trimmed String to check
 	 * @param compressed A compressed representation of the input string (e.g. \d{5} for 20351).
 	 * @param charCounts An array of occurrence counts for characters in the input (ASCII-only).
 	 * @param lastIndex An array of the last index where character is located (ASCII-only).
-	 * @return true iff the supplied String is a possible instance of this Logical type.
+	 * @return true iff the supplied String is a possible instance of this Semantic type.
 	 */
 	public abstract boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex);
 

@@ -75,7 +75,7 @@ public class NameLastFirst extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 

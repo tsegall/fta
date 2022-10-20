@@ -98,7 +98,7 @@ public class Aadhar_IN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 

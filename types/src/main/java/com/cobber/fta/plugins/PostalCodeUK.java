@@ -35,7 +35,7 @@ import com.cobber.fta.token.TokenStreams;
 /**
  * Plugin to detect valid UK Postal codes.
  * Note: Neither the validator nor the random are true reflections of UK Postal Codes.
- * Note: we used an Infinite :-) Logical Type since the domain is so large.
+ * Note: we used an Infinite :-) Semantic Type since the domain is so large.
  */
 public class PostalCodeUK extends LogicalTypeInfinite {
 	/** The Semantic type for this Plugin. */
@@ -109,7 +109,7 @@ public class PostalCodeUK extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 

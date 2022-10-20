@@ -25,11 +25,11 @@ import com.cobber.fta.core.FTAPluginException;
  */
 public abstract class LogicalTypeFactory {
 	/**
-	 * Return a Logical Type based on a Plugin Definition with an associated AnalysisConfig.
+	 * Return a Semantic Type based on a Plugin Definition with an associated AnalysisConfig.
 	 *
 	 * @param plugin The Definition for this plugin
 	 * @param analysisConfig The Analysis configuration used for this analysis
-	 * @return The LogicalType The Logical Type associated with the definition (if it exists), null if non-existent.
+	 * @return The LogicalType The Semantic Type associated with the definition (if it exists), null if non-existent.
 	 * @throws FTAPluginException Thrown when the plugin is incorrectly configured.
 	 */
 	public static LogicalType newInstance(final PluginDefinition plugin, final AnalysisConfig analysisConfig) throws FTAPluginException {
@@ -46,7 +46,7 @@ public abstract class LogicalTypeFactory {
 
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
-				throw new FTAPluginException("Logical type: " + plugin.qualifier + " of class " + plugin.clazz + " does not appear to be a Logical Type.", e);
+				throw new FTAPluginException("Semantic type: " + plugin.semanticType + " of class " + plugin.clazz + " does not appear to be a Semantic Type.", e);
 			}
 		}
 		else if ("list".equals(plugin.pluginType))
@@ -55,7 +55,7 @@ public abstract class LogicalTypeFactory {
 			logical = new LogicalTypeRegExp(plugin);
 
 		if (!(logical instanceof LogicalType))
-			throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' unknown type.");
+			throw new FTAPluginException("Semantic type: '" + plugin.semanticType + "' unknown type.");
 
 		logical.initialize(analysisConfig);
 

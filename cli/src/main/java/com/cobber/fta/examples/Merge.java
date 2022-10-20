@@ -35,13 +35,17 @@ public abstract class Merge {
 			shardTwo.train("MALE");
 		final String serializedTwo = shardTwo.serialize();
 
+		// Analysis on the first Shard does not generate a Semantic Type
 		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(serializedOne);
-		System.err.println(hydratedOne.getResult().getTypeQualifier());
+		System.err.println("ShardOne - Semantic Type? " + hydratedOne.getResult().isSemanticType());
+
+		// Analysis on the second Shard does not generate a Semantic Type
 		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(serializedTwo);
-		System.err.println(hydratedTwo.getResult().getTypeQualifier());
+		System.err.println("ShardTwo - Semantic Type? " + hydratedTwo.getResult().isSemanticType());
 
+		// Analysis of the merged shards correctly identifies a Gender
 		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
-
-		System.err.println(merged.getResult().getTypeQualifier());
+		System.err.println("Merged - Semantic Type? " + merged.getResult().isSemanticType());
+		System.err.println(merged.getResult().getSemanticType());
 	}
 }

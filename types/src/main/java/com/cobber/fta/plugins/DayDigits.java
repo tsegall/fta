@@ -64,8 +64,8 @@ public class DayDigits extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
-		return defn.qualifier;
+	public String getSemanticType() {
+		return defn.semanticType;
 	}
 
 	@Override

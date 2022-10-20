@@ -19,7 +19,7 @@ import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
-import com.cobber.fta.KnownPatterns;
+import com.cobber.fta.KnownTypes;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -91,8 +91,8 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	}
 
 	@Override
-	public String getQualifier() {
-		return defn.qualifier;
+	public String getSemanticType() {
+		return defn.semanticType;
 	}
 
 	@Override
@@ -162,10 +162,10 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		// If we are allowing local-only numbers then insist on some signal from the header
 		if (localNumbersValid && nonLocal != 0 && getHeaderConfidence(context.getStreamName()) == 0)
-			return new PluginAnalysis(onlyDigits ? KnownPatterns.PATTERN_NUMERIC_VARIABLE : REGEXP);
+			return new PluginAnalysis(onlyDigits ? KnownTypes.PATTERN_NUMERIC_VARIABLE : REGEXP);
 
 		if (getHeaderConfidence(context.getStreamName()) == 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, context) < getThreshold()/100.0)
-			return new PluginAnalysis(onlyDigits ? KnownPatterns.PATTERN_NUMERIC_VARIABLE : REGEXP);
+			return new PluginAnalysis(onlyDigits ? KnownTypes.PATTERN_NUMERIC_VARIABLE : REGEXP);
 
 		return PluginAnalysis.OK;
 	}

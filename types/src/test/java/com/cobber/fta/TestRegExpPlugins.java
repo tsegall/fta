@@ -61,7 +61,7 @@ public class TestRegExpPlugins {
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getRegExp(), "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
-		assertEquals(result.getTypeQualifier(), "MACADDRESS");
+		assertEquals(result.getSemanticType(), "MACADDRESS");
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -93,7 +93,7 @@ public class TestRegExpPlugins {
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getRegExp(), "\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}");
-		assertEquals(result.getTypeQualifier(), "MACADDRESS");
+		assertEquals(result.getSemanticType(), "MACADDRESS");
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -128,7 +128,7 @@ public class TestRegExpPlugins {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length + 1);
-		assertEquals(result.getTypeQualifier(), "SSN");
+		assertEquals(result.getSemanticType(), "SSN");
 		assertEquals(result.getRegExp(), "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}", result.getRegExp());
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
@@ -148,7 +148,7 @@ public class TestRegExpPlugins {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("SSN");
-		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%03d-%02d-%04d",
@@ -161,7 +161,7 @@ public class TestRegExpPlugins {
 
 		assertEquals(result.getSampleCount(), SAMPLE_COUNT);
 		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}", result.getRegExp());
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -189,7 +189,7 @@ public class TestRegExpPlugins {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
-		assertEquals(result.getTypeQualifier(), "MONTH.DIGITS");
+		assertEquals(result.getSemanticType(), "MONTH.DIGITS");
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.LONG);
@@ -218,7 +218,7 @@ public class TestRegExpPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getSampleCount(), samples.length);
-		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		assertEquals(result.getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
@@ -248,7 +248,7 @@ public class TestRegExpPlugins {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
-		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		assertEquals(result.getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
@@ -280,7 +280,7 @@ public class TestRegExpPlugins {
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getMatchCount(), samples.length);
-		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		assertEquals(result.getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
@@ -317,7 +317,7 @@ public class TestRegExpPlugins {
 		}
 
 		final TextAnalysisResult result = analysis[0].getResult();
-		assertEquals(result.getTypeQualifier(), "MACADDRESS");
+		assertEquals(result.getSemanticType(), "MACADDRESS");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("MACADDRESS").signature);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
@@ -358,7 +358,7 @@ public class TestRegExpPlugins {
 		}
 
 		final TextAnalysisResult result = analysis[0].getResult();
-		assertEquals(result.getTypeQualifier(), "COLOR.HEX");
+		assertEquals(result.getSemanticType(), "COLOR.HEX");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("COLOR.HEX").signature);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
@@ -417,7 +417,7 @@ public class TestRegExpPlugins {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), samples.length);
-		assertEquals(result.getTypeQualifier(), "CITY");
+		assertEquals(result.getSemanticType(), "CITY");
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);

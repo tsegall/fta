@@ -97,7 +97,7 @@ public class SSN_FR extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 

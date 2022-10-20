@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 
+import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
@@ -38,9 +39,9 @@ public abstract class SamplePlugin {
 		final TextAnalyzer analysis = new TextAnalyzer("Colors");
 
 		// Register our new magic plugin
-		final String colorPlugin = "[ { \"qualifier\": \"COLOR.TEXT_<LANG>\", \"pluginType\": \"java\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"validLocales\": [ \"en\", \"fr-FR\" ] } ]";
+		final String colorPlugin = "[ { \"semanticType\": \"CUSTOM_COLOR.TEXT_<LANG>\", \"pluginType\": \"java\", \"clazz\": \"com.cobber.fta.examples.PluginColor\", \"validLocales\": [ { \"localeTag\": \"en,fr-FR\" } ] } ]";
 		try {
-			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", null);
+			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", new AnalysisConfig());
 		} catch (InvocationTargetException e) {
 			System.err.println("ERROR: Failed to register plugin: " + e.getCause().getMessage());
 			System.exit(1);

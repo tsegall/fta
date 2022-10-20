@@ -116,6 +116,27 @@ public class TokenStream {
 		isAllAlphaNumeric = digits != 0 && alphas != 0 && digits + alphas == len;
 	}
 
+	public static String getKey(final String trimmed) {
+		final int len = trimmed.length();
+
+		if (len > Token.MAX_LENGTH)
+			return "ANY";
+
+		final StringBuilder b = new StringBuilder(trimmed);
+
+		for (int i = 0; i < len; i++) {
+			final char ch = trimmed.charAt(i);
+			if (Character.isAlphabetic(ch)) {
+				b.setCharAt(i, Token.Type.ALPHA_CLASS.getEncoded());
+			}
+			else if (Character.isDigit(ch)) {
+				b.setCharAt(i, Token.Type.DIGIT_CLASS.getEncoded());
+			}
+		}
+
+		return b.toString();
+	}
+
 	/**
 	 * Construct a new TokenStream from an existing TokenStream.
 	 * @param other The template for the new TokenStream.
@@ -174,6 +195,11 @@ public class TokenStream {
 	private boolean mergeable(final TokenStream other) {
 		if (getKey().length() != other.getKey().length())
 			return false;
+
+		// If the keys are identical we can merge
+		if (getKey().equals(other.getKey()))
+			return true;
+
 		for (int i = 0; i < getKey().length() ;i++) {
 			final char ch1 = getKey().charAt(i);
 			final char ch2 = other.getKey().charAt(i);
@@ -198,6 +224,11 @@ public class TokenStream {
 		for (int i = 0; i < tokens.length; i++)
 			tokens[i].merge(other.tokens[i]);
 
+		return this;
+	}
+
+	public TokenStream mergeCount(final long occurrences) {
+		this.occurrences += occurrences;
 		return this;
 	}
 

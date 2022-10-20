@@ -65,7 +65,7 @@ public class MonthAbbr extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return "MONTH.ABBR_" + locale.toLanguageTag();
 	}
 

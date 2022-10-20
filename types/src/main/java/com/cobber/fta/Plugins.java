@@ -61,7 +61,7 @@ public class Plugins {
 		for (final PluginDefinition plugin : plugins) {
 			if (!internal)
 				if (plugin.priority < PluginDefinition.PRIORITY_EXTERNAL)
-					throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' has invalid priority, priority must be >= " + PluginDefinition.PRIORITY_EXTERNAL);
+					throw new FTAPluginException("Semantic type: '" + plugin.semanticType + "' has invalid priority, priority must be >= " + PluginDefinition.PRIORITY_EXTERNAL);
 
 			boolean register = plugin.isLocaleSupported(analysisConfig.getLocale());
 
@@ -77,27 +77,27 @@ public class Plugins {
 				else if ("regex".equals(plugin.pluginType))
 					registerLogicalTypeRegExp(plugin, analysisConfig);
 				else
-					throw new FTAPluginException("Logical type: '" + plugin.qualifier + "' unknown type.");
+					throw new FTAPluginException("Semantic type: '" + plugin.semanticType + "' unknown type.");
 		}
 	}
 
 	private void registerLogicalType(final LogicalType logical, final AnalysisConfig analysisConfig) throws FTAPluginException {
 		logical.initialize(analysisConfig);
 
-		if (registered.containsKey(logical.getQualifier()))
-			throw new FTAPluginException("Logical type: " + logical.getQualifier() + " already registered.");
+		if (registered.containsKey(logical.getSemanticType()))
+			throw new FTAPluginException("Semantic type: " + logical.getSemanticType() + " already registered.");
 
-		registered.put(logical.getQualifier(), logical);
+		registered.put(logical.getSemanticType(), logical);
 
 	}
 
 	/**
-	 * Register a new Logical Type processor.
+	 * Register a new Semantic Type processor.
 	 * See {@link LogicalTypeFinite} or {@link LogicalTypeInfinite}
 	 *
-	 * @param plugin The Plugin Definition for a Finite or Infinite Logical Type
+	 * @param plugin The Plugin Definition for a Finite or Infinite Semantic Type
 	 * @param locale The current Locale
-	 * @return Success if the new Logical type was successfully registered.
+	 * @return Success if the new Semantic type was successfully registered.
 	 * @throws ClassNotFoundException
 	 * @throws SecurityException
 	 * @throws NoSuchMethodException
@@ -117,15 +117,15 @@ public class Plugins {
 		logical = (LogicalType)ctor.newInstance(plugin);
 
 		if (!(logical instanceof LogicalType))
-			throw new FTAPluginException("Logical type: " + plugin.clazz + " does not appear to be a Logical Type.");
+			throw new FTAPluginException("Semantic type: " + plugin.clazz + " does not appear to be a Semantic Type.");
 
 		registerLogicalType(logical, analysisConfig);
 	}
 
 	/**
-	 * Register a new Logical Type processor of type LogicalTypeRegExp. See {@link LogicalTypeRegExp}
+	 * Register a new Semantic Type processor of type LogicalTypeRegExp. See {@link LogicalTypeRegExp}
 	 *
-	 * @param plugin The Plugin Definition for a RegExp Logical Type
+	 * @param plugin The Plugin Definition for a RegExp Semantic Type
 	 * @param locale The current Locale
 	 * @throws FTAPluginException
 	 */
@@ -134,9 +134,9 @@ public class Plugins {
 	}
 
 	/**
-	 * Register a new Logical Type processor of type LogicalTypeFiniteSimpleExternal. See {@link LogicalTypeFiniteSimpleExternal}
+	 * Register a new Semantic Type processor of type LogicalTypeFiniteSimpleExternal. See {@link LogicalTypeFiniteSimpleExternal}
 	 *
-	 * @param plugin The Plugin Definition for a simple file-based Logical Type
+	 * @param plugin The Plugin Definition for a simple file-based Semantic Type
 	 * @param locale The current Locale
 	 * @throws FTAPluginException
 	 */
@@ -145,17 +145,17 @@ public class Plugins {
 	}
 
 	/**
-	 * Return the set of registered Logical Types.
-	 * @return A Collection of the currently registered Logical Types.
+	 * Return the set of registered Semantic Types.
+	 * @return A Collection of the currently registered Semantic Types.
 	 */
 	public Collection<LogicalType> getRegisteredLogicalTypes() {
 		return new HashSet<>(registered.values());
 	}
 
 	/**
-	 * Return the plugin associated with this named Logical Type.
-	 * @param qualifier Name of this Logical Type.
-	 * @return A Collection of the currently registered Logical Types.
+	 * Return the plugin associated with this named Semantic Type.
+	 * @param qualifier Name of this Semantic Type.
+	 * @return A Collection of the currently registered Semantic Types.
 	 */
 	public LogicalType getRegistered(final String qualifier) {
 		return registered.get(qualifier);

@@ -16,11 +16,9 @@
 package com.cobber.fta;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.NavigableMap;
 
-import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 
 /**
@@ -28,6 +26,10 @@ import com.cobber.fta.core.InternalErrorException;
  * then it simply uses a map to generate the histogram values.  Once the cardinality exceeds maxCardinality then the
  * data is tracked using an algorithm based on Yael Ben-Haim and Elad Tom-Tov, "A streaming parallel decision tree algorithm",
  * J. Machine Learning Research 11 (2010), pp. 849--872
+ *
+ * All data is stored in the Cardinality Map until this is exhausted at this point we start to populate (via accept) the underlying Histogram Sketch with all values
+ * not captured in the Cardinality Map.  Once we need to generate a Histogram we either just generate it from the Cardinality Map or if the
+ * MaxCardinality has been exceeded we add all the entries captured in the  Cardinality Map to the Sketch.
  */
 public class Histogram {
 	/**
@@ -74,75 +76,62 @@ public class Histogram {
 	}
 
 	private NavigableMap<String, Long> typedMap;
-	private AnalysisConfig analysisConfig;
-	protected long totalMapEntries;
-	protected long totalHistogramEntries;
-	private HistogramSPDT histogramSPDT;
-	protected FTAType type;
-	protected StringConverter stringConverter;
-	private boolean isComplete = false;
+	private HistogramSPDT histogramOverflow;
+	private StringConverter stringConverter;
+	private int debug;
 
-	Histogram(final FTAType type, final NavigableMap<String, Long> typedMap, final StringConverter stringConverter, final AnalysisConfig analysisConfig) {
-		this.type = type;
+	Histogram() {
+	}
+
+	Histogram(final NavigableMap<String, Long> typedMap, final StringConverter stringConverter, final int bins, final int debug) {
 		this.stringConverter = stringConverter;
 		this.typedMap = typedMap;
-		this.analysisConfig = analysisConfig;
-		this.histogramSPDT = new HistogramSPDT(analysisConfig.getHistogramBins());
+		this.debug = debug;
 	}
 
-	public void accept(String key, Long count) {
-		histogramSPDT.accept(stringConverter.toDouble(key.trim()), count);
-		totalHistogramEntries += count;
-	}
-
-	public boolean isCardinalityExceeded() {
-		return totalHistogramEntries != 0;
-	}
-
-	public boolean isComplete() {
-		return isComplete;
-	}
-
-	public void complete(Map<String, Long> map) {
+	public void setCardinality(Map<String, Long> map) {
+		typedMap.clear();
 		for (Map.Entry<String, Long> entry : map.entrySet()) {
-			if (isCardinalityExceeded()) {
-				histogramSPDT.accept(stringConverter.toDouble(entry.getKey().trim()), entry.getValue());
-				totalHistogramEntries += entry.getValue();
+			// Cardinality map - has entries that differ only based on whitespace, so for example it may include
+			// "47" 10 times and " 47" 20 times, for the purposes of calculating histograms these are coalesced
+			// Similarly 47.0 and 47.000 will be collapsed since the typedMap is type aware and will consider these equal
+			// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
+			// if there happens to be an issue then we will lose this entry in the Cardinality map.
+			try {
+				typedMap.merge(entry.getKey().trim(), entry.getValue(), Long::sum);
 			}
-			else {
-				// Cardinality map - has entries that differ only based on whitespace, so for example it may include
-				// "47" 10 times and " 47" 20 times, for the purposes of calculating histograms these are coalesced
-				// Similarly 47.0 and 47.000 will be collapsed since the typedMap is type aware and will consider these equal
-				// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
-				// if there happens to be an issue then we will lose this entry in the Cardinality map.
-				try {
-					typedMap.merge(entry.getKey().trim(), entry.getValue(), Long::sum);
-					totalMapEntries += entry.getValue();
-				}
-				catch (RuntimeException e) {
-					if (analysisConfig.getDebug() != 0)
-						throw new InternalErrorException(e.getMessage(), e);
-				}
+			catch (RuntimeException e) {
+				if (debug != 0)
+					throw new InternalErrorException(e.getMessage(), e);
+			}
+		}
+	}
 
-			}
-        }
-		isComplete = true;
+	public void setCardinalityOverflow(HistogramSPDT histogramSPDT) {
+		this.histogramOverflow = histogramSPDT;
 	}
 
 	/**
 	 * Get the histogram with the supplied number of buckets
 	 * @param buckets the number of buckets in the Histogram
-	 * @return An array of length 'buckets' that constitutes the Histogram
+	 * @return An array of length 'buckets' that constitutes the Histogram (or null if cardinality is zero).
 	 */
 	public Histogram.Entry[] getHistogram(final int buckets) {
 		final Histogram.Entry[] ret = new Entry[buckets];
 		final double[] cutPoints = new double[buckets + 1];
+		HistogramSPDT histogramFull = null;
 		double low;
 		double high;
 
-		if (isCardinalityExceeded()) {
-			low = histogramSPDT.getMinValue();
-			high = histogramSPDT.getMaxValue();
+		if (typedMap.isEmpty())
+			return null;
+
+		if (histogramOverflow != null) {
+			histogramFull = new HistogramSPDT(histogramOverflow);
+			for (Map.Entry<String, Long> e : typedMap.entrySet())
+				histogramFull.accept(e.getKey(), e.getValue());
+			low = histogramFull.getMinValue();
+			high = histogramFull.getMaxValue();
 		}
 		else {
 			low = stringConverter.toDouble(typedMap.firstKey());
@@ -159,33 +148,22 @@ public class Histogram {
 		for (int i = 0; i < buckets; i++)
 			ret[i] = new Entry(cutPoints[i], cutPoints[i + 1]);
 
-		Comparator<? super String> c = typedMap.comparator();
-
 		int upto = 0;
-		long count = 0;
 
-		if (isCardinalityExceeded()) {
-			ArrayList<HistogramSPDT.Bin> bins = histogramSPDT.getBins();
-			for (int i = 0; i < bins.size(); i++) {
-				String stringValue = stringConverter.formatted(stringConverter.fromDouble(bins.get(i).value));
-				// All bar the last bin is Closed,Open the last one is Closed,Closed
-				if ((upto != buckets -1 && c.compare(stringValue, ret[upto].getHigh()) < 0) ||
-						c.compare(stringValue, ret[upto].getHigh()) <= 0) {
-					count += bins.get(i).count;
-				}
-				else {
-					ret[upto].setCount(count);
+		if (histogramFull != null) {
+			ArrayList<HistogramSPDT.Bin> bins = histogramFull.getBins();
+			for (final HistogramSPDT.Bin bin : bins) {
+				// All the buckets except for the last are [low, high) the last bucket is [low,high]
+				while (!inThisBucket(ret[upto], bin.value, buckets, upto))
 					upto++;
-					count = bins.get(i).count;
-				}
+
+				ret[upto].setCount(ret[upto].getCount() + bin.count);
 			}
-			if (upto < buckets)
-				ret[upto].setCount(count);
 		}
 		else {
 			for (Map.Entry<String, Long> e : typedMap.entrySet()) {
 				// All the buckets except for the last are [low, high) the last bucket is [low,high]
-				while (!inThisBucket(ret[upto], e.getKey(), c, buckets, upto))
+				while (!inThisBucket(ret[upto], stringConverter.toDouble(e.getKey()), buckets, upto))
 					upto++;
 
 				ret[upto].setCount(ret[upto].getCount() + e.getValue());
@@ -195,16 +173,29 @@ public class Histogram {
 		return ret;
 	}
 
-	private boolean inThisBucket(final Entry bucket, final String key, final Comparator<? super String> c,
-			final int buckets, final int currentBucket) {
+	private boolean inThisBucket(final Entry bucket, final double value, final int buckets, final int currentBucket) {
 		// By definition any value cannot be lower than the first bucket low bound
-		if (currentBucket != 0 && c.compare(key, bucket.getLow()) < 0)
-			return false;
+		if (currentBucket == 0 && value < bucket.getLowCut())
+			return true;
 
 		// If this is the last bucket then any value is by definition < the high bound
 		if (currentBucket == buckets - 1)
 			return true;
 
-		return c.compare(key, bucket.getHigh()) < 0;
+		return value < bucket.getHighCut();
+	}
+
+	public Histogram merge(Histogram other) {
+		this.typedMap.putAll(other.typedMap);
+		if (this.histogramOverflow != null && other.histogramOverflow != null) {
+			// Both sides have overflow so merge
+			this.histogramOverflow.merge(other.histogramOverflow);
+		}
+		else if (other.histogramOverflow != null && this.histogramOverflow == null) {
+			// We have no overflow but the other side does
+			this.histogramOverflow = other.histogramOverflow;
+		}
+
+		return this;
 	}
 }

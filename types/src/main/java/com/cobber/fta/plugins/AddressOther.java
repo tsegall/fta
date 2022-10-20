@@ -68,8 +68,8 @@ public class AddressOther extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
-		return defn.qualifier.replace("<LANGUAGE>", language);
+	public String getSemanticType() {
+		return defn.semanticType.replace("<LANGUAGE>", language);
 	}
 
 	@Override

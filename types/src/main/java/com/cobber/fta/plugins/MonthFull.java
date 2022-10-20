@@ -65,7 +65,7 @@ public class MonthFull extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return "MONTH.FULL_" + locale.toLanguageTag();
 	}
 

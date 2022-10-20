@@ -51,7 +51,7 @@ public class CheckDigitEAN13 extends CheckDigitLT {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 

@@ -22,11 +22,11 @@ package com.cobber.fta;
  * The isRegExpComplete indicates if all values that the regular expression allows are valid.
  */
 public class PluginMatchEntry {
-	/** RegExp plugins: the RegExps to be matched to qualify as this Logical Type. */
+	/** RegExp plugins: the RegExps to be matched to qualify as this Semantic Type. */
 	public String[] regExpsToMatch;
-	/** RegExp plugins: the RegExp to be returned for this Logical Type. */
+	/** RegExp plugins: the RegExp to be returned for this Semantic Type. */
 	public String regExpReturned;
-	/** Is the returned Regular Expression a complete representation of the Logical Type. */
+	/** Is the returned Regular Expression a complete representation of the Semantic Type. */
 	public boolean isRegExpComplete;
 
 	PluginMatchEntry() {

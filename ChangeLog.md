@@ -1,6 +1,19 @@
 
 ## Changes ##
 
+### 12.0.0
+ - **ENH:** Incompatible changes.
+	isLogicalType() -> isSemanticType()
+	getTypeQualifier() has split into getTypeModifier() and getSemanticType().  getSemanticType() is only valid if isSemanticType() is true.
+	getTypeModifier() describes modification to the Base Type (for example SIGNED on base type LONG or DOUBLE, or YYYY-MM-dd for LOCALDATE)
+	JSON output has also changed accordingly (Use analyzer.configure(TextAnalyzer.Feature.LEGACY_JSON, true) to revert to legacy JSON - pre 12.X)
+ - ENH: Bump google phone number library
+ - ENH: Add new Semantic Type - DIRECTION (Cardinal Direction)
+ - INT: Improved test coverage on Histogram/Quantile support
+ - BUG: Should preserve uniqueness (at least to the extent we can) on merge()
+ - BUG: Numerous fixes for Histograms and Quartiles (especially around ugly data - e.g. trailing minus), also improve performance
+ - BUG: Add UTF8 encoding option - just in case anyone builds on Windows
+
 ### 11.0.7
  - ENH: Add cutpoints on Histogram entries returned (as well as the BaseType cuts)
  - BUG: Various fixes to Histogram details

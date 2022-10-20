@@ -139,13 +139,13 @@ public class TestUtils {
 		if (nf instanceof DecimalFormat) {
 			negPrefix = ((DecimalFormat) nf).getNegativePrefix();
 			// Ignore the LEFT_TO_RIGHT_MARK if it exists
-			if (!negPrefix.isEmpty() && negPrefix.charAt(0) == KnownPatterns.LEFT_TO_RIGHT_MARK)
+			if (!negPrefix.isEmpty() && negPrefix.charAt(0) == KnownTypes.LEFT_TO_RIGHT_MARK)
 				negPrefix = negPrefix.substring(1);
 			if (!negPrefix.isEmpty())
 				if (negPrefix.charAt(0) == minusSign && minusSign == '-')
-					negPrefix = KnownPatterns.OPTIONAL_SIGN;
+					negPrefix = KnownTypes.OPTIONAL_SIGN;
 				else if (negPrefix.charAt(0) == minusSign && minusSign == '\u2212')  // Unicode minus
-					negPrefix = KnownPatterns.OPTIONAL_UNICODE_SIGN;
+					negPrefix = KnownTypes.OPTIONAL_UNICODE_SIGN;
 				else
 					negPrefix = RegExpGenerator.slosh(negPrefix) + "?";
 		}
@@ -162,9 +162,9 @@ public class TestUtils {
 			negSuffix = ((DecimalFormat) nf).getNegativeSuffix();
 			if (!negSuffix.isEmpty())
 				if (negSuffix.charAt(0) == minusSign && minusSign == '-')
-					negSuffix = KnownPatterns.OPTIONAL_SIGN;
+					negSuffix = KnownTypes.OPTIONAL_SIGN;
 				else if (negSuffix.charAt(0) == minusSign && minusSign == '\u2212')  // Unicode minus
-					negSuffix = KnownPatterns.OPTIONAL_UNICODE_SIGN;
+					negSuffix = KnownTypes.OPTIONAL_UNICODE_SIGN;
 				else
 					negSuffix = RegExpGenerator.slosh(negSuffix) + "?";
 		}

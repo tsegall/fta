@@ -99,8 +99,8 @@ public class TestMerge {
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
-		assertTrue(mergedResult.isLogicalType());
-		assertEquals(mergedResult.getTypeQualifier(), Gender.SEMANTIC_TYPE + "EN");
+		assertTrue(mergedResult.isSemanticType());
+		assertEquals(mergedResult.getSemanticType(), Gender.SEMANTIC_TYPE + "EN");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -210,7 +210,7 @@ public class TestMerge {
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LONG);
-		assertEquals(mergedResult.getTypeQualifier(), "GROUPING");
+		assertEquals(mergedResult.getTypeModifier(), "GROUPING");
 		assertEquals(mergedResult.getMaxValue(), "99,999");
 	}
 
@@ -231,7 +231,7 @@ public class TestMerge {
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LONG);
-		assertEquals(mergedResult.getTypeQualifier(), "GROUPING");
+		assertEquals(mergedResult.getTypeModifier(), "GROUPING");
 		assertEquals(mergedResult.getMaxValue(), "99,999");
 	}
 
@@ -247,6 +247,66 @@ public class TestMerge {
 			shardTwo.add(String.valueOf(100000 + i));
 
 		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededLong", null, false);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void mergeWithInvalid() throws IOException, FTAException {
+		TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		for (int i = 0; i < 1000; i++)
+			shardOne.train(String.valueOf(i));
+		shardOne.train("x");
+		TextAnalysisResult shardOneResult = shardOne.getResult();
+
+		TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		for (int i = 0; i < 1000; i++)
+			shardTwo.train(String.valueOf(100000 + i));
+		shardTwo.train("y");
+		TextAnalysisResult shardTwoResult = shardTwo.getResult();
+
+		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		TextAnalysisResult mergedResult = merged.getResult();
+		assertEquals(mergedResult.getCardinality(), shardOneResult.getCardinality() + shardTwoResult.getCardinality());
+		assertEquals(mergedResult.getInvalidCount(), shardOneResult.getInvalidCount() + shardTwoResult.getInvalidCount());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void testUniquenessTrue() throws IOException, FTAException {
+		TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		for (int i = 0; i < 20000; i++)
+			shardOne.train(String.valueOf(i));
+		TextAnalysisResult shardOneResult = shardOne.getResult();
+
+		TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		for (int i = 0; i < 20000; i++)
+			shardTwo.train(String.valueOf(100000 + i));
+		TextAnalysisResult shardTwoResult = shardTwo.getResult();
+
+		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		TextAnalysisResult mergedResult = merged.getResult();
+		assertEquals(mergedResult.getInvalidCount(), shardOneResult.getInvalidCount() + shardTwoResult.getInvalidCount());
+		assertEquals(mergedResult.getMinValue(), shardOneResult.getMinValue());
+		assertEquals(mergedResult.getMaxValue(), shardTwoResult.getMaxValue());
+		assertEquals(mergedResult.getUniqueness(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void testUniquenessFalse() throws IOException, FTAException {
+		TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		for (int i = 0; i < 20000; i++)
+			shardOne.train(String.valueOf(i));
+		TextAnalysisResult shardOneResult = shardOne.getResult();
+
+		TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		for (int i = 0; i < 20000; i++)
+			shardTwo.train(String.valueOf(1000 + i));
+		TextAnalysisResult shardTwoResult = shardTwo.getResult();
+
+		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		TextAnalysisResult mergedResult = merged.getResult();
+		assertEquals(mergedResult.getInvalidCount(), shardOneResult.getInvalidCount() + shardTwoResult.getInvalidCount());
+		assertEquals(mergedResult.getMinValue(), shardOneResult.getMinValue());
+		assertEquals(mergedResult.getMaxValue(), shardTwoResult.getMaxValue());
+		assertEquals(mergedResult.getUniqueness(), -1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -304,7 +364,7 @@ public class TestMerge {
 
 		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDoubleFrench", Locale.FRANCE, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
-		assertNull(mergedResult.getTypeQualifier());
+		assertNull(mergedResult.getTypeModifier());
 	}
 
 	// Test is broken due to the fact that the bottomk/topK values are stored in a reasonable localized format (reasonable means
@@ -586,10 +646,10 @@ public class TestMerge {
 		assertEquals(mergedResult.getMatchCount(), inputsOne.length + inputsTwo.length);
 		assertEquals(mergedResult.getNullCount(), 3);
 		assertEquals(mergedResult.getBlankCount(), 1);
-		assertEquals(mergedResult.getRegExp(), "\\d{2} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{4}");
+		assertEquals(mergedResult.getRegExp(), "\\d{2} " + KnownTypes.PATTERN_ALPHA + "{3} \\d{4}");
 		assertEquals(mergedResult.getConfidence(), 1.0);
 		assertEquals(mergedResult.getType(), FTAType.LOCALDATE);
-		assertEquals(mergedResult.getTypeQualifier(), "dd MMM yyyy");
+		assertEquals(mergedResult.getTypeModifier(), "dd MMM yyyy");
 		assertEquals(mergedResult.getMinValue(), "11 Dec 1916");
 		assertEquals(mergedResult.getMaxValue(), "12 Mar 2019");
 	}
@@ -618,10 +678,10 @@ public class TestMerge {
 		assertEquals(mergedResult.getMatchCount(), inputsOne.length + inputsTwo.length);
 		assertEquals(mergedResult.getNullCount(), 3);
 		assertEquals(mergedResult.getBlankCount(), 1);
-		assertEquals(mergedResult.getRegExp(), "\\d{2} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{4}");
+		assertEquals(mergedResult.getRegExp(), "\\d{2} " + KnownTypes.PATTERN_ALPHA + "{3} \\d{4}");
 		assertEquals(mergedResult.getConfidence(), 1.0);
 		assertEquals(mergedResult.getType(), FTAType.LOCALDATE);
-		assertEquals(mergedResult.getTypeQualifier(), "dd MMM yyyy");
+		assertEquals(mergedResult.getTypeModifier(), "dd MMM yyyy");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -660,7 +720,7 @@ public class TestMerge {
 		assertEquals(mergedResult.getType(), FTAType.LOCALDATETIME);
 		assertEquals(mergedResult.getRegExp(), "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 		assertEquals(mergedResult.getConfidence(), 1.0);
-		assertEquals(mergedResult.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss");
+		assertEquals(mergedResult.getTypeModifier(), "yyyy-MM-dd'T'HH:mm:ss");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -694,7 +754,7 @@ public class TestMerge {
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.OFFSETDATETIME);
-		assertEquals(mergedResult.getTypeQualifier(), "yyyy-MM-dd'T'HH:mm:ss.SSSX");
+		assertEquals(mergedResult.getTypeModifier(), "yyyy-MM-dd'T'HH:mm:ss.SSSX");
 		assertEquals(mergedResult.getSampleCount(), inputsOne.size() + inputsTwo.size() + 4);
 		assertEquals(mergedResult.getNullCount(), 3);
 		assertEquals(mergedResult.getBlankCount(), 1);
@@ -737,7 +797,7 @@ public class TestMerge {
 		assertEquals(mergedResult.getRegExp(), "\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}");
 		assertEquals(mergedResult.getConfidence(), 1.0);
 		assertEquals(mergedResult.getType(), FTAType.LOCALTIME);
-		assertEquals(mergedResult.getTypeQualifier(), "H:mm:ss.S{1,2}");
+		assertEquals(mergedResult.getTypeModifier(), "H:mm:ss.S{1,2}");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -791,7 +851,7 @@ public class TestMerge {
 		assertEquals(mergedResult.getMatchCount(), inputsOne.length + inputsTwo.length);
 		assertEquals(mergedResult.getNullCount(), 0);
 		assertEquals(mergedResult.getRegExp(), "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
-		assertEquals(mergedResult.getTypeQualifier(), "MM/dd/yyyy HH:mm:ss z");
+		assertEquals(mergedResult.getTypeModifier(), "MM/dd/yyyy HH:mm:ss z");
 		assertEquals(mergedResult.getConfidence(), 1.0);
 		assertEquals(mergedResult.getMinValue(), "01/20/2011 10:42:23 GMT");
 		assertEquals(mergedResult.getMaxValue(), "01/30/2012 10:59:48 GMT");
@@ -824,7 +884,7 @@ public class TestMerge {
 		assertEquals(mergedResult.getMatchCount(), inputsOne.length + inputsTwo.length);
 		assertEquals(mergedResult.getNullCount(), 0);
 		assertEquals(mergedResult.getRegExp(), "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} .*");
-		assertEquals(mergedResult.getTypeQualifier(), "MM/dd/yyyy HH:mm:ss z");
+		assertEquals(mergedResult.getTypeModifier(), "MM/dd/yyyy HH:mm:ss z");
 		assertEquals(mergedResult.getConfidence(), 1.0);
 	}
 
@@ -971,6 +1031,79 @@ public class TestMerge {
 		checkTextAnalyzerMerge(samplesAlphaData, samplesAlphaData, "ALPHADATA_ALPHADATA", null, true);
 	}
 
+	public void testHistogramMerge(long sizeOne, long sizeTwo) throws IOException, FTAException {
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		final SecureRandom random = new SecureRandom();
+
+		for (int i = 0; i < sizeOne; i++)
+//			shardOne.train(String.valueOf(random.nextGaussian()*5 + 20));
+			shardOne.train(String.valueOf(i%100));
+
+		TextAnalysisResult shardOneResult = shardOne.getResult();
+		Histogram.Entry[] shardOneHistogram = shardOneResult.getHistogram(10);
+		long shardOneHistogramCount = TestSupport.countHistogram(shardOneHistogram);
+		assertEquals(shardOneHistogramCount, shardOneResult.getMatchCount());
+
+		final String serializedOne = shardOne.serialize();
+		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(serializedOne);
+
+		TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
+		Histogram.Entry[] histogramOne = hydratedOneResult.getHistogram(10);
+		long histogramOneCount = TestSupport.countHistogram(histogramOne);
+		assertEquals(hydratedOneResult.getMatchCount(), sizeOne);
+		assertEquals(histogramOneCount, hydratedOneResult.getMatchCount());
+
+		TestSupport.dumpPicture(histogramOne);
+		TestSupport.checkQuantiles(hydratedOneResult);
+		TestSupport.checkHistogram(hydratedOneResult, 10, true);
+
+		for (int i = 0; i < sizeTwo; i++)
+//			shardTwo.train(String.valueOf(random.nextGaussian()*5 + 70));
+			shardTwo.train(String.valueOf(i%100 + 200));
+
+		final String serializedTwo = shardTwo.serialize();
+		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(serializedTwo);
+		TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
+		Histogram.Entry[] histogramTwo = hydratedTwoResult.getHistogram(10);
+		long histogramTwoCount = TestSupport.countHistogram(histogramTwo);
+		assertEquals(hydratedTwoResult.getMatchCount(), sizeTwo);
+		assertEquals(histogramTwoCount, hydratedTwoResult.getMatchCount());
+
+		TestSupport.dumpPicture(histogramTwo);
+		TestSupport.checkQuantiles(hydratedTwoResult);
+		TestSupport.checkHistogram(hydratedTwoResult, 10, true);
+
+		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		TextAnalysisResult mergedResult = merged.getResult();
+		Histogram.Entry[] histogramResult = mergedResult.getHistogram(20);
+		long mergedCount = TestSupport.countHistogram(histogramResult);
+		assertEquals(mergedCount, sizeOne + sizeTwo);
+
+		TestSupport.dumpPicture(mergedResult.getHistogram(20));
+		TestSupport.checkQuantiles(mergedResult);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void histogramSmallSmall() throws IOException, FTAException {
+		testHistogramMerge(1000, AnalysisConfig.MAX_CARDINALITY_DEFAULT - 500);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void histogramSmallLarge() throws IOException, FTAException {
+		testHistogramMerge(1000, AnalysisConfig.MAX_CARDINALITY_DEFAULT + 1000);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void histogramLargeSmall() throws IOException, FTAException {
+		testHistogramMerge(AnalysisConfig.MAX_CARDINALITY_DEFAULT + 1000, 1000);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void histogramLargeLarge() throws IOException, FTAException {
+		testHistogramMerge(AnalysisConfig.MAX_CARDINALITY_DEFAULT + 1000, AnalysisConfig.MAX_CARDINALITY_DEFAULT + 1000);
+	}
+
 	private TextAnalyzer checkTextAnalyzerMerge(List<String> samplesOne, List<String> samplesTwo, String streamName,
 			Locale locale, boolean collectStatistics) throws FTAException {
 		final TextAnalyzer shardOne = new TextAnalyzer(streamName);
@@ -1039,8 +1172,8 @@ public class TestMerge {
 			if (
 					// Type and TypeQualifier (if it exists)
 					!mergedResult.getType().equals(referenceResult.getType()) ||
-					mergedResult.isLogicalType() != referenceResult.isLogicalType() ||
-					(mergedResult.getTypeQualifier() != null && !mergedResult.getTypeQualifier().equals(referenceResult.getTypeQualifier())) ||
+					mergedResult.isSemanticType() != referenceResult.isSemanticType() ||
+					(mergedResult.getTypeModifier() != null && !mergedResult.getTypeModifier().equals(referenceResult.getTypeModifier())) ||
 					// White-space
 					mergedResult.getLeadingWhiteSpace() != referenceResult.getLeadingWhiteSpace() ||
 					mergedResult.getTrailingWhiteSpace() != referenceResult.getTrailingWhiteSpace() ||

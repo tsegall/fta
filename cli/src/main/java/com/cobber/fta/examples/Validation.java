@@ -35,49 +35,49 @@ public abstract class Validation {
 
 	public static void main(final String[] args) throws IOException, FTAException {
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("EMAIL");
-		final LogicalType knownLogicalType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
+		final LogicalType knownSemanticType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
 		// Make sure we like India and do not like Gondwana
-		System.err.println("Is 'elease.campo@gmail.com' valid? " + knownLogicalType.isValid("elease.campo@gmail.com", true));
-		System.err.println("Is 'double@at@cobber.com' valid? " + knownLogicalType.isValid("double@at@cobber.com", true));
+		System.err.println("Is 'elease.campo@gmail.com' valid? " + knownSemanticType.isValid("elease.campo@gmail.com", true));
+		System.err.println("Is 'double@at@cobber.com' valid? " + knownSemanticType.isValid("double@at@cobber.com", true));
 
 		//
-		// Example for Logical Types ...
+		// Example for Semantic Types ...
 		//
 		final String[] inputsLT = {
 				"france",  "germany", "poland", "canada", "australia", "belgium", "china", "turkey",
 				"new zealand", "pakistan", "colombia", "portugal", "spain", "estonia", "croatia", "tanzania"
 		};
 
-		final TextAnalyzer analysisLT = new TextAnalyzer("Country");
-		analysisLT.setTrace("enabled=true");
+		final TextAnalyzer analysis = new TextAnalyzer("Country");
+		analysis.setTrace("enabled=true");
 
 		// Train the input
 		for (final String input : inputsLT)
-			analysisLT.train(input);
+			analysis.train(input);
 
 		// Grab the result of our training?
-		final TextAnalysisResult resultLT = analysisLT.getResult();
+		final TextAnalysisResult resultCountry = analysis.getResult();
 
-		// We want to do validation so check that this we detected a Logical Type
-		if (!resultLT.isLogicalType()) {
-			System.err.println("Logical Type not detected");
+		// We want to do validation so check that we detected a Semantic Type
+		if (!resultCountry.isSemanticType()) {
+			System.err.println("Semantic Type not detected");
 			System.exit(1);
 		}
 
-		// Grab the Logical Type and check it is closed (e.g. a finite set, so for example Countries are good, First names are not)
-		final LogicalType logicalType = analysisLT.getPlugins().getRegistered(resultLT.getTypeQualifier());
-		if (!logicalType.isClosed()) {
-			System.err.println("Logical Type not closed - hence can only use RegExp to validate");
+		// Grab the Semantic Type and check it is closed (e.g. a finite set, so for example Countries are good, First names are not)
+		final LogicalType semanticType = analysis.getPlugins().getRegistered(resultCountry.getSemanticType());
+		if (!semanticType.isClosed()) {
+			System.err.println("Semantic Type not closed - hence can only use RegExp to validate");
 			System.exit(1);
 		}
 
 		// Make sure we like India and do not like Gondwana
-		System.err.println("Is 'India' valid? " + logicalType.isValid("India", true));
-		System.err.println("Is 'Gondwana' valid? " + logicalType.isValid("Gondwana", true));
+		System.err.println("Is 'India' valid? " + semanticType.isValid("India", true));
+		System.err.println("Is 'Gondwana' valid? " + semanticType.isValid("Gondwana", true));
 
 		//
-		// Example where no Logical Type detected
+		// Example where no Semantic Type detected
 		//
 		final String[] inputsRE = {
 				"DAILY",  "WEEKLY", "MONTHLY", "ANUALLY", "BIANNNUALLY", "QUARTERLY", "DAILY", "MONTHLY",
@@ -95,9 +95,9 @@ public abstract class Validation {
 		// Grab the result of our training?
 		final TextAnalysisResult result = analysisRE.getResult();
 
-		// We want to do RegExp validation - so better not be a Logical Type
-		if (result.isLogicalType()) {
-			System.err.println("Should not have detected as a Logical Type");
+		// We want to do RegExp validation - so better not be a Semantic Type
+		if (result.isSemanticType()) {
+			System.err.println("Should not have detected as a Semantic Type");
 			System.exit(1);
 		}
 

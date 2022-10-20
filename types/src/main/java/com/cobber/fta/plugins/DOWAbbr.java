@@ -65,7 +65,7 @@ public class DOWAbbr extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return "DAY.ABBR_" + locale.toLanguageTag();
 	}
 

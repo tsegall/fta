@@ -66,16 +66,16 @@ public class TestDoubles {
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getMinValue(), "0.1");
 		assertEquals(result.getMaxValue(), "99.23");
 		assertEquals(result.getMinLength(), 2);
 		assertEquals(result.getMaxLength(), 11);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -94,17 +94,18 @@ public class TestDoubles {
 
 		assertEquals(result.getSampleCount(), 1);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getMinValue(), "0E0");
 		assertEquals(result.getMaxValue(), "0E0");
 		assertEquals(result.getMinLength(), 5);
 		assertEquals(result.getMaxLength(), 5);
 		assertTrue(input.matches(result.getRegExp()));
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -125,14 +126,15 @@ public class TestDoubles {
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getMinValue(), "0.1");
 		assertEquals(result.getMaxValue(), "99.23");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -156,16 +158,17 @@ public class TestDoubles {
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), PatternInfo.TypeQualifier.SIGNED.toString());
+		assertEquals(result.getTypeModifier(), TypeInfo.TypeModifier.SIGNED.toString());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getMinValue(), "-99.23");
 		assertEquals(result.getMaxValue(), "43.8");
 
 		assertTrue("0".matches(result.getRegExp()));
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -193,15 +196,16 @@ public class TestDoubles {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -225,15 +229,15 @@ public class TestDoubles {
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE) + "-?");
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE) + "-?");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeModifier(), "SIGNED_TRAILING");
 		assertEquals(result.getMinValue(), "-2903.22");
 		assertEquals(result.getMaxValue(), "5234.0");
 
-		TestSupport.checkHistogram(result, 10);
-		// TODO - Quantile support broken for TRAILING minus case
-		// TestSupport.checkQuantiles(result);
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -270,10 +274,10 @@ public class TestDoubles {
 		assertEquals(result.getSampleCount(), 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
@@ -308,12 +312,12 @@ public class TestDoubles {
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(Double.valueOf(result.getMinValue()), Double.valueOf(smallest), TestUtils.EPSILON);
 		assertEquals(Double.valueOf(result.getMaxValue()), Double.valueOf(largest), TestUtils.EPSILON);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
@@ -351,11 +355,12 @@ public class TestDoubles {
 		assertEquals(result.getSampleCount(), 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
@@ -379,12 +384,13 @@ public class TestDoubles {
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMean(), Double.valueOf(80.26315789473685));
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
@@ -408,7 +414,8 @@ public class TestDoubles {
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "\\d{4}\\p{IsAlphabetic}\\d{3}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -435,7 +442,8 @@ public class TestDoubles {
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "\\d{4}\\p{IsAlphabetic}\\d{3}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -473,11 +481,11 @@ public class TestDoubles {
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getTypeModifier(), "SIGNED");
 		assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 //		for (int i = 0; i < samples.length; i++) {
@@ -514,11 +522,12 @@ public class TestDoubles {
 		assertEquals(result.getBlankCount(), 33);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "\\d");
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -543,11 +552,12 @@ public class TestDoubles {
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
@@ -584,14 +594,15 @@ public class TestDoubles {
 		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		assertEquals(result.getNullCount(), nullIterations);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), 3);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 3);
 		assertEquals(invalids.get("Zoomer"), Long.valueOf(1));
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -630,10 +641,10 @@ public class TestDoubles {
 		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		assertEquals(result.getNullCount(), nullIterations);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -671,11 +682,12 @@ public class TestDoubles {
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getDecimalSeparator(), ',');
-		assertEquals(result.getTypeQualifier(), "GROUPING");
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_GROUPING));
+		assertEquals(result.getTypeModifier(), "GROUPING");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_GROUPING));
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
@@ -700,11 +712,12 @@ public class TestDoubles {
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getDecimalSeparator(), '.');
-		assertEquals(result.getTypeQualifier(), "SIGNED");
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1 - (double)4/(result.getSampleCount() - result.getBlankCount()));
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples) {
@@ -718,7 +731,7 @@ public class TestDoubles {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
-		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 
 		analysis.train("1010e:");
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
@@ -732,15 +745,89 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
-		assertNull(result.getTypeQualifier());
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		TestSupport.checkHistogram(result, 10);
-		// TODO TestSupport.checkQuantiles(result);
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String sample : samples)
+			assertTrue(sample.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void lowerE() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 100;
+		final Set<String> samples = new HashSet<>();
+		final TextAnalyzer analysis = new TextAnalyzer("Simple");
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+
+		double min = Double.MAX_VALUE;
+		analysis.train("1010e:");
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			final String sample = String.format("%04d.0e%d",
+					random.nextInt(10000), random.nextInt(10));
+			samples.add(sample);
+			double d = Double.valueOf(sample.toUpperCase(Locale.ROOT));
+			if (d < min)
+				min = d;
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		assertEquals(Double.valueOf(result.getMinValue()), min);
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String sample : samples)
+			assertTrue(sample.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void exponentWithPlus() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 100;
+		final Set<String> samples = new HashSet<>();
+		final TextAnalyzer analysis = new TextAnalyzer("Simple");
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+
+		analysis.train("1010e:");
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			final String sample = String.format("%04d.0E+%d",
+					random.nextInt(10000), random.nextInt(10));
+			samples.add(sample);
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
@@ -751,7 +838,7 @@ public class TestDoubles {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
-		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%04d", i);
@@ -764,14 +851,15 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
-		assertNull(result.getTypeQualifier());
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
@@ -783,7 +871,7 @@ public class TestDoubles {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
-		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%04d", i);
@@ -797,22 +885,22 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 2);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
-		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
 	}
 
-	// BUG - In general, even if the locale suggests otherwise we should still cope with 1234.56 as a valid double
-	//@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void manyConstantLengthDoublesI18N_2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthDoublesI18N_2");
 		final int nullIterations = 50;
@@ -846,10 +934,11 @@ public class TestDoubles {
 		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		assertEquals(result.getNullCount(), nullIterations);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getRegExp(), "\\d+|(\\d+)?" + RegExpGenerator.slosh('.') + "\\d+");
+		assertEquals(result.getTypeModifier(), "NON_LOCALIZED");
+		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -873,12 +962,12 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		assertEquals(result.getMinValue(), "-101.0");
 		assertEquals(result.getMaxValue(), "119.0");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -913,18 +1002,19 @@ public class TestDoubles {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount() + result.getBlankCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "0.0");
 		assertEquals(result.getMaxValue(), "3.0");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		final String regExp = result.getRegExp();
@@ -1009,16 +1099,17 @@ public class TestDoubles {
 			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getType(), FTAType.DOUBLE);
-			assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+			assertEquals(result.getTypeModifier(), "SIGNED,GROUPING");
+			assertNull(result.getSemanticType());
 			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			assertEquals(result.getNullCount(), 0);
 			assertEquals(result.getLeadingZeroCount(), 0);
 
-			assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_GROUPING));
+			assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE_GROUPING));
 			assertEquals(result.getConfidence(), 1.0);
 
-			TestSupport.checkHistogram(result, 10);
+			TestSupport.checkHistogram(result, 10, true);
 			TestSupport.checkQuantiles(result);
 
 			for (final String sample : samples)
@@ -1055,18 +1146,19 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE + 10);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE + 10);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
 
 		final String actualRegExp = result.getRegExp();
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String s : samples) {
@@ -1130,18 +1222,19 @@ public class TestDoubles {
 			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getType(), FTAType.DOUBLE);
-			assertEquals(result.getTypeQualifier(), "SIGNED");
+			assertEquals(result.getTypeModifier(), "SIGNED");
+			assertNull(result.getSemanticType());
 			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			assertEquals(result.getNullCount(), 0);
 			assertEquals(result.getLeadingZeroCount(), 0);
 
-			assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
+			assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
 			assertEquals(result.getConfidence(), 1.0);
 
 			final String actualRegExp = result.getRegExp();
 
-			TestSupport.checkHistogram(result, 10);
+			TestSupport.checkHistogram(result, 10, true);
 			TestSupport.checkQuantiles(result);
 
 			for (final String sample : samples) {
@@ -1181,14 +1274,15 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE + analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1247,17 +1341,17 @@ public class TestDoubles {
 		}
 		final TextAnalysisResult result3 = analysis3.getResult();
 
-		assertEquals(result1.getTypeQualifier(), result2.getTypeQualifier());
+		assertEquals(result1.getSemanticType(), result2.getSemanticType());
 		assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
-		assertEquals(result1.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		assertEquals(result1.getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");
 		assertEquals(result1.getDataSignature(), result3.getDataSignature());
 		assertEquals(result1.getNullCount(), 0);
 		assertEquals(result1.getSampleCount(), inputs1.length);
 		assertEquals(result1.getConfidence(), 1.0);
 		assertEquals(result1.getMatchCount(), inputs1.length);
 
-		TestSupport.checkHistogram(result3, 10);
+		TestSupport.checkHistogram(result3, 10, true);
 		TestSupport.checkQuantiles(result3);
 
 		for (final String input : inputs1)
@@ -1290,14 +1384,15 @@ public class TestDoubles {
 			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getType(), FTAType.DOUBLE);
-			assertEquals(result.getTypeQualifier(), "SIGNED");
+			assertEquals(result.getTypeModifier(), "SIGNED");
+			assertNull(result.getSemanticType());
 			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			assertEquals(result.getNullCount(), 0);
 			assertEquals(result.getLeadingZeroCount(), 0);
 			assertEquals(result.getDecimalSeparator(), formatSymbols.getDecimalSeparator());
 
-			assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
+			assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE));
 			assertEquals(result.getConfidence(), 1.0);
 
 			for (final String sample : samples) {
@@ -1339,21 +1434,22 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getMinValue(), minValue);
 		assertEquals(result.getMaxValue(), maxValue);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
-			assertTrue(sample.matches(analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT)), sample);
+			assertTrue(sample.matches(analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT)), sample);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
@@ -1388,17 +1484,18 @@ public class TestDoubles {
 		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getMinValue(), minValue);
 		assertEquals(result.getMaxValue(), maxValue);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
@@ -1429,21 +1526,18 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "GROUPING");
+		assertEquals(result.getTypeModifier(), "GROUPING");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE_WITH_EXPONENT_GROUPING));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT_GROUPING));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "3E8");
 		assertEquals(result.getMaxValue(), "6E27");
 
-		for (final Map.Entry<String, Long> entry : result.getCardinalityDetails().entrySet()) {
-			System.err.println(entry.getKey() + ":" + entry.getValue());
-		}
-
-		TestSupport.checkHistogram(result, 10);
-		// TODO TestSupport.checkQuantiles(result);
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -1473,17 +1567,18 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+		assertEquals(result.getTypeModifier(), "SIGNED,GROUPING");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-3E27");
 		assertEquals(result.getMaxValue(), "6E27");
 
-		TestSupport.checkHistogram(result, 10);
-		// TODO TestSupport.checkQuantiles(result);
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -1509,7 +1604,8 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "GROUPING");
+		assertEquals(result.getTypeModifier(), "GROUPING");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -1518,7 +1614,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "22.039");
 		assertEquals(result.getMaxValue(), "84.369.774");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1528,6 +1624,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void longitudeGermanNonLocalized() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("LÄNGENGRAD");
+		analysis.setDebug(2);
 		// For German, Decimal Sep = ',' and Thousands Sep = '.'
 		final Locale locale = Locale.forLanguageTag("de-DE");
 		analysis.setLocale(locale);
@@ -1547,7 +1644,7 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "COORDINATE.LONGITUDE_DECIMAL");
+		assertEquals(result.getSemanticType(), "COORDINATE.LONGITUDE_DECIMAL");
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -1557,7 +1654,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "13.40948033");
 		assertEquals(result.getMaxValue(), "13.41310555");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1586,7 +1683,7 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "COORDINATE.LONGITUDE_DECIMAL");
+		assertEquals(result.getSemanticType(), "COORDINATE.LONGITUDE_DECIMAL");
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -1596,7 +1693,7 @@ public class TestDoubles {
 		assertEquals(result.getMaxValue(), "13,41310555");
 		assertEquals(result.getDecimalSeparator(), ',');
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1625,7 +1722,7 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "NON_LOCALIZED");
+		assertEquals(result.getTypeModifier(), "NON_LOCALIZED");
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -1635,7 +1732,7 @@ public class TestDoubles {
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1663,7 +1760,8 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED,NON_LOCALIZED");
+		assertEquals(result.getTypeModifier(), "SIGNED,NON_LOCALIZED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -1673,7 +1771,7 @@ public class TestDoubles {
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1703,7 +1801,8 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED,NON_LOCALIZED");
+		assertEquals(result.getTypeModifier(), "SIGNED,NON_LOCALIZED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getNullCount(), 0);
@@ -1713,7 +1812,7 @@ public class TestDoubles {
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1738,7 +1837,8 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "NON_LOCALIZED");
+		assertEquals(result.getTypeModifier(), "NON_LOCALIZED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -1748,7 +1848,7 @@ public class TestDoubles {
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1776,7 +1876,8 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED,NON_LOCALIZED");
+		assertEquals(result.getTypeModifier(), "SIGNED,NON_LOCALIZED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -1786,7 +1887,7 @@ public class TestDoubles {
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1816,7 +1917,8 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED,NON_LOCALIZED");
+		assertEquals(result.getTypeModifier(), "SIGNED,NON_LOCALIZED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getNullCount(), 0);
@@ -1826,7 +1928,7 @@ public class TestDoubles {
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1853,7 +1955,8 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED,NON_LOCALIZED");
+		assertEquals(result.getTypeModifier(), "SIGNED,NON_LOCALIZED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getNullCount(), 0);
@@ -1863,7 +1966,7 @@ public class TestDoubles {
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1895,16 +1998,17 @@ public class TestDoubles {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + analysis.getRegExp(KnownPatterns.ID.ID_SIGNED_DOUBLE));
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE + analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-9999.0");
 		assertEquals(result.getMaxValue(), "0.69334954");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1955,7 +2059,8 @@ public class TestDoubles {
 					System.err.println(s);
 			}
 			assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
-			assertEquals(result.getTypeQualifier(), "GROUPING");
+			assertEquals(result.getTypeModifier(), "GROUPING");
+			assertNull(result.getSemanticType());
 			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			assertEquals(result.getNullCount(), 0);
@@ -1995,7 +2100,8 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 	TestUtils.checkSerialization(analysis);
 
 	assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
-	assertEquals(result.getTypeQualifier(), "GROUPING");
+	assertEquals(result.getTypeModifier(), "GROUPING");
+	assertNull(result.getSemanticType());
 	assertEquals(result.getSampleCount(), ugly.length);
 	assertEquals(result.getMatchCount(), ugly.length);
 	assertEquals(result.getNullCount(), 0);
@@ -2076,7 +2182,8 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 				failures.add("Locale: " + locale + ", type: '" + result.getType() + '"');
 				continue;
 			}
-			assertEquals(result.getTypeQualifier(), "SIGNED");
+			assertEquals(result.getTypeModifier(), "SIGNED");
+			assertNull(result.getSemanticType());
 			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			assertEquals(result.getNullCount(), 0);
@@ -2111,7 +2218,7 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("_doublePerfcd ");
 		analysis.setLocale(Locale.FRENCH);
 		if (!statisticsOn) {
-			analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+			analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		}
 		final long sampleCount = 100_000_000_000L;
@@ -2150,10 +2257,11 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 		assertEquals(result.getMatchCount(), iters + 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getMaxLength(), 18);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_DOUBLE));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		logger.info("Count {}, duration: {}ms, ~{} per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes

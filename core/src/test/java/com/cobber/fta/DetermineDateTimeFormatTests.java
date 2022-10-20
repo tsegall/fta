@@ -1356,7 +1356,7 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(formatString, "MMM d, yyyy");
 
 		final String regExp = result.getRegExp();
-		assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3} \\d{1,2}, \\d{4}");
+		assertEquals(regExp, KnownTypes.PATTERN_ALPHA + "{3} \\d{1,2}, \\d{4}");
 		assertTrue(trimmed.matches(regExp));
 
 		assertNull(checkParseable(result, trimmed));
@@ -1757,7 +1757,7 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(result.getFormatString(), "MMMM-d-yyyy");
 
 		final String regExp = result.getRegExp();
-		assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3,9}-\\d{1,2}-\\d{4}");
+		assertEquals(regExp, KnownTypes.PATTERN_ALPHA + "{3,9}-\\d{1,2}-\\d{4}");
 		assertTrue(sample.trim().matches(regExp));
 
 		assertTrue(result.isValid("April-1-1939"));
@@ -2040,7 +2040,7 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParserResult result = checkSerialization(det).getResult();
 		assertEquals(result.getFormatString(), "d MMM yyyy");
 		final String regExp = result.getRegExp();
-		assertEquals(regExp, "\\d{1,2} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{4}");
+		assertEquals(regExp, "\\d{1,2} " + KnownTypes.PATTERN_ALPHA + "{3} \\d{4}");
 		assertTrue(sample.matches(regExp));
 
 		assertTrue(result.isValid("20 Jun 2017"));
@@ -2680,7 +2680,7 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(result.getFormatString(), "d-MMM-yy");
 
 		final String regExp = result.getRegExp();
-		assertEquals(regExp, "\\d{1,2}-" + KnownPatterns.PATTERN_ALPHA + "{3}-\\d{2}");
+		assertEquals(regExp, "\\d{1,2}-" + KnownTypes.PATTERN_ALPHA + "{3}-\\d{2}");
 		assertTrue(sample.trim().matches(regExp));
 
 		assertTrue(result.isValid("1-Jan-14"));
@@ -2708,7 +2708,7 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss z yyyy");
 
 		final String regExp = result.getRegExp();
-		assertEquals(regExp, KnownPatterns.PATTERN_ALPHA + "{3} " + KnownPatterns.PATTERN_ALPHA + "{3} \\d{2} \\d{2}:\\d{2}:\\d{2} .* \\d{4}");
+		assertEquals(regExp, KnownTypes.PATTERN_ALPHA + "{3} " + KnownTypes.PATTERN_ALPHA + "{3} \\d{2} \\d{2}:\\d{2}:\\d{2} .* \\d{4}");
 		assertTrue(d.toString().matches(regExp));
 		assertTrue(result.isValid8(d.toString()));
 		assertTrue(result.isValid(d.toString()));

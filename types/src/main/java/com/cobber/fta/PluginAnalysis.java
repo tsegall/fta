@@ -23,7 +23,7 @@ public class PluginAnalysis {
 	public final static PluginAnalysis OK = new PluginAnalysis();
 
 	/** Analysis was unsuccessful - and we want to back out to a wildcard match. */
-	public final static PluginAnalysis SIMPLE_NOT_OK = new PluginAnalysis(KnownPatterns.PATTERN_ANY_VARIABLE);
+	public final static PluginAnalysis SIMPLE_NOT_OK = new PluginAnalysis(KnownTypes.PATTERN_ANY_VARIABLE);
 
 	/**
 	 * Construct a 'happy' analysis.

@@ -15,6 +15,7 @@ public class TypeFormatter {
 	private DateTimeFormatter dateTimeFormatter;
 	public FTAType type;
 	public boolean hasGrouping;
+	public boolean isTrailingMinus;
 	public String format;
 	public Locale locale;
 	public AnalysisConfig analysisConfig;
@@ -22,13 +23,14 @@ public class TypeFormatter {
 	TypeFormatter() {
 	}
 
-	TypeFormatter(final PatternInfo matchPatternInfo, final AnalysisConfig analysisConfig, final char decimalSeparator, final char localeDecimalSeparator) {
-		this.type = matchPatternInfo.getBaseType();
-		this.hasGrouping = KnownPatterns.hasGrouping(matchPatternInfo.id);
-		this.format = matchPatternInfo.format;
+	TypeFormatter(final TypeInfo matchTypeInfo, final AnalysisConfig analysisConfig) {
+		this.type = matchTypeInfo.getBaseType();
+		this.hasGrouping = matchTypeInfo.hasGrouping();
+		this.isTrailingMinus = matchTypeInfo.isTrailingMinus();
+		this.format = matchTypeInfo.format;
 		this.analysisConfig = analysisConfig;
 		if (type == FTAType.DOUBLE)
-			this.locale = decimalSeparator == localeDecimalSeparator ? analysisConfig.getLocale() : Locale.ROOT;
+			this.locale = matchTypeInfo.isNonLocalized() ? Locale.ROOT : analysisConfig.getLocale();
 		else
 			this.locale = analysisConfig.getLocale();
 	}

@@ -180,10 +180,10 @@ public class TestStandalonePlugins {
 		};
 
 		for (final Locale locale : locales) {
-			// Create an Analyzer to retrieve the Logical Types (magically will be all - since passed in '*')
+			// Create an Analyzer to retrieve the Semantic Types (magically will be all - since passed in '*')
 			final TextAnalyzer analyzer = new TextAnalyzer("*");
 			analyzer.setLocale(locale);
-			// Load the default set of plugins for Logical Type detection (normally done by a call to train())
+			// Load the default set of plugins for Semantic Type detection (normally done by a call to train())
 			analyzer.registerDefaultPlugins(analyzer.getConfig());
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
@@ -192,30 +192,30 @@ public class TestStandalonePlugins {
 
 					PluginDefinition definition = logical.getPluginDefinition();
 					// TODO
-					if ("STATE_PROVINCE.COMMUNE_IT".equals(definition.qualifier))
+					if ("STATE_PROVINCE.COMMUNE_IT".equals(definition.semanticType))
 						continue;
 
 					final String pluginSignature = definition.signature;
 					if (!"[NONE]".equals(pluginSignature) && !logical.getSignature().equals(logical.getPluginDefinition().signature))
 						logger.warn("WARNING: Signature incorrect for '{}'.  LogicalType = '{}', Plugin = '{}'.",
-								logical.getQualifier(), logical.getSignature(), logical.getPluginDefinition().signature);
+								logical.getSemanticType(), logical.getSignature(), logical.getPluginDefinition().signature);
 					assertTrue("[NONE]".equals(pluginSignature) || logical.getSignature().equals(logical.getPluginDefinition().signature));
 
 					if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
 						continue;
 
 					if (logical.nextRandom() == null) {
-						System.err.println("No nextRandom() support for Logical Type: " + logical.getQualifier());
+						System.err.println("No nextRandom() support for Semantic Type: " + logical.getSemanticType());
 						continue;
 					}
 
 					final String[] testCases = new String[SAMPLE_SIZE];
 					for (int i = 0; i < SAMPLE_SIZE; i++) {
 						testCases[i] = logical.nextRandom();
-						assertTrue(logical.isValid(testCases[i], true), logical.getQualifier() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
+						assertTrue(logical.isValid(testCases[i], true), logical.getSemanticType() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
 					}
 					for (int i = 0; i < SAMPLE_SIZE; i++)
-						assertTrue(testCases[i].matches(logical.getRegExp()), logical.getQualifier() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
+						assertTrue(testCases[i].matches(logical.getRegExp()), logical.getSemanticType() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
 				}
 			}
 		}

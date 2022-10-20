@@ -26,7 +26,7 @@ import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
-import com.cobber.fta.KnownPatterns;
+import com.cobber.fta.KnownTypes;
 import com.cobber.fta.LogicalTypeCode;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
@@ -179,7 +179,7 @@ public class FreeText extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 
@@ -224,7 +224,7 @@ public class FreeText extends LogicalTypeInfinite {
 			return new PluginAnalysis(REGEXP);
 
 		if (facts != null)
-			regExp = KnownPatterns.PATTERN_ANY + RegExpSplitter.qualify(facts.minRawLength, facts.maxRawLength);
+			regExp = KnownTypes.PATTERN_ANY + RegExpSplitter.qualify(facts.minRawLength, facts.maxRawLength);
 
 		return PluginAnalysis.OK;
 	}

@@ -56,7 +56,7 @@ public class TestPerformance {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "(?i)(BLACK|BLUE|GREEN|RED)");
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PERFORMANCE })
@@ -80,7 +80,7 @@ public class TestPerformance {
 		assertEquals(result.getInvalidCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.ZONEDDATETIME);
-		assertEquals(result.getTypeQualifier(), "EEE MMM ppd HH:mm:ss z yyyy");
+		assertEquals(result.getTypeModifier(), "EEE MMM ppd HH:mm:ss z yyyy");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PERFORMANCE })
@@ -108,7 +108,7 @@ public class TestPerformance {
 		assertEquals(result.getInvalidCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getMean(), 666666.3333333203, .00001);
 		assertEquals(result.getStandardDeviation(), 235702.14254410806, 0.00001);
 

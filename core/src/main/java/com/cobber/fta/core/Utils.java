@@ -18,6 +18,8 @@ package com.cobber.fta.core;
 import java.io.IOException;
 import java.io.StringReader;
 import java.security.SecureRandom;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
@@ -315,5 +317,39 @@ public final class Utils {
 			return "Base64";
 
 		return "OTHER";
+	}
+
+	public static long parseLong(final String input, final NumberFormat longFormatter) {
+		final String trimmed = input.trim();
+		final ParsePosition lPos = new ParsePosition(0);
+		final String lParse = trimmed.charAt(0) == '+' ? trimmed.substring(1) : trimmed;
+		final Number l = longFormatter.parse(lParse, lPos);
+
+		if (l != null && lParse.length() == lPos.getIndex())
+			return l.longValue();
+
+		final int digits = lParse.length();
+		if (digits >= 2 && lParse.charAt(digits - 1) == '-')
+			return -Long.parseLong(lParse.substring(0, digits - 1));
+
+		return Long.valueOf(lParse);
+	}
+
+	public static double parseDouble(final String input, final NumberFormat doubleFormatter) {
+		final String trimmed = input.trim();
+		final ParsePosition dPos = new ParsePosition(0);
+		final String dParse = trimmed.charAt(0) == '+' ? trimmed.substring(1) : trimmed;
+		final Number d = doubleFormatter.parse(dParse, dPos);
+
+		if (d != null && dParse.length() == dPos.getIndex())
+			return d.doubleValue();
+
+		// NumberFormat.getInstance(locale) returns a parser that cannot cope with a set of sins including:
+		// Exponents with a lower case 'e' (e.g. 1234.0e5) or with a '+ (e.g. or 123E+5) or with a trailing minus.
+		final int digits = dParse.length();
+		if (digits >= 2 && dParse.charAt(digits - 1) == '-')
+			return -Double.parseDouble(dParse.substring(0, digits - 1));
+
+		return Double.valueOf(dParse);
 	}
 }

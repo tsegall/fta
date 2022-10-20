@@ -23,7 +23,7 @@ import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
-import com.cobber.fta.KnownPatterns;
+import com.cobber.fta.KnownTypes;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
@@ -92,7 +92,7 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 
@@ -117,7 +117,7 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 	}
 
 	private String backout() {
-		return KnownPatterns.PATTERN_ANY_VARIABLE;
+		return KnownTypes.PATTERN_ANY_VARIABLE;
 	}
 
 	@Override

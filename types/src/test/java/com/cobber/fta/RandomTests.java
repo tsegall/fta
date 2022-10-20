@@ -59,23 +59,23 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
-	public void getDefaultLogicalTypesDefault() throws IOException, FTAException {
+	public void getDefaultSemanticTypesDefault() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("getDefaultLogicalTypesDefault");
 
-		assertTrue(analysis.isEnabled(Feature.DEFAULT_LOGICAL_TYPES));
+		assertTrue(analysis.isEnabled(Feature.DEFAULT_SEMANTIC_TYPES));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
-	public void setDefaultLogicalTypesTooLate() throws IOException, FTAException, FTAException {
+	public void setDefaultSemanticTypesTooLate() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setDefaultLogicalTypesTooLate");
 
 		analysis.train("Hello, World");
 
 		try {
-			analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+			analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		}
 		catch (IllegalArgumentException e) {
-			assertEquals(e.getMessage(), "Cannot adjust feature 'DEFAULT_LOGICAL_TYPES' once training has started");
+			assertEquals(e.getMessage(), "Cannot adjust feature 'DEFAULT_SEMANTIC_TYPES' once training has started");
 			return;
 		}
 		fail("Exception should have been thrown");
@@ -216,8 +216,8 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void setDefaultLogicalTypes() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setDefaultLogicalTypes");
-		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
-		assertFalse(analysis.isEnabled(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES));
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+		assertFalse(analysis.isEnabled(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
@@ -254,10 +254,10 @@ public class RandomTests {
 
 		assertEquals(result.getSampleCount(), 0);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_NULL));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_NULL));
 		assertEquals(result.getConfidence(), 0.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "NULL");
+		assertEquals(result.getTypeModifier(), "NULL");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
@@ -276,7 +276,7 @@ public class RandomTests {
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), KnownPatterns.freezeANY(1, 12, 1, 12, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
+		assertEquals(result.getRegExp(), KnownTypes.freezeANY(1, 12, 1, 12, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getMinValue(), "+++++");
@@ -304,7 +304,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getTypeQualifier(), USZip5.SEMANTIC_TYPE);
+		assertEquals(result.getSemanticType(), USZip5.SEMANTIC_TYPE);
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), COUNT);
 		assertEquals(result.getMatchCount(), COUNT - INVALID);
@@ -342,7 +342,7 @@ public class RandomTests {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), "99");
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMean(), Double.valueOf((double)sum/COUNT));
 		assertEquals(result.getStandardDeviation(), 28.86607004772212);
@@ -409,14 +409,14 @@ public class RandomTests {
 		final int samplesProcessed = inputs.length - 1;
 
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), samplesProcessed);
 		assertEquals(result.getMatchCount(), samplesProcessed - result.getBlankCount() - 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getMinLength(), 9);
 		assertEquals(result.getMaxLength(), 11);
 		assertEquals(result.getBlankCount(), 20);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{10,11}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHANUMERIC + "{10,11}");
 		assertEquals(result.getConfidence(), 0.975609756097561);
 
 		int matchCount = 0;
@@ -454,10 +454,10 @@ public class RandomTests {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 1);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "((?i)(HELLO|HI|WORLD))" + KnownPatterns.PATTERN_WHITESPACE);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE + "((?i)(HELLO|HI|WORLD))" + KnownTypes.PATTERN_WHITESPACE);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -487,7 +487,7 @@ public class RandomTests {
 
 		for (int field = 0; field < analyzers.length; field++) {
 			final TextAnalysisResult result = analyzers[field].getResult();
-			assertEquals(result.getTypeQualifier(), demos[field%demos.length]);
+			assertEquals(result.getSemanticType(), demos[field%demos.length]);
 		}
 	}
 
@@ -509,12 +509,12 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 26);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), 2 * AnalysisConfig.DETECT_WINDOW_DEFAULT + 26);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{1,2}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHANUMERIC + "{1,2}");
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -561,7 +561,7 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount() + result.getBlankCount(), inputs.length);
@@ -651,7 +651,7 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -699,7 +699,7 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), USZipPlus4.SEMANTIC_TYPE);
+		assertEquals(result.getSemanticType(), USZipPlus4.SEMANTIC_TYPE);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
@@ -749,7 +749,7 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), USZipPlus4.SEMANTIC_TYPE);
+		assertEquals(result.getSemanticType(), USZipPlus4.SEMANTIC_TYPE);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
@@ -788,12 +788,12 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{18}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHANUMERIC + "{18}");
 		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
@@ -823,12 +823,12 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{3,10}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHA + "{3,10}");
 		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
@@ -856,9 +856,9 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BLANK));
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "BLANK");
+		assertEquals(result.getTypeModifier(), "BLANK");
 		assertEquals(result.getSampleCount(), iters);
 		assertEquals(result.getBlankCount(), iters);
 		assertEquals(result.getCardinality(), 0);
@@ -896,9 +896,9 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + KnownPatterns.PATTERN_ALPHA + "{3}" + KnownPatterns.PATTERN_WHITESPACE);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE + KnownTypes.PATTERN_ALPHA + "{3}" + KnownTypes.PATTERN_WHITESPACE);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), iters + 1);
 		assertEquals(result.getBlankCount(), iters);
 		assertEquals(result.getCardinality(), 1);
@@ -936,7 +936,7 @@ public class RandomTests {
 
 		assertEquals(result.getRegExp(), "[ 	]*[\\p{IsAlphabetic}\\d]{3,8}[ 	]*");
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getCardinality(), inputs.length);
@@ -978,9 +978,9 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{4}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHA + "{4}");
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length * 2);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length * 2);
@@ -1006,10 +1006,10 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_NUMERIC + "{3}" + '|' + KnownPatterns.PATTERN_ALPHA + "{3}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_NUMERIC + "{3}" + '|' + KnownTypes.PATTERN_ALPHA + "{3}");
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1034,10 +1034,10 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_NUMERIC + "{3}" + '|' + KnownPatterns.PATTERN_ALPHA + "{3}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_NUMERIC + "{3}" + '|' + KnownTypes.PATTERN_ALPHA + "{3}");
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1091,9 +1091,9 @@ public class RandomTests {
 		assertEquals(locked, realSamples >= AnalysisConfig.DETECT_WINDOW_DEFAULT ? AnalysisConfig.DETECT_WINDOW_DEFAULT : -1);
 		assertEquals(result.getType(), FTAType.STRING);
 		if (inputs.length == empty)
-			assertEquals(result.getTypeQualifier(), "BLANK");
+			assertEquals(result.getTypeModifier(), "BLANK");
 		else
-			assertNull(result.getTypeQualifier());
+			assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getBlankCount(), empty);
@@ -1111,10 +1111,10 @@ public class RandomTests {
 		if (result.getMatchCount() != 0 && !result.getRegExp().startsWith("(?i)")) {
 			String re = "";
 			if (result.getLeadingWhiteSpace())
-				re += KnownPatterns.PATTERN_WHITESPACE;
-			re += KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline());
+				re += KnownTypes.PATTERN_WHITESPACE;
+			re += KnownTypes.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline());
 			if (result.getTrailingWhiteSpace())
-				re += KnownPatterns.PATTERN_WHITESPACE;
+				re += KnownTypes.PATTERN_WHITESPACE;
 			assertEquals(result.getRegExp(), re);
 		}
 	}
@@ -1251,12 +1251,12 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{8,12}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHANUMERIC + "{8,12}");
 		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
@@ -1395,7 +1395,7 @@ public class RandomTests {
 		assertEquals(result.getSampleCount(), iterations);
 		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getRegExp(), KnownPatterns.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
+		assertEquals(result.getRegExp(), KnownTypes.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1423,7 +1423,7 @@ public class RandomTests {
 		assertEquals(result.getSampleCount(), 2 * (AnalysisConfig.DETECT_WINDOW_DEFAULT + 1));
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -1539,7 +1539,7 @@ public class RandomTests {
 		final String inputs[] = alpha3.split("\\|");
 		final TextAnalyzer analysis = new TextAnalyzer("setMaxCardinalitySmall");
 		analysis.setMaxCardinality(100);
-		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 
 		try {
 			for (final String input : inputs) {
@@ -1549,9 +1549,9 @@ public class RandomTests {
 
 			final TextAnalysisResult result = analysis.getResult();
 
-			assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{4}");
+			assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHA + "{4}");
 			assertEquals(result.getType(), FTAType.STRING);
-			assertNull(result.getTypeQualifier());
+			assertNull(result.getTypeModifier());
 			assertEquals(result.getSampleCount(), inputs.length * 2);
 			assertEquals(result.getOutlierCount(), 0);
 			assertEquals(result.getMatchCount(), inputs.length * 2);
@@ -1676,7 +1676,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getRegExp(), "\\+\\d \\d{3} \\d{3} \\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -1713,7 +1713,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getRegExp(), "\\d\\.\\d{3}\\.\\d{3}\\.\\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -1750,7 +1750,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getRegExp(), "\\(\\d{3}\\) \\d{3} \\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -2311,7 +2311,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), FreeText.SEMANTIC_TYPE);
+		assertEquals(result.getSemanticType(), FreeText.SEMANTIC_TYPE);
 		assertEquals(result.getRegExp(), ".{36,185}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -2343,7 +2343,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), FreeText.SEMANTIC_TYPE);
+		assertEquals(result.getSemanticType(), FreeText.SEMANTIC_TYPE);
 		assertEquals(result.getRegExp(), ".{16,25}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -2373,7 +2373,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 37);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getRegExp(), "\\d{2}-\\d{4}\\p{IsAlphabetic}\\d");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -2399,7 +2399,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 3);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getRegExp(), "\\d{3} \\d{4} \\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
 	}
@@ -2414,7 +2414,7 @@ public class RandomTests {
 
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getConfidence(), 1.0);
 	}
 
@@ -2439,7 +2439,7 @@ public class RandomTests {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getMatchCount(), 10);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
-		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{2,3}");
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd HH:mm:ss.S{2,3}");
 		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{2,3}");
 	}
 
@@ -2468,7 +2468,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getRegExp(), ".{10,18}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -2501,7 +2501,7 @@ public class RandomTests {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getMatchCount(), 10);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
-		assertEquals(result.getTypeQualifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd HH:mm:ss.S{1,3}");
 		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
 	}
 
@@ -2526,7 +2526,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
@@ -2553,7 +2553,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getRegExp(), "(?i)(DIVORCED - NOT SEPARATED|DIVORCED - SEPARATED|MARRIED - SHARING A HOUSE|SINGLE - LIVING ALONE|SURVIVING SPOUSE|WIDOWER - HUSBAND DIED|WIDOWER - WIFE DIED)");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -2705,12 +2705,12 @@ public class RandomTests {
 					System.err.println("'" + outlier.getKey() + "': " + outlier.getValue());
 			}
 			assertEquals(result.getConfidence(), 1.0, semanticType);
-			final String typeQualifier = result.getTypeQualifier();
-			assertNotNull(typeQualifier, semanticType);
-			if (!typeQualifier.equals(semanticType) &&
-					!typeQualifier.equals(semanticType.replaceAll("<LANGUAGE>", "EN")) &&
-					!typeQualifier.equals(semanticType.replaceAll("<LOCALE>", "en-US")))
-					fail("Input: " + semanticType + ", Result: " + typeQualifier);
+			final String semanticTypeDetected = result.getSemanticType();
+			assertNotNull(semanticTypeDetected, semanticType);
+			if (!semanticTypeDetected.equals(semanticType) &&
+					!semanticTypeDetected.equals(semanticType.replaceAll("<LANGUAGE>", "EN")) &&
+					!semanticTypeDetected.equals(semanticType.replaceAll("<LOCALE>", "en-US")))
+					fail("Input: " + semanticType + ", Result: " + semanticTypeDetected);
 		}
 	}
 
@@ -2826,7 +2826,7 @@ public class RandomTests {
 				try {
 					final PluginDefinition defn = PluginDefinition.findByQualifier(semanticType);
 					if (!defn.isLocaleSupported(Locale.getDefault()))
-						System.err.println("Attempting to create an intance of LogicalType: " + defn.qualifier + " in an unsupported Locale");
+						System.err.println("Attempting to create an intance of LogicalType: " + defn.semanticType + " in an unsupported Locale");
 					logical = LogicalTypeFactory.newInstance(defn, new AnalysisConfig());
 				} catch (FTAException e) {
 					e.printStackTrace();

@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,7 @@ public class TestLongs {
 		assertEquals(result.getMinLength(), 1);
 		assertEquals(result.getMaxLength(), 7);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
@@ -119,13 +120,14 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "[+-]?\\d{1,6}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
 		if (collectStatistics) {
 			assertEquals(result.getMinValue(), "-100000");
 			assertEquals(result.getMaxValue(), "10000");
 		}
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -165,7 +167,7 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "116789");
 		assertEquals(result.getMaxValue(), "456789");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -195,9 +197,8 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "-2903");
 		assertEquals(result.getMaxValue(), "5234");
 
-		TestSupport.checkHistogram(result, 10);
-		// TODO - Quantile support broken for TRAILING minus case
-		// TestSupport.checkQuantiles(result);
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -226,7 +227,7 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "-2903");
 		assertEquals(result.getMaxValue(), "5234");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -237,9 +238,6 @@ public class TestLongs {
 	public void similar() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("trailingMinus");
 		final String[] inputs = { "47", " 47", " 47 ", "47.0", "47.000" };
-
-//		for (int i = 0; i < analysis.getMaxCardinality(); i++)
-//			analysis.train(String.valueOf(i + 100) + ".0");
 
 		for (String input: inputs)
 			analysis.train(input);
@@ -261,7 +259,7 @@ public class TestLongs {
 		assertEquals(result.getValueAtQuantile(.5), "47");
 
 		TestSupport.dumpRaw(result.getHistogram(10));
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -336,7 +334,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), 59);
 		assertEquals(result.getMatchCount(), 59);
 		assertEquals(result.getNullCount(), 0);
@@ -344,7 +343,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{9}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 }
 
@@ -364,7 +363,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), 7);
 		assertEquals(result.getMatchCount(), 7);
 		assertEquals(result.getNullCount(), 0);
@@ -372,7 +372,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{1,2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -389,7 +389,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), 30);
 		assertEquals(result.getMatchCount(), 6);
 		assertEquals(result.getNullCount(), 0);
@@ -397,7 +398,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -413,7 +414,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), tooBig);
 		assertEquals(result.getMatchCount(), tooBig);
 		assertEquals(result.getNullCount(), 0);
@@ -423,7 +425,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -440,7 +442,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), tooBig + 1);
 		assertEquals(result.getMatchCount(), tooBig + 1);
 		assertEquals(result.getNullCount(), 0);
@@ -450,7 +453,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -466,7 +469,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), 2 * tooBig);
 		assertEquals(result.getMatchCount(), 2 * tooBig);
 		assertEquals(result.getNullCount(), 0);
@@ -476,7 +480,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -492,7 +496,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), 2 * tooBig);
 		assertEquals(result.getMatchCount(), 2 * tooBig);
 		assertEquals(result.getNullCount(), 0);
@@ -502,7 +507,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -520,7 +525,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), tooBig * 2);
 		assertEquals(result.getMatchCount(), tooBig * 2);
 		assertEquals(result.getNullCount(), 0);
@@ -530,7 +536,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -550,7 +556,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), 2 * tooBig + 1);
 		assertEquals(result.getMatchCount(), 2 * tooBig + 1);
 		assertEquals(result.getNullCount(), 0);
@@ -561,7 +568,7 @@ public class TestLongs {
 		assertEquals(result.getConfidence(), 1.0);
 
 		TestSupport.dumpRaw(result.getHistogram(10));
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -595,7 +602,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "GROUPING");
+		assertEquals(result.getTypeModifier(), "GROUPING");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 		assertEquals(result.getNullCount(), 0);
@@ -612,7 +620,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), regExp);
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
@@ -663,7 +671,8 @@ public class TestLongs {
 			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getType(), FTAType.LONG);
-			assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toString());
+			assertEquals(result.getTypeModifier(), "SIGNED,GROUPING", locale.toString());
+			assertNull(result.getSemanticType());
 			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			assertEquals(result.getNullCount(), 0);
@@ -678,7 +687,7 @@ public class TestLongs {
 			assertEquals(result.getRegExp(), regExp);
 			assertEquals(result.getConfidence(), 1.0);
 
-			TestSupport.checkHistogram(result, 10);
+			TestSupport.checkHistogram(result, 10, true);
 			TestSupport.checkQuantiles(result);
 
 			for (final String sample : samples)
@@ -707,7 +716,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "GROUPING");
+		assertEquals(result.getTypeModifier(), "GROUPING");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -716,7 +726,7 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "22.039");
 		assertEquals(result.getMaxValue(), "84.369.774");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -742,7 +752,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+		assertEquals(result.getTypeModifier(), "SIGNED,GROUPING");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length + 1);
 		assertEquals(result.getBlankCount(), 2);
 		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
@@ -750,8 +761,9 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "[ 	]*[+-]?[\\d\\.]{5,17}[ 	]*");
 		assertEquals(result.getMinValue(), "-1.234.567.890.123");
 		assertEquals(result.getMaxValue(), "1.234.567.890.123");
+		assertEquals(result.getCardinality(), 6);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs) {
@@ -786,14 +798,15 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+		assertEquals(result.getTypeModifier(), "SIGNED,GROUPING");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "[\\d,]{21,25}[+-]?");
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getMatchCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -883,7 +896,8 @@ public class TestLongs {
 			TestUtils.checkSerialization(analysis);
 
 			assertEquals(result.getType(), FTAType.LONG);
-			assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING", locale.toLanguageTag());
+			assertEquals(result.getTypeModifier(), "SIGNED,GROUPING", locale.toLanguageTag());
+			assertNull(result.getSemanticType());
 			assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 			assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 			assertEquals(result.getNullCount(), 0);
@@ -903,7 +917,7 @@ public class TestLongs {
 			assertEquals(result.getRegExp(), regExp, locale.toLanguageTag());
 			assertEquals(result.getConfidence(), 1.0);
 
-			TestSupport.checkHistogram(result, 10);
+			TestSupport.checkHistogram(result, 10, true);
 			TestSupport.checkQuantiles(result);
 
 			for (final String sample : samples)
@@ -952,7 +966,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), pattern);
 		assertEquals(result.getConfidence(), 1 - (double)bad/result.getSampleCount());
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -987,7 +1001,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{10}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1010,15 +1024,15 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertTrue(result.isLogicalType());
-		assertEquals(result.getTypeQualifier(), "EPOCH.MILLISECONDS");
+		assertTrue(result.isSemanticType());
+		assertEquals(result.getSemanticType(), "EPOCH.MILLISECONDS");
 		assertEquals(result.getRegExp(), "\\d{10}");
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getMatchCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1041,15 +1055,15 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertTrue(result.isLogicalType());
-		assertEquals(result.getTypeQualifier(), "EPOCH.NANOSECONDS");
+		assertTrue(result.isSemanticType());
+		assertEquals(result.getSemanticType(), "EPOCH.NANOSECONDS");
 		assertEquals(result.getRegExp(), "\\d{13}");
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getMatchCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1077,8 +1091,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertTrue(result.isLogicalType());
-		assertEquals(result.getTypeQualifier(), "CHECKDIGIT.LUHN");
+		assertTrue(result.isSemanticType());
+		assertEquals(result.getSemanticType(), "CHECKDIGIT.LUHN");
 //BUG TODO		assertEquals(result.getRegExp(), "\\d{13}");
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getMatchCount(), samples.length - 1);
@@ -1090,7 +1104,7 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "985491000");
 		assertEquals(result.getMaxValue(), "9452921001");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1113,7 +1127,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
@@ -1121,9 +1136,9 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), "29");
 		assertEquals(result.getMean(), Double.valueOf(14.5));
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_WHITESPACE + "\\d{1,2}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE + "\\d{1,2}");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1147,14 +1162,15 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "\\d{1,4}");
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getConfidence(), 0.9166666666666666);
 		assertEquals(result.getMatchCount(), inputs.length - 2);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1178,14 +1194,15 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "[+-]?\\d{1,10}");
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
@@ -1223,7 +1240,7 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), String.valueOf(iterations - 1));
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1255,7 +1272,8 @@ public class TestLongs {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "GROUPING");
+		assertEquals(result.getTypeModifier(), "GROUPING");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1266,7 +1284,7 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "200");
 		assertEquals(result.getMaxValue(), "13,000");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		final String regExp = result.getRegExp();
@@ -1315,7 +1333,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "SIGNED,GROUPING");
+		assertEquals(result.getTypeModifier(), "SIGNED,GROUPING");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE);
 		assertEquals(result.getNullCount(), 0);
@@ -1332,7 +1351,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), regExp);
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
 		for (final String sample : samples)
@@ -1359,7 +1378,7 @@ public class TestLongs {
 
 		assertEquals(result.getRegExp(), "\\d+");
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1381,7 +1400,7 @@ public class TestLongs {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1410,7 +1429,7 @@ public class TestLongs {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getConfidence(), 1.0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1427,13 +1446,14 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE + 1);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE + 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1453,7 +1473,8 @@ public class TestLongs {
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
 
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getSampleCount(), 5 * SAMPLE_SIZE);
 		assertEquals(result.getMatchCount(), 5 * SAMPLE_SIZE);
@@ -1462,7 +1483,7 @@ public class TestLongs {
 		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1482,7 +1503,8 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), 5 * SAMPLE_SIZE);
 		assertEquals(result.getMatchCount(), 5 * SAMPLE_SIZE);
 		assertEquals(result.getNullCount(), 0);
@@ -1490,7 +1512,7 @@ public class TestLongs {
 		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1515,7 +1537,8 @@ public class TestLongs {
 		final TextAnalysisResult result = merged.getResult();
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), 5 * SAMPLE_SIZE);
 		assertEquals(result.getMatchCount(), 5 * SAMPLE_SIZE);
 		assertEquals(result.getNullCount(), 0);
@@ -1524,7 +1547,7 @@ public class TestLongs {
 		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
 		dump(result);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1533,7 +1556,7 @@ public class TestLongs {
 		final int MAX_CARDINALITY = 40;
 		final TextAnalyzer analysis = new TextAnalyzer("meanSDCardinalityExceeded");
 		analysis.setMaxCardinality(MAX_CARDINALITY);
-		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		final int SAMPLE_SIZE = 100;
 
 		for (int i = 1; i < SAMPLE_SIZE; i++)
@@ -1543,13 +1566,14 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1558,7 +1582,7 @@ public class TestLongs {
 		final int MAX_CARDINALITY = 40;
 		final TextAnalyzer analysis = new TextAnalyzer("meanSDBulkCardinalityExceeded");
 		analysis.setMaxCardinality(MAX_CARDINALITY);
-		analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		final long SAMPLE_SIZE = 100;
 
 		Map<String, Long> data = new HashMap<>();
@@ -1571,13 +1595,14 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1586,24 +1611,28 @@ public class TestLongs {
 		final int MAX_CARDINALITY = 40;
 		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
 		shardOne.setMaxCardinality(MAX_CARDINALITY);
-		shardOne.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		shardOne.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 
 		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
 		shardTwo.setMaxCardinality(MAX_CARDINALITY);
-		shardTwo.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		shardTwo.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		final int SAMPLE_SIZE = 100;
 
 		final TextAnalyzer shardReference = new TextAnalyzer("shardReference");
 
-		Map<String, Long> data = new HashMap<>();
+		Map<String, Long> data = new TreeMap<>();
 
-		for (int i = 1; i < SAMPLE_SIZE; i++)
+		// Add 1-99 + 'x' to shard One which has a Max Cardinality of 40
+		for (int i = 1; i < SAMPLE_SIZE; i++) {
+			shardOne.train(String.valueOf(i));
 			data.put(String.valueOf(i), 1L);
+		}
+		shardOne.train("x");
 		data.put("x", 1L);
-		shardOne.trainBulk(data);
-		shardOne.setTotalCount(data.size());
+		shardOne.setTotalCount(SAMPLE_SIZE);
 		shardReference.trainBulk(data);
 
+		// Add 1-99 to shard Two which has a Max Cardinality of 40
 		data.clear();
 		for (int i = 1; i < SAMPLE_SIZE; i++)
 			data.put(String.valueOf(i), 1L);
@@ -1617,12 +1646,13 @@ public class TestLongs {
 		final TextAnalysisResult referenceResult = shardReference.getResult();
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
 		assertEquals(referenceResult.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, false);
 		TestSupport.checkQuantiles(result);
 	}
 
@@ -1653,7 +1683,7 @@ public class TestLongs {
 		assertEquals(shardOneResult.getStandardDeviation(), shardTwoResult.getStandardDeviation(), .5);
 		assertEquals(shardOneResult.getStandardDeviation(), mergedResult.getStandardDeviation(), .5);
 
-		TestSupport.checkHistogram(mergedResult, 10);
+		TestSupport.checkHistogram(mergedResult, 10, false);
 		TestSupport.checkQuantiles(mergedResult);
 	}
 
@@ -1685,16 +1715,17 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{" + result.getMinLength() + ",8}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 	}
 
 	public void _longPerf(final boolean statisticsOn) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("_longPerf");
 		if (!statisticsOn) {
-			analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+			analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		}
 		final long sampleCount = 100_000_000_000L;
@@ -1734,7 +1765,8 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d{" + result.getMinLength() + ",8}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 		logger.info("Count {}, duration: {}ms, ~{} per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes

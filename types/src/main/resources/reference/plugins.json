@@ -1,6 +1,6 @@
 [
 	{
-		"qualifier": "EMAIL",
+		"semanticType": "EMAIL",
 		"description": "Email Address",
 		"pluginType": "java",
 		"signature": "+A0AMjgeFlGRlPKsX/iXYmoWpfY=",
@@ -9,7 +9,7 @@
 		"priority": 10
 	},
 	{
-		"qualifier": "URI.URL",
+		"semanticType": "URI.URL",
 		"description": "URL - see RFC 3986",
 		"pluginType": "java",
 		"signature": "r+muJMmeRDtmg9qyVbWCOAMusc8=",
@@ -18,7 +18,7 @@
 		"priority": 15
 	},
 	{
-		"qualifier": "IPADDRESS.IPV4",
+		"semanticType": "IPADDRESS.IPV4",
 		"description": "IP V4 Address",
 		"pluginType": "java",
 		"signature": "tjKmv3C98nzoxPHtvYb1sp+UQEY=",
@@ -28,7 +28,7 @@
 		"priority": 20
 	},
 	{
-		"qualifier": "IPADDRESS.IPV6",
+		"semanticType": "IPADDRESS.IPV6",
 		"description": "IP V6 Address",
 		"pluginType": "java",
 		"signature": "UCm9KlNKo0Hv4BULLB3qSWbMQHY=",
@@ -38,7 +38,7 @@
 		"priority": 25
 	},
 	{
-		"qualifier": "TELEPHONE",
+		"semanticType": "TELEPHONE",
 		"description": "Telephone Number (Generic)",
 		"pluginType": "java",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
@@ -48,7 +48,7 @@
 		"priority": 40
 	},
 	{
-		"qualifier": "GUID",
+		"semanticType": "GUID",
 		"description": "Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67",
 		"pluginType": "java",
 		"signature": "AtovlR1okrAJUeTCpYUUTXow4yM=",
@@ -61,7 +61,7 @@
 		"priority": 50
 	},
 	{
-		"qualifier": "VIN",
+		"semanticType": "VIN",
 		"description": "Vehicle Identification Number",
 		"pluginType": "java",
 		"signature": "JLD6IQMMMoQZTZH7OyHsGRuSoTQ=",
@@ -71,7 +71,7 @@
 		"priority": 51
 	},
 	{
-		"qualifier": "POSTAL_CODE.ZIP5_US",
+		"semanticType": "POSTAL_CODE.ZIP5_US",
 		"description": "Postal Code (US)",
 		"pluginType": "java",
 		"signature": "VvLLosjm/N/z7zpF2IDSgpeT02c=",
@@ -84,7 +84,7 @@
 		"priority": 60
 	},
 	{
-		"qualifier": "POSTAL_CODE.ZIP5_PLUS4_US",
+		"semanticType": "POSTAL_CODE.ZIP5_PLUS4_US",
 		"description": "Postal Code + 4 (US)",
 		"pluginType": "java",
 		"signature": "97eQHR8swSv5+VyCVyYDNayMdy4=",
@@ -96,7 +96,7 @@
 		"priority": 61
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_UK",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_UK",
 		"description": "Postal Code (UK)",
 		"pluginType": "java",
 		"signature": "0m+ny+TVuhGGP1RGw3XKoni4Qyo=",
@@ -105,7 +105,7 @@
 		"priority": 62
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_CA",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_CA",
 		"description": "Postal Code (CA)",
 		"pluginType": "java",
 		"signature": "PJdCrn71buwdG4wyhlOpLSrc1+M=",
@@ -121,7 +121,7 @@
 		"priority": 63
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_AU",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_AU",
 		"description": "Postal Code (AU)",
 		"pluginType": "regex",
 		"signature": "GGcrawbIPrKWkNlGg2vaccl1MNY=",
@@ -139,7 +139,7 @@
 		"priority": 64
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_NL",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_NL",
 		"description": "Postal Code (NL)",
 		"pluginType": "regex",
 		"signature": "zPoRG8ivy1ZRtQmx2dYu/pc6Prk=",
@@ -162,7 +162,7 @@
 		"priority": 65
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_FR",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_FR",
 		"description": "Postal Code (FR)",
 		"pluginType": "java",
 		"signature": "NBx2UhY9b1E8PKjEPXxorgBew1s=",
@@ -177,7 +177,7 @@
 		"priority": 66
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_JA",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_JA",
 		"description": "Postal Code (JA)",
 		"pluginType": "java",
 		"signature": "90grIf//XH2xAcARIKYJPzmfhJg=",
@@ -186,7 +186,7 @@
 		"priority": 67
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_PT",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_PT",
 		"description": "Postal Code (PT)",
 		"pluginType": "regex",
 		"signature": "YOwVZiE8O4fMUH/RJ/34zgxi0yg=",
@@ -204,7 +204,7 @@
 		"priority": 68
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_DE",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_DE",
 		"description": "Postal Code (DE)",
 		"pluginType": "list",
 		"signature": "7Q/NP19OT3uFsdQkhdDLsBJdZck=",
@@ -219,7 +219,7 @@
 		"priority": 69
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_ES",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_ES",
 		"description": "Postal Code (ES)",
 		"pluginType": "list",
 		"signature": "wme+qdk/tsdr4Fb4qfCyAaicpmE=",
@@ -234,7 +234,7 @@
 		"priority": 70
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_SE",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_SE",
 		"description": "Postal Code (SE)",
 		"pluginType": "java",
 		"signature": "pfVf2x3vraje4ycWyo87F5A6e38=",
@@ -247,7 +247,7 @@
 		"priority": 71
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_UY",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_UY",
 		"description": "Postal Code (UY)",
 		"pluginType": "list",
 		"signature": "bGHgk5RMF4mqRw5xkTxm8AdUMxg=",
@@ -262,7 +262,7 @@
 		"priority": 72
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_MX",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_MX",
 		"description": "Postal Code (MX)",
 		"pluginType": "java",
 		"signature": "z0MBnHNCyrDo8blnBUAqjNDVwdw=",
@@ -275,7 +275,7 @@
 		"priority": 72
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_BG",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_BG",
 		"description": "Postal Code (BG)",
 		"pluginType": "list",
 		"signature": "vf445LWLa0dN+AZtiaxv3WlOrDc=",
@@ -290,7 +290,7 @@
 		"priority": 73
 	},
 	{
-		"qualifier": "POSTAL_CODE.POSTAL_CODE_CO",
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_CO",
 		"description": "Postal Code (CO)",
 		"pluginType": "java",
 		"signature": "nb4TdG9sqJZTuLyvoOUywb1lA4s=",
@@ -306,7 +306,7 @@
 	},
 	
 	{
-		"qualifier": "STREET_ADDRESS_EN",
+		"semanticType": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
 		"pluginType": "java",
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
@@ -318,7 +318,7 @@
 		"priority": 75
 	},
 	{
-		"qualifier": "STREET_ADDRESS2_EN",
+		"semanticType": "STREET_ADDRESS2_EN",
 		"description": "Street Address - Line 2 (English Language)",
 		"pluginType": "java",
 		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
@@ -330,7 +330,7 @@
 		"priority": 76
 	},
 	{
-		"qualifier": "STREET_MARKER_EN",
+		"semanticType": "STREET_MARKER_EN",
 		"description": "Street Marker (English Language)",
 		"pluginType": "list",
 		"signature": "whIM9TwB3ArMA50gXTlOBjNCFJk=",
@@ -343,7 +343,7 @@
 		"priority": 77
 	},
 	{
-		"qualifier": "STREET_ADDRESS_<LANGUAGE>",
+		"semanticType": "STREET_ADDRESS_<LANGUAGE>",
 		"description": "Street Address",
 		"pluginType": "java",
 		"signature": "[NONE]",
@@ -370,7 +370,7 @@
 		"priority": 78
 	},
 	{
-		"qualifier": "GENDER.TEXT_<LANGUAGE>",
+		"semanticType": "GENDER.TEXT_<LANGUAGE>",
 		"description": "Gender",
 		"pluginType": "java",
 		"signature": "[NONE]",
@@ -396,7 +396,7 @@
 		"priority": 80
 	},
 	{
-		"qualifier" : "GENDER.TEXT_JA",
+		"semanticType" : "GENDER.TEXT_JA",
 		"description": "Gender (Japanese Language)",
 		"pluginType": "regex",
 		"signature": "Cw4ieuKHMT4qah2mJ9uWUYg+rNk=",
@@ -416,7 +416,7 @@
 		"priority": 81
 	},
 	{
-		"qualifier" : "GENDER.TEXT_ZH",
+		"semanticType" : "GENDER.TEXT_ZH",
 		"description": "Gender (Chinese Language)",
 		"pluginType": "regex",
 		"signature": "Cw4ieuKHMT4qah2mJ9uWUYg+rNk=",
@@ -436,7 +436,7 @@
 		"priority": 82
 	},
 	{
-		"qualifier" : "PERSON.AGE",
+		"semanticType" : "PERSON.AGE",
 		"description": "Age (person)",
 		"pluginType": "java",
 		"signature": "4IK7tmSs276PtQDC39Ggz27RB1g=",
@@ -463,7 +463,7 @@
 		"priority": 83
 	},
 	{
-		"qualifier" : "PERSON.RACE_EN",
+		"semanticType" : "PERSON.RACE_EN",
 		"description": "Race/Ethnicity (person)",
 		"pluginType": "java",
 		"signature": "20Jx6q02Vkew5xiX87Cnvi2EVf4=",
@@ -477,7 +477,7 @@
 		"priority": 84
 	},
 	{
-		"qualifier" : "PERSON.RACE_ABBR_EN",
+		"semanticType" : "PERSON.RACE_ABBR_EN",
 		"description": "Race/Ethnicity (person)",
 		"pluginType": "java",
 		"signature": "exN+QvGFqAfnTL793VLPx85wmQ0=",
@@ -491,7 +491,7 @@
 		"priority": 85
 	},
 	{
-		"qualifier" : "PERSON.MARITAL_STATUS_EN",
+		"semanticType" : "PERSON.MARITAL_STATUS_EN",
 		"description": "Marital Status (person)",
 		"pluginType": "java",
 		"signature": "BHhRzS4WZnSye7mgRa+J3L1fEWQ=",
@@ -505,7 +505,7 @@
 		"priority": 86
 	},
 	{
-		"qualifier": "NATIONALITY_EN",
+		"semanticType": "NATIONALITY_EN",
 		"description": "Nationality (English Language)",
 		"pluginType": "list",
 		"signature": "FO3IMfeesbLJh6WwceQWPVORcnE=",
@@ -518,7 +518,7 @@
 		"priority": 88
 	},
 	{
-		"qualifier": "HONORIFIC_EN",
+		"semanticType": "HONORIFIC_EN",
 		"description": "Honorific (English Language)",
 		"pluginType": "list",
 		"signature": "/Di73LZHHGjcJYhigTqSTQrtTvA=",
@@ -531,7 +531,7 @@
 		"priority": 89
 	},
 	{
-		"qualifier": "COUNTRY.TEXT_EN",
+		"semanticType": "COUNTRY.TEXT_EN",
 		"description": "Country as a string (English language)",
 		"pluginType": "java",
 		"signature": "T4UZNFT895GsC99J7dOz/ENNYvM=",
@@ -549,7 +549,7 @@
 		"priority": 90
 	},
 	{
-		"qualifier": "COUNTRY.TEXT_DE",
+		"semanticType": "COUNTRY.TEXT_DE",
 		"description": "Country as a string (German)",
 		"pluginType": "list",
 		"signature": "Rs6U63buoAAlnITZdPtJuxUrgNg=",
@@ -562,7 +562,7 @@
 		"priority": 91
 	},
 	{
-		"qualifier": "COUNTRY.TEXT_ES",
+		"semanticType": "COUNTRY.TEXT_ES",
 		"description": "Country as a string (Spanish)",
 		"pluginType": "list",
 		"signature": "fot3XHPIh18wTcBDyeN3DlY7LYY=",
@@ -577,7 +577,7 @@
 		"priority": 92
 	},
 	{
-		"qualifier": "MONTH.ABBR_<LOCALE>",
+		"semanticType": "MONTH.ABBR_<LOCALE>",
 		"description": "Month Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"pluginType": "java",
 		"signature": "[NONE]",
@@ -586,7 +586,7 @@
 		"priority": 100
 	},
 	{
-		"qualifier": "MONTH.FULL_<LOCALE>",
+		"semanticType": "MONTH.FULL_<LOCALE>",
 		"description": "Full Month name <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"pluginType": "java",
 		"signature": "[NONE]",
@@ -595,7 +595,7 @@
 		"priority": 101
 	},
 	{
-		"qualifier": "DAY.ABBR_<LOCALE>",
+		"semanticType": "DAY.ABBR_<LOCALE>",
 		"description": "Day of Week Abbreviation <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"pluginType": "java",
 		"signature": "[NONE]",
@@ -604,7 +604,7 @@
 		"priority": 102
 	},
 	{
-		"qualifier": "DAY.FULL_<LOCALE>",
+		"semanticType": "DAY.FULL_<LOCALE>",
 		"description": "Full Day of Week name <LOCALE> = Locale, e.g. en-US for English language in US)",
 		"pluginType": "java",
 		"signature": "[NONE]",
@@ -613,7 +613,7 @@
 		"priority": 103
 	},
 	{
-		"qualifier": "PERIOD.QUARTER",
+		"semanticType": "PERIOD.QUARTER",
 		"description": "Quarter (Year)",
 		"pluginType": "java",
 		"signature": "H0LOGKpMF3InUXIIU5pCKHEReTo=",
@@ -626,7 +626,7 @@
 		"priority": 104
 	},
 	{
-		"qualifier": "PERIOD.HALF",
+		"semanticType": "PERIOD.HALF",
 		"description": "Half (Year)",
 		"pluginType": "regex",
 		"signature": "lc0Ep9P3R6hDY6EIlSvRtjjvfbc=",
@@ -643,7 +643,7 @@
 		"priority": 105
 	},
 	{
-		"qualifier": "PERIOD.YEAR_RANGE",
+		"semanticType": "PERIOD.YEAR_RANGE",
 		"description": "Year Range",
 		"pluginType": "java",
 		"signature": "nA7JzkjHCLvvRAfhvJv12v4FNgU=",
@@ -652,7 +652,7 @@
 		"priority": 106
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PROVINCE_CA",
+		"semanticType": "STATE_PROVINCE.PROVINCE_CA",
 		"description": "Canadian Province Code",
 		"pluginType": "list",
 		"signature": "jwzKHMfuq3AO4lEKEm0e/ZmOIRA=",
@@ -665,7 +665,7 @@
 		"priority": 110
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_MX",
+		"semanticType": "STATE_PROVINCE.STATE_MX",
 		"description": "Mexican State Code",
 		"pluginType": "list",
 		"signature": "h565UW3Wl3GYzYAriMJM6T1LsmY=",
@@ -678,7 +678,7 @@
 		"priority": 111
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_US",
+		"semanticType": "STATE_PROVINCE.STATE_US",
 		"description": "US State Code",
 		"pluginType": "list",
 		"signature": "JD5jeXHLzGctpqicY44B9iJzyXU=",
@@ -691,7 +691,7 @@
 		"priority": 112
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NA",
+		"semanticType": "STATE_PROVINCE.STATE_PROVINCE_NA",
 		"description": "US State Code/Canadian Province Code/Mexican State Code",
 		"pluginType": "java",
 		"signature": "Q00LXfhmPibwrK8HTkzNsRosvzw=",
@@ -708,7 +708,7 @@
 		"priority": 113
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_AU",
+		"semanticType": "STATE_PROVINCE.STATE_AU",
 		"description": "Australian State Code",
 		"pluginType": "list",
 		"signature": "khHytrFa0Oj4KP/37i2mRhJmliU=",
@@ -727,7 +727,7 @@
 		"priority": 114
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PROVINCE_IT",
+		"semanticType": "STATE_PROVINCE.PROVINCE_IT",
 		"description": "Italian Province Code",
 		"pluginType": "list",
 		"signature": "0vMZaBH760lIeD7hdvi7RVIDoVc=",
@@ -740,7 +740,7 @@
 		"priority": 115
 	},
 	{
-		"qualifier": "STATE_PROVINCE.CANTON_CH",
+		"semanticType": "STATE_PROVINCE.CANTON_CH",
 		"description": "Swiss CANTON Code",
 		"pluginType": "list",
 		"signature": "YNu63sC5qbl7DWY0aV4khfLKrXs=",
@@ -753,7 +753,7 @@
 		"priority": 116
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_BR",
+		"semanticType": "STATE_PROVINCE.STATE_BR",
 		"description": "Brazilian State Code",
 		"pluginType": "list",
 		"signature": "5B0N5wsZpS+g/ck2cXCQjtqYwXA=",
@@ -766,7 +766,7 @@
 		"priority": 117
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PROVINCE_ZA",
+		"semanticType": "STATE_PROVINCE.PROVINCE_ZA",
 		"description": "South African Province Code",
 		"pluginType": "list",
 		"signature": "nXFbO6uiHPMEct83mAPMsziYPtI=",
@@ -779,7 +779,7 @@
 		"priority": 118
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_CA",
+		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_CA",
 		"description": "Canadian Province Name",
 		"pluginType": "list",
 		"signature": "hiCNMWvc1MO99KTP8IaH1Fp3s3Y=",
@@ -798,7 +798,7 @@
 		"priority": 120
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_NAME_MX",
+		"semanticType": "STATE_PROVINCE.STATE_NAME_MX",
 		"description": "Mexican State Name",
 		"pluginType": "list",
 		"signature": "f5Bx+omlv1xMG6Oq8XQo5RkrtmU=",
@@ -817,7 +817,7 @@
 		"priority": 121
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_NAME_US",
+		"semanticType": "STATE_PROVINCE.STATE_NAME_US",
 		"description": "US State Name",
 		"pluginType": "list",
 		"signature": "y0oxFvZb1RpG1UVwi/hSCEymwzc=",
@@ -836,7 +836,7 @@
 		"priority": 122
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_PROVINCE_NAME_NA",
+		"semanticType": "STATE_PROVINCE.STATE_PROVINCE_NAME_NA",
 		"description": "US State Name/Canadian Province Name/Mexican State Name",
 		"pluginType": "list",
 		"signature": "KfDjCnkj/KmZglkvM32W3OBEwxU=",
@@ -855,7 +855,7 @@
 		"priority": 123
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_NAME_AU",
+		"semanticType": "STATE_PROVINCE.STATE_NAME_AU",
 		"description": "Australian State Name",
 		"pluginType": "list",
 		"signature": "iNmmCNk8cEQ6mQuhOTxSlO+nvUk=",
@@ -874,7 +874,7 @@
 		"priority": 124
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_NAME_DE",
+		"semanticType": "STATE_PROVINCE.STATE_NAME_DE",
 		"description": "German State Name",
 		"pluginType": "list",
 		"signature": "bEx7JkLIUY8fjFyEhsjeJfx2k6o=",
@@ -893,7 +893,7 @@
 		"priority": 125
 	},
 	{
-		"qualifier": "STATE_PROVINCE.REGION_NAME_FR",
+		"semanticType": "STATE_PROVINCE.REGION_NAME_FR",
 		"description": "French Region",
 		"pluginType": "list",
 		"signature": "hiZwJanMwVKNX7yumKr1rNKQNN8=",
@@ -912,7 +912,7 @@
 		"priority": 126
 	},
 	{
-		"qualifier": "STATE_PROVINCE.DEPARTMENT_NAME_FR",
+		"semanticType": "STATE_PROVINCE.DEPARTMENT_NAME_FR",
 		"description": "French Department",
 		"pluginType": "list",
 		"signature": "oOZtEv/rhMuaXVd2SLFBvR1VShI=",
@@ -931,7 +931,7 @@
 		"priority": 127
 	},
 	{
-		"qualifier": "STATE_PROVINCE.INSEE_CODE_FR",
+		"semanticType": "STATE_PROVINCE.INSEE_CODE_FR",
 		"description": "French Insee Code (5 digit)",
 		"pluginType": "java",
 		"signature": "2dBxTIccKcNhE+xvma/5fTAfhiw=",
@@ -944,7 +944,7 @@
 		"priority": 128
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_IT",
+		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_IT",
 		"description": "Italian Province Name",
 		"pluginType": "list",
 		"signature": "veLvb2gbLjr395Sbu+jeP0R9ciQ=",
@@ -963,7 +963,7 @@
 		"priority": 129
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_ES",
+		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_ES",
 		"description": "Spanish Province Name",
 		"pluginType": "list",
 		"signature": "w5axJ/mMkNw2fiYY3xw7ZDvRurM=",
@@ -982,7 +982,7 @@
 		"priority": 130
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_NL",
+		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_NL",
 		"description": "Netherlands Province Name",
 		"pluginType": "list",
 		"signature": "LfF0rgcJobv3P/9fW8+SAzpl//c=",
@@ -1001,7 +1001,7 @@
 		"priority": 131
 	},
 	{
-		"qualifier": "STATE_PROVINCE.COUNTY_US",
+		"semanticType": "STATE_PROVINCE.COUNTY_US",
 		"description": "US County Name",
 		"pluginType": "list",
 		"signature": "NkMoovh9DwxDIeJXza8dsJ4wRzY=",
@@ -1020,7 +1020,7 @@
 		"priority": 132
 	},
 	{
-		"qualifier": "STATE_PROVINCE.COUNTY_UK",
+		"semanticType": "STATE_PROVINCE.COUNTY_UK",
 		"description": "United Kingdom County Name",
 		"pluginType": "list",
 		"signature": "ppbqIL83hfnExGV8bdzIoA3hLN8=",
@@ -1039,7 +1039,7 @@
 		"priority": 133
 	},
 	{
-		"qualifier": "STATE_PROVINCE.CANTON_NAME_CH",
+		"semanticType": "STATE_PROVINCE.CANTON_NAME_CH",
 		"description": "Swiss CANTON Name",
 		"pluginType": "list",
 		"signature": "s2RWNkJraOojAx4YB3NlVxPjqOY=",
@@ -1058,7 +1058,7 @@
 		"priority": 134
 	},
 	{
-		"qualifier": "STATE_PROVINCE.STATE_NAME_BR",
+		"semanticType": "STATE_PROVINCE.STATE_NAME_BR",
 		"description": "Brazilian State Name",
 		"pluginType": "list",
 		"signature": "Av9xqFJX7iwzve2N0bwz5yImxnM=",
@@ -1077,7 +1077,7 @@
 		"priority": 135
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PREFECTURE_NAME_JA",
+		"semanticType": "STATE_PROVINCE.PREFECTURE_NAME_JA",
 		"description": "Japanese Prefecture Name",
 		"pluginType": "list",
 		"signature": "qUPFgdl8kNvmZ8M55kR4qaFp184=",
@@ -1096,7 +1096,7 @@
 		"priority": 136
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_ZA",
+		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_ZA",
 		"description": "South African Province Name",
 		"pluginType": "list",
 		"signature": "79CAHTLod2FXV8V4iLZvXQ5r61M=",
@@ -1115,7 +1115,7 @@
 		"priority": 137
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_EC",
+		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_EC",
 		"description": "Ecuadorian Province Name",
 		"pluginType": "list",
 		"signature": "rre1QxKeEKPUbmo5hHdo62LHQKg=",
@@ -1134,7 +1134,7 @@
 		"priority": 138
 	},
 	{
-		"qualifier": "STATE_PROVINCE.DISTRICT_NAME_PT",
+		"semanticType": "STATE_PROVINCE.DISTRICT_NAME_PT",
 		"description": "Portuguese District Name",
 		"pluginType": "list",
 		"signature": "zx5UQndn84s9pYXMKYEV/HEuu9U=",
@@ -1153,7 +1153,7 @@
 		"priority": 139
 	},
 	{
-		"qualifier": "STATE_PROVINCE.MUNICIPALITY_BR",
+		"semanticType": "STATE_PROVINCE.MUNICIPALITY_BR",
 		"description": "Brazilian Municipality",
 		"pluginType": "list",
 		"signature": "+FROCExRov0I3emW4ucxNDfQvr0=",
@@ -1166,7 +1166,7 @@
 		"priority": 140
 	},
 	{
-		"qualifier": "STATE_PROVINCE.REGION_IT",
+		"semanticType": "STATE_PROVINCE.REGION_IT",
 		"description": "Italian Region",
 		"pluginType": "list",
 		"signature": "UzzWCvJr1W7TLdDlTUuiyJbrF2k=",
@@ -1179,7 +1179,7 @@
 		"priority": 14
 	},
 	{
-		"qualifier": "STATE_PROVINCE.COMMUNE_IT",
+		"semanticType": "STATE_PROVINCE.COMMUNE_IT",
 		"description": "Italian Commune",
 		"pluginType": "list",
 		"signature": "3QajzO92Nvv5D9haTofNgKJ6HNo=",
@@ -1193,7 +1193,7 @@
 		"priority": 142
 	},
 	{
-		"qualifier": "STATE_PROVINCE.COUNTY_HU",
+		"semanticType": "STATE_PROVINCE.COUNTY_HU",
 		"description": "Hungarian County",
 		"pluginType": "list",
 		"signature": "Cif4jZjegKgHwceZACrW5E0Vsdg=",
@@ -1206,7 +1206,7 @@
 		"priority": 143
 	},
 	{
-		"qualifier": "STATE_PROVINCE.COUNTY_IE",
+		"semanticType": "STATE_PROVINCE.COUNTY_IE",
 		"description": "Irish County",
 		"pluginType": "list",
 		"signature": "umrsnOd/JEy0ddIXpTD9iNBe7w8=",
@@ -1219,7 +1219,7 @@
 		"priority": 144
 	},
 	{
-		"qualifier": "STATE_PROVINCE.PROVINCE_NAME_IE",
+		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_IE",
 		"description": "Irish Province",
 		"pluginType": "list",
 		"signature": "x5yTiBlrSflCR2o91jz1tILKp9c=",
@@ -1232,7 +1232,7 @@
 		"priority": 145
 	},
 	{
-		"qualifier": "STATE_PROVINCE.MUNICIPALITY_MX",
+		"semanticType": "STATE_PROVINCE.MUNICIPALITY_MX",
 		"description": "Mexican Municipality",
 		"pluginType": "list",
 		"signature": "kepJbVnP+P/TSoxgry2mxiQFOg4=",
@@ -1245,7 +1245,7 @@
 		"priority": 146
 	},
 	{
-		"qualifier": "STATE_PROVINCE.SUBURB_AU",
+		"semanticType": "STATE_PROVINCE.SUBURB_AU",
 		"description": "Australian Suburb",
 		"pluginType": "java",
 		"signature": "VR2/cf7EOxcm7ed9eGp8A2j1fn4=",
@@ -1259,7 +1259,7 @@
 		"priority": 147
 	},
 	{
-		"qualifier": "STATE_PROVINCE.MUNICIPALITY_CO",
+		"semanticType": "STATE_PROVINCE.MUNICIPALITY_CO",
 		"description": "Colombian Municipality",
 		"pluginType": "list",
 		"signature": "w7YfMi7yPXuoePHgfnM7RDyb6UE=",
@@ -1272,7 +1272,7 @@
 		"priority": 148
 	},
 	{
-		"qualifier": "STATE_PROVINCE.DEPARTMENT_CO",
+		"semanticType": "STATE_PROVINCE.DEPARTMENT_CO",
 		"description": "Colombian Department",
 		"pluginType": "list",
 		"signature": "V3LTco+XmMy0HMMj8+HljXecDyU=",
@@ -1285,7 +1285,7 @@
 		"priority": 149
 	},
 	{
-		"qualifier": "CURRENCY_CODE.ISO-4217",
+		"semanticType": "CURRENCY_CODE.ISO-4217",
 		"description": "Currency as defined by ISO 4217",
 		"pluginType": "list",
 		"signature": "HElKonWFB+FY+MspBKm3eCwwrVo=",
@@ -1298,7 +1298,7 @@
 		"priority": 160
 	},
 	{
-		"qualifier": "CURRENCY.TEXT_EN",
+		"semanticType": "CURRENCY.TEXT_EN",
 		"description": "Currency Name",
 		"pluginType": "list",
 		"signature": "hp7SSeC1M4SD1q40lH1wjYzrgV8=",
@@ -1314,7 +1314,7 @@
 		"priority": 161
 	},
 	{
-		"qualifier": "COUNTRY.ISO-3166-3",
+		"semanticType": "COUNTRY.ISO-3166-3",
 		"description": "Country as defined by ISO 3166 - Alpha 3",
 		"pluginType": "list",
 		"signature": "WyaPkc1jgevOXlDl5bt1Za4j8ko=",
@@ -1327,7 +1327,7 @@
 		"priority": 162
 	},
 	{
-		"qualifier": "COUNTRY.ISO-3166-2",
+		"semanticType": "COUNTRY.ISO-3166-2",
 		"description": "Country as defined by ISO 3166 - Alpha 2",
 		"pluginType": "list",
 		"signature": "2ySMIn/48aoAVrw/OwOCKdYI4OE=",
@@ -1340,7 +1340,7 @@
 		"priority": 163
 	},
 	{
-		"qualifier": "TIMEZONE.IANA",
+		"semanticType": "TIMEZONE.IANA",
 		"description": "IANA Time Zone (Olson)",
 		"pluginType": "list",
 		"signature": "AYkvNH/jCNxWHK4uLso7vEbNh5U=",
@@ -1353,7 +1353,7 @@
 		"priority": 164
 	},
 	{
-		"qualifier": "CONTINENT.TEXT_EN",
+		"semanticType": "CONTINENT.TEXT_EN",
 		"description": "Continent",
 		"pluginType": "list",
 		"signature": "LpGvbcbbeanXoAkIVobKRfMuzcg=",
@@ -1366,7 +1366,7 @@
 		"priority": 165
 	},
 	{
-		"qualifier": "CONTINENT.CODE_EN",
+		"semanticType": "CONTINENT.CODE_EN",
 		"description": "Continent Code",
 		"pluginType": "list",
 		"signature": "7VSVzDUptpe+9R5UafDWEwLqKs4=",
@@ -1379,7 +1379,7 @@
 		"priority": 166
 	},
 	{
-		"qualifier": "AIRPORT_CODE.IATA",
+		"semanticType": "AIRPORT_CODE.IATA",
 		"description": "IATA Airport Code",
 		"pluginType": "list",
 		"signature": "yRx9nzsOl22lQTstXrT43OVBZoU=",
@@ -1396,7 +1396,7 @@
 		"priority": 167
 	},
 	{
-		"qualifier": "AIRLINE.IATA_CODE",
+		"semanticType": "AIRLINE.IATA_CODE",
 		"description": "IATA Airline Code",
 		"pluginType": "list",
 		"signature": "DFUIUVTe2c6xa7beZSL16iYFj2Q=",
@@ -1413,7 +1413,7 @@
 		"priority": 168
 	},
 	{
-		"qualifier": "AIRLINE.TEXT_EN",
+		"semanticType": "AIRLINE.TEXT_EN",
 		"description": "Airline Name",
 		"pluginType": "list",
 		"signature": "pE1aMtjAkbETBURTHyhqlYPTuPQ=",
@@ -1430,7 +1430,7 @@
 		"priority": 169
 	},
 	{
-		"qualifier": "NAME.FIRST",
+		"semanticType": "NAME.FIRST",
 		"description": "First Name",
 		"pluginType": "java",
 		"signature": "slggsAEDZ26rz9dqs15eNF23j2w=",
@@ -1491,7 +1491,7 @@
 		"priority": 170
 	},
 	{
-		"qualifier": "NAME.LAST",
+		"semanticType": "NAME.LAST",
 		"description": "Last Name",
 		"pluginType": "java",
 		"signature": "+h9v4tygGZxbEPbJLp5MDezGgME=",
@@ -1551,7 +1551,7 @@
 		"priority": 171
 	},
 	{
-		"qualifier": "NAME.LAST_FIRST",
+		"semanticType": "NAME.LAST_FIRST",
 		"description": "Merged Name (Last, First)",
 		"pluginType": "java",
 		"signature": "WlXF9TSnYBDQXbOMhceVK9XCxAk=",
@@ -1569,7 +1569,7 @@
 		"priority": 172
 	},
 	{
-		"qualifier": "NAME.FIRST_LAST",
+		"semanticType": "NAME.FIRST_LAST",
 		"description": "Merged Name (First Last)",
 		"pluginType": "java",
 		"signature": "pJJS+kSfyNDRb2T7SXIWhZhlH3c=",
@@ -1586,7 +1586,7 @@
 		"priority": 173
 	},
 	{
-		"qualifier": "NAME.MIDDLE_INITIAL",
+		"semanticType": "NAME.MIDDLE_INITIAL",
 		"description": "Middle Initial",
 		"pluginType": "regex",
 		"signature": "5AG+x37vekPMlggzCTebzFWovPc=",
@@ -1606,7 +1606,7 @@
 		"priority": 174
 	},
 	{
-		"qualifier": "NAME.MIDDLE",
+		"semanticType": "NAME.MIDDLE",
 		"description": "Middle Name",
 		"pluginType": "java",
 		"signature": "3UGho+Z93uiqi9L8+qjAQ1pb0qQ=",
@@ -1623,14 +1623,14 @@
 		"priority": 175
 	},
 	{
-		"qualifier": "NAME.SUFFIX",
+		"semanticType": "NAME.SUFFIX",
 		"description": "Name Suffix",
 		"pluginType": "list",
 		"signature": "O8pdYhB+VqM6qvj6Yc7Wt3JPhy0=",
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": "(?i)(suffix|.*[_ ]suffix)", "confidence": 99, "mandatory": true }, { "regExp": "(?i).*suffix", "confidence": 85, "mandatory": true } ]
+				"headerRegExps": [ { "regExp": "(?i)(suffix|suff|.*[_ ]suffix)", "confidence": 99, "mandatory": true }, { "regExp": "(?i).*suffix", "confidence": 85, "mandatory": true } ]
 			}
 		],
 		"content": "/reference/en_name_suffix.csv",
@@ -1641,7 +1641,7 @@
 		"priority": 176
 	},
 	{
-		"qualifier": "COORDINATE.LATITUDE_DECIMAL",
+		"semanticType": "COORDINATE.LATITUDE_DECIMAL",
 		"description": "Latitude (Decimal degrees)",
 		"pluginType": "regex",
 		"signature": "5+1TLjdhcG8m3gVn0m/r6uLmh/Q=",
@@ -1678,7 +1678,7 @@
 		"priority": 190
 	},
 	{
-		"qualifier": "COORDINATE.LONGITUDE_DECIMAL",
+		"semanticType": "COORDINATE.LONGITUDE_DECIMAL",
 		"description": "Longitude (Decimal degrees)",
 		"pluginType": "regex",
 		"signature": "nDTXmMjlW1pm2Rav/0mJVPeRvKc=",
@@ -1715,7 +1715,7 @@
 		"priority": 191
 	},
 	{
-		"qualifier": "COORDINATE.LATITUDE_DMS",
+		"semanticType": "COORDINATE.LATITUDE_DMS",
 		"description": "Latitude (degrees/minutes/seconds)",
 		"pluginType": "java",
 		"signature": "DbzARuk/thlR/jm3sj8H3vllZCE=",
@@ -1727,7 +1727,7 @@
 		"priority": 192
 	},
 	{
-		"qualifier": "COORDINATE.LONGITUDE_DMS",
+		"semanticType": "COORDINATE.LONGITUDE_DMS",
 		"description": "Longitude (degrees/minutes/seconds)",
 		"pluginType": "java",
 		"signature": "uZncg/K2y6hbc3Wul8IFlpvwEEU=",
@@ -1739,7 +1739,7 @@
 		"priority": 193
 	},
 	{
-		"qualifier": "COORDINATE.EASTING",
+		"semanticType": "COORDINATE.EASTING",
 		"description": "Latitude - easting",
 		"pluginType": "regex",
 		"signature": "EMjCy1d/N2KNGU3JR8XeZGAcIW0=",
@@ -1759,7 +1759,7 @@
 		"priority": 194
 	},
 	{
-		"qualifier": "COORDINATE.NORTHING",
+		"semanticType": "COORDINATE.NORTHING",
 		"description": "Longitude - northing",
 		"pluginType": "regex",
 		"signature": "RWgxHqDcPc9KKgzBF03YcFjzwIA=",
@@ -1779,7 +1779,7 @@
 		"priority": 195
 	},
 	{
-		"qualifier": "COORDINATE_PAIR.DECIMAL",
+		"semanticType": "COORDINATE_PAIR.DECIMAL",
 		"description": "Coordinate Pair Lat,Long - Decimal degrees",
 		"pluginType": "regex",
 		"signature": "6lVqkPqRAcyOlhHO3ckHttlzBww=",
@@ -1799,7 +1799,7 @@
 		"priority": 196
 	},
 	{
-		"qualifier": "COORDINATE_PAIR.DECIMAL_PAREN",
+		"semanticType": "COORDINATE_PAIR.DECIMAL_PAREN",
 		"description": "Coordinate Pair (Lat,Long) - Decimal degrees)",
 		"pluginType": "regex",
 		"signature": "JjuOgDiwZkSPUB8AQMBLHAM1HFs=",
@@ -1819,7 +1819,7 @@
 		"priority": 197
 	},
 	{
-		"qualifier": "CITY",
+		"semanticType": "CITY",
 		"description": "City/Town",
 		"pluginType": "regex",
 		"signature": "mz6raYadjSZxxvo+j66/fQXbhf8=",
@@ -1858,7 +1858,7 @@
 		"priority": 210
 	},
 	{
-		"qualifier": "COMPANY_NAME",
+		"semanticType": "COMPANY_NAME",
 		"description": "Organization/Company Name",
 		"pluginType": "regex",
 		"signature": "gTynrjgOpvdzfWdVMRddP2Ksv8k=",
@@ -1879,7 +1879,7 @@
 		"priority": 211
 	},
 	{
-		"qualifier": "CREDIT_CARD_TYPE",
+		"semanticType": "CREDIT_CARD_TYPE",
 		"description": "Type of Credit CARD - e.g. AMEX, VISA, ...",
 		"pluginType": "list",
 		"signature": "QzgdMpiIKP3sFI8FS6u3taAuRK4=",
@@ -1892,7 +1892,7 @@
 		"priority": 220
 	},
 	{
-		"qualifier": "SSN",
+		"semanticType": "SSN",
 		"description": "Social Security Number (US)",
 		"pluginType": "java",
 		"signature": "SaJgghJaa44guUQ5oMO6woNkWac=",
@@ -1907,7 +1907,7 @@
 		"priority": 225
 	},
 	{
-		"qualifier": "IDENTITY.EIN_US",
+		"semanticType": "IDENTITY.EIN_US",
 		"description": "Employer Identification Number (US)",
 		"pluginType": "java",
 		"signature": "XwD3tlpcRPsH1AXfYE5z7XPvrjA=",
@@ -1923,7 +1923,7 @@
 		"priority": 226
 	},
 	{
-		"qualifier": "IDENTITY.SSN_FR",
+		"semanticType": "IDENTITY.SSN_FR",
 		"description": "Social Security Number (France)",
 		"pluginType": "java",
 		"signature": "XfMSrETk0IIuromCYEfRy+k212s=",
@@ -1935,7 +1935,7 @@
 		"priority": 231
 	},
 	{
-		"qualifier": "IDENTITY.INDIVIDUAL_NUMBER_JA",
+		"semanticType": "IDENTITY.INDIVIDUAL_NUMBER_JA",
 		"description": "Individual Number / My Number (Japan)",
 		"pluginType": "java",
 		"signature": "E4/GpH4/SwmWNCLlNswUgL6qWBU=",
@@ -1947,7 +1947,7 @@
 		"priority": 232
 	},
 	{
-		"qualifier": "IDENTITY.SSN_CH",
+		"semanticType": "IDENTITY.SSN_CH",
 		"description": "AVH Number / SSN (Switzerland)",
 		"pluginType": "java",
 		"signature": "JuS68p5mp6n2dvAxNDEuS7S4f9U=",
@@ -1959,7 +1959,7 @@
 		"priority": 233
 	},
 	{
-		"qualifier": "IDENTITY.AADHAR_IN",
+		"semanticType": "IDENTITY.AADHAR_IN",
 		"description": "Aadhar (India)",
 		"pluginType": "java",
 		"signature": "Wlco1SWZzWRzZSrYkb7kcQF3O/E=",
@@ -1971,7 +1971,7 @@
 		"priority": 234
 	},
 	{
-		"qualifier": "IDENTITY.NHS_UK",
+		"semanticType": "IDENTITY.NHS_UK",
 		"description": "NHS (UK)",
 		"pluginType": "java",
 		"signature": "CftIkR8ZKJb0EsTdGaP4WzBW4/c=",
@@ -1983,7 +1983,7 @@
 		"priority": 235
 	},
 	{
-		"qualifier": "IDENTITY.DUNS",
+		"semanticType": "IDENTITY.DUNS",
 		"description": "Data Universal Numbering System (Dun & Bradstreet)",
 		"pluginType": "regex",
 		"signature": "DMFnAAIxAV3SYWq07h/9U2S8IVo=",
@@ -2001,7 +2001,7 @@
 		"priority": 236
 	},
 	{
-		"qualifier": "IDENTITY.VAT_<COUNTRY>",
+		"semanticType": "IDENTITY.VAT_<COUNTRY>",
 		"description": "VAT",
 		"pluginType": "java",
 		"signature": "[NONE]",
@@ -2018,7 +2018,7 @@
 		"priority": 237
 	},
 	{
-		"qualifier": "LANGUAGE.ISO-639-2",
+		"semanticType": "LANGUAGE.ISO-639-2",
 		"description": "Language code - ISO 639, two character",
 		"pluginType": "list",
 		"signature": "oh7DsTF4qDUm+o+JPy7jAIoU+1Y=",
@@ -2031,7 +2031,7 @@
 		"priority": 240
 	},
 	{
-		"qualifier": "LANGUAGE.ISO-639-1",
+		"semanticType": "LANGUAGE.ISO-639-1",
 		"description": "Language code - ISO 639, three character",
 		"pluginType": "list",
 		"signature": "5f6VjpTf8QQ4BjI0GVI1e7z9o3U=",
@@ -2044,7 +2044,7 @@
 		"priority": 241
 	},
 	{
-		"qualifier": "LANGUAGE.TEXT_EN",
+		"semanticType": "LANGUAGE.TEXT_EN",
 		"description": "Language name, e.g. English, French, ...",
 		"pluginType": "list",
 		"pluginOptions": "words=all",
@@ -2064,7 +2064,7 @@
 		"priority": 250
 	},
 	{
-		"qualifier": "MACADDRESS",
+		"semanticType": "MACADDRESS",
 		"description": "MAC Address",
 		"pluginType": "regex",
 		"signature": "QIZNObx4ycNBImDb7esJCP1YrOs=",
@@ -2091,7 +2091,7 @@
 		"priority": 260
 	},
 	{
-		"qualifier": "MONTH.DIGITS",
+		"semanticType": "MONTH.DIGITS",
 		"description": "Numeric Month",
 		"pluginType": "java",
 		"signature": "dFlMU1F4av5mccH3zIeKaRe67SY=",
@@ -2107,7 +2107,7 @@
 		"priority": 270
 	},
 	{
-		"qualifier": "DAY.DIGITS",
+		"semanticType": "DAY.DIGITS",
 		"description": "Numeric Day of Month",
 		"pluginType": "java",
 		"signature": "1C6IAjixbGXDfrkL4dEndXg65BQ=",
@@ -2126,7 +2126,7 @@
 		"priority": 271
 	},
 	{
-		"qualifier": "EPOCH.MILLISECONDS",
+		"semanticType": "EPOCH.MILLISECONDS",
 		"description": "Unix Epoch (Timestamp) - milliseconds",
 		"pluginType": "regex",
 		"signature": "viRZbKzQgIqtkppDhoCbAFLXEag=",
@@ -2147,7 +2147,7 @@
 		"priority": 272
 	},
 	{
-		"qualifier": "EPOCH.NANOSECONDS",
+		"semanticType": "EPOCH.NANOSECONDS",
 		"description": "Unix Epoch (Timestamp) - nanoseconds",
 		"pluginType": "regex",
 		"signature": "J4XCZXZ7BfO/UL8stzuwRwBHFgc=",
@@ -2168,7 +2168,7 @@
 		"priority": 273
 	},
 	{
-		"qualifier": "CHECKDIGIT.LUHN",
+		"semanticType": "CHECKDIGIT.LUHN",
 		"description": "LUHN Checkdigit (Credit Cards, IMEI, etc)",
 		"pluginType": "java",
 		"signature": "ySEbGrpJCO/yoMiVxyK5vi9sBtU=",
@@ -2178,7 +2178,7 @@
 		"priority": 290
 	},
 	{
-		"qualifier": "CHECKDIGIT.CUSIP",
+		"semanticType": "CHECKDIGIT.CUSIP",
 		"description": "CUSIP - North American Security Identifiers",
 		"pluginType": "java",
 		"signature": "4EK6Y3hBd2en5Hm9EUKnVbrUjlM=",
@@ -2194,7 +2194,7 @@
 		"priority": 291
 	},
 	{
-		"qualifier": "CHECKDIGIT.SEDOL",
+		"semanticType": "CHECKDIGIT.SEDOL",
 		"description": "SEDOL - UK Security Identifiers",
 		"pluginType": "java",
 		"signature": "A6zVzMb8GxHKIRvQeHJYY2mUqV0=",
@@ -2203,7 +2203,7 @@
 		"priority": 292
 	},
 	{
-		"qualifier": "CHECKDIGIT.ISIN",
+		"semanticType": "CHECKDIGIT.ISIN",
 		"description": "ISIN - International Securities Identification Number",
 		"pluginType": "java",
 		"signature": "ROIyMHsrinw2O/REk9ClAb0WUEs=",
@@ -2212,7 +2212,7 @@
 		"priority": 293
 	},
 	{
-		"qualifier": "CHECKDIGIT.EAN13",
+		"semanticType": "CHECKDIGIT.EAN13",
 		"description": "EAN-13 - EAN-13/ISBN-13 Check digit",
 		"pluginType": "java",
 		"signature": "AP6Bjl97rR4D1ogsqPqXGoD5Dq4=",
@@ -2222,7 +2222,7 @@
 		"priority": 294
 	},
 	{
-		"qualifier": "CHECKDIGIT.UPC",
+		"semanticType": "CHECKDIGIT.UPC",
 		"description": "UPC - Universal Product Code",
 		"pluginType": "java",
 		"signature": "L88o6zYDCyR84UYMe+O/ua0Kfcg=",
@@ -2232,7 +2232,7 @@
 		"priority": 295
 	},
 	{
-		"qualifier": "CHECKDIGIT.IBAN",
+		"semanticType": "CHECKDIGIT.IBAN",
 		"description": "IBAN - International Bank Account Number",
 		"pluginType": "java",
 		"signature": "ahEtumk3vTi+ErbmmqrmBN7OeVU=",
@@ -2241,7 +2241,7 @@
 		"priority": 296
 	},
 	{
-		"qualifier": "CHECKDIGIT.ABA",
+		"semanticType": "CHECKDIGIT.ABA",
 		"description": "ABA Number (or Routing Transit Number (RTN))",
 		"pluginType": "java",
 		"signature": "z/uWdWQDM6Ln80wNSIshhGV5et4=",
@@ -2251,7 +2251,7 @@
 		"priority": 297
 	},
 	{
-		"qualifier": "CHECKDIGIT.ISBN",
+		"semanticType": "CHECKDIGIT.ISBN",
 		"description": "ISBN-13 identifiers (with hyphens)",
 		"pluginType": "java",
 		"signature": "4ZyGddBdufT5msMx8IyO5ZJP30s=",
@@ -2260,7 +2260,7 @@
 		"priority": 298
 	},
 	{
-		"qualifier": "JOB_TITLE_EN",
+		"semanticType": "JOB_TITLE_EN",
 		"description": "Job Title/Occupation (English Language)",
 		"pluginType": "java",
 		"signature": "6IKfzTa++cfQDm7aehEqSaJ/rek=",
@@ -2272,7 +2272,7 @@
 		"priority": 300
 	},
 	{
-		"qualifier": "INDUSTRY_EN",
+		"semanticType": "INDUSTRY_EN",
 		"description": "Industry Name",
 		"pluginType": "list",
 		"signature": "j2TOVT5j9M0DIQyTrwOdB71iZdA=",
@@ -2285,7 +2285,7 @@
 		"priority": 301
 	},
 	{
-		"qualifier": "HASH.SHA1_HEX",
+		"semanticType": "HASH.SHA1_HEX",
 		"description": "SHA1 Hash - hexadecimal",
 		"pluginType": "regex",
 		"signature": "N4sH+cysuswY590FSnqXWIn0e3k=",
@@ -2304,7 +2304,7 @@
 		"priority": 302
 	},
 	{
-		"qualifier": "HASH.SHA256_HEX",
+		"semanticType": "HASH.SHA256_HEX",
 		"description": "SHA256 Hash - hexadecimal",
 		"pluginType": "regex",
 		"signature": "D+loPv6WvUlbi28kW3z7tVJ40N4=",
@@ -2323,7 +2323,7 @@
 		"priority": 303
 	},
 	{
-		"qualifier": "COLOR.HEX",
+		"semanticType": "COLOR.HEX",
 		"description": "Hex Color code",
 		"pluginType": "regex",
 		"signature": "HX3ks449m2szm58Mj0TNb+W8e0A=",
@@ -2342,7 +2342,7 @@
 		"priority": 304
 	},
 	{
-		"qualifier": "COLOR.TEXT_EN",
+		"semanticType": "COLOR.TEXT_EN",
 		"description": "Color name",
 		"pluginType": "list",
 		"pluginOptions": "words=all",
@@ -2356,7 +2356,19 @@
 		"priority": 305
 	},
 	{
-		"qualifier": "FREE_TEXT",
+		"semanticType": "DIRECTION",
+		"description": "Cardinal Direction",
+		"pluginType": "java",
+		"signature": "eQbFEkaZaWJM4Quexoibt1QJsnw=",
+		"clazz": "com.cobber.fta.plugins.Direction",
+		"validLocales": [
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(directions).*", "confidence": 99 }, { "regExp": ".*(?i)(dir).*", "confidence": 90 } ] }
+		],
+		"baseType": "STRING",
+		"priority": 306
+	},
+	{
+		"semanticType": "FREE_TEXT",
 		"description": "Free Text field - e.g. Description, Notes, Comments, ...",
 		"pluginType": "java",
 		"signature": "7WbjWLZJ8Zdm+U8po/igrvDH3yE=",

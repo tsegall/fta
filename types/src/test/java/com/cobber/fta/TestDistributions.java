@@ -18,12 +18,15 @@ package com.cobber.fta;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -422,7 +425,7 @@ public class TestDistributions {
 		assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{4} \\d{1,2}:\\d{2}:\\d{2} (?i)(AM|PM)");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
-		assertEquals(result.getTypeQualifier(), "MM/dd/yyyy h:mm:ss a");
+		assertEquals(result.getTypeModifier(), "MM/dd/yyyy h:mm:ss a");
 
 		String q0_0 = result.getValueAtQuantile(0);
 		String q0_5 = result.getValueAtQuantile(.5);
@@ -503,7 +506,7 @@ public class TestDistributions {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{" + digits + "}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 
 		String q0_0 = result.getValueAtQuantile(0);
 		String q0_5 = result.getValueAtQuantile(.5);
@@ -540,7 +543,7 @@ public class TestDistributions {
 		assertEquals(result.getRegExp(), "(?i)(FALSE|TRUE)");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.BOOLEAN);
-		assertEquals(result.getTypeQualifier(), "TRUE_FALSE");
+		assertEquals(result.getTypeModifier(), "TRUE_FALSE");
 
 		Boolean q0_0 = Boolean.valueOf(result.getValueAtQuantile(0));
 		Boolean q0_5 = Boolean.valueOf(result.getValueAtQuantile(.5));
@@ -602,7 +605,7 @@ public class TestDistributions {
 		assertEquals(result.getRegExp(), "(?i)(FALSE|TRUE)");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.BOOLEAN);
-		assertEquals(result.getTypeQualifier(), "TRUE_FALSE");
+		assertEquals(result.getTypeModifier(), "TRUE_FALSE");
 
 		Boolean q0_0 = Boolean.valueOf(result.getValueAtQuantile(0));
 		Boolean q0_5 = Boolean.valueOf(result.getValueAtQuantile(.5));
@@ -658,7 +661,7 @@ public class TestDistributions {
 		assertEquals(result.getRegExp(), "\\d{2}:\\d{2}:\\d{2}\\.\\d{3}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALTIME);
-		assertEquals(result.getTypeQualifier(), "HH:mm:ss.SSS");
+		assertEquals(result.getTypeModifier(), "HH:mm:ss.SSS");
 
 		String q0_0 = result.getValueAtQuantile(0);
 		String q0_5 = result.getValueAtQuantile(.5);
@@ -712,7 +715,7 @@ public class TestDistributions {
 		assertEquals(result.getRegExp(), "[ 	]*\\d{1,2}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeQualifier(), "HH:mm:ss.SSS");
+		assertNull(result.getTypeModifier(), "HH:mm:ss.SSS");
 
 		String q0_0 = result.getValueAtQuantile(0);
 		String q0_5 = result.getValueAtQuantile(.5);
@@ -747,7 +750,7 @@ public class TestDistributions {
 		assertEquals(result.getRegExp(), "([+-]?([0-9]|[0-8][0-9])\\.\\d+)|[+-]?90\\.0+|0");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "COORDINATE.LATITUDE_DECIMAL");
+		assertEquals(result.getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");
 
 		String q0_0 = result.getValueAtQuantile(0);
 		String q0_5 = result.getValueAtQuantile(.5);
@@ -789,7 +792,7 @@ public class TestDistributions {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeQualifier(), "SIGNED");
+		assertEquals(result.getTypeModifier(), "SIGNED");
 
 		assertEquals(result.getMean(), 0.0, 1.0);
 		assertEquals(result.getStandardDeviation(), 100, 1);
@@ -827,6 +830,153 @@ public class TestDistributions {
 		}
 	}
 
+	/*
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void checkHistogramSerialization() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("normalCurve");
+		final SecureRandom random = new SecureRandom();
+		final int SIZE = 100000;
+
+		for (int i = 0; i < SIZE; i++)
+			analysis.train(String.valueOf(random.nextGaussian()*100));
+
+		TextAnalysisResult result = analysis.getResult();
+
+		final ObjectMapper mapper = new ObjectMapper();
+
+		String s = mapper.writeValueAsString(mapper.convertValue(analysis.getFacts().histogram, JsonNode.class));
+	}
+*/
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void biModal() throws IOException, FTAException {
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		final SecureRandom random = new SecureRandom();
+		final int SIZE = 100000;
+		ArrayList<String> samples = new ArrayList<>();
+
+		for (int i = 0; i < SIZE; i++)
+			samples.add(String.valueOf(random.nextGaussian()*5 + 20));
+
+		for (String sample : samples)
+			shardOne.train(sample);
+
+		TextAnalysisResult shardOneResult = shardOne.getResult();
+		assertEquals(shardOneResult.getMatchCount(), SIZE);
+//		TestSupport.dumpPicture(shardOneResult.getHistogram(50));
+
+		Histogram.Entry[] histogram = shardOneResult.getHistogram(10);
+
+		if (histogram == null)
+			return;
+
+		long histogramCount = 0;
+		for (Histogram.Entry entry : histogram)
+			histogramCount += entry.getCount();
+
+		if (histogramCount  != shardOneResult.getMatchCount()) {
+			FileWriter myWriter = new FileWriter("/tmp/bug.csv");
+			for (String sample : samples)
+				myWriter.write(sample + "\n");
+			myWriter.close();
+			System.err.println("PROBLEM!!!!!!!!!!");
+			System.exit(1);
+		}
+
+		assertEquals(histogramCount, shardOneResult.getMatchCount());
+		TestSupport.checkHistogram(shardOneResult, 10, true);
+		TestSupport.checkQuantiles(shardOneResult);
+
+		for (int i = 0; i < SIZE; i++)
+			shardTwo.train(String.valueOf(random.nextGaussian()*5 + 1020));
+
+		TextAnalysisResult shardTwoResult = shardTwo.getResult();
+//		TestSupport.dumpPicture(shardTwoResult.getHistogram(10));
+		TestSupport.checkHistogram(shardTwoResult, 10, true);
+		TestSupport.checkQuantiles(shardTwoResult);
+
+		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		TextAnalysisResult mergedResult = merged.getResult();
+//		System.err.println("**** " + mergedResult.getSampleCount());
+//		TestSupport.dumpPicture(mergedResult.getHistogram(40));
+		// Histogram numbers reflect everything we have seen in the merged case which is not
+		TestSupport.checkHistogram(mergedResult, 20, false);
+		TestSupport.checkQuantiles(mergedResult);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void justNulls() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("justNulls");
+
+		analysis.train(null);
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		try {
+			result.getHistogram(10);
+			fail("Should have thrown an exception!");
+		}
+		catch (java.lang.IllegalArgumentException e) {
+			assertEquals(e.getMessage(), "No Histogram support for either STRING or BOOLEAN types.");
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void biModalSerialized() throws IOException, FTAException {
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		final SecureRandom random = new SecureRandom();
+		final int SIZE = 100000;
+
+		for (int i = 0; i < SIZE; i++)
+			shardOne.train(String.valueOf(random.nextGaussian()*5 + 20));
+
+		TextAnalysisResult shardOneResult = shardOne.getResult();
+		Histogram.Entry[] shardOneHistogram = shardOneResult.getHistogram(10);
+		long shardOneHistogramCount = TestSupport.countHistogram(shardOneHistogram);
+		assertEquals(shardOneHistogramCount, shardOneResult.getMatchCount());
+
+		final String serializedOne = shardOne.serialize();
+		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(serializedOne);
+
+		TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
+		Histogram.Entry[] histogramOne = hydratedOneResult.getHistogram(10);
+		long histogramOneCount = TestSupport.countHistogram(histogramOne);
+		assertEquals(hydratedOneResult.getMatchCount(), SIZE);
+		assertEquals(histogramOneCount, hydratedOneResult.getMatchCount());
+
+		TestSupport.dumpPicture(histogramOne);
+		TestSupport.checkQuantiles(hydratedOneResult);
+		TestSupport.checkHistogram(hydratedOneResult, 10, true);
+
+		for (int i = 0; i < SIZE; i++)
+			shardTwo.train(String.valueOf(random.nextGaussian()*5 + 70));
+
+		final String serializedTwo = shardTwo.serialize();
+		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(serializedTwo);
+
+		TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
+		Histogram.Entry[] histogramTwo = hydratedTwoResult.getHistogram(10);
+		long histogramTwoCount = TestSupport.countHistogram(histogramTwo);
+		assertEquals(hydratedTwoResult.getMatchCount(), SIZE);
+		assertEquals(histogramTwoCount, hydratedTwoResult.getMatchCount());
+
+		TestSupport.dumpPicture(histogramTwo);
+		TestSupport.checkQuantiles(hydratedTwoResult);
+		TestSupport.checkHistogram(hydratedTwoResult, 10, true);
+
+		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		TextAnalysisResult mergedResult = merged.getResult();
+		Histogram.Entry[] histogramResult = mergedResult.getHistogram(20);
+		long mergedCount = TestSupport.countHistogram(histogramResult);
+//		assertEquals(mergedCount, SIZE * 2);
+
+		TestSupport.dumpPicture(mergedResult.getHistogram(20));
+		TestSupport.checkQuantiles(mergedResult);
+	}
+
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void mergeTest() throws IOException, FTAException {
 		final double RELATIVE_ACCURACY = 0.01;
@@ -856,7 +1006,7 @@ public class TestDistributions {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), "200000");
-		assertNull(result.getTypeQualifier(), "SIGNED");
+		assertNull(result.getTypeModifier(), "SIGNED");
 
 		assertEquals(result.getMean(), 100000.0);
 
@@ -916,7 +1066,7 @@ public class TestDistributions {
 		assertEquals(histogram[0].getCount(), 2000);
 		assertEquals(histogram[1].getCount(), 1000);
 		assertEquals(histogram[9].getCount(), 2000);
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -940,7 +1090,7 @@ public class TestDistributions {
 		for (int i = 0; i < BUCKETS - 1; i++)
 			assertEquals(histogram[i].getCount(), SIZE / BUCKETS * RECORDS);
 		assertEquals(histogram[BUCKETS - 1].getCount(), SIZE / BUCKETS * RECORDS + RECORDS);
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -964,7 +1114,7 @@ public class TestDistributions {
 		for (int i = 0; i < BUCKETS - 1; i++)
 			assertEquals(histogram[i].getCount(), SIZE / BUCKETS * RECORDS);
 		assertEquals(histogram[BUCKETS - 1].getCount(), SIZE / BUCKETS * RECORDS + RECORDS);
-		TestSupport.checkHistogram(result, 10);
+		TestSupport.checkHistogram(result, 10, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -981,7 +1131,7 @@ public class TestDistributions {
 		final int WIDTH = 20;
 
 		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
-		TestSupport.checkHistogram(result, WIDTH);
+		TestSupport.checkHistogram(result, WIDTH, true);
 
 		TestSupport.dumpRawDouble(histogram);
 		TestSupport.dumpPicture(histogram);
@@ -1009,11 +1159,11 @@ public class TestDistributions {
 		assertEquals(histogram[0].getLowCut(), 1.0);
 		assertEquals(histogram[0].getHigh(), "2");
 		assertEquals(histogram[0].getHighCut(), 1.8);
-		assertEquals(histogram[3].getCount(), 1);
+		assertEquals(histogram[2].getCount(), 1);
 		assertEquals(histogram[5].getCount(), 1);
-		assertEquals(histogram[8].getCount(), 1);
+		assertEquals(histogram[7].getCount(), 1);
 		assertEquals(histogram[9].getCount(), 1);
-		TestSupport.checkHistogram(result, WIDTH);
+		TestSupport.checkHistogram(result, WIDTH, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -1025,12 +1175,12 @@ public class TestDistributions {
 
 		TextAnalysisResult result = analysis.getResult();
 
-		TestSupport.checkHistogram(result, 2);
+		TestSupport.checkHistogram(result, 2, true);
 
 		final int WIDTH = 2;
 
 		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
-		TestSupport.checkHistogram(result, WIDTH);
+		TestSupport.checkHistogram(result, WIDTH, true);
 
 		assertEquals(histogram[0].getCount(), 1);
 		assertEquals(histogram[1].getCount(), 1);
@@ -1208,12 +1358,62 @@ public class TestDistributions {
 		final int WIDTH = 20;
 
 		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
-		TestSupport.checkHistogram(result, WIDTH);
+		TestSupport.checkHistogram(result, WIDTH, true);
 
 		TestSupport.dumpRawDouble(histogram);
 //		dumpPicture(histogram, getMaxCount(histogram));
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void testSkewed() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramGaussian");
+		final int SIZE = 20000;
+
+		for (long l = 0; l < SIZE; l++)
+			analysis.train(String.valueOf(l));
+
+		analysis.train("1000000");
+
+		TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getMatchCount(), SIZE + 1);
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getMaxValue(), "1000000");
+
+		final int WIDTH = 10;
+
+		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		assertEquals(TestSupport.countHistogram(histogram), SIZE + 1);
+
+		TestSupport.checkHistogram(result, WIDTH, true);
+
+		TestSupport.dumpRaw(histogram);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void testPerformance() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramGaussian");
+		analysis.setHistogramBins(1000);
+		final int SIZE = 1_000_000; //0000;
+
+		for (long l = 0; l < SIZE; l++)
+			analysis.train(String.valueOf(l));
+
+		analysis.train("100000000");
+
+		TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getMatchCount(), SIZE + 1);
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getMaxValue(), "100000000");
+
+		final int WIDTH = 10;
+
+		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		TestSupport.checkHistogram(result, WIDTH, true);
+
+		TestSupport.dumpRaw(histogram);
+	}
+
+	/*
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void testHistogramSPDT() throws IOException, FTAException {
 		final int BUCKETS = 20;
@@ -1230,4 +1430,26 @@ public class TestDistributions {
 //			System.err.printf("%s-%s: %d%n", histogram.getLow(), histogram.getHigh(), histogram.getCount());
 
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
+	public void testInsertion() throws IOException, FTAException {
+		HistogramSPDT histogram = new HistogramSPDT(1000);
+
+		histogram.accept(1.0, 1);
+		histogram.accept(3.0, 1);
+		histogram.accept(5.0, 1);
+		histogram.accept(7.0, 1);
+		histogram.accept(9.0, 1);
+		histogram.accept(11.0, 1);
+		histogram.accept(15.0, 1);
+		histogram.accept(25.0, 1);
+		histogram.accept(35.0, 1);
+		histogram.accept(45.0, 1);
+
+		assertEquals(histogram.locateInsertion(0.0), 0);
+		assertEquals(histogram.locateInsertion(10.0), 5);
+		assertEquals(histogram.locateInsertion(11.0), 5);
+		assertEquals(histogram.locateInsertion(50.0), 10);
+	}
+*/
 }

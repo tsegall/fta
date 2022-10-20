@@ -28,8 +28,7 @@ public class FakerParameters {
 	public String values;
 
 	public FakerParameters(String config) {
-		String body = config.substring(1, config.length() - 1);
-		String[] attributes = body.split(";");
+		String[] attributes = config.split(";");
 
 		for (String attribute : attributes) {
 			String[] components = attribute.split("=");

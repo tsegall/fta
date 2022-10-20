@@ -39,11 +39,11 @@ public class FakerLocalDateTimeLT extends FakerLT {
 			if (parameters != null) {
 				if (locale == null)
 					locale = Locale.getDefault();
-                    dtf = DateTimeFormatter.ofPattern(parameters.format == null ? "yyyy-MM-dd HH:mm:ss" : parameters.format, locale);
+				dtf = DateTimeFormatter.ofPattern(parameters.format == null ? "yyyy-MM-dd HH:mm:ss" : parameters.format, locale);
 	            if (parameters.low != null)
-                    low = LocalDateTime.parse(parameters.low);
+                    low = LocalDateTime.parse(parameters.low, dtf);
 	            if (parameters.high != null)
-                    high = LocalDateTime.parse(parameters.high);
+                    high = LocalDateTime.parse(parameters.high, dtf);
 			}
 
 			if (high == null)

@@ -93,7 +93,7 @@ public class Replay {
 
 			// Apply the Config we retrieved from the Trace file
 			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS));
-			analyzer.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, analysisConfig.isEnabled(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES));
+			analyzer.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, analysisConfig.isEnabled(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES));
 			analyzer.setDetectWindow(analysisConfig.getDetectWindow());
 			analyzer.setMaxCardinality(analysisConfig.getMaxCardinality());
 			analyzer.setMaxInputLength(analysisConfig.getMaxInputLength());

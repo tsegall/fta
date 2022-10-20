@@ -65,10 +65,10 @@ public class TestStrings {
 		assertEquals(result.getMaxValue(), null);
 		assertEquals(result.getNullCount(), iterations);
 		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_NULL));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_NULL));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "NULL");
+		assertEquals(result.getTypeModifier(), "NULL");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -95,10 +95,10 @@ public class TestStrings {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getMatchCount(), 0);
 		assertEquals(result.getBlankCount(), 3 * iterations + 1);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BLANK));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "BLANK");
+		assertEquals(result.getTypeModifier(), "BLANK");
 
 		assertTrue("".matches(result.getRegExp()));
 		assertTrue(" ".matches(result.getRegExp()));
@@ -127,10 +127,10 @@ public class TestStrings {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getMatchCount(), 0);
 		assertEquals(result.getBlankCount(), iterations);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BLANK));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "BLANK");
+		assertEquals(result.getTypeModifier(), "BLANK");
 
 		assertTrue("      ".matches(result.getRegExp()));
 	}
@@ -148,7 +148,7 @@ public class TestStrings {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), iterations);
-		assertEquals(result.getTypeQualifier(), "BLANK");
+		assertEquals(result.getTypeModifier(), "BLANK");
 		assertEquals(result.getMaxLength(), 0);
 		assertEquals(result.getMinLength(), 0);
 		assertEquals(result.getMaxValue(), "");
@@ -157,7 +157,7 @@ public class TestStrings {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getMatchCount(), 0);
 		assertEquals(result.getBlankCount(), iterations);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BLANK));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
 
@@ -182,14 +182,14 @@ public class TestStrings {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "BLANKORNULL");
+		assertEquals(result.getTypeModifier(), "BLANKORNULL");
 		assertEquals(result.getSampleCount(), 22);
 		assertEquals(result.getMatchCount(), 0);
 		assertEquals(result.getNullCount(), 2);
 		assertEquals(result.getMinLength(), 1);
 		assertEquals(result.getMaxLength(), 9);
 		assertEquals(result.getBlankCount(), 20);
-		assertEquals(result.getRegExp(), analysis.getRegExp(KnownPatterns.ID.ID_BLANK));
+		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BLANKORNULL));
 		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs)
@@ -217,14 +217,14 @@ public class TestStrings {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getMinLength(), 2);
 		assertEquals(result.getMaxLength(), 9);
 		assertEquals(result.getBlankCount(), 32);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHANUMERIC + "{2,9}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHANUMERIC + "{2,9}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getName(), "employeeNumber");
 
@@ -252,7 +252,7 @@ public class TestStrings {
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), KnownPatterns.freezeANY(1, 11, 1, 11, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
+		assertEquals(result.getRegExp(), KnownTypes.freezeANY(1, 11, 1, 11, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getMinValue(), "A");
@@ -393,7 +393,7 @@ public class TestStrings {
 		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		assertEquals(result.getNullCount(), nullIterations);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHA + "{12}");
 		assertEquals(result.getConfidence(), 1.0);
 
 		// Now check that we achieve the same outcome but using trainBulk() instead of train()
@@ -408,7 +408,7 @@ public class TestStrings {
 		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		assertEquals(result.getNullCount(), nullIterations);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getRegExp(), KnownPatterns.PATTERN_ALPHA + "{12}");
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHA + "{12}");
 		assertEquals(result.getConfidence(), 1.0);
 
 	}
@@ -483,7 +483,7 @@ public class TestStrings {
 
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{9}");
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -753,8 +753,8 @@ public class TestStrings {
 		assertEquals(result1.getStructureSignature(), PluginDefinition.findByQualifier("COUNTRY.TEXT_EN").signature);
 		assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
-		assertEquals(result1.getTypeQualifier(), result2.getTypeQualifier());
-		assertEquals(result1.getTypeQualifier(), CountryEN.SEMANTIC_TYPE);
+		assertEquals(result1.getSemanticType(), result2.getSemanticType());
+		assertEquals(result1.getSemanticType(), CountryEN.SEMANTIC_TYPE);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -778,7 +778,7 @@ public class TestStrings {
 		assertEquals(result.getSampleCount(), inputs.length * iterations);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
+		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -818,7 +818,7 @@ public class TestStrings {
 		assertEquals(result.getSampleCount(), inputs.length * iterations);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
+		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -851,7 +851,7 @@ public class TestStrings {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 2);
-		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL");
+		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -892,7 +892,7 @@ public class TestStrings {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL_PAREN");
+		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL_PAREN");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -924,7 +924,7 @@ public class TestStrings {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL_PAREN");
+		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL_PAREN");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -961,7 +961,7 @@ public class TestStrings {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getTypeQualifier(), "COORDINATE_PAIR.DECIMAL_PAREN");
+		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL_PAREN");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -1046,7 +1046,7 @@ public class TestStrings {
 
 		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 1);
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{4}");
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -1087,7 +1087,7 @@ public class TestStrings {
 	public void _stringPerf(final boolean statisticsOn) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCompressUSD");
 		if (!statisticsOn) {
-			analysis.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+			analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		}
 		final long sampleCount = 100_000_000_000L;
@@ -1135,7 +1135,7 @@ public class TestStrings {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{1,52}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
 		logger.info("Count {}, duration: {}ms, ~{} per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes

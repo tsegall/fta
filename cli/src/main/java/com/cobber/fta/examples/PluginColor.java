@@ -33,7 +33,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.token.TokenStreams;
 
 public class PluginColor extends LogicalTypeFinite {
-	public static final String SEMANTIC_TYPE_BASE = "COLOR.TEXT_";
+	public static final String SEMANTIC_TYPE_BASE = "CUSTOM_COLOR.TEXT_";
 	public static final Map<String, Set<String>> MEMBERS = new HashMap<>();
 	private static String[] colorsEN = {
 			"RED",  "GREEN", "BLUE", "PINK", "BLACK", "WHITE", "ORANGE", "PURPLE",
@@ -62,7 +62,7 @@ public class PluginColor extends LogicalTypeFinite {
 		if (!defn.isLocaleSupported(analysisConfig.getLocale()))
 			throw new FTAPluginException("Locale '" + language + "' is not supported");
 
-		language = locale.toLanguageTag().split("[-_]+")[0].toUpperCase(Locale.ROOT);
+		language = analysisConfig.getLocale().toLanguageTag().split("[-_]+")[0].toUpperCase(Locale.ROOT);
 
 		return super.initialize(analysisConfig);
 	}
@@ -83,7 +83,7 @@ public class PluginColor extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE_BASE + language;
 	}
 

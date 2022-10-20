@@ -88,8 +88,8 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public String getQualifier() {
-		return defn.qualifier;
+	public String getSemanticType() {
+		return defn.semanticType;
 	}
 
 	@Override
@@ -254,6 +254,9 @@ public class LogicalTypeRegExp extends LogicalType {
 	 * @return True if the Regular Expression matches the current Match Entry
 	 */
 	public boolean isMatch(final String regExp) {
+		if (regExp == null)
+			return false;
+
 		if (matchEntry != null)
 			return matchEntry.matches(regExp);
 

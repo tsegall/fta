@@ -49,7 +49,7 @@ public class PluginPercent extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return "PERCENT";
 	}
 

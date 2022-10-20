@@ -51,7 +51,7 @@ public class LongitudeDMS extends CoordinateDMS {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 

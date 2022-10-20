@@ -167,7 +167,7 @@ There are a large number of metrics detected, which vary based on the type of th
  * regExp - A Regular Expression (Java) that matches the detected Type
  * confidence - The percentage confidence (0-1.0) in the determination of the Type
  * type - The Base Type (one of Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
- * typeQualifier - A modifier with respect to the Base Type. See Note 1.
+ * typeModifier - A modifier with respect to the Base Type. See Note 1.
  * min - The minimum value observed
  * max - The maximum value observed
  * bottomK (Date, Time, Numeric, and String types only) - lowest 10 values
@@ -180,7 +180,8 @@ There are a large number of metrics detected, which vary based on the type of th
  * leadingWhiteSpace - Does the observed set have leading white space
  * trailingWhiteSpace - Does the observed set have trailing white space
  * multiline - Does the observed set have leading multiline elements
- * logicalType - Does the observed stream, reflect a Semantic Type
+ * isSemanticType - Does the observed stream, reflect a Semantic Type
+ * semanticType - The Semantic Type detected (Only valid if isSemanticType is true)
  * uniqueness - The percentage (0.0-1.0) of elements in the stream with a cardinality of one, -1.0 if maxCardinality exceeded.  See Note 2.
  * keyConfidence - The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique).  See Note 2.
  * cardinalityDetail - Details on the valid set, list of elements and occurrence count
@@ -207,13 +208,12 @@ The following fields are *not* calculated by FTA (but may be set on the Analyzer
  * totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly).
  * totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly).
 
-Note 1: The value of the typeQualifier is dependent on the Base Type as follows:
- * Boolean - options are "TRUE_FALSE", "YES_NO", "ONE_ZERO"
+Note 1: The value of the typeModifier is dependent on the Base Type as follows:
+ * Boolean - options are "TRUE_FALSE", "YES_NO", "Y_N", "ONE_ZERO"
  * String - options are "BLANK", "BLANKORNULL", "NULL"
  * Long - options are "GROUPING", "SIGNED", "SIGNED_TRAILING" ("GROUPING" and "SIGNED" are independent and can both be present).
  * Double - options are "GROUPING", "SIGNED", "SIGNED_TRAILING", "NON_LOCALIZED" ("GROUPING" and "SIGNED" are independent and can both be present).
  * LocalDate, LocalTime, LocalDateTime, ZonedDateTime, OffsetDateTime - The qualifier is the detailed date format string (See Java DateTimeFormatter for format details).
- * If any Logical plugins are installed - then additional Qualifiers may be returned. For example, if the LastName plugin is installed and a Last Name is detected then the Base Type will be STRING, and the qualifier will be "NAME.LAST".
 
 Note 2: This field may be set on the Analyzer - and if so FTA attempts no further analysis.
 
@@ -268,6 +268,7 @@ CURRENCY.TEXT_EN|Currency Name|en
 DAY.DIGITS|Day represented as a number (1-31)|*
 DAY.ABBR_&lt;Locale&gt;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
 DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
+DIRECTION|Cardinal Direction|*
 EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
@@ -527,6 +528,24 @@ Additional attributes captured in JSON structure:
 FTA can also be used to validate an input stream either based on known Semantic Types or on Semantic Types detected by FTA.  For example, it is possible to retrieve the LogicalType for a known Semantic Type and then invoke the isValid() method.  This is typically only useful for 'Closed' Semantic Types (isClosed() == true), i.e. those for which there is a known constrained set.  A good example of a closed Semantic Type is the Country code as defined by ISO-3166 Alpha 3.  An example where isValid() would be less useful is FIRST_NAME.  For those cases where the Semantic Type is not one of those known to FTA - the result returned will include a Java Regular Expression which can be used to validate new values.  Refer to the Validation example for further details.
 
 In addition to validating a data Stream, FTA can also be used to generate a synthetic pseudo-random data stream.  For any detected Semantic Type which implements the LTRandom interface it is possible to generate a 'random' element of the Semantic Type by invoking nextRandom(). Refer to the Generation example for further details.
+
+## Faker ##
+
+To create synthetic data, invoke the CLI with --faker and then a string used to describe the desired output. This string consists of multiple instances of a 'fieldName' and then a specification used to populate data for that field separated by commas.  For example:
+
+```
+cli --faker "FirstName[type=NAME.FIRST],LastName[type=NAME.LAST],Age[type=LONG;low=18;high=100;distribution=gaussian;nulls=.01],Gender[type=ENUM;values=M^F^U],CreateDate[type=LOCALDATETIME;format=yyyy.MM.dd HH:mm:ss;low=2000.01.01 12:00:00;high=2022.08.08 12:00:00]" --records 100
+```
+
+Will produce a file with 100 records with five columns (FirstName,LastName,Age,Gender,CreateDate).
+
+Within the specification the type is required and can either be a Semantic Type or a Base Type.  There are an additional set of optional parameters including:
+ - low - the low bound
+ - high - the high bound
+ - format - the format for outputting this field (e.g. %03d for a LONG)
+ - distribution - the distribution of the samples (gaussian, monotonic_increasing, monotonic_decreasing; the default is normal)
+ - nulls - the percentage of nulls in this field
+ - blanks - the percentage of blanks in this field
 
 ## Merging Analyses ##
 FTA supports merging of analyses run on distinct data shards.  So for example, if part of the data to be profiled resides on one shard and the balance on a separate shard then FTA can be invoked on each shard separately and then merged.  To accomplish this individual analyses should be executed (with similar configurations), the resulting serialized forms should then be deserialized on a common node and merged. Refer to the Merge example for further details.

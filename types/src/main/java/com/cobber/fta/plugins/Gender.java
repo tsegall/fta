@@ -248,7 +248,7 @@ public class Gender extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE + language;
 	}
 

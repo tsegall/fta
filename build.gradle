@@ -37,6 +37,10 @@ subprojects {
 		withJavadocJar()
 	}
 
+	tasks.withType(JavaCompile) {
+		options.encoding = "UTF-8"
+	}
+
 	jacoco {
 		toolVersion = libs.versions.jacoco.get()
 	}
@@ -55,6 +59,7 @@ subprojects {
 	}
 
 	javadoc {
+		options.encoding = "UTF-8"
 		options.noQualifiers 'java.lang:java.util:com.cobber.fta:com.cobber.fta.core'
 	}
 

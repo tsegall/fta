@@ -31,9 +31,9 @@ public class PluginLocaleEntry {
 	}
 
 	/**
-	 * Is the returned Regular Expression a true and complete representation of the Logical Type.
+	 * Is the returned Regular Expression a true and complete representation of the Semantic Type.
 	 * For example, \\d{5} is not for US ZIP codes (e.g. 00000 is not a valid Zip), whereas (?i)(male|female) could be valid for a Gender.
-	 * @return The Java Regular Expression that most closely matches this Logical Type.
+	 * @return The Java Regular Expression that most closely matches this Semantic Type.
 	 * @param matchEntry The MatchEntry we have concluded is the correct one.
 	 */
 	public boolean isRegExpComplete(final int matchEntry) {

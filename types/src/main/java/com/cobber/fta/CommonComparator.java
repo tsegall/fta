@@ -15,7 +15,16 @@
  */
 package com.cobber.fta;
 
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.Comparator;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+
+import com.cobber.fta.core.FTAType;
 
 public class CommonComparator<T extends Comparable> implements Comparator<String> {
 	private StringConverter stringConverter;
@@ -38,4 +47,29 @@ public class CommonComparator<T extends Comparable> implements Comparator<String
 
         return 0;
     }
+
+	public static NavigableMap<String, Long> getTypedMap(final FTAType type, final StringConverter stringConverter) {
+		switch (type) {
+		case BOOLEAN:
+			return new TreeMap<>();
+		case DOUBLE:
+			return new TreeMap<>(new CommonComparator<Double>(stringConverter));
+		case LOCALDATE:
+			return new TreeMap<>(new CommonComparator<ChronoLocalDate>(stringConverter));
+		case LOCALDATETIME:
+			return new TreeMap<>(new CommonComparator<ChronoLocalDateTime<?>>(stringConverter));
+		case LOCALTIME:
+			return new TreeMap<>(new CommonComparator<LocalTime>(stringConverter));
+		case LONG:
+			return new TreeMap<>(new CommonComparator<Long>(stringConverter));
+		case OFFSETDATETIME:
+			return new TreeMap<>(new CommonComparator<OffsetDateTime>(stringConverter));
+		case STRING:
+			return new TreeMap<>();
+		case ZONEDDATETIME:
+			return new TreeMap<>(new CommonComparator<ChronoZonedDateTime<?>>(stringConverter));
+		default:
+			return null;
+		}
+	}
 }

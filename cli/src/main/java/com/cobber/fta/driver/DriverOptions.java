@@ -33,10 +33,11 @@ public class DriverOptions {
 	protected boolean bulk;
 	protected int col = -1;
 	protected int debug = -1;
-	protected String logicalTypes;
+	protected String semanticTypes;
 	protected boolean json;
+	protected boolean legacyJSON;
 	protected boolean noAnalysis;
-	protected boolean noLogicalTypes;
+	protected boolean noSemanticTypes;
 	protected boolean noDistributions;
 	protected boolean noStatistics;
 	protected boolean output;
@@ -79,12 +80,14 @@ public class DriverOptions {
 			analyzer.setPluginThreshold(this.pluginThreshold);
 		if (this.locale != null)
 			analyzer.setLocale(this.locale);
+		if (this.legacyJSON)
+			analyzer.configure(TextAnalyzer.Feature.LEGACY_JSON, true);
 		if (this.noDistributions)
 			analyzer.configure(TextAnalyzer.Feature.DISTRIBUTIONS, false);
 		if (this.noStatistics)
 			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
-		if (this.noLogicalTypes)
-			analyzer.configure(TextAnalyzer.Feature.DEFAULT_LOGICAL_TYPES, false);
+		if (this.noSemanticTypes)
+			analyzer.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		if (this.formatDetection)
 			analyzer.configure(TextAnalyzer.Feature.FORMAT_DETECTION, true);
 		if (this.abbreviationPunctuation)
@@ -92,17 +95,17 @@ public class DriverOptions {
 		if (this.trace != null)
 			analyzer.setTrace(trace);
 
-		if (this.logicalTypes != null)
+		if (this.semanticTypes != null)
 			try {
-				if (this.logicalTypes.charAt(0) == '[')
-					analyzer.getPlugins().registerPlugins(new StringReader(this.logicalTypes),
+				if (this.semanticTypes.charAt(0) == '[')
+					analyzer.getPlugins().registerPlugins(new StringReader(this.semanticTypes),
 							analyzer.getStreamName(), analyzer.getConfig());
 				else {
-					if(!Files.isRegularFile(Paths.get(this.logicalTypes))) {
-						System.err.println("ERROR: Failed to read Logical Types file: " + this.logicalTypes);
+					if(!Files.isRegularFile(Paths.get(this.semanticTypes))) {
+						System.err.println("ERROR: Failed to read Semantic Types file: " + this.semanticTypes);
 						System.exit(1);
 					}
-					try (FileReader logicalTypes = new FileReader(this.logicalTypes)) {
+					try (FileReader logicalTypes = new FileReader(this.semanticTypes)) {
 						analyzer.getPlugins().registerPlugins(logicalTypes, analyzer.getStreamName(), analyzer.getConfig());
 					}
 				}

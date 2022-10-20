@@ -46,35 +46,39 @@ public class Faker {
 		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 		String[] pluginDefinitions = options.faker.split(",");
 		LogicalType[] logicals = new LogicalType[pluginDefinitions.length];
-		FakerParameters[] controls = new FakerParameters[pluginDefinitions.length];
+		FakerParameters[] parameters = new FakerParameters[pluginDefinitions.length];
 		String[] pluginNames = new String[pluginDefinitions.length];
 
 		for (int i = 0; i < pluginDefinitions.length; i++) {
-			int controlIndex = pluginDefinitions[i].indexOf('[');
-			if (controlIndex == -1) {
-				error.printf("ERROR: Failed to retrieve control for '%s', use --help%n", pluginDefinitions[i]);
+			int parameterIndex = pluginDefinitions[i].indexOf('[');
+			if (parameterIndex == -1) {
+				error.printf("ERROR: Failed to retrieve parameters for '%s', missing open ('[')?, use --help%n", pluginDefinitions[i]);
 				System.exit(1);
 			}
-			controls[i] = new FakerParameters(pluginDefinitions[i].substring(controlIndex));
-			pluginNames[i] = pluginDefinitions[i].substring(0, controlIndex);
+			if (pluginDefinitions[i].charAt(pluginDefinitions[i].length() - 1) != ']') {
+				error.printf("ERROR: Missing close (']') for parameter definition for '%s', use --help%n", pluginDefinitions[i]);
+				System.exit(1);
+			}
+			parameters[i] = new FakerParameters(pluginDefinitions[i].substring(parameterIndex + 1, pluginDefinitions[i].length() - 1));
+			pluginNames[i] = pluginDefinitions[i].substring(0, parameterIndex);
 
 			for (final LogicalType logical : registered)
-				if (logical.getQualifier().equals(controls[i].type)) {
+				if (logical.getSemanticType().equals(parameters[i].type)) {
 					logicals[i] = logical;
 					break;
 				}
 
 			// If we did not find the Semantic Type it must be one of the Base Types
 			if (logicals[i] == null) {
-				String baseType = controls[i].type;
+				String baseType = parameters[i].type;
 				if (!"DOUBLE".equals(baseType) && !"LONG".equals(baseType) && !"LOCALDATE".equals(baseType) && !"LOCALDATETIME".equals(baseType) && !"ENUM".equals(baseType)) {
 					error.printf("ERROR: Unknown type '%s', use --help%n", baseType);
 					System.exit(1);
 				}
-				final PluginDefinition plugin = new PluginDefinition(controls[i].type, controls[i].clazz);
+				final PluginDefinition plugin = new PluginDefinition(parameters[i].type, parameters[i].clazz);
 				try {
 					logicals[i] = LogicalTypeFactory.newInstance(plugin, analyzer.getConfig());
-					((FakerLT)logicals[i]).setControl(controls[i]);
+					((FakerLT)logicals[i]).setControl(parameters[i]);
 				} catch (FTAPluginException e) {
 					error.printf("ERROR: Failed to locate plugin named '%s', use --help%n", pluginDefinitions[i]);
 					System.exit(1);
@@ -90,7 +94,7 @@ public class Faker {
 				line.append(',');
 			line.append(quoteIfNeeded(pluginNames[i]));
 			if (logicals[i] instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logicals[i]).isRegExpComplete())
-				error.printf("ERROR: Logical Type (%s) does implement LTRandom interface - however samples may not be useful.%n", logicals[i].getQualifier());
+				error.printf("ERROR: Semantic Type (%s) does implement LTRandom interface - however samples may not be useful.%n", logicals[i].getSemanticType());
 		}
 		output.println(line);
 
@@ -99,12 +103,12 @@ public class Faker {
 			for (int i = 0; i < logicals.length; i++) {
 				if (i != 0)
 					line.append(',');
-				if (controls[i].nullPercent != 0 && random.nextDouble() <= controls[i].nullPercent)
+				if (parameters[i].nullPercent != 0 && random.nextDouble() <= parameters[i].nullPercent)
 					;		// Don't output anything which generates a null
-				else if (controls[i].blankPercent != 0 && random.nextDouble() <= controls[i].blankPercent) {
+				else if (parameters[i].blankPercent != 0 && random.nextDouble() <= parameters[i].blankPercent) {
 					StringBuilder blank = new StringBuilder();
 					blank.append('"');
-					int blankLength = controls[i].blankLength == -1 ? random.nextInt(6) : controls[i].blankLength;
+					int blankLength = parameters[i].blankLength == -1 ? random.nextInt(6) : parameters[i].blankLength;
 					for (int b = 0; b < blankLength; b++)
 						blank.append(' ');
 					blank.append('"');

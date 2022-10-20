@@ -25,7 +25,7 @@ import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * All Logical Types that are backed by a simple list typically subclass this abstract class.
+ * All Semantic Types that are backed by a simple list typically subclass this abstract class.
  */
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected String qualifier;
@@ -36,7 +36,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	public LogicalTypeFiniteSimple(final PluginDefinition plugin, final String backout, final int threshold) {
 		super(plugin);
-		this.qualifier = plugin.qualifier;
+		this.qualifier = plugin.semanticType;
 		this.backout = backout;
 		this.threshold = threshold;
 	}
@@ -86,7 +86,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return qualifier;
 	}
 

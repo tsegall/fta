@@ -56,7 +56,7 @@ public class PluginBirthDate extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return "BIRTHDATE";
 	}
 

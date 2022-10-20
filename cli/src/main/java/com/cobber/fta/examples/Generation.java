@@ -36,17 +36,15 @@ public abstract class Generation {
 			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(s);
 			final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
-			if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete()) {
-				System.err.printf("Logical Type (%s) does implement LTRandom interface - however samples may not be valid.", s);
-				System.exit(1);
-			}
+			if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
+				System.err.printf("Semantic Type (%s) does implement LTRandom interface - however samples may not be valid.", s);
 
-			System.err.printf("%n*** Logical Type: '%s' ***%n", s);
+			System.err.printf("%n*** Semantic Type: '%s' ***%n", s);
 			for (int i = 0; i < 10; i++) {
 				final String value = logical.nextRandom();
 				System.err.println(value);
 				if (!logical.isValid(value, true))
-					System.err.println("Issue with LogicalType'" + logical.getDescription() + "', value: " + value + "\n");
+					System.err.println("Issue with SemanticType'" + logical.getDescription() + "', value: " + value + "\n");
 			}
 		}
 	}

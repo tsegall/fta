@@ -31,19 +31,19 @@ public class DriverUtils {
 		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
 		for (final LogicalType logical : registered)
-			if (logical.getQualifier().equals(pluginName))
+			if (logical.getSemanticType().equals(pluginName))
 				return logical;
 
 		return null;
 	}
 
 	public static TextAnalyzer getDefaultAnalysis(final Locale locale) {
-		// Create an Analyzer to retrieve the Logical Types (magically will be all - since passed in '*')
+		// Create an Analyzer to retrieve the Semantic Types (magically will be all - since passed in '*')
 		final TextAnalyzer analysis = new TextAnalyzer("*");
 		if (locale != null)
 			analysis.setLocale(locale);
 
-		// Load the default set of plugins for Logical Type detection (normally done by a call to train())
+		// Load the default set of plugins for Semantic Type detection (normally done by a call to train())
 		analysis.registerDefaultPlugins(analysis.getConfig());
 
 		return  analysis;

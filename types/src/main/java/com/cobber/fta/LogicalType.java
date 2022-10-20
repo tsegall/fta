@@ -27,7 +27,7 @@ import com.cobber.fta.dates.LocaleInfo;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * All Logical Types are derived from this abstract class.
+ * All Semantic Types are derived from this abstract class.
  * This LTRandom interface provides a {@link LTRandom#nextRandom} which will create a new valid example of the
  *  Semantic Type.
  */
@@ -73,7 +73,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 		pluginLocaleEntry = defn.getLocaleEntry(locale);
 
 		if (pluginLocaleEntry == null)
-			throw new FTAPluginException("Plugin: " + defn.qualifier + " has no support for " + locale.toLanguageTag());
+			throw new FTAPluginException("Plugin: " + defn.semanticType + " has no support for " + locale.toLanguageTag());
 
 		return true;
 	}
@@ -88,16 +88,16 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	}
 
 	/**
-	 *  The user-friendly name of the Qualifier.  For example, EMAIL for an email address
-	 *  @return The user-friendly name of the type-qualifier.
+	 *  The name of the Semantic Type.  For example, EMAIL for an email address.
+	 *  @return The name of the Semantic Type.
 	 */
-	public String getQualifier() {
-		return defn.qualifier;
+	public String getSemanticType() {
+		return defn.semanticType;
 	}
 
 	/**
-	 *  The user-friendly description of the Qualifier.  For example, 'Australian State' for the qualifier "STATE_PROVINCE.STATE_AU".
-	 *  @return The user-friendly description of the type-qualifier.
+	 *  The user-friendly description of the Semantic Type.  For example, 'Australian State' for the Semantic Type "STATE_PROVINCE.STATE_AU".
+	 *  @return The user-friendly description of the Semantic Type.
 	 */
 	public String getDescription() {
 		return defn.description;
@@ -120,16 +120,16 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	}
 
 	/**
-	 * The Regular Expression that most closely matches (See {@link #isRegExpComplete()}) this Logical Type.
+	 * The Regular Expression that most closely matches (See {@link #isRegExpComplete()}) this Semantic Type.
 	 * Note: All valid matches will match this RE, but the inverse is not necessarily true.
-	 * @return The Java Regular Expression that most closely matches this Logical Type.
+	 * @return The Java Regular Expression that most closely matches this Semantic Type.
 	 */
 	public abstract String getRegExp();
 
 	/**
-	 * Is the returned Regular Expression a true and complete representation of the Logical Type.
+	 * Is the returned Regular Expression a true and complete representation of the Semantic Type.
 	 * For example, \\d{5} is not for US ZIP codes (e.g. 00000 is not a valid Zip), whereas (?i)(male|female) could be valid for a Gender.
-	 * @return The Java Regular Expression that most closely matches this Logical Type.
+	 * @return The Java Regular Expression that most closely matches this Semantic Type.
 	 */
 	public boolean isRegExpComplete() {
 		return pluginLocaleEntry.isRegExpComplete(-1);
@@ -137,7 +137,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 	/**
 	 * The percentage when we declare success 0 - 100.
-	 * We use this percentage in the determination of the Logical Type.  When and how it is used varies based on the plugin.
+	 * We use this percentage in the determination of the Semantic Type.  When and how it is used varies based on the plugin.
 	 * @return The threshold percentage.
 	 */
 	public int getThreshold() {
@@ -146,7 +146,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 	/**
 	 * The percentage when we declare success 0 - 100.
-	 * We use this percentage in the determination of the Logical Type.  When and how it is used varies based on the plugin.
+	 * We use this percentage in the determination of the Semantic Type.  When and how it is used varies based on the plugin.
 	 * @param threshold the new threshold.
 	 */
 	public void setThreshold(final int threshold) {
@@ -184,7 +184,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	public String getSignature() {
 		String structureSignature = getSignatureBaseType() + ":";
 
-		structureSignature += getQualifier();
+		structureSignature += getSemanticType();
 
 		MessageDigest md;
 		try {
@@ -202,26 +202,26 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	}
 
 	/**
-	 * Is the supplied String an instance of this logical type?
+	 * Is the supplied String an instance of this Semantic type?
 	 * Note: this invokes {@link #isValid(String, boolean)} with true to emulate detection mode.
 	 * @param input String to check (trimmed for Numeric base Types, un-trimmed for String base Type)
-	 * @return true iff the supplied String is an instance of this Logical type.
+	 * @return true iff the supplied String is an instance of this Semantic type.
 	 */
 	public boolean isValid(final String input) {
 		return isValid(input, true);
 	}
 
 	/**
-	 * Is the supplied String an instance of this logical type?
+	 * Is the supplied String an instance of this Semantic type?
 	 * @param input String to check (trimmed for Numeric base Types, un-trimmed for String base Type)
 	 * @param detectMode If true then we are in the process of detection, otherwise it is a simple validity check.
-	 * @return true iff the supplied String is an instance of this Logical type.
+	 * @return true iff the supplied String is an instance of this Semantic type.
 	 */
 	public abstract boolean isValid(final String input, final boolean detectMode);
 
 	/**
 	 * Given the data to date as embodied by the arguments return an analysis. If we think this is an instance
-	 * of this logical type then valid will be true , if invalid then valid will be false and a new Pattern will be returned.
+	 * of this Semantic type then valid will be true , if invalid then valid will be false and a new Pattern will be returned.
 	 *
 	 * @param context The context used to interpret the Data Stream (for example, stream name, date resolution mode, etc)
 	 * @param matchCount Number of samples that match so far (as determined by isValid()
@@ -232,7 +232,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @param outliers Outlier set, up to the maximum maintained
 	 * @param tokenStreams Shapes observed
 	 * @param analysisConfig The Configuration of the current analysis
-	 * @return Null if we think this is an instance of this logical type (backout pattern otherwise)
+	 * @return Null if we think this is an instance of this Semantic type (backout pattern otherwise)
 	 */
 	public abstract PluginAnalysis analyzeSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp, Facts facts, FiniteMap cardinality, FiniteMap outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig);
 
@@ -246,7 +246,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	public abstract boolean isClosed();
 
 	/**
-	 * Accessor for the Plugin Definition for this Logical Type.
+	 * Accessor for the Plugin Definition for this Semantic Type.
 	 * @return The Plugin Definition.
 	 */
 	public PluginDefinition getPluginDefinition() {

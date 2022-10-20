@@ -38,6 +38,9 @@ public class AnalysisConfig {
 	/** The default value for the maximum # of outliers tracked. */
 	public static final int MAX_OUTLIERS_DEFAULT = 50;
 
+	/** The default value for the maximum # of invalid entries tracked. */
+	public static final int MAX_INVALID_DEFAULT = 50;
+
 	/** The default value for the maximum number of shapes tracked. */
 	public static final int MAX_SHAPES_DEFAULT = 400;
 
@@ -65,6 +68,9 @@ public class AnalysisConfig {
 	/** The maximum number of outliers tracked. */
 	private int maxOutliers = MAX_OUTLIERS_DEFAULT;
 
+	/** The maximum number of invalid entries tracked. */
+	private int maxInvalids = MAX_INVALID_DEFAULT;
+
 	/** The maximum number of shapes tracked. */
 	private int maxShapes = MAX_SHAPES_DEFAULT;
 
@@ -87,7 +93,7 @@ public class AnalysisConfig {
 	/** Internal-only debugging flag. */
 	private int debug;
 
-	/** Should we enable Default Logical Type detection. */
+	/** Should we enable Default Semantic Type detection. */
 	private boolean enableDefaultLogicalTypes = true;
 
 	/** Enable Numeric widening - i.e. if we see lots of integers then some doubles call it a double. */
@@ -95,6 +101,9 @@ public class AnalysisConfig {
 
 	/** Should we attempt to do Stream format detection.  For example, HTML, XML, JSON, BASE64, ... */
 	private boolean formatDetection = false;
+
+	/** Should we generate Legacy JSON (i.e. compatible with FTA 11.X and below. */
+	private boolean legacyJSON = false;
 
 	/** Should we attempt to qualify the size of the returned RexExp. */
 	private boolean lengthQualifier = true;
@@ -148,7 +157,7 @@ public class AnalysisConfig {
 		case COLLECT_STATISTICS:
 			collectStatistics = state;
 			break;
-		case DEFAULT_LOGICAL_TYPES:
+		case DEFAULT_SEMANTIC_TYPES:
 			enableDefaultLogicalTypes = state;
 			break;
 		case NUMERIC_WIDENING:
@@ -156,6 +165,9 @@ public class AnalysisConfig {
 			break;
 		case FORMAT_DETECTION:
 			formatDetection = state;
+			break;
+		case LEGACY_JSON:
+			legacyJSON = state;
 			break;
 		case LENGTH_QUALIFIER:
 			lengthQualifier = state;
@@ -181,12 +193,14 @@ public class AnalysisConfig {
 		switch (feature) {
 		case COLLECT_STATISTICS:
 			return collectStatistics;
-		case DEFAULT_LOGICAL_TYPES:
+		case DEFAULT_SEMANTIC_TYPES:
 			return enableDefaultLogicalTypes;
 		case NUMERIC_WIDENING:
 			return numericWidening;
 		case FORMAT_DETECTION:
 			return formatDetection;
+		case LEGACY_JSON:
+			return legacyJSON;
 		case LENGTH_QUALIFIER:
 			return lengthQualifier;
 		case NO_ABBREVIATION_PUNCTUATION:
@@ -223,7 +237,7 @@ public class AnalysisConfig {
 		return histogramBins;
 	}
 
-	public long setHistogramBins(final int histogramBins) {
+	public int setHistogramBins(final int histogramBins) {
 		final int ret = this.histogramBins;
 		this.histogramBins = histogramBins;
 		return ret;
@@ -256,6 +270,16 @@ public class AnalysisConfig {
 	public int setMaxOutliers(final int maxOutliers) {
 		final int ret = this.maxOutliers;
 		this.maxOutliers = maxOutliers;
+		return ret;
+	}
+
+	public int getMaxInvalids() {
+		return maxOutliers;
+	}
+
+	public int setMaxInvalids(final int maxInvalids) {
+		final int ret = this.maxInvalids;
+		this.maxInvalids = maxInvalids;
 		return ret;
 	}
 

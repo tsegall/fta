@@ -306,7 +306,7 @@ class FileProcessor {
 				matchCount += result.getMatchCount();
 				sampleCount += result.getSampleCount();
 				if (options.validate && matched[i] != result.getMatchCount()) {
-					if (result.isLogicalType())
+					if (result.isSemanticType())
 						if (matched[i] > result.getMatchCount())
 							error.printf("\t*** Warning: Match Count via RegExp (%d) > LogicalType match analysis (%d) ***%n", matched[i], result.getMatchCount());
 						else

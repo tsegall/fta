@@ -8,7 +8,7 @@ pluginManagement {
 	}
 
 	plugins {
-		id "com.github.ben-manes.versions" version '0.42.0'
+		id "com.github.ben-manes.versions" version '0.43.0'
 	}
 }
 
@@ -19,7 +19,7 @@ include 'cli'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '11.0.7')
+			version('fta', '12.0.0')
 			version('jacoco', '0.8.8')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
@@ -33,7 +33,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
 			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4')
 // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.12.56')
+			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.12.57')
 // https://mvnrepository.com/artifact/org.apache.commons/commons-text
 			library('commonsText', 'org.apache.commons:commons-text:1.10.0')
 // https://mvnrepository.com/artifact/com.github.krraghavan/xeger

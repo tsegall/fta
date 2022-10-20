@@ -57,7 +57,8 @@ public class TestInvalidSupport {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), "999");
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getTypeModifier());
 
 		// Old behavior
 		// assertEquals(result.getOutlierCount(), 1);
@@ -89,7 +90,8 @@ public class TestInvalidSupport {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getMinValue(), "0.0");
 		assertEquals(result.getMaxValue(), "999.9");
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getTypeModifier());
 
 		// Old behavior
 		// assertEquals(result.getOutlierCount(), 1);
@@ -137,7 +139,8 @@ public class TestInvalidSupport {
 
 		assertEquals(result.getSampleCount(), GOOD_SAMPLES + BAD_SAMPLES);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "COUNTRY.TEXT_EN");
+		assertEquals(result.getSemanticType(), "COUNTRY.TEXT_EN");
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getMatchCount(), GOOD_SAMPLES);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
@@ -178,7 +181,8 @@ public class TestInvalidSupport {
 
 		assertEquals(result.getSampleCount(), SIZE + 5);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "NAME.FIRST");
+		assertEquals(result.getSemanticType(), "NAME.FIRST");
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getMatchCount(), SIZE + 2);
 		assertEquals(result.getNullCount(), 1);
 		assertEquals(result.getBlankCount(), 1);
@@ -218,7 +222,8 @@ public class TestInvalidSupport {
 
 		assertEquals(result.getSampleCount(), SIZE + 4);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getTypeQualifier(), "GUID");
+		assertEquals(result.getSemanticType(), "GUID");
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getMatchCount(), SIZE);
 		assertEquals(result.getNullCount(), 1);
 		assertEquals(result.getBlankCount(), 1);
@@ -251,7 +256,8 @@ public class TestInvalidSupport {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getTypeQualifier(), USZip5.SEMANTIC_TYPE);
+		assertEquals(result.getSemanticType(), USZip5.SEMANTIC_TYPE);
+		assertNull(result.getTypeModifier());
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US").signature);
 		assertEquals(result.getSampleCount(), inputs.length + 2);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -291,6 +297,7 @@ public class TestInvalidSupport {
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "(?i)(BLUE|GREEN|RED)");
-		assertNull(result.getTypeQualifier());
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
 	}
 }

@@ -47,7 +47,7 @@ public class PluginDefinition {
 	private static List<PluginDefinition> builtinPlugins;
 
 	/** Semantic Type of Plugin (Qualifier). */
-	public String qualifier;
+	public String semanticType;
 	/** English language description of the Semantic Type. */
 	public String description;
 	/** Type of the plugin - can be 'java', 'list', or 'regex' */
@@ -93,18 +93,18 @@ public class PluginDefinition {
 	}
 
 	// *** Only use this for internal testing ***
-	public PluginDefinition(final String qualifier, final String clazz) {
-		this.qualifier = qualifier;
+	public PluginDefinition(final String semanticType, final String clazz) {
+		this.semanticType = semanticType;
 		this.clazz = clazz;
 		this.pluginType = "java";
 		this.validLocales = PluginLocaleEntry.simple(new String[] { "en" });
 	}
 
 	// *** Only use this for internal testing ***
-	public PluginDefinition(final String qualifier, final String description, final String[] invalidList,
+	public PluginDefinition(final String semanticType, final String description, final String[] invalidList,
 			final String content, final String contentType, final String backout, final PluginLocaleEntry[] validLocales, final boolean localeSensitive,
 			final int threshold, final FTAType  baseType) {
-		this.qualifier = qualifier;
+		this.semanticType = semanticType;
 		this.description = description;
 		this.pluginType = content != null ? "list" : "regex";
 		this.invalidList = invalidList == null ? null : new HashSet<>(Arrays.asList(invalidList));
@@ -120,7 +120,7 @@ public class PluginDefinition {
 	/**
 	 * Retrieve the Plugin Definition associated with this Qualifier.
 	 *
-	 * @param qualifier The Qualifier for this Logical Type
+	 * @param qualifier The Qualifier for this Semantic Type
 	 * @return The Plugin Definition associated with the supplied Qualifier.
 	 */
 	public static PluginDefinition findByQualifier(final String qualifier) {
@@ -135,7 +135,7 @@ public class PluginDefinition {
 		}
 
 		for (final PluginDefinition pluginDefinition : builtinPlugins)
-			if (pluginDefinition.qualifier.equals(qualifier))
+			if (pluginDefinition.semanticType.equals(qualifier))
 				return pluginDefinition;
 
 		return null;
@@ -168,7 +168,7 @@ public class PluginDefinition {
 
 	public PluginLocaleEntry getLocaleEntry(final Locale locale) throws FTAPluginException {
 		if (validLocales == null)
-			throw new FTAPluginException("plugin: " + qualifier + " - validLocales cannot be null");
+			throw new FTAPluginException("plugin: " + semanticType + " - validLocales cannot be null");
 
 		final String languageTag = locale.toLanguageTag();
 		final String language = locale.getLanguage();

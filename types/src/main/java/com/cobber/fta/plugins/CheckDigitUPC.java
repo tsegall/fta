@@ -54,7 +54,7 @@ public class CheckDigitUPC extends CheckDigitLT {
 	}
 
 	@Override
-	public String getQualifier() {
+	public String getSemanticType() {
 		return SEMANTIC_TYPE;
 	}
 
