@@ -34,7 +34,7 @@ public static void main(final String[] args) throws FTAException {
 	final TextAnalysisResult result = analysis.getResult();
 
 	System.err.printf("Semantic Type: %s (%s)%n",
-			result.getTypeQualifier(), result.getType());
+			result.getSemanticType(), result.getType());
 
 	System.err.println("Detail: " + result.asJSON(true, 1));
 }

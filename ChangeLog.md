@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.0.1
+ - BUG Fix example in README
+
 ### 12.0.0
  - **ENH:** Incompatible changes.
 	isLogicalType() -> isSemanticType()
