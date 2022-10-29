@@ -68,6 +68,8 @@ public class PluginDefinition {
 	public String clazz;
 	/** RegExp plugins: a set of strings that match the regExp but are known to be invalid. */
 	public Set<String> invalidList;
+	/** Simple finite plugins: a set of strings that we should ignore when checking the known good list. */
+	public Set<String> ignoreList;
 	/** Simple finite plugins: the content with the set of valid elements. */
 	public String content;
 	/** ContentType describes the supplied content and must be one of 'inline', 'file' or 'resource'. */

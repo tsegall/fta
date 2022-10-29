@@ -36,7 +36,12 @@ import com.cobber.fta.token.TokenStreams;
 */
 public class Age extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
-	public static final String REGEXP = "\\d{1,3}";
+	public static final String LONG_REGEXP = "\\d{1,3}";
+	public static final String DOUBLE_REGEXP = "\\d{1,3}\\.\\d+";
+
+	private final int MAX_AGE = 120;
+
+	private boolean longType = true;
 
 	private LogicalTypeFinite logicalGender;
 	private LogicalTypeCode logicalFirst;
@@ -74,12 +79,17 @@ public class Age extends LogicalTypeInfinite {
 
 	@Override
 	public FTAType getBaseType() {
-		return FTAType.LONG;
+		return longType ? FTAType.LONG : FTAType.DOUBLE;
+	}
+
+	@Override
+	public boolean acceptsBaseType(final FTAType type) {
+		return type == FTAType.LONG || type == FTAType.DOUBLE;
 	}
 
 	@Override
 	public String getRegExp() {
-		return REGEXP;
+		return longType ? LONG_REGEXP : DOUBLE_REGEXP;
 	}
 
 	@Override
@@ -89,10 +99,20 @@ public class Age extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode) {
-		if (input.length() > 3 || !Utils.isNumeric(input))
+		final int periodOffset = input.indexOf('.');
+		String integerPart;
+
+		if (periodOffset != -1) {
+			integerPart = input.substring(0, periodOffset);
+			longType = false;
+		}
+		else
+			integerPart = input;
+
+		if (integerPart.length() > 3 || !Utils.isNumeric(integerPart))
 			return false;
-		final int age = Integer.valueOf(input);
-		return age >= 0 && age < 120;
+		final int age = Integer.valueOf(integerPart);
+		return age >= 0 && age < MAX_AGE;
 	}
 
 	@Override
@@ -104,7 +124,7 @@ public class Age extends LogicalTypeInfinite {
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
-		if (getHeaderConfidence(context.getStreamName()) == 0)
+		if (((Number)(facts.getMax())).longValue() > MAX_AGE || ((Number)(facts.getMin())).longValue() < 0 || getHeaderConfidence(context.getStreamName()) == 0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Find a gender or first name field (both highly correlated with the presence of age)

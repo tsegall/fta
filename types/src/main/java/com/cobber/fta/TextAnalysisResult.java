@@ -799,15 +799,55 @@ public class TextAnalysisResult {
 		analysis.put("distinctCount", facts.distinctCount);
 		if (target != SignatureTarget.DATA_SIGNATURE) {
 			analysis.put("regExp", getRegExp());
-			//			final ArrayNode regExpStream = analysis.putArray("regExpStream");
-			//			final Set<String> streamRegExps = new HashSet<>();
-			//			streamRegExps.add(shape.getRegExp(false));
-			//			// Only bother to return a fitted result of we have a reasonable number of samples
-			//			if (shape.getSamples() > 100)
-			//				streamRegExps.add(shape.getRegExp(true));
-			//			streamRegExps.remove(getRegExp());
-			//			if (!streamRegExps.isEmpty())
-			//				outputArray(regExpStream, streamRegExps);
+			/*
+						final ArrayNode regExpStream = analysis.putArray("regExpStream");
+						final Set<String> streamRegExps = new HashSet<>();
+						streamRegExps.add(shape.getRegExp(false));
+						// Only bother to return a fitted result of we have a reasonable number of samples
+						if (shape.getSamples() > 100)
+							streamRegExps.add(shape.getRegExp(true));
+						streamRegExps.remove(getRegExp());
+						if (!streamRegExps.isEmpty())
+							outputArray(regExpStream, streamRegExps);
+			*/
+
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.RULES)) {
+				Rules rules = new Rules();
+				if (facts.nullCount == 0 && (facts.totalNullCount <= 0))
+					rules.add("NullPercent", "0.0");
+				if (facts.blankCount == 0 && (facts.totalBlankCount <= 0))
+					rules.add("BlankPercent", "0.0");
+				if (getLeadingWhiteSpace())
+					rules.add("TrimLeft", "true");
+				if (getTrailingWhiteSpace())
+					rules.add("TrimRight", "true");
+				if (facts.uniqueness == 1.0)
+					rules.add("Unique");
+				if (isSemanticType())
+					rules.add("SemanticType", facts.getMatchTypeInfo().semanticType);
+				else {
+					boolean isNumeric = FTAType.isNumeric(facts.getMatchTypeInfo().getBaseType());
+					if (facts.cardinality.size() < 10) {
+						rules.add("OneOf", facts.cardinality.keySet().stream().toArray(String[]::new));
+					}
+					else {
+						if (isNumeric) {
+							rules.add("Min", facts.getMinValue());
+							rules.add("Max", facts.getMaxValue());
+						}
+						else if (FTAType.isDateOrTimeType(facts.getMatchTypeInfo().getBaseType())) {
+							rules.add("Min", facts.getMatchTypeInfo().typeModifier, facts.getMinValue());
+							rules.add("Max", facts.getMatchTypeInfo().typeModifier, facts.getMaxValue());
+						}
+						else
+							rules.add("Pattern", getRegExp());
+					}
+				}
+
+				if (rules.nonEmpty())
+					analysis.put("rules", rules.toString());
+			}
+
 			analysis.put("confidence", facts.confidence);
 			analysis.put("type", facts.getMatchTypeInfo().getBaseType().toString());
 

@@ -231,6 +231,7 @@ class FileProcessor {
 
 		// Validate the result of the analysis if requested
 		int[] matched = new int[numFields];
+		int[] nulls = new int[numFields];
 		int[] blanks = new int[numFields];
 		final Set<String> failures = new HashSet<>();
 		if (options.validate) {
@@ -260,7 +261,9 @@ class FileProcessor {
 					for (int i = 0; i < numFields; i++) {
 						if (options.col == -1 || options.col == i) {
 							final String value = row[i];
-							if (value.trim().isEmpty())
+							if (value == null)
+								nulls[i]++;
+							else if (value.trim().isEmpty())
 								blanks[i]++;
 							else if (patterns[i].matcher(value).matches())
 								matched[i]++;

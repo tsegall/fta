@@ -153,20 +153,22 @@ public class TextAnalyzer {
 
 	private boolean cacheCheck;
 
+	private Correlation correlation;
+
 	/** Enumeration that defines all on/off features for parsers. */
 	public enum Feature {
-		/** Feature that if enabled return a double if we see a set of integers followed by some doubles call it a double. Feature is enabled by default. */
-		NUMERIC_WIDENING,
 		/** Feature that determines whether to collect statistics or not. Feature is enabled by default. */
 		COLLECT_STATISTICS,
 		/** Feature that indicates whether to enable the built-in Semantic Types. Feature is enabled by default. */
 		DEFAULT_SEMANTIC_TYPES,
+		/** Indicate whether we should track distributions (Quantiles/Histograms). Feature is enabled by default. */
+		DISTRIBUTIONS,
 		/** Feature that indicates whether to attempt to detect the stream format (HTML, XML, JSON, BASE64, OTHER). Feature is disabled by default. */
 		FORMAT_DETECTION,
-		/** Indicate whether we should qualify the size of the RegExp. Feature is enabled by default. */
-		LENGTH_QUALIFIER,
 		/** Indicate whether we should generate Legacy JSON (compatible with FTA 11.X). */
 		LEGACY_JSON,
+		/** Indicate whether we should qualify the size of the RegExp. Feature is enabled by default. */
+		LENGTH_QUALIFIER,
 		/**
 		 * Indicate whether we should Month Abbreviations (without punctuation), for instance the locale for Canada
 		 * uses 'AUG.' for the month abbreviation, and similarly for the AM/PM string which are defined as A.M and P.M.
@@ -175,8 +177,10 @@ public class TextAnalyzer {
 		NO_ABBREVIATION_PUNCTUATION,
 		/** Indicate whether we should treat "NULL" (and similar) as Null values. Feature is enabled by default. */
 		NULL_AS_TEXT,
-		/** Indicate whether we should track distributions (Quantiles/Histograms). Feature is enabled by default. */
-		DISTRIBUTIONS
+		/** Feature that if enabled return a double if we see a set of integers followed by some doubles call it a double. Feature is enabled by default. */
+		NUMERIC_WIDENING,
+		/** Indicate whether we should generate Field validation rules. */
+		RULES
 	}
 
 	/**
@@ -1225,6 +1229,9 @@ public class TextAnalyzer {
 
 		outliersSmashed.setMaxCapacity(analysisConfig.getMaxOutliers());
 
+		correlation = new Correlation(locale);
+		correlation.initialize();
+
 		initialized = true;
 	}
 
@@ -2149,7 +2156,30 @@ public class TextAnalyzer {
 	 * @param realSamples The number of real samples we have seen.
 	 */
 	private void backoutLogicalDoubleType(final LogicalType logical, final long realSamples) {
-		facts.setMatchTypeInfo(knownTypes.getByID(KnownTypes.ID.ID_DOUBLE));
+		long otherDoubles = 0;
+
+		final Map<String, Long> doubleOutliers = new HashMap<>();
+
+		// Back out to a Double with the same Modifiers we already have (e.g., SIGNED, NON_LOCALIZED, ...
+		facts.setMatchTypeInfo(knownTypes.getByTypeAndModifier(FTAType.DOUBLE, facts.getMatchTypeInfo().typeModifierFlags));
+
+		// Sweep the current outliers and check they are part of the set
+		for (final Map.Entry<String, Long> entry : facts.outliers.entrySet()) {
+			try {
+				Double.parseDouble(entry.getKey());
+				otherDoubles += entry.getValue();
+				doubleOutliers.put(entry.getKey(), entry.getValue());
+			} catch (NumberFormatException el) {
+				// Swallow
+			}
+		}
+
+		// Move the doubles from the outlier set to the cardinality set
+		facts.matchCount += otherDoubles;
+		facts.outliers.entrySet().removeAll(doubleOutliers.entrySet());
+		for (final Map.Entry<String, Long> entry : doubleOutliers.entrySet())
+			addValid(entry.getKey(), entry.getValue());
+
 		debug("Type determination - backing out, matchTypeInfo - {}", facts.getMatchTypeInfo());
 	}
 
@@ -2342,16 +2372,14 @@ public class TextAnalyzer {
 		else {
 			addOutlier(input, count);
 
+			// So we are about to blow the outliers - so now would be a good time to validate that the Semantic Type we have declared is actually correct!
 			if (!facts.getMatchTypeInfo().isDateType() && facts.outliers.size() == analysisConfig.getMaxOutliers()) {
 				if (facts.getMatchTypeInfo().isSemanticType()) {
 					// Do we need to back out from any of our Infinite type determinations
 					final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
 					final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
 					if (!pluginAnalysis.isValid())
-						if (FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType()))
-							backoutLogicalLongType(logical, realSamples);
-						else if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()))
-							backoutToPattern(realSamples, pluginAnalysis.getNewPattern());
+						backout(logical, realSamples, pluginAnalysis);
 				}
 				else {
 
@@ -2368,13 +2396,24 @@ public class TextAnalyzer {
 		}
 	}
 
+	void backout(final LogicalType logical, final long realSamples, final PluginAnalysis pluginAnalysis) {
+		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()))
+			backoutToPattern(realSamples, pluginAnalysis.getNewPattern());
+		else if (FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType()))
+			backoutLogicalLongType(logical, realSamples);
+		else
+			backoutLogicalDoubleType(logical, realSamples);
+
+		facts.confidence = (double) facts.matchCount / realSamples;
+	}
+
 	/**
 	 * Determine if the current dataset reflects a Semantic type.
 	 * @param logical The Semantic type we are testing
 	 * @return A MatchResult that indicates the quality of the match against the provided data
 	 */
 	private FiniteMatchResult checkFiniteSet(final FiniteMap cardinalityUpper, final FiniteMap outliers, final LogicalTypeFinite logical) {
-		final long realSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
+		long realSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
 		long missCount = 0;				// count of number of misses
 
 		final FiniteMap newOutliers = new FiniteMap(outliers.getMaxCapacity());
@@ -2400,8 +2439,14 @@ public class TextAnalyzer {
 
 		final Map<String, Long> minusMatches = new HashMap<>();
 
+		final Set<String> ignorable = logical.getIgnorable();
+
 		for (final Map.Entry<String, Long> entry : cardinalityUpper.entrySet()) {
-			if (logical.isValid(entry.getKey(), true))
+			if (ignorable != null && ignorable.contains(entry.getKey())) {
+				realSamples -= entry.getValue();
+				minusMatches.put(entry.getKey(), entry.getValue());
+			}
+			else if (logical.isValid(entry.getKey(), true))
 				validCount += entry.getValue();
 			else {
 				missCount += entry.getValue();
@@ -2604,13 +2649,7 @@ public class TextAnalyzer {
 			final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
 			if (!pluginAnalysis.isValid()) {
 				if (logical.acceptsBaseType(FTAType.STRING) || logical.acceptsBaseType(FTAType.LONG) || logical.acceptsBaseType(FTAType.DOUBLE)) {
-					if (logical.getBaseType() == FTAType.STRING)
-						backoutToPattern(realSamples, pluginAnalysis.getNewPattern());
-					else if (logical.getBaseType() == FTAType.LONG)
-						backoutLogicalLongType(logical, realSamples);
-// TODO				else
-//						backoutLogicalDoubleType(logical, realSamples);
-					facts.confidence = (double) facts.matchCount / realSamples;
+					backout(logical, realSamples, pluginAnalysis);
 					if (logical instanceof LogicalTypeRegExp)
 						backedOutRegExp = true;
 				}

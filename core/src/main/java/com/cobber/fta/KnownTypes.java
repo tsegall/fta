@@ -356,6 +356,15 @@ public class KnownTypes {
 		return knownIDs.get(id);
 	}
 
+	protected TypeInfo getByTypeAndModifier(final FTAType type, int typeModifier) {
+		for (final TypeInfo typeInfo : knownTypes.values()) {
+			if (typeInfo.getBaseType() == type && typeInfo.typeModifierFlags == typeModifier)
+				return typeInfo;
+		}
+
+		return null;
+	}
+
 	protected TypeInfo numericPromotion(final ID left, final ID right) {
 		return promotion.get(left.toString() + "---" + right.toString());
 	}

@@ -101,6 +101,10 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 		return getMembers().size();
 	}
 
+	public Set<String> getIgnorable() {
+		return defn.ignoreList;
+	}
+
 	/**
 	 * Get the minimum length of instances of this Semantic Type.
 	 * @return The minimum length of instances

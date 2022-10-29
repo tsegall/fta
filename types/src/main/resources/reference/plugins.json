@@ -512,6 +512,7 @@
 		"validLocales": [
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(nationality).*", "confidence": 90 } ] }
 		],
+		"ignoreList": [ "N/A", "OTHER" ],
 		"content": "/reference/en_nationality.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
@@ -525,6 +526,7 @@
 		"validLocales": [
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(honorific|title).*", "confidence": 90 } ] }
 		],
+		"ignoreList": [ "N/A", "OTHER" ],
 		"content": "/reference/en_honorific.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
@@ -1865,7 +1867,10 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": "^(?i)(company|company.?name|business.?name|organization.?name|dba.?name)$", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [
+					{ "regExp": "^(?i)(company|business|company.?name|business.?name|organization.?name|dba.?name)$", "confidence": 99, "mandatory": true },
+					{ "regExp": "^.*(?i)(company.?name|business.?name|organization.?name|dba.?name).*$", "confidence": 90, "mandatory": true }
+				 ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
 					"regExpReturned": "[-+|*:;!@\"/()',&# \\.\\p{IsAlphabetic}\\d]*",
@@ -2274,14 +2279,12 @@
 	{
 		"semanticType": "INDUSTRY_EN",
 		"description": "Industry Name",
-		"pluginType": "list",
+		"pluginType": "java",
 		"signature": "j2TOVT5j9M0DIQyTrwOdB71iZdA=",
+		"clazz": "com.cobber.fta.plugins.IndustryEN",
 		"validLocales": [
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(industry).*", "confidence": 90 } ] }
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": "(?i)(industry)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(industry|naics).*", "confidence": 90, "mandatory": true } ] }
 		],
-		"content": "/reference/en_industries.csv",
-		"contentType": "resource",
-		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 301
 	},
 	{
@@ -2350,6 +2353,7 @@
 		"validLocales": [
 			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(color|colour).*", "confidence": 90, "mandatory": true } ] }
 		],
+		"ignoreList": [ "N/A", "OTHER" ],
 		"content": "/reference/en_color.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",

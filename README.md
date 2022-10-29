@@ -365,7 +365,7 @@ Any of the above Semantic Types suffixed with one of the following are locale-se
 The English-language performance of Semantic Type determination is based on a large sample of inputs from open data portals.
 The data set can be found at [semantic-types](https://github.com/tsegall/semantic-types).
 
-Based on this set the average Precision across the identified Semantic Types is estimated at ~99.9%, the Recall at ~98.5% with an F1-Score of ~99.2%.
+Based on this set the average Precision across the identified Semantic Types is estimated at ~99.9%, the Recall at ~98.3% with an F1-Score of ~99.1%.
 
 Precision == True Positives / (True Positives + False Positives)
 

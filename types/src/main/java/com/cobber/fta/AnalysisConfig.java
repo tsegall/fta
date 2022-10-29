@@ -93,6 +93,9 @@ public class AnalysisConfig {
 	/** Internal-only debugging flag. */
 	private int debug;
 
+	/** Should track distributions (Quantiles/Histograms). */
+	private boolean distributions = true;
+
 	/** Should we enable Default Semantic Type detection. */
 	private boolean enableDefaultLogicalTypes = true;
 
@@ -115,8 +118,8 @@ public class AnalysisConfig {
 	/** Should we should treat "NULL" (and similar) as Null values. */
 	private boolean nullAsText = true;
 
-	/** Should track distributions (Quantiles/Histograms). */
-	private boolean distributions = true;
+	/** Should we generate Rules. */
+	private boolean rules = false;
 
 	public AnalysisConfig() {
 		this(Locale.getDefault());
@@ -144,6 +147,7 @@ public class AnalysisConfig {
 		this.lengthQualifier = other.lengthQualifier;
 		this.noAbbreviationPunctuation = other.noAbbreviationPunctuation;
 		this.nullAsText = other.nullAsText;
+		this.rules = other.rules;
 		this.distributions = other.distributions;
 	}
 
@@ -160,8 +164,8 @@ public class AnalysisConfig {
 		case DEFAULT_SEMANTIC_TYPES:
 			enableDefaultLogicalTypes = state;
 			break;
-		case NUMERIC_WIDENING:
-			numericWidening = state;
+		case DISTRIBUTIONS:
+			distributions = state;
 			break;
 		case FORMAT_DETECTION:
 			formatDetection = state;
@@ -178,8 +182,11 @@ public class AnalysisConfig {
 		case NULL_AS_TEXT:
 			nullAsText = state;
 			break;
-		case DISTRIBUTIONS:
-			distributions = state;
+		case NUMERIC_WIDENING:
+			numericWidening = state;
+			break;
+		case RULES:
+			rules = state;
 			break;
 		}
 	}
@@ -195,8 +202,8 @@ public class AnalysisConfig {
 			return collectStatistics;
 		case DEFAULT_SEMANTIC_TYPES:
 			return enableDefaultLogicalTypes;
-		case NUMERIC_WIDENING:
-			return numericWidening;
+		case DISTRIBUTIONS:
+			return distributions;
 		case FORMAT_DETECTION:
 			return formatDetection;
 		case LEGACY_JSON:
@@ -207,8 +214,10 @@ public class AnalysisConfig {
 			return noAbbreviationPunctuation;
 		case NULL_AS_TEXT:
 			return nullAsText;
-		case DISTRIBUTIONS:
-			return distributions;
+		case NUMERIC_WIDENING:
+			return numericWidening;
+		case RULES:
+			return rules;
 		}
 		return false;
 	}

@@ -1,6 +1,14 @@
 
 ## Changes ##
 
+### 12.0.2
+ - ENH: Reimplement INDUSTRY_EN as a Java plugin (Recall now at 90% against Suite, previously at 5%)
+ - ENH: Add support for ignoreList so we can ignore things like 'OTHER' and 'N/A' on lists
+ - ENH: Add Correlation data from Test Suite to inform likelihood of a semantic match
+ - ENH: PERSON.AGE plugin should support DOUBLE as well as LONG
+ - ENH: Improve COMPANY_NAME/COLOR detection
+ - BUG: Fix up backing out from Semantic Types that have a base type of Double
+
 ### 12.0.1
  - BUG Fix example in README
 
