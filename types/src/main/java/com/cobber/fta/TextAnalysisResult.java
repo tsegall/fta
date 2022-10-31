@@ -845,7 +845,7 @@ public class TextAnalysisResult {
 				}
 
 				if (rules.nonEmpty())
-					analysis.put("rules", rules.toString());
+					analysis.set("rules", rules.asJSON());
 			}
 
 			analysis.put("confidence", facts.confidence);

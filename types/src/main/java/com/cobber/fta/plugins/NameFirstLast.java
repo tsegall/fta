@@ -39,7 +39,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "NAME.FIRST_LAST";
 
 	/** The Regular Expression for this Semantic type. */
-	private static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]* \\p{IsAlphabetic}[- \\p{IsAlphabetic}]*";
+	private static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]* \\p{IsAlphabetic}[- \\.\\p{IsAlphabetic}]*";
 	private static final String BACKOUT = ".+";
 	private LogicalTypeFiniteSimple logicalFirst;
 	private LogicalTypeFiniteSimple logicalLast;
@@ -171,7 +171,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return trimmed.length() >= 5 && trimmed.length() <= 32 && charCounts[' '] >= 1 && charCounts[' '] < maxExpectedNames;
+		return trimmed.length() >= 5 && trimmed.length() <= 32 && trimmed.split("\\s+").length <= maxExpectedNames;
 	}
 
 	@Override

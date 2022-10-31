@@ -757,6 +757,35 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void phoneManyFormats() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("phone");
+		final String[] inputs = {
+				"432.2133750", "210.296.6710", "8174411241", "2145005481", "210.844.7221", "956.580.1568",
+				"2102966710", "8322372014", "830.625.2279", "3615503009", "7132563691", "254-741-4612",
+				"5124418626", "9406650661", "2102966710", "254-741-4612", "214.293.2847", "2542897264",
+				"2814512898", "9729323185", "8303293064"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "TELEPHONE");
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("TELEPHONE").signature);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			assertTrue(input.trim().matches(result.getRegExp()), input);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		final String pipedInput = " Female| MALE|Male| Female|Female|MALE |Female |Female |Unknown |Male |" +
@@ -3122,6 +3151,35 @@ public class TestPlugins {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getConfidence(), 1 - (double)2/result.getSampleCount());
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameManySpaces() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("contact_full_name");
+		final String[] inputs = {
+				"Rodney D.  Jones", "Margaret A.  Baldwin", "Patricia A.  Greenfield", "Tena D.  Golden", "Melissa A.  Baxter-Kosub",
+				"Renee S.  Martin", "Margaret A.  Baldwin", "Charles L.  Bertani Sr", "Stephen  S.  Nishimuta", "Thomas M.  Dornak",
+				"Morgan Karsh", "James D.  Recks", "Veronica Uriegas", "Mary H.  Klement", "Margaret A.  Baldwin", "James D.  Recks",
+				"Jana K.  Barch", "Carmen J.  Williams", "Sharon K.  Ives", "Donald W.  Sivley Jr"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "NAME.FIRST_LAST");
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("NAME.FIRST_LAST").signature);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			assertTrue(input.trim().matches(result.getRegExp()), input);
+		}
+	}
+
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testNames() throws IOException, FTAException {

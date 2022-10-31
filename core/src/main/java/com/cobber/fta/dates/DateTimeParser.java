@@ -221,6 +221,23 @@ public class DateTimeParser {
 		return config;
 	}
 
+	// Looking for things like "MM/yyyy", "MM-yyyy", "yyyy/MM", "yyyy-MM", "M/yyyy", "M-yyyy", "yyyy/M", "yyyy-M" and "MMMM,yyyy", "MMM,yyyy"
+	private boolean justMonthAndYear(final String input) {
+		final int len = input.length();
+		int monthChars = 0;
+		int yearChars = 0;
+
+		for (int i = 0; i < len; i++) {
+			char ch = input.charAt(i);
+			if (ch == 'M')
+				monthChars++;
+			else if (ch == 'y')
+				yearChars++;
+		}
+
+		return monthChars != 0 && yearChars != 0 && monthChars + yearChars + 1 == len;
+	}
+
 	/**
 	 * Given an input string with a DateTimeFormatter pattern return a suitable DateTimeFormatter.
 	 * This is very similar to DateTimeFormatter.ofPattern(), however, there are a set of key differences:
@@ -260,9 +277,9 @@ public class DateTimeParser {
             .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
             .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
             .toFormatter(config.getLocale());
-		else if ("MM/yyyy".equals(formatString) || "MM-yyyy".equals(formatString) || "yyyy/MM".equals(formatString) || "yyyy-MM".equals(formatString) ||
-				"M/yyyy".equals(formatString) || "M-yyyy".equals(formatString) || "yyyy/M".equals(formatString) || "yyyy-M".equals(formatString))
+		else if (justMonthAndYear(formatString))
 			formatter = new DateTimeFormatterBuilder()
+			.parseCaseInsensitive()
 			.parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
 			.append(DateTimeFormatter.ofPattern(formatString))
 			.toFormatter(config.getLocale());
@@ -1579,26 +1596,32 @@ public class DateTimeParser {
 			return null;
 
 		if (components == 2) {
-			// We only support MM/yyyy, MM-yyyy, yyyy/MM, and yyyy-MM (and their corresponding single month variants)
-			final int len = compressed.length();
-			if (len != 9 && len != 6)
-				return null;
-			final int year = compressed.indexOf("d{4}");
-			if (year == -1)
-				return null;
+			if ("MMM,d{4}".equals(compressed))
+				compressed = "MMM,yyyy";
+			else if ("MMMM,d{4}".equals(compressed))
+				compressed = "MMMM,yyyy";
+			else {
+				// We only support MM/yyyy, MM-yyyy, yyyy/MM, and yyyy-MM (and their corresponding single month variants)
+				final int len = compressed.length();
+				if (len != 9 && len != 6)
+					return null;
+				final int year = compressed.indexOf("d{4}");
+				if (year == -1)
+					return null;
 
-			final char separator = compressed.charAt(year == 0 ? 4 : year - 1);
-			if (separator != '/' && separator != '-')
-				return null;
+				final char separator = compressed.charAt(year == 0 ? 4 : year - 1);
+				if (separator != '/' && separator != '-')
+					return null;
 
-			if (year == 0)
-				compressed = "yyyy" + separator + (len == 9 ? "MM" : "M");
-			else if (year == 2)
-				compressed = "M" + separator + "yyyy";
-			else if (year == 5)
-				compressed = "MM" + separator + "yyyy";
-			else
-				return null;
+				if (year == 0)
+					compressed = "yyyy" + separator + (len == 9 ? "MM" : "M");
+				else if (year == 2)
+					compressed = "M" + separator + "yyyy";
+				else if (year == 5)
+					compressed = "MM" + separator + "yyyy";
+				else
+					return null;
+			}
 		}
 		else {
 			int alreadyResolved = 0;

@@ -1459,6 +1459,7 @@ public class TextAnalyzer {
 		int numericGroupingSeparators = 0;
 		boolean nonLocalizedDouble = false;
 		boolean couldBeNumeric = true;
+		boolean leadingZero = false;
 		int possibleExponentSeen = -1;
 		int digitsSeen = 0;
 		int alphasSeen = 0;
@@ -1503,13 +1504,15 @@ public class TextAnalyzer {
 				numericSigned = SignStatus.TRAILING_MINUS;
 			} else if (Character.isDigit(ch)) {
 				l0.append('d');
+				if (digitsSeen == 0 && ch == '0')
+					leadingZero = true;
 				digitsSeen++;
 			} else if (ch == localeDecimalSeparator) {
 				l0.append('D');
 				numericDecimalSeparators++;
 				if (numericDecimalSeparators > 1)
 					couldBeNumeric = false;
-			} else if (ch == localeGroupingSeparator) {
+			} else if (leadingZero == false && ch == localeGroupingSeparator && i + 3 < stopLooking) {
 				l0.append('G');
 				numericGroupingSeparators++;
 			} else if (Character.isAlphabetic(ch)) {
@@ -1541,7 +1544,7 @@ public class TextAnalyzer {
 
 		// Handle doubles stored in non-localized for (e.g. latitude is often stored with a '.')
 		// This case handles the case where the grouping separator is not a '.'
-		if (periodOffset != -1 && periods == 1 && numericDecimalSeparators == 0 && numericGroupingSeparators == 0) {
+		if (alphasSeen == 0 && periodOffset != -1 && periods == 1 && numericDecimalSeparators == 0 && numericGroupingSeparators == 0) {
 			couldBeNumeric = true;
 			for (int i = 0; i < l0.length(); i++) {
 				if (l0.charAt(i) == '.') {
@@ -1873,6 +1876,11 @@ public class TextAnalyzer {
 					|| (!best.getKey().equals(level2pattern) && (double)best.getValue()/raw.size() < (double)analysisConfig.getThreshold()/100
 							&& level2value >= 1.10 * best.getValue()))) {
 				facts.setMatchTypeInfo(level2typeInfo);
+
+				// If we are really unhappy with this determination then just back out to String
+				if ((double)level2value/raw.size() < 0.8)
+					facts.setMatchTypeInfo(knownTypes.getByID(KnownTypes.ID.ID_ANY_VARIABLE));
+
 			}
 
 			if (possibleDateTime != 0 && possibleDateTime + 1 >= raw.size()) {

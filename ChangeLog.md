@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 12.0.4
+ - ENH: Improve NON_LOCALIZED Double detection
+ - ENH: Improve NAME.FIRST_LAST to cope with multiple spaces - e.g., "Rodney D.  Jones"
+ - ENH: Support Date formats like "April,2015"
+
 ### 12.0.3
  - BUG: Missed a file on checkin
 

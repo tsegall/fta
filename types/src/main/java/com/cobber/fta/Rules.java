@@ -1,36 +1,53 @@
+/*
+ * Copyright 2017-2022 Tim Segall
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cobber.fta;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public class Rules {
+	private final static ObjectMapper MAPPER = new ObjectMapper();
+
 	private class Rule {
 		private String name;
 		private String[] arguments;
+
 
 		Rule(final String name, final String ...arguments) {
 			this.name = name;
 			this.arguments = arguments;
 		}
 
-		@Override
-		public String toString() {
-			final StringBuilder ret = new StringBuilder();
-			ret.append(name);
+		private void outputArray(final ArrayNode detail, final String[] array) {
+			for (final String s : array)
+				detail.add(s);
+		}
 
-			ret.append("(");
+		public ObjectNode asJSON() {
+			final ObjectNode rule = MAPPER.createObjectNode();
+			rule.put("name", name);
 
-			for (int i = 0; i < arguments.length; i++) {
-				if (i != 0)
-					ret.append(", ");
-				ret.append("'");
-				ret.append(arguments[i]);
-				ret.append("'");
-			}
+			if (arguments.length > 0)
+				outputArray(rule.putArray("arguments"), arguments);
 
-			ret.append(")");
-
-			return ret.toString();
+			return rule;
 		}
 	}
 
@@ -52,22 +69,14 @@ public class Rules {
 		return rules.size() != 0;
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder b = new StringBuilder();
+	public ArrayNode asJSON() {
+		ObjectMapper objectMapper = new ObjectMapper();
 
-		if (rules.size() > 1)
-			b.append("[ ");
+		ArrayNode ruleArray =  objectMapper.createArrayNode();
 
-		for (int i = 0; i < rules.size(); i++) {
-			if (i != 0)
-				b.append(", ");
-			b.append(rules.get(i).toString());
-		}
+		for (final Rule rule : rules)
+			ruleArray.add(rule.asJSON());
 
-		if (rules.size() > 1)
-			b.append(" ]");
-
-		return b.toString();
+		return ruleArray;
 	}
 }
