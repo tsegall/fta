@@ -118,9 +118,6 @@ public class AnalysisConfig {
 	/** Should we should treat "NULL" (and similar) as Null values. */
 	private boolean nullAsText = true;
 
-	/** Should we generate Rules. */
-	private boolean rules = false;
-
 	public AnalysisConfig() {
 		this(Locale.getDefault());
 	}
@@ -147,7 +144,6 @@ public class AnalysisConfig {
 		this.lengthQualifier = other.lengthQualifier;
 		this.noAbbreviationPunctuation = other.noAbbreviationPunctuation;
 		this.nullAsText = other.nullAsText;
-		this.rules = other.rules;
 		this.distributions = other.distributions;
 	}
 
@@ -185,9 +181,6 @@ public class AnalysisConfig {
 		case NUMERIC_WIDENING:
 			numericWidening = state;
 			break;
-		case RULES:
-			rules = state;
-			break;
 		}
 	}
 
@@ -216,8 +209,6 @@ public class AnalysisConfig {
 			return nullAsText;
 		case NUMERIC_WIDENING:
 			return numericWidening;
-		case RULES:
-			return rules;
 		}
 		return false;
 	}

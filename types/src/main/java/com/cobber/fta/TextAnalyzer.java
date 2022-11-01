@@ -178,9 +178,7 @@ public class TextAnalyzer {
 		/** Indicate whether we should treat "NULL" (and similar) as Null values. Feature is enabled by default. */
 		NULL_AS_TEXT,
 		/** Feature that if enabled return a double if we see a set of integers followed by some doubles call it a double. Feature is enabled by default. */
-		NUMERIC_WIDENING,
-		/** Indicate whether we should generate Field validation rules. */
-		RULES
+		NUMERIC_WIDENING
 	}
 
 	/**

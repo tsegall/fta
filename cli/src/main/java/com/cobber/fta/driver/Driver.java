@@ -180,8 +180,6 @@ public class Driver {
 					System.exit(1);
 				}
 			}
-			else if ("--rules".equals(args[idx]))
-				options.rules = true;
 			else if ("--samples".equals(args[idx]))
 				options.samples = true;
 			else if ("--semanticType".equals(args[idx]))

@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.0.5
+ - INT: Remove support for Rule generation (moved to separate utility)
+
 ### 12.0.4
  - ENH: Improve NON_LOCALIZED Double detection
  - ENH: Improve NAME.FIRST_LAST to cope with multiple spaces - e.g., "Rodney D.  Jones"

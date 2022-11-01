@@ -811,43 +811,6 @@ public class TextAnalysisResult {
 							outputArray(regExpStream, streamRegExps);
 			*/
 
-			if (analysisConfig.isEnabled(TextAnalyzer.Feature.RULES)) {
-				Rules rules = new Rules();
-				if (facts.nullCount == 0 && (facts.totalNullCount <= 0))
-					rules.add("NullPercent", "0.0");
-				if (facts.blankCount == 0 && (facts.totalBlankCount <= 0))
-					rules.add("BlankPercent", "0.0");
-				if (getLeadingWhiteSpace())
-					rules.add("TrimLeft", "true");
-				if (getTrailingWhiteSpace())
-					rules.add("TrimRight", "true");
-				if (facts.uniqueness == 1.0)
-					rules.add("Unique");
-				if (isSemanticType())
-					rules.add("SemanticType", facts.getMatchTypeInfo().semanticType);
-				else {
-					boolean isNumeric = FTAType.isNumeric(facts.getMatchTypeInfo().getBaseType());
-					if (facts.cardinality.size() < 10) {
-						rules.add("OneOf", facts.cardinality.keySet().stream().toArray(String[]::new));
-					}
-					else {
-						if (isNumeric) {
-							rules.add("Min", facts.getMinValue());
-							rules.add("Max", facts.getMaxValue());
-						}
-						else if (FTAType.isDateOrTimeType(facts.getMatchTypeInfo().getBaseType())) {
-							rules.add("Min", facts.getMatchTypeInfo().typeModifier, facts.getMinValue());
-							rules.add("Max", facts.getMatchTypeInfo().typeModifier, facts.getMaxValue());
-						}
-						else
-							rules.add("Pattern", getRegExp());
-					}
-				}
-
-				if (rules.nonEmpty())
-					analysis.set("rules", rules.asJSON());
-			}
-
 			analysis.put("confidence", facts.confidence);
 			analysis.put("type", facts.getMatchTypeInfo().getBaseType().toString());
 

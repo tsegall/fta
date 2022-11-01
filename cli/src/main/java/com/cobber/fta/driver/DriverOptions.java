@@ -41,7 +41,6 @@ public class DriverOptions {
 	protected boolean noDistributions;
 	protected boolean noStatistics;
 	protected boolean output;
-	protected boolean rules;
 	protected boolean formatDetection;
 	public long recordsToProcess = -1;
 	protected int detectWindow = -1;
@@ -89,8 +88,6 @@ public class DriverOptions {
 			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		if (this.noSemanticTypes)
 			analyzer.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
-		if (this.rules)
-			analyzer.configure(TextAnalyzer.Feature.RULES, true);
 		if (this.formatDetection)
 			analyzer.configure(TextAnalyzer.Feature.FORMAT_DETECTION, true);
 		if (this.abbreviationPunctuation)
