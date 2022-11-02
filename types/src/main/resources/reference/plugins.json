@@ -1588,26 +1588,6 @@
 		"priority": 173
 	},
 	{
-		"semanticType": "NAME.MIDDLE_INITIAL",
-		"description": "Middle Initial",
-		"pluginType": "regex",
-		"signature": "5AG+x37vekPMlggzCTebzFWovPc=",
-		"validLocales": [
-			{
-				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(middle.?init).*|(?i)(mi|middle)", "confidence": 99, "mandatory": true } ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ "\\p{IsAlphabetic}", "\\p{IsAlphabetic}\\." ],
-					"regExpReturned": "\\p{IsAlphabetic}\\.?",
-					"isRegExpComplete": true
-				} ]
-			}
-		],
-		"threshold": 98,
-		"baseType": "STRING",
-		"priority": 174
-	},
-	{
 		"semanticType": "NAME.MIDDLE",
 		"description": "Middle Name",
 		"pluginType": "java",
@@ -1622,6 +1602,29 @@
 				} ]
 			}
 		],
+		"priority": 174
+	},
+	{
+		"semanticType": "NAME.MIDDLE_INITIAL",
+		"description": "Middle Initial",
+		"pluginType": "regex",
+		"signature": "5AG+x37vekPMlggzCTebzFWovPc=",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [
+					{ "regExp": ".*(?i)(middle.?init).*|(?i)(mi|middle)", "confidence": 99, "mandatory": true },
+					{ "regExp": "(?i)middle.*", "confidence": 90, "mandatory": true }
+				],
+				"matchEntries": [ {
+					"regExpsToMatch": [ "\\p{IsAlphabetic}", "\\p{IsAlphabetic}\\." ],
+					"regExpReturned": "\\p{IsAlphabetic}\\.?",
+					"isRegExpComplete": true
+				} ]
+			}
+		],
+		"threshold": 98,
+		"baseType": "STRING",
 		"priority": 175
 	},
 	{

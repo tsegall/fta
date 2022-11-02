@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.0.6
+ - ENH: Improve NAME.MIDDLE_INITIAL recall
+
 ### 12.0.5
  - INT: Remove support for Rule generation (moved to separate utility)
 

@@ -69,8 +69,6 @@ public class MiddleName extends FirstName {
 		final String trimmedUpper = input.trim().toUpperCase(locale);
 		final int length = trimmedUpper.length();
 
-		if (length < minLength && length > maxLength)
-			return false;
 		if (getMembers().contains(trimmedUpper))
 			return true;
 
@@ -80,6 +78,9 @@ public class MiddleName extends FirstName {
 				return false;
 			return length == 1 || trimmedUpper.charAt(1) == '.';
 		}
+
+		if (length < minLength || length > maxLength)
+			return false;
 
 		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
 		for (int i = 0; i < length; i++) {
