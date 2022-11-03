@@ -40,6 +40,7 @@ public class DriverOptions {
 	protected boolean noSemanticTypes;
 	protected boolean noDistributions;
 	protected boolean noStatistics;
+	protected boolean noNullAsText;
 	protected boolean output;
 	protected boolean formatDetection;
 	public long recordsToProcess = -1;
@@ -86,6 +87,8 @@ public class DriverOptions {
 			analyzer.configure(TextAnalyzer.Feature.DISTRIBUTIONS, false);
 		if (this.noStatistics)
 			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		if (!this.noNullAsText)
+			analyzer.configure(TextAnalyzer.Feature.NULL_AS_TEXT, true);
 		if (this.noSemanticTypes)
 			analyzer.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		if (this.formatDetection)

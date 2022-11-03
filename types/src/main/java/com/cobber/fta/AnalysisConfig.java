@@ -116,7 +116,7 @@ public class AnalysisConfig {
 	private boolean noAbbreviationPunctuation = true;
 
 	/** Should we should treat "NULL" (and similar) as Null values. */
-	private boolean nullAsText = true;
+	private boolean nullAsText = false;
 
 	public AnalysisConfig() {
 		this(Locale.getDefault());

@@ -153,6 +153,8 @@ public class Driver {
 				options.noSemanticTypes = true;
 			else if ("--noStatistics".equals(args[idx]))
 				options.noStatistics = true;
+			else if ("--noNullAsText".equals(args[idx]))
+				options.noNullAsText = true;
 			else if ("--output".equals(args[idx]))
 				options.output = true;
 			else if ("--pluginDefinition".equals(args[idx]))

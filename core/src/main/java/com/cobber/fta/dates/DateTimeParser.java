@@ -226,6 +226,7 @@ public class DateTimeParser {
 		final int len = input.length();
 		int monthChars = 0;
 		int yearChars = 0;
+		char separator = '#';
 
 		for (int i = 0; i < len; i++) {
 			char ch = input.charAt(i);
@@ -233,9 +234,13 @@ public class DateTimeParser {
 				monthChars++;
 			else if (ch == 'y')
 				yearChars++;
+			else
+				separator = ch;
 		}
 
-		return monthChars != 0 && yearChars != 0 && monthChars + yearChars + 1 == len;
+		// We want to make sure that there is only a single separator and if it is a period do not treat all numerics as a date
+		return monthChars != 0 && yearChars != 0 && monthChars + yearChars + 1 == len &&
+				!((separator == '.' || separator == ',') && (monthChars == 1 || monthChars == 2));
 	}
 
 	/**
@@ -1596,32 +1601,16 @@ public class DateTimeParser {
 			return null;
 
 		if (components == 2) {
-			if ("MMM,d{4}".equals(compressed))
-				compressed = "MMM,yyyy";
-			else if ("MMMM,d{4}".equals(compressed))
-				compressed = "MMMM,yyyy";
-			else {
-				// We only support MM/yyyy, MM-yyyy, yyyy/MM, and yyyy-MM (and their corresponding single month variants)
-				final int len = compressed.length();
-				if (len != 9 && len != 6)
-					return null;
-				final int year = compressed.indexOf("d{4}");
-				if (year == -1)
-					return null;
+			final int year = compressed.indexOf("d{4}");
+			if (year == -1)
+				return null;
 
-				final char separator = compressed.charAt(year == 0 ? 4 : year - 1);
-				if (separator != '/' && separator != '-')
-					return null;
-
-				if (year == 0)
-					compressed = "yyyy" + separator + (len == 9 ? "MM" : "M");
-				else if (year == 2)
-					compressed = "M" + separator + "yyyy";
-				else if (year == 5)
-					compressed = "MM" + separator + "yyyy";
-				else
-					return null;
-			}
+			compressed = compressed.replace("d{4}", "yyyy");
+			// Only one of the following two will succeed
+			compressed = compressed.replace("d{2}", "MM");
+			compressed = compressed.replace("d", "M");
+			if (!justMonthAndYear(compressed))
+				return null;
 		}
 		else {
 			int alreadyResolved = 0;

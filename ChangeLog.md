@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 12.0.7
+ - ENH: Default NULL_AS_TEXT to off. Note: by default the CLI enables this.
+ - ENH: Improve detection for dates of the form MMM<sep>YYYY or MMMM<sep>YYYY
+
 ### 12.0.6
  - ENH: Improve NAME.MIDDLE_INITIAL recall
 
