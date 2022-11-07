@@ -128,7 +128,7 @@ public class NameLastFirst extends LogicalTypeInfinite {
 			}
 			if (ch == ' ') {
 				alphas = 0;
-				if (i != comma + 1)
+				if (i != comma + 1 && !(i == comma + 2 && trimmed.charAt(i - 1) == ' '))
 					spaces++;
 				if (spaces == 2)
 					return false;

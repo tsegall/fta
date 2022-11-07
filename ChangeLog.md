@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 12.0.8
+ - ENH: Improve NAME.LAST_FIRST to cope with multiple spaces - e.g., "DAVIS,  RICHARD M"
+ - ENH: Bump google phone number library
+ - ENH: Bump Jackson
+
 ### 12.0.7
  - ENH: Default NULL_AS_TEXT to off. Note: by default the CLI enables this.
  - ENH: Improve detection for dates of the form MMM&lt;sep&gt;YYYY or MMMM&lt;sep&gt;YYYY
