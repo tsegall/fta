@@ -2716,7 +2716,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testThreading() throws IOException, FTAException, FTAException, InterruptedException {
-		final int THREADS = 1000;
+		final int THREADS = 500;
 		Thread[] threads = new Thread[THREADS];
 
 		for (int t = 0; t < THREADS; t++) {
