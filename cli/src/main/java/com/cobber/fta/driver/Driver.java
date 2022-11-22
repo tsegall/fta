@@ -42,7 +42,6 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.driver.faker.Faker;
 
 public class Driver {
-
 	private static DriverOptions options;
 
 	public static void main(final String[] args) throws IOException {
@@ -88,7 +87,7 @@ public class Driver {
 				error.println(" --delimiter <ch> - Set the delimiter to the charactere <ch>");
 				error.println(" --detectWindow <n> - Set the size of the detect window to <n>");
 				error.println(" --faker <header> - Header is a comma separated list of Semantic Types");
-				error.println(" --formatDetection - Enabled Format Detection");
+				error.println(" --formatDetection - Enable Format Detection");
 				error.println(" --help - Print this help");
 				error.println(" --json - Output as JSON");
 				error.println(" --legacyJSON - Output legacy JSON - compatible with FTA 11.X or lower");

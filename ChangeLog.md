@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 12.0.9
+ - ENH: Revamp Address detection - now split into FULL_ADDRESS_EN, STREET_ADDRESS_EN, STREET_ADDRESS2_EN, STREET_NAME_EN
+ - ENH: Content Format Detection - accept JSON that uses single quotes as opposed to the standard
+ - ENH: Bump Jackson & slf4j
+ - BUG: STREET_ADDRESS_EN - should trim() before checking length
+
 ### 12.0.8
  - ENH: Improve NAME.LAST_FIRST to cope with multiple spaces - e.g., "DAVIS,  RICHARD M"
  - ENH: Bump google phone number library

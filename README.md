@@ -273,6 +273,7 @@ EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.NANOSECONDS|Unix Epoch (Timestamp) - nanoseconds|*
 FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|bg, ca, de, en, es, fr, it, nl, pt, ru
+FULL_ADDRESS_EN|Full Address (English Language)|en
 GENDER.TEXT_&lt;Language&gt;|Gender|bg, ca, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr, zh
 GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HASH.SHA1_HEX|SHA1 Hash - hexadecimal|*
@@ -345,6 +346,7 @@ STATE_PROVINCE.SUBURB_AU|Australian Suburb|en-AU
 STREET_ADDRESS_&lt;Language&gt;|Street Address|bg, ca, da, de, en, es, fi, fr, hr, it, lv, nl, pl, pt, ro, ru, sk
 STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
 STREET_MARKER_EN| Street Suffix (English Language)|en
+STREET_NAME_EN|Street Name (English Language)|en
 TELEPHONE|Telephone Number (Generic)|*
 TIMEZONE.IANA|IANA Time Zone (Olson)|*
 URI.URL|URL - see RFC 3986|*
@@ -528,6 +530,15 @@ Additional attributes captured in JSON structure:
 FTA can also be used to validate an input stream either based on known Semantic Types or on Semantic Types detected by FTA.  For example, it is possible to retrieve the LogicalType for a known Semantic Type and then invoke the isValid() method.  This is typically only useful for 'Closed' Semantic Types (isClosed() == true), i.e. those for which there is a known constrained set.  A good example of a closed Semantic Type is the Country code as defined by ISO-3166 Alpha 3.  An example where isValid() would be less useful is FIRST_NAME.  For those cases where the Semantic Type is not one of those known to FTA - the result returned will include a Java Regular Expression which can be used to validate new values.  Refer to the Validation example for further details.
 
 In addition to validating a data Stream, FTA can also be used to generate a synthetic pseudo-random data stream.  For any detected Semantic Type which implements the LTRandom interface it is possible to generate a 'random' element of the Semantic Type by invoking nextRandom(). Refer to the Generation example for further details.
+
+## Address Detection ##
+
+There are multiple Semantic Types associated with addresses:
+ - FULL_ADDRESS - A full address, typically this includes a Postal Code (Zip Code) and/or a State/Province as well as a Street number and Street name.
+ - STREET_ADDRESS - First line of an address
+ - STREET_ADDRESS2 - Second line of an address
+ - STREET_MARKER - The Street qualifier, e.g. Road, Street, Avenue, Boulevard, etc.
+ - STREET_NAME - Street name with no number, e.g. Penaton Avenue
 
 ## Faker ##
 

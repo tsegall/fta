@@ -70,6 +70,7 @@ import com.cobber.fta.dates.LocaleInfo;
 import com.cobber.fta.token.Token;
 import com.cobber.fta.token.TokenStream;
 import com.cobber.fta.token.TokenStreams;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1116,6 +1117,7 @@ public class TextAnalyzer {
 
 	private void initialize() throws FTAPluginException, FTAUnsupportedLocaleException {
 		mapper.registerModule(new JavaTimeModule());
+		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 
 		if (LocaleInfo.isSupported(locale) != null)
 			throw new FTAUnsupportedLocaleException(LocaleInfo.isSupported(locale));
@@ -1636,7 +1638,7 @@ public class TextAnalyzer {
 					candidateCounts[c]++;
 			}
 			catch (Exception e) {
-				LoggerFactory.getLogger("com.cobber.fta").error("Plugin: %s, issue: %s.", logical.getSemanticType(), e.getMessage());
+				LoggerFactory.getLogger("com.cobber.fta").error("Plugin: {}, issue: {}.", logical.getSemanticType(), e.getMessage());
 			}
 			c++;
 		}
@@ -1933,7 +1935,7 @@ public class TextAnalyzer {
 					if (currentConfidence > bestConfidence && currentConfidence >= logical.getThreshold()/100.0) {
 						facts.setMatchTypeInfo(candidate);
 						bestConfidence = currentConfidence;
-						debug("Type determination - infinite type, matchTypeInfo - {}", facts.getMatchTypeInfo());
+						debug("Type determination - infinite type, confidence: {}, matchTypeInfo - {}", currentConfidence, facts.getMatchTypeInfo());
 					}
 				}
 				i++;
@@ -2186,7 +2188,7 @@ public class TextAnalyzer {
 		for (final Map.Entry<String, Long> entry : doubleOutliers.entrySet())
 			addValid(entry.getKey(), entry.getValue());
 
-		debug("Type determination - backing out, matchTypeInfo - {}", facts.getMatchTypeInfo());
+		debug("Type determination - backing out double, matchTypeInfo - {}", facts.getMatchTypeInfo());
 	}
 
 	/**

@@ -15,10 +15,10 @@
  */
 package com.cobber.fta.plugins;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
@@ -34,24 +34,20 @@ import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * Plugin to detect an Address line. (English-language only).
+ * Plugin to detect a Street Name (no number!). (English-language only).
+ * Note: This will also detect a Street Intersection.
  */
-public class AddressEN extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "STREET_ADDRESS_EN";
-
+public class AddressStreetNameEN extends LogicalTypeInfinite {
 	private boolean multiline;
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
-	private String country;
-
-	private Pattern poBox;
+	private Set<String> markersSeen;
 
 	/**
-	 * Construct a plugin to detect an Address based on the Plugin Definition.
+	 * Construct a plugin to detect a Street Name based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public AddressEN(final PluginDefinition plugin) {
+	public AddressStreetNameEN(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -59,7 +55,7 @@ public class AddressEN extends LogicalTypeInfinite {
 	public String nextRandom() {
 		final String[] streets = {
 				"Main",  "Lakeside", "Pennsylvania", "Hill", "Croydon", "Buchanan", "Riverside", "Flushing",
-				"Jefferson", "Randolph", "North Point", "Massachusetts", "Meadow", "Central", "Lincoln", "Eight Mile",
+				"Jefferson", "Randolph", "North Point", "Massachusetts", "Meadow", "Central", "Lincoln", "Final Mile",
 				"4th", "Flower", "High", "3rd", "12th", "D", "Piedmont", "Chaton", "Kenwood", "Sycamore Lake",
 				"Euclid", "Cedarstone", "Carriage", "Isaacs Creek", "Happy Hollow", "Armory", "Bryan", "Charack",
 				"Atha", "Bassel", "Overlook", "Chatham", "Melville", "Stone", "Dawson", "Pringle", "Federation",
@@ -67,7 +63,7 @@ public class AddressEN extends LogicalTypeInfinite {
 		};
 		final String simpleAddressMarkers[] = { "Street", "St", "Road", "Rd", "Rd.", "Avenue", "Ave", "Terrace", "Drive" };
 
-		return String.valueOf(1 + random.nextInt(999)) + ' ' + streets[random.nextInt(streets.length)] + ' ' + simpleAddressMarkers[random.nextInt(simpleAddressMarkers.length)];
+		return streets[random.nextInt(streets.length)] + ' ' + simpleAddressMarkers[random.nextInt(simpleAddressMarkers.length)];
 	}
 
 	@Override
@@ -76,17 +72,9 @@ public class AddressEN extends LogicalTypeInfinite {
 
 		addressMarkersRef = new SingletonSet("resource", "/reference/en_street_markers.csv");
 		addressMarkers = addressMarkersRef.getMembers();
-
-		country = locale.getCountry().toUpperCase(Locale.ROOT);
-
-		poBox = Pattern.compile(AddressCommon.POBOX);
+		markersSeen = new HashSet<>();
 
 		return true;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override
@@ -103,102 +91,82 @@ public class AddressEN extends LogicalTypeInfinite {
 	public boolean isValid(final String input, final boolean detectMode) {
 		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
 
-		final int length = inputUpper.length();
-
-		// Attempt to fail fast
-		if (length > 60 || length < 5)
-			return false;
-
-//		// Simple case first - last 'word is something we recognize
-//		final int spaceIndex = inputUpper.trim().lastIndexOf(' ');
-//		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1)))
-//			return true;
-//
-//		if (inputUpper.contains("SUITE") || inputUpper.contains("FLOOR"))
-//			return true;
-
 		return validation(inputUpper, detectMode);
 	}
 
 	private boolean validation(final String trimmedUpper, final boolean detectMode) {
-		// Australia commonly uses unit/number in the address so allow / to be part of words
-		final List<String> words = Utils.asWords(trimmedUpper, "AU".equals(country) ? "/-#" : "-#");
+		final List<String> words = Utils.asWords(trimmedUpper, "-#");
 		final int wordCount = words.size();
+
+		if (words.size() == 0)
+			return false;
+
+		if (words.size() <= 2 && "BROADWAY".equals(words.get(0)))
+			return true;
 
 		if (wordCount < 2)
 			return false;
 
-		final String firstWord = words.get(0);
-		boolean initialNumeric = AddressCommon.isAddressNumber(firstWord);
+		int extrasPresent = 0;
+		for (int i = wordCount - 1; i >= 0; i--)
+			if (AddressCommon.isModifier(words.get(i)))
+				extrasPresent += 2;
+			else if (AddressCommon.isDirection(words.get(i)))
+				extrasPresent++;
 
-		if ("BOX".equals(firstWord))
-			return true;
-
-		if (words.size() == 2 && initialNumeric && "BROADWAY".equals(words.get(1)))
-			return true;
-
-		if (trimmedUpper.charAt(0) == 'P' && poBox.matcher(trimmedUpper).find())
-			return true;
-
-		if (wordCount < 3)
+		boolean intersection = trimmedUpper.contains("/") || trimmedUpper.contains("&") || trimmedUpper.contains(" AND ");
+		if (!intersection && wordCount > 4 + extrasPresent || wordCount > 8 + extrasPresent)
 			return false;
 
-		int addressMarkerIndex = -1;
-		int score = 0;
-
-		if (!AddressCommon.isModifier(firstWord) && !addressMarkers.contains(firstWord) && !initialNumeric)
+		final String first = words.get(0);
+		final boolean isAddressNumber = AddressCommon.isAddressNumber(first);
+		// Allow '12 Avenue' etc as these are quite common
+		if (isAddressNumber && !addressMarkers.contains(words.get(1)))
 			return false;
 
-		// Only get credit if the number starts with something non-zero in detect mode (despite the fact that they do occur)
-		if (initialNumeric && (!detectMode || words.get(0).charAt(0) != '0'))
-			score++;
+		// These commonly appear at the front - e.g. 'Avenue of the Americas'
+		if ("AVENUE".equals(first) || "AVE".equals(first) || "INTERSTATE".equals(first) || "ROUTE".equals(first) || "HWY".equals(first))
+			return true;
 
+		// If there is no modifier (e.g. Flat, Suite, Building, ... ) then one of the last two words should be an Address Marker
+		if (!intersection && extrasPresent == 0)
+			return addressMarkers.contains(words.get(wordCount - 1)) || addressMarkers.contains(words.get(wordCount - 2));
+
+		int markers = 0;
 		for (int i = 0; i < wordCount; i++) {
-			String word = words.get(i);
+			final String word = words.get(i);
 			if (addressMarkers.contains(word)) {
-				if (addressMarkerIndex == -1)
-					score++;
-				addressMarkerIndex = i;
+				markersSeen.add(word);
+				markers++;
 			}
-			else if (AddressCommon.isDirection(word) || AddressCommon.isModifier(word))
-				score++;
 		}
 
-		if (score >= 2)
-			return true;
-
-		// If it looks like '1280 SE XXXXX' declare it good
-		if (initialNumeric && AddressCommon.isDirection(words.get(1)))
-			return true;
-
-		return false;
+		return intersection ? markers >= 2 : markers >= 1;
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
+		final String rubbish = "{}[]=+";
+		for (int i = 0; i < rubbish.length(); i++)
+			if (charCounts[rubbish.charAt(i)] != 0)
+				return false;
+
 		return validation(trimmed.toUpperCase(Locale.ENGLISH), true);
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+		// Don't declare success if the header does not look good and we only have a few sample OR the uniqueness of the set is extremely low
+		if (getHeaderConfidence(context.getStreamName()) <= 85 && realSamples < 10 ||
+				getHeaderConfidence(context.getStreamName()) <= 85 && markersSeen.size() < 2 ||
+				getHeaderConfidence(context.getStreamName()) < 99 && cardinality.size() * 100 / realSamples < 1)
+			return PluginAnalysis.SIMPLE_NOT_OK;
 		return getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final String dataStreamName = context.getStreamName();
-
-		// We really don't want to classify Line 2/Line 3 of an address as a Line 1
-		if (dataStreamName.length() > 1) {
-			final char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
-			if (Character.isDigit(lastChar) && lastChar != '1')
-				return 0.0;
-		}
-
-		// If we have all the headers then we can check if this one is less likely to be the primary address field than the previous one
-		int current = context.getStreamIndex();
-		if (current >= 1 && getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) > getHeaderConfidence(dataStreamName))
-			return 0.0;
 
 		final int headerConfidence = getHeaderConfidence(dataStreamName);
 		double confidence = (double)matchCount/realSamples;
@@ -207,9 +175,7 @@ public class AddressEN extends LogicalTypeInfinite {
 		if (headerConfidence >= 99)
 			confidence = Math.min(confidence + 0.20, 1.0);
 		else if (headerConfidence >= 90)
-			confidence = Math.min(confidence + 0.10, 1.0);
-		else if (headerConfidence >= 85)
-			confidence = Math.min(confidence + 0.05, 1.0);
+			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.15), 1.0);
 
 		return confidence;
 	}

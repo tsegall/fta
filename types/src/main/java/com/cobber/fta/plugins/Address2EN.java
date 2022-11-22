@@ -15,6 +15,10 @@
  */
 package com.cobber.fta.plugins;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
@@ -23,8 +27,10 @@ import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.PluginLocaleEntry;
+import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -35,6 +41,9 @@ public class Address2EN extends LogicalTypeInfinite {
 	public static final String SEMANTIC_TYPE = "STREET_ADDRESS2_EN";
 
 	private PluginLocaleEntry addressLine1Entry;
+	private PluginLocaleEntry cityEntry;
+	private SingletonSet addressMarkersRef;
+	private Set<String> addressMarkers;
 
 	/**
 	 * Construct a plugin to detect the second line of an Address based on the Plugin Definition.
@@ -62,7 +71,10 @@ public class Address2EN extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
+		addressMarkersRef = new SingletonSet("resource", "/reference/en_street_markers.csv");
+		addressMarkers = addressMarkersRef.getMembers();
 		addressLine1Entry = PluginDefinition.findByQualifier("STREET_ADDRESS_EN").getLocaleEntry(locale);
+		cityEntry = PluginDefinition.findByQualifier("CITY").getLocaleEntry(locale);
 
 		return true;
 	}
@@ -87,12 +99,29 @@ public class Address2EN extends LogicalTypeInfinite {
 		final int length = input.length();
 
 		// Attempt to fail fast
-		return length <= 60;
+		if (length > 60)
+			return false;
+
+		return validation(input.trim().toUpperCase(Locale.ENGLISH), true);
+	}
+
+	private boolean validation(final String trimmedUpper, final boolean detectMode) {
+		final List<String> words = Utils.asWords(trimmedUpper, "-#");
+
+		for (int i = 0; i < words.size(); i++) {
+			String word = words.get(i);
+			if (addressMarkers.contains(word) && words.size() != 1)
+				return true;
+			else if (AddressCommon.isModifier(word))
+				return true;
+		}
+
+		return false;
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed, true);
+		return validation(trimmed.toUpperCase(Locale.ENGLISH), true);
 	}
 
 	@Override
@@ -100,34 +129,65 @@ public class Address2EN extends LogicalTypeInfinite {
 		return PluginAnalysis.OK;
 	}
 
-	@Override
-	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
+	private int headerConfidence(final AnalyzerContext context) {
 		final String dataStreamName = context.getStreamName();
+
+		if (dataStreamName.length() == 0)
+			return 0;
+
 		final int headerConfidence = getHeaderConfidence(dataStreamName);
+		if (headerConfidence >= 99)
+			return headerConfidence;
 
-		// If we don't like the header, or we have no header context or this is better header for an Address Line 1 than an Address Line 2 then bail
-		if (headerConfidence < 95 || context.getCompositeStreamNames() == null || context.getCompositeStreamNames().length < 2 ||
-				addressLine1Entry.getHeaderConfidence(dataStreamName) > headerConfidence)
-			return 0.0;
+		// If this header does not look good or we have no context then we are all done
+		if (headerConfidence < 90 || context.getCompositeStreamNames() == null)
+			return 0;
 
-		// We really don't want to classify Line 1/Line 3 of an address as a Line 2
-		if (dataStreamName.length() > 1) {
-			final char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
-			if (Character.isDigit(lastChar) && lastChar != '2')
-				return 0.0;
+		final int current = context.getStreamIndex();
+		// Make sure we can access the previous field
+		if (current == 0)
+			return 0;
+
+		final String previousStreamName = context.getCompositeStreamNames()[current - 1];
+		if (previousStreamName.length() == 0)
+			return 0;
+
+		// We know it looks like an address since the header confidence is > 90
+
+		final char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
+		if (Character.isDigit(lastChar))
+			return lastChar == '2' ? 99 : 0;
+
+		// If this header is the same as the previous but with a 1 switched for a '2' then we are super confident
+		int index = previousStreamName.indexOf('1');
+		if (index != -1 && dataStreamName.equals(previousStreamName.substring(0, index) + '2' + previousStreamName.substring(index + 1)))
+			return 99;
+
+		// Does the previous field look like an Address Line 1 AND not look like an Address Line 2
+		if (addressLine1Entry.getHeaderConfidence(previousStreamName) >= 90 && getHeaderConfidence(previousStreamName) < 99) {
+			if (current + 1 < context.getCompositeStreamNames().length &&
+					cityEntry.getHeaderConfidence(context.getCompositeStreamNames()[current + 1]) != 0)
+				return 95;
+			return 90;
 		}
 
-		// Get the index of the of the current field
-		int current = context.getStreamIndex();
+		return 0;
+	}
 
-		// Does the previous field exist and look like an Address Line 1?
-		if (current < 1 || addressLine1Entry.getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) < 90)
+	@Override
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
+		int confidence = headerConfidence(context);
+
+		// If we really don't like the header call it a day
+		if (confidence == 0)
 			return 0.0;
 
-		// If all the samples match and the header looks perfect then we are in great shape
-		if (matchCount == realSamples && headerConfidence >= 95)
-			return 1.0;
+		double matchConfidence = (double)matchCount/realSamples;
+		// If we are super confident in the header boost if we like the data
+		if (confidence == 99)
+			return matchConfidence > .25 ? 1.0 : .9;
 
-		return (double)headerConfidence / 100;
+		// Header is reasonable - so check we have some data that looks reasonable
+		return matchConfidence > .25 ? (double)confidence/100 : 0;
 	}
 }

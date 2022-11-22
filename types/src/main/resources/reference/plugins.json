@@ -304,7 +304,18 @@
 		"threshold": 98,
 		"priority": 74
 	},
-	
+	{
+		"semanticType": "FULL_ADDRESS_EN",
+		"description": "Full Address (English Language)",
+		"pluginType": "java",
+		"signature": "CJFV+VSRgkE9qJFlqdfK5nVpYCM=",
+		"clazz": "com.cobber.fta.plugins.AddressFullEN",
+		"validLocales": [
+			{ "localeTag":  "en-CA,en-US", "headerRegExps": [ { "regExp": ".*(?i)(address)", "confidence": 99 }, { "regExp": ".*(?i)(addr|location).*", "confidence": 95 } ] }
+		],
+		"threshold": 90,
+		"priority": 75
+	},
 	{
 		"semanticType": "STREET_ADDRESS_EN",
 		"description": "Street Address (English Language)",
@@ -312,22 +323,22 @@
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
 		"clazz": "com.cobber.fta.plugins.AddressEN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(address|addr.*1)", "confidence": 99 }, { "regExp": ".*(?i)(addr).*", "confidence": 95 } ] }
-		],
-		"threshold": 90,
-		"priority": 75
-	},
-	{
-		"semanticType": "STREET_ADDRESS2_EN",
-		"description": "Street Address - Line 2 (English Language)",
-		"pluginType": "java",
-		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
-		"clazz": "com.cobber.fta.plugins.Address2EN",
-		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr).*2", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 95 } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i).*(address|addr)(.*1)?", "confidence": 99 }, { "regExp": ".*(?i)(addr).*", "confidence": 95 }, { "regExp": ".*(?i)(location).*", "confidence": 85 } ] }
 		],
 		"threshold": 90,
 		"priority": 76
+	},
+	{
+		"semanticType": "STREET_NAME_EN",
+		"description": "Street Name (English Language)",
+		"pluginType": "java",
+		"signature": "3E5oqYqSkuXljmmvAl47bS8ywxM=",
+		"clazz": "com.cobber.fta.plugins.AddressStreetNameEN",
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(street|road)(.?name)?", "confidence": 99 }, { "regExp": ".*(?i)(street|road).*", "confidence": 90 }, { "regExp": ".*(?i)(location).*", "confidence": 85 } ] }
+		],
+		"threshold": 90,
+		"priority": 77
 	},
 	{
 		"semanticType": "STREET_MARKER_EN",
@@ -340,7 +351,19 @@
 		"content": "/reference/en_street_markers.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 77
+		"priority": 78
+	},
+	{
+		"semanticType": "STREET_ADDRESS2_EN",
+		"description": "Street Address - Line 2 (English Language)",
+		"pluginType": "java",
+		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
+		"clazz": "com.cobber.fta.plugins.Address2EN",
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr).*2", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
+		],
+		"threshold": 90,
+		"priority": 79
 	},
 	{
 		"semanticType": "STREET_ADDRESS_<LANGUAGE>",
@@ -367,7 +390,7 @@
 			{ "localeTag":  "sk", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 90,
-		"priority": 78
+		"priority": 80
 	},
 	{
 		"semanticType": "GENDER.TEXT_<LANGUAGE>",
@@ -393,7 +416,7 @@
 			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Пол).*", "confidence": 90 } ] },
 			{ "localeTag":  "sv", "headerRegExps": [ { "regExp": ".*(?i)(Gender|kon|kön).*", "confidence": 90 } ] }
 		],
-		"priority": 80
+		"priority": 85
 	},
 	{
 		"semanticType" : "GENDER.TEXT_JA",
@@ -413,7 +436,7 @@
 		"content": "{ \"members\": [ \"女性\",\"女\",\"男性\",\"男\",\"その他\" ] }",
 		"backout": ".*",
 		"baseType" : "STRING",
-		"priority": 81
+		"priority": 86
 	},
 	{
 		"semanticType" : "GENDER.TEXT_ZH",
@@ -433,7 +456,7 @@
 		"content": "{ \"members\": [ \"女性\",\"女\",\"女生\",\"男性\",\"男\",\"男生\" ] }",
 		"backout": ".*",
 		"baseType" : "STRING",
-		"priority": 82
+		"priority": 87
 	},
 	{
 		"semanticType" : "PERSON.AGE",
@@ -460,7 +483,7 @@
 			}
 		],
 		"baseType" : "LONG",
-		"priority": 83
+		"priority": 88
 	},
 	{
 		"semanticType" : "PERSON.RACE_EN",
@@ -474,7 +497,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(race|ethnic).*", "confidence": 95, "mandatory": true } ]
 			}
 		],
-		"priority": 84
+		"priority": 89
 	},
 	{
 		"semanticType" : "PERSON.RACE_ABBR_EN",
@@ -488,7 +511,7 @@
 				"headerRegExps": [ { "regExp": "(?i)(race|ethnic).*|.*(?i)(race|ethnicity)", "confidence": 95, "mandatory": true } ]
 			}
 		],
-		"priority": 85
+		"priority": 90
 	},
 	{
 		"semanticType" : "PERSON.MARITAL_STATUS_EN",
@@ -502,7 +525,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(marital.?status).*", "confidence": 95, "mandatory": true } ]
 			}
 		],
-		"priority": 86
+		"priority": 91
 	},
 	{
 		"semanticType": "NATIONALITY_EN",
@@ -516,7 +539,7 @@
 		"content": "/reference/en_nationality.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 88
+		"priority": 92
 	},
 	{
 		"semanticType": "HONORIFIC_EN",
@@ -530,7 +553,7 @@
 		"content": "/reference/en_honorific.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 89
+		"priority": 93
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_EN",
@@ -548,7 +571,7 @@
 			}
 		],
 		"threshold": 85,
-		"priority": 90
+		"priority": 94
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_DE",
@@ -561,7 +584,7 @@
 		"content": "/reference/de_countries.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 91
+		"priority": 95
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_ES",
@@ -576,7 +599,7 @@
 		"contentType": "resource",
 		"threshold": 90,
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 92
+		"priority": 96
 	},
 	{
 		"semanticType": "MONTH.ABBR_<LOCALE>",

@@ -207,6 +207,10 @@ public class FreeText extends LogicalTypeInfinite {
 		if ((double)matchCount/realSamples < getThreshold()/100.0)
 			return new PluginAnalysis(REGEXP);
 
+		// No business claiming this is free text if the cardinality is 1!
+		if (cardinality.size() == 1)
+			return new PluginAnalysis(REGEXP);
+
 		double uniqueness = 1.0;
 		// Calculate the uniqueness if it is possible
 		if (realSamples != 0 && cardinality.size() != analysisConfig.getMaxCardinality()) {

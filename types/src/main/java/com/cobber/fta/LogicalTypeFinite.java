@@ -55,7 +55,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 			boolean all = value.equalsIgnoreCase("all");
 			boolean first = value.equalsIgnoreCase("first");
 
-			List<String> words = Utils.asWords(trimmedUpper);
+			List<String> words = Utils.asWords(trimmedUpper, null);
 			boolean found = false;
 			for (final String word : words) {
 				found = getMembers().contains(Utils.cleanse(word).toUpperCase(locale));

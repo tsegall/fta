@@ -87,7 +87,7 @@ public class IndustryEN extends LogicalTypeInfinite {
 		if (length > 200 || length < 2)
 			return false;
 
-		List<String> words = Utils.asWords(trimmedUpper);
+		List<String> words = Utils.asWords(trimmedUpper, null);
 
 		if (words.size() > 10)
 			return false;

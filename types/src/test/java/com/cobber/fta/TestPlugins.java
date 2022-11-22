@@ -1211,6 +1211,44 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testFullAddressCA() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testFullAddressCA");
+		analysis.setLocale(Locale.forLanguageTag("en-CA"));
+		LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("FULL_ADDRESS_EN"), analysis.getConfig());
+
+		assertTrue(logicalFullAddress.isValid("510 Chaton Ave, NW H6J 1S5"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testFullAddressUS() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testFullAddressUS");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("FULL_ADDRESS_EN"), analysis.getConfig());
+
+		assertTrue(logicalFullAddress.isValid("PO Box 554, Oakley, UT"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testStreetNameUS() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testStreetNameUS");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STREET_NAME_EN"), analysis.getConfig());
+
+		assertTrue(logicalFullAddress.isValid("S CAPITAL OF TEXAS HWY STE B5"));
+		assertTrue(logicalFullAddress.isValid("ROUTE 17"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testStreetAddressUS() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testStreetAddressUS");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STREET_ADDRESS_EN"), analysis.getConfig());
+
+		assertTrue(logicalFullAddress.isValid("P.O. BOX 769"));
+		assertTrue(logicalFullAddress.isValid("P.O.BOX 1387"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicURLMixed() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicURLMixed");
 		final String inputs[] = INPUT_URLS.split("\\|");
@@ -3843,7 +3881,7 @@ public class TestPlugins {
 			"5 Boston Ave #88",
 			"228 Runamuck Pl #2808",
 			"2371 Jerrold Ave",
-			"37275 St  Rt 17m M",
+			"37275 Logan St",
 			"25 E 75th St #69",
 			"98 Connecticut Ave Nw",
 			"56 E Morehead St",

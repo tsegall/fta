@@ -212,10 +212,12 @@ public class TestStandalonePlugins {
 					final String[] testCases = new String[SAMPLE_SIZE];
 					for (int i = 0; i < SAMPLE_SIZE; i++) {
 						testCases[i] = logical.nextRandom();
-						assertTrue(logical.isValid(testCases[i], true), logical.getSemanticType() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
+						if (!testCases[i].isEmpty())
+							assertTrue(logical.isValid(testCases[i], true), logical.getSemanticType() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
 					}
 					for (int i = 0; i < SAMPLE_SIZE; i++)
-						assertTrue(testCases[i].matches(logical.getRegExp()), logical.getSemanticType() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
+						if (!testCases[i].isEmpty())
+							assertTrue(testCases[i].matches(logical.getRegExp()), logical.getSemanticType() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
 				}
 			}
 		}
