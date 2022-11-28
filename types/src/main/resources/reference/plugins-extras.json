@@ -11,4 +11,15 @@
 		"backout": "[\\p{IsAlphabetic}]+",
 		"priority": 302
 	},
-
+	{
+		"semanticType": "NAME.FULL",
+		"description": "Full Name - unstructured",
+		"pluginType": "java",
+		"signature": "",
+		"clazz": "com.cobber.fta.plugins.NameFull",
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name|nm).*", "confidence": 60 } ] }
+		],
+		"threshold": 90,
+		"priority": 177
+	},

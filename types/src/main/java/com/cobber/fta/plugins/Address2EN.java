@@ -110,9 +110,9 @@ public class Address2EN extends LogicalTypeInfinite {
 
 		for (int i = 0; i < words.size(); i++) {
 			String word = words.get(i);
-			if (addressMarkers.contains(word) && words.size() != 1)
+			if (i != 0 && addressMarkers.contains(word))
 				return true;
-			else if (AddressCommon.isModifier(word))
+			else if (AddressCommon.isModifier(word) && words.size() != 1)
 				return true;
 		}
 
@@ -139,8 +139,8 @@ public class Address2EN extends LogicalTypeInfinite {
 		if (headerConfidence >= 99)
 			return headerConfidence;
 
-		// If this header does not look good or we have no context then we are all done
-		if (headerConfidence < 90 || context.getCompositeStreamNames() == null)
+		// If we have no context then we are all done
+		if (context.getCompositeStreamNames() == null)
 			return 0;
 
 		final int current = context.getStreamIndex();
@@ -152,23 +152,25 @@ public class Address2EN extends LogicalTypeInfinite {
 		if (previousStreamName.length() == 0)
 			return 0;
 
-		// We know it looks like an address since the header confidence is > 90
-
 		final char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
-		if (Character.isDigit(lastChar))
+		// We know it looks like an address and the last character is a '2' so we are feeling really good
+		if (headerConfidence >= 90 && Character.isDigit(lastChar))
 			return lastChar == '2' ? 99 : 0;
 
-		// If this header is the same as the previous but with a 1 switched for a '2' then we are super confident
+		// If this header is the same as the previous but with a 1 switched for a '2' then we are somewhat confident
 		int index = previousStreamName.indexOf('1');
 		if (index != -1 && dataStreamName.equals(previousStreamName.substring(0, index) + '2' + previousStreamName.substring(index + 1)))
-			return 99;
+			return headerConfidence >= 90 ? 99 : 85;
+
+		if (headerConfidence == 0 && lastChar != 2)
+			return 0;
 
 		// Does the previous field look like an Address Line 1 AND not look like an Address Line 2
 		if (addressLine1Entry.getHeaderConfidence(previousStreamName) >= 90 && getHeaderConfidence(previousStreamName) < 99) {
 			if (current + 1 < context.getCompositeStreamNames().length &&
 					cityEntry.getHeaderConfidence(context.getCompositeStreamNames()[current + 1]) != 0)
-				return 95;
-			return 90;
+				return headerConfidence == 0 ? 85 : 95;
+			return headerConfidence == 0 ? 85 : 90;
 		}
 
 		return 0;
@@ -176,18 +178,21 @@ public class Address2EN extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
-		int confidence = headerConfidence(context);
+		final int confidence = headerConfidence(context);
+		final double matchConfidence = (double)matchCount/realSamples;
 
 		// If we really don't like the header call it a day
 		if (confidence == 0)
 			return 0.0;
 
-		double matchConfidence = (double)matchCount/realSamples;
 		// If we are super confident in the header boost if we like the data
 		if (confidence == 99)
-			return matchConfidence > .25 ? 1.0 : .9;
+			return matchConfidence > .25 ? .95 : .9;
 
 		// Header is reasonable - so check we have some data that looks reasonable
-		return matchConfidence > .25 ? (double)confidence/100 : 0;
+		if (confidence >= 90)
+			return matchConfidence > .25 ? .9 : 0;
+
+		return matchConfidence > .5 ? .9 : 0;
 	}
 }

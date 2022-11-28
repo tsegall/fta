@@ -20,7 +20,7 @@ import java.security.SecureRandom;
 import com.cobber.fta.core.FTAPluginException;
 
 /**
- * All Semanticv Types implemented via Java code typically extend this class.
+ * All Semantic Types implemented via Java code typically extend this class.
  */
 public abstract class LogicalTypeCode extends LogicalType {
 	protected SecureRandom random;

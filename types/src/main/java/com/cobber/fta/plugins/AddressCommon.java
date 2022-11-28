@@ -20,9 +20,19 @@ import java.util.HashSet;
 public class AddressCommon {
 	public static final String POBOX = "P.? ?O.?.?BOX.|POST OFFICE BOX";
 
+	public static final String[] sampleStreets = {
+			"Main",  "Lakeside", "Pennsylvania", "Penaton", "Croydon", "Buchanan", "Riverside", "Flushing",
+			"Jefferson", "Randolph", "North Lakeside", "Massachusetts", "Central", "Lincoln", "Final Mile",
+			"4th", "Flower", "High", "3rd", "12th", "D", "Piedmont", "Chaton", "Kenwood", "Sycamore Lake",
+			"Euclid", "Cedarstone", "Carriage", "Major Grey", "Armory", "Bryan", "Charack",
+			"Atha", "Bassel", "Overlook", "Chatham", "Melville", "Stone", "Dawson", "Pringle", "Federation",
+			"Winifred", "Pratt", "Hillview", "Rosemont", "Romines Mill", "School House", "Candlelight"
+	};
+
 	private static HashSet<String> directions = new HashSet<>();
 	private static HashSet<String> modifiers = new HashSet<>();
 	private static HashSet<String> textDigit = new HashSet<>();
+	private static HashSet<String> initialMarker = new HashSet<>();
 
 	static {
 		directions.add("N");
@@ -70,6 +80,13 @@ public class AddressCommon {
 		textDigit.add("EIGHT");
 		textDigit.add("NINE");
 		textDigit.add("TEN");
+
+		initialMarker.add("AVENUE");
+		initialMarker.add("AVE");
+		initialMarker.add("INTERSTATE");
+		initialMarker.add("ROUTE");
+		initialMarker.add("HWY");
+		initialMarker.add("SR");
 	}
 
 	public static boolean isDirection(final String input) {
@@ -78,6 +95,10 @@ public class AddressCommon {
 
 	public static boolean isModifier(final String input) {
 		return modifiers.contains(input);
+	}
+
+	public static boolean isInitialMarker(final String input) {
+		return initialMarker.contains(input);
 	}
 
 	/**

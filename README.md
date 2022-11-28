@@ -347,6 +347,7 @@ STREET_ADDRESS_&lt;Language&gt;|Street Address|bg, ca, da, de, en, es, fi, fr, h
 STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
 STREET_MARKER_EN| Street Suffix (English Language)|en
 STREET_NAME_EN|Street Name (English Language)|en
+STREET_NAME_BARE_EN|Street Name - no Marker (English Language)|en
 TELEPHONE|Telephone Number (Generic)|*
 TIMEZONE.IANA|IANA Time Zone (Olson)|*
 URI.URL|URL - see RFC 3986|*
@@ -367,7 +368,7 @@ Any of the above Semantic Types suffixed with one of the following are locale-se
 The English-language performance of Semantic Type determination is based on a large sample of inputs from open data portals.
 The data set can be found at [semantic-types](https://github.com/tsegall/semantic-types).
 
-Based on this set the average Precision across the identified Semantic Types is estimated at ~99.9%, the Recall at ~98.3% with an F1-Score of ~99.1%.
+Based on this set the average Precision across the identified Semantic Types is estimated at ~99.8%, the Recall at ~98.0% with an F1-Score of ~98.9%.
 
 Precision == True Positives / (True Positives + False Positives)
 
@@ -539,6 +540,7 @@ There are multiple Semantic Types associated with addresses:
  - STREET_ADDRESS2 - Second line of an address
  - STREET_MARKER - The Street qualifier, e.g. Road, Street, Avenue, Boulevard, etc.
  - STREET_NAME - Street name with no number, e.g. Penaton Avenue
+ - STREET_NAME_BARE - Street name with no number and no Marker, e.g. Main, Lakeside
 
 ## Faker ##
 

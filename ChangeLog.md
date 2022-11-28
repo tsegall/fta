@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 12.1.0
+ - ENH: Add new Semantic Type - STREET_NAME_BARE_EN (Street Name without a Marker (e.g. no ST, RD, LN, ...))
+ - ENH: More Address detection improvements
+ - ENH: Bump google phone number library
+ - ENH: Bump slf4j
+ - INT: Bump gradle to 7.6
+
 ### 12.0.9
  - ENH: Revamp Address detection - now split into FULL_ADDRESS_EN, STREET_ADDRESS_EN, STREET_ADDRESS2_EN, STREET_NAME_EN
  - ENH: Content Format Detection - accept JSON that uses single quotes as opposed to the standard

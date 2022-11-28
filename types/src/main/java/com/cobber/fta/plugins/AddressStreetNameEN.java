@@ -53,17 +53,9 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		final String[] streets = {
-				"Main",  "Lakeside", "Pennsylvania", "Hill", "Croydon", "Buchanan", "Riverside", "Flushing",
-				"Jefferson", "Randolph", "North Point", "Massachusetts", "Meadow", "Central", "Lincoln", "Final Mile",
-				"4th", "Flower", "High", "3rd", "12th", "D", "Piedmont", "Chaton", "Kenwood", "Sycamore Lake",
-				"Euclid", "Cedarstone", "Carriage", "Isaacs Creek", "Happy Hollow", "Armory", "Bryan", "Charack",
-				"Atha", "Bassel", "Overlook", "Chatham", "Melville", "Stone", "Dawson", "Pringle", "Federation",
-				"Winifred", "Pratt", "Hillview", "Rosemont", "Romines Mill", "School House", "Candlelight"
-		};
 		final String simpleAddressMarkers[] = { "Street", "St", "Road", "Rd", "Rd.", "Avenue", "Ave", "Terrace", "Drive" };
 
-		return streets[random.nextInt(streets.length)] + ' ' + simpleAddressMarkers[random.nextInt(simpleAddressMarkers.length)];
+		return AddressCommon.sampleStreets[random.nextInt(AddressCommon.sampleStreets.length)] + ' ' + simpleAddressMarkers[random.nextInt(simpleAddressMarkers.length)];
 	}
 
 	@Override
@@ -119,13 +111,14 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 			return false;
 
 		final String first = words.get(0);
+		final String second = words.get(1);
 		final boolean isAddressNumber = AddressCommon.isAddressNumber(first);
 		// Allow '12 Avenue' etc as these are quite common
-		if (isAddressNumber && !addressMarkers.contains(words.get(1)))
+		if (isAddressNumber && !addressMarkers.contains(second))
 			return false;
 
 		// These commonly appear at the front - e.g. 'Avenue of the Americas'
-		if ("AVENUE".equals(first) || "AVE".equals(first) || "INTERSTATE".equals(first) || "ROUTE".equals(first) || "HWY".equals(first))
+		if (AddressCommon.isInitialMarker(first) || (AddressCommon.isDirection(first) && AddressCommon.isInitialMarker(second)))
 			return true;
 
 		// If there is no modifier (e.g. Flat, Suite, Building, ... ) then one of the last two words should be an Address Marker
