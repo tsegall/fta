@@ -18,8 +18,10 @@ public class RecordAnalyzer {
 		AnalyzerContext templateContext = template.getContext();
 
 		for (int i = 0; i < streamCount; i++) {
-			final AnalyzerContext context = new AnalyzerContext(templateContext.getCompositeStreamNames()[i], templateContext.getDateResolutionMode(), templateContext.getCompositeName(), templateContext.getCompositeStreamNames());
+			final String fieldName = templateContext.getCompositeStreamNames()[i];
+			final AnalyzerContext context = new AnalyzerContext(fieldName == null ? "" : fieldName.trim(), templateContext.getDateResolutionMode(), templateContext.getCompositeName(), templateContext.getCompositeStreamNames());
 			analyzers[i] = new TextAnalyzer(context);
+			analyzers[i].setConfig(template.getConfig());
 		}
 	}
 
@@ -36,8 +38,11 @@ public class RecordAnalyzer {
 		if (rawInput.length != streamCount)
 			throw new IllegalArgumentException("Size of training input must match number of stream names");
 		boolean allTrained = true;
-		for (int i = 0; i < rawInput.length; i++)
-			allTrained = allTrained && analyzers[i].train(rawInput[i]);
+		for (int i = 0; i < rawInput.length; i++) {
+			boolean trained = analyzers[i].train(rawInput[i]);
+			if (!trained)
+				allTrained = false;
+		}
 
 		return allTrained;
 	}
@@ -57,5 +62,13 @@ public class RecordAnalyzer {
 			ret[i] = analyzers[i].getResult();
 
 		return ret;
+	}
+
+	public TextAnalyzer getAnalyzer(final int stream) {
+		return analyzers[stream];
+	}
+
+	public TextAnalyzer[] getAnalyzers() {
+		return analyzers;
 	}
 }

@@ -23,12 +23,14 @@ import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.RecordAnalyzer;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 
 public class Processor {
-	private final TextAnalyzer[] analyzers;
+	private TextAnalyzer[] analyzers;
+	private RecordAnalyzer recordAnalyzer;
 	private final DriverOptions options;
 	private final int streamCount;
 	private LogicalType logicalType;
@@ -50,8 +52,14 @@ public class Processor {
 			}
 		}
 
-		analyzers = new TextAnalyzer[streamCount];
+		if (options.col == -1) {
+			TextAnalyzer template = new TextAnalyzer(new AnalyzerContext(null, options.resolutionMode, compositeName, fieldNames));
+			options.apply(template);
+			recordAnalyzer = new RecordAnalyzer(template);
+			return;
+		}
 
+		analyzers = new TextAnalyzer[streamCount];
 		for (int i = 0; i < fieldNames.length; i++) {
 			if (options.col == -1 || options.col == i) {
 				analyzers[i] = new TextAnalyzer(new AnalyzerContext(fieldNames[i] == null ? "" : fieldNames[i].trim(), options.resolutionMode, compositeName, fieldNames));
@@ -61,6 +69,11 @@ public class Processor {
 	}
 
 	public void consume(final String[] row) throws FTAPluginException, FTAUnsupportedLocaleException {
+		if (options.col == -1) {
+			recordAnalyzer.train(row);
+			return;
+		}
+
 		for (int i = 0; i < streamCount; i++) {
 			if (options.col == -1 || options.col == i) {
 				if (options.verbose != 0 && options.noAnalysis)
@@ -76,10 +89,16 @@ public class Processor {
 	}
 
 	public TextAnalyzer getAnalyzer(final int stream) {
+		if (options.col == -1)
+			return recordAnalyzer.getAnalyzer(stream);
+
 		return analyzers[stream];
 	}
 
 	public TextAnalyzer[] getAnalyzers() {
+		if (options.col == -1)
+			return recordAnalyzer.getAnalyzers();
+
 		return analyzers;
 	}
 }

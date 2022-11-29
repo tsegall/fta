@@ -334,6 +334,18 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Set the configuration associated with this TextAnalyzer.
+	 * Note: Internal only.
+	 * @param analysisConfig The replacement AnalysisConfig
+	 */
+	protected void setConfig(final AnalysisConfig analysisConfig) {
+		this.analysisConfig = analysisConfig;
+
+		if (analysisConfig.getLocaleTag() != null)
+			setLocale(Locale.forLanguageTag(analysisConfig.getLocaleTag()));
+	}
+
+	/**
 	 * Internal Only.  Enable internal debugging.
 	 *
 	 * @param debug The debug level.
@@ -3190,13 +3202,10 @@ public class TextAnalyzer {
 		try {
 			final TextAnalyzerWrapper wrapper = mapper.readValue(serialized, TextAnalyzerWrapper.class);
 			ret = new TextAnalyzer(wrapper.analyzerContext);
-			ret.analysisConfig = wrapper.analysisConfig;
+			ret.setConfig(wrapper.analysisConfig);
+
 			ret.facts = wrapper.facts;
-
-			if (wrapper.analysisConfig.getLocaleTag() != null)
-				ret.setLocale(Locale.forLanguageTag(wrapper.analysisConfig.getLocaleTag()));
 			ret.facts.setConfig(wrapper.analysisConfig);
-
 			ret.facts.hydrate();
 			ret.initialize();
 
@@ -3220,14 +3229,10 @@ public class TextAnalyzer {
 	public static TextAnalyzer merge(final TextAnalyzer first, final TextAnalyzer second) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException  {
 		TextAnalyzer ret = new TextAnalyzer(first.context);
 
-		// If we have a locale set make sure to set it on the TextAnalyzer
-		if (first.analysisConfig.getLocaleTag() != null)
-			ret.setLocale(Locale.forLanguageTag(first.analysisConfig.getLocaleTag()));
-
 		if (!first.analysisConfig.equals(second.analysisConfig))
 			throw new FTAMergeException("The AnalysisConfig for both TextAnalyzers must be identical.");
 
-		ret.analysisConfig = first.analysisConfig;
+		ret.setConfig(first.analysisConfig);
 
 		// Train using all the non-null/non-blank elements
 		final Map<String, Long>merged = new HashMap<>();

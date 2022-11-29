@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.1.1
+ - ENH: Initial version of the new RecordAnalyzer interface (and use it from the CLI)
+
 ### 12.1.0
  - ENH: Add new Semantic Type - STREET_NAME_BARE_EN (Street Name without a Marker (e.g. no ST, RD, LN, ...))
  - ENH: More Address detection improvements
