@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 12.2.0
+ - ENH: Improve RecordAnalyzer interface.
+ - ENH: Add new Semantic Type - STREET_NUMBER (Street Number).
+ - ENH: Improved Name detection (NAME.*)
+ - ENH: Add the ability to specify known Semantic Types as part of the supplied Context (see withSemanticTypes)
+ - BUG: Weekday abbreviations should also honor the NO_ABBREVIATION_PUNCTUATION feature (impacted locale CA)
+
 ### 12.1.1
  - ENH: Initial version of the new RecordAnalyzer interface (and use it from the CLI)
 

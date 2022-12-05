@@ -161,24 +161,42 @@ public class Facts {
 	/** The bottom 10  values. */
 	public Set<String> bottomK;
 
-	/** The total number of samples in the stream (typically -1 to indicate unknown). */
-	public long totalCount = -1;
-	/** The number of null elements in the entire data stream (-1 unless set explicitly). */
-	public long totalNullCount = -1;
-	/** totalBlankCount - The number of blank elements in the entire data stream (-1 unless set explicitly). */
-	public long totalBlankCount = -1;
-	/** totalMean - The mean for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
-	public Double totalMean;
-	/** totalStandardDeviation - The standard deviation for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
-	public Double totalStandardDeviation;
-	/** totalMinValue - The minimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly). */
-	public String totalMinValue;
-	/** totalMaxValue - The manimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly). */
-	public String totalMaxValue;
-	/** totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
-	public int totalMinLength = -1;
-	/** totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
-	public int totalMaxLength = -1;
+	public class ExternalFacts {
+		public ExternalFacts() {
+		}
+
+		public ExternalFacts(final ExternalFacts external) {
+			this.totalCount = external.totalCount;
+			this.totalNullCount = external.totalNullCount;
+			this.totalBlankCount = external.totalBlankCount;
+			this.totalMean = external.totalMean;
+			this.totalStandardDeviation = external.totalStandardDeviation;
+			this.totalMinValue = external.totalMinValue;
+			this.totalMaxValue = external.totalMaxValue;
+			this.totalMinLength = external.totalMinLength;
+			this.totalMaxLength = external.totalMaxLength;
+		}
+
+		/** The total number of samples in the stream (typically -1 to indicate unknown). */
+		public long totalCount = -1;
+		/** The number of null elements in the entire data stream (-1 unless set explicitly). */
+		public long totalNullCount = -1;
+		/** totalBlankCount - The number of blank elements in the entire data stream (-1 unless set explicitly). */
+		public long totalBlankCount = -1;
+		/** totalMean - The mean for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
+		public Double totalMean;
+		/** totalStandardDeviation - The standard deviation for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
+		public Double totalStandardDeviation;
+		/** totalMinValue - The minimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly). */
+		public String totalMinValue;
+		/** totalMaxValue - The manimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly). */
+		public String totalMaxValue;
+		/** totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
+		public int totalMinLength = -1;
+		/** totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
+		public int totalMaxLength = -1;
+	}
+	public ExternalFacts external = new ExternalFacts();
 
 	public String streamFormat;
 
@@ -656,11 +674,11 @@ public class Facts {
 				&& invalid.equals(other.invalid)
 				&& sampleCount == other.sampleCount
 				&& trailingWhiteSpace == other.trailingWhiteSpace
-				&& totalCount == other.totalCount
-				&& totalNullCount == other.totalNullCount && totalBlankCount == other.totalBlankCount
-				&& totalMean == other.totalMean && totalStandardDeviation == other.totalStandardDeviation
-				&& totalMinValue == other.totalMinValue && totalMaxValue == other.totalMaxValue
-				&& totalMinLength == other.totalMinLength && totalMaxLength == other.totalMaxLength
+				&& external.totalCount == other.external.totalCount
+				&& external.totalNullCount == other.external.totalNullCount && external.totalBlankCount == other.external.totalBlankCount
+				&& external.totalMean == other.external.totalMean && external.totalStandardDeviation == other.external.totalStandardDeviation
+				&& external.totalMinValue == other.external.totalMinValue && external.totalMaxValue == other.external.totalMaxValue
+				&& external.totalMinLength == other.external.totalMinLength && external.totalMaxLength == other.external.totalMaxLength
 				&& Objects.equals(uniqueness, other.uniqueness)
 				&& Objects.equals(distinctCount, other.distinctCount)
 				&& Objects.equals(streamFormat, other.streamFormat)

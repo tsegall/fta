@@ -17,6 +17,8 @@ package com.cobber.fta.plugins;
 
 import java.util.HashSet;
 
+import com.cobber.fta.core.Utils;
+
 public class AddressCommon {
 	public static final String POBOX = "P.? ?O.?.?BOX.|POST OFFICE BOX";
 
@@ -103,19 +105,28 @@ public class AddressCommon {
 
 	/**
 	 * This routine attempts to determine if the input is 'numeric' in the context of an address.
-	 * For example, in '1st Avenue', 'One Broadway', '45 Penaton St', '312-314 Kings Rd.', '5/2 Hanlon Crescent' are all valid
+	 * For example, in '110A Eton Drive', 'One Broadway', '45 Penaton St', '312-314 Kings Rd.', '5/2 Hanlon Crescent' are all valid
 	 * addresses and should return true.
 	 * @param input The input to test.
 	 * @return True if the input looks plausible as the start of an address.
 	 */
 	public static boolean isAddressNumber(final String input) {
+		final int len = input.length();
+		final char last = input.charAt(len - 1);
 		String toTest = input;
-		if (input.endsWith("th") || input.endsWith("st") || input.endsWith("nd") || input.endsWith("rd"))
-			toTest = input.substring(0, input.length() - 2);
 
+		if (len > 1 && Character.isAlphabetic(last)) {
+			String rest = input.substring(0, len - 1);
+			if (!Utils.isNumeric(rest))
+				return false;
+			toTest = rest;
+		}
+
+		// Check for a simple text digit - e.g. 'One', 'Two' etc.
 		char firstCh = toTest.charAt(0);
 		if (Character.isAlphabetic(firstCh) && AddressCommon.isTextDigit(toTest))
 			return true;
+
 		if (!Character.isDigit(firstCh))
 			return false;
 

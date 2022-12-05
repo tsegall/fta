@@ -142,11 +142,19 @@ public final class Utils {
 		if (input == null || input.isEmpty())
 			return false;
 
-		for (int i = 0; i < input.length(); i++)
-			if (!Character.isDigit(input.charAt(i)))
-				return false;
+		return input.chars().allMatch(Character::isDigit);
+	}
 
-		return true;
+	/**
+	 * Test if the supplied input is all alphas.
+	 * @param input String to test.
+	 * @return True if the string is all alphas.
+	 */
+	public static boolean isAlphas(final String input) {
+		if (input == null || input.isEmpty())
+			return false;
+
+		return input.chars().allMatch(Character::isLetter);
 	}
 
 	/**

@@ -109,19 +109,11 @@ public class AddressEN extends LogicalTypeInfinite {
 		if (length > 60 || length < 5)
 			return false;
 
-//		// Simple case first - last 'word is something we recognize
-//		final int spaceIndex = inputUpper.trim().lastIndexOf(' ');
-//		if (spaceIndex != -1 && addressMarkers.contains(inputUpper.substring(spaceIndex + 1)))
-//			return true;
-//
-//		if (inputUpper.contains("SUITE") || inputUpper.contains("FLOOR"))
-//			return true;
-
 		return validation(inputUpper, detectMode);
 	}
 
 	private boolean validation(final String trimmedUpper, final boolean detectMode) {
-		// Australia commonly uses unit/number in the address so allow / to be part of words
+		// Australia commonly uses unit/number in the address so allow '/' to be part of words
 		final List<String> words = Utils.asWords(trimmedUpper, "AU".equals(country) ? "/-#" : "-#");
 		final int wordCount = words.size();
 

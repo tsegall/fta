@@ -35,6 +35,8 @@ public class AnalyzerContext {
 	private String[] compositeStreamNames;
 	/** The index of this stream name in the list of all field names - or -1 if it is not present (or no column names provided). */
 	private int streamIndex;
+	/** The 'known' answer for the Semantic Type - typically based on user input or a prior run. */
+	private String[] semanticTypes;
 
 	AnalyzerContext() {
 	}
@@ -107,6 +109,24 @@ public class AnalyzerContext {
 	 */
 	public String[] getCompositeStreamNames() {
 		return compositeStreamNames;
+	}
+
+	/**
+	 * Set the 'known' Semantic Type for each field.
+	 * @param semanticTypes The 'known' set of Semantic Types - null implies unknown.
+	 * @return The AnalyzerContext
+	 */
+	public AnalyzerContext withSemanticTypes(final String[] semanticTypes) {
+		this.semanticTypes = semanticTypes;
+		return this;
+	}
+
+	/**
+	 * Retrieve the Semantic Types of all the streams.
+	 * @return The String array with the Semantic Type or null if not known.
+	 */
+	public String[] getSemanticTypes() {
+		return semanticTypes;
 	}
 
 	@Override

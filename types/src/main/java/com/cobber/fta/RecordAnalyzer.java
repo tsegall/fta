@@ -1,5 +1,8 @@
 package com.cobber.fta;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 
@@ -15,14 +18,16 @@ public class RecordAnalyzer {
 	public RecordAnalyzer(final TextAnalyzer template) {
 		streamCount = template.getContext().getCompositeStreamNames().length;
 		analyzers = new TextAnalyzer[streamCount];
-		AnalyzerContext templateContext = template.getContext();
 
 		for (int i = 0; i < streamCount; i++) {
-			final String fieldName = templateContext.getCompositeStreamNames()[i];
-			final AnalyzerContext context = new AnalyzerContext(fieldName == null ? "" : fieldName.trim(), templateContext.getDateResolutionMode(), templateContext.getCompositeName(), templateContext.getCompositeStreamNames());
-			analyzers[i] = new TextAnalyzer(context);
+			analyzers[i] = new TextAnalyzer(getStreamContext(template.getContext(), i));
 			analyzers[i].setConfig(template.getConfig());
 		}
+	}
+
+	private AnalyzerContext getStreamContext(final AnalyzerContext templateContext, final int streamIndex) {
+		final String fieldName = templateContext.getCompositeStreamNames()[streamIndex];
+		return  new AnalyzerContext(fieldName == null ? "" : fieldName.trim(), templateContext.getDateResolutionMode(), templateContext.getCompositeName(), templateContext.getCompositeStreamNames());
 	}
 
 	/**
@@ -58,11 +63,38 @@ public class RecordAnalyzer {
 	public TextAnalysisResult[] getResult() throws FTAPluginException, FTAUnsupportedLocaleException {
 		TextAnalysisResult[] ret = new TextAnalysisResult[streamCount];
 
-		for (int i = 0; i < streamCount; i++)
+		// Build an array of the Semantic Types detected as a result of the analysis so far
+		final String[] semanticTypes = new String[streamCount];
+		for (int i = 0; i < streamCount; i++) {
 			ret[i] = analyzers[i].getResult();
+			semanticTypes[i] = ret[i].isSemanticType() ? ret[i].getSemanticType() : null;
+		}
+
+		// For any stream where we have not already determined a Semantic type - try again providing the overall Semantic Type context
+		for (int i = 0; i < streamCount; i++) {
+			if (!ret[i].isSemanticType()) {
+				// Update the Context with all the Semantic Type information we have calculated
+				analyzers[i].setContext(analyzers[i].getContext().withSemanticTypes(semanticTypes));
+				ret[i] = reAnalyze(analyzers[i], ret[i]);
+			}
+		}
 
 		return ret;
 	}
+
+	private TextAnalysisResult reAnalyze(final TextAnalyzer analyzer, final TextAnalysisResult result) throws FTAPluginException, FTAUnsupportedLocaleException {
+		final Map<String, Long> details = new HashMap<>(result.getCardinalityDetails());
+		details.put(null, result.getNullCount());
+
+		final TextAnalyzer analysisBulk = new TextAnalyzer(analyzer.getContext());
+		analysisBulk.setExternalFacts(analyzer.getFacts().external);
+		analysisBulk.setConfig(analyzer.getConfig());
+
+		analysisBulk.trainBulk(details);
+		TextAnalysisResult newResult = analysisBulk.getResult();
+		return newResult.isSemanticType() ? newResult : result;
+	}
+
 
 	public TextAnalyzer getAnalyzer(final int stream) {
 		return analyzers[stream];

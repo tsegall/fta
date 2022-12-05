@@ -224,9 +224,16 @@ public class LocaleInfo {
 		final Set<String> shortWeekdaysLocale = new TreeSet<>(new LengthComparator());
 		generator = new RegExpGenerator();
 		isAllAlphabetic = true;
-		for (final String shortWeek : dfs.getShortWeekdays()) {
+		for (String shortWeek : dfs.getShortWeekdays()) {
 			if (shortWeek.isEmpty())
 				continue;
+			// In Java some countries (e.g. CA) have the short days defined with a period after them,
+			// for example 'SUN.' - if useStandardAbbreviations is set just using the US definition of 'truth'
+			if (noAbbreviationPunctuation) {
+				final int len = shortWeek.length();
+				if (len != 0 && shortWeek.charAt(len - 1) == '.')
+					shortWeek = shortWeek.substring(0, len - 1);
+			}
 			if (isAllAlphabetic && !shortWeek.chars().allMatch(Character::isAlphabetic))
 				isAllAlphabetic = false;
 			final String weekUpper = shortWeek.toUpperCase(locale);

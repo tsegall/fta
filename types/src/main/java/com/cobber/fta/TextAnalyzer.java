@@ -325,6 +325,15 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Set the context supplied to the TextAnalyzer.
+	 *
+	 * @param context The Context for this analysis.
+	 */
+	protected void  setContext(final AnalyzerContext context) {
+		this.context = context;
+	}
+
+	/**
 	 * Get the configuration associated with this TextAnalyzer.
 	 *
 	 * @return The AnalysisConfig  of the TextAnalyzer.
@@ -607,7 +616,7 @@ public class TextAnalyzer {
 	 * @param totalCount The total number of elements, as opposed to the number sampled.
 	 */
 	public void setTotalCount(final long totalCount) {
-		facts.totalCount = totalCount;
+		facts.external.totalCount = totalCount;
 	}
 
 	/**
@@ -616,7 +625,7 @@ public class TextAnalyzer {
 	 * @param totalNullCount The total number of null elements, as opposed to the number of nulls in the sample set.
 	 */
 	public void setTotalNullCount(final long totalNullCount) {
-		facts.totalNullCount = totalNullCount;
+		facts.external.totalNullCount = totalNullCount;
 	}
 
 	/**
@@ -625,7 +634,7 @@ public class TextAnalyzer {
 	 * @param totalBlankCount The total number of blank elements, as opposed to the number of blanks in the sample set.
 	 */
 	public void setTotalBlankCount(final long totalBlankCount) {
-		facts.totalBlankCount = totalBlankCount;
+		facts.external.totalBlankCount = totalBlankCount;
 	}
 
 	/**
@@ -634,7 +643,7 @@ public class TextAnalyzer {
 	 * @param totalMean The mean of all elements in the data stream, as opposed to the mean of the sampled set.
 	 */
 	public void setTotalMean(final Double totalMean) {
-		facts.totalMean = totalMean;
+		facts.external.totalMean = totalMean;
 	}
 
 	/**
@@ -643,7 +652,7 @@ public class TextAnalyzer {
 	 * @param totalStandardDeviation The Standard Deviation of all elements in the data stream, as opposed to the Standard Deviation of the sampled set.
 	 */
 	public void setTotalStandardDeviation(final Double totalStandardDeviation) {
-		facts.totalStandardDeviation = totalStandardDeviation;
+		facts.external.totalStandardDeviation = totalStandardDeviation;
 	}
 
 	/**
@@ -652,7 +661,7 @@ public class TextAnalyzer {
 	 * @param totalMinValue The minimum value of all elements in the data stream, as opposed to the minimum of the sampled set.
 	 */
 	public void setTotalMinValue(final String totalMinValue) {
-		facts.totalMinValue = totalMinValue;
+		facts.external.totalMinValue = totalMinValue;
 	}
 
 	/**
@@ -661,7 +670,7 @@ public class TextAnalyzer {
 	 * @param totalMaxValue The manimum value of all elements in the data stream, as opposed to the manimum of the sampled set.
 	 */
 	public void setTotalMaxValue(final String totalMaxValue) {
-		facts.totalMaxValue = totalMaxValue;
+		facts.external.totalMaxValue = totalMaxValue;
 	}
 
 	/**
@@ -671,7 +680,7 @@ public class TextAnalyzer {
 	 * @param totalMinLength The minimum length of all elements in the data stream, as opposed to the minimum length of the sampled set.
 	 */
 	public void setTotalMinLength(final int totalMinLength) {
-		facts.totalMinLength = totalMinLength;
+		facts.external.totalMinLength = totalMinLength;
 	}
 
 	/**
@@ -681,7 +690,7 @@ public class TextAnalyzer {
 	 * @param totalMaxLength The manimum length of all elements in the data stream, as opposed to the manimum length of the sampled set.
 	 */
 	public void setTotalMaxLength(final int totalMaxLength) {
-		facts.totalMaxLength = totalMaxLength;
+		facts.external.totalMaxLength = totalMaxLength;
 	}
 
 	/**
@@ -1404,6 +1413,7 @@ public class TextAnalyzer {
 		// Initialize if we have not already done so
 		if (!initialized) {
 			initialize();
+			handleForce();
 			trainingStarted = true;
 		}
 
@@ -1802,6 +1812,39 @@ public class TextAnalyzer {
 	void debug(final String format, final Object... arguments) {
 		if (analysisConfig.getDebug() >= 2)
 			LoggerFactory.getLogger("com.cobber.fta").debug(format, arguments);
+	}
+
+	private boolean handleForce() {
+		final String[] semanticTypes = context.getSemanticTypes();
+		if (semanticTypes == null)
+			return false;
+
+		String semanticType = semanticTypes[context.getStreamIndex()];
+
+		if (semanticType != null && semanticType.trim().length() != 0) {
+			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
+			if (pluginDefinition == null) {
+				System.err.printf("ERROR: Failed to locate plugin named '%s', use --help%n", semanticType);
+				return false;
+			}
+
+			LogicalType logical = null;
+			try {
+				logical = LogicalTypeFactory.newInstance(pluginDefinition, analysisConfig);
+			} catch (FTAPluginException e) {
+				System.err.printf("ERROR: Failed to instantiate plugin named '%s', use --help%n", semanticType);
+				return false;
+			}
+			final TypeInfo answer = new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo());
+			answer.setForce(true);
+
+			facts.setMatchTypeInfo(answer);
+			debug("Type determination - infinite type, confidence: FORCED, matchTypeInfo - {}", facts.getMatchTypeInfo());
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -2394,17 +2437,16 @@ public class TextAnalyzer {
 
 			// So we are about to blow the outliers - so now would be a good time to validate that the Semantic Type we have declared is actually correct!
 			if (!facts.getMatchTypeInfo().isDateType() && facts.outliers.size() == analysisConfig.getMaxOutliers()) {
-				if (facts.getMatchTypeInfo().isSemanticType()) {
+				if (!facts.getMatchTypeInfo().isSemanticType()) {
+					// Need to evaluate if we got this wrong
+					conditionalBackoutToPattern(realSamples, facts.getMatchTypeInfo());
+				}
+				else if (!facts.getMatchTypeInfo().isForce()) {
 					// Do we need to back out from any of our Infinite type determinations
 					final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
 					final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
 					if (!pluginAnalysis.isValid())
 						backout(logical, realSamples, pluginAnalysis);
-				}
-				else {
-
-					// Need to evaluate if we got this wrong
-					conditionalBackoutToPattern(realSamples, facts.getMatchTypeInfo());
 				}
 			}
 		}
@@ -2416,7 +2458,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	void backout(final LogicalType logical, final long realSamples, final PluginAnalysis pluginAnalysis) {
+	private void backout(final LogicalType logical, final long realSamples, final PluginAnalysis pluginAnalysis) {
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()))
 			backoutToPattern(realSamples, pluginAnalysis.getNewPattern());
 		else if (FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType()))
@@ -2663,7 +2705,7 @@ public class TextAnalyzer {
 		// Do we need to back out from any of our Semantic type determinations.  Most of the time this backs out of
 		// Infinite type determinations (since we have not yet declared it to be a Finite type).  However it is possible
 		// that this is a subsequent call to getResult()!!
-		if (facts.getMatchTypeInfo().isSemanticType()) {
+		if (facts.getMatchTypeInfo().isSemanticType() && !facts.getMatchTypeInfo().isForce()) {
 			final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
 
 			final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
@@ -3280,8 +3322,8 @@ public class TextAnalyzer {
 		ret.facts.nullCount = firstFacts.nullCount + secondFacts.nullCount;
 		ret.facts.blankCount = firstFacts.blankCount + secondFacts.blankCount;
 		ret.facts.sampleCount += ret.facts.nullCount + ret.facts.blankCount;
-		if (firstFacts.totalCount != -1 && secondFacts.totalCount != -1)
-			ret.facts.totalCount = firstFacts.totalCount + secondFacts.totalCount;
+		if (firstFacts.external.totalCount != -1 && secondFacts.external.totalCount != -1)
+			ret.facts.external.totalCount = firstFacts.external.totalCount + secondFacts.external.totalCount;
 
 		// Set the min/maxRawLength just in case a blank field is the longest/shortest
 		ret.facts.minRawLength = Math.min(first.facts.minRawLength, second.facts.minRawLength);
@@ -3352,7 +3394,6 @@ public class TextAnalyzer {
 		return ret;
 	}
 
-
 	private static boolean nonOverlappingRegions(final Facts firstFacts, final Facts secondFacts, final AnalysisConfig analysisConfig) {
 		StringConverter stringConverter = new StringConverter(firstFacts.getMatchTypeInfo().getBaseType(), new TypeFormatter(firstFacts.getMatchTypeInfo(), analysisConfig));
 		if (stringConverter.toDouble(firstFacts.getMinValue()) == stringConverter.toDouble(secondFacts.getMinValue()))
@@ -3366,6 +3407,10 @@ public class TextAnalyzer {
 
 	protected Facts getFacts() {
 		return facts;
+	}
+
+	protected void setExternalFacts(final Facts.ExternalFacts externalFacts) {
+		facts.external = externalFacts;
 	}
 
 	/*

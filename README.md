@@ -4,8 +4,8 @@ Analyze Text data to determine Base Type and Semantic type information and other
 Key objectives of the library include:
 * Large set of built-in Semantic Types (extensible via JSON defined plugins).  See list below.
 * Sufficiently fast to be used inline.   See Speed notes below.
+* Minimal false positives for Semantic type detection. See Performance notes below.
 * Usable in either Streaming or Bulk mode.
-* Minimal false positives for Semantic type detection.
 * Broad country/language support - including US, Canada, Mexico, Brazil, UK, Australia, much of Europe, Japan and China.
 * Support for sharded analysis (i.e. Analysis results can be merged)
 
@@ -348,6 +348,7 @@ STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
 STREET_MARKER_EN| Street Suffix (English Language)|en
 STREET_NAME_EN|Street Name (English Language)|en
 STREET_NAME_BARE_EN|Street Name - no Marker (English Language)|en
+STREET_NUMBER|Street Number|en
 TELEPHONE|Telephone Number (Generic)|*
 TIMEZONE.IANA|IANA Time Zone (Olson)|*
 URI.URL|URL - see RFC 3986|*
@@ -368,7 +369,7 @@ Any of the above Semantic Types suffixed with one of the following are locale-se
 The English-language performance of Semantic Type determination is based on a large sample of inputs from open data portals.
 The data set can be found at [semantic-types](https://github.com/tsegall/semantic-types).
 
-Based on this set the average Precision across the identified Semantic Types is estimated at ~99.8%, the Recall at ~98.0% with an F1-Score of ~98.9%.
+Based on this set the average Precision across the identified Semantic Types is estimated at ~99.7%, the Recall at ~98.4% with an F1-Score of ~99.0%.
 
 Precision == True Positives / (True Positives + False Positives)
 

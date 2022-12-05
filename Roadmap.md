@@ -1,3 +1,11 @@
+# Record Level detection
+ - Enables a set of additional detection if Pass One determines Semantic Types, and subsequent pass(es) use this information
+ - Can improve detection - i.e. reject a description field as FREE_TEXT if highly correlated with another field
+
+# Rework Address Detection
+ - Improve precision - e.g. Full Address
+ - Improve detection - e.g. locate Street Number
+
 # DataSet attributes
  - Identify recency fields (e.g. tlm_dt)
  - Identify reference/lookup tables

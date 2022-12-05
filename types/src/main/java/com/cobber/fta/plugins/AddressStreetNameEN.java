@@ -112,8 +112,10 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 
 		final String first = words.get(0);
 		final String second = words.get(1);
+
 		final boolean isAddressNumber = AddressCommon.isAddressNumber(first);
-		// Allow '12 Avenue' etc as these are quite common
+
+		// If the first word looks like a number then the next better be an address marker
 		if (isAddressNumber && !addressMarkers.contains(second))
 			return false;
 

@@ -378,6 +378,18 @@
 		"priority": 80
 	},
 	{
+		"semanticType": "STREET_NUMBER",
+		"description": "Street Number",
+		"pluginType": "java",
+		"signature": "JFmqXYZjmq/aTw/EALlxloQ/tgQ=",
+		"clazz": "com.cobber.fta.plugins.AddressStreetNumber",
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(number|no)", "confidence": 90, "mandatory": true } ] }
+		],
+		"threshold": 95,
+		"priority": 81
+	},
+	{
 		"semanticType": "STREET_ADDRESS_<LANGUAGE>",
 		"description": "Street Address",
 		"pluginType": "java",
@@ -402,7 +414,7 @@
 			{ "localeTag":  "sk", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 90,
-		"priority": 81
+		"priority": 82
 	},
 	{
 		"semanticType": "GENDER.TEXT_<LANGUAGE>",
@@ -1612,7 +1624,7 @@
 		"signature": "pJJS+kSfyNDRb2T7SXIWhZhlH3c=",
 		"clazz": "com.cobber.fta.plugins.NameFirstLast",
 		"validLocales": [
-			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name|contact).*", "confidence": 60 } ] },
 			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
 			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
 			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(nom).*", "confidence": 60 } ] },

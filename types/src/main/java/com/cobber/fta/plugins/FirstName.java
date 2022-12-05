@@ -15,6 +15,9 @@
  */
 package com.cobber.fta.plugins;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.PluginDefinition;
 
@@ -25,12 +28,54 @@ public class FirstName extends PersonName {
 	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "NAME.FIRST";
 
+	// This set covers the first two letters of ~92% of our first name list - assume this is a reasonable proxy for first names more generally
+	private String plausibleStarters[] = {
+		"AB", "AD", "AL", "AM", "AN", "AR", "AS", "AU", "AY",
+		"BA", "BE", "BI", "BO", "BR",
+		"CA", "CE", "CH", "CI", "CL", "CO", "CR",
+		"DA", "DE", "DI", "DO", "EA",
+		"ED", "EL", "EM", "EN", "ER", "ES", "EU", "EV",
+		"FA", "FE", "FI", "FL", "FR",
+		"GA", "GE", "GI", "GL", "GR", "GU",
+		"HA", "HE", "HI", "HO", "HU",
+		"IL", "IN", "IR", "IS",
+		"JA", "JE", "JI", "JO", "JU",
+		"KA", "KE", "KI", "KR", "KY",
+		"LA", "LE", "LI", "LO", "LU", "LY",
+		"MA", "ME", "MI", "MO", "MY",
+		"NA", "NE", "NI", "NO",
+		"OL", "OR",
+		"PA", "PE", "PH", "PI",
+		"QU",
+		"RA", "RE", "RI", "RO", "RU",
+		"SA", "SE", "SH", "SI", "SO", "ST", "SU",
+		"TA", "TE", "TH", "TI", "TO", "TR", "TY",
+		"VA", "VE", "VI",
+		"WA", "WE", "WI",
+		"YA", "YO",
+		"ZA", "ZO",
+	};
+	private Set<String> plausibleSet = new HashSet<>();
+
 	/**
 	 * Construct a First Name plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
 	public FirstName(final PluginDefinition plugin) {
 		super(plugin, "firstnames.txt");
+
+		for (final String s: plausibleStarters)
+			plausibleSet.add(s);
+	}
+
+	@Override
+	public boolean isPlausible(final String candidate) {
+		if (candidate.length() <= 2 || !plausibleSet.contains(candidate.substring(0, 2)))
+			return false;
+
+		// Assume 50% of the remaining are good - hopefully this will not bias the determination excessively.
+		// Use hashCode as opposed to random() to ensure that a given data set gives the same results from one run to another.
+		return candidate.hashCode() % 10 < 5;
 	}
 
 	/*
@@ -60,15 +105,11 @@ public class FirstName extends PersonName {
 				return false;
 		}
 
-		if (detectMode) {
-			// Assume 40% of the remaining are good - hopefully this will not bias the determination excessively.
-			// Use hashCode as opposed to random() to ensure that a given data set gives the same results from one run to another.
-			return input.hashCode() % 10 < 4;
-		}
-		else
-			return input.matches(getRegExp());
-	}
+		if (detectMode)
+			return isPlausible(trimmedUpper);
 
+		return input.matches(getRegExp());
+	}
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {

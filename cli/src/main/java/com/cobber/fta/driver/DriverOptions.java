@@ -35,6 +35,7 @@ public class DriverOptions {
 	protected int debug = -1;
 	protected String semanticTypes;
 	protected boolean json;
+	protected String knownTypes;
 	protected boolean legacyJSON;
 	protected boolean noAnalysis;
 	protected boolean noSemanticTypes;
@@ -54,6 +55,7 @@ public class DriverOptions {
 	protected boolean pretty = true;
 	protected boolean pluginDefinition;
 	protected String pluginName;
+	protected Boolean pluginMode;
 	protected DateResolutionMode resolutionMode = DateResolutionMode.Auto;
 	protected boolean samples;
 	protected boolean signature;
@@ -100,6 +102,7 @@ public class DriverOptions {
 
 		if (this.semanticTypes != null)
 			try {
+				// If the argument starts with a '[' assume it is an inline definition, if not assume it is a file
 				if (this.semanticTypes.charAt(0) == '[')
 					analyzer.getPlugins().registerPlugins(new StringReader(this.semanticTypes),
 							analyzer.getStreamName(), analyzer.getConfig());

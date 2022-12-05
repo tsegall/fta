@@ -29,6 +29,7 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -96,7 +97,7 @@ public class NameLastFirst extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode) {
-		final String trimmed = input.trim();
+		final String trimmed = Utils.cleanse(input.trim());
 		final int comma = trimmed.indexOf(',');
 		if (comma == -1 || comma == 0 || comma == trimmed.length() - 1)
 			return false;

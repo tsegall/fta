@@ -387,7 +387,7 @@ public class TextAnalysisResult {
 	 * @return total number of elements in the entire data stream (-1 if not known).
 	 */
 	public long getTotalCount() {
-		return facts.totalCount;
+		return facts.external.totalCount;
 	}
 
 	/**
@@ -396,7 +396,7 @@ public class TextAnalysisResult {
 	 * @return Count of all null elements in the entire data stream (-1 if not known).
 	 */
 	public long getTotalNullCount() {
-		return facts.totalNullCount;
+		return facts.external.totalNullCount;
 	}
 
 	/**
@@ -406,7 +406,7 @@ public class TextAnalysisResult {
 	 * @return Count of all blank samples in the entire data stream (-1 if not known).
 	 */
 	public long getTotalBlankCount() {
-		return facts.totalBlankCount;
+		return facts.external.totalBlankCount;
 	}
 
 	/**
@@ -415,7 +415,7 @@ public class TextAnalysisResult {
 	 * @return The mean across the entire data stream (null if not known).
 	 */
 	public Double getTotalMean() {
-		return facts.totalMean;
+		return facts.external.totalMean;
 	}
 
 	/**
@@ -424,7 +424,7 @@ public class TextAnalysisResult {
 	 * @return The Standard Deviation across the entire data stream (null if not known).
 	 */
 	public Double getTotalStandardDeviation() {
-		return facts.totalStandardDeviation;
+		return facts.external.totalStandardDeviation;
 	}
 
 	/**
@@ -433,7 +433,7 @@ public class TextAnalysisResult {
 	 * @return The minimum value as a String (null if not known).
 	 */
 	public String getTotalMinValue() {
-		return facts.totalMinValue;
+		return facts.external.totalMinValue;
 	}
 
 	/**
@@ -442,7 +442,7 @@ public class TextAnalysisResult {
 	 * @return The maximum value as a String (null if not known).
 	 */
 	public String getTotalMaxValue() {
-		return facts.totalMaxValue;
+		return facts.external.totalMaxValue;
 	}
 
 	/**
@@ -452,7 +452,7 @@ public class TextAnalysisResult {
 	 * @return The minimum length in the entire Data Stream (-1 if not known).
 	 */
 	public int getTotalMinLength() {
-		return facts.totalMinLength;
+		return facts.external.totalMinLength;
 	}
 
 	/**
@@ -462,7 +462,7 @@ public class TextAnalysisResult {
 	 * @return The maximum length in the entire Data Stream (-1 if not known).
 	 */
 	public int getTotalMaxLength() {
-		return facts.totalMaxLength;
+		return facts.external.totalMaxLength;
 	}
 
 	/**
@@ -791,7 +791,7 @@ public class TextAnalysisResult {
 		final ObjectNode analysis = MAPPER.createObjectNode();
 		if (target != SignatureTarget.STRUCTURE_SIGNATURE && target != SignatureTarget.DATA_SIGNATURE)
 			analysis.put("fieldName", name);
-		analysis.put("totalCount", facts.totalCount);
+		analysis.put("totalCount", facts.external.totalCount);
 		analysis.put("sampleCount", facts.sampleCount);
 		analysis.put("matchCount", facts.matchCount);
 		analysis.put("nullCount", facts.nullCount);
@@ -915,23 +915,23 @@ public class TextAnalysisResult {
 
 		// If an external source has set totalCount then output all the total* attributes (which
 		// will presumably also have been set by the external source).
-		if (facts.totalCount != -1) {
-			if (facts.totalNullCount != -1)
-				analysis.put("totalNullCount", facts.totalNullCount);
-			if (facts.totalBlankCount != -1)
-				analysis.put("totalBlankCount", facts.totalBlankCount);
-			if (facts.totalMean != null)
-				analysis.put("toalMean", facts.totalMean);
-			if (facts.totalStandardDeviation != null)
-				analysis.put("totalStandardDeviation", facts.totalStandardDeviation);
-			if (facts.totalMinValue != null)
-				analysis.put("totalMin", facts.totalMinValue);
-			if (facts.totalMaxValue != null)
-				analysis.put("totalMax", facts.totalMaxValue);
-			if (facts.totalMinLength != -1)
-				analysis.put("totalMinLength", facts.totalMinLength);
-			if (facts.totalMaxLength != -1)
-				analysis.put("totalMaxLength", facts.totalMaxLength);
+		if (facts.external.totalCount != -1) {
+			if (facts.external.totalNullCount != -1)
+				analysis.put("totalNullCount", facts.external.totalNullCount);
+			if (facts.external.totalBlankCount != -1)
+				analysis.put("totalBlankCount", facts.external.totalBlankCount);
+			if (facts.external.totalMean != null)
+				analysis.put("toalMean", facts.external.totalMean);
+			if (facts.external.totalStandardDeviation != null)
+				analysis.put("totalStandardDeviation", facts.external.totalStandardDeviation);
+			if (facts.external.totalMinValue != null)
+				analysis.put("totalMin", facts.external.totalMinValue);
+			if (facts.external.totalMaxValue != null)
+				analysis.put("totalMax", facts.external.totalMaxValue);
+			if (facts.external.totalMinLength != -1)
+				analysis.put("totalMinLength", facts.external.totalMinLength);
+			if (facts.external.totalMaxLength != -1)
+				analysis.put("totalMaxLength", facts.external.totalMaxLength);
 		}
 
 		if (facts.getMatchTypeInfo().isDateType())

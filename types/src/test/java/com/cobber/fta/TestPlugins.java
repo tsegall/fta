@@ -425,6 +425,7 @@ public class TestPlugins {
 	public void VAT_UK1() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("VAT Registration Number");
 		analysis.setLocale(Locale.forLanguageTag("en-UK"));
+		analysis.setDebug(2);
 
 		final String[] inputs = {
 				"654434043", "654961603", "902905932", "902905932", "902905932",
@@ -3846,6 +3847,62 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void semanticForce() throws IOException, FTAException {
+		final AnalyzerContext context = new AnalyzerContext("SemanticForce", DateResolutionMode.None, null, new String[] { "SemanticForce" });
+		context.withSemanticTypes(new String[] { "NAME.LAST_FIRST" });
+
+		final TextAnalyzer analysis = new TextAnalyzer(context);
+		analysis.setDebug(2);
+
+		final String[] inputs = {
+				"SARAH LEE#", "WALKER, TIMOTHY MR.", "JERRY SIMS JR", "JERRY SLAUGHTER#",
+				"ACHENBACH, ROGER MR.", "BARNES, BRAD P DR.", "GALIS, BILL#", "RAMPAGE, EILEEN&",
+				"GUINN, LUCINDA", "HEINER, BRANDON&", "SMITH, THOMAS", "GOOSE, SUHAS MD",
+				"MASON, GEORG M.", "CANTOR, CHRISTINE MS.", "SELPH, JOHN G MR.", "SCHERER, BRON",
+				"LOWENBRAU, JACKIE", "HAUGEN, MIKE MR.", "LEONARD, BRENT C.", "ROGER F. HALLAT III"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "NAME.LAST_FIRST");
+		assertEquals(result.getMatchCount(), 6);
+		assertEquals(result.getConfidence(), .3);
+		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getInvalidCount());
+		assertEquals(result.getNullCount(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void semanticForceOverflow() throws IOException, FTAException {
+		final AnalyzerContext context = new AnalyzerContext("SemanticForce", DateResolutionMode.None, null, new String[] { "SemanticForceOverflow" });
+		context.withSemanticTypes(new String[] { "NAME.LAST_FIRST" });
+		final TextAnalyzer analysis = new TextAnalyzer(context);
+		final LogicalType logicalFirst = LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), analysis.getConfig());
+		final LogicalType logicalLast = LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.LAST"), analysis.getConfig());
+		final int ITERS = 1000;
+
+		analysis.setDebug(2);
+
+		for (int i = 0; i < ITERS; i++) {
+			final String input = i%10 <= 7 ? logicalLast.nextRandom() + ", " + logicalFirst.nextRandom() : logicalFirst.nextRandom() + " " + logicalLast.nextRandom();
+			analysis.train(input);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), ITERS);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "NAME.LAST_FIRST");
+		assertEquals(result.getMatchCount(), ITERS * .8);
+		assertEquals(result.getConfidence(), .8);
+		assertEquals(result.getNullCount(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicCountryHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingCountry");
 		final String[] inputs = {
@@ -4082,6 +4139,72 @@ public class TestPlugins {
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.ABA").signature);
 		assertEquals(result.getConfidence(), 1.0);
 
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void dayofweekUS() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("dayofweekUS");
+		final String[] inputs = {
+				"Sat", "Sat", "Sun", "Sun", "Sun", "Sun",
+				"Tue", "Thu", "Thu", "Tue", "Tue", "Tue",
+				"Thu", "Thu", "Tue", "Tue", "Thu", "Tue",
+				"Thu", "Thu", "Tue", "Tue", "Tue", "Tue",
+				"Sun", "Sun", "Sun", "Sun", "Sun", "Fri"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "DAY.ABBR_en-US");
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void dayofweekCA() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("dayofweekCA");
+		analysis.setLocale(Locale.forLanguageTag("en-CA"));
+		final String[] inputs = {
+				"Sat", "Sat", "Sun", "Sun", "Sun", "Sun",
+				"Tue", "Thu", "Thu", "Tue", "Tue", "Tue",
+				"Thu", "Thu", "Tue", "Tue", "Thu", "Tue",
+				"Thu", "Thu", "Tue", "Tue", "Tue", "Tue",
+				"Sun", "Sun", "Sun", "Sun", "Sun", "Fri"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "DAY.ABBR_en-CA");
+		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));

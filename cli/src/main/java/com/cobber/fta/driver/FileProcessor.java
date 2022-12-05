@@ -241,14 +241,12 @@ class FileProcessor {
 				parser.beginParsing(in);
 				numFields = parser.getRecordMetadata().headers().length;
 
-				TextAnalysisResult[] results = new TextAnalysisResult[numFields];
+				TextAnalysisResult[] results = processor.getResult();
 				Pattern[] patterns = new Pattern[numFields];
 
 				for (int i = 0; i < numFields; i++)
-					if (options.col == -1 || options.col == i) {
-						results[i] = processor.getAnalyzer(i).getResult();
+					if (options.col == -1 || options.col == i)
 						patterns[i] = Pattern.compile(results[i].getRegExp());
-					}
 
 				thisRecord = 0;
 				String[] row;
@@ -285,13 +283,14 @@ class FileProcessor {
 		TextAnalysisResult result = null;
 		if (options.json)
 			output.printf("[%n");
+		TextAnalysisResult[] results = processor.getResult();
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
 				final TextAnalyzer analyzer = processor.getAnalyzer(i);
 				if (thisRecord != options.recordsToProcess)
 					analyzer.setTotalCount(thisRecord);
 
-				result = analyzer.getResult();
+				result = results[i];
 				if (options.json) {
 					if (i != 0 && options.col == -1)
 						output.printf(",");

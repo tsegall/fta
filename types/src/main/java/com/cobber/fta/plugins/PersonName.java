@@ -44,6 +44,8 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 		setContent("resource", "/reference/" + filename);
 	}
 
+	public abstract boolean isPlausible(final String candidate);
+
 	@Override
 	public String nextRandom() {
 		// We only return names that do not have embedded spaces in them, this makes generating other
@@ -83,7 +85,7 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 	@Override
 	public boolean isValid(final String input, final boolean detectMode) {
 		final String trimmedUpper = input.trim().toUpperCase(locale);
-		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength)
+		if (trimmedUpper.length() < minLength || trimmedUpper.length() > maxLength)
 			return false;
 		if (getMembers().contains(trimmedUpper))
 			return true;
@@ -99,13 +101,10 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 				return false;
 		}
 
-		if (detectMode) {
-			// Assume 40% of the remaining are good - hopefully this will not bias the determination excessively.
-			// Use hashCode as opposed to random() to ensure that a given data set gives the same results from one run to another.
-			return input.hashCode() % 10 < 4;
-		}
-		else
-			return input.matches(getRegExp());
+		if (detectMode)
+			return isPlausible(trimmedUpper);
+
+		return input.matches(getRegExp());
 	}
 
 	@Override

@@ -90,6 +90,7 @@ public class Driver {
 				error.println(" --formatDetection - Enable Format Detection");
 				error.println(" --help - Print this help");
 				error.println(" --json - Output as JSON");
+				error.println(" --knownTypes <SemanticTypes> - Comma separated list of of Semantic Types");
 				error.println(" --legacyJSON - Output legacy JSON - compatible with FTA 11.X or lower");
 				error.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				error.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
@@ -102,6 +103,7 @@ public class Driver {
 				error.println(" --noSemanticTypes - Do not register any Semantic Types");
 				error.println(" --noStatistics - Do not track statistics");
 				error.println(" --pluginDefinition - Output the plugin definitions from the training data set");
+				error.println(" --pluginMode true|false - Set the detect mode when running Plugin validate");
 				error.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a signature (record count based on --records)");
 				error.println(" --pluginThreshold <n> - Set the plugin threshold percentage (0-100) for detection");
 				error.println(" --records <n> - The number of records to analyze");
@@ -130,8 +132,8 @@ public class Driver {
 			}
 			else if ("--json".equals(args[idx]))
 				options.json = true;
-			else if ("--json".equals(args[idx]))
-				options.json = true;
+			else if ("--knownTypes".equals(args[idx]))
+				options.knownTypes = args[++idx];
 			else if ("--legacyJSON".equals(args[idx]))
 				options.legacyJSON = true;
 			else if ("--maxInputLength".equals(args[idx]))
@@ -158,6 +160,8 @@ public class Driver {
 				options.output = true;
 			else if ("--pluginDefinition".equals(args[idx]))
 				options.pluginDefinition = true;
+			else if ("--pluginMode".equals(args[idx]))
+				options.pluginMode = Boolean.valueOf(args[++idx]);
 			else if ("--pluginName".equals(args[idx]))
 				options.pluginName = args[++idx];
 			else if ("--pluginThreshold".equals(args[idx]))

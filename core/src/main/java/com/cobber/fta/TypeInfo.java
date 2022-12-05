@@ -75,6 +75,7 @@ public class TypeInfo {
 	public int typeModifierFlags;
 	public boolean isSemanticType;
 	public String semanticType;
+	private boolean isForce;
 
 	/**
 	 * Construct a new information block for the supplied pattern.
@@ -262,6 +263,24 @@ public class TypeInfo {
 	 */
 	public boolean isSemanticType() {
 		return isSemanticType;
+	}
+
+	/**
+	 * Is this TypeInfo a 'forced' Semantic Type - i.e. an external agent has told us the Semantic Type.
+	 *
+	 * @return A boolean indicating if this is a forced Semantic Type.
+	 */
+	public boolean isForce() {
+		return isForce;
+	}
+
+	/**
+	 * Indicate if this TypeInfo is a 'forced' Semantic Type - i.e. an external agent has told us the Semantic Type.
+	 *
+	 * @param isForce A boolean indicating if this is a forced Semantic Type.
+	 */
+	public void setForce(final boolean isForce) {
+		this.isForce = isForce;
 	}
 
 	@JsonIgnore

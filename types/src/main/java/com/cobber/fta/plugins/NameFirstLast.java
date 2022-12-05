@@ -29,6 +29,7 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -102,7 +103,8 @@ public class NameFirstLast extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode) {
-		final String trimmed = input.trim();
+		final String trimmed = Utils.cleanse(input.trim());
+
 		final int lastSpace = trimmed.lastIndexOf(' ');
 		if (lastSpace == -1)
 			return false;
@@ -112,6 +114,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		int dashes = 0;
 		int spaces = 0;
 		int apostrophe = 0;
+		boolean ampersandSeen = false;
 		int alphas = 0;
 		for (int i = 0; i < len; i++) {
 			if (i == lastSpace) {
@@ -147,6 +150,11 @@ public class NameFirstLast extends LogicalTypeInfinite {
 				if (spaces == maxExpectedNames)
 					return false;
 				alphas = 0;
+				continue;
+			}
+
+			if (ch == '&' && !ampersandSeen && i < lastSpace && spaces <= 1) {
+				ampersandSeen = true;
 				continue;
 			}
 
@@ -209,11 +217,11 @@ public class NameFirstLast extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
-		final double is = (double)matchCount/realSamples;
+		final double confidence = (double)matchCount/realSamples;
 		if (matchCount == realSamples || getHeaderConfidence(context.getStreamName()) == 0)
-			return is;
+			return confidence;
 
-		return is + (1.0 - is)/2;
+		return Math.min(confidence + 0.10, 1.0);
 	}
 }
 
