@@ -155,13 +155,13 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return trimmed.length() > 5 && isValid(trimmed, true);
+		return trimmed.length() > 5 && isValid(trimmed);
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		// If we are allowing local-only numbers then insist on some signal from the header
-		if (localNumbersValid && nonLocal != 0 && getHeaderConfidence(context.getStreamName()) == 0)
+		if (localNumbersValid && nonLocal != 0 && getHeaderConfidence(context.getStreamName()) <= 0)
 			return new PluginAnalysis(onlyDigits ? KnownTypes.PATTERN_NUMERIC_VARIABLE : REGEXP);
 
 		if (getHeaderConfidence(context.getStreamName()) == 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, context) < getThreshold()/100.0)
@@ -174,7 +174,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		double is = (double)matchCount/realSamples;
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(context.getStreamName()) != 0)
+		if (getHeaderConfidence(context.getStreamName()) > 0)
 			is = Math.min(is * 1.2, 1.0);
 
 		return is;

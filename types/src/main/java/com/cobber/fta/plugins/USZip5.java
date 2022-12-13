@@ -132,7 +132,7 @@ public class USZip5 extends LogicalTypeInfinite {
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(context.getStreamName()) != 0)
+		if (getHeaderConfidence(context.getStreamName()) > 0)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.20), 1.0);
 
 		return confidence;

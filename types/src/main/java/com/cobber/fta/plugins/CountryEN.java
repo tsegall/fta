@@ -50,7 +50,7 @@ public class CountryEN extends LogicalTypeFiniteSimple {
 
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 
-		if (headerConfidence == 0 && (realSamples < 10 || cardinality.size() == 1))
+		if (headerConfidence <= 0 && (realSamples < 10 || cardinality.size() == 1))
 			return new PluginAnalysis(BACKOUT);
 
 		if ((double)matchCount / realSamples >= getThreshold()/100.0)

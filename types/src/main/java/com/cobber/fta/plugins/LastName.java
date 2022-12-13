@@ -15,6 +15,7 @@
  */
 package com.cobber.fta.plugins;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,7 +54,16 @@ public class LastName extends PersonName {
 		"YA", "YO", "ZA",
 		"ZE",
 	};
+	private String badFirstWords[] = {
+			"NORTH",  "SOUTH", "EAST", "WEST", "NEW", "OLD", "MOUNT", "LAKE"
+	};
+	private String badSecondWords[] = {
+			"HILL",  "HILLS", "PARK", "SPRING", "SPRINGS", "RIDGE", "PARK", "VALLEY", "LAKE", "CREEK"
+	};
+
 	private Set<String> plausibleSet = new HashSet<>();
+	private Set<String> badFirstSet = new HashSet<>();
+	private Set<String> badSecondSet = new HashSet<>();
 
 	/**
 	 * Construct a Last Name plugin based on the Plugin Definition.
@@ -62,8 +72,9 @@ public class LastName extends PersonName {
 	public LastName(final PluginDefinition plugin) {
 		super(plugin, "lastnames.txt");
 
-		for (final String s: plausibleStarters)
-			plausibleSet.add(s);
+		plausibleSet = new HashSet<>(Arrays.asList(plausibleStarters));
+		badFirstSet = new HashSet<>(Arrays.asList(badFirstWords));
+		badSecondSet = new HashSet<>(Arrays.asList(badSecondWords));
 	}
 
 	@Override
@@ -111,23 +122,24 @@ public class LastName extends PersonName {
 		if (!Utils.isAlphas(first) || !Utils.isAlphas(second))
 			return false;
 
-		int matches = 0;
-		// If the either component of the hyphenated name is good then declare success
-		if (getMembers().contains(first))
-			matches++;
-		if (getMembers().contains(second))
-			matches++;
-
 		final char separator = trimmedUpper.charAt(separatorOffset);
-		if (matches == 2 || (matches == 1 && separator == '-'))
+		// Reject a set of unlikely names (typically these are Cities)
+		if (separator == ' ' && (badFirstSet.contains(first) || badSecondSet.contains(second)))
+			return false;
+
+		boolean firstMatch = getMembers().contains(first);
+		boolean secondMatch = getMembers().contains(second);
+
+		// Declares success if
+		//  - both components of last name are good
+		//  - either component of the hyphenated name is good
+		//  - second component of the space separated name is good
+		if ((firstMatch && secondMatch) || ((firstMatch || secondMatch) && separator == '-') || (secondMatch && separator == ' '))
 			return true;
 
 		if (!detectMode)
 			return true;
 
-		if (separator == ' ')
-			return false;
-
-		return isPlausible(trimmedUpper);
+		return separator != ' ' && isPlausible(trimmedUpper);
 	}
 }

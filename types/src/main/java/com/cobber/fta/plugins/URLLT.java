@@ -136,7 +136,7 @@ public class URLLT extends LogicalTypeInfinite {
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		double confidence = (double)matchCount/realSamples;
 		// Boost by up to 5% if we like the header, drop by 5% if we have only seen items with no protocol
-		if (getHeaderConfidence(context.getStreamName()) != 0)
+		if (getHeaderConfidence(context.getStreamName()) > 0)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.05), 1.0);
 		else if (protocol[0] == 0)
 			confidence = Math.max(confidence - 0.05, 0.0);

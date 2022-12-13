@@ -46,6 +46,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
@@ -848,10 +849,9 @@ public class TextAnalyzer {
 		if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
 			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
-			if (logical.acceptsBaseType(FTAType.LONG) && !logical.isValid(trimmed, true))
+			if (logical.acceptsBaseType(FTAType.LONG) && !logical.isValid(trimmed))
 				return false;
 		}
-
 
 		if (register) {
 			if (firstCh == '0' && digits != 1)
@@ -915,7 +915,7 @@ public class TextAnalyzer {
 		return isTrue || isFalse;
 	}
 
-	private boolean trackString(final String rawInput, final String trimmed, final TypeInfo typeInfo, final boolean register) {
+	private boolean trackString(final String rawInput, final String trimmed, final TypeInfo typeInfo, final boolean register, final long count) {
 		if (register && analysisConfig.getDebug() >= 2 && rawInput.length() > 0 && rawInput.charAt(0) == '¶' && "¶ xyzzy ¶".equals(rawInput))
 			throw new NullPointerException("¶ xyzzy ¶");
 		if (!typeInfo.isSemanticType()) {
@@ -929,7 +929,7 @@ public class TextAnalyzer {
 		else if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
 			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
-			if (logical.acceptsBaseType(FTAType.STRING) && !logical.isValid(rawInput, true))
+			if (logical.acceptsBaseType(FTAType.STRING) && !logical.isValid(rawInput))
 				return false;
 		}
 
@@ -1020,7 +1020,7 @@ public class TextAnalyzer {
 		if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
 			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
-			if (logical.acceptsBaseType(FTAType.DOUBLE) && !logical.isValid(input, true))
+			if (logical.acceptsBaseType(FTAType.DOUBLE) && !logical.isValid(input))
 				return false;
 		}
 
@@ -1967,7 +1967,7 @@ public class TextAnalyzer {
 					for (final String sample : raw) {
 						switch (logical.getBaseType()) {
 						case STRING:
-							if (trackString(sample, sample.trim(),  candidate, false))
+							if (trackString(sample, sample.trim(),  candidate, false, 1))
 								count++;
 							break;
 						case LONG:
@@ -2181,8 +2181,8 @@ public class TextAnalyzer {
 
 		facts.setMatchTypeInfo(newTypeInfo);
 
-		for (final String s : facts.cardinality.keySet())
-			trackString(s, s.trim(), newTypeInfo, false);
+		for (final Entry<String, Long> entry : facts.cardinality.entrySet())
+			trackString(entry.getKey(), entry.getKey().trim(), newTypeInfo, false, entry.getValue());
 
 		facts.outliers.clear();
 		outliersSmashed.clear();
@@ -2198,8 +2198,8 @@ public class TextAnalyzer {
 
 		// Need to update stats to reflect any outliers we previously ignored
 		if (facts.getMatchTypeInfo().getBaseType().equals(FTAType.STRING)) {
-			for (final String s : facts.cardinality.keySet())
-				trackString(s, s.trim(), newTypeInfo, false);
+			for (final Map.Entry<String, Long> entry : facts.cardinality.entrySet())
+				trackString(entry.getKey(), entry.getKey().trim(), newTypeInfo, false, entry.getValue());
 		}
 		else if (facts.getMatchTypeInfo().getBaseType().equals(FTAType.DOUBLE)) {
 			facts.minDouble = facts.minLong;
@@ -2342,7 +2342,7 @@ public class TextAnalyzer {
 			break;
 
 		case STRING:
-			if (trackString(input, trimmed, facts.getMatchTypeInfo(), true))
+			if (trackString(input, trimmed, facts.getMatchTypeInfo(), true, count))
 				valid = true;
 			break;
 
@@ -2598,7 +2598,19 @@ public class TextAnalyzer {
 		}
 	}
 
-	private LogicalTypeFinite matchFiniteTypes(final FTAType type, final FiniteMap cardinalityUpper, final double scoreToBeat) {
+	private LogicalTypeFinite matchFiniteTypes(final FTAType type, final FiniteMap cardinalityUpper) {
+		double scoreToBeat;
+		int currentPriority = 0;
+
+		LogicalType priorLogical = null;
+		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
+		if (facts.getMatchTypeInfo().isSemanticType()) {
+			priorLogical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
+			scoreToBeat = facts.confidence;
+		}
+		else
+			scoreToBeat = -1.0;
+
 		FiniteMatchResult bestResult = null;
 		double bestScore = scoreToBeat;
 
@@ -2613,10 +2625,15 @@ public class TextAnalyzer {
 				if (!result.matched() || result.score < bestScore)
 					continue;
 
+				// We prefer finite matches to infinite matches only if header or priority is better
+				if (bestResult == null && priorLogical != null && result.score <= bestScore &&
+						logical.getHeaderConfidence(context.getStreamName()) <= priorLogical.getHeaderConfidence(context.getStreamName()) &&
+						logical.getPluginDefinition().priority <= priorLogical.getPluginDefinition().priority)
+					continue;
+
 				// Choose the best score
 				if (result.score > bestScore ||
-						// If bestResult is null then this finite match has matched an incoming score to beat,
-						// we prefer finite matches to infinite matches if scores are equal
+						// If bestResult is null then this finite match has matched an incoming score to beat
 						bestResult == null ||
 						// If two scores the same then prefer the one with the higher header confidence
 						logical.getHeaderConfidence(context.getStreamName()) > bestResult.logical.getHeaderConfidence(context.getStreamName()) ||
@@ -2740,10 +2757,8 @@ public class TextAnalyzer {
 			// Sort the results so that we consider the most frequent first (we will hopefully fail faster)
 			cardinalityUpper.sortByValue();
 
-			final double scoreToBeat = facts.getMatchTypeInfo().isSemanticType() ? facts.confidence : -1.0;
-
 			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
-			final LogicalTypeFinite logical = matchFiniteTypes(FTAType.STRING, cardinalityUpper, scoreToBeat);
+			final LogicalTypeFinite logical = matchFiniteTypes(FTAType.STRING, cardinalityUpper);
 			if (logical != null)
 				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 
@@ -3128,10 +3143,8 @@ public class TextAnalyzer {
 				facts.getMatchTypeInfo().regexp = freezeNumeric(facts.getMatchTypeInfo().regexp);
 			}
 
-			final double scoreToBeat = facts.getMatchTypeInfo().isSemanticType() ? facts.confidence : -1.0;
-
 			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
-			final LogicalTypeFinite logicalFinite = matchFiniteTypes(FTAType.LONG, facts.cardinality, scoreToBeat);
+			final LogicalTypeFinite logicalFinite = matchFiniteTypes(FTAType.LONG, facts.cardinality);
 			if (logicalFinite != null)
 				facts.confidence = logicalFinite.getConfidence(facts.matchCount, realSamples, context);
 

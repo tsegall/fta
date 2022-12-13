@@ -28,7 +28,7 @@ public class HeaderLocaleEntry {
 	/**
 	 * Determine the confidence that the name of the data stream is likely a valid header
 	 * @param dataStreamName The name of this data stream
-	 * @return An integer between 0 and 100 reflecting the confidence that this stream name is a valid header.
+	 * @return An integer between -100 and 100 reflecting the confidence that this stream name is a valid header.  O indicates no data.
 	 */
 	public int getHeaderConfidence(final String dataStreamName) {
 		if (headerRegExps != null)

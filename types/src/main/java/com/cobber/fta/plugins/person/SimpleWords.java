@@ -127,7 +127,7 @@ public abstract class SimpleWords extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		if (!isValid(trimmed, true)) {
+		if (!isValid(trimmed)) {
 			rejected.add(trimmed);
 			return false;
 		}

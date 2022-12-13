@@ -168,7 +168,7 @@ public class Address2EN extends LogicalTypeInfinite {
 		// Does the previous field look like an Address Line 1 AND not look like an Address Line 2
 		if (addressLine1Entry.getHeaderConfidence(previousStreamName) >= 90 && getHeaderConfidence(previousStreamName) < 99) {
 			if (current + 1 < context.getCompositeStreamNames().length &&
-					cityEntry.getHeaderConfidence(context.getCompositeStreamNames()[current + 1]) != 0)
+					cityEntry.getHeaderConfidence(context.getCompositeStreamNames()[current + 1]) > 0)
 				return headerConfidence == 0 ? 85 : 95;
 			return headerConfidence == 0 ? 85 : 90;
 		}

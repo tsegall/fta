@@ -112,6 +112,8 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
+		if (headerConfidence < 0)
+			return new PluginAnalysis(backout);
 
 		if (headerConfidence >= 90 && (double)matchCount / realSamples >= (double)IDENTIFIED_LOW_THRESHOLD/100)
 			return PluginAnalysis.OK;

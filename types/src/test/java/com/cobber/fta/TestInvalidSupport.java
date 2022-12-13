@@ -163,7 +163,7 @@ public class TestInvalidSupport {
 		for (int i = 0; i < SIZE; i++) {
 			String testCase = logical.nextRandom();
 			analyzer.train(testCase);
-			assertTrue(logical.isValid(testCase, true));
+			assertTrue(logical.isValid(testCase));
 		}
 
 		// Good - but now known names
@@ -206,7 +206,7 @@ public class TestInvalidSupport {
 		for (int i = 0; i < SIZE; i++) {
 			String testCase = logical.nextRandom();
 			analyzer.train(testCase);
-			assertTrue(logical.isValid(testCase, true));
+			assertTrue(logical.isValid(testCase));
 		}
 
 		// The letter 'O' not the number '0'

@@ -58,7 +58,7 @@ public class VAT extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		final int len = trimmed.length() - charCounts[' '];
-		return len >= 9 && len <= 13 && isValid(trimmed, true);
+		return len >= 9 && len <= 13 && isValid(trimmed);
 	}
 
 	@Override

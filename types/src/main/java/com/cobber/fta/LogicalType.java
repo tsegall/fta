@@ -80,8 +80,9 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 	/**
 	 * Determine the confidence that the name of the data stream is likely a valid header for this Semantic Type.
+	 * Positive Numbers indicate it could be this Semantic Type, negative numbers indicate is it unlikely to be this Semantic Type, 0 indicates no opinion.
 	 * @param dataStreamName The name of this data stream
-	 * @return An integer between 0 and 100 reflecting the confidence that this stream name is a valid header.
+	 * @return An integer between -100 and 100 reflecting the confidence that this stream name is a valid header.
 	 */
 	public int getHeaderConfidence(final String dataStreamName) {
 		return pluginLocaleEntry.getHeaderConfidence(dataStreamName);

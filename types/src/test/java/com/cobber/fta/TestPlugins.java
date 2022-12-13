@@ -198,7 +198,7 @@ public class TestPlugins {
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()), input);
 			final boolean expected = "male".equalsIgnoreCase(input.trim()) || "female".equalsIgnoreCase(input.trim());
-			assertEquals(logicalGender.isValid(input, true), expected);
+			assertEquals(logicalGender.isValid(input), expected);
 		}
 	}
 
@@ -815,7 +815,7 @@ public class TestPlugins {
 		for (final String input : inputs) {
 			assertTrue(input.trim().matches(result.getRegExp()), input);
 			final boolean expected = "male".equalsIgnoreCase(input.trim()) || "female".equalsIgnoreCase(input.trim());
-			assertEquals(logicalGender.isValid(input, true), expected);
+			assertEquals(logicalGender.isValid(input), expected);
 		}
 	}
 
@@ -1473,22 +1473,22 @@ public class TestPlugins {
 		final String valid = "http://www.infogix.com";
 		final String invalid = "www infogix.com";
 
-		assertTrue(logical.isValid(valid, true));
-		assertFalse(logical.isValid(invalid, true));
+		assertTrue(logical.isValid(valid));
+		assertFalse(logical.isValid(invalid));
 
 		logical = analyzer.getPlugins().getRegistered(CountryEN.SEMANTIC_TYPE);
 
 		final String ChinaUpper = "CHINA";
-		assertTrue(logical.isValid(ChinaUpper, true));
+		assertTrue(logical.isValid(ChinaUpper));
 
 		final String ChinaWithSpaces = "  CHINA  ";
-		assertTrue(logical.isValid(ChinaWithSpaces, true));
+		assertTrue(logical.isValid(ChinaWithSpaces));
 
 		final String ChinaCamel = "China";
-		assertTrue(logical.isValid(ChinaCamel, true));
+		assertTrue(logical.isValid(ChinaCamel));
 
 		final String Lemuria = "Lemuria";
-		assertFalse(logical.isValid(Lemuria, true));
+		assertFalse(logical.isValid(Lemuria));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -2011,7 +2011,7 @@ public class TestPlugins {
 			final String trimmed = input.trim();
 			assertTrue(trimmed.matches(result.getRegExp()), input);
 			final boolean expected = !invalids.containsKey(trimmed);
-			assertEquals(logical.isValid(input, true), expected);
+			assertEquals(logical.isValid(input), expected);
 		}
 	}
 
@@ -3262,7 +3262,7 @@ public class TestPlugins {
 		assertEquals(middleInitial.getStructureSignature(), PluginDefinition.findByQualifier("NAME.MIDDLE_INITIAL").signature);
 
 		final LogicalType logicalFirst = analysis[0].getPlugins().getRegistered(FirstName.SEMANTIC_TYPE);
-		assertTrue(logicalFirst.isValid("Harry", true));
+		assertTrue(logicalFirst.isValid("Harry"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })

@@ -123,7 +123,7 @@ public class JobTitleEN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed, true);
+		return isValid(trimmed);
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class JobTitleEN extends LogicalTypeInfinite {
 
 		int minCardinality = 10;
 		int minSamples = 20;
-		if (getHeaderConfidence(context.getStreamName()) != 0) {
+		if (getHeaderConfidence(context.getStreamName()) > 0) {
 			minCardinality = 5;
 			minSamples = 5;
 		}

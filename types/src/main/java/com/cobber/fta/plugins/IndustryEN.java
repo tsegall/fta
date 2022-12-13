@@ -101,7 +101,7 @@ public class IndustryEN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed, true);
+		return isValid(trimmed);
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class IndustryEN extends LogicalTypeInfinite {
 		int minCardinality = 5;
 		int minSamples = 5;
 
-		if (getHeaderConfidence(context.getStreamName()) == 0 || cardinality.size() < minCardinality || realSamples < minSamples)
+		if (getHeaderConfidence(context.getStreamName()) <= 0 || cardinality.size() < minCardinality || realSamples < minSamples)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		if (getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0)

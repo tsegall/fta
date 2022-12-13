@@ -123,14 +123,14 @@ public class EIN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return isValid(trimmed, true);
+		return isValid(trimmed);
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
-		if (getHeaderConfidence(context.getStreamName()) == 0)
+		if (getHeaderConfidence(context.getStreamName()) <= 0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		if (cardinality.size() < 20 && getHeaderConfidence(context.getStreamName()) < 95)

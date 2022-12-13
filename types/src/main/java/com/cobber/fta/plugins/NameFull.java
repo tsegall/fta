@@ -162,7 +162,7 @@ public class NameFull extends LogicalTypeInfinite {
 			return new PluginAnalysis(BACKOUT);
 
 		// Reject if there is not a reasonable spread of last or first names
-		if (getHeaderConfidence(context.getStreamName()) == 0 &&
+		if (getHeaderConfidence(context.getStreamName()) <= 0 &&
 				((lastNames.size() < MAX_LAST_NAMES && (double)lastNames.size()/matchCount < .2) ||
 				(firstNames.size() < MAX_FIRST_NAMES && (double)firstNames.size()/matchCount < .2)))
 			return new PluginAnalysis(BACKOUT);
@@ -176,7 +176,7 @@ public class NameFull extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double is = (double)matchCount/realSamples;
-		if (matchCount == realSamples || getHeaderConfidence(context.getStreamName()) == 0)
+		if (matchCount == realSamples || getHeaderConfidence(context.getStreamName()) <= 0)
 			return is;
 
 		return is + (1.0 - is)/2;

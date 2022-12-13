@@ -1,6 +1,14 @@
 
 ## Changes ##
 
+### 12.2.1
+ - ENH: Bump google phone number library
+ - ENH: Bump slf4j
+ - ENH: Change getHeaderConfidence to allow negative Header indication (i.e. < 0)
+
+### 12.2.0
+ - ENH: Improve Last Name detection
+
 ### 12.2.0
  - ENH: Improve RecordAnalyzer interface.
  - ENH: Add new Semantic Type - STREET_NUMBER (Street Number).

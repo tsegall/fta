@@ -2835,9 +2835,9 @@ public class RandomTests {
 
 			for (int i = 0; i < 1000; i++) {
 				final String value = logical.nextRandom();
-				if (logical.isRegExpComplete() && !logical.isValid(value, true)) {
+				if (logical.isRegExpComplete() && !logical.isValid(value)) {
 					System.err.println("Issue with LogicalType'" + logical.getDescription() + "', value: " + value + "\n");
-					assertTrue(logical.isValid(value, true), value);
+					assertTrue(logical.isValid(value), value);
 				}
 			}
 		}

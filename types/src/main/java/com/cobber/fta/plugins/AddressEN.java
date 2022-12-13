@@ -121,10 +121,10 @@ public class AddressEN extends LogicalTypeInfinite {
 			return false;
 
 		final String firstWord = words.get(0);
-		boolean initialNumeric = AddressCommon.isAddressNumber(firstWord);
-
 		if ("BOX".equals(firstWord))
 			return true;
+
+		boolean initialNumeric = AddressCommon.isAddressNumber(firstWord);
 
 		if (words.size() == 2 && initialNumeric && "BROADWAY".equals(words.get(1)))
 			return true;

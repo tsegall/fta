@@ -116,7 +116,7 @@ public class FirstName extends PersonName {
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(context.getStreamName()) != 0)
+		if (getHeaderConfidence(context.getStreamName()) > 0)
 			confidence = Math.min(confidence * 1.2, 1.0);
 
 		return confidence;

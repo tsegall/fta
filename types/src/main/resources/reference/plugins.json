@@ -1479,220 +1479,6 @@
 		"priority": 169
 	},
 	{
-		"semanticType": "NAME.FIRST",
-		"description": "First Name",
-		"pluginType": "java",
-		"signature": "slggsAEDZ26rz9dqs15eNF23j2w=",
-		"clazz": "com.cobber.fta.plugins.FirstName",
-		"validLocales": [
-			{
-				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(first.?name|fname|given.?name|forename|first_nm).*", "confidence": 95 },
-					{ "regExp": "(?i)(name|.*first.*)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "de",
-				"headerRegExps": [ { "regExp": ".*(?i)(vornam).*", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "es",
-				"headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "fr",
-				"headerRegExps": [ { "regExp": ".*(?i)(prénom|prenom).*", "confidence": 90 },
-					{ "regExp": "(?i)(first)", "confidence": 90 }, { "regExp": "(?i)(nom|name)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "it",
-				"headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "nl",
-				"headerRegExps": [ { "regExp": ".*(?i)(voornaam|vnaam).*", "confidence": 90 }, { "regExp": "(?i)(naam|name)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "pt",
-				"headerRegExps": [ { "regExp": "(?i)(nome)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			}
-		],
-		"priority": 170
-	},
-	{
-		"semanticType": "NAME.LAST",
-		"description": "Last Name",
-		"pluginType": "java",
-		"signature": "+h9v4tygGZxbEPbJLp5MDezGgME=",
-		"clazz": "com.cobber.fta.plugins.LastName",
-		"validLocales": [
-			{
-				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(surname|last.?name|lname|maiden.?name|name.?last|last_nm).*", "confidence": 90 },
-					{ "regExp": "(?i)(name|.*last.*)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "de",
-				"headerRegExps": [ { "regExp": ".*(?i)(nachname).*", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "es",
-				"headerRegExps": [ { "regExp": ".*(?i)(apellido).*", "confidence": 90 }, { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "fr",
-				"headerRegExps": [ { "regExp": "(?i)(nom|name)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "it",
-				"headerRegExps": [ { "regExp": ".*(?i)(cognome).*", "confidence": 90 }, { "regExp": "(?i)(nome)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "nl",
-				"headerRegExps": [ { "regExp": ".*(?i)(achternaam|anaam).*", "confidence": 90 }, { "regExp": "(?i)(naam|name)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			},
-			{
-				"localeTag": "pt",
-				"headerRegExps": [ { "regExp": ".*(?i)(sobrenome).*", "confidence": 90 }, { "regExp": "(?i)(nome)", "confidence": 60 } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			}
-		],
-		"priority": 171
-	},
-	{
-		"semanticType": "NAME.LAST_FIRST",
-		"description": "Merged Name (Last, First)",
-		"pluginType": "java",
-		"signature": "WlXF9TSnYBDQXbOMhceVK9XCxAk=",
-		"clazz": "com.cobber.fta.plugins.NameLastFirst",
-		"validLocales": [
-			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
-			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
-			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
-			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(nom).*", "confidence": 60 } ] },
-			{ "localeTag": "it", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] },
-			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(naam).*", "confidence": 60 } ] },
-			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] }
-		],
-		"threshold": 90,
-		"priority": 172
-	},
-	{
-		"semanticType": "NAME.FIRST_LAST",
-		"description": "Merged Name (First Last)",
-		"pluginType": "java",
-		"signature": "pJJS+kSfyNDRb2T7SXIWhZhlH3c=",
-		"clazz": "com.cobber.fta.plugins.NameFirstLast",
-		"validLocales": [
-			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name|contact).*", "confidence": 60 } ] },
-			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
-			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
-			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(nom).*", "confidence": 60 } ] },
-			{ "localeTag": "it", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] },
-			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(naam).*", "confidence": 60 } ] },
-			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] }
-		],
-		"priority": 173
-	},
-	{
-		"semanticType": "NAME.MIDDLE",
-		"description": "Middle Name",
-		"pluginType": "java",
-		"signature": "3UGho+Z93uiqi9L8+qjAQ1pb0qQ=",
-		"clazz": "com.cobber.fta.plugins.MiddleName",
-		"validLocales": [
-			{
-				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(middle.?name).*|(?i)(mi|middle)", "confidence": 99, "mandatory": true } ],
-				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
-				} ]
-			}
-		],
-		"priority": 174
-	},
-	{
-		"semanticType": "NAME.MIDDLE_INITIAL",
-		"description": "Middle Initial",
-		"pluginType": "regex",
-		"signature": "5AG+x37vekPMlggzCTebzFWovPc=",
-		"validLocales": [
-			{
-				"localeTag": "en",
-				"headerRegExps": [
-					{ "regExp": ".*(?i)(middle.?init).*|(?i)(mi|middle)", "confidence": 99, "mandatory": true },
-					{ "regExp": "(?i)middle.*", "confidence": 90, "mandatory": true }
-				],
-				"matchEntries": [ {
-					"regExpsToMatch": [ "\\p{IsAlphabetic}", "\\p{IsAlphabetic}\\." ],
-					"regExpReturned": "\\p{IsAlphabetic}\\.?",
-					"isRegExpComplete": true
-				} ]
-			}
-		],
-		"threshold": 98,
-		"baseType": "STRING",
-		"priority": 175
-	},
-	{
-		"semanticType": "NAME.SUFFIX",
-		"description": "Name Suffix",
-		"pluginType": "list",
-		"signature": "O8pdYhB+VqM6qvj6Yc7Wt3JPhy0=",
-		"validLocales": [
-			{
-				"localeTag": "en",
-				"headerRegExps": [ { "regExp": "(?i)(suffix|suff|.*[_ ]suffix)", "confidence": 99, "mandatory": true }, { "regExp": "(?i).*suffix", "confidence": 85, "mandatory": true } ]
-			}
-		],
-		"content": "/reference/en_name_suffix.csv",
-		"contentType": "resource",
-		"backout": "[ \\p{IsAlphabetic}.]+",
-		"threshold": 90,
-		"baseType": "STRING",
-		"priority": 176
-	},
-	{
 		"semanticType": "COORDINATE.LATITUDE_DECIMAL",
 		"description": "Latitude (Decimal degrees)",
 		"pluginType": "regex",
@@ -2420,6 +2206,220 @@
 		],
 		"baseType": "STRING",
 		"priority": 306
+	},
+	{
+		"semanticType": "NAME.LAST_FIRST",
+		"description": "Merged Name (Last, First)",
+		"pluginType": "java",
+		"signature": "WlXF9TSnYBDQXbOMhceVK9XCxAk=",
+		"clazz": "com.cobber.fta.plugins.NameLastFirst",
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name|contact).*", "confidence": 60 } ] },
+			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
+			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(nom).*", "confidence": 60 } ] },
+			{ "localeTag": "it", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] },
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(naam).*", "confidence": 60 } ] },
+			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] }
+		],
+		"threshold": 90,
+		"priority": 370
+	},
+	{
+		"semanticType": "NAME.FIRST_LAST",
+		"description": "Merged Name (First Last)",
+		"pluginType": "java",
+		"signature": "pJJS+kSfyNDRb2T7SXIWhZhlH3c=",
+		"clazz": "com.cobber.fta.plugins.NameFirstLast",
+		"validLocales": [
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name|contact).*", "confidence": 60 } ] },
+			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
+			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(nom).*", "confidence": 60 } ] },
+			{ "localeTag": "it", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] },
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(naam).*", "confidence": 60 } ] },
+			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] }
+		],
+		"priority": 371
+	},
+	{
+		"semanticType": "NAME.FIRST",
+		"description": "First Name",
+		"pluginType": "java",
+		"signature": "slggsAEDZ26rz9dqs15eNF23j2w=",
+		"clazz": "com.cobber.fta.plugins.FirstName",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [ { "regExp": ".*(?i)(first.?name|fname|given.?name|forename|first_nm).*", "confidence": 95 },
+					{ "regExp": "(?i)(name|.*first.*)", "confidence": 60 }, { "regExp": "(?i).*city.*", "confidence": -100 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "de",
+				"headerRegExps": [ { "regExp": ".*(?i)(vornam).*", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "es",
+				"headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "fr",
+				"headerRegExps": [ { "regExp": ".*(?i)(prénom|prenom).*", "confidence": 90 },
+					{ "regExp": "(?i)(first)", "confidence": 90 }, { "regExp": "(?i)(nom|name)", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "it",
+				"headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "nl",
+				"headerRegExps": [ { "regExp": ".*(?i)(voornaam|vnaam).*", "confidence": 90 }, { "regExp": "(?i)(naam|name)", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "pt",
+				"headerRegExps": [ { "regExp": "(?i)(nome)", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			}
+		],
+		"priority": 372
+	},
+	{
+		"semanticType": "NAME.LAST",
+		"description": "Last Name",
+		"pluginType": "java",
+		"signature": "+h9v4tygGZxbEPbJLp5MDezGgME=",
+		"clazz": "com.cobber.fta.plugins.LastName",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [ { "regExp": ".*(?i)(surname|last.?name|lname|maiden.?name|name.?last|last_nm).*", "confidence": 90 },
+					{ "regExp": "(?i)(name|.*last.*)", "confidence": 60 }, { "regExp": "(?i).*city.*", "confidence": -100 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "de",
+				"headerRegExps": [ { "regExp": ".*(?i)(nachname).*", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "es",
+				"headerRegExps": [ { "regExp": ".*(?i)(apellido).*", "confidence": 90 }, { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "fr",
+				"headerRegExps": [ { "regExp": "(?i)(nom|name)", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "it",
+				"headerRegExps": [ { "regExp": ".*(?i)(cognome).*", "confidence": 90 }, { "regExp": "(?i)(nome)", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "nl",
+				"headerRegExps": [ { "regExp": ".*(?i)(achternaam|anaam).*", "confidence": 90 }, { "regExp": "(?i)(naam|name)", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "pt",
+				"headerRegExps": [ { "regExp": ".*(?i)(sobrenome).*", "confidence": 90 }, { "regExp": "(?i)(nome)", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			}
+		],
+		"priority": 373
+	},
+	{
+		"semanticType": "NAME.MIDDLE",
+		"description": "Middle Name",
+		"pluginType": "java",
+		"signature": "3UGho+Z93uiqi9L8+qjAQ1pb0qQ=",
+		"clazz": "com.cobber.fta.plugins.MiddleName",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [ { "regExp": ".*(?i)(middle.?name).*|(?i)(mi|middle)", "confidence": 99, "mandatory": true } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			}
+		],
+		"priority": 374
+	},
+	{
+		"semanticType": "NAME.MIDDLE_INITIAL",
+		"description": "Middle Initial",
+		"pluginType": "regex",
+		"signature": "5AG+x37vekPMlggzCTebzFWovPc=",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [
+					{ "regExp": ".*(?i)(middle.?init).*|(?i)(mi|middle)", "confidence": 99, "mandatory": true },
+					{ "regExp": "(?i)middle.*", "confidence": 90, "mandatory": true }
+				],
+				"matchEntries": [ {
+					"regExpsToMatch": [ "\\p{IsAlphabetic}", "\\p{IsAlphabetic}\\." ],
+					"regExpReturned": "\\p{IsAlphabetic}\\.?",
+					"isRegExpComplete": true
+				} ]
+			}
+		],
+		"threshold": 98,
+		"baseType": "STRING",
+		"priority": 375
+	},
+	{
+		"semanticType": "NAME.SUFFIX",
+		"description": "Name Suffix",
+		"pluginType": "list",
+		"signature": "O8pdYhB+VqM6qvj6Yc7Wt3JPhy0=",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [ { "regExp": "(?i)(suffix|suff|.*[_ ]suffix)", "confidence": 99, "mandatory": true }, { "regExp": "(?i).*suffix", "confidence": 85, "mandatory": true } ]
+			}
+		],
+		"content": "/reference/en_name_suffix.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}.]+",
+		"threshold": 90,
+		"baseType": "STRING",
+		"priority": 376
 	},
 	{
 		"semanticType": "FREE_TEXT",

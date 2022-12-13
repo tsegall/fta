@@ -127,7 +127,7 @@ public class InseeCodeFR extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
-		if (headerConfidence == 0 && cardinality.size() < 5)
+		if (headerConfidence <= 0 && cardinality.size() < 5)
 			return new PluginAnalysis(backout());
 
 		if (getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0)
@@ -141,7 +141,7 @@ public class InseeCodeFR extends LogicalTypeInfinite {
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(context.getStreamName()) != 0)
+		if (getHeaderConfidence(context.getStreamName()) > 0)
 			confidence = Math.min(confidence * 1.2, 1.0);
 
 		return confidence;

@@ -82,7 +82,7 @@ public class CheckDigitISBN extends CheckDigitLT {
 		if (charCounts['-'] != 4)
 			return false;
 
-		return isValid(trimmed, true);
+		return isValid(trimmed);
 	}
 
 	@Override

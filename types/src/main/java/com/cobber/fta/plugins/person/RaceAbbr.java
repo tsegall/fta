@@ -81,7 +81,7 @@ public class RaceAbbr extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed, true);
+		return isValid(trimmed);
 	}
 
 	@Override

@@ -135,7 +135,7 @@ public class Direction extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return isValid(trimmed, true);
+		return isValid(trimmed);
 	}
 
 	@Override

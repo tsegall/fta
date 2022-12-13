@@ -38,8 +38,8 @@ public abstract class Validation {
 		final LogicalType knownSemanticType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
 		// Make sure we like India and do not like Gondwana
-		System.err.println("Is 'elease.campo@gmail.com' valid? " + knownSemanticType.isValid("elease.campo@gmail.com", true));
-		System.err.println("Is 'double@at@cobber.com' valid? " + knownSemanticType.isValid("double@at@cobber.com", true));
+		System.err.println("Is 'elease.campo@gmail.com' valid? " + knownSemanticType.isValid("elease.campo@gmail.com"));
+		System.err.println("Is 'double@at@cobber.com' valid? " + knownSemanticType.isValid("double@at@cobber.com"));
 
 		//
 		// Example for Semantic Types ...
@@ -73,8 +73,8 @@ public abstract class Validation {
 		}
 
 		// Make sure we like India and do not like Gondwana
-		System.err.println("Is 'India' valid? " + semanticType.isValid("India", true));
-		System.err.println("Is 'Gondwana' valid? " + semanticType.isValid("Gondwana", true));
+		System.err.println("Is 'India' valid? " + semanticType.isValid("India"));
+		System.err.println("Is 'Gondwana' valid? " + semanticType.isValid("Gondwana"));
 
 		//
 		// Example where no Semantic Type detected

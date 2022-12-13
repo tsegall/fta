@@ -17,7 +17,7 @@ subprojects {
 		project.afterEvaluate {
 			tasks.withType(JavaCompile) {
 				options.compilerArgs.addAll(['--release', 8])
-				options.compilerArgs.addAll(['-Xlint'])
+//				options.compilerArgs.addAll(['-Xlint'])
 			}
 		}
 	}

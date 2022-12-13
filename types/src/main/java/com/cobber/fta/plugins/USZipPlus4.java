@@ -148,11 +148,11 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 		double confidence = (double)matchCount/realSamples;
 
 		// If we do not have an embedded '-' then insist that the header is good
-		if (maxLength == 9 && getHeaderConfidence(dataStreamName) == 0)
+		if (maxLength == 9 && getHeaderConfidence(dataStreamName) <= 0)
 			return 0;
 
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(dataStreamName) != 0)
+		if (getHeaderConfidence(dataStreamName) > 0)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.20), 1.0);
 
 		return confidence;

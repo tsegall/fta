@@ -111,6 +111,11 @@ public class AddressCommon {
 	 * @return True if the input looks plausible as the start of an address.
 	 */
 	public static boolean isAddressNumber(final String input) {
+		// Check for a simple text digit - e.g. 'One', 'Two' etc.
+		char firstCh = input.charAt(0);
+		if (Character.isAlphabetic(firstCh) && AddressCommon.isTextDigit(input))
+			return true;
+
 		final int len = input.length();
 		final char last = input.charAt(len - 1);
 		String toTest = input;
@@ -121,11 +126,6 @@ public class AddressCommon {
 				return false;
 			toTest = rest;
 		}
-
-		// Check for a simple text digit - e.g. 'One', 'Two' etc.
-		char firstCh = toTest.charAt(0);
-		if (Character.isAlphabetic(firstCh) && AddressCommon.isTextDigit(toTest))
-			return true;
 
 		if (!Character.isDigit(firstCh))
 			return false;

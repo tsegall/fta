@@ -105,7 +105,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 		int minCardinality = Math.min(getSize(), 4);
 		int minSamples = 20;
 		int threshold = getThreshold();
-		if (headerConfidence != 0) {
+		if (headerConfidence > 0) {
 			minCardinality = 1;
 			minSamples = headerConfidence < 99 ? 4 : 1;
 			maxOutliers =  headerConfidence < 90 ? Math.max(4, baseOutliers) : getSize() / 2;
