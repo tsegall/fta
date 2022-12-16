@@ -124,8 +124,12 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 			return true;
 
 		// If there is no modifier (e.g. Flat, Suite, Building, ... ) then one of the last two words should be an Address Marker
-		if (!intersection && extrasPresent == 0)
-			return addressMarkers.contains(words.get(wordCount - 1)) || addressMarkers.contains(words.get(wordCount - 2));
+		if (!intersection && extrasPresent == 0) {
+			if (wordCount >= 3)
+				return addressMarkers.contains(words.get(wordCount - 1)) || addressMarkers.contains(words.get(wordCount - 2));
+			else
+				return addressMarkers.contains(words.get(wordCount - 1));
+		}
 
 		int markers = 0;
 		for (int i = 0; i < wordCount; i++) {

@@ -421,10 +421,16 @@ public class TestRegExpPlugins {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getConfidence(), 1.0);
+
+		final LogicalTypeCode logical = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("CITY"), new AnalysisConfig());
 
 		for (final String sample : samples) {
+			if (!sample.matches(result.getRegExp()))
+				System.err.printf("Match failed: %s\n", sample);
+			if (!logical.isValid(sample))
+				System.err.printf("isValid failed: %s\n", sample);
 			assertTrue(sample.matches(result.getRegExp()), sample);
 		}
+		assertEquals(result.getConfidence(), 1.0);
 	}
 }

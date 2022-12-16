@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.2.2
+ - ENH: Reimplement CITY as a Java plugin (F1-Score from 97% to >99%)
+
 ### 12.2.1
  - ENH: Bump google phone number library
  - ENH: Bump slf4j

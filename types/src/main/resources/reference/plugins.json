@@ -1659,35 +1659,26 @@
 	{
 		"semanticType": "CITY",
 		"description": "City/Town",
-		"pluginType": "regex",
+		"pluginType": "java",
 		"signature": "mz6raYadjSZxxvo+j66/fQXbhf8=",
+		"clazz": "com.cobber.fta.plugins.City",
 		"validLocales": [
 			{
 				"localeTag": "de",
-				"headerRegExps": [ { "regExp": "^(?i)(ort)$", "confidence": 99, "mandatory": true } ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
-					"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
-					"isRegExpComplete": false
-				} ]
+				"headerRegExps": [ { "regExp": "^(?i)(ort)$", "confidence": 99, "mandatory": true } ]
 			},
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": "^(?i)(city|town)$|^.*[ _](city|town)$|^(city|town)[ _]name$|(?-i).*[a-z](City|Town)$", "confidence": 99, "mandatory": true } ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
-					"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
-					"isRegExpComplete": false
-				} ]
+				"headerRegExps": [
+					{ "regExp": "^(?i).*(ethnicity).*", "confidence": -1, "mandatory": true },
+					{ "regExp": "^(?i)(city|town)$", "confidence": 99, "mandatory": true },
+					{ "regExp": "^(?i).*[ _](city|town)$|^(city|town)[ _]name$|(?-i).*[a-z](City|Town)$", "confidence": 95, "mandatory": true },
+					{ "regExp": "^(?i).*(city|town)$", "confidence": 75, "mandatory": true }
+				]
 			},
 			{
 				"localeTag": "fr",
-				"headerRegExps": [ { "regExp": "^(?i)(ville)$", "confidence": 99, "mandatory": true } ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
-					"regExpReturned": "\\p{IsAlphabetic}[-' \\.\\p{IsAlphabetic}\\d]*",
-					"isRegExpComplete": false
-				} ]
+				"headerRegExps": [ { "regExp": "^(?i)(ville)$", "confidence": 99, "mandatory": true } ]
 			}
 		],
 		"content": "/reference/en_city_samples.csv",

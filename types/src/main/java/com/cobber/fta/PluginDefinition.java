@@ -143,7 +143,7 @@ public class PluginDefinition {
 		return null;
 	}
 
-	public boolean isRequiredHeaderMissing(final Locale locale, final String streamName) {
+	public boolean isMandatoryHeaderUnsatisfied(final Locale locale, final String streamName) {
 		PluginLocaleEntry localeEntry;
 		try {
 			localeEntry = getLocaleEntry(locale);
@@ -161,7 +161,7 @@ public class PluginDefinition {
 			if (entry.mandatory)
 				mandatory = true;
 			if (entry.matches(streamName))
-				return false;
+				return entry.confidence < 0;
 		}
 
 		return mandatory;

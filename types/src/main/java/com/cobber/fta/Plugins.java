@@ -66,7 +66,7 @@ public class Plugins {
 			boolean register = plugin.isLocaleSupported(analysisConfig.getLocale());
 
 			// Check to see if this plugin requires a mandatory hotword (and it is present)
-			if (register && !"*".equals(dataStreamName) && plugin.isRequiredHeaderMissing(analysisConfig.getLocale(), dataStreamName))
+			if (register && !"*".equals(dataStreamName) && plugin.isMandatoryHeaderUnsatisfied(analysisConfig.getLocale(), dataStreamName))
 				register = false;
 
 			if (register)
