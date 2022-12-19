@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.3.0
+ - ENH: Change return value of RecordAnalyzer
+
 ### 12.2.2
  - ENH: Reimplement CITY as a Java plugin (F1-Score from 97% to >99%)
 

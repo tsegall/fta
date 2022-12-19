@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017-2022 Tim Segall
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cobber.fta;
 
 import java.util.HashMap;
@@ -60,26 +75,55 @@ public class RecordAnalyzer {
 	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
-	public TextAnalysisResult[] getResult() throws FTAPluginException, FTAUnsupportedLocaleException {
-		TextAnalysisResult[] ret = new TextAnalysisResult[streamCount];
+	public RecordAnalysisResult getResult() throws FTAPluginException, FTAUnsupportedLocaleException {
+		TextAnalysisResult[] results = new TextAnalysisResult[streamCount];
 
 		// Build an array of the Semantic Types detected as a result of the analysis so far
 		final String[] semanticTypes = new String[streamCount];
 		for (int i = 0; i < streamCount; i++) {
-			ret[i] = analyzers[i].getResult();
-			semanticTypes[i] = ret[i].isSemanticType() ? ret[i].getSemanticType() : null;
+			results[i] = analyzers[i].getResult();
+			semanticTypes[i] = results[i].isSemanticType() ? results[i].getSemanticType() : null;
 		}
 
 		// For any stream where we have not already determined a Semantic type - try again providing the overall Semantic Type context
 		for (int i = 0; i < streamCount; i++) {
-			if (!ret[i].isSemanticType()) {
+			if (!results[i].isSemanticType()) {
 				// Update the Context with all the Semantic Type information we have calculated
 				analyzers[i].setContext(analyzers[i].getContext().withSemanticTypes(semanticTypes));
-				ret[i] = reAnalyze(analyzers[i], ret[i]);
+				results[i] = reAnalyze(analyzers[i], results[i]);
 			}
 		}
 
-		return ret;
+		// Now do Entity detection based on the Semantic Type analysis
+
+		/*
+		{
+			"entity": "PERSON.FULL_NAME",
+			"description": "Person's Full Name",
+			"mandatoryTypes": { "NAME.FIRST", "NAME.LAST" },
+			"optionalTypes": { "HONORIFIC_EN", "NAME.MIDDLE", "NAME.MIDDLE_INITIAL", "NAME.SUFFIX" },
+		},
+		{
+			"entity": "PERSON.FULL_NAME",
+			"description": "Person's Full Name",
+			"mandatoryTypes": { "NAME.FIRST_LAST" },
+			"optionalTypes": { "HONORIFIC_EN", "NAME.MIDDLE", "NAME.MIDDLE_INITIAL", "NAME.SUFFIX" },
+		},
+		{
+			"entity": "PERSON.FULL_NAME",
+			"description": "Person's Full Name",
+			"mandatoryTypes": { "NAME.LAST_FIRST" },
+			"optionalTypes": { "HONORIFIC_EN", "NAME.MIDDLE", "NAME.MIDDLE_INITIAL", "NAME.SUFFIX" },
+		},
+		*/
+
+		// POSTAL_CODE.ZIP5_US, ADDRESS, CITY, STATE/PROVICE, COUNTRY, COUNTY [ADDRESS]
+		// [PERSON] + DOB/Birth*Date -> PERSON.DOB
+		// [PERSON] + GENDER -> PERSON.GENDER
+		// [PERSON] + JOB_TITLE -> PERSON.JOB_TITLE
+
+
+		return new RecordAnalysisResult(results);
 	}
 
 	private TextAnalysisResult reAnalyze(final TextAnalyzer analyzer, final TextAnalysisResult result) throws FTAPluginException, FTAUnsupportedLocaleException {

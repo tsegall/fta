@@ -93,7 +93,7 @@ public class Processor {
 
 	public TextAnalysisResult[] getResult() throws FTAPluginException, FTAUnsupportedLocaleException {
 		if (options.col == -1)
-			return recordAnalyzer.getResult();
+			return recordAnalyzer.getResult().getStreamResults();
 
 		TextAnalysisResult[] results = new TextAnalysisResult[streamCount];
 

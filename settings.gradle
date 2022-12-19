@@ -19,7 +19,7 @@ include 'cli'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '12.2.2')
+			version('fta', '12.3.0')
 			version('jacoco', '0.8.8')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
