@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.3.1
+ - INT: Add example for Record Mode to README and examples (ModeRecord, cf. ModeStreaming, ModeBulk)
+
 ### 12.3.0
  - ENH: Change return value of RecordAnalyzer
 

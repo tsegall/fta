@@ -1,13 +1,15 @@
 # Text Profiling and Semantic Type Detection #
 
 Analyze Text data to determine Base Type and Semantic type information and other key metrics associated with a text stream.
-Key objectives of the library include:
+Design objectives of the library include:
 * Large set of built-in Semantic Types (extensible via JSON defined plugins).  See list below.
+* Extensive Profiling metrics (e.g. Min, Max, Distinct, signatures, …)
 * Sufficiently fast to be used inline.   See Speed notes below.
 * Minimal false positives for Semantic type detection. See Performance notes below.
-* Usable in either Streaming or Bulk mode.
+* Usable in either Streaming, Bulk or Record  mode.
 * Broad country/language support - including US, Canada, Mexico, Brazil, UK, Australia, much of Europe, Japan and China.
 * Support for sharded analysis (i.e. Analysis results can be merged)
+* Once stream is profiled then subsequent samples can be validated and/or new samples can be generated
 
 Notes:
 * By default analysis is performed on the initial 4096 characters (adjustable via setMaxInputLength()).
@@ -64,6 +66,44 @@ public static void main(final String[] args) throws FTAException {
 ```
 
 Result: Semantic Type: **GENDER.TEXT_EN** (String)
+
+Record example:
+```java
+public static void main(final String[] args) throws FTAException {
+		final String[] headers = { "First", "Last", "MI" };
+		final String[][] names = {
+				{ "Anaïs", "Nin", "" }, { "Gertrude", "Stein", "" }, { "Paul", "Campbell", "" },
+				{ "Pablo", "Picasso", "" }, { "Theodore", "Camp", "" }, { "Henri", "Matisse", "" },
+				{ "Georges", "Braque", "" }, { "Ernest", "Hemingway", "" }, { "Alice", "Toklas", "B." },
+				{ "Eleanor", "Roosevelt", "" }, { "Edgar", "Degas", "" }, { "Pierre-Auguste", "Wren", "" },
+				{ "Claude", "Monet", "" }, { "Édouard", "Sorenson", "" }, { "Mary", "Dunning", "" },
+				{ "Alfred", "Jones", "" }, { "Joseph", "Smith", "" }, { "Camille", "Pissarro", "" },
+				{ "Franklin", "Roosevelt", "Delano" }, { "Winston", "Churchill", "" }
+		};
+
+		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", headers );
+		final TextAnalyzer template = new TextAnalyzer(context);
+
+		final RecordAnalyzer analysis = new RecordAnalyzer(template);
+		for (final String [] name : names)
+			analysis.train(name);
+
+		final RecordAnalysisResult recordResult = analysis.getResult();
+
+		for (final TextAnalysisResult result : recordResult.getStreamResults()) {
+			System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
+		}
+	}
+```
+
+Result:
+
+Semantic Type: ***NAME.FIRST*** (String)
+</br>
+Semantic Type: ***NAME.LAST*** (String)
+</br>
+Semantic Type: ***NAME.MIDDLE*** (String)
+
 
 ## Date Format determination ##
 

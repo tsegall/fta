@@ -21,7 +21,7 @@ import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
 
-public abstract class SampleBulk {
+public abstract class ModeBulk {
 	public static void main(final String[] args) throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
