@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.3.2
+ - BUG: Stop double-barreled last names with spaces from preempting NAME.FIRST_LAST
+
 ### 12.3.1
  - INT: Add example for Record Mode to README and examples (ModeRecord, cf. ModeStreaming, ModeBulk)
 

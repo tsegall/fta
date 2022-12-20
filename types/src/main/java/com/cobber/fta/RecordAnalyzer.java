@@ -71,7 +71,7 @@ public class RecordAnalyzer {
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
 	 *
-	 * @return A TextAnalysisResult[] with the analysis of any training completed.
+	 * @return A RecordAnalysisResult with the analysis of any training completed.
 	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
@@ -140,10 +140,21 @@ public class RecordAnalyzer {
 	}
 
 
+	/**
+	 * Get the TextAnalyzer associated with a particular stream.
+	 *
+	 * @param stream The index of the stream requested.
+	 * @return The TextAnalyzer used to process this particular stream.
+	 */
 	public TextAnalyzer getAnalyzer(final int stream) {
 		return analyzers[stream];
 	}
 
+	/**
+	 * Get all the TextAnalyzers associated with this record.
+	 *
+	 * @return The array of TextAnalyzer's used to process the records.
+	 */
 	public TextAnalyzer[] getAnalyzers() {
 		return analyzers;
 	}

@@ -19,8 +19,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.Facts;
+import com.cobber.fta.FiniteMap;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.Utils;
+import com.cobber.fta.token.TokenStreams;
 
 /**
  * Plugin to detect an individuals Last Name.
@@ -64,6 +70,7 @@ public class LastName extends PersonName {
 	private Set<String> plausibleSet = new HashSet<>();
 	private Set<String> badFirstSet = new HashSet<>();
 	private Set<String> badSecondSet = new HashSet<>();
+	private long singles = 0;
 
 	/**
 	 * Construct a Last Name plugin based on the Plugin Definition.
@@ -87,6 +94,13 @@ public class LastName extends PersonName {
 		return candidate.hashCode() % 10 < 5;
 	}
 
+	private boolean trackSingle(final String input, final boolean detectMode) {
+		boolean ret = super.isValid(input, detectMode);
+		if (ret)
+			singles++;
+		return ret;
+	}
+
 	/*
 	 * Note: The input String will be both trimmed and converted to upper Case
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
@@ -107,11 +121,11 @@ public class LastName extends PersonName {
 			if (separatorOffset == -1 && (ch == '-' || ch == ' '))
 				separatorOffset = i;
 			else
-				return super.isValid(input, detectMode);
+				return trackSingle(input, detectMode);
 		}
 
 		if (separatorOffset == -1)
-			return super.isValid(input, detectMode);
+			return trackSingle(input, detectMode);
 
 		if (separatorOffset < 2 || separatorOffset >= trimmedUpper.length() - 2)
 			return false;
@@ -141,5 +155,14 @@ public class LastName extends PersonName {
 			return true;
 
 		return separator != ' ' && isPlausible(trimmedUpper);
+	}
+
+	@Override
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
+			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+		// We expect to see at least some last names that are not double-barreled, prevents us from preempting FIRST_LAST
+		if (singles == 0)
+			return PluginAnalysis.SIMPLE_NOT_OK;
+		return super.analyzeSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig);
 	}
 }

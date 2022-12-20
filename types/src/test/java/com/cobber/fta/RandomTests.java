@@ -2709,8 +2709,11 @@ public class RandomTests {
 			assertNotNull(semanticTypeDetected, semanticType);
 			if (!semanticTypeDetected.equals(semanticType) &&
 					!semanticTypeDetected.equals(semanticType.replaceAll("<LANGUAGE>", "EN")) &&
-					!semanticTypeDetected.equals(semanticType.replaceAll("<LOCALE>", "en-US")))
-					fail("Input: " + semanticType + ", Result: " + semanticTypeDetected);
+					!semanticTypeDetected.equals(semanticType.replaceAll("<LOCALE>", "en-US"))) {
+				for (final String input : stream)
+					System.err.println(input);
+				fail("Input: " + semanticType + ", Result: " + semanticTypeDetected);
+			}
 		}
 	}
 
