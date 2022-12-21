@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.3.3
+ - ENH: Bump google phone number library
+
 ### 12.3.2
  - BUG: Stop double-barreled last names with spaces from preempting NAME.FIRST_LAST
 

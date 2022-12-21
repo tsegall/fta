@@ -17,6 +17,17 @@ Notes:
 like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
 * Date detection supports ~750 locales (no support for locales using non-Gregorian calendars or non-Arabic numerals).
 
+## Mode
+
+### Streaming
+Used when the source is inherently continuous, e.g. IOT device, flat file, etc.
+
+### Bulk
+Used when the source offers the ability to group at source, e.g. a Database.  The advantages of using Bulk mode are that as the data is pre-aggregated the analysis is significantly faster, and the Semantic Type detection is not biased by a set of outliers present early in the analysis.
+
+### Record
+Used when the primary objective is Semantic Type information and not profiling, or when the focus is on a subset of the data (e.g. fewer than MAX_CARDINALITY records).  The advantage of using Record mode is that the Semantic Type detection is stronger and there is support for cross-stream analysis.
+
 Streaming example:
 ```java
 public static void main(final String[] args) throws FTAException {
