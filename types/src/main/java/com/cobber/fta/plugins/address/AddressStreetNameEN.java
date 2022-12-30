@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.address;
 
 import java.util.HashSet;
 import java.util.List;
@@ -101,7 +101,7 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 
 		int extrasPresent = 0;
 		for (int i = wordCount - 1; i >= 0; i--)
-			if (AddressCommon.isModifier(words.get(i)))
+			if (AddressCommon.isModifier(words.get(i), i == wordCount - 1))
 				extrasPresent += 2;
 			else if (AddressCommon.isDirection(words.get(i)))
 				extrasPresent++;

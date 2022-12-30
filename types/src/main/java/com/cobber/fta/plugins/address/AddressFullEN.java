@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.address;
 
 import java.util.List;
 import java.util.Locale;
@@ -195,7 +195,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 				if (i + 1 < wordCount && AddressCommon.isDirection(words.get(i + 1).word))
 					i++;
 			}
-			else if (AddressCommon.isModifier(input))
+			else if (AddressCommon.isModifier(input, i == wordCount - 1))
 				hintIndex = i;
 		}
 

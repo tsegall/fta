@@ -309,7 +309,7 @@
 		"description": "Full Address (English Language)",
 		"pluginType": "java",
 		"signature": "CJFV+VSRgkE9qJFlqdfK5nVpYCM=",
-		"clazz": "com.cobber.fta.plugins.AddressFullEN",
+		"clazz": "com.cobber.fta.plugins.address.AddressFullEN",
 		"validLocales": [
 			{ "localeTag":  "en-CA,en-US", "headerRegExps": [ { "regExp": ".*(?i)(address)", "confidence": 99 }, { "regExp": ".*(?i)(addr|location).*", "confidence": 95 } ] }
 		],
@@ -321,7 +321,7 @@
 		"description": "Street Address (English Language)",
 		"pluginType": "java",
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
-		"clazz": "com.cobber.fta.plugins.AddressEN",
+		"clazz": "com.cobber.fta.plugins.address.AddressEN",
 		"validLocales": [
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i).*(address|addr)(.*1)?", "confidence": 99 }, { "regExp": ".*(?i)(addr).*", "confidence": 95 }, { "regExp": ".*(?i)(street|location).*", "confidence": 85 } ] }
 		],
@@ -333,7 +333,7 @@
 		"description": "Street Name (English Language)",
 		"pluginType": "java",
 		"signature": "3E5oqYqSkuXljmmvAl47bS8ywxM=",
-		"clazz": "com.cobber.fta.plugins.AddressStreetNameEN",
+		"clazz": "com.cobber.fta.plugins.address.AddressStreetNameEN",
 		"validLocales": [
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(street|road).?name", "confidence": 99 }, { "regExp": "(?i)(street|road)", "confidence": 95 }, { "regExp": ".*(?i)(street|road).*", "confidence": 90 }, { "regExp": ".*(?i)(location).*", "confidence": 85 } ] }
 		],
@@ -345,7 +345,7 @@
 		"description": "Street Name - no Marker (English Language)",
 		"pluginType": "java",
 		"signature": "f4aT7BMSi+IsDI0LannEVYe/uQI=",
-		"clazz": "com.cobber.fta.plugins.AddressStreetNameBareEN",
+		"clazz": "com.cobber.fta.plugins.address.AddressStreetNameBareEN",
 		"validLocales": [
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i).*(street|road).?name", "confidence": 99, "mandatory": true } ] }
 		],
@@ -370,7 +370,7 @@
 		"description": "Street Address - Line 2 (English Language)",
 		"pluginType": "java",
 		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
-		"clazz": "com.cobber.fta.plugins.Address2EN",
+		"clazz": "com.cobber.fta.plugins.address.Address2EN",
 		"validLocales": [
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*2", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
 		],
@@ -378,23 +378,35 @@
 		"priority": 80
 	},
 	{
+		"semanticType": "STREET_ADDRESS3_EN",
+		"description": "Street Address - Line 3 (English Language)",
+		"pluginType": "java",
+		"signature": "swnXMC+o9QcQEBdo3yHQEeExVxo=",
+		"clazz": "com.cobber.fta.plugins.address.Address3EN",
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*2", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
+		],
+		"threshold": 90,
+		"priority": 81
+	},
+	{
 		"semanticType": "STREET_NUMBER",
 		"description": "Street Number",
 		"pluginType": "java",
 		"signature": "JFmqXYZjmq/aTw/EALlxloQ/tgQ=",
-		"clazz": "com.cobber.fta.plugins.AddressStreetNumber",
+		"clazz": "com.cobber.fta.plugins.address.AddressStreetNumber",
 		"validLocales": [
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(number|no)", "confidence": 90, "mandatory": true } ] }
 		],
 		"threshold": 95,
-		"priority": 81
+		"priority": 82
 	},
 	{
 		"semanticType": "STREET_ADDRESS_<LANGUAGE>",
 		"description": "Street Address",
 		"pluginType": "java",
 		"signature": "[NONE]",
-		"clazz": "com.cobber.fta.plugins.AddressOther",
+		"clazz": "com.cobber.fta.plugins.address.AddressOther",
 		"validLocales": [
 			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": "(?i)(?u)^адрес$", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": "(?i)(?u)^(adreça|adresse.*1)$", "confidence": 99, "mandatory": true } ] },
@@ -414,7 +426,7 @@
 			{ "localeTag":  "sk", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 90,
-		"priority": 82
+		"priority": 83
 	},
 	{
 		"semanticType": "GENDER.TEXT_<LANGUAGE>",

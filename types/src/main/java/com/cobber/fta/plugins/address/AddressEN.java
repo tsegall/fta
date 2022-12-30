@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.address;
 
 import java.util.List;
 import java.util.Locale;
@@ -138,7 +138,7 @@ public class AddressEN extends LogicalTypeInfinite {
 		int addressMarkerIndex = -1;
 		int score = 0;
 
-		if (!AddressCommon.isModifier(firstWord) && !addressMarkers.contains(firstWord) && !initialNumeric)
+		if (!AddressCommon.isModifier(firstWord, false) && !addressMarkers.contains(firstWord) && !initialNumeric)
 			return false;
 
 		// Only get credit if the number starts with something non-zero in detect mode (despite the fact that they do occur)
@@ -152,7 +152,7 @@ public class AddressEN extends LogicalTypeInfinite {
 					score++;
 				addressMarkerIndex = i;
 			}
-			else if (AddressCommon.isDirection(word) || AddressCommon.isModifier(word))
+			else if (AddressCommon.isDirection(word) || AddressCommon.isModifier(word, i == wordCount - 1))
 				score++;
 		}
 
@@ -194,6 +194,19 @@ public class AddressEN extends LogicalTypeInfinite {
 
 		final int headerConfidence = getHeaderConfidence(dataStreamName);
 		double confidence = (double)matchCount/realSamples;
+
+		final String[] semanticTypes = context.getSemanticTypes();
+		final boolean semanticTypeInfoAvailable = semanticTypes != null && context.getStreamIndex() != -1 && context.getStreamIndex() != semanticTypes.length - 1;
+
+		// Does the next field have a Semantic Type that indicates it is a Street Address 2
+		if (semanticTypeInfoAvailable && confidence > 0.1 && "STREET_ADDRESS2_EN".equals(semanticTypes[context.getStreamIndex() + 1])) {
+			// If this header is the same as the next but with a 2 switched for a '1' then we are extremely confident
+			final String nextStreamName = context.getCompositeStreamNames()[current + 1];
+
+			int index = nextStreamName.indexOf('2');
+			if (index != -1 && dataStreamName.equals(nextStreamName.substring(0, index) + '1' + nextStreamName.substring(index + 1)))
+				return 0.95;
+		}
 
 		// Boost based on how much we like the header
 		if (headerConfidence >= 99)

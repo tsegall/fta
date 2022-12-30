@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.address;
 
 import java.util.Locale;
 

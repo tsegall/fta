@@ -13,94 +13,97 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+package com.cobber.fta.plugins.address;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
+import com.cobber.fta.KnownTypes;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
-import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * Plugin to detect a Street Name (no number or marker). (English-language only).
+ * Plugin to detect a Street Name (no number!). (English-language only).
+ * Note: This will also detect a Street Intersection.
  */
-public class AddressStreetNameBareEN extends LogicalTypeInfinite {
-	private boolean multiline;
-	private SingletonSet addressMarkersRef;
-	private Set<String> addressMarkers;
+public class AddressStreetNumber extends LogicalTypeInfinite {
+	private boolean onlyNumeric = true;
 
 	/**
-	 * Construct a plugin to detect a Street Name based on the Plugin Definition.
+	 * Construct a plugin to detect a Street Number based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public AddressStreetNameBareEN(final PluginDefinition plugin) {
+	public AddressStreetNumber(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public String nextRandom() {
-		return AddressCommon.sampleStreets[random.nextInt(AddressCommon.sampleStreets.length)];
+		return String.valueOf(random.nextInt(1000) + 1);
 	}
 
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		addressMarkersRef = new SingletonSet("resource", "/reference/en_street_markers.csv");
-		addressMarkers = addressMarkersRef.getMembers();
-
 		return true;
 	}
 
 	@Override
-	public String getRegExp() {
-		return multiline ? "(?s).+" : ".+";
+	public boolean acceptsBaseType(final FTAType type) {
+		return type == FTAType.STRING || type == FTAType.LONG;
 	}
 
 	@Override
 	public FTAType getBaseType() {
-		return FTAType.STRING;
+		return onlyNumeric ? FTAType.LONG : FTAType.STRING;
 	}
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode) {
-		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
-
-		return validation(inputUpper, detectMode);
+		return validation(input.trim(), detectMode);
 	}
 
-	private boolean validation(final String trimmedUpper, final boolean detectMode) {
-		final List<String> words = Utils.asWords(trimmedUpper, "-#");
-		final int wordCount = words.size();
-
-		if (words.size() > 3)
+	private boolean validation(final String trimmed, final boolean detectMode) {
+		if (!AddressCommon.isAddressNumber(trimmed))
 			return false;
 
-		for (int i = wordCount - 1; i >= 0; i--)
-			if (addressMarkers.contains(words.get(i)))
-				return false;
+		if (onlyNumeric)
+			onlyNumeric = Utils.isNumeric(trimmed);
 
 		return true;
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return validation(trimmed.toUpperCase(Locale.ENGLISH), true);
+		return validation(trimmed, true);
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		return getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
+	}
+
+	@Override
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
+		final String[] semanticTypes = context.getSemanticTypes();
+		final boolean semanticTypeInfoAvailable = semanticTypes != null && context.getStreamIndex() != -1 && context.getStreamIndex() != semanticTypes.length - 1;
+
+		// The next field must have a Semantic Type that indicates it is a Street name (with or without the marker)
+		if (!semanticTypeInfoAvailable ||
+				(!"STREET_NAME_EN".equals(semanticTypes[context.getStreamIndex() + 1])) && !"STREET_NAME_BARE_EN".equals(semanticTypes[context.getStreamIndex() + 1]))
+			return 0.0;
+		return (double)matchCount/realSamples;
+	}
+
+	@Override
+	public String getRegExp() {
+		return onlyNumeric ? KnownTypes.PATTERN_NUMERIC_VARIABLE : KnownTypes.PATTERN_ANY_VARIABLE;
 	}
 }

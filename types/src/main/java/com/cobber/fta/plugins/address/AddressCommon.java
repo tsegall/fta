@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.address;
 
 import java.util.HashSet;
 
@@ -32,7 +32,8 @@ public class AddressCommon {
 	};
 
 	private static HashSet<String> directions = new HashSet<>();
-	private static HashSet<String> modifiers = new HashSet<>();
+	private static HashSet<String> modifiersWithArgument = new HashSet<>();
+	private static HashSet<String> modifiersAny = new HashSet<>();
 	private static HashSet<String> textDigit = new HashSet<>();
 	private static HashSet<String> initialMarker = new HashSet<>();
 
@@ -58,19 +59,20 @@ public class AddressCommon {
 		directions.add("EB");
 		directions.add("WB");
 
-		modifiers.add("APARTMENT");
-		modifiers.add("APT");
-		modifiers.add("BLDG");
-		modifiers.add("BOX");
-		modifiers.add("FL");
-		modifiers.add("FLOOR");
-		modifiers.add("LBBY");
-		modifiers.add("LOBBY");
-		modifiers.add("OFFICE");
-		modifiers.add("ROOM");
-		modifiers.add("STE");
-		modifiers.add("SUITE");
-		modifiers.add("UNIT");
+		modifiersWithArgument.add("APARTMENT");
+		modifiersWithArgument.add("APT");
+		modifiersWithArgument.add("BLDG");
+		modifiersWithArgument.add("BOX");
+		modifiersWithArgument.add("LEVEL");
+		modifiersWithArgument.add("OFFICE");
+		modifiersWithArgument.add("ROOM");
+		modifiersWithArgument.add("STE");
+		modifiersWithArgument.add("SUITE");
+		modifiersWithArgument.add("UNIT");
+		modifiersAny.add("FL");
+		modifiersAny.add("FLOOR");
+		modifiersAny.add("LBBY");
+		modifiersAny.add("LOBBY");
 
 		textDigit.add("ONE");
 		textDigit.add("TWO");
@@ -95,8 +97,10 @@ public class AddressCommon {
 		return directions.contains(input);
 	}
 
-	public static boolean isModifier(final String input) {
-		return modifiers.contains(input);
+	public static boolean isModifier(final String input, boolean isLastWord) {
+		if (isLastWord)
+			return modifiersAny.contains(input);
+		return modifiersWithArgument.contains(input);
 	}
 
 	public static boolean isInitialMarker(final String input) {

@@ -396,6 +396,7 @@ STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA
 STATE_PROVINCE.SUBURB_AU|Australian Suburb|en-AU
 STREET_ADDRESS_&lt;Language&gt;|Street Address|bg, ca, da, de, en, es, fi, fr, hr, it, lv, nl, pl, pt, ro, ru, sk
 STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
+STREET_ADDRESS3_EN|Street Address - Line 3 (English Language)|en
 STREET_MARKER_EN| Street Suffix (English Language)|en
 STREET_NAME_EN|Street Name (English Language)|en
 STREET_NAME_BARE_EN|Street Name - no Marker (English Language)|en

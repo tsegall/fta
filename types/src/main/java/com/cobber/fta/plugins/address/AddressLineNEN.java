@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.address;
 
 import java.util.List;
 import java.util.Locale;
@@ -36,10 +36,7 @@ import com.cobber.fta.token.TokenStreams;
 /**
  * Plugin to detect the second line of an Address. (English-language only).
  */
-public class Address2EN extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "STREET_ADDRESS2_EN";
-
+public abstract class AddressLineNEN extends LogicalTypeInfinite {
 	private PluginLocaleEntry addressLine1Entry;
 	private PluginLocaleEntry cityEntry;
 	private SingletonSet addressMarkersRef;
@@ -49,9 +46,11 @@ public class Address2EN extends LogicalTypeInfinite {
 	 * Construct a plugin to detect the second line of an Address based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public Address2EN(final PluginDefinition plugin) {
+	public AddressLineNEN(final PluginDefinition plugin) {
 		super(plugin);
 	}
+
+	protected abstract char getIndicator();
 
 	@Override
 	public String nextRandom() {
@@ -80,11 +79,6 @@ public class Address2EN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
-	}
-
-	@Override
 	public String getRegExp() {
 		return ".*";
 	}
@@ -108,11 +102,12 @@ public class Address2EN extends LogicalTypeInfinite {
 	private boolean validation(final String trimmedUpper, final boolean detectMode) {
 		final List<String> words = Utils.asWords(trimmedUpper, "-#");
 
-		for (int i = 0; i < words.size(); i++) {
+		final int wordCount = words.size();
+		for (int i = 0; i < wordCount; i++) {
 			String word = words.get(i);
 			if (i != 0 && addressMarkers.contains(word))
 				return true;
-			else if (AddressCommon.isModifier(word) && words.size() != 1)
+			else if (AddressCommon.isModifier(word, i == wordCount - 1) && words.size() != 1)
 				return true;
 		}
 
@@ -155,14 +150,14 @@ public class Address2EN extends LogicalTypeInfinite {
 		final char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
 		// We know it looks like an address and the last character is a '2' so we are feeling really good
 		if (headerConfidence >= 90 && Character.isDigit(lastChar))
-			return lastChar == '2' ? 99 : 0;
+			return lastChar == getIndicator() ? 99 : 0;
 
-		// If this header is the same as the previous but with a 1 switched for a '2' then we are somewhat confident
-		int index = previousStreamName.indexOf('1');
-		if (index != -1 && dataStreamName.equals(previousStreamName.substring(0, index) + '2' + previousStreamName.substring(index + 1)))
+		// If this header is the same as the previous but with the previous number then we are pretty confident
+		int index = previousStreamName.indexOf(getIndicator() - 1);
+		if (index != -1 && dataStreamName.equals(previousStreamName.substring(0, index) + getIndicator() + previousStreamName.substring(index + 1)))
 			return headerConfidence >= 90 ? 99 : 85;
 
-		if (headerConfidence == 0 && lastChar != 2)
+		if (headerConfidence == 0 && lastChar != getIndicator())
 			return 0;
 
 		// Does the previous field look like an Address Line 1 AND not look like an Address Line 2
