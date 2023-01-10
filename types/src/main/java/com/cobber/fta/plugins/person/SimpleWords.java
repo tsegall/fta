@@ -137,7 +137,10 @@ public abstract class SimpleWords extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
-		final double confidence = (double)matchCount/realSamples;
+		double confidence = (double)matchCount/realSamples;
+		if (getHeaderConfidence(context.getStreamName()) >= 95)
+			confidence = Math.min(confidence + 0.20, 1.0);
+
 		if (confidence >= getThreshold() / 100.0)
 			return confidence;
 

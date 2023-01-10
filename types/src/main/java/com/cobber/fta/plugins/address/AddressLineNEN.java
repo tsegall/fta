@@ -148,9 +148,9 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 			return 0;
 
 		final char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);
-		// We know it looks like an address and the last character is a '2' so we are feeling really good
-		if (headerConfidence >= 90 && Character.isDigit(lastChar))
-			return lastChar == getIndicator() ? 99 : 0;
+		// If it looks like an address and the last character is a 2 so we are feeling really good
+		if (headerConfidence >= 90 && getIndicator() == '2' && lastChar == '2')
+			return 99;
 
 		// If this header is the same as the previous but with the previous number then we are pretty confident
 		int index = previousStreamName.indexOf(getIndicator() - 1);

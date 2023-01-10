@@ -1070,11 +1070,12 @@ public class TestPlugins {
 			"Waters@lavastorm.com|Meagher@lavastorm.com|Mok@lavastorm.com|Mullin@lavastorm.com|" +
 			"Nason@lavastorm.com|reilly@lavastorm.com|Scoble@lavastorm.com|Comerford@lavastorm.com|" +
 			"Gallagher@lavastorm.com|Hughes@lavastorm.com|Kelly@lavastorm.com|" +
-			"Tuddenham@lavastorm.com|Williams@lavastorm.com|Wilson@lavastorm.com|";
+			"Tuddenham@lavastorm.com|Williams@lavastorm.com|Wilson@lavastorm.com|" +
+			"a@ibm.com|b@ibm.com|c@ibm.com|d@ibm.com|e@ibm.com|f@ibm.com|g@ibm.com|";
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicEmail() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicE_mail");
+		final TextAnalyzer analysis = new TextAnalyzer("basicEm_ail");
 		analysis.setTrace("samples=10");
 		final String inputs[] = validEmails.split("\\|");
 		int locked = -1;
@@ -1108,7 +1109,7 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void degenerativeEmail() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("degenerativeE_mail");
+		final TextAnalyzer analysis = new TextAnalyzer("degenerativeEma_il");
 		final String pipedInput = validEmails + validEmails + validEmails + validEmails + "ask|not|what|your|country|can|";
 		final String inputs[] = pipedInput.split("\\|");
 		final int ERRORS = 6;
@@ -2164,7 +2165,7 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicEmailListSemicolon() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicE_mailListSemicolon");
+		final TextAnalyzer analysis = new TextAnalyzer("basicEm_ailListSemicolon");
 		final String pipedInput = "Bachmann@lavastorm.com;Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
 				"coleman@lavastorm.com;Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
 				"Jones@lavastorm.com|Marinelli@lavastorm.com;Nason@lavastorm.com;Parker@lavastorm.com|" +

@@ -1136,7 +1136,8 @@ public class TextAnalyzer {
 		}
 	}
 
-	private void initialize() throws FTAPluginException, FTAUnsupportedLocaleException {
+	private void initialize(final AnalysisConfig.TrainingMode trainingMode) throws FTAPluginException, FTAUnsupportedLocaleException {
+		analysisConfig.setTrainingMode(trainingMode);
 		mapper.registerModule(new JavaTimeModule());
 		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 
@@ -1322,7 +1323,7 @@ public class TextAnalyzer {
 	public void trainBulk(Map<String, Long> observed) throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Initialize if we have not already done so
 		if (!initialized) {
-			initialize();
+			initialize(AnalysisConfig.TrainingMode.BULK);
 			trainingStarted = true;
 		}
 
@@ -1412,7 +1413,7 @@ public class TextAnalyzer {
 	public boolean train(final String rawInput) throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Initialize if we have not already done so
 		if (!initialized) {
-			initialize();
+			initialize(AnalysisConfig.TrainingMode.SIMPLE);
 			handleForce();
 			trainingStarted = true;
 		}
@@ -1424,7 +1425,7 @@ public class TextAnalyzer {
 
 		final FTAType matchType = facts.getMatchTypeInfo() != null ? facts.getMatchTypeInfo().getBaseType() : null;
 
-		if (rawInput == null || (analysisConfig.isEnabled(TextAnalyzer.Feature.NULL_AS_TEXT) && keywords.match(rawInput, "NO_DATA", Keywords.MatchStyle.EQUALS) == 100)) {
+		if (rawInput == null || isNullEquivalent(rawInput)) {
 			facts.nullCount++;
 			return matchType != null;
 		}
@@ -1452,6 +1453,10 @@ public class TextAnalyzer {
 			return false;
 		}
 		return result;
+	}
+
+	protected boolean isNullEquivalent(final String input) {
+		return input == null || (analysisConfig.isEnabled(TextAnalyzer.Feature.NULL_AS_TEXT) && keywords.match(input, "NO_DATA", Keywords.MatchStyle.EQUALS) == 100);
 	}
 
 	enum SignStatus {
@@ -2435,7 +2440,7 @@ public class TextAnalyzer {
 		else {
 			addOutlier(input, count);
 
-			// So we are about to blow the outliers - so now would be a good time to validate that the Semantic Type we have declared is actually correct!
+			// We are about to blow the outliers - so validate that the Semantic Type we have declared is actually correct!
 			if (!facts.getMatchTypeInfo().isDateType() && facts.outliers.size() == analysisConfig.getMaxOutliers()) {
 				if (!facts.getMatchTypeInfo().isSemanticType()) {
 					// Need to evaluate if we got this wrong
@@ -2600,7 +2605,6 @@ public class TextAnalyzer {
 
 	private LogicalTypeFinite matchFiniteTypes(final FTAType type, final FiniteMap cardinalityUpper) {
 		double scoreToBeat;
-		int currentPriority = 0;
 
 		LogicalType priorLogical = null;
 		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
@@ -2683,6 +2687,15 @@ public class TextAnalyzer {
 	private final static int EARLY_LONG_YYYYMMDD = 19000101;
 	private final static int LATE_LONG_YYYYMMDD = 20510101;
 
+	protected TextAnalysisResult reAnalyze(Map<String, Long> details) throws FTAPluginException, FTAUnsupportedLocaleException {
+		final TextAnalyzer analysisBulk = new TextAnalyzer(getContext());
+		analysisBulk.setExternalFacts(getFacts().external);
+		analysisBulk.setConfig(getConfig());
+
+		analysisBulk.trainBulk(details);
+		return analysisBulk.getResult();
+	}
+
 	/**
 	 * Determine the result of the training complete to date. Typically invoked
 	 * after all training is complete, but may be invoked at any stage.
@@ -2694,7 +2707,7 @@ public class TextAnalyzer {
 	public TextAnalysisResult getResult() throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Normally we will initialize as a consequence of the first call to train() but just in case no training happens!
 		if (!initialized)
-			initialize();
+			initialize(AnalysisConfig.TrainingMode.NONE);
 
 		// If we have not already determined the type, now we need to
 		if (facts.getMatchTypeInfo() == null)
@@ -2748,240 +2761,158 @@ public class TextAnalyzer {
 			finalizeBoolean(realSamples);
 		else if (FTAType.DOUBLE.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType())
 			finalizeDouble(realSamples);
-		else if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType())) {
-			// Build Cardinality map ignoring case (and white space)
-			for (final Map.Entry<String, Long> entry : facts.cardinality.entrySet()) {
-				final String key = entry.getKey().toUpperCase(locale).trim();
-				cardinalityUpper.merge(key, entry.getValue(), Long::sum);
+		else if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()))
+			finalizeString(realSamples, cardinalityUpper);
+
+		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType())) {
+			if (facts.getMatchTypeInfo().isSemanticType()) {
+				final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
+				boolean recalcConfidence = false;
+
+				// Sweep the outliers - flipping them to invalid if they do not pass the relaxed isValid definition
+				for (final Map.Entry<String, Long> entry : facts.outliers.entrySet()) {
+					// Split the outliers to either invalid entries or valid entries
+					if (logical.isValid(entry.getKey(), false)) {
+						addValid(entry.getKey(), entry.getValue());
+						facts.matchCount += entry.getValue();
+						recalcConfidence = true;
+					}
+					else
+						addInvalid(entry.getKey(), entry.getValue());
+				}
+
+				if (recalcConfidence)
+					facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
+				facts.outliers.clear();
 			}
-			// Sort the results so that we consider the most frequent first (we will hopefully fail faster)
-			cardinalityUpper.sortByValue();
-
-			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
-			final LogicalTypeFinite logical = matchFiniteTypes(FTAType.STRING, cardinalityUpper);
-			if (logical != null)
-				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
-
-			// Fixup any likely enums
-			if (!facts.getMatchTypeInfo().isSemanticType() && cardinalityUpper.size() < MAX_ENUM_SIZE && !facts.outliers.isEmpty() && facts.outliers.size() < 10) {
+			else {
+				// We would really like to say something better than it is a String!
 				boolean updated = false;
 
-				final Set<String> killSet = new HashSet<>();
+				// If we are currently matching everything then flip to a better Regular Expression based on Stream analysis if possible
+				if (facts.matchCount == realSamples && !tokenStreams.isAnyShape()) {
+					final String newRegExp = tokenStreams.getRegExp(false);
+					if (newRegExp != null) {
+						facts.setMatchTypeInfo(new TypeInfo(null, newRegExp, FTAType.STRING, null, false, facts.minTrimmedLength,
+								facts.maxTrimmedLength, null, null));
+						debug("Type determination - updated based on Stream analysis {}", facts.getMatchTypeInfo());
+					}
+				}
 
-				// Sort the outliers so that we consider the most frequent first
-				facts.outliers.sortByValue();
+				if (!backedOutRegExp)
+					updated = checkRegExpTypes();
 
-				// Iterate through the outliers adding them to the core cardinality set if we think they are reasonable.
-				for (final Map.Entry<String, Long> entry : facts.outliers.entrySet()) {
-					final String key = entry.getKey();
-					final String keyUpper = key.toUpperCase(locale).trim();
-					String validChars = " _-";
-					boolean skip = false;
+				final long interestingSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
 
-					// We are wary of outliers that only have one instance, do an extra check that the characters in the
-					// outlier exist in the real set.
-					if (entry.getValue() == 1) {
-						// Build the universe of valid characters
-						for (final String existing : cardinalityUpper.keySet()) {
-							for (int i = 0; i < existing.length(); i++) {
-								final char ch = existing.charAt(i);
-								if (!Character.isAlphabetic(ch) && !Character.isDigit(ch))
-									if (validChars.indexOf(ch) == -1)
-										validChars += ch;
+				// Try a nice discrete enum
+				if (!updated && cardinalityUpper.size() > 1 && cardinalityUpper.size() <= MAX_ENUM_SIZE && (interestingSamples > reflectionSamples || interestingSamples / cardinalityUpper.size() >= 3)) {
+					// Rip through the enum doing some basic sanity checks
+					RegExpGenerator gen = new RegExpGenerator(MAX_ENUM_SIZE, locale);
+					boolean fail = false;
+					int excessiveDigits = 0;
+
+					for (final String elt : cardinalityUpper.keySet()) {
+						final int length = elt.length();
+						// Give up if any one of the strings is too long
+						if (length > 40) {
+							fail = true;
+							break;
+						}
+						int digits = 0;
+						for (int i = 0; i < length; i++) {
+							final char ch = elt.charAt(i);
+							// Give up if we have some non-expected character
+							if (!Character.isAlphabetic(ch) && !Character.isDigit(ch) &&
+									ch != '-' && ch != '_' && ch != ' ' && ch != ';' && ch != '.' && ch != ',' && ch != '/' && ch != '(' && ch != ')') {
+								fail = true;
+								break;
+							}
+
+							// Record how many of the elements have 3 or more digits
+							if (Character.isDigit(ch)) {
+								digits++;
+								if (digits == 3)
+									excessiveDigits++;
 							}
 						}
-						for (int i = 0; i < keyUpper.length(); i++) {
-							final char ch = keyUpper.charAt(i);
-							if (!Character.isAlphabetic(ch) && !Character.isDigit(ch) && validChars.indexOf(ch) == -1) {
-								skip = true;
+
+						if (fail)
+							break;
+						gen.train(elt);
+					}
+
+					// If we did not find any reason to reject, output it as an enum
+					if (excessiveDigits != cardinalityUpper.size() && !fail) {
+						// If we have a significant # of samples and a small number of non-numerics with distinct values attempt to remove outliers
+						if (interestingSamples > 1000 && cardinalityUpper.size() < 20 && !gen.isDigit()) {
+							final Map<String, Long> sorted = Utils.sortByValue(cardinalityUpper);
+							for (final Map.Entry<String, Long> elt : sorted.entrySet()) {
+								if (elt.getValue() < 3 && elt.getKey().length() > 3 && distanceLevenshtein(elt.getKey(), cardinalityUpper.keySet()) <= 1) {
+									cardinalityUpper.remove(elt.getKey());
+									facts.cardinality.entrySet()
+									  .removeIf(entry -> entry.getKey().equalsIgnoreCase(elt.getKey()));
+									facts.outliers.put(elt.getKey(), elt.getValue());
+									facts.matchCount -= elt.getValue();
+									facts.confidence = (double) facts.matchCount / realSamples;
+								}
+							}
+
+							// Regenerate the enum without the outliers removed
+							gen = new RegExpGenerator(MAX_ENUM_SIZE, locale);
+							for (final String elt : cardinalityUpper.keySet())
+								gen.train(elt);
+						}
+
+						facts.setMatchTypeInfo(new TypeInfo(null, gen.getResult(), FTAType.STRING, facts.getMatchTypeInfo().typeModifier, false, facts.minTrimmedLength,
+								facts.maxTrimmedLength, null, null));
+						updated = true;
+
+						// Now we have mapped to an enum we need to check again if this should be matched to a Semantic type
+						for (final LogicalTypeRegExp logical : regExpTypes) {
+							if (logical.acceptsBaseType(FTAType.STRING) &&
+									logical.isMatch(facts.getMatchTypeInfo().regexp) &&
+									logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+								facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
+								facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 								break;
 							}
 						}
 					}
-					else
-						skip = false;
-
-					if (!skip) {
-						cardinalityUpper.merge(keyUpper, entry.getValue(), Long::sum);
-						killSet.add(key);
-						updated = true;
-					}
 				}
 
-				// If we updated the set then we need to remove the outliers we OK'd and
-				// also update the pattern to reflect the looser definition
-				if (updated) {
-					final FiniteMap remainingOutliers = new FiniteMap(facts.outliers.getMaxCapacity());
-					remainingOutliers.putAll(facts.outliers);
-					for (final String elt : killSet)
-						remainingOutliers.remove(elt);
-
-					backoutToPattern(realSamples, KnownTypes.PATTERN_ANY_VARIABLE);
-					facts.confidence = (double) facts.matchCount / realSamples;
-					facts.outliers = remainingOutliers;
-				}
-			}
-
-			// Need to evaluate if we got the type wrong
-			if (!facts.getMatchTypeInfo().isSemanticType() && !facts.outliers.isEmpty() && facts.getMatchTypeInfo().isAlphabetic() && realSamples >= reflectionSamples) {
-				conditionalBackoutToPattern(realSamples, facts.getMatchTypeInfo());
-				facts.confidence = (double) facts.matchCount / realSamples;
-
-				// Rebuild the cardinalityUpper Map
-				cardinalityUpper.clear();
-				for (final Map.Entry<String, Long> entry : facts.cardinality.entrySet())
-					cardinalityUpper.merge(entry.getKey().toUpperCase(locale).trim(), entry.getValue(), Long::sum);
-			}
-		}
-
-		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && facts.getMatchTypeInfo().isSemanticType()) {
-			final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
-			boolean recalcConfidence = false;
-
-			// Sweep the outliers - flipping them to invalid if they do not pass the relaxed isValid definition
-			for (final Map.Entry<String, Long> entry : facts.outliers.entrySet()) {
-				// Split the outliers to either invalid entries or valid entries
-				if (logical.isValid(entry.getKey(), false)) {
-					addValid(entry.getKey(), entry.getValue());
-					facts.matchCount += entry.getValue();
-					recalcConfidence = true;
-				}
-				else
-					addInvalid(entry.getKey(), entry.getValue());
-			}
-
-			if (recalcConfidence)
-				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
-			facts.outliers.clear();
-		}
-
-		// We would really like to say something better than it is a String!
-		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType()) {
-			boolean updated = false;
-
-			// If we are currently matching everything then flip to a better Regular Expression based on Stream analysis if possible
-			if (facts.matchCount == realSamples && !tokenStreams.isAnyShape()) {
-				final String newRegExp = tokenStreams.getRegExp(false);
-				if (newRegExp != null) {
-					facts.setMatchTypeInfo(new TypeInfo(null, newRegExp, FTAType.STRING, null, false, facts.minTrimmedLength,
-							facts.maxTrimmedLength, null, null));
-					debug("Type determination - updated based on Stream analysis {}", facts.getMatchTypeInfo());
-				}
-			}
-
-			if (!backedOutRegExp)
-				updated = checkRegExpTypes();
-
-			final long interestingSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
-
-			// Try a nice discrete enum
-			if (!updated && cardinalityUpper.size() > 1 && cardinalityUpper.size() <= MAX_ENUM_SIZE && (interestingSamples > reflectionSamples || interestingSamples / cardinalityUpper.size() >= 3)) {
-				// Rip through the enum doing some basic sanity checks
-				RegExpGenerator gen = new RegExpGenerator(MAX_ENUM_SIZE, locale);
-				boolean fail = false;
-				int excessiveDigits = 0;
-
-				for (final String elt : cardinalityUpper.keySet()) {
-					final int length = elt.length();
-					// Give up if any one of the strings is too long
-					if (length > 40) {
-						fail = true;
-						break;
-					}
-					int digits = 0;
-					for (int i = 0; i < length; i++) {
-						final char ch = elt.charAt(i);
-						// Give up if we have some non-expected character
-						if (!Character.isAlphabetic(ch) && !Character.isDigit(ch) &&
-								ch != '-' && ch != '_' && ch != ' ' && ch != ';' && ch != '.' && ch != ',' && ch != '/' && ch != '(' && ch != ')') {
-							fail = true;
-							break;
-						}
-
-						// Record how many of the elements have 3 or more digits
-						if (Character.isDigit(ch)) {
-							digits++;
-							if (digits == 3)
-								excessiveDigits++;
-						}
-					}
-
-					if (fail)
-						break;
-					gen.train(elt);
-				}
-
-				// If we did not find any reason to reject, output it as an enum
-				if (excessiveDigits != cardinalityUpper.size() && !fail) {
-					// If we have a significant # of samples and a small number of non-numerics with distinct values attempt to remove outliers
-					if (interestingSamples > 1000 && cardinalityUpper.size() < 20 && !gen.isDigit()) {
-						final Map<String, Long> sorted = Utils.sortByValue(cardinalityUpper);
-						for (final Map.Entry<String, Long> elt : sorted.entrySet()) {
-							if (elt.getValue() < 3 && elt.getKey().length() > 3 && distanceLevenshtein(elt.getKey(), cardinalityUpper.keySet()) <= 1) {
-								cardinalityUpper.remove(elt.getKey());
-								facts.cardinality.entrySet()
-								  .removeIf(entry -> entry.getKey().equalsIgnoreCase(elt.getKey()));
-								facts.outliers.put(elt.getKey(), elt.getValue());
-								facts.matchCount -= elt.getValue();
-								facts.confidence = (double) facts.matchCount / realSamples;
-							}
-						}
-
-						// Regenerate the enum without the outliers removed
-						gen = new RegExpGenerator(MAX_ENUM_SIZE, locale);
-						for (final String elt : cardinalityUpper.keySet())
-							gen.train(elt);
-					}
-
-					facts.setMatchTypeInfo(new TypeInfo(null, gen.getResult(), FTAType.STRING, facts.getMatchTypeInfo().typeModifier, false, facts.minTrimmedLength,
-							facts.maxTrimmedLength, null, null));
-					updated = true;
-
-					// Now we have mapped to an enum we need to check again if this should be matched to a Semantic type
+				// Check to see whether the most common shape matches our regExp and test to see if this valid
+				if (!updated && tokenStreams.size() > 1) {
+					final TokenStream best = tokenStreams.getBest();
+					final String regExp = best.getRegExp(false);
 					for (final LogicalTypeRegExp logical : regExpTypes) {
 						if (logical.acceptsBaseType(FTAType.STRING) &&
-								logical.isMatch(facts.getMatchTypeInfo().regexp) &&
-								logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-							facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
+								logical.isMatch(regExp) &&
+								logical.analyzeSet(context, best.getOccurrences(), realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+							facts.setMatchTypeInfo(new TypeInfo(regExp, logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
+							facts.matchCount = best.getOccurrences();
 							facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
+							updated = true;
 							break;
 						}
 					}
 				}
-			}
 
-			// Check to see whether the most common shape matches our regExp and test to see if this valid
-			if (!updated && tokenStreams.size() > 1) {
-				final TokenStream best = tokenStreams.getBest();
-				final String regExp = best.getRegExp(false);
-				for (final LogicalTypeRegExp logical : regExpTypes) {
-					if (logical.acceptsBaseType(FTAType.STRING) &&
-							logical.isMatch(regExp) &&
-							logical.analyzeSet(context, best.getOccurrences(), realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-						facts.setMatchTypeInfo(new TypeInfo(regExp, logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
-						facts.matchCount = best.getOccurrences();
-						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
-						updated = true;
-						break;
-					}
+				// Qualify Alpha or Alnum with a min and max length
+				if (!updated && (KnownTypes.PATTERN_ALPHA_VARIABLE.equals(facts.getMatchTypeInfo().regexp) || KnownTypes.PATTERN_ALPHANUMERIC_VARIABLE.equals(facts.getMatchTypeInfo().regexp))) {
+					String newPattern = facts.getMatchTypeInfo().regexp;
+					newPattern = newPattern.substring(0, newPattern.length() - 1) + lengthQualifier(facts.minTrimmedLength, facts.maxTrimmedLength);
+					facts.setMatchTypeInfo(new TypeInfo(null, newPattern, FTAType.STRING, facts.getMatchTypeInfo().typeModifier, false, facts.minTrimmedLength,
+							facts.maxTrimmedLength, null, null));
+					updated = true;
 				}
-			}
 
-			// Qualify Alpha or Alnum with a min and max length
-			if (!updated && (KnownTypes.PATTERN_ALPHA_VARIABLE.equals(facts.getMatchTypeInfo().regexp) || KnownTypes.PATTERN_ALPHANUMERIC_VARIABLE.equals(facts.getMatchTypeInfo().regexp))) {
-				String newPattern = facts.getMatchTypeInfo().regexp;
-				newPattern = newPattern.substring(0, newPattern.length() - 1) + lengthQualifier(facts.minTrimmedLength, facts.maxTrimmedLength);
-				facts.setMatchTypeInfo(new TypeInfo(null, newPattern, FTAType.STRING, facts.getMatchTypeInfo().typeModifier, false, facts.minTrimmedLength,
-						facts.maxTrimmedLength, null, null));
-				updated = true;
-			}
-
-			// Qualify random string with a min and max length
-			if (!updated && KnownTypes.PATTERN_ANY_VARIABLE.equals(facts.getMatchTypeInfo().regexp)) {
-				final String newPattern = KnownTypes.freezeANY(facts.minTrimmedLength, facts.maxTrimmedLength, facts.minRawNonBlankLength, facts.maxRawNonBlankLength, facts.leadingWhiteSpace, facts.trailingWhiteSpace, facts.multiline);
-				facts.setMatchTypeInfo(new TypeInfo(null, newPattern, FTAType.STRING, facts.getMatchTypeInfo().typeModifier, false, facts.minRawLength,
-						facts.maxRawLength, null, null));
-				updated = true;
+				// Qualify random string with a min and max length
+				if (!updated && KnownTypes.PATTERN_ANY_VARIABLE.equals(facts.getMatchTypeInfo().regexp)) {
+					final String newPattern = KnownTypes.freezeANY(facts.minTrimmedLength, facts.maxTrimmedLength, facts.minRawNonBlankLength, facts.maxRawNonBlankLength, facts.leadingWhiteSpace, facts.trailingWhiteSpace, facts.multiline);
+					facts.setMatchTypeInfo(new TypeInfo(null, newPattern, FTAType.STRING, facts.getMatchTypeInfo().typeModifier, false, facts.minRawLength,
+							facts.maxRawLength, null, null));
+					updated = true;
+				}
 			}
 		}
 
@@ -3044,8 +2975,21 @@ public class TextAnalyzer {
 		if (isEnabled(Feature.FORMAT_DETECTION))
 			facts.streamFormat = Utils.determineStreamFormat(mapper, facts.cardinality);
 
-		final TextAnalysisResult result = new TextAnalysisResult(context.getStreamName(),
-				facts.calculateFacts(), context.getDateResolutionMode(), analysisConfig, tokenStreams);
+		TextAnalysisResult result = null;
+		// If we are in SIMPLE mode (i.e. not Bulk) and we have not detected a Semantic Type - try replaying accumulated set in Bulk mode,
+		// this has the potential to pick up entries where the first <n> (by default 20 are misleading).
+		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType() && analysisConfig.getTrainingMode() == AnalysisConfig.TrainingMode.SIMPLE && pluginThreshold != 100) {
+			final Map<String, Long> details = new HashMap<>(facts.cardinality);
+			details.put(null, facts.nullCount);
+			TextAnalysisResult bulkResult = reAnalyze(new HashMap<String, Long>(details));
+			if (bulkResult.isSemanticType()) {
+				result = bulkResult;
+				debug("Type determination - was STRING, post Bulk analyis, matchTypeInfo - {}", facts.getMatchTypeInfo());
+			}
+		}
+
+		if (result == null)
+			result = new TextAnalysisResult(context.getStreamName(), facts.calculateFacts(), context.getDateResolutionMode(), analysisConfig, tokenStreams);
 
 		if (traceConfig != null)
 			traceConfig.recordResult(result, internalErrors);
@@ -3210,6 +3154,92 @@ public class TextAnalyzer {
 		}
 	}
 
+	private void finalizeString(final long realSamples, final FiniteMap cardinalityUpper) {
+		// Build Cardinality map ignoring case (and white space)
+		for (final Map.Entry<String, Long> entry : facts.cardinality.entrySet()) {
+			final String key = entry.getKey().toUpperCase(locale).trim();
+			cardinalityUpper.merge(key, entry.getValue(), Long::sum);
+		}
+		// Sort the results so that we consider the most frequent first (we will hopefully fail faster)
+		cardinalityUpper.sortByValue();
+
+		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
+		final LogicalTypeFinite logical = matchFiniteTypes(FTAType.STRING, cardinalityUpper);
+		if (logical != null)
+			facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
+
+		// Fixup any likely enums
+		if (!facts.getMatchTypeInfo().isSemanticType() && cardinalityUpper.size() < MAX_ENUM_SIZE && !facts.outliers.isEmpty() && facts.outliers.size() < 10) {
+			boolean updated = false;
+
+			final Set<String> killSet = new HashSet<>();
+
+			// Sort the outliers so that we consider the most frequent first
+			facts.outliers.sortByValue();
+
+			// Iterate through the outliers adding them to the core cardinality set if we think they are reasonable.
+			for (final Map.Entry<String, Long> entry : facts.outliers.entrySet()) {
+				final String key = entry.getKey();
+				final String keyUpper = key.toUpperCase(locale).trim();
+				String validChars = " _-";
+				boolean skip = false;
+
+				// We are wary of outliers that only have one instance, do an extra check that the characters in the
+				// outlier exist in the real set.
+				if (entry.getValue() == 1) {
+					// Build the universe of valid characters
+					for (final String existing : cardinalityUpper.keySet()) {
+						for (int i = 0; i < existing.length(); i++) {
+							final char ch = existing.charAt(i);
+							if (!Character.isAlphabetic(ch) && !Character.isDigit(ch))
+								if (validChars.indexOf(ch) == -1)
+									validChars += ch;
+						}
+					}
+					for (int i = 0; i < keyUpper.length(); i++) {
+						final char ch = keyUpper.charAt(i);
+						if (!Character.isAlphabetic(ch) && !Character.isDigit(ch) && validChars.indexOf(ch) == -1) {
+							skip = true;
+							break;
+						}
+					}
+				}
+				else
+					skip = false;
+
+				if (!skip) {
+					cardinalityUpper.merge(keyUpper, entry.getValue(), Long::sum);
+					killSet.add(key);
+					updated = true;
+				}
+			}
+
+			// If we updated the set then we need to remove the outliers we OK'd and
+			// also update the pattern to reflect the looser definition
+			if (updated) {
+				final FiniteMap remainingOutliers = new FiniteMap(facts.outliers.getMaxCapacity());
+				remainingOutliers.putAll(facts.outliers);
+				for (final String elt : killSet)
+					remainingOutliers.remove(elt);
+
+				backoutToPattern(realSamples, KnownTypes.PATTERN_ANY_VARIABLE);
+				facts.confidence = (double) facts.matchCount / realSamples;
+				facts.outliers = remainingOutliers;
+			}
+		}
+
+		// Need to evaluate if we got the type wrong
+		if (!facts.getMatchTypeInfo().isSemanticType() && !facts.outliers.isEmpty() && facts.getMatchTypeInfo().isAlphabetic() && realSamples >= reflectionSamples) {
+			conditionalBackoutToPattern(realSamples, facts.getMatchTypeInfo());
+			facts.confidence = (double) facts.matchCount / realSamples;
+
+			// Rebuild the cardinalityUpper Map
+			cardinalityUpper.clear();
+			for (final Map.Entry<String, Long> entry : facts.cardinality.entrySet())
+				cardinalityUpper.merge(entry.getKey().toUpperCase(locale).trim(), entry.getValue(), Long::sum);
+		}
+	}
+
 	/**
 	 * Access the training set - this will typically be the first {@link AnalysisConfig#DETECT_WINDOW_DEFAULT} records.
 	 *
@@ -3262,7 +3292,7 @@ public class TextAnalyzer {
 			ret.facts = wrapper.facts;
 			ret.facts.setConfig(wrapper.analysisConfig);
 			ret.facts.hydrate();
-			ret.initialize();
+			ret.initialize(wrapper.analysisConfig.getTrainingMode());
 
 			return ret;
 		} catch (JsonProcessingException e) {

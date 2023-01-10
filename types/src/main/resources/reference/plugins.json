@@ -5,7 +5,10 @@
 		"pluginType": "java",
 		"signature": "+A0AMjgeFlGRlPKsX/iXYmoWpfY=",
 		"clazz": "com.cobber.fta.plugins.EmailLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(email|e-mail).*", "confidence": 90 } ] } ],
+		"validLocales": [
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(email|e-mail|e_mail).*", "confidence": 90 } ] },
+			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(correo|email|e-mail|e_mail).*", "confidence": 90 } ] }
+		],
 		"priority": 10
 	},
 	{

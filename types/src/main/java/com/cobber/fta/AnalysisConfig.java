@@ -118,6 +118,14 @@ public class AnalysisConfig {
 	/** Should we should treat "NULL" (and similar) as Null values. */
 	private boolean nullAsText = false;
 
+	public enum TrainingMode {
+		SIMPLE,
+		BULK,
+		NONE
+	}
+	/** How was training performed for this analysis. */
+	private TrainingMode trainingMode = TrainingMode.NONE;
+
 	public AnalysisConfig() {
 		this(Locale.getDefault());
 	}
@@ -338,6 +346,14 @@ public class AnalysisConfig {
 
 	public void setDebug(final int debug) {
 		this.debug = debug;
+	}
+
+	public TrainingMode getTrainingMode() {
+		return trainingMode;
+	}
+
+	public void setTrainingMode(TrainingMode trainingMode) {
+		this.trainingMode = trainingMode;
 	}
 
 	@Override

@@ -1,10 +1,13 @@
 
 ## Changes ##
- - ENH: Add new Semantic Type - STREET_ADDRESS3_EN (Third line of an address)
- - ENH: Continue to improve address detection
+
+### 12.4.1
+ - ENH: If using linear (not bulk) then if we have not detected a Semantic Type try replaying accumulated set in Bulk mode this has the potential to pick up entries where the first <n> (by default 20) are misleading.
+ - ENH: Bump google phone number library
 
 ### 12.4.0
- - ENH: Bump google phone number library
+ - ENH: Add new Semantic Type - STREET_ADDRESS3_EN (Third line of an address)
+ - ENH: Continue to improve address detection
 
 ### 12.3.3
  - ENH: Bump google phone number library

@@ -187,19 +187,22 @@ public class AddressEN extends LogicalTypeInfinite {
 				return 0.0;
 		}
 
-		// If we have all the headers then we can check if this one is less likely to be the primary address field than the previous one
-		int current = context.getStreamIndex();
-		if (current >= 1 && getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) > getHeaderConfidence(dataStreamName))
+		final String[] semanticTypes = context.getSemanticTypes();
+		final int current = context.getStreamIndex();
+		final boolean nextSemanticTypeInfoAvailable = semanticTypes != null && current != -1 && current != semanticTypes.length - 1;
+		final boolean previousSemanticTypeInfoAvailable = semanticTypes != null && current >= 1;
+		final boolean previousIsAddress = previousSemanticTypeInfoAvailable && semanticTypes[current - 1] != null && semanticTypes[current - 1].startsWith("STREET_ADDRESS");
+
+		if (previousIsAddress ||
+				// If we have all the headers then we can check if this one is less likely to be the primary address field than the previous one
+				(!previousSemanticTypeInfoAvailable && (current >= 1 && getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) > getHeaderConfidence(dataStreamName))))
 			return 0.0;
 
 		final int headerConfidence = getHeaderConfidence(dataStreamName);
 		double confidence = (double)matchCount/realSamples;
 
-		final String[] semanticTypes = context.getSemanticTypes();
-		final boolean semanticTypeInfoAvailable = semanticTypes != null && context.getStreamIndex() != -1 && context.getStreamIndex() != semanticTypes.length - 1;
-
 		// Does the next field have a Semantic Type that indicates it is a Street Address 2
-		if (semanticTypeInfoAvailable && confidence > 0.1 && "STREET_ADDRESS2_EN".equals(semanticTypes[context.getStreamIndex() + 1])) {
+		if (nextSemanticTypeInfoAvailable && confidence > 0.1 && "STREET_ADDRESS2_EN".equals(semanticTypes[context.getStreamIndex() + 1])) {
 			// If this header is the same as the next but with a 2 switched for a '1' then we are extremely confident
 			final String nextStreamName = context.getCompositeStreamNames()[current + 1];
 
