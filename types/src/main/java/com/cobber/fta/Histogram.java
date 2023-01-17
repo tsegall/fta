@@ -70,7 +70,7 @@ public class Histogram {
 			return count;
 		}
 
-		public void setCount(long count) {
+		public void setCount(final long count) {
 			this.count = count;
 		}
 	}
@@ -89,9 +89,9 @@ public class Histogram {
 		this.debug = debug;
 	}
 
-	public void setCardinality(Map<String, Long> map) {
+	public void setCardinality(final Map<String, Long> map) {
 		typedMap.clear();
-		for (Map.Entry<String, Long> entry : map.entrySet()) {
+		for (final Map.Entry<String, Long> entry : map.entrySet()) {
 			// Cardinality map - has entries that differ only based on whitespace, so for example it may include
 			// "47" 10 times and " 47" 20 times, for the purposes of calculating histograms these are coalesced
 			// Similarly 47.0 and 47.000 will be collapsed since the typedMap is type aware and will consider these equal
@@ -107,7 +107,7 @@ public class Histogram {
 		}
 	}
 
-	public void setCardinalityOverflow(HistogramSPDT histogramSPDT) {
+	public void setCardinalityOverflow(final HistogramSPDT histogramSPDT) {
 		this.histogramOverflow = histogramSPDT;
 	}
 
@@ -128,7 +128,7 @@ public class Histogram {
 
 		if (histogramOverflow != null) {
 			histogramFull = new HistogramSPDT(histogramOverflow);
-			for (Map.Entry<String, Long> e : typedMap.entrySet())
+			for (final Map.Entry<String, Long> e : typedMap.entrySet())
 				histogramFull.accept(e.getKey(), e.getValue());
 			low = histogramFull.getMinValue();
 			high = histogramFull.getMaxValue();
@@ -151,7 +151,7 @@ public class Histogram {
 		int upto = 0;
 
 		if (histogramFull != null) {
-			ArrayList<HistogramSPDT.Bin> bins = histogramFull.getBins();
+			final ArrayList<HistogramSPDT.Bin> bins = histogramFull.getBins();
 			for (final HistogramSPDT.Bin bin : bins) {
 				// All the buckets except for the last are [low, high) the last bucket is [low,high]
 				while (!inThisBucket(ret[upto], bin.value, buckets, upto))
@@ -161,7 +161,7 @@ public class Histogram {
 			}
 		}
 		else {
-			for (Map.Entry<String, Long> e : typedMap.entrySet()) {
+			for (final Map.Entry<String, Long> e : typedMap.entrySet()) {
 				// All the buckets except for the last are [low, high) the last bucket is [low,high]
 				while (!inThisBucket(ret[upto], stringConverter.toDouble(e.getKey()), buckets, upto))
 					upto++;
@@ -185,7 +185,7 @@ public class Histogram {
 		return value < bucket.getHighCut();
 	}
 
-	public Histogram merge(Histogram other) {
+	public Histogram merge(final Histogram other) {
 		this.typedMap.putAll(other.typedMap);
 		if (this.histogramOverflow != null && other.histogramOverflow != null) {
 			// Both sides have overflow so merge

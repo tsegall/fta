@@ -162,7 +162,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		if (!getPattern().matcher(Utils.cleanse(input.trim())).matches())
 			return false;
 
@@ -334,7 +334,7 @@ public class LogicalTypeRegExp extends LogicalType {
 			if (retries%10 == 0) {
 				return ret;
 			}
-		} while (!isValid(ret, true));
+		} while (!isValid(ret));
 
 		return ret;
 	}
@@ -349,7 +349,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		return matchEntry;
 	}
 
-	public void setMatchEntry(PluginMatchEntry matchEntry) {
+	public void setMatchEntry(final PluginMatchEntry matchEntry) {
 		this.matchEntry = matchEntry;
 	}
 }

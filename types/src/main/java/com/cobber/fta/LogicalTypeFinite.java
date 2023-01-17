@@ -40,7 +40,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String trimmedUpper = Utils.cleanse(input.trim()).toUpperCase(locale);
 
 		if (trimmedUpper.length() < minLength)
@@ -49,13 +49,13 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 		if (trimmedUpper.length() <= maxLength && getMembers().contains(trimmedUpper))
 			return true;
 
-		String value = defn.getOptions().get("words");
+		final String value = defn.getOptions().get("words");
 		if (value != null) {
-			boolean any = value.equalsIgnoreCase("any");
-			boolean all = value.equalsIgnoreCase("all");
-			boolean first = value.equalsIgnoreCase("first");
+			final boolean any = "any".equalsIgnoreCase(value);
+			final boolean all = "all".equalsIgnoreCase(value);
+			final boolean first = "first".equalsIgnoreCase(value);
 
-			List<String> words = Utils.asWords(trimmedUpper, null);
+			final List<String> words = Utils.asWords(trimmedUpper, null);
 			boolean found = false;
 			for (final String word : words) {
 				found = getMembers().contains(Utils.cleanse(word).toUpperCase(locale));

@@ -53,7 +53,7 @@ public class PluginMatchEntry {
 		return regExpReturned;
 	}
 
-	public boolean matches(String regExp) {
+	public boolean matches(final String regExp) {
 		for (final String re : getRegExpsToMatch()) {
 			if (".+".equals(re) || regExp.equals(re))
 				return true;

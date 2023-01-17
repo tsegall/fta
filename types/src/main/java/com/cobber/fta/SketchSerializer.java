@@ -37,7 +37,7 @@ public class SketchSerializer extends JsonSerializer<Sketch> {
 		}
 
 		@Override
-		public void writeByte(byte value) {
+		public void writeByte(final byte value) {
 			buffer.write(value);
 		}
 	}

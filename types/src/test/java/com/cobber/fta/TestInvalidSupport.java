@@ -168,13 +168,13 @@ public class TestInvalidSupport {
 
 		// Good - but now known names
 		analyzer.train("Aditya");
-		assertTrue(logical.isValid("Aditya", false));
+		assertTrue(logical.isValid("Aditya", false, -1));
 		analyzer.train("Zendaya");
-		assertTrue(logical.isValid("Zendaya", false));
+		assertTrue(logical.isValid("Zendaya", false, -1));
 
 		analyzer.train(null);
 		analyzer.train("9999");
-		assertFalse(logical.isValid("9999", false));
+		assertFalse(logical.isValid("9999", false, -1));
 		analyzer.train("     ");
 
 		final TextAnalysisResult result = analyzer.getResult();
@@ -211,11 +211,11 @@ public class TestInvalidSupport {
 
 		// The letter 'O' not the number '0'
 		analyzer.train("O929998A-96BD-28CC-833C-F77AAFE49E7A");
-		assertFalse(logical.isValid("O929998A-96BD-28CC-833C-F77AAFE49E7A", false));
+		assertFalse(logical.isValid("O929998A-96BD-28CC-833C-F77AAFE49E7A", false, -1));
 
 		analyzer.train(null);
 		analyzer.train("9999");
-		assertFalse(logical.isValid("9999", false));
+		assertFalse(logical.isValid("9999", false, -1));
 		analyzer.train("     ");
 
 		final TextAnalysisResult result = analyzer.getResult();

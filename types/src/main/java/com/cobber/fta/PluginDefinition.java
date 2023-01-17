@@ -212,9 +212,9 @@ public class PluginDefinition {
 				if (options == null) {
 					options = new HashMap<>();
 					if (pluginOptions != null) {
-						String[] entries = pluginOptions.split("\\s*,\\s*");
+						final String[] entries = pluginOptions.split("\\s*,\\s*");
 						for (final String entry : entries) {
-							int separator = entry.indexOf('=');
+							final int separator = entry.indexOf('=');
 							options.put(entry.substring(0,separator), entry.substring(separator + 1));
 						}
 					}

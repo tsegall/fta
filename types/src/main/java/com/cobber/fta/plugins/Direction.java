@@ -98,7 +98,7 @@ public class Direction extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final int len = input.length();
 		final String upper = input.toUpperCase(locale);
 
@@ -135,7 +135,7 @@ public class Direction extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return isValid(trimmed);
+		return isValid(trimmed, true, 0);
 	}
 
 	@Override

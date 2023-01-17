@@ -126,10 +126,10 @@ public class StringConverter {
 		case LONG:
 			return (Long)(getValue(key));
 		case OFFSETDATETIME:
-			OffsetDateTime odt = ((OffsetDateTime)(getValue(key)));
-			long epochSeconds = odt.toEpochSecond();
+			final OffsetDateTime odt = ((OffsetDateTime)(getValue(key)));
+			final long epochSeconds = odt.toEpochSecond();
 			// Zone Offset seconds ranges from -64800 to +64800
-			long zoneOffsetSeconds = odt.getOffset().getTotalSeconds();
+			final long zoneOffsetSeconds = odt.getOffset().getTotalSeconds();
 			return epochSeconds * 1_000_000 + zoneOffsetSeconds + 64800;
 		case ZONEDDATETIME:
 			// Not correct - since does not account for Zone
@@ -176,10 +176,10 @@ public class StringConverter {
 		case LONG:
 			return Math.round(value);
 		case OFFSETDATETIME:
-			long raw = (long)value;
-			long epochSeconds = raw / 1_000_000;
-			long zoneOffsetSeconds = raw - (epochSeconds * 1_000_000) - 64800;
-			ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds(clampInt((int)zoneOffsetSeconds, -18 * 60 * 60, 18 * 60 * 60));
+			final long raw = (long)value;
+			final long epochSeconds = raw / 1_000_000;
+			final long zoneOffsetSeconds = raw - (epochSeconds * 1_000_000) - 64800;
+			final ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds(clampInt((int)zoneOffsetSeconds, -18 * 60 * 60, 18 * 60 * 60));
 			return OffsetDateTime.of(LocalDateTime.ofEpochSecond(epochSeconds, 0, zoneOffset), zoneOffset);
 		case ZONEDDATETIME:
 			// Not correct - since ignores Zone

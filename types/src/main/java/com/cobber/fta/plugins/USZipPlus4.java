@@ -109,7 +109,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input, final boolean detectMode) {
+	public boolean isValid(String input, final boolean detectMode, long count) {
 		final int len = input.length();
 
 		if (len != 10 && len != 9 && len != 5)

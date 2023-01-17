@@ -21,7 +21,7 @@ import com.cobber.fta.PluginDefinition;
 * Plugin to detect Marital Status (Person).
 */
 public class MaritalStatus extends SimpleWords {
-	public MaritalStatus(PluginDefinition plugin) {
+	public MaritalStatus(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -34,7 +34,7 @@ public class MaritalStatus extends SimpleWords {
 	};
 
 	@Override
-	String[] getWords() {
+	protected String[] getWords() {
 		return marriageWordsEN;
 	}
 }

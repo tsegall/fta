@@ -849,7 +849,7 @@ public class TextAnalyzer {
 		if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
 			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
-			if (logical.acceptsBaseType(FTAType.LONG) && !logical.isValid(trimmed))
+			if (logical.acceptsBaseType(FTAType.LONG) && !logical.isValid(trimmed, true, count))
 				return false;
 		}
 
@@ -879,8 +879,8 @@ public class TextAnalyzer {
 				// Avoids any work if the existing mean is the same as the input
 				if (l != facts.mean) {
 					// Calculate the mean & standard deviation using Welford's algorithm (weighted)
-					double oldMean = facts.mean;
-					long newCount = facts.matchCount + count;
+					final double oldMean = facts.mean;
+					final long newCount = facts.matchCount + count;
 					facts.mean += (count * (l - oldMean)) / newCount;
 					facts.currentM2 += count * ((l - facts.mean) * (l - oldMean));
 				}
@@ -929,7 +929,7 @@ public class TextAnalyzer {
 		else if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
 			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
-			if (logical.acceptsBaseType(FTAType.STRING) && !logical.isValid(rawInput))
+			if (logical.acceptsBaseType(FTAType.STRING) && !logical.isValid(rawInput, true, count))
 				return false;
 		}
 
@@ -1020,7 +1020,7 @@ public class TextAnalyzer {
 		if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
 			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
-			if (logical.acceptsBaseType(FTAType.DOUBLE) && !logical.isValid(input))
+			if (logical.acceptsBaseType(FTAType.DOUBLE) && !logical.isValid(input, true, count))
 				return false;
 		}
 
@@ -1824,7 +1824,7 @@ public class TextAnalyzer {
 		if (semanticTypes == null)
 			return false;
 
-		String semanticType = semanticTypes[context.getStreamIndex()];
+		final String semanticType = semanticTypes[context.getStreamIndex()];
 
 		if (semanticType != null && semanticType.trim().length() != 0) {
 			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
@@ -2490,7 +2490,7 @@ public class TextAnalyzer {
 
 		for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
 			final String upper = entry.getKey().toUpperCase(Locale.ENGLISH);
-			if (logical.isValid(upper, true)) {
+			if (logical.isValid(upper, true, entry.getValue())) {
 				validCount += entry.getValue();
 				addMatches.put(upper, entry.getValue());
 			}
@@ -2513,7 +2513,7 @@ public class TextAnalyzer {
 				realSamples -= entry.getValue();
 				minusMatches.put(entry.getKey(), entry.getValue());
 			}
-			else if (logical.isValid(entry.getKey(), true))
+			else if (logical.isValid(entry.getKey(), true, entry.getValue()))
 				validCount += entry.getValue();
 			else {
 				missCount += entry.getValue();
@@ -2772,7 +2772,7 @@ public class TextAnalyzer {
 				// Sweep the outliers - flipping them to invalid if they do not pass the relaxed isValid definition
 				for (final Map.Entry<String, Long> entry : facts.outliers.entrySet()) {
 					// Split the outliers to either invalid entries or valid entries
-					if (logical.isValid(entry.getKey(), false)) {
+					if (logical.isValid(entry.getKey(), false, entry.getValue())) {
 						addValid(entry.getKey(), entry.getValue());
 						facts.matchCount += entry.getValue();
 						recalcConfidence = true;
@@ -2981,7 +2981,7 @@ public class TextAnalyzer {
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType() && analysisConfig.getTrainingMode() == AnalysisConfig.TrainingMode.SIMPLE && pluginThreshold != 100) {
 			final Map<String, Long> details = new HashMap<>(facts.cardinality);
 			details.put(null, facts.nullCount);
-			TextAnalysisResult bulkResult = reAnalyze(new HashMap<String, Long>(details));
+			final TextAnalysisResult bulkResult = reAnalyze(new HashMap<String, Long>(details));
 			if (bulkResult.isSemanticType()) {
 				result = bulkResult;
 				debug("Type determination - was STRING, post Bulk analyis, matchTypeInfo - {}", facts.getMatchTypeInfo());
@@ -3438,7 +3438,7 @@ public class TextAnalyzer {
 	}
 
 	private static boolean nonOverlappingRegions(final Facts firstFacts, final Facts secondFacts, final AnalysisConfig analysisConfig) {
-		StringConverter stringConverter = new StringConverter(firstFacts.getMatchTypeInfo().getBaseType(), new TypeFormatter(firstFacts.getMatchTypeInfo(), analysisConfig));
+		final StringConverter stringConverter = new StringConverter(firstFacts.getMatchTypeInfo().getBaseType(), new TypeFormatter(firstFacts.getMatchTypeInfo(), analysisConfig));
 		if (stringConverter.toDouble(firstFacts.getMinValue()) == stringConverter.toDouble(secondFacts.getMinValue()))
 			return false;
 

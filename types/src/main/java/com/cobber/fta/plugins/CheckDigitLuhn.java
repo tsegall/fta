@@ -70,7 +70,7 @@ public class CheckDigitLuhn extends CheckDigitLT {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		return input.length() >= 8 && input.length() < 30 && validator.isValid(input);
 	}
 

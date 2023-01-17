@@ -132,7 +132,7 @@ public class VIN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String cleaned = input.trim().replaceAll("-", "").toUpperCase(Locale.ROOT);
 		final int len = cleaned.length();
 		if (len != VIN_LENGTH)
@@ -158,7 +158,7 @@ public class VIN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed);
+		return isValid(trimmed, true, -1);
 	}
 
 	@Override

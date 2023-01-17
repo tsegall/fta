@@ -100,7 +100,7 @@ public class AddressEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
 
 		final int length = inputUpper.length();
@@ -124,7 +124,7 @@ public class AddressEN extends LogicalTypeInfinite {
 		if ("BOX".equals(firstWord))
 			return true;
 
-		boolean initialNumeric = AddressCommon.isAddressNumber(firstWord);
+		final boolean initialNumeric = AddressCommon.isAddressNumber(firstWord);
 
 		if (words.size() == 2 && initialNumeric && "BROADWAY".equals(words.get(1)))
 			return true;
@@ -146,7 +146,7 @@ public class AddressEN extends LogicalTypeInfinite {
 			score++;
 
 		for (int i = 0; i < wordCount; i++) {
-			String word = words.get(i);
+			final String word = words.get(i);
 			if (addressMarkers.contains(word)) {
 				if (addressMarkerIndex == -1)
 					score++;
@@ -206,7 +206,7 @@ public class AddressEN extends LogicalTypeInfinite {
 			// If this header is the same as the next but with a 2 switched for a '1' then we are extremely confident
 			final String nextStreamName = context.getCompositeStreamNames()[current + 1];
 
-			int index = nextStreamName.indexOf('2');
+			final int index = nextStreamName.indexOf('2');
 			if (index != -1 && dataStreamName.equals(nextStreamName.substring(0, index) + '1' + nextStreamName.substring(index + 1)))
 				return 0.95;
 		}

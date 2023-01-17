@@ -44,7 +44,7 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 		setContent("resource", "/reference/" + filename);
 	}
 
-	public abstract boolean isPlausible(final String candidate);
+	protected abstract boolean isPlausible(final String candidate);
 
 	@Override
 	public String nextRandom() {
@@ -53,8 +53,7 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 		String ret;
 		do {
 			ret = anyRandom();
-		}
-		while (ret.indexOf(' ') != -1);
+		} while (ret.indexOf(' ') != -1);
 
 		return ret;
 	}
@@ -80,10 +79,11 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 
 	/*
 	 * Note: The input String will be both trimmed and converted to upper Case
+	 *
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String trimmedUpper = input.trim().toUpperCase(locale);
 		if (trimmedUpper.length() < minLength || trimmedUpper.length() > maxLength)
 			return false;
@@ -91,8 +91,8 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 			return true;
 
 		int space = trimmedUpper.indexOf(' ');
-		if (space != -1 && getMembers().contains(trimmedUpper.substring(0, space)) &&
-					getMembers().contains(trimmedUpper.substring(space + 1)))
+		if (space != -1 && getMembers().contains(trimmedUpper.substring(0, space))
+				&& getMembers().contains(trimmedUpper.substring(space + 1)))
 			return true;
 
 		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
@@ -109,13 +109,14 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
-			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers,
+			final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 		if (headerConfidence < 0)
 			return new PluginAnalysis(backout);
 
-		if (headerConfidence >= 90 && (double)matchCount / realSamples >= (double)IDENTIFIED_LOW_THRESHOLD/100)
+		if (headerConfidence >= 90 && (double) matchCount / realSamples >= (double) IDENTIFIED_LOW_THRESHOLD / 100)
 			return PluginAnalysis.OK;
 
 		int minCardinality = 10;
@@ -131,8 +132,8 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 		if (realSamples < minSamples)
 			return new PluginAnalysis(backout);
 
-		if ((headerConfidence >= 50 && (double)matchCount / realSamples >= (double)IDENTIFIED_HIGH_THRESHOLD/100) ||
-			((double)matchCount / realSamples >= getThreshold()/100.0))
+		if ((headerConfidence >= 50 && (double) matchCount / realSamples >= (double) IDENTIFIED_HIGH_THRESHOLD / 100)
+				|| ((double) matchCount / realSamples >= getThreshold() / 100.0))
 			return PluginAnalysis.OK;
 
 		return new PluginAnalysis(backout);

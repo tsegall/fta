@@ -74,14 +74,14 @@ public class RaceAbbr extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String trimmed = input.trim();
 		return trimmed.length() == 1 && Character.isAlphabetic(trimmed.charAt(0));
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed);
+		return isValid(trimmed, true, -1);
 	}
 
 	@Override

@@ -58,7 +58,7 @@ public class VAT extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		final int len = trimmed.length() - charCounts[' '];
-		return len >= 9 && len <= 13 && isValid(trimmed);
+		return len >= 9 && len <= 13 && isValid(trimmed, true, -1);
 	}
 
 	@Override
@@ -156,7 +156,7 @@ public class VAT extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		int len = input.length();
 
 		if (len < 8)

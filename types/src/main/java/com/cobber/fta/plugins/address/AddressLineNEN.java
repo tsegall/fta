@@ -89,7 +89,7 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final int length = input.length();
 
 		// Attempt to fail fast
@@ -104,7 +104,7 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 
 		final int wordCount = words.size();
 		for (int i = 0; i < wordCount; i++) {
-			String word = words.get(i);
+			final String word = words.get(i);
 			if (i != 0 && addressMarkers.contains(word))
 				return true;
 			else if (AddressCommon.isModifier(word, i == wordCount - 1) && words.size() != 1)
@@ -153,7 +153,7 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 			return 99;
 
 		// If this header is the same as the previous but with the previous number then we are pretty confident
-		int index = previousStreamName.indexOf(getIndicator() - 1);
+		final int index = previousStreamName.indexOf(getIndicator() - 1);
 		if (index != -1 && dataStreamName.equals(previousStreamName.substring(0, index) + getIndicator() + previousStreamName.substring(index + 1)))
 			return headerConfidence >= 90 ? 99 : 85;
 

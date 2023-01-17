@@ -18,8 +18,13 @@ package com.cobber.fta.plugins;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.Facts;
+import com.cobber.fta.FiniteMap;
+import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.token.TokenStreams;
 
 /**
  * Plugin to detect an individuals First Name.
@@ -30,32 +35,33 @@ public class FirstName extends PersonName {
 
 	// This set covers the first two letters of ~92% of our first name list - assume this is a reasonable proxy for first names more generally
 	private String plausibleStarters[] = {
-		"AB", "AD", "AL", "AM", "AN", "AR", "AS", "AU", "AY",
-		"BA", "BE", "BI", "BO", "BR",
-		"CA", "CE", "CH", "CI", "CL", "CO", "CR",
-		"DA", "DE", "DI", "DO", "EA",
-		"ED", "EL", "EM", "EN", "ER", "ES", "EU", "EV",
-		"FA", "FE", "FI", "FL", "FR",
-		"GA", "GE", "GI", "GL", "GR", "GU",
-		"HA", "HE", "HI", "HO", "HU",
-		"IL", "IN", "IR", "IS",
-		"JA", "JE", "JI", "JO", "JU",
-		"KA", "KE", "KI", "KR", "KY",
-		"LA", "LE", "LI", "LO", "LU", "LY",
-		"MA", "ME", "MI", "MO", "MY",
-		"NA", "NE", "NI", "NO",
-		"OL", "OR",
-		"PA", "PE", "PH", "PI",
-		"QU",
-		"RA", "RE", "RI", "RO", "RU",
-		"SA", "SE", "SH", "SI", "SO", "ST", "SU",
-		"TA", "TE", "TH", "TI", "TO", "TR", "TY",
-		"VA", "VE", "VI",
-		"WA", "WE", "WI",
-		"YA", "YO",
-		"ZA", "ZO",
+			"AB", "AD", "AL", "AM", "AN", "AR", "AS", "AU", "AY",
+			"BA", "BE", "BI", "BO", "BR",
+			"CA", "CE", "CH", "CI", "CL", "CO", "CR",
+			"DA", "DE", "DI", "DO", "EA",
+			"ED", "EL", "EM", "EN", "ER", "ES", "EU", "EV",
+			"FA", "FE", "FI", "FL", "FR",
+			"GA", "GE", "GI", "GL", "GR", "GU",
+			"HA", "HE", "HI", "HO", "HU",
+			"IL", "IN", "IR", "IS",
+			"JA", "JE", "JI", "JO", "JU",
+			"KA", "KE", "KI", "KR", "KY",
+			"LA", "LE", "LI", "LO", "LU", "LY",
+			"MA", "ME", "MI", "MO", "MY",
+			"NA", "NE", "NI", "NO",
+			"OL", "OR",
+			"PA", "PE", "PH", "PI",
+			"QU",
+			"RA", "RE", "RI", "RO", "RU",
+			"SA", "SE", "SH", "SI", "SO", "ST", "SU",
+			"TA", "TE", "TH", "TI", "TO", "TR", "TY",
+			"VA", "VE", "VI",
+			"WA", "WE", "WI",
+			"YA", "YO",
+			"ZA", "ZO",
 	};
 	private Set<String> plausibleSet = new HashSet<>();
+	private long bad = 0;
 
 	/**
 	 * Construct a First Name plugin based on the Plugin Definition.
@@ -83,10 +89,21 @@ public class FirstName extends PersonName {
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String trimmedUpper = input.trim().toUpperCase(locale);
-		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength)
+
+		if (!Character.isLetter(trimmedUpper.charAt(0))) {
+			if (detectMode)
+				bad += count;
 			return false;
+		}
+
+		if (trimmedUpper.length() < minLength && trimmedUpper.length() > maxLength) {
+			if (detectMode)
+				bad += count;
+			return false;
+		}
+
 		if (getMembers().contains(trimmedUpper))
 			return true;
 
@@ -96,7 +113,7 @@ public class FirstName extends PersonName {
 			if (len == space + 2 ||
 					(len == space + 3 && trimmedUpper.charAt(space + 2) == '.') ||
 					getMembers().contains(trimmedUpper.substring(space + 1)))
-			return true;
+				return true;
 		}
 
 		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
@@ -121,4 +138,14 @@ public class FirstName extends PersonName {
 
 		return confidence;
 	}
+
+	@Override
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
+			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+		// We do not expect to see much true rubbish
+		if (getHeaderConfidence(context.getStreamName()) < 90 && realSamples > 10 && (100*bad)/realSamples > 1)
+			return PluginAnalysis.SIMPLE_NOT_OK;
+		return super.analyzeSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig);
+	}
+
 }

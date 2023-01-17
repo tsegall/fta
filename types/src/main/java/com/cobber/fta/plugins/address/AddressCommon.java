@@ -97,7 +97,7 @@ public class AddressCommon {
 		return directions.contains(input);
 	}
 
-	public static boolean isModifier(final String input, boolean isLastWord) {
+	public static boolean isModifier(final String input, final boolean isLastWord) {
 		if (isLastWord)
 			return modifiersAny.contains(input);
 		return modifiersWithArgument.contains(input);
@@ -116,7 +116,7 @@ public class AddressCommon {
 	 */
 	public static boolean isAddressNumber(final String input) {
 		// Check for a simple text digit - e.g. 'One', 'Two' etc.
-		char firstCh = input.charAt(0);
+		final char firstCh = input.charAt(0);
 		if (Character.isAlphabetic(firstCh) && AddressCommon.isTextDigit(input))
 			return true;
 
@@ -125,7 +125,7 @@ public class AddressCommon {
 		String toTest = input;
 
 		if (len > 1 && Character.isAlphabetic(last)) {
-			String rest = input.substring(0, len - 1);
+			final String rest = input.substring(0, len - 1);
 			if (!Utils.isNumeric(rest))
 				return false;
 			toTest = rest;
@@ -138,7 +138,7 @@ public class AddressCommon {
 		boolean secondNumber = false;
 		boolean separator = false;
 		for (int i = 0; i < toTest.length(); i++) {
-			char ch = toTest.charAt(i);
+			final char ch = toTest.charAt(i);
 			if (!Character.isDigit(ch)) {
 				if (ch != '-' && ch != '/')
 					return false;

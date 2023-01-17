@@ -90,7 +90,7 @@ public class GUID extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final int len = input.length();
 
 		if (len == 36) {

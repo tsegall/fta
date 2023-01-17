@@ -3878,6 +3878,37 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameLast() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("name");
+
+		final String[] inputs = {
+				"LEE", "WALKER", "SIMS", "SLAUGHTER", "ACHENBACH", "BARNES", "GALIS", "RAMPAGE", "GUINN", "HALLAT",
+				"HEINER", "SMITH", "GOOSE", "MASON", "CANTOR", "SELPH", "SCHERER", "LOWENBRAU", "HAUGEN", "LEONARD",
+				"HANNA", "CUSHMAN", "DENNING", "CLYMER", "CUSICK", "EDER", "EDGAR", "HANNAH", "CUSTER", "COAKLEY",
+				"HANNAN", "CUSTODIO", "DENNIS", "HANNER", "HANNIGAN", "DENNISON", "EDGE", "EDGERTON", "DENNY", "EDINGER",
+				"EDISON", "COATES", "COATS", "HANNINEN", "COBB", "HANNON", "HANNULA", "HANRAHAN", "DENSMORE", "HANS"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "NAME.LAST");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getInvalidCount());
+		assertEquals(result.getNullCount(), 0);
+
+		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("NAME.LAST");
+		final LogicalType knownSemanticType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
+
+		assertTrue(knownSemanticType.isValid("Segall"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void semanticForceOverflow() throws IOException, FTAException {
 		final AnalyzerContext context = new AnalyzerContext("SemanticForce", DateResolutionMode.None, null, new String[] { "SemanticForceOverflow" });
 		context.withSemanticTypes(new String[] { "NAME.LAST_FIRST" });

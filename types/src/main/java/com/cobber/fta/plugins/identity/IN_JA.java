@@ -107,7 +107,7 @@ public class IN_JA extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final StringBuilder b = new StringBuilder(IN_LENGTH);
 
 		for (int i = 0; i < input.length(); i++) {

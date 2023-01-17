@@ -80,7 +80,7 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
 
 		return validation(inputUpper, detectMode);
@@ -106,7 +106,7 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 			else if (AddressCommon.isDirection(words.get(i)))
 				extrasPresent++;
 
-		boolean intersection = trimmedUpper.contains("/") || trimmedUpper.contains("&") || trimmedUpper.contains(" AND ");
+		final boolean intersection = trimmedUpper.contains("/") || trimmedUpper.contains("&") || trimmedUpper.contains(" AND ");
 		if (!intersection && wordCount > 4 + extrasPresent || wordCount > 8 + extrasPresent)
 			return false;
 

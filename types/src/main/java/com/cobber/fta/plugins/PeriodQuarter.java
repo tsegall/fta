@@ -124,7 +124,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		int len = input.length();
 		if (len == 0)
 			return false;
@@ -159,7 +159,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 			else
 				return false;
 
-			return isValid(input, detectMode);
+			return isValid(input, detectMode, count);
 		}
 
 		return false;
@@ -168,7 +168,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return isValid(trimmed);
+		return isValid(trimmed, true, -1);
 	}
 
 	@Override

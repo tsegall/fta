@@ -83,7 +83,7 @@ public class AddressOther extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		// Calculate the length in Code Points so we do not penalize non-ASCII characters
 		final int length = input.codePointCount(0, input.length());
 
@@ -111,7 +111,7 @@ public class AddressOther extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
-		double confidence = (double)matchCount/realSamples;
+		final double confidence = (double)matchCount/realSamples;
 
 		// We really want to see a great header
 		if (headerConfidence < 99)

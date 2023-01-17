@@ -66,7 +66,7 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		return validation(input.trim(), detectMode);
 	}
 

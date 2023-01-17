@@ -33,7 +33,7 @@ public class Correlation {
 	private List<SemanticTypeInfo> semanticTypesList;
 	private TreeMap<String, SemanticTypeInfo>  semanticTypes;
 
-	Correlation(Locale locale) {
+	Correlation(final Locale locale) {
 		this.locale = locale;
 		this.tag = locale.toLanguageTag().replaceAll("-", "_");
 	}
@@ -48,12 +48,12 @@ public class Correlation {
 			}
 
 			semanticTypes = new TreeMap<>();
-			for (SemanticTypeInfo semanticType : semanticTypesList)
+			for (final SemanticTypeInfo semanticType : semanticTypesList)
 				semanticTypes.put(semanticType.semanticType, semanticType);
 		}
 	}
 
-	List<SemanticTypeInfo> getCorrelatedTypes(String semanticType, float threshold) {
+	List<SemanticTypeInfo> getCorrelatedTypes(final String semanticType, final float threshold) {
 		return null;
 	}
 }

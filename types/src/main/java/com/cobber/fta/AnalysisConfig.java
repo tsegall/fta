@@ -352,7 +352,7 @@ public class AnalysisConfig {
 		return trainingMode;
 	}
 
-	public void setTrainingMode(TrainingMode trainingMode) {
+	public void setTrainingMode(final TrainingMode trainingMode) {
 		this.trainingMode = trainingMode;
 	}
 

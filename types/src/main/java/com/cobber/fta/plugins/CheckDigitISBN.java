@@ -82,11 +82,11 @@ public class CheckDigitISBN extends CheckDigitLT {
 		if (charCounts['-'] != 4)
 			return false;
 
-		return isValid(trimmed);
+		return isValid(trimmed, true, -1);
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		if (input.length() == DIGIT_LENGTH)
 			return validator.isValid(input);
 

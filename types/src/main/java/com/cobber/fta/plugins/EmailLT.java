@@ -114,7 +114,7 @@ public class EmailLT extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input, final boolean detectMode) {
+	public boolean isValid(String input, final boolean detectMode, long count) {
 		// This is not strictly correct since RFC 822 does not mandate an '@' but this is what mortals expect
 		if (input.indexOf('@') == -1)
 			return false;

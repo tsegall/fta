@@ -204,21 +204,22 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 	/**
 	 * Is the supplied String an instance of this Semantic type?
-	 * Note: this invokes {@link #isValid(String, boolean)} with true to emulate detection mode.
+	 * Note: this invokes {@link #isValid(String, boolean, long)} with false so using validate mode not detect mode.
 	 * @param input String to check (trimmed for Numeric base Types, un-trimmed for String base Type)
 	 * @return true iff the supplied String is an instance of this Semantic type.
 	 */
 	public boolean isValid(final String input) {
-		return isValid(input, true);
+		return isValid(input, false, 0);
 	}
 
 	/**
 	 * Is the supplied String an instance of this Semantic type?
 	 * @param input String to check (trimmed for Numeric base Types, un-trimmed for String base Type)
 	 * @param detectMode If true then we are in the process of detection, otherwise it is a simple validity check.
+	 * @param count The number of instance of this sample.
 	 * @return true iff the supplied String is an instance of this Semantic type.
 	 */
-	public abstract boolean isValid(final String input, final boolean detectMode);
+	public abstract boolean isValid(final String input, final boolean detectMode, final long count);
 
 	/**
 	 * Given the data to date as embodied by the arguments return an analysis. If we think this is an instance

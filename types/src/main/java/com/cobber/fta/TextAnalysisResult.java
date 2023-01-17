@@ -257,7 +257,7 @@ public class TextAnalysisResult {
 
 		// Check we have an ordered list
 		Double last = null;
-		for (double d : quantiles) {
+		for (final double d : quantiles) {
 			if (last == null) {
 				last = d;
 				continue;
@@ -286,7 +286,7 @@ public class TextAnalysisResult {
 		if (buckets <= 0)
 			throw new IllegalArgumentException("Number of buckets must be > 0.");
 
-		FTAType baseType = facts.getMatchTypeInfo().getBaseType();
+		final FTAType baseType = facts.getMatchTypeInfo().getBaseType();
 		if (FTAType.STRING.equals(baseType) || FTAType.BOOLEAN.equals(baseType))
 			throw new IllegalArgumentException("No Histogram support for either STRING or BOOLEAN types.");
 
@@ -904,7 +904,7 @@ public class TextAnalysisResult {
 			outputArray(detailQ, getValuesAtQuantiles(percentiles));
 
 			final ArrayNode detailH = analysis.putArray("histogram");
-			Histogram.Entry[] histogram = getHistogram(10);
+			final Histogram.Entry[] histogram = getHistogram(10);
 			for (final Histogram.Entry e : histogram)
 				detailH.add(e.getCount());
 		}

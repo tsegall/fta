@@ -38,7 +38,7 @@ import com.cobber.fta.token.TokenStreams;
 public abstract class SimpleWords extends LogicalTypeInfinite {
 	private Set<String> keywordsHash;
 
-	abstract String[] getWords();
+	protected abstract String[] getWords();
 
 	private String regExp = "[-\\p{IsAlphabetic} /]+";
 	private final Set<String> rejected = new HashSet<>();
@@ -111,7 +111,7 @@ public abstract class SimpleWords extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		if (keywordsHash.contains(input.toUpperCase(locale)))
 			return true;
 
@@ -127,7 +127,7 @@ public abstract class SimpleWords extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		if (!isValid(trimmed)) {
+		if (!isValid(trimmed, true, -1)) {
 			rejected.add(trimmed);
 			return false;
 		}

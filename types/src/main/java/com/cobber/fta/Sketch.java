@@ -49,7 +49,7 @@ public class Sketch {
 		ddSketch = DDSketches.unboundedDense(relativeAccuracy);
 	}
 
-	public void accept(String key, Long count) {
+	public void accept(final String key, final Long count) {
 		ddSketch.accept(stringConverter.toDouble(key.trim()), count);
 		totalSketchEntries += count;
 	}
@@ -62,8 +62,8 @@ public class Sketch {
 		return isComplete;
 	}
 
-	public void complete(Map<String, Long> map) {
-		for (Map.Entry<String, Long> entry : map.entrySet()) {
+	public void complete(final Map<String, Long> map) {
+		for (final Map.Entry<String, Long> entry : map.entrySet()) {
 			if (isCardinalityExceeded()) {
 				ddSketch.accept(stringConverter.toDouble(entry.getKey().trim()), entry.getValue());
 				totalSketchEntries += entry.getValue();
@@ -97,10 +97,10 @@ public class Sketch {
 		if (isCardinalityExceeded())
 			return stringConverter.formatted(stringConverter.fromDouble(ddSketch.getValueAtQuantile(quantile)));
 
-		long quest = Math.round(quantile * totalMapEntries);
+		final long quest = Math.round(quantile * totalMapEntries);
 
 		long upto = 0;
-		for (Map.Entry<String, Long> e : typedMap.entrySet()) {
+		for (final Map.Entry<String, Long> e : typedMap.entrySet()) {
 			if (quest >= upto && quest <= upto + e.getValue())
 				return e.getKey();
 			upto += e.getValue();

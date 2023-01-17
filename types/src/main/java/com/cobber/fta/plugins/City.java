@@ -83,7 +83,7 @@ public class City extends LogicalTypeInfinite {
 	// <city>
 	// <city_1] <city_2>
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String trimmedUpper = Utils.cleanse(input.toUpperCase(locale).trim());
 		final int len = trimmedUpper.length();
 		if (len > maxLength)
@@ -138,7 +138,7 @@ public class City extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
-		return isValid(trimmed);
+		return isValid(trimmed, true, 0);
 	}
 
 	@Override

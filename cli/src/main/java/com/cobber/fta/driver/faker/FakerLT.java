@@ -41,7 +41,7 @@ public abstract class FakerLT extends LogicalTypeCode {
 	}
 
 	@Override
-	public boolean isValid(String input, boolean detectMode) {
+	public boolean isValid(String input, boolean detectMode, long count) {
 		return false;
 	}
 

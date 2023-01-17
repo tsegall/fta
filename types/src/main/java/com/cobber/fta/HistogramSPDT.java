@@ -45,7 +45,7 @@ public class HistogramSPDT {
 		}
 
 		@Override
-		public int compareTo(Object other) {
+		public int compareTo(final Object other) {
 	    	return Double.compare(value, ((Bin)other).value);
 	    }
 	}
@@ -78,7 +78,7 @@ public class HistogramSPDT {
 		this.random = new Random(3141592);
 	}
 
-	HistogramSPDT(StringConverter stringConverter, final int maxBins) {
+	HistogramSPDT(final StringConverter stringConverter, final int maxBins) {
 		this.bins = new ArrayList<>();
 		this.stringConverter = stringConverter;
 		this.maxBins = maxBins;
@@ -92,7 +92,7 @@ public class HistogramSPDT {
 	 * @param value The String data point to add to the histogram approximation.
 	 * @param count The count associated with this data point
 	 */
-	public void accept(String value, long count) {
+	public void accept(final String value, final long count) {
 		accept(stringConverter.toDouble(value), count);
 	}
 
@@ -102,7 +102,7 @@ public class HistogramSPDT {
 	 * @param value The data point to add to the histogram approximation.
 	 * @param count The count associated with this data point
 	 */
-	public void accept(double value, long count) {
+	public void accept(final double value, final long count) {
 		observed += count;
 		if (value < minValue)
 			minValue = value;
@@ -114,7 +114,7 @@ public class HistogramSPDT {
 			return;
 		}
 
-		int index = locateInsertion(value);
+		final int index = locateInsertion(value);
 
 		// Check to see if we already have an identical entry
 		if (index < bins.size() && bins.get(index).value == value) {
@@ -165,7 +165,7 @@ public class HistogramSPDT {
 			// Find the two adjacent items with the smallest delta as these are the ones we need to merge
 			// If there are multiple candidates with identical deltas then choose one at random
 			for (int i = 0; i + 1 < bins.size(); i++) {
-				double newDelta = bins.get(i + 1).value - bins.get(i).value;
+				final double newDelta = bins.get(i + 1).value - bins.get(i).value;
 				if (newDelta < delta) {
 					delta = newDelta;
 					index = i;
@@ -176,7 +176,7 @@ public class HistogramSPDT {
 			}
 
 			// Adjust the current item to reflect the merge of it and its successor, then remove the successor
-			long newCount = bins.get(index).count + bins.get(index + 1).count;
+			final long newCount = bins.get(index).count + bins.get(index + 1).count;
 			bins.get(index).value = (bins.get(index).value * bins.get(index).count + bins.get(index + 1).value * bins.get(index + 1).count) /
 					newCount;
 			bins.get(index).count = newCount;
@@ -184,7 +184,7 @@ public class HistogramSPDT {
 		}
 	}
 
-	public HistogramSPDT merge(HistogramSPDT other) {
+	public HistogramSPDT merge(final HistogramSPDT other) {
 		// Smash the two lists together and then sort them
 		bins.addAll(other.bins);
 		Collections.sort(bins);

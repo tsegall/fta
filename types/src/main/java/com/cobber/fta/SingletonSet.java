@@ -124,7 +124,7 @@ public class SingletonSet {
 	}
 
 	public String getRandom(final SecureRandom random) {
-		int size = getMembers().size();
+		final int size = getMembers().size();
 		return MEMBER_CACHE.get(key).get(random.nextInt(size));
 	}
 }

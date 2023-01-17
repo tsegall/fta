@@ -94,13 +94,13 @@ public class NameFull extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
 
-		return validation(inputUpper, detectMode);
+		return validation(inputUpper, detectMode, count);
 	}
 
-	private boolean validation(final String trimmedUpper, final boolean detectMode) {
+	private boolean validation(final String trimmedUpper, final boolean detectMode, final long count) {
 		final List<String> words = Utils.asWords(trimmedUpper, "-");
 		final int wordCount = words.size();
 
@@ -118,15 +118,15 @@ public class NameFull extends LogicalTypeInfinite {
 				initialSeen = true;
 				continue;
 			}
-			if (!suffixSeen && logicalSuffix.isValid(word, detectMode)) {
+			if (!suffixSeen && logicalSuffix.isValid(word, detectMode, -1)) {
 				suffixSeen = true;
 				continue;
 			}
-			if (!honorificSeen && logicalHonorific.isValid(word, detectMode)) {
+			if (!honorificSeen && logicalHonorific.isValid(word, detectMode, -1)) {
 				honorificSeen = true;
 				continue;
 			}
-			if (logicalFirst.isValid(word, detectMode) || logicalLast.isValid(word, detectMode))
+			if (logicalFirst.isValid(word, detectMode, -1) || logicalLast.isValid(word, detectMode, -1))
 				nameCount++;
 		}
 
@@ -141,7 +141,7 @@ public class NameFull extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return validation(trimmed.toUpperCase(Locale.ENGLISH), true);
+		return validation(trimmed.toUpperCase(Locale.ENGLISH), true, 0);
 	}
 
 	@Override

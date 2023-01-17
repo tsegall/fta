@@ -73,7 +73,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 		};
 		final String simpleAddressMarkers[] = { "Street", "St", "Road", "Rd", "Rd.", "Avenue", "Ave", "Terrace", "Drive" };
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		return b.append(1 + random.nextInt(999))
 				.append(' ')
 				.append(streets[random.nextInt(streets.length)])
@@ -85,24 +85,24 @@ public class AddressFullEN extends LogicalTypeInfinite {
 				.append(logicalPostCode.nextRandom()).toString();
 	}
 
-	private int getPostCodeIndex(List<WordOffset> words) {
+	private int getPostCodeIndex(final List<WordOffset> words) {
 		int ret = -1;
 
 		for (int i = 1; i < words.size(); i++) {
-			String word = words.get(i).word;
+			final String word = words.get(i).word;
 			if ("US".equals(country)) {
 				if (word.length() >= 5) {
 					// Always prefer a 5 digit zip if we see one
-					if (logicalPostCode.isValid(word))
+					if (logicalPostCode.isValid(word, true, -1))
 						ret = i;
-					else if (logicalZipPlus.isValid(word) && ret == -1)
+					else if (logicalZipPlus.isValid(word, true, -1) && ret == -1)
 						ret = i;
 				}
 			}
 			else if ("CA".equals(country)) {
-				if (word.length() == 6 && logicalPostCode.isValid(word) ||
+				if (word.length() == 6 && logicalPostCode.isValid(word, true, -1) ||
 						(word.length() == 3 && Utils.isSimpleAlpha(word.charAt(0)) && Utils.isSimpleNumeric(word.charAt(1)) && Utils.isSimpleAlpha(word.charAt(2)) &&
-						i + 1 < words.size() && logicalPostCode.isValid(word + " " + words.get(i + 1).word)))
+						i + 1 < words.size() && logicalPostCode.isValid(word + " " + words.get(i + 1).word, true, -1)))
 					ret = i;
 			}
 
@@ -146,7 +146,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		return validation(input.trim());
 	}
 
@@ -182,10 +182,10 @@ public class AddressFullEN extends LogicalTypeInfinite {
 		}
 
 		for (int i = start; i < wordCount; i++) {
-			String word = words.get(i).word;
-			if (logicalState.isValid(word))
+			final String word = words.get(i).word;
+			if (logicalState.isValid(word, true, -1))
 				stateIndex = i;
-			else if (logicalCountry.isValid(word))
+			else if (logicalCountry.isValid(word, true, -1))
 				countryIndex = i;
 			else if (addressMarkers.contains(word)) {
 				if (addressMarkerIndex == -1)
@@ -201,7 +201,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 
 		// Unfortunately some States have spaces in them so if we have not found a state but and it is worth searching (look harder)
 		if (stateIndex == -1 && score >= 2) {
-			for (String state : logicalState.getMembers()) {
+			for (final String state : logicalState.getMembers()) {
 				int offset = -1;
 				if (state.indexOf(' ') != -1 && (offset = upper.indexOf(state)) != -1) {
 					for (int i = 0; i < wordCount; i++) {

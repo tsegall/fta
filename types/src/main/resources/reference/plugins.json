@@ -2318,7 +2318,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(surname|last.?name|lname|maiden.?name|name.?last|last_nm).*", "confidence": 90 },
+				"headerRegExps": [ { "regExp": ".*(?i)(surname|last.?name|lname|maiden.?name|name.?last|last_nm).*|last", "confidence": 90 },
 					{ "regExp": "(?i)(name|.*last.*)", "confidence": 60 }, { "regExp": "(?i).*city.*", "confidence": -100 } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
@@ -2333,7 +2333,8 @@
 			},
 			{
 				"localeTag": "es",
-				"headerRegExps": [ { "regExp": ".*(?i)(apellido).*", "confidence": 90 }, { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(apellido).*", "confidence": 90 }, { "regExp": ".*(?i)(nombre).*", "confidence": 60 },
+					{ "regExp": "(?i).*ciudad.*", "confidence": -100 } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
 				} ]

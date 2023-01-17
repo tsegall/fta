@@ -85,7 +85,7 @@ public class Processor {
 			System.out.printf("\"%s\"%n", row[options.col]);
 		if (options.pluginName != null && options.pluginMode != null) {
 			if (row[options.col] != null && !row[options.col].trim().isEmpty())
-				System.out.printf("'%s': %b%n", row[options.col], logicalType.isValid(row[options.col], options.pluginMode));
+				System.out.printf("'%s': %b%n", row[options.col], logicalType.isValid(row[options.col], options.pluginMode, 0));
 		}
 		else if (!options.noAnalysis)
 			analyzers[options.col].train(row[options.col]);

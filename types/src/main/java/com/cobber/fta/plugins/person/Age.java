@@ -98,7 +98,7 @@ public class Age extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final int periodOffset = input.indexOf('.');
 		String integerPart;
 
@@ -117,7 +117,7 @@ public class Age extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed);
+		return isValid(trimmed, true, -1);
 	}
 
 	@Override

@@ -25,6 +25,8 @@ import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.SingletonSet;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
@@ -70,7 +72,11 @@ public class LastName extends PersonName {
 	private Set<String> plausibleSet = new HashSet<>();
 	private Set<String> badFirstSet = new HashSet<>();
 	private Set<String> badSecondSet = new HashSet<>();
-	private long singles = 0;
+	private String language;
+	private Set<String> suffixes = null;
+	private long lengthSum = 0;
+	private long sampleCount = 0;
+	private long bad = 0;
 
 	/**
 	 * Construct a Last Name plugin based on the Plugin Definition.
@@ -85,7 +91,18 @@ public class LastName extends PersonName {
 	}
 
 	@Override
-	public boolean isPlausible(final String candidate) {
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
+
+		language = locale.getLanguage();
+		suffixes = new SingletonSet("resource", "/reference/en_name_suffix.csv").getMembers();
+
+		return true;
+	}
+
+
+	@Override
+	protected boolean isPlausible(final String candidate) {
 		if (candidate.length() <= 2 || !plausibleSet.contains(candidate.substring(0, 2)))
 			return false;
 
@@ -94,74 +111,134 @@ public class LastName extends PersonName {
 		return candidate.hashCode() % 10 < 5;
 	}
 
-	private boolean trackSingle(final String input, final boolean detectMode) {
-		boolean ret = super.isValid(input, detectMode);
-		if (ret)
-			singles++;
-		return ret;
-	}
-
 	/*
 	 * Note: The input String will be both trimmed and converted to upper Case
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
+		final int ret = isValidCore(input, detectMode, count);
+
+		if (detectMode && count != 0) {
+			if (ret >= 1) {
+				sampleCount += count;
+				lengthSum += ret * count;
+			}
+			else if (ret == -1)
+				bad += count;
+		}
+
+		return ret > 0;
+	}
+
+	private boolean hasValidSuffix(final String input) {
+		final String trimmed = input.trim();
+		for (String suffix : suffixes)
+			if (trimmed.endsWith(suffix))
+				return true;
+		return false;
+	}
+
+	private boolean averageLengthOK() {
+		if ("es".equals(language))
+			return (double)lengthSum/sampleCount < 2.5;
+
+		return (double)lengthSum/sampleCount < 1.5;
+	}
+
+	/*
+	 * Handle the following cases:
+	 *  - Simple name, e.g. JEFFERSON
+	 *  - Space separate last names (max 3), e.g. BARON COHEN, DE LA RENTA
+	 *  - Hyphen separated name (max 2), e.g. DAY-LEWIS
+	 *  - Name followed by suffix, e.g. BUSH SR (or BUSH, SR)
+	 *
+	 * Return value:
+	 *  -1 = rubbish
+	 *   0 = looks OK but does not pass validity test
+	 *   >1 = Number of words in a valid name
+	 */
+	private int isValidCore(final String input, final boolean detectMode, final long count) {
 		final String trimmedUpper = input.trim().toUpperCase(locale);
 		final int len = trimmedUpper.length();
 
-		if (!Character.isLetter(trimmedUpper.charAt(0)) || !Character.isLetter(trimmedUpper.charAt(len - 1)))
-			return false;
-
 		int separatorOffset = -1;
+		char separator = ' ';
+		int spaces = 0;
 		for (int i = 0; i < len; i++) {
 			final char ch = trimmedUpper.charAt(i);
 			if (Character.isLetter(ch))
 				continue;
-			if (separatorOffset == -1 && (ch == '-' || ch == ' '))
+			if (separatorOffset == -1 && (ch == '-' || ch == ' ' || ch == ',')) {
 				separatorOffset = i;
-			else
-				return trackSingle(input, detectMode);
+				separator = ch;
+				continue;
+			}
+			if (separatorOffset != -1 && ch == '.')
+				continue;
+			if (ch != ' ')
+				return -1;
+
+			spaces++;
 		}
 
 		if (separatorOffset == -1)
-			return trackSingle(input, detectMode);
+			return super.isValid(input, detectMode, count) ? 1 : 0;
 
 		if (separatorOffset < 2 || separatorOffset >= trimmedUpper.length() - 2)
-			return false;
+			return -1;
 
 		final String first = trimmedUpper.substring(0, separatorOffset);
-		final String second = trimmedUpper.substring(separatorOffset + 1);
+		if (!Utils.isAlphas(first))
+			return 0;
 
-		if (!Utils.isAlphas(first) || !Utils.isAlphas(second))
-			return false;
+		int wordCount = 2;
+		String second = trimmedUpper.substring(separatorOffset + 1).trim();
+		if (separator == ' ' && spaces != 0) {
+			String[] words = second.split(" ");
+			second = words[0];
+			wordCount = words.length + 1;
+			if (wordCount > 3)
+				return -1;
+		}
 
-		final char separator = trimmedUpper.charAt(separatorOffset);
+		if (separator == ',')
+			return hasValidSuffix(second) ? 1 : -1;
+
+		final boolean firstMatch = getMembers().contains(first);
+
 		// Reject a set of unlikely names (typically these are Cities)
-		if (separator == ' ' && (badFirstSet.contains(first) || badSecondSet.contains(second)))
-			return false;
+		if (separator == ' ') {
+			if (badFirstSet.contains(first) || badSecondSet.contains(second))
+				return 0;
+			if (firstMatch && hasValidSuffix(second))
+				return 1;
+		}
 
-		boolean firstMatch = getMembers().contains(first);
-		boolean secondMatch = getMembers().contains(second);
+		if (!Utils.isAlphas(second))
+			return 0;
+
+		final boolean secondMatch = getMembers().contains(second);
 
 		// Declares success if
 		//  - both components of last name are good
 		//  - either component of the hyphenated name is good
 		//  - second component of the space separated name is good
-		if ((firstMatch && secondMatch) || ((firstMatch || secondMatch) && separator == '-') || (secondMatch && separator == ' '))
-			return true;
+		if ((firstMatch && secondMatch) || ((firstMatch || secondMatch) && (separator == '-' || "es".equals(language))) || (secondMatch && separator == ' '))
+			return wordCount;
 
 		if (!detectMode)
-			return true;
+			return wordCount;
 
-		return separator != ' ' && isPlausible(trimmedUpper);
+		return separator == '-' && isPlausible(first) && isPlausible(second) ? wordCount : 0;
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
 			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		// We expect to see at least some last names that are not double-barreled, prevents us from preempting FIRST_LAST
-		if (singles == 0)
+		if (realSamples > 10 && !averageLengthOK())
+			return PluginAnalysis.SIMPLE_NOT_OK;
+		if (getHeaderConfidence(context.getStreamName()) < 90 && realSamples > 10 && (100*bad)/realSamples > 1)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 		return super.analyzeSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig);
 	}

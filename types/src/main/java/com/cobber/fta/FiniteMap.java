@@ -43,7 +43,7 @@ public class FiniteMap implements Map<String, Long> {
 	}
 
 	public void sortByKey(final NavigableMap<String, Long> newMap) {
-		for (Map.Entry<String, Long> entry : impl.entrySet())
+		for (final Map.Entry<String, Long> entry : impl.entrySet())
 			newMap.merge(entry.getKey(), entry.getValue(), Long::sum);
 
 		impl = newMap;
@@ -134,7 +134,7 @@ public class FiniteMap implements Map<String, Long> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		FiniteMap other = (FiniteMap)o;
 		return o != null && impl.equals(other.impl) && maxCapacity == other.maxCapacity;
 	}

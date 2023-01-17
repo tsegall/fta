@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 12.5.0
+ - ENH: Change plugin interface to enable counting of detection entries (and use to improve Last Name detection, also add tests)
+ - ENH: Improve set of recognized Street Markers
+
 ### 12.4.1
  - ENH: If using linear (not bulk) then if we have not detected a Semantic Type try replaying accumulated set in Bulk mode this has the potential to pick up entries where the first <n> (by default 20) are misleading.
  - ENH: Bump google phone number library

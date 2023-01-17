@@ -20,7 +20,7 @@ import com.cobber.fta.PluginDefinition;
 * Plugin to detect Race (Person).
 */
 public class Race extends SimpleWords {
-	public Race(PluginDefinition plugin) {
+	public Race(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -33,7 +33,7 @@ public class Race extends SimpleWords {
 	};
 
 	@Override
-	String[] getWords() {
+	protected String[] getWords() {
 		return raceWordsEN;
 	}
 }

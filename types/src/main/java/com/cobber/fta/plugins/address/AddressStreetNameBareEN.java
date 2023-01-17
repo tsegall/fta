@@ -74,7 +74,7 @@ public class AddressStreetNameBareEN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
 
 		return validation(inputUpper, detectMode);

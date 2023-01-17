@@ -84,7 +84,7 @@ public class DayDigits extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(final String input, final boolean detectMode) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		if (input.length() >= 3 || !Utils.isNumeric(input))
 			return false;
 		final int day = Integer.valueOf(input);
@@ -93,7 +93,7 @@ public class DayDigits extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return isValid(trimmed);
+		return isValid(trimmed, true, 0);
 	}
 
 	@Override
