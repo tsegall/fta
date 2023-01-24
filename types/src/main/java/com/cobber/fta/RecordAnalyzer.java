@@ -87,13 +87,20 @@ public class RecordAnalyzer {
 		}
 
 		// For any stream where we have not already determined a Semantic type - try again providing the overall Semantic Type context
-		for (int i = 0; i < streamCount; i++) {
-			if (!results[i].isSemanticType()) {
-				// Update the Context with all the Semantic Type information we have calculated
-				analyzers[i].setContext(analyzers[i].getContext().withSemanticTypes(semanticTypes));
-				results[i] = reAnalyze(analyzers[i], results[i]);
+		int pickups;
+		do {
+			pickups = 0;
+			for (int i = 0; i < streamCount; i++) {
+				if (!results[i].isSemanticType()) {
+					// Update the Context with all the Semantic Type information we have calculated
+					analyzers[i].setContext(analyzers[i].getContext().withSemanticTypes(semanticTypes));
+					results[i] = reAnalyze(analyzers[i], results[i]);
+					semanticTypes[i] = results[i].getSemanticType();
+					if (results[i].isSemanticType())
+						pickups++;
+				}
 			}
-		}
+		} while (pickups != 0);
 
 		// Now do Entity detection based on the Semantic Type analysis
 

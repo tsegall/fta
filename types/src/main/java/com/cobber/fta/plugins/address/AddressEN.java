@@ -189,11 +189,9 @@ public class AddressEN extends LogicalTypeInfinite {
 
 		final String[] semanticTypes = context.getSemanticTypes();
 		final int current = context.getStreamIndex();
-		final boolean nextSemanticTypeInfoAvailable = semanticTypes != null && current != -1 && current != semanticTypes.length - 1;
 		final boolean previousSemanticTypeInfoAvailable = semanticTypes != null && current >= 1;
-		final boolean previousIsAddress = previousSemanticTypeInfoAvailable && semanticTypes[current - 1] != null && semanticTypes[current - 1].startsWith("STREET_ADDRESS");
 
-		if (previousIsAddress ||
+		if (context.isPreviousSemanticType("STREET_ADDRESS_EN", "STREET_ADDRESS2_EN", "STREET_ADDRESS3_EN") ||
 				// If we have all the headers then we can check if this one is less likely to be the primary address field than the previous one
 				(!previousSemanticTypeInfoAvailable && (current >= 1 && getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) > getHeaderConfidence(dataStreamName))))
 			return 0.0;
@@ -202,7 +200,7 @@ public class AddressEN extends LogicalTypeInfinite {
 		double confidence = (double)matchCount/realSamples;
 
 		// Does the next field have a Semantic Type that indicates it is a Street Address 2
-		if (nextSemanticTypeInfoAvailable && confidence > 0.1 && "STREET_ADDRESS2_EN".equals(semanticTypes[context.getStreamIndex() + 1])) {
+		if (confidence > 0.1 && context.isNextSemanticType("STREET_ADDRESS2_EN")) {
 			// If this header is the same as the next but with a 2 switched for a '1' then we are extremely confident
 			final String nextStreamName = context.getCompositeStreamNames()[current + 1];
 

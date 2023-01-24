@@ -35,6 +35,7 @@ public class DriverOptions {
 	protected int debug = -1;
 	protected String semanticTypes;
 	protected boolean json;
+	// Used to pass in a list of known Semantic Types - e.g. User-stated, or previously identified in some manner
 	protected String knownTypes;
 	protected boolean legacyJSON;
 	protected boolean noAnalysis;

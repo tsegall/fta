@@ -350,7 +350,7 @@
 		"signature": "f4aT7BMSi+IsDI0LannEVYe/uQI=",
 		"clazz": "com.cobber.fta.plugins.address.AddressStreetNameBareEN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i).*(street|road).?name", "confidence": 99, "mandatory": true } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i).*(street|road).?name", "confidence": 99, "mandatory": true }, { "regExp": "(?i).*(name|street)", "confidence": 60, "mandatory": true } ] }
 		],
 		"threshold": 90,
 		"priority": 78
@@ -399,7 +399,7 @@
 		"signature": "JFmqXYZjmq/aTw/EALlxloQ/tgQ=",
 		"clazz": "com.cobber.fta.plugins.address.AddressStreetNumber",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(number|no)", "confidence": 90, "mandatory": true } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street.?number)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(number|no)", "confidence": 90, "mandatory": true } ] }
 		],
 		"threshold": 95,
 		"priority": 82

@@ -129,6 +129,48 @@ public class AnalyzerContext {
 		return semanticTypes;
 	}
 
+	/*
+	 * Check whether any of the supplied Semantic Types is the type subsequent to this one.
+	 * @param searching The list of Semantic Types to check.
+	 * @return True if the subsequent type exists and matches an item from the list.
+	 */
+	public boolean isNextSemanticType(final String... searching) {
+		if (semanticTypes == null)
+			return false;
+
+		final int current = getStreamIndex();
+		if (current == -1 || current == semanticTypes.length - 1)
+			return false;
+
+		for (String semanticType : searching) {
+			if (semanticType.equals(semanticTypes[current + 1]))
+				return true;
+		}
+
+		return false;
+	}
+
+	/*
+	 * Check whether any of the supplied Semantic Types is the type prior to this one.
+	 * @param searching The list of Semantic Types to check.
+	 * @return True if the prior type exists and matches an item from the list.
+	 */
+	public boolean isPreviousSemanticType(final String... searching) {
+		if (semanticTypes == null)
+			return false;
+
+		final int current = getStreamIndex();
+		if (current == -1 || current == 0)
+			return false;
+
+		for (String semanticType : searching) {
+			if (semanticType.equals(semanticTypes[current - 1]))
+				return true;
+		}
+
+		return false;
+	}
+
 	@Override
 	public boolean equals(final Object obj) {
 		if (this == obj)

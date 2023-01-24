@@ -35,6 +35,8 @@ public class AddressCommon {
 	private static HashSet<String> modifiersWithArgument = new HashSet<>();
 	private static HashSet<String> modifiersAny = new HashSet<>();
 	private static HashSet<String> textDigit = new HashSet<>();
+	private static HashSet<String> ordinal = new HashSet<>();
+	private static HashSet<String> ordinalIndicator = new HashSet<>();
 	private static HashSet<String> initialMarker = new HashSet<>();
 
 	static {
@@ -85,6 +87,22 @@ public class AddressCommon {
 		textDigit.add("NINE");
 		textDigit.add("TEN");
 
+		ordinal.add("FIRST");
+		ordinal.add("SECOND");
+		ordinal.add("THIRD");
+		ordinal.add("FOURTH");
+		ordinal.add("FIFTH");
+		ordinal.add("SIXTH");
+		ordinal.add("SEVENTH");
+		ordinal.add("EIGHT");
+		ordinal.add("NINTH");
+		ordinal.add("TENTH");
+
+		ordinalIndicator.add("ST");
+		ordinalIndicator.add("ND");
+		ordinalIndicator.add("RD");
+		ordinalIndicator.add("TH");
+
 		initialMarker.add("AVENUE");
 		initialMarker.add("AVE");
 		initialMarker.add("INTERSTATE");
@@ -108,11 +126,11 @@ public class AddressCommon {
 	}
 
 	/**
-	 * This routine attempts to determine if the input is 'numeric' in the context of an address.
+	 * Attempt to determine if the input is 'numeric' in the context of an address.
 	 * For example, in '110A Eton Drive', 'One Broadway', '45 Penaton St', '312-314 Kings Rd.', '5/2 Hanlon Crescent' are all valid
 	 * addresses and should return true.
 	 * @param input The input to test.
-	 * @return True if the input looks plausible as the start of an address.
+	 * @return True if the input looks plausible as a 'numeric'.
 	 */
 	public static boolean isAddressNumber(final String input) {
 		// Check for a simple text digit - e.g. 'One', 'Two' etc.
@@ -155,6 +173,41 @@ public class AddressCommon {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Attempt to determine if the input is a 'numeric' street name in the context of an address.
+	 * For example, 110th, 2nd, Fourth.
+	 * @param input The input to test.
+	 * @return True if the input looks plausible as a 'numeric' street name.
+	 */
+	public static boolean numericStreetName(final String input) {
+		if (input == null)
+			return false;
+		final int len = input.length();
+		if (len == 0)
+			return false;
+		final char firstCh = input.charAt(0);
+		if (Character.isLetter(firstCh))
+			return ordinal.contains(input);
+		if (!Character.isDigit(firstCh))
+			return false;
+
+		int digits = 0;
+		int i = 0;
+
+		while (i < len) {
+			if (!Character.isDigit(input.charAt(i)))
+				break;
+
+			digits++;
+			i++;
+		}
+
+		if (digits == 0 || i == len)
+			return false;
+
+		return ordinalIndicator.contains(input.substring(i).trim());
 	}
 
 	private static boolean isTextDigit(final String input) {

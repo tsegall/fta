@@ -92,14 +92,15 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
-		final String[] semanticTypes = context.getSemanticTypes();
-		final boolean semanticTypeInfoAvailable = semanticTypes != null && context.getStreamIndex() != -1 && context.getStreamIndex() != semanticTypes.length - 1;
+		double confidence = (double)matchCount/realSamples;
+		if (getHeaderConfidence(context.getStreamName()) >= 99)
+			return confidence;
 
 		// The next field must have a Semantic Type that indicates it is a Street name (with or without the marker)
-		if (!semanticTypeInfoAvailable ||
-				(!"STREET_NAME_EN".equals(semanticTypes[context.getStreamIndex() + 1])) && !"STREET_NAME_BARE_EN".equals(semanticTypes[context.getStreamIndex() + 1]))
+		if (!context.isNextSemanticType("STREET_NAME_EN", "STREET_NAME_BARE_EN"))
 			return 0.0;
-		return (double)matchCount/realSamples;
+
+		return confidence;
 	}
 
 	@Override

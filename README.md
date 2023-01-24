@@ -312,7 +312,7 @@ COORDINATE.NORTHING|Coordinate - Northing|*
 COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|*
 COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2|*
 COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|*
-COUNTRY.TEXT_&lt;Language&gt;|Country as a string|de, en
+COUNTRY.TEXT_&lt;Language&gt;|Country as a string|de, en, es
 CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|*
 CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|*
 CURRENCY.TEXT_EN|Currency Name|en

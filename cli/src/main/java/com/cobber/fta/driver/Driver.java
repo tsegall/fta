@@ -90,7 +90,7 @@ public class Driver {
 				error.println(" --formatDetection - Enable Format Detection");
 				error.println(" --help - Print this help");
 				error.println(" --json - Output as JSON");
-				error.println(" --knownTypes <SemanticTypes> - Comma separated list of of Semantic Types");
+				error.println(" --knownTypes <SemanticTypes> - Comma separated list of Semantic Types");
 				error.println(" --legacyJSON - Output legacy JSON - compatible with FTA 11.X or lower");
 				error.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 				error.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");

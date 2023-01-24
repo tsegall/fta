@@ -77,17 +77,47 @@ public class AddressStreetNameBareEN extends LogicalTypeInfinite {
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String inputUpper = input.trim().toUpperCase(Locale.ENGLISH);
 
-		return validation(inputUpper, detectMode);
+		return validation(inputUpper, detectMode, count);
 	}
 
-	private boolean validation(final String trimmedUpper, final boolean detectMode) {
+	@Override
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
+		final String dataStreamName = context.getStreamName();
+
+		final int headerConfidence = getHeaderConfidence(dataStreamName);
+		double confidence = (double)matchCount/realSamples;
+		if (headerConfidence >= 99) {
+			if (context.isNextSemanticType("STREET_MARKER_EN"))
+				confidence = Math.min(confidence + 0.20, 1.0);
+			return confidence;
+		}
+		if (headerConfidence >= 60 && context.isNextSemanticType("STREET_MARKER_EN")) {
+			if (context.isPreviousSemanticType("DIRECTION", "STREET_NUMBER"))
+				confidence = Math.min(confidence + 0.20, 1.0);
+			return confidence;
+		}
+
+		return 0.0;
+	}
+
+	private boolean validation(final String trimmedUpper, final boolean detectMode, final long count) {
 		final List<String> words = Utils.asWords(trimmedUpper, "-#");
 		final int wordCount = words.size();
 
-		if (words.size() > 3)
+		if (wordCount == 0)
 			return false;
 
-		for (int i = wordCount - 1; i >= 0; i--)
+		final String firstWord = words.get(0);
+		if (wordCount == 1 && ("GREEN".equals(firstWord) || "PARK".equals(firstWord) || "BROADWAY".equals(firstWord)))
+			return true;
+
+		if (wordCount == 2 && ("VIEW".equals(words.get(1)) || "HILL".equals(words.get(1))))
+			return true;
+
+		if (wordCount > 3 || (wordCount == 1 && addressMarkers.contains(firstWord)))
+			return false;
+
+		for (int i = wordCount - 1; i >= 1; i--)
 			if (addressMarkers.contains(words.get(i)))
 				return false;
 
@@ -96,11 +126,14 @@ public class AddressStreetNameBareEN extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return validation(trimmed.toUpperCase(Locale.ENGLISH), true);
+		return validation(trimmed.toUpperCase(Locale.ENGLISH), true, 0);
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		return getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
+		if (getConfidence(matchCount, realSamples, context) < getThreshold()/100.0)
+			return PluginAnalysis.SIMPLE_NOT_OK;
+
+		return PluginAnalysis.OK;
 	}
 }

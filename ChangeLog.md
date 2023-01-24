@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 12.5.1
+ - ENH: Improve detection of STREET_NUMBER and STREET_ADDRESS_BARE_EN
+ - ENH: For RecordAnalyzer loop if any new Semantic Type detected (hopefully we pick up others on a subsequent pass)
+ - ENH: Bump google phone number library
+
 ### 12.5.0
  - ENH: Change plugin interface to enable counting of detection entries (and use to improve Last Name detection, also add tests)
  - ENH: Improve set of recognized Street Markers
