@@ -312,11 +312,11 @@ COORDINATE.NORTHING|Coordinate - Northing|*
 COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|*
 COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2|*
 COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|*
-COUNTRY.TEXT_&lt;Language&gt;|Country as a string|de, en, es
+COUNTRY.TEXT_&lt;Language&gt;|Country as a string|de, en, es, nl
 CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|*
 CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|*
 CURRENCY.TEXT_EN|Currency Name|en
-DAY.DIGITS|Day represented as a number (1-31)|*
+DAY.DIGITS|Day represented as a number (1-31)|en, es, nl
 DAY.ABBR_&lt;Locale&gt;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
 DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
 DIRECTION|Cardinal Direction|*
@@ -347,7 +347,7 @@ LANGUAGE.ISO-639-2|Language code - ISO 639, two character|*
 LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...|en
 MACADDRESS|MAC Address|*
 MONTH.ABBR_&lt;Locale&gt;|Month Abbreviation &lt;LOCALE&gt; = Locale, for example, en-US for English language in US|Current Locale
-MONTH.DIGITS|Month represented as a number (1-12)|*
+MONTH.DIGITS|Month represented as a number (1-12)|en, es, nl
 MONTH.FULL_&lt;Locale&gt;|Full Month name &lt;LOCALE&gt; = Locale, for example, en-US for English language in US|Current Locale
 NAME.FIRST|First Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.FIRST_LAST|Merged Name (First Last)|br, de, do, en, es, fr, gt, mx, nl, pr, pt

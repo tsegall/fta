@@ -530,6 +530,10 @@
 				"headerRegExps": [ { "regExp": "(?i)(?u)(età)", "confidence": 90, "mandatory": true } ]
 			},
 			{
+				"localeTag":  "nl",
+				"headerRegExps": [ { "regExp": "(?i)(leeftijd)", "confidence": 90, "mandatory": true } ]
+			},
+			{
 				"localeTag":  "pt",
 				"headerRegExps": [ { "regExp": "(?i)(idade)", "confidence": 90, "mandatory": true } ]
 			}
@@ -657,7 +661,6 @@
 		"description": "Country as a string (Spanish)",
 		"pluginType": "list",
 		"signature": "fot3XHPIh18wTcBDyeN3DlY7LYY=",
-		"clazz": "com.cobber.fta.plugins.CountryES",
 		"validLocales": [
 			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(pais).*", "confidence": 90 } ] }
 		],
@@ -666,6 +669,20 @@
 		"threshold": 90,
 		"backout": "[\\p{IsAlphabetic}\\.]+",
 		"priority": 97
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_NL",
+		"description": "Country as a string (Dutch)",
+		"pluginType": "list",
+		"signature": "SVnejJJWKhuw1LMRsCaHojewEOk=",
+		"validLocales": [
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/nl_countries.csv",
+		"contentType": "resource",
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 98
 	},
 	{
 		"semanticType": "MONTH.ABBR_<LOCALE>",
@@ -1423,7 +1440,7 @@
 		"pluginType": "list",
 		"signature": "WyaPkc1jgevOXlDl5bt1Za4j8ko=",
 		"validLocales": [
-			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country|pais).*", "confidence": 70 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country|pais|land.?code).*", "confidence": 70 } ] }
 		],
 		"content": "/reference/ISO-3166-3.csv",
 		"contentType": "resource",
@@ -1436,7 +1453,7 @@
 		"pluginType": "list",
 		"signature": "2ySMIn/48aoAVrw/OwOCKdYI4OE=",
 		"validLocales": [
-			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country).*", "confidence": 70 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country||land.?code).*", "confidence": 70 } ] }
 		],
 		"content": "/reference/ISO-3166-2.csv",
 		"contentType": "resource",
@@ -1991,6 +2008,14 @@
 			{
 				"localeTag": "en",
 				"headerRegExps": [ { "regExp": ".*(?i)(month)|(i?)(month).*", "confidence": 99, "mandatory": true } ]
+			},
+			{
+				"localeTag": "es",
+				"headerRegExps": [ { "regExp": ".*(?i)(mes)|(i?)(mes).*", "confidence": 99, "mandatory": true } ]
+			},
+			{
+				"localeTag": "nl",
+				"headerRegExps": [ { "regExp": ".*(?i)(maand)|(i?)(maand).*", "confidence": 99, "mandatory": true } ]
 			}
 		],
 		"threshold": 98,
@@ -2009,6 +2034,18 @@
 				"headerRegExps": [
 					{ "regExp": "(?i)day", "confidence": 99, "mandatory": true },
 					{ "regExp": ".*(?i)(day|cycle).*", "confidence": 90, "mandatory": true }
+				]
+			},
+			{
+				"localeTag": "es",
+				"headerRegExps": [
+					{ "regExp": "(?i)(?u)día", "confidence": 99, "mandatory": true }
+				]
+			},
+			{
+				"localeTag": "nl",
+				"headerRegExps": [
+					{ "regExp": "(?i)dag", "confidence": 99, "mandatory": true }
 				]
 			}
 		],

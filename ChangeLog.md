@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 12.6.1
+ - ENH: I18N - Detect PERSON.AGE in Dutch
+ - ENH: I18N - Detect COUNTRY.ISO-3166-2, COUNTRY.ISO-3166-3 in Dutch
+ - ENH: I18N - Detect MONTH.DIGITS/DAY.DIGITS in Dutch & Spanish
+ - ENG: I18N - Add new Semantic Type - COUNTRY.TEXT_NL (akin to COUNTRY.TEXT_EN)
+
 ### 12.6.0
  - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.MUNICIPALITY_NL - Dutch Municipality
  - ENH: I18N - Add new Semantic Type - STREET_NAME_BARE_NL (akin to STREET_NAME_BARE_EN)
