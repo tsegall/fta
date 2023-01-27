@@ -1,6 +1,16 @@
 
 ## Changes ##
 
+### 12.6.0
+ - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.MUNICIPALITY_NL - Dutch Municipality
+ - ENH: I18N - Add new Semantic Type - STREET_NAME_BARE_NL (akin to STREET_NAME_BARE_EN)
+ - ENG: I18N - Add new Semantic Type - NATIONALITY_NL (akin to NATIONALITY_EN)
+ - ENH: I18N - Add Telefoon as a TELEPHONE header for Dutch
+ - ENH: I18N - Add a set of the most common Dutch first names
+ - ENH: I18N - Add 'plaats/woonplaats' to detect CITY in Dutch
+ - ENH: I18N - Improve FREE_TEXT detection in Dutch
+ - ENH: I18N - Detect STREET_NUMBER in Dutch
+
 ### 12.5.1
  - ENH: Improve detection of STREET_NUMBER and STREET_ADDRESS_BARE_EN
  - ENH: For RecordAnalyzer loop if any new Semantic Type detected (hopefully we pick up others on a subsequent pass)

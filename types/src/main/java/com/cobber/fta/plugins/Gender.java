@@ -35,7 +35,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Gender.
  */
 public class Gender extends LogicalTypeFinite {
-	/** The Semantic type for this Plugin. */
 	public static final String SEMANTIC_TYPE = "GENDER.TEXT_";
 
 	private static final String BACKOUT_REGEX = "\\p{IsAlphabetic}+";

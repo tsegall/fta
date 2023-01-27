@@ -297,7 +297,7 @@ CHECKDIGIT.ISIN|International Securities Identification Number|*
 CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit (and length between 8 and 30 inclusive)|*
 CHECKDIGIT.SEDOL|UK/Ireland Security Identifier|*
 CHECKDIGIT.UPC|Universal Product Code|*
-CITY|City/Town|en
+CITY|City/Town|en, nl
 COLOR.HEX|Hex Color code|*
 COLOR.TEXT_EN|Color name|*
 COMPANY_NAME|Company Name|en
@@ -356,7 +356,7 @@ NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, nl, pr
 NAME.MIDDLE|Middle Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.MIDDLE_INITIAL|Middle Initial|br, de, do, en, es, fr, gt, mx, nl, pr, pt
 NAME.SUFFIX|Name Suffix|en
-NATIONALITY_EN|Nationality|en
+NATIONALITY_&lt;Language&gt;|Nationality|en, nl
 PERIOD.HALF|Half (Year)|*
 PERIOD.QUARTER|Quarter (Year)|*
 PERIOD.YEAR_RANGE|Year Range|*
@@ -377,6 +377,7 @@ STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|pt-PT
 STATE_PROVINCE.INSEE_CODE_FR|French Insee Code (5 digit)|fr-FR
 STATE_PROVINCE.MUNICIPALITY_BR|Brazilian Municipality|pt-BR
 STATE_PROVINCE.MUNICIPALITY_CO|Colombian Municipality|es-CO
+STATE_PROVINCE.MUNICIPALITY_NL|Dutch Municipality|nl-NL
 STATE_PROVINCE.PREFECTURE_NAME_JP|Japanese Prefecture Name|ja
 STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA, en-US
 STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
@@ -399,8 +400,8 @@ STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
 STREET_ADDRESS3_EN|Street Address - Line 3 (English Language)|en
 STREET_MARKER_EN| Street Suffix (English Language)|en
 STREET_NAME_EN|Street Name (English Language)|en
-STREET_NAME_BARE_EN|Street Name - no Marker (English Language)|en
-STREET_NUMBER|Street Number|en
+STREET_NAME_BARE_&lt;Language&gt;|Street Name - no Marker|en, nl
+STREET_NUMBER|Street Number|en, nl
 TELEPHONE|Telephone Number (Generic)|*
 TIMEZONE.IANA|IANA Time Zone (Olson)|*
 URI.URL|URL - see RFC 3986|*

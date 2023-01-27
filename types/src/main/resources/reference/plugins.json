@@ -46,7 +46,7 @@
 		"pluginType": "java",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
 		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|Mobiel|móvil|movil|telephone|telefono|telefon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|Mobiel|móvil|movil|telephone|telefono|telefon|telefoon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
 		"baseType": "STRING",
 		"priority": 40
 	},
@@ -399,7 +399,8 @@
 		"signature": "JFmqXYZjmq/aTw/EALlxloQ/tgQ=",
 		"clazz": "com.cobber.fta.plugins.address.AddressStreetNumber",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street.?number)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(number|no)", "confidence": 90, "mandatory": true } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street.?number)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(number|no)", "confidence": 90, "mandatory": true } ] },
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)(huisnummer|huisnr.*)", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 95,
 		"priority": 82
@@ -430,6 +431,18 @@
 		],
 		"threshold": 90,
 		"priority": 83
+	},
+	{
+		"semanticType": "STREET_NAME_BARE_<LANGUAGE>",
+		"description": "Street Address",
+		"pluginType": "java",
+		"signature": "[NONE]",
+		"clazz": "com.cobber.fta.plugins.address.AddressStreetNameBare",
+		"validLocales": [
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)^(straat|straatnaam)$", "confidence": 99, "mandatory": true } ] }
+		],
+		"threshold": 90,
+		"priority": 84
 	},
 	{
 		"semanticType": "GENDER.TEXT_<LANGUAGE>",
@@ -581,6 +594,20 @@
 		"priority": 92
 	},
 	{
+		"semanticType": "NATIONALITY_NL",
+		"description": "Nationality (Dutch Language)",
+		"pluginType": "list",
+		"signature": "1oOVHBz4YE+HmzPDQSy/OjpSBiA=",
+		"validLocales": [
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(nationaliteit).*", "confidence": 90 } ] }
+		],
+		"ignoreList": [ "N/A", "OTHER" ],
+		"content": "/reference/nl_nationality.csv",
+		"contentType": "resource",
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 93
+	},
+	{
 		"semanticType": "HONORIFIC_EN",
 		"description": "Honorific (English Language)",
 		"pluginType": "list",
@@ -592,7 +619,7 @@
 		"content": "/reference/en_honorific.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 93
+		"priority": 94
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_EN",
@@ -610,7 +637,7 @@
 			}
 		],
 		"threshold": 85,
-		"priority": 94
+		"priority": 95
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_DE",
@@ -623,7 +650,7 @@
 		"content": "/reference/de_countries.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 95
+		"priority": 96
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_ES",
@@ -638,7 +665,7 @@
 		"contentType": "resource",
 		"threshold": 90,
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 96
+		"priority": 97
 	},
 	{
 		"semanticType": "MONTH.ABBR_<LOCALE>",
@@ -1349,6 +1376,19 @@
 		"priority": 149
 	},
 	{
+		"semanticType": "STATE_PROVINCE.MUNICIPALITY_NL",
+		"description": "Dutch Municipality",
+		"pluginType": "list",
+		"signature": "eHt5Aj3a8lO9nvH9CeV/O3NgZZs=",
+		"validLocales": [
+			{ "localeTag": "nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(gemeente).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/nl_municipalities.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 150
+	},
+	{
 		"semanticType": "CURRENCY_CODE.ISO-4217",
 		"description": "Currency as defined by ISO 4217",
 		"pluginType": "list",
@@ -1694,6 +1734,10 @@
 			{
 				"localeTag": "fr",
 				"headerRegExps": [ { "regExp": "^(?i)(ville)$", "confidence": 99, "mandatory": true } ]
+			},
+			{
+				"localeTag": "nl",
+				"headerRegExps": [ { "regExp": "^(?i)(plaats|woonplaats)$", "confidence": 99, "mandatory": true } ]
 			}
 		],
 		"content": "/reference/en_city_samples.csv",
@@ -2441,7 +2485,7 @@
 			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descripción|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": ".*(?i)(description|remarques|commentaire|raison).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "it", "headerRegExps": [ { "regExp": ".*(?i)(descrizione|nota|Annotazioni|motivo|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(omschrijving|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(omschrijving|opmerkingen|description).*", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descrição|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(описание|description).*", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comment|reason).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] }
