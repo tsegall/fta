@@ -1453,7 +1453,7 @@
 		"pluginType": "list",
 		"signature": "2ySMIn/48aoAVrw/OwOCKdYI4OE=",
 		"validLocales": [
-			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country||land.?code).*", "confidence": 70 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country|land.?code).*", "confidence": 70 } ] }
 		],
 		"content": "/reference/ISO-3166-2.csv",
 		"contentType": "resource",

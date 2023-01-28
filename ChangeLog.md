@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.6.2
+ - BUG: Fix typo in JSON file - introduced in 3.6.1
+
 ### 12.6.1
  - ENH: I18N - Detect PERSON.AGE in Dutch
  - ENH: I18N - Detect COUNTRY.ISO-3166-2, COUNTRY.ISO-3166-3 in Dutch
