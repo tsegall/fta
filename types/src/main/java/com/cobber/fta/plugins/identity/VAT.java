@@ -58,7 +58,7 @@ public class VAT extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		final int len = trimmed.length() - charCounts[' '];
-		return len >= 9 && len <= 13 && isValid(trimmed, true, -1);
+		return len >= 9 && len <= 14 && isValid(trimmed, true, -1);
 	}
 
 	@Override
@@ -109,6 +109,11 @@ public class VAT extends LogicalTypeInfinite {
 			}
 		}
 
+		if ("NL".equals(country)) {
+			String noCheckDigit = Utils.getRandomDigits(random, 8);
+			return ret + noCheckDigit + getCheckDigitNL(noCheckDigit) + "B00";
+		}
+
 		if ("PL".equals(country))
 			return ret + Utils.getRandomDigits(random, 9) + random.nextInt(100);
 
@@ -138,6 +143,9 @@ public class VAT extends LogicalTypeInfinite {
 
 		if ("IT".equals(country))
 			return ret + "\\d{11}";
+
+		if ("NL".equals(country))
+			return ret + "\\d{9}B\\d{2}";
 
 		if ("PL".equals(country))
 			return ret + "\\d{10}";
@@ -183,6 +191,9 @@ public class VAT extends LogicalTypeInfinite {
 
 		if ("IT".equals(country))
 			return len == 11 && validator.isValid(input);
+
+		if ("NL".equals(country))
+			return isValidNL(toCheck);
 
 		if ("PL".equals(country))
 			return isValidPL(toCheck);
@@ -347,6 +358,36 @@ public class VAT extends LogicalTypeInfinite {
 		}
 
 		return toCheck.length() == 9 && Utils.isNumeric(toCheck);
+	}
+
+	// Validate a Dutch VAT number - NL
+	private boolean isValidNL(final String input) {
+		if (input.length() != 12 || input.charAt(9) != 'B' || !Character.isDigit(input.charAt(10)) || !Character.isDigit(input.charAt(11)))
+			return false;
+
+		char checkDigit = getCheckDigitNL(input.substring(0, 8));
+
+		// Check digit should be the same as the last digit
+		return checkDigit == input.charAt(8);
+	}
+
+	public static char getCheckDigitNL(final String input) {
+
+		final int[] multipliers = { 9, 8, 7, 6, 5, 4, 3, 2 };
+
+		long total = 0;
+
+		// Calculate the total
+		for (int i = 0; i < 8; i++)
+			total += (input.charAt(i) - '0') * multipliers[i];
+
+		// Check digit is mod 11
+		total = total % 11;
+		if (total > 9)
+			total = 0;
+
+		// Validate that the last digit is indeed the Check Digit
+		return (char)(total + '0');
 	}
 
 	// Validate a Polish VAT number

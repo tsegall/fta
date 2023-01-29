@@ -331,13 +331,14 @@ HASH.SHA1_HEX|SHA1 Hash - hexadecimal|*
 HASH.SHA256_HEX|SHA256 Hash - hexadecimal|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN
+IDENTITY.BSN_NL|Burger Service Nummer|nl-NL
 IDENTITY.DUNS|Data Universal Numbering System (Dun & Bradstreet)|*
 IDENTITY.EIN_US|Employer Identification Number|en-US
 IDENTITY.NHS_UK|NHS Number|en-UK
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH
 IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number (Japan)|ja
-IDENTITY.VAT_&lt;COUNTRY&gt;|Value-added Tax Identification Number|de-AT, ca-ES, es-ES, fr-FR, it-IT, en-GB, en-UK, pl-PL
+IDENTITY.VAT_&lt;COUNTRY&gt;|Value-added Tax Identification Number|de-AT, ca-ES, es-ES, fr-FR, it-IT, en-GB, en-UK, nl-NL, pl-PL
 INDUSTRY_EN|Industry Name|en
 IPADDRESS.IPV4|IP V4 Address|*
 IPADDRESS.IPV6|IP V6 Address|*

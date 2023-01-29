@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 12.6.3
+ - ENH: I18N - Add new Semantic Type - IDENTITY.VAT_NL (Dutch)
+ - ENG: I18N - Add new Semantic Type - IDENTITY.BSN_NL (Burger Service Nummer)
+ - ENH: I18N - Improve detection of DAY.DIGITS and LocalDate(yyyy) in Spanish
+ - ENH: I18N - Add 'ciudad' to detect CITY in Spanish
+
 ### 12.6.2
  - BUG: Fix typo in JSON file - introduced in 3.6.1
 

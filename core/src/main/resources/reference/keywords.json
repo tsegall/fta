@@ -16,7 +16,7 @@
 			{ "localeTag": "en",
 				"headerRegExps": [ { "regExp": "(?i).*(year.*|yr)", "confidence": 90 } ] },
 			{ "localeTag": "es",
-				"headerRegExps": [ { "regExp": "(?i)(?u).*(año|year).*", "confidence": 90 }, { "regExp": "(?i)ano", "confidence": 90 } ] },
+				"headerRegExps": [ { "regExp": "(?i)(?u).*(año|year).*", "confidence": 90 }, { "regExp": "(?i)(ano|ano[_ ].*)", "confidence": 90 } ] },
 			{ "localeTag": "fi",
 				"headerRegExps": [ { "regExp": "(?i).*(vuosi|year).*", "confidence": 90 } ] },
 			{ "localeTag": "fr",

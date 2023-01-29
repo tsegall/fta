@@ -1749,6 +1749,10 @@
 				]
 			},
 			{
+				"localeTag": "es",
+				"headerRegExps": [ { "regExp": "^(?i)(ciudad)$", "confidence": 99, "mandatory": true } ]
+			},
+			{
 				"localeTag": "fr",
 				"headerRegExps": [ { "regExp": "^(?i)(ville)$", "confidence": 99, "mandatory": true } ]
 			},
@@ -1879,6 +1883,18 @@
 		"priority": 234
 	},
 	{
+		"semanticType": "IDENTITY.BSN_NL",
+		"description": "BSN (Netherlands)",
+		"pluginType": "java",
+		"signature": "7Q98Lrd+aZrOHv6KdG81YGOV4fk=",
+		"clazz": "com.cobber.fta.plugins.identity.BSN_NL",
+		"validLocales": [
+			{ "localeTag": "nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(BSN)", "confidence": 95 } ] }
+		],
+		"threshold": 98,
+		"priority": 235
+	},
+	{
 		"semanticType": "IDENTITY.NHS_UK",
 		"description": "NHS (UK)",
 		"pluginType": "java",
@@ -1888,7 +1904,7 @@
 			{ "localeTag": "en-GB,en-UK", "headerRegExps": [ { "regExp": ".*(?i)(NHS)", "confidence": 95 } ] }
 		],
 		"threshold": 98,
-		"priority": 235
+		"priority": 236
 	},
 	{
 		"semanticType": "IDENTITY.DUNS",
@@ -1906,7 +1922,7 @@
 			}
 		],
 		"baseType": "LONG",
-		"priority": 236
+		"priority": 237
 	},
 	{
 		"semanticType": "IDENTITY.VAT_<COUNTRY>",
@@ -1918,12 +1934,13 @@
 			{ "localeTag": "en-GB,en-UK", "headerRegExps": [ { "regExp": ".*(?i)(VAT).*", "confidence": 95, "mandatory": true } ] },
 			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(IVA).*", "confidence": 95, "mandatory": true } ] },
 			{ "localeTag": "es-ES,ca-ES", "headerRegExps": [ { "regExp": ".*(?i)(NIF|CIF).*", "confidence": 95, "mandatory": true } ] },
+			{ "localeTag": "nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(BTW).*", "confidence": 95, "mandatory": true } ] },
 			{ "localeTag": "pl-PL", "headerRegExps": [ { "regExp": ".*(?i)(NIP).*", "confidence": 95, "mandatory": true } ] },
 			{ "localeTag": "de-AT", "headerRegExps": [ { "regExp": "(?i)(UID)", "confidence": 95, "mandatory": true } ] },
 			{ "localeTag": "fr-FR", "headerRegExps": [ { "regExp": "(?i)(TVA)", "confidence": 95, "mandatory": true } ] }
 		],
 		"threshold": 95,
-		"priority": 237
+		"priority": 238
 	},
 	{
 		"semanticType": "LANGUAGE.ISO-639-2",
@@ -2039,7 +2056,7 @@
 			{
 				"localeTag": "es",
 				"headerRegExps": [
-					{ "regExp": "(?i)(?u)día", "confidence": 99, "mandatory": true }
+					{ "regExp": "(?i)(?u)(día|dia[_ ].*)", "confidence": 99, "mandatory": true }
 				]
 			},
 			{

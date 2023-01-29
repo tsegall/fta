@@ -129,6 +129,7 @@ public class RecordAnalyzer {
 		// [PERSON] + DOB/Birth*Date -> PERSON.DOB
 		// [PERSON] + GENDER -> PERSON.GENDER
 		// [PERSON] + JOB_TITLE -> PERSON.JOB_TITLE
+		// LocalDate(yyyy), MONTH.DIGITS, DAY.DIGITS -> Date
 
 
 		return new RecordAnalysisResult(results);
