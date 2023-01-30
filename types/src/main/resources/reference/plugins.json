@@ -46,7 +46,7 @@
 		"pluginType": "java",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
 		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|Mobiel|móvil|movil|telephone|telefono|telefon|telefoon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|mobiel|móvil|movil|telephone|telefono|telefon|telefoon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
 		"baseType": "STRING",
 		"priority": 40
 	},
@@ -1775,7 +1775,7 @@
 			{
 				"localeTag": "*",
 				"headerRegExps": [
-					{ "regExp": "^(?i)(company|business|company.?name|business.?name|organization.?name|dba.?name)$", "confidence": 99, "mandatory": true },
+					{ "regExp": "^(?i)(company|business|company.?name|business.?name|organization.?name|dba.?name|naam.?organisatie|organisatie)$", "confidence": 99, "mandatory": true },
 					{ "regExp": "^.*(?i)(company.?name|business.?name|organization.?name|dba.?name).*$", "confidence": 90, "mandatory": true }
 				 ],
 				"matchEntries": [ {
@@ -2286,7 +2286,7 @@
 	},
 	{
 		"semanticType": "COLOR.TEXT_EN",
-		"description": "Color name",
+		"description": "Color name (English)",
 		"pluginType": "list",
 		"pluginOptions": "words=all",
 		"signature": "CIsljBWEmutE4EulPJgCkQZyzMU=",
@@ -2300,6 +2300,21 @@
 		"priority": 305
 	},
 	{
+		"semanticType": "COLOR.TEXT_NL",
+		"description": "Color name (Dutch)",
+		"pluginType": "list",
+		"pluginOptions": "words=all",
+		"signature": "+WrxpZvBxXNUyWInyd9r2FadhuY=",
+		"validLocales": [
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(kleur).*", "confidence": 90, "mandatory": true } ] }
+		],
+		"ignoreList": [ "nvt" ],
+		"content": "/reference/nl_color.csv",
+		"contentType": "resource",
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 306
+	},
+	{
 		"semanticType": "DIRECTION",
 		"description": "Cardinal Direction",
 		"pluginType": "java",
@@ -2309,7 +2324,7 @@
 			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(directions).*", "confidence": 99 }, { "regExp": ".*(?i)(dir).*", "confidence": 90 } ] }
 		],
 		"baseType": "STRING",
-		"priority": 306
+		"priority": 307
 	},
 	{
 		"semanticType": "NAME.LAST_FIRST",

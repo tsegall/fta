@@ -299,8 +299,8 @@ CHECKDIGIT.SEDOL|UK/Ireland Security Identifier|*
 CHECKDIGIT.UPC|Universal Product Code|*
 CITY|City/Town|en, nl
 COLOR.HEX|Hex Color code|*
-COLOR.TEXT_EN|Color name|*
-COMPANY_NAME|Company Name|en
+COLOR.TEXT_&lt;Language&gt;|Color name|en, nl
+COMPANY_NAME|Company Name|en, nl
 CONTINENT.CODE_EN|Continent Code|en
 CONTINENT.TEXT_EN|Continent Name|en
 COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|*

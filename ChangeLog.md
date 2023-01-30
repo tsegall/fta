@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 12.6.4
+ - ENH: I18N - Add new Semantic Type - COLOR.TEXT_NL (Dutch)
+ - ENH: I18N - Detect COMPANY_NAME in Dutch
+ - ENH: Bump Jackson
+
 ### 12.6.3
  - ENH: I18N - Add new Semantic Type - IDENTITY.VAT_NL (Dutch)
  - ENG: I18N - Add new Semantic Type - IDENTITY.BSN_NL (Burger Service Nummer)
