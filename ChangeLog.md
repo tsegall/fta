@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 12.6.5
+ - ENH: Restructure some examples to be stand-alone
+ - ENH: Add simple CLI example
+ - ENH: Bump versions
+
 ### 12.6.4
  - ENH: I18N - Add new Semantic Type - COLOR.TEXT_NL (Dutch)
  - ENH: I18N - Detect COMPANY_NAME in Dutch

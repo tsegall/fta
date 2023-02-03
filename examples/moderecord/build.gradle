@@ -1,0 +1,15 @@
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'com.cobber.fta', name: 'fta', version: "12.6.4"
+}
+
+application {
+    mainClass = 'moderecord.ModeRecord'
+}

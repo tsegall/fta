@@ -70,7 +70,7 @@ public static void main(final String[] args) throws FTAException {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		System.err.printf("Semantic Type: %s (%s)%n", result.getTypeQualifier(), result.getType());
+		System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
 
 		System.err.println("Detail: " + result.asJSON(true, 1));
 	}
@@ -361,7 +361,7 @@ NATIONALITY_&lt;Language&gt;|Nationality|en, nl
 PERIOD.HALF|Half (Year)|*
 PERIOD.QUARTER|Quarter (Year)|*
 PERIOD.YEAR_RANGE|Year Range|*
-PERSON.AGE|Age (Person)|en, es, fr, es, it, pt
+PERSON.AGE|Age (Person)|en, es, fr, it, nl, pt
 PERSON.RACE_ABBR_EN|Race/Ethinicity abbreviation (person)|*
 PERSON.RACE_EN|Race/Ethinicity (person)|*
 POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, CO, FR, JA, NL, UK, ES, MX, PT, SE, UY
