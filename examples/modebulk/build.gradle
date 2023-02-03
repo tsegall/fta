@@ -2,6 +2,10 @@ plugins {
     id 'application'
 }
 
+wrapper {
+	gradleVersion = '7.6'
+}
+
 repositories {
     mavenCentral()
 }
