@@ -1406,6 +1406,18 @@
 		"priority": 150
 	},
 	{
+		"semanticType": "STATE_PROVINCE.MUNICIPALITY_CODE_NL",
+		"description": "Dutch Municipality Code",
+		"pluginType": "java",
+		"signature": "6jAs4X5jVlK2N0D0PxVkpA7+/oM=",
+		"clazz": "com.cobber.fta.plugins.MunicipalityCodeNL",
+		"validLocales": [
+			{ "localeTag":  "nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(gemeente.?code).*", "confidence": 95, "mandatory": true } ] }
+		],
+		"threshold": 95,
+		"priority": 151
+	},
+	{
 		"semanticType": "CURRENCY_CODE.ISO-4217",
 		"description": "Currency as defined by ISO 4217",
 		"pluginType": "list",
@@ -1595,7 +1607,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(longitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(longitude|longtitude|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+(?:[eE]([+-]?\\d+))?" ],
 					"regExpReturned": "([+-]?([0-9]|[0-9][0-9]|1[0-7][0-9])\\.\\d+)|[+-]?180\\.0+|[+-]?\\d*\\.?\\d+([eE]([+-]?\\d{1,3}))?",
@@ -1758,7 +1770,7 @@
 			},
 			{
 				"localeTag": "nl",
-				"headerRegExps": [ { "regExp": "^(?i)(plaats|woonplaats)$", "confidence": 99, "mandatory": true } ]
+				"headerRegExps": [ { "regExp": "^(?i)(plaats|woonplaats|woonplaatsnaam)$", "confidence": 99, "mandatory": true } ]
 			}
 		],
 		"content": "/reference/en_city_samples.csv",
@@ -1773,10 +1785,21 @@
 		"signature": "gTynrjgOpvdzfWdVMRddP2Ksv8k=",
 		"validLocales": [
 			{
-				"localeTag": "*",
+				"localeTag": "en",
 				"headerRegExps": [
-					{ "regExp": "^(?i)(company|business|company.?name|business.?name|organization.?name|dba.?name|naam.?organisatie|organisatie)$", "confidence": 99, "mandatory": true },
+					{ "regExp": "^(?i)(company|business|company.?name|business.?name|organization.?name|dba.?name)$", "confidence": 99, "mandatory": true },
 					{ "regExp": "^.*(?i)(company.?name|business.?name|organization.?name|dba.?name).*$", "confidence": 90, "mandatory": true }
+				 ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
+					"regExpReturned": "[-+|*:;!@\"/()',&# \\.\\p{IsAlphabetic}\\d]*",
+					"isRegExpComplete": false
+				} ]
+			},
+			{
+				"localeTag": "nl",
+				"headerRegExps": [
+					{ "regExp": "^(?i)(Handelsnaam|naam.?organisatie|organisatie)$", "confidence": 99, "mandatory": true }
 				 ],
 				"matchEntries": [ {
 					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
@@ -2308,7 +2331,7 @@
 		"validLocales": [
 			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(kleur).*", "confidence": 90, "mandatory": true } ] }
 		],
-		"ignoreList": [ "nvt" ],
+		"ignoreList": [ "NVT" ],
 		"content": "/reference/nl_color.csv",
 		"contentType": "resource",
 		"backout": "[ \\p{IsAlphabetic}]+",

@@ -169,7 +169,7 @@ public class Gender extends LogicalTypeFinite {
 		case "NL":
 			// Dutch
 			genderData = new GenderData(
-					new String[][] { new String[] { "VROUWELIJK", "MANNELIJK" } },
+					new String[][] { new String[] { "VROUWELIJK", "MANNELIJK" }, new String[] { "VROUW", "MAN" } },
 					new String[][] { new String[] { "V", "M" } } );
 			break;
 		case "PL":

@@ -106,8 +106,8 @@ class FileProcessor {
 			while ((row = parser.parseNext()) != null) {
 				thisRecord++;
 				if (row.length != numFields) {
-					error.printf("ERROR: Record %d has %d fields, expected %d, skipping%n",
-							thisRecord, row.length, numFields);
+					error.printf("ERROR: File: '%s', record %d has %d fields, expected %d, skipping%n",
+							filename, thisRecord, row.length, numFields);
 					continue;
 				}
 				key = row[0];
@@ -205,8 +205,8 @@ class FileProcessor {
 			while ((row = parser.parseNext()) != null) {
 				thisRecord++;
 				if (row.length != numFields) {
-					error.printf("ERROR: Record %d has %d fields, expected %d, skipping%n",
-							thisRecord, row.length, numFields);
+					error.printf("ERROR: File: '%s', record %d has %d fields, expected %d, skipping%n",
+							filename, thisRecord, row.length, numFields);
 					continue;
 				}
 				processor.consume(row);

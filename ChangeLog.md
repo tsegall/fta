@@ -1,6 +1,15 @@
 
 ## Changes ##
 
+### 12.7.0
+ - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.MUNICIPALITY_CODE_NL - Dutch Municipality Code
+ - ENH: I18N - Improve Gender detection in Dutch - now also match 'VROUW' and 'MAN'
+ - ENH: I18N - Improve Nationality, Company Name, and City detection in Dutch
+ - ENH: I18N - Improve Department detection in Colombian
+ - ENH: For a finite type with a good header, attempt to analyze removing the worst invalid entry (hoping to remove N/A, Not Present, All, etc)
+ - ENH: Improve mini CLI - now supports --locale, --verbose
+ - ENH: Allow longtitude as a mispelling of longitude (occurs 4 times in VizNet examples)
+
 ### 12.6.5
  - ENH: Restructure some examples to be stand-alone
  - ENH: Add simple CLI example

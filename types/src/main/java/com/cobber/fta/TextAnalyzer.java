@@ -2508,15 +2508,21 @@ public class TextAnalyzer {
 
 		final Set<String> ignorable = logical.getIgnorable();
 
+		long missEntries = 0;
+		Map.Entry<String, Long> missEntry = null;
+
 		for (final Map.Entry<String, Long> entry : cardinalityUpper.entrySet()) {
 			if (ignorable != null && ignorable.contains(entry.getKey())) {
 				realSamples -= entry.getValue();
 				minusMatches.put(entry.getKey(), entry.getValue());
+				newOutliers.put(entry.getKey(), entry.getValue());
 			}
 			else if (logical.isValid(entry.getKey(), true, entry.getValue()))
 				validCount += entry.getValue();
 			else {
-				missCount += entry.getValue();
+				missEntries++;
+				if (missEntry == null || entry.getValue() > missEntry.getValue())
+					missEntry = entry;
 				minusMatches.put(entry.getKey(), entry.getValue());
 				newOutliers.put(entry.getKey(), entry.getValue());
 			}
@@ -2528,10 +2534,19 @@ public class TextAnalyzer {
 		for (final String elt : minusMatches.keySet())
 			newCardinality.remove(elt);
 
-		if (!logical.analyzeSet(context, validCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
-			return new FiniteMatchResult();
+		if (logical.analyzeSet(context, validCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
+			return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context), validCount, newOutliers, newCardinality);
 
-		return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context), validCount, newOutliers, newCardinality);
+		// If the number of misses is less than 10% then remove the worst offender since it will often be something
+		// silly like All, Other, N/A, ...
+		if (missEntries != 0 && (double)missEntries/cardinalityUpper.size() < .1 && logical.getHeaderConfidence(context.getStreamName()) >= 90) {
+			realSamples -= missEntry.getValue();
+			if (logical.analyzeSet(context, validCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
+				return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context), validCount, newOutliers, newCardinality);
+		}
+
+		return new FiniteMatchResult();
+
 	}
 
 	private String lengthQualifier(final int min, final int max) {
