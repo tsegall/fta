@@ -139,27 +139,6 @@ public class RecordAnalyzer {
 		final Map<String, Long> details = new HashMap<>(result.getCardinalityDetails());
 		details.put(null, result.getNullCount());
 
-		/*
-		if (result.getType() == FTAType.STRING && details.size() > 10) {
-			// Attempt to detect a single anomalous value, e.g. 'Redacted or N/A' in a set of addresses
-			long largest = 0;
-			String largestKey = null;
-			long second = 0;
-			for (Map.Entry<String, Long> entry : details.entrySet()) {
-				if (entry.getValue() > largest) {
-					largest = entry.getValue();
-					largestKey = entry.getKey();
-				}
-				else if (entry.getValue() > second)
-					second = entry.getValue();
-			}
-			if (largest > second * 10 && !analyzer.isNullEquivalent(largestKey) && (largestKey.length() == result.getMinLength() || largestKey.length() == result.getMaxLength())) {
-				System.err.printf("'%s' looks strange!", largestKey);
-				details.remove(largestKey);
-			}
-		}
-		*/
-
 		// Now do the analysis using the bulk data with the addition of the Semantic Type information
 		final TextAnalysisResult newResult = analyzer.reAnalyze(details);
 

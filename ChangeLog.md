@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 12.7.1
+ - ENH: Bump google phonenumber
+ - ENH: Make examples depend on the latest major version
+ - BUG: Add missing Java file for MUNICIPALITY_CODE_NL
+
 ### 12.7.0
  - ENH: I18N - Add new Semantic Type - STATE_PROVINCE.MUNICIPALITY_CODE_NL - Dutch Municipality Code
  - ENH: I18N - Improve Gender detection in Dutch - now also match 'VROUW' and 'MAN'
