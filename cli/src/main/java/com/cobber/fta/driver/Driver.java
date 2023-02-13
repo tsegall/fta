@@ -84,7 +84,7 @@ public class Driver {
 				error.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 				error.println(" --col <n> - Only analyze column <n>");
 				error.println(" --debug <n> - Set the debug level to <n>");
-				error.println(" --delimiter <ch> - Set the delimiter to the charactere <ch>");
+				error.println(" --delimiter <ch> - Set the delimiter to the character <ch>");
 				error.println(" --detectWindow <n> - Set the size of the detect window to <n>");
 				error.println(" --faker <header> - Header is a comma separated list of Semantic Types");
 				error.println(" --formatDetection - Enable Format Detection");
@@ -106,6 +106,7 @@ public class Driver {
 				error.println(" --pluginMode true|false - Set the detect mode when running Plugin validate");
 				error.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a signature (record count based on --records)");
 				error.println(" --pluginThreshold <n> - Set the plugin threshold percentage (0-100) for detection");
+				error.println(" --quoteChar <ch> - Set the quote character to  <ch>");
 				error.println(" --records <n> - The number of records to analyze");
 				error.println(" --replay <file>.fta - Replay the FTA trace file");
 				error.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
@@ -166,6 +167,8 @@ public class Driver {
 				options.pluginName = args[++idx];
 			else if ("--pluginThreshold".equals(args[idx]))
 				options.pluginThreshold = Integer.valueOf(args[++idx]);
+			else if ("--quoteChar".equals(args[idx]))
+				options.quoteChar = args[++idx];
 			else if ("--records".equals(args[idx]))
 				options.recordsToProcess = Long.valueOf(args[++idx]);
 			else if ("--replay".equals(args[idx]))

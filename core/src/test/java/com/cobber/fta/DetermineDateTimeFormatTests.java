@@ -277,7 +277,7 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(dtp.determineFormatString("2013"), "yyyy");
 		assertEquals(dtp.determineFormatString("1913"), "yyyy");
 		assertEquals(dtp.determineFormatString("1813"), "yyyy");
-		assertNull(dtp.determineFormatString("1713"));
+		assertNull(dtp.determineFormatString("1499"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

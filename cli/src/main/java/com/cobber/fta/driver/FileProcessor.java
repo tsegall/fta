@@ -65,6 +65,10 @@ class FileProcessor {
 		}
 		else
 			settings.setDelimiterDetectionEnabled(true, ',', '\t', '|', ';');
+		if (options.quoteChar != null) {
+			settings.getFormat().setQuote(options.quoteChar.charAt(0));
+			settings.setQuoteDetectionEnabled(false);
+		}
 		if (options.xMaxCharsPerColumn != -1)
 			settings.setMaxCharsPerColumn(options.xMaxCharsPerColumn);
 

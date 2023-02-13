@@ -70,7 +70,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * </pre>
  */
 public class DateTimeParser {
-	public final static int EARLY_LONG_YYYY = 1800;
+	// Should handle reasonable specific years in the past
+	public final static int EARLY_LONG_YYYY = 1500;
+	// Should handle current birth years
+	public final static int RECENT_EARLY_LONG_YYYY = 1920;
 	public final static int LATE_LONG_YYYY = 2050;
 
 	private static final String TIME_ONLY_HHMMSS = "d{2}:d{2}:d{2}";
@@ -221,26 +224,40 @@ public class DateTimeParser {
 		return config;
 	}
 
-	// Looking for things like "MM/yyyy", "MM-yyyy", "yyyy/MM", "yyyy-MM", "M/yyyy", "M-yyyy", "yyyy/M", "yyyy-M" and "MMMM,yyyy", "MMM,yyyy"
+	// Looking for things like "MM/yyyy", "MM-yyyy", "yyyy/MM", "yyyy-MM", "M/yyyy", "M-yyyy", "yyyy/M", "yyyy-M"
+	// and "MMMM, yyyy", "MMM, yyyy"
 	private boolean justMonthAndYear(final String input) {
 		final int len = input.length();
 		int monthChars = 0;
 		int yearChars = 0;
-		char separator = '#';
+		char separator = '¶';
+		int whitespace = 0;
 
 		for (int i = 0; i < len; i++) {
 			char ch = input.charAt(i);
-			if (ch == 'M')
+			if (ch == 'd')
+				return false;
+			else if (ch == 'M')
 				monthChars++;
 			else if (ch == 'y')
 				yearChars++;
-			else
+			else if (ch == ' ')
+				whitespace++;
+			else if (separator == '¶')
 				separator = ch;
+			else
+				return false;
+		}
+
+		// We did not detect a separator but there was whitespace then use it as the separator
+		if (separator == '¶' && whitespace != 0) {
+			separator = ' ';
+			whitespace--;
 		}
 
 		// We want to make sure that there is only a single separator and if it is a period do not treat all numerics as a date
-		return monthChars != 0 && yearChars != 0 && monthChars + yearChars + 1 == len &&
-				!((separator == '.' || separator == ',') && (monthChars == 1 || monthChars == 2));
+		return monthChars != 0 && yearChars != 0 && monthChars + yearChars + whitespace + 1 == len &&
+				!(whitespace == 0 && (separator == '.' || separator == ',') && (monthChars == 1 || monthChars == 2));
 	}
 
 	/**

@@ -3053,6 +3053,14 @@ public class TextAnalyzer {
 				}
 	}
 
+	private boolean plausibleYear(final long realSamples) {
+		return (facts.minLongNonZero > DateTimeParser.RECENT_EARLY_LONG_YYYY && facts.maxLong <= DateTimeParser.LATE_LONG_YYYY &&
+				realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
+				(facts.minLongNonZero >= DateTimeParser.EARLY_LONG_YYYY && facts.maxLong <= DateTimeParser.LATE_LONG_YYYY &&
+				(keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) >= 90 ||
+				keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90));
+	}
+
 	// Called to finalize a LONG type determination when NOT a Semantic type
 	void finalizeLong(final long realSamples) {
 		if (KnownTypes.ID.ID_LONG == facts.getMatchTypeInfo().id && facts.getMatchTypeInfo().typeModifier == null && facts.minLong < 0) {
@@ -3073,10 +3081,7 @@ public class TextAnalyzer {
 			// If we are collecting statistics - we need to generate the topK and bottomK
 			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 				generateTopBottom();
-		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > DateTimeParser.EARLY_LONG_YYYY && facts.maxLong <= DateTimeParser.LATE_LONG_YYYY &&
-				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
-						keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) >= 90 ||
-						keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90)) {
+		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && plausibleYear(realSamples)) {
 			facts.setMatchTypeInfo(new TypeInfo(null, "\\d{4}", FTAType.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy"));
 			facts.killZeroes();
 			facts.minLocalDate = LocalDate.of((int)facts.minLongNonZero, 1, 1);

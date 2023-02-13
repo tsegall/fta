@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 12.8.0
+ - ENH: I18N - Dutch - Add PERIOD.QUARTER support
+ - ENH: I18N - Dutch - Improve PostCode detection, Province detection, Municipality Code detection
+ - ENH: Date detection now catches 'MMMM, yyyy'
+ - ENH: Impove LocalDate(yyyy) detection
+ - CLI: Add ability to set quote char from CLI
+
 ### 12.7.1
  - ENH: Bump google phonenumber
  - ENH: Make examples depend on the latest major version

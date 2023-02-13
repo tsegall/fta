@@ -68,6 +68,7 @@ public class DriverOptions {
 	protected int xMaxCharsPerColumn = -1;
 	protected int xMaxColumns = 1024;
 	protected String delimiter;
+	protected String quoteChar;
 
 	public void apply(final TextAnalyzer analyzer) throws IOException {
 		if (this.debug != -1)
