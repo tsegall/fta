@@ -350,8 +350,7 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the count of all (non-blank/non-null) samples that matched the determined type.
-	 * More formally the SampleCount is equal to the MatchCount + BlankCount + NullCount.
+	 * Get the count of all (non-blank/non-null/non-outlier/non-invalid) samples that matched the determined type.
 	 * @return Count of all matches.
 	 */
 	public long getMatchCount() {

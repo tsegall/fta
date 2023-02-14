@@ -2534,8 +2534,11 @@ public class TextAnalyzer {
 		for (final String elt : minusMatches.keySet())
 			newCardinality.remove(elt);
 
-		if (logical.analyzeSet(context, validCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
+		final long outlierCount = newOutliers.values().stream().mapToLong(l-> l).sum();
+		if (logical.analyzeSet(context, validCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid()) {
+			validCount += outlierCount - newOutliers.values().stream().mapToLong(l-> l).sum();
 			return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context), validCount, newOutliers, newCardinality);
+		}
 
 		// If the number of misses is less than 10% then remove the worst offender since it will often be something
 		// silly like All, Other, N/A, ...
@@ -2546,7 +2549,6 @@ public class TextAnalyzer {
 		}
 
 		return new FiniteMatchResult();
-
 	}
 
 	private String lengthQualifier(final int min, final int max) {
@@ -2750,6 +2752,7 @@ public class TextAnalyzer {
 		// Do we need to back out from any of our Semantic type determinations.  Most of the time this backs out of
 		// Infinite type determinations (since we have not yet declared it to be a Finite type).  However it is possible
 		// that this is a subsequent call to getResult()!!
+		final long outlierCount = facts.outliers.values().stream().mapToLong(l-> l).sum();
 		if (facts.getMatchTypeInfo().isSemanticType() && !facts.getMatchTypeInfo().isForce()) {
 			final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
 
@@ -2764,6 +2767,7 @@ public class TextAnalyzer {
 			else {
 				// Update our Regular Expression - since it may have changed based on all the data observed
 				facts.getMatchTypeInfo().regexp = logical.getRegExp();
+				facts.matchCount += outlierCount - facts.outliers.values().stream().mapToLong(l-> l).sum();
 				facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 			}
 		}

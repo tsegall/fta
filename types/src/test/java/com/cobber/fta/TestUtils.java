@@ -194,6 +194,18 @@ public class TestUtils {
 		}
 	}
 
+	static Boolean checkCounts(final TextAnalysisResult result) {
+		if (result.getOutlierCount() == result.getConfig().getMaxOutliers())
+			return null;
+		if (result.getInvalidCount() == result.getConfig().getMaxInvalids())
+			return null;
+
+		final long outlierCount = result.getOutlierDetails().values().stream().mapToLong(l-> l).sum();
+		final long invalidCount = result.getInvalidDetails().values().stream().mapToLong(l-> l).sum();
+
+		return result.getSampleCount() == result.getMatchCount() + result.getBlankCount() + result.getNullCount() + outlierCount + invalidCount;
+	}
+
 	@Test(groups = { TestGroups.ALL })
 	public void testDistanceClose() throws IOException {
 		final Set<String> universe = new HashSet<>(Arrays.asList(new String[] { "Primary", "Secondary", "Tertiary", "Secondory"}));

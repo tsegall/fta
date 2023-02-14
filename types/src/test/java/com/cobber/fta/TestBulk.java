@@ -17,6 +17,7 @@ package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -56,6 +57,8 @@ public class TestBulk {
 		final Map<String, Long> details = result.getCardinalityDetails();
 		assertEquals(details.get("MALE"), Long.valueOf(2000000));
 		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
+
+		assertTrue(TestUtils.checkCounts(result));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -85,6 +88,8 @@ public class TestBulk {
 		final Map<String, Long> details = result.getCardinalityDetails();
 		assertEquals(details.get("MALE"), Long.valueOf(2000000));
 		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
+
+		assertTrue(TestUtils.checkCounts(result));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -123,6 +128,8 @@ public class TestBulk {
 		// There will be very small errors due to the random nature of the data stream
 		assertEquals(resultBulk.getMean(),result.getMean(), TestUtils.EPSILON);
 		assertEquals(resultBulk.getStandardDeviation(),result.getStandardDeviation(), TestUtils.EPSILON);
+
+		assertTrue(TestUtils.checkCounts(result));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -159,6 +166,8 @@ public class TestBulk {
 
 		assertEquals(resultBulk.getStructureSignature(), result.getStructureSignature());
 		assertEquals(resultBulk.getDataSignature(), result.getDataSignature());
+
+		assertTrue(TestUtils.checkCounts(result));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -186,6 +195,8 @@ public class TestBulk {
 		assertEquals(resultBulk.getRegExp(), "(?i)(DISCONNECT|DISCONNECT FRACTIONAL|DISCONNECT OTHER|DISCONNECT STILL BILLING|INSTALL FRACTIONAL|INSTALL FRACTIONAL RERATE|RE-RATES|RUN RATE)");
 		assertEquals(resultBulk.getMatchCount(), SAMPLES);
 		assertEquals(resultBulk.getConfidence(), 1.0);
+
+		assertTrue(TestUtils.checkCounts(resultBulk));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -207,6 +218,8 @@ public class TestBulk {
 		assertEquals(resultBulk.getMatchCount(), 109);
 		assertEquals(resultBulk.getConfidence(), 1.0);
 		assertEquals(resultBulk.getName(), "ModifiedDate");
+
+		assertTrue(TestUtils.checkCounts(resultBulk));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -230,6 +243,8 @@ public class TestBulk {
 		assertEquals(result.getMatchCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 0);
+
+		assertTrue(TestUtils.checkCounts(result));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -263,7 +278,9 @@ public class TestBulk {
 		assertEquals(result.getMatchCount(), SAMPLES);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 9);
-	}
+
+		assertTrue(TestUtils.checkCounts(result));
+}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void dateFieldDot6() throws IOException, FTAException {
@@ -291,6 +308,8 @@ public class TestBulk {
 		assertEquals(result.getMatchCount(), SAMPLES);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 4);
+
+		assertTrue(TestUtils.checkCounts(result));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -321,6 +340,8 @@ public class TestBulk {
 		assertEquals(result.getMatchCount(), SAMPLES - result.getNullCount());
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 4);
+
+		assertTrue(TestUtils.checkCounts(result));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -353,6 +374,8 @@ public class TestBulk {
 		assertEquals(result.getCardinality(), 6);
 		assertEquals(result.getSemanticType(), "INDUSTRY_EN");
 		assertNull(result.getTypeModifier());
+
+		assertTrue(TestUtils.checkCounts(result));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -402,6 +425,8 @@ public class TestBulk {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getCardinality(), 20);
+
+		assertTrue(TestUtils.checkCounts(result));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -452,5 +477,6 @@ public class TestBulk {
 		assertNull(result.getTypeModifier());
 		assertNull(result.getSemanticType());
 
+		assertTrue(TestUtils.checkCounts(result));
 	}
 }

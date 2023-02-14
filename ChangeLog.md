@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.8.1
+ - BUG: Counts do not match for some Finite types - including GENDER.TEXT_EN (Issue #23)
+
 ### 12.8.0
  - ENH: I18N - Dutch - Add PERIOD.QUARTER support
  - ENH: I18N - Dutch - Improve PostCode detection, Province detection, Municipality Code detection
