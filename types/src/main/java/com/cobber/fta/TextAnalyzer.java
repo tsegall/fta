@@ -2999,7 +2999,18 @@ public class TextAnalyzer {
 		// this has the potential to pick up entries where the first <n> (by default 20 are misleading).
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType() && analysisConfig.getTrainingMode() == AnalysisConfig.TrainingMode.SIMPLE && pluginThreshold != 100) {
 			final Map<String, Long> details = new HashMap<>(facts.cardinality);
-			details.put(null, facts.nullCount);
+			if (facts.nullCount != 0)
+				details.put(null, facts.nullCount);
+			if (facts.blankCount != 0) {
+				// It is possible that the blank fields determine both the maximum and minimum length
+				long blanksNeeded = facts.blankCount;
+				if (facts.maxRawLength > facts.maxRawNonBlankLength) {
+					details.put(Utils.repeat(' ', facts.maxRawLength), 1L);
+					blanksNeeded--;
+				}
+				if (blanksNeeded != 0)
+					details.put(Utils.repeat(' ', facts.minRawLength), blanksNeeded);
+			}
 			final TextAnalysisResult bulkResult = reAnalyze(new HashMap<String, Long>(details));
 			if (bulkResult.isSemanticType()) {
 				result = bulkResult;

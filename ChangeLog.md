@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.8.2
+ - BUG: Blank counts wrong when re-analyzing (Issue #24)
+
 ### 12.8.1
  - BUG: Counts do not match for some Finite types - including GENDER.TEXT_EN (Issue #23)
 
