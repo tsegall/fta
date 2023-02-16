@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 12.8.3
+ - BUG: MinLength wrong when only have nulls and empty strings
+ - BUG: Blank counts wrong when using RecordAnalyzer with prior Semantic Information
+ - BUG: Mismatched counts (matchCount) for Semantic Types (Issue 25)
+
 ### 12.8.2
  - BUG: Blank counts wrong when re-analyzing (Issue #24)
 

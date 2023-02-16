@@ -82,7 +82,7 @@ public class TestIdentity {
 		assertTrue(result.isSemanticType());
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("SSN").signature);
 		assertEquals(result.getConfidence(), 0.998);
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 
 		for (int l = 0; l < samples.length; l++) {
 			if (l != 100 && l != 200)
@@ -116,7 +116,7 @@ public class TestIdentity {
 		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
 		assertFalse(result.isSemanticType());
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 
 		for (int l = 0; l < samples.length; l++) {
 			assertTrue(samples[l].matches(result.getRegExp()));
@@ -170,7 +170,7 @@ public class TestIdentity {
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 1);
 		assertEquals(invalids.get("032--45-0981"), Long.valueOf(1));
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 
 		for (final String sample : samples) {
 			assertTrue(sample.matches(result.getRegExp()));
@@ -211,7 +211,7 @@ public class TestIdentity {
 		assertEquals(result.getSemanticType(), SSN_FR.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_FR").signature);
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -250,7 +250,7 @@ public class TestIdentity {
 		assertEquals(result.getSemanticType(), IN_JA.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA").signature);
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -289,7 +289,7 @@ public class TestIdentity {
 		assertEquals(result.getSemanticType(), SSN_CH.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_CH").signature);
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -327,7 +327,7 @@ public class TestIdentity {
 		assertEquals(result.getSemanticType(), NHS_UK.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.NHS_UK").signature);
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -366,7 +366,7 @@ public class TestIdentity {
 		assertEquals(result.getSemanticType(), Aadhar_IN.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.AADHAR_IN").signature);
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));

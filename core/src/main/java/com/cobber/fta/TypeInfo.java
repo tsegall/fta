@@ -313,6 +313,11 @@ public class TypeInfo {
 		return (typeModifierFlags & BLANK_FLAG) != 0;
 	}
 
+	@JsonIgnore
+	public boolean isBlankOrNull() {
+		return (typeModifierFlags & BLANKORNULL_FLAG) != 0;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder ret = new StringBuilder();

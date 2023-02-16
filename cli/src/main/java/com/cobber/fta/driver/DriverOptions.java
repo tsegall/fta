@@ -63,7 +63,7 @@ public class DriverOptions {
 	protected int skip;
 	protected int threshold = -1;
 	protected String trace;
-	protected boolean validate;
+	protected int validate;
 	protected int verbose;
 	protected int xMaxCharsPerColumn = -1;
 	protected int xMaxColumns = 1024;

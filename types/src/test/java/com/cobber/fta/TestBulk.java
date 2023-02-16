@@ -58,7 +58,7 @@ public class TestBulk {
 		assertEquals(details.get("MALE"), Long.valueOf(2000000));
 		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -89,7 +89,7 @@ public class TestBulk {
 		assertEquals(details.get("MALE"), Long.valueOf(2000000));
 		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -129,7 +129,7 @@ public class TestBulk {
 		assertEquals(resultBulk.getMean(),result.getMean(), TestUtils.EPSILON);
 		assertEquals(resultBulk.getStandardDeviation(),result.getStandardDeviation(), TestUtils.EPSILON);
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -167,7 +167,7 @@ public class TestBulk {
 		assertEquals(resultBulk.getStructureSignature(), result.getStructureSignature());
 		assertEquals(resultBulk.getDataSignature(), result.getDataSignature());
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -196,7 +196,7 @@ public class TestBulk {
 		assertEquals(resultBulk.getMatchCount(), SAMPLES);
 		assertEquals(resultBulk.getConfidence(), 1.0);
 
-		assertTrue(TestUtils.checkCounts(resultBulk));
+		assertTrue(resultBulk.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -219,7 +219,7 @@ public class TestBulk {
 		assertEquals(resultBulk.getConfidence(), 1.0);
 		assertEquals(resultBulk.getName(), "ModifiedDate");
 
-		assertTrue(TestUtils.checkCounts(resultBulk));
+		assertTrue(resultBulk.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -244,7 +244,7 @@ public class TestBulk {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 0);
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -279,7 +279,7 @@ public class TestBulk {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 9);
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 }
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -309,7 +309,7 @@ public class TestBulk {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 4);
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -341,7 +341,7 @@ public class TestBulk {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getCardinality(), 4);
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -375,7 +375,7 @@ public class TestBulk {
 		assertEquals(result.getSemanticType(), "INDUSTRY_EN");
 		assertNull(result.getTypeModifier());
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -426,7 +426,7 @@ public class TestBulk {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getCardinality(), 20);
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -477,6 +477,6 @@ public class TestBulk {
 		assertNull(result.getTypeModifier());
 		assertNull(result.getSemanticType());
 
-		assertTrue(TestUtils.checkCounts(result));
+		assertTrue(result.checkCounts());
 	}
 }

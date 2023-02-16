@@ -645,6 +645,23 @@ public class TextAnalysisResult {
 		return asJSON(false, 0);
 	}
 
+	protected Facts getFacts() {
+		return facts;
+	}
+
+	public Boolean checkCounts() {
+		if (getOutlierCount() == getConfig().getMaxOutliers())
+			return null;
+		if (getInvalidCount() == getConfig().getMaxInvalids())
+			return null;
+
+		final long outlierCount = getOutlierDetails().values().stream().mapToLong(l-> l).sum();
+		final long invalidCount = getInvalidDetails().values().stream().mapToLong(l-> l).sum();
+
+		return getSampleCount() == getMatchCount() + getBlankCount() + getNullCount() + outlierCount + invalidCount;
+	}
+
+
 	/**
 	 * A SHA-1 hash that reflects the data stream structure.
 	 * Note: If a Semantic type is detected then the SHA-1 hash will reflect this.

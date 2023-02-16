@@ -453,7 +453,7 @@ public class Facts {
 		case STRING:
 			if (matchTypeInfo.isNull()) {
 				minRawLength = maxRawLength = 0;
-			} else if (matchTypeInfo.isBlank()) {
+			} else if (matchTypeInfo.isBlank() || matchTypeInfo.isBlankOrNull() ) {
 				// If all the fields are blank (i.e. a variable number of spaces) - then we have not saved any of the raw input, so we
 				// need to synthesize the min and max value, as well as the minRawlength if not set.
 				if (minRawLength == Integer.MAX_VALUE)

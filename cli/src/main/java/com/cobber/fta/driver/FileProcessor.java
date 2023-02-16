@@ -238,44 +238,57 @@ class FileProcessor {
 		int[] nulls = new int[numFields];
 		int[] blanks = new int[numFields];
 		final Set<String> failures = new HashSet<>();
-		if (options.validate) {
-			try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
+		if (options.validate != 0) {
+			// Check the counts if we are validating
+			for (final TextAnalyzer analyzer : processor.getAnalyzers()) {
+				final TextAnalysisResult result = analyzer.getResult();
+				Boolean ret = result.checkCounts();
+				if (ret != null && ret == false) {
+					System.err.printf("Composite: %s, field: %s (%d), failed count validation\n",
+							analyzer.getContext().getCompositeName(), analyzer.getContext().getStreamName(), analyzer.getContext().getStreamIndex());
+					System.exit(1);
+				}
+			}
+			// Check the RegExp at level 2 validation
+			if (options.validate == 2) {
+				try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
-				final CsvParser parser = new CsvParser(settings);
-				parser.beginParsing(in);
-				numFields = parser.getRecordMetadata().headers().length;
+					final CsvParser parser = new CsvParser(settings);
+					parser.beginParsing(in);
+					numFields = parser.getRecordMetadata().headers().length;
 
-				TextAnalysisResult[] results = processor.getResult();
-				Pattern[] patterns = new Pattern[numFields];
+					TextAnalysisResult[] results = processor.getResult();
+					Pattern[] patterns = new Pattern[numFields];
 
-				for (int i = 0; i < numFields; i++)
-					if (options.col == -1 || options.col == i)
-						patterns[i] = Pattern.compile(results[i].getRegExp());
+					for (int i = 0; i < numFields; i++)
+						if (options.col == -1 || options.col == i)
+							patterns[i] = Pattern.compile(results[i].getRegExp());
 
-				thisRecord = 0;
-				String[] row;
+					thisRecord = 0;
+					String[] row;
 
-				while ((row = parser.parseNext()) != null) {
-					thisRecord++;
-					if (row.length != numFields)
-						continue;
+					while ((row = parser.parseNext()) != null) {
+						thisRecord++;
+						if (row.length != numFields)
+							continue;
 
-					for (int i = 0; i < numFields; i++) {
-						if (options.col == -1 || options.col == i) {
-							final String value = row[i];
-							if (value == null)
-								nulls[i]++;
-							else if (value.trim().isEmpty())
-								blanks[i]++;
-							else if (patterns[i].matcher(value).matches())
-								matched[i]++;
-							else if (options.verbose != 0)
-								failures.add(value);
+						for (int i = 0; i < numFields; i++) {
+							if (options.col == -1 || options.col == i) {
+								final String value = row[i];
+								if (value == null)
+									nulls[i]++;
+								else if (value.trim().isEmpty())
+									blanks[i]++;
+								else if (patterns[i].matcher(value).matches())
+									matched[i]++;
+								else if (options.verbose != 0)
+									failures.add(value);
+							}
 						}
-					}
-					if (thisRecord == options.recordsToProcess) {
-						parser.stopParsing();
-						break;
+						if (thisRecord == options.recordsToProcess) {
+							parser.stopParsing();
+							break;
+						}
 					}
 				}
 			}
@@ -311,7 +324,7 @@ class FileProcessor {
 					typesDetected++;
 				matchCount += result.getMatchCount();
 				sampleCount += result.getSampleCount();
-				if (options.validate && matched[i] != result.getMatchCount()) {
+				if (options.validate == 2 && matched[i] != result.getMatchCount()) {
 					if (result.isSemanticType())
 						if (matched[i] > result.getMatchCount())
 							error.printf("\t*** Warning: Match Count via RegExp (%d) > LogicalType match analysis (%d) ***%n", matched[i], result.getMatchCount());

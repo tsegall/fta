@@ -849,7 +849,7 @@ public class TextAnalyzer {
 		if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
 			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
-			if (logical.acceptsBaseType(FTAType.LONG) && !logical.isValid(trimmed, true, count))
+			if (logical.acceptsBaseType(FTAType.LONG) && !logical.isValid(trimmed, false, count))
 				return false;
 		}
 
@@ -929,7 +929,7 @@ public class TextAnalyzer {
 		else if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
 			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
-			if (logical.acceptsBaseType(FTAType.STRING) && !logical.isValid(rawInput, true, count))
+			if (logical.acceptsBaseType(FTAType.STRING) && !logical.isValid(rawInput, false, count))
 				return false;
 		}
 
@@ -1020,7 +1020,7 @@ public class TextAnalyzer {
 		if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
 			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
-			if (logical.acceptsBaseType(FTAType.DOUBLE) && !logical.isValid(input, true, count))
+			if (logical.acceptsBaseType(FTAType.DOUBLE) && !logical.isValid(input, false, count))
 				return false;
 		}
 
@@ -2998,20 +2998,7 @@ public class TextAnalyzer {
 		// If we are in SIMPLE mode (i.e. not Bulk) and we have not detected a Semantic Type - try replaying accumulated set in Bulk mode,
 		// this has the potential to pick up entries where the first <n> (by default 20 are misleading).
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType() && analysisConfig.getTrainingMode() == AnalysisConfig.TrainingMode.SIMPLE && pluginThreshold != 100) {
-			final Map<String, Long> details = new HashMap<>(facts.cardinality);
-			if (facts.nullCount != 0)
-				details.put(null, facts.nullCount);
-			if (facts.blankCount != 0) {
-				// It is possible that the blank fields determine both the maximum and minimum length
-				long blanksNeeded = facts.blankCount;
-				if (facts.maxRawLength > facts.maxRawNonBlankLength) {
-					details.put(Utils.repeat(' ', facts.maxRawLength), 1L);
-					blanksNeeded--;
-				}
-				if (blanksNeeded != 0)
-					details.put(Utils.repeat(' ', facts.minRawLength), blanksNeeded);
-			}
-			final TextAnalysisResult bulkResult = reAnalyze(new HashMap<String, Long>(details));
+			final TextAnalysisResult bulkResult = reAnalyze(RecordAnalyzer.synthesizeBulk(facts));
 			if (bulkResult.isSemanticType()) {
 				result = bulkResult;
 				debug("Type determination - was STRING, post Bulk analyis, matchTypeInfo - {}", facts.getMatchTypeInfo());

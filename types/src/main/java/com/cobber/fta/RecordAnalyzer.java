@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
+import com.cobber.fta.core.Utils;
 
 public class RecordAnalyzer {
 	private TextAnalyzer[] analyzers;
@@ -136,13 +137,28 @@ public class RecordAnalyzer {
 	}
 
 	private TextAnalysisResult reAnalyze(final TextAnalyzer analyzer, final TextAnalysisResult result) throws FTAPluginException, FTAUnsupportedLocaleException {
-		final Map<String, Long> details = new HashMap<>(result.getCardinalityDetails());
-		details.put(null, result.getNullCount());
-
 		// Now do the analysis using the bulk data with the addition of the Semantic Type information
-		final TextAnalysisResult newResult = analyzer.reAnalyze(details);
+		final TextAnalysisResult newResult = analyzer.reAnalyze(synthesizeBulk(result.getFacts()));
 
 		return newResult.isSemanticType() ? newResult : result;
+	}
+
+	protected static Map<String, Long> synthesizeBulk(final Facts facts) {
+		final Map<String, Long> details = new HashMap<>(facts.cardinality);
+		if (facts.nullCount != 0)
+			details.put(null, facts.nullCount);
+		if (facts.blankCount != 0) {
+			// It is possible that the blank fields determine both the maximum and minimum length
+			long blanksNeeded = facts.blankCount;
+			if (facts.maxRawLength > facts.maxRawNonBlankLength) {
+				details.put(Utils.repeat(' ', facts.maxRawLength), 1L);
+				blanksNeeded--;
+			}
+			if (blanksNeeded != 0)
+				details.put(Utils.repeat(' ', facts.minRawLength), blanksNeeded);
+		}
+
+		return details;
 	}
 
 	/**
