@@ -2046,8 +2046,8 @@ public class TextAnalyzer {
 		facts.outliers.mergeIfSpace(input, count, Long::sum);
 	}
 
-	private void addInvalid(final String input, final long count) {
-		facts.invalid.mergeIfSpace(input, count, Long::sum);
+	private void addInvalid(final Map.Entry<String, Long> entry) {
+		facts.invalid.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
 	}
 
 	class OutlierAnalysis {
@@ -2295,6 +2295,7 @@ public class TextAnalyzer {
 			facts.outliers.entrySet().removeAll(doubleOutliers.entrySet());
 			for (final Map.Entry<String, Long> entry : doubleOutliers.entrySet())
 				addValid(entry.getKey(), entry.getValue());
+			facts.matchCount += otherDoubles;
 
 			// Recalculate the world since we now 'know' it is a double
 	        facts.mean = 0.0;
@@ -2797,7 +2798,7 @@ public class TextAnalyzer {
 						recalcConfidence = true;
 					}
 					else
-						addInvalid(entry.getKey(), entry.getValue());
+						addInvalid(entry);
 				}
 
 				if (recalcConfidence)
@@ -3025,14 +3026,34 @@ public class TextAnalyzer {
 				for (final PluginMatchEntry entry : logical.getMatchEntries()) {
 					long newMatchCount = facts.matchCount;
 					final String re = entry.getRegExpReturned();
-					if (((newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0) &&
-							logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-						logical.setMatchEntry(entry);
-						facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
-						facts.matchCount = newMatchCount;
-						debug("Type determination - updated to Regular Expression Semantic type {}", facts.getMatchTypeInfo());
-						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
-						return true;
+					if (((newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0)) {
+						// Build the new Cardinality and Outlier maps - based on the RE
+						final FiniteMap newCardinality = new FiniteMap(facts.cardinality.getMaxCapacity());
+						final FiniteMap newOutliers = new FiniteMap(facts.outliers.getMaxCapacity());
+						for (final Map.Entry<String, Long> current : facts.cardinality.entrySet()) {
+							if (current.getKey().trim().matches(re))
+								newCardinality.put(current.getKey(), current.getValue());
+							else
+								newOutliers.put(current.getKey(), current.getValue());
+						}
+						for (final Map.Entry<String, Long> current : facts.outliers.entrySet()) {
+							if (current.getKey().trim().matches(re))
+								newCardinality.put(current.getKey(), current.getValue());
+							else
+								newOutliers.put(current.getKey(), current.getValue());
+						}
+
+						// Based on the new Cardinality/Outliers do we think this is a match?
+						if (logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid()) {
+							logical.setMatchEntry(entry);
+							facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
+							facts.matchCount = newMatchCount;
+							facts.cardinality = newCardinality;
+							facts.outliers = newOutliers;
+							debug("Type determination - updated to Regular Expression Semantic type {}", facts.getMatchTypeInfo());
+							facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
+							return true;
+						}
 					}
 				}
 			}
@@ -3245,8 +3266,9 @@ public class TextAnalyzer {
 					remainingOutliers.remove(elt);
 
 				backoutToPattern(realSamples, KnownTypes.PATTERN_ANY_VARIABLE);
-				facts.confidence = (double) facts.matchCount / realSamples;
 				facts.outliers = remainingOutliers;
+				facts.matchCount -= remainingOutliers.values().stream().mapToLong(l-> l).sum();
+				facts.confidence = (double) facts.matchCount / realSamples;
 			}
 		}
 

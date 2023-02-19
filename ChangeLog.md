@@ -1,6 +1,16 @@
 
 ## Changes ##
 
+### 12.8.4
+ - ENH: Improve NAME.FIRST_LAST detection
+ - ENH: Add count validation to CLI (and use it to validate code against semantic-types suite)
+ - BUG: Issue with Signed Double with grouping and exponent and invoking getResult() multiple times
+ - BUG: Mismatched counts for Enums with outliers
+ - BUG: Mismatched counts for RegExp Semantic Types with invalid entries
+ - BUG: Mismatched counts for LocalDate(yyyy) with "0" entries
+ - BUG: Mismatched counts when Long Semantic Type detected incorrecly and backing out to Double
+ - INT: Bump gradle to 8.0
+
 ### 12.8.3
  - BUG: MinLength wrong when only have nulls and empty strings
  - BUG: Blank counts wrong when using RecordAnalyzer with prior Semantic Information

@@ -100,6 +100,141 @@ public class TestIssues {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void enumCountMismatch() throws IOException, FTAException {
+		final String[] values = {
+				"Tungsten", "Silver", "Silver", "Silver", "Silver", "Silver", "Silver", "Silver", "Silver", "Tungsten",
+				"Tungsten", "Tungsten", "Tungsten", "Silver", "Silver", "Tungsten", "Tungsten", "Tungsten", "Tungsten",
+				"Tungsten", "Tungsten", "Gold", "Gold", "Gold", "Gold", "Gold", "Gold", "Gold", "Gold",
+				"Gold", "Gold", "Gold", "Multi Mineral", "Multi Mineral", "Multi Mineral", "Multi Mineral", "Multi Mineral", "Multi Mineral", "Multi Mineral",
+				"Multi Mineral", "Multi Mineral", "Multi Mineral", "Copper", "Copper", "Copper", "Copper", "Lithium", "Lithium", "Lithium",
+				"Lithium", "Lithium", "Lithium", "Lead", "Lead", "Lead", "Aluminum", "Aluminum", "Aluminum", "Aluminum",
+				"Aluminum", "Aluminum", "Aluminum", "Aluminum", "Aluminum", "Aluminum", "Lithium", "Lithium", "Lithium", "Lithium",
+				"Lithium", "Lithium", "Lithium", "Lithium", "Bad Egg."
+		};
+
+		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "enumCountMismatch",
+				new String[] { "Mineral" });
+		TextAnalyzer template = new TextAnalyzer(context);
+		template.setLocale(Locale.getDefault());
+		RecordAnalyzer analyzer = new RecordAnalyzer(template);
+
+		for (String[] value : asRecords(values))
+			analyzer.train(value);
+
+		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
+			assertEquals(result.getSampleCount(), values.length);
+			assertEquals(result.getMatchCount(), values.length - 1);
+			assertTrue(result.checkCounts());
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void miCountMismatch() throws IOException, FTAException {
+		final String[] values = {
+				"M", "H", "L", "M", "L", "E", "J", "R", "M", "C", "H", "N", "N", "S", "J", "J",
+				"M", "M", "R", "T", "O", "R", "M", "D", "K", "JB", "G", "L", "D", "K", "W", "B",
+				"C", "D", "K", "A", "S", "B", "J", "J", "R", "L", "D", "L", "T", "M", "R", "K",
+				"R", "L", "R", "S", "L", "E", "G", "T", "S", "J", "J", "L", "Y", "L", "D", "R",
+				"D", "L", "F", "F", "F", "T", "L", "A", "A", "R", "G", "T", "W", "J", "L", "S",
+				"S", "R", "L", "M", "F", "M", "A", "G", "S", "M", "J", "A", "O", "R", "A", "E",
+				"D", "W", "J", "A", "M", "T", "E", "O", "M", "M", "J", "C", "K", "J", "M", "N",
+				"A", "C", "E", "L", "L", "A", "R", "L", "C", "H", "A", "L", "D", "W", "M", "A",
+				"K", "J", "J", "T", "E", "D", "C", "J", "W", "A", "M", "P", "B", "J", "B", "D",
+				"J", "C", "J", "L", "A", "W", "V", "G", "O", "R", "P", "K", "E", "T", "M", "D",
+				"L", "D", "R", "A", "D", "R", "L", "D", "L", "C", "M", "N", "S", "W", "S", "C"
+		};
+
+		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "miCountMismatch",
+				new String[] { "MI" });
+		TextAnalyzer template = new TextAnalyzer(context);
+		template.setLocale(Locale.getDefault());
+		RecordAnalyzer analyzer = new RecordAnalyzer(template);
+
+		for (String[] value : asRecords(values))
+			analyzer.train(value);
+
+		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
+			assertEquals(result.getSampleCount(), values.length);
+			assertEquals(result.getMatchCount(), values.length - 1);
+			assertTrue(result.checkCounts());
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void middleInitialCountMismatch() throws IOException, FTAException {
+		final String[] values = {
+				"J", "M", "L", "M", "M", "M", "M", "T", "R", "R", "P", "F", "A", "E", "T", "N", "A",
+				"E", "A", "A", "R", "N", "F", "D", "L", "S", "E", "W", "E", "J", "V", "A", "A", "J",
+				"M", "J", "S", "E", "G.", "T", "B", "M", "J", "K", "H", "B", "M", "T", "N", "G", "S",
+				"J", "R", "D", "J", "H", "M", "M", "P", "A", "C", "T", "A", "E", "M", "Z", "D", "P",
+				"M", "M", "C", "KEVIN", "A", "K", "H", "J.", "A", "R", "V", "M", "V", "L", "R", "MICHAEL",
+				"N", "E", "N", "E", "J", "J", "L", "P", "J", "J", "R", "L", "L", "J", "A", "T", "P",
+				"A", "A", "W", "M", "A", "D", "C", "V", "V", "E", "A", "A", "A", "P", "S", "E", "H",
+				"M", "A", "A", "W", "M", "L", "A", "R", "M", "A", "R", "E", "J", "J", "M", "E", "S",
+				"J", "M", "R", "J", "A", "D", "L", "T", "E", "W", "J", "J", "H", "DAVID", "W", "P",
+				"L", "R", "C", "K", "M", "D", "A", "E", "A", "P", "D", "L", "H", "N", "J", "L", "A",
+				"A", "T", "S", "C", "R", "LEE", "T", "M", "J", "C", "L", "L", "E", "P", "M", "J", "J",
+				"E", "L", "V", "A", "P", "L", "W", "P", "J", "L", "H", "H", "F", "L", "J", "F", "J",
+				"W", "J", "L", "M", "S", "T", "I", "A", "G", "A", "W", "C", "K", "C", "A", "N", "B",
+				"L", "T", "T", "J", "M", "L", "P", "A", "B", "SZETO", "D", "M", "Q", "D", "M", "M",
+				"M", "E", "E", "H", "C", "L", "D", "L", "L", "L", "R", "J", "A", "L", "A", "I", "M",
+				"I", "R", "A", "J", "D", "L", "H", "J", "J", "P", "M", "M", "W", "J", "P", "J", "M",
+				"L", "A", "M", "R", "A", "J", "L", "G", "J", "C.", "M", "A", "L", "D", "J", "E", "N",
+				"F", "E", "L", "JUDAS", "J", "E", "C", "D", "M", "N", "A", "A", "W", "J", "T", "L",
+				"R", "W", "R", "F", "C", "R", "N", "L", "L"
+		};
+
+		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "middleInitialCountMismatch",
+				new String[] { "middle_init" });
+		TextAnalyzer template = new TextAnalyzer(context);
+		template.setLocale(Locale.getDefault());
+		RecordAnalyzer analyzer = new RecordAnalyzer(template);
+
+		for (String[] value : asRecords(values))
+			analyzer.train(value);
+
+		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
+			assertEquals(result.getSampleCount(), values.length);
+			assertTrue(result.checkCounts());
+			assertEquals(result.getMatchCount(), values.length - 6);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void numericalMismatch() throws IOException, FTAException {
+		final String[] values = {
+				"4", "4", "4", "4", "4", "4", "4", "4", "4", "4", "1", "1", "1", "1", "1", "1", "1",
+				"1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1",
+				"1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1",
+				"1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1",
+				"1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2",
+				"1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "1.2", "2",
+				"2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2",
+				"2", "2", "2", "2", "2", "2", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1",
+				"2.1", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1", "2.1",
+				"2.1", "2.1", "2.1", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3",
+				"3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3.1", "3.1", "3.1", "3.1", "3.1",
+				"3.1", "3.1", "3.1", "3.1", "3.1", "3.1", "3.1", "3.1", "3.1", "4", "4", "4", "4", "4",
+				"4", "4", "4", "4", "4", "4", "4", "4", "4", "4", "4", "2.2"
+		};
+
+		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "numericalMismatch",
+				new String[] { "age_num" });
+		TextAnalyzer template = new TextAnalyzer(context);
+		template.setLocale(Locale.getDefault());
+		RecordAnalyzer analyzer = new RecordAnalyzer(template);
+
+		for (String[] value : asRecords(values))
+			analyzer.train(value);
+
+		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
+			assertEquals(result.getSampleCount(), values.length);
+			assertEquals(result.getMatchCount(), values.length);
+			assertTrue(result.checkCounts());
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void pickup() throws IOException, FTAException {
 		final CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);

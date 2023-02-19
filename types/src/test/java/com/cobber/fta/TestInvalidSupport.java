@@ -186,7 +186,7 @@ public class TestInvalidSupport {
 		assertEquals(result.getMatchCount(), SIZE + 2);
 		assertEquals(result.getNullCount(), 1);
 		assertEquals(result.getBlankCount(), 1);
-		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*");
+		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}]+[- \\p{IsAlphabetic}]*\\.?");
 
 		// Old behavior
 		// assertEquals(result.getOutlierCount(), 2);

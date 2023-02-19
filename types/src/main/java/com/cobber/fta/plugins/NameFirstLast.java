@@ -44,11 +44,19 @@ public class NameFirstLast extends LogicalTypeInfinite {
 	private static final String BACKOUT = ".+";
 	private LogicalTypeFiniteSimple logicalFirst;
 	private LogicalTypeFiniteSimple logicalLast;
-	private static final int MAX_FIRST_NAMES = 100;
-	private static final int MAX_LAST_NAMES = 100;
+	private static final int MAX_FIRST_NAMES = 1000;
+	private static final int MAX_LAST_NAMES = 1000;
 	private Set<String> lastNames;
 	private Set<String> firstNames;
 	private int maxExpectedNames;
+	private static Set<String> excludes;
+
+	static {
+		excludes = new HashSet<>();
+		excludes.add("INC");
+		excludes.add("INC.");
+		excludes.add("LLC");
+	}
 
 	/**
 	 * Construct a plugin to detect First name followed by Last name based on the Plugin Definition.
@@ -165,6 +173,9 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		final String firstName = trimmed.substring(0, firstSpace);
 		final String lastName = trimmed.substring(lastSpace + 1);
 
+		if (excludes.contains(lastName))
+			return false;
+
 		if (firstNames.size() < MAX_FIRST_NAMES)
 			firstNames.add(firstName);
 		if (lastNames.size() < MAX_LAST_NAMES)
@@ -192,6 +203,10 @@ public class NameFirstLast extends LogicalTypeInfinite {
 			minCardinality = 5;
 			minSamples = 5;
 		}
+
+		// We expect a decent spread of last names relative to first names - stops us tripping on names of things
+		if (firstNames.size() > 10 && (double)lastNames.size()/firstNames.size() < 0.75)
+			return new PluginAnalysis(BACKOUT);
 
 		// Reject if there is not a reasonable spread of values
 		if (getHeaderConfidence(context.getStreamName()) <= 0 && cardinality.size() < analysisConfig.getMaxCardinality() && (double)cardinality.size()/matchCount < .2)

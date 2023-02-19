@@ -407,7 +407,7 @@ public class Facts {
 				final Entry<String, Long> entry = it.next();
 				if (Long.parseLong(entry.getKey()) == 0) {
 					invalid.put(entry.getKey(), entry.getValue());
-					matchCount--;
+					matchCount -= entry.getValue();
 					it.remove();
 				}
 			 }

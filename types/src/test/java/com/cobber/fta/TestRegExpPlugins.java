@@ -66,6 +66,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
+		assertTrue(result.checkCounts());
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
@@ -98,6 +99,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
+		assertTrue(result.checkCounts());
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
@@ -134,6 +136,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
+		assertTrue(result.checkCounts());
 
 		int matches = 0;
 		for (final String sample : samples)
@@ -166,10 +169,10 @@ public class TestRegExpPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
+		assertTrue(result.checkCounts());
 
-		for (final String sample : samples) {
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -194,10 +197,10 @@ public class TestRegExpPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getConfidence(), 1.0);
+		assertTrue(result.checkCounts());
 
-		for (final String sample : samples) {
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -223,10 +226,10 @@ public class TestRegExpPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1.0);
+		assertTrue(result.checkCounts());
 
-		for (final String sample : samples) {
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -253,10 +256,10 @@ public class TestRegExpPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1.0);
+		assertTrue(result.checkCounts());
 
-		for (final String sample : samples) {
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -285,10 +288,10 @@ public class TestRegExpPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1.0);
+		assertTrue(result.checkCounts());
 
-		for (final String sample : samples) {
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.ALL })
@@ -326,6 +329,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), 1);
+		assertTrue(result.checkCounts());
 		Entry<String, Long> only = result.getInvalidDetails().entrySet().iterator().next();
 		assertEquals(only.getKey(), "rubbish");
 		assertEquals(only.getValue(), 1);
@@ -367,6 +371,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), 1);
+		assertTrue(result.checkCounts());
 		Entry<String, Long> only = result.getInvalidDetails().entrySet().iterator().next();
 		assertEquals(only.getKey(), "rubbish");
 		assertEquals(only.getValue(), 1);
@@ -421,6 +426,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
+		assertTrue(result.checkCounts());
 
 		final LogicalTypeCode logical = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("CITY"), new AnalysisConfig());
 

@@ -152,12 +152,6 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 95 }, { "regExp": ".*(?i)(code).*", "confidence": 75 } ],
 				"matchEntries": [
 					{
-						"regExpReturned": "\\d{4}\\p{IsAlphabetic}{2}"
-					},
-					{
-						"regExpReturned": "\\d{4} \\p{IsAlphabetic}{2}"
-					},
-					{
 						"regExpReturned": "\\d{4} \\p{IsAlphabetic}{2}|\\d{4}\\p{IsAlphabetic}{2}"
 					}
 				 ]
@@ -2403,7 +2397,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(first.?name|fname|given.?name|forename|first_nm).*", "confidence": 95 },
 					{ "regExp": "(?i)(name|.*first.*)", "confidence": 60 }, { "regExp": "(?i).*city.*", "confidence": -100 } ],
 				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+					"regExpReturned": "[\\p{IsAlphabetic}]+[- \\p{IsAlphabetic}]*\\.?"
 				} ]
 			},
 			{

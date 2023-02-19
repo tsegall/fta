@@ -775,7 +775,7 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getSemanticType(), "POSTAL_CODE.POSTAL_CODE_NL");
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "\\d{4}\\p{IsAlphabetic}{2}");
+		assertEquals(result.getRegExp(), "\\d{4} \\p{IsAlphabetic}{2}|\\d{4}\\p{IsAlphabetic}{2}");
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -2883,7 +2883,20 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getRegExp(), TestUtils.getJavaVersion() == 8 ? "\\p{IsAlphabetic}{3}" : "[\\p{IsAlphabetic}\\.]{3,4}");
+		int javaVersion = TestUtils.getJavaVersion();
+		String expected = "untested";
+		switch (javaVersion) {
+		case 8:
+			expected = "\\p{IsAlphabetic}{3}";
+			break;
+		case 11:
+			expected = "[\\p{IsAlphabetic}\\.]{3,4}";
+			break;
+		case 18:
+			expected = "[\\p{IsAlphabetic}\\.]{3,5}";
+			break;
+		}
+		assertEquals(result.getRegExp(), expected);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getSemanticType(), "MONTH.ABBR_de");
 		assertEquals(result.getSampleCount(), iterations * actualMonths + badCount);
