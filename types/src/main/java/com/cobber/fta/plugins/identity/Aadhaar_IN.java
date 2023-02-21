@@ -31,28 +31,25 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * Plugin to detect Indian Aadhar.
+ * Plugin to detect Indian Aadhaar.
  */
-public class Aadhar_IN extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "IDENTITY.AADHAR_IN";
-
+public class Aadhaar_IN extends LogicalTypeInfinite {
 	private static final int ID_LENGTH = 12;
 	private static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
 	private CheckDigit validator;
 
 	/**
-	 * Construct a plugin to detect an Indian Aadhar based on the Plugin Definition.
+	 * Construct a plugin to detect an Indian Aadhaar based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public Aadhar_IN(final PluginDefinition plugin) {
+	public Aadhaar_IN(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		if (trimmed.length() - (charCounts[' ']) != ID_LENGTH)
+		if (trimmed.length() != ID_LENGTH && !(charCounts[' '] == 2 || charCounts['-'] == 2))
 			return false;
 
 		// Currently numbers starting with 0 & 1 are reserved for future use
@@ -61,7 +58,7 @@ public class Aadhar_IN extends LogicalTypeInfinite {
 
 		for (int i = 0; i < trimmed.length(); i++) {
 			final char ch = trimmed.charAt(i);
-			if (ch == ' ')
+			if (ch == ' ' || ch == '-')
 				continue;
 			if (!Character.isDigit(ch))
 				return false;
@@ -81,25 +78,20 @@ public class Aadhar_IN extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		final String aadhar = String.format("%04d%04d%03d",
+		final String aadhaar = String.format("%04d%04d%03d",
 				2000 + random.nextInt(8000),
 				random.nextInt(10_000),
 				random.nextInt(1000));
 
 		String check = null;
 		try {
-			check = validator.calculate(aadhar);
+			check = validator.calculate(aadhaar);
 		} catch (CheckDigitException e) {
 			return null;
 		}
 
-		return aadhar.substring(0, 4) + " " + aadhar.substring(4, 8) + " " +
-			aadhar.substring(8, 11) + check;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
+		return aadhaar.substring(0, 4) + " " + aadhaar.substring(4, 8) + " " +
+			aadhaar.substring(8, 11) + check;
 	}
 
 	@Override
@@ -129,7 +121,7 @@ public class Aadhar_IN extends LogicalTypeInfinite {
 
 		for (int i = 0; i < trimmed.length(); i++) {
 			final char ch = input.charAt(i);
-			if (ch == ' ')
+			if (ch == ' ' || ch == '-')
 				continue;
 			if (!Character.isDigit(ch))
 				return false;

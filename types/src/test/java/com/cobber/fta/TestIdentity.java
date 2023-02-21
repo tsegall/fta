@@ -17,6 +17,7 @@ package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
@@ -31,7 +32,6 @@ import org.testng.annotations.Test;
 import com.cobber.fta.TextAnalyzer.Feature;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.plugins.identity.Aadhar_IN;
 import com.cobber.fta.plugins.identity.IN_JA;
 import com.cobber.fta.plugins.identity.NHS_UK;
 import com.cobber.fta.plugins.identity.SSN_CH;
@@ -82,7 +82,7 @@ public class TestIdentity {
 		assertTrue(result.isSemanticType());
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("SSN").signature);
 		assertEquals(result.getConfidence(), 0.998);
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (int l = 0; l < samples.length; l++) {
 			if (l != 100 && l != 200)
@@ -116,7 +116,7 @@ public class TestIdentity {
 		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
 		assertFalse(result.isSemanticType());
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (int l = 0; l < samples.length; l++) {
 			assertTrue(samples[l].matches(result.getRegExp()));
@@ -170,7 +170,7 @@ public class TestIdentity {
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 1);
 		assertEquals(invalids.get("032--45-0981"), Long.valueOf(1));
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String sample : samples) {
 			assertTrue(sample.matches(result.getRegExp()));
@@ -211,7 +211,7 @@ public class TestIdentity {
 		assertEquals(result.getSemanticType(), SSN_FR.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_FR").signature);
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -250,7 +250,7 @@ public class TestIdentity {
 		assertEquals(result.getSemanticType(), IN_JA.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA").signature);
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -289,7 +289,7 @@ public class TestIdentity {
 		assertEquals(result.getSemanticType(), SSN_CH.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_CH").signature);
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -327,15 +327,15 @@ public class TestIdentity {
 		assertEquals(result.getSemanticType(), NHS_UK.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.NHS_UK").signature);
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void basicAadhar_IN() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicNHS_UK");
+	public void basicAadhaar_IN() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("basicAadhaar_IN");
 		analysis.setLocale(Locale.forLanguageTag("en-IN"));
 
 		final String[] inputs = {
@@ -363,10 +363,11 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), Aadhar_IN.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.AADHAR_IN").signature);
+		PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.AADHAAR_IN");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));

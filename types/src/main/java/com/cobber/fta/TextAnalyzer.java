@@ -882,6 +882,7 @@ public class TextAnalyzer {
 					final double oldMean = facts.mean;
 					final long newCount = facts.matchCount + count;
 					facts.mean += (count * (l - oldMean)) / newCount;
+//					System.err.printf("Mean: %.2f\n", facts.mean);
 					facts.currentM2 += count * ((l - facts.mean) * (l - oldMean));
 				}
 
@@ -2199,7 +2200,8 @@ public class TextAnalyzer {
 		facts.setMatchTypeInfo(newTypeInfo);
 
 		// All outliers are now part of the cardinality set and there are now no outliers
-		facts.cardinality.putAll(facts.outliers);
+		for (final Map.Entry<String, Long> entry : facts.outliers.entrySet())
+			facts.cardinality.merge(entry.getKey(), entry.getValue(), Long::sum);
 
 		// Need to update stats to reflect any outliers we previously ignored
 		if (facts.getMatchTypeInfo().getBaseType().equals(FTAType.STRING)) {
@@ -2284,8 +2286,10 @@ public class TextAnalyzer {
 		// Move the longs from the outlier set to the cardinality set
 		facts.matchCount += otherLongs;
 		facts.outliers.entrySet().removeAll(longOutliers.entrySet());
-		for (final Map.Entry<String, Long> entry : longOutliers.entrySet())
+		for (final Map.Entry<String, Long> entry : longOutliers.entrySet()) {
+			trackLong(entry.getKey().trim(), knownTypes.getByID(KnownTypes.ID.ID_LONG), true, entry.getValue());
 			addValid(entry.getKey(), entry.getValue());
+		}
 
 		if ((double) facts.matchCount / realSamples > analysisConfig.getThreshold()/100.0) {
 			facts.setMatchTypeInfo(knownTypes.getByID(KnownTypes.ID.ID_LONG));
@@ -2493,11 +2497,11 @@ public class TextAnalyzer {
 			final String upper = entry.getKey().toUpperCase(Locale.ENGLISH);
 			if (logical.isValid(upper, true, entry.getValue())) {
 				validCount += entry.getValue();
-				addMatches.put(upper, entry.getValue());
+				addMatches.merge(upper, entry.getValue(), Long::sum);
 			}
 			else {
 				missCount += entry.getValue();
-				newOutliers.put(entry.getKey(), entry.getValue());
+				newOutliers.merge(entry.getKey(), entry.getValue(), Long::sum);
 			}
 		}
 
@@ -3265,8 +3269,13 @@ public class TextAnalyzer {
 				for (final String elt : killSet)
 					remainingOutliers.remove(elt);
 
+				// This resets the Cardinality set to include all outliers
 				backoutToPattern(realSamples, KnownTypes.PATTERN_ANY_VARIABLE);
+				// Fix the outliers
 				facts.outliers = remainingOutliers;
+				// Fix the cardinality set
+				for (final String elt : facts.outliers.keySet())
+					facts.cardinality.remove(elt);
 				facts.matchCount -= remainingOutliers.values().stream().mapToLong(l-> l).sum();
 				facts.confidence = (double) facts.matchCount / realSamples;
 			}

@@ -1895,13 +1895,13 @@
 		"priority": 233
 	},
 	{
-		"semanticType": "IDENTITY.AADHAR_IN",
-		"description": "Aadhar (India)",
+		"semanticType": "IDENTITY.AADHAAR_IN",
+		"description": "Aadhaar (India)",
 		"pluginType": "java",
-		"signature": "Wlco1SWZzWRzZSrYkb7kcQF3O/E=",
-		"clazz": "com.cobber.fta.plugins.identity.Aadhar_IN",
+		"signature": "X+ml1qaeW0taw3RfNRky+4Ifg88=",
+		"clazz": "com.cobber.fta.plugins.identity.Aadhaar_IN",
 		"validLocales": [
-			{ "localeTag": "en-IN", "headerRegExps": [ { "regExp": ".*(?i)(Aadhar)", "confidence": 95 } ] }
+			{ "localeTag": "en-IN", "headerRegExps": [ { "regExp": ".*(?i)(Aadhar|Aadhaar)", "confidence": 95 } ] }
 		],
 		"threshold": 98,
 		"priority": 234

@@ -316,10 +316,11 @@ class FileProcessor {
 
 				// Check the counts if we are validating
 				if (options.validate == 1) {
-					Boolean ret = result.checkCounts();
-					if (ret != null && ret == false) {
-						System.err.printf("Composite: %s, field: %s (%d), failed count validation\n",
-								analyzer.getContext().getCompositeName(), analyzer.getContext().getStreamName(), analyzer.getContext().getStreamIndex());
+					String ret = result.checkCounts();
+					if (ret != null) {
+						System.err.printf("Composite: %s, field: %s (%d), failed count validation - %s\n",
+								analyzer.getContext().getCompositeName(), analyzer.getContext().getStreamName(),
+								analyzer.getContext().getStreamIndex(), ret);
 						System.exit(1);
 					}
 				}

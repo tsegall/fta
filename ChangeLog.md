@@ -1,14 +1,21 @@
 
 ## Changes ##
 
+### 12.9.0
+ - INT: Improve count validation
+ - ENH: Improve STREET_NAME_EN detection
+ - ENH: Allow for hyphens in Aadhaar (also fix spelling)
+ - BUG: Mismatched counts - Long Semantic Type detected incorrectly and backing out to Long
+ - BUG: Mismatched counts - Semantic Type detected and Outliers present and overlapping in case
+
 ### 12.8.4
  - ENH: Improve NAME.FIRST_LAST detection
  - ENH: Add count validation to CLI (and use it to validate code against semantic-types suite)
  - BUG: Issue with Signed Double with grouping and exponent and invoking getResult() multiple times
- - BUG: Mismatched counts for Enums with outliers
- - BUG: Mismatched counts for RegExp Semantic Types with invalid entries
- - BUG: Mismatched counts for LocalDate(yyyy) with "0" entries
- - BUG: Mismatched counts when Long Semantic Type detected incorrecly and backing out to Double
+ - BUG: Mismatched counts - Enums with outliers
+ - BUG: Mismatched counts - RegExp Semantic Types with invalid entries
+ - BUG: Mismatched counts - LocalDate(yyyy) with "0" entries
+ - BUG: Mismatched counts - Long Semantic Type detected incorrecly and backing out to Double
  - INT: Bump gradle to 8.0
 
 ### 12.8.3

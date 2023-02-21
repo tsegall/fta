@@ -113,6 +113,14 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 		final String first = words.get(0);
 		final String second = words.get(1);
 
+		// Check for something like 'Interstate 23'
+		if (AddressCommon.isInitialMarker(first) && Utils.isNumeric(second))
+			return true;
+
+		// Check for something like 'W 13th'
+		if (AddressCommon.isDirection(first) && AddressCommon.numericStreetName(second))
+			return true;
+
 		final boolean isAddressNumber = AddressCommon.isAddressNumber(first);
 
 		// If the first word looks like a number then the next better be an address marker

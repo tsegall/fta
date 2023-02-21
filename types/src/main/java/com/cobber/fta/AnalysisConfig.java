@@ -36,10 +36,10 @@ public class AnalysisConfig {
 	public static final int HISTOGRAM_BINS_DEFAULT = 1000;
 
 	/** The default value for the maximum # of outliers tracked. */
-	public static final int MAX_OUTLIERS_DEFAULT = 50;
+	public static final int MAX_OUTLIERS_DEFAULT = 200;
 
 	/** The default value for the maximum # of invalid entries tracked. */
-	public static final int MAX_INVALID_DEFAULT = 50;
+	public static final int MAX_INVALID_DEFAULT = 200;
 
 	/** The default value for the maximum number of shapes tracked. */
 	public static final int MAX_SHAPES_DEFAULT = 400;

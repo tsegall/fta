@@ -105,9 +105,11 @@ public class AddressCommon {
 
 		initialMarker.add("AVENUE");
 		initialMarker.add("AVE");
-		initialMarker.add("INTERSTATE");
-		initialMarker.add("ROUTE");
+		initialMarker.add("HIGHWAY");
 		initialMarker.add("HWY");
+		initialMarker.add("INTERSTATE");
+		initialMarker.add("I");
+		initialMarker.add("ROUTE");
 		initialMarker.add("SR");
 	}
 

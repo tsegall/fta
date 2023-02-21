@@ -649,7 +649,7 @@ public class TextAnalysisResult {
 		return facts;
 	}
 
-	public Boolean checkCounts() {
+	public String checkCounts() {
 		if (getOutlierCount() == getConfig().getMaxOutliers())
 			return null;
 		if (getInvalidCount() == getConfig().getMaxInvalids())
@@ -658,7 +658,14 @@ public class TextAnalysisResult {
 		final long outlierCount = getOutlierDetails().values().stream().mapToLong(l-> l).sum();
 		final long invalidCount = getInvalidDetails().values().stream().mapToLong(l-> l).sum();
 
-		return getSampleCount() == getMatchCount() + getBlankCount() + getNullCount() + outlierCount + invalidCount;
+		// Check that the sum of the Cardinality set is equal to the matchCount
+		if (getCardinality() < getConfig().getMaxCardinality() && getCardinalityDetails().values().stream().mapToLong(l-> l).sum() != getMatchCount())
+			return "Cardinality sum incorrect";
+
+		if (getSampleCount() != getMatchCount() + getBlankCount() + getNullCount() + outlierCount + invalidCount)
+			return "Samples != match + blank + null + outlier count + invalid count";
+
+		return null;
 	}
 
 

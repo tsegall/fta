@@ -330,7 +330,7 @@ GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
 HASH.SHA1_HEX|SHA1 Hash - hexadecimal|*
 HASH.SHA256_HEX|SHA256 Hash - hexadecimal|*
 HONORIFIC_EN|Title (English language)|en
-IDENTITY.AADHAR_IN|Aadhar|en-IN, hi-IN
+IDENTITY.AADHAAR_IN|Aadhar|en-IN, hi-IN
 IDENTITY.BSN_NL|Burger Service Nummer|nl-NL
 IDENTITY.DUNS|Data Universal Numbering System (Dun & Bradstreet)|*
 IDENTITY.EIN_US|Employer Identification Number|en-US

@@ -205,7 +205,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		}
 
 		// We expect a decent spread of last names relative to first names - stops us tripping on names of things
-		if (firstNames.size() > 10 && (double)lastNames.size()/firstNames.size() < 0.75)
+		if (firstNames.size() > 10 && (double)lastNames.size()/firstNames.size() < 0.70)
 			return new PluginAnalysis(BACKOUT);
 
 		// Reject if there is not a reasonable spread of values
@@ -214,8 +214,8 @@ public class NameFirstLast extends LogicalTypeInfinite {
 
 		// Reject if there is not a reasonable spread of last or first names
 		if (getHeaderConfidence(context.getStreamName()) <= 0 &&
-				((lastNames.size() < MAX_LAST_NAMES && (double)lastNames.size()/matchCount < .2) ||
-				(firstNames.size() < MAX_FIRST_NAMES && (double)firstNames.size()/matchCount < .2)))
+				((lastNames.size() < MAX_LAST_NAMES && (double)lastNames.size()/cardinality.size() < .2) ||
+				(firstNames.size() < MAX_FIRST_NAMES && (double)firstNames.size()/cardinality.size() < .2)))
 			return new PluginAnalysis(BACKOUT);
 
 		if (cardinality.size() < minCardinality)

@@ -1,7 +1,7 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,7 +64,7 @@ public class TestIssues {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMaxLength(), LONGEST);
 			assertEquals(result.getMinLength(), SHORTEST);
-			assertTrue(result.checkCounts());
+			assertNull(result.checkCounts());
 		}
 	}
 
@@ -96,7 +96,7 @@ public class TestIssues {
 		assertEquals(streetName.getSampleCount(), rows);
 		assertEquals(streetName.getType(), FTAType.STRING);
 		assertEquals(streetName.getSemanticType(), "STREET_ADDRESS_EN");
-		assertTrue(streetName.checkCounts());
+		assertNull(streetName.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -124,7 +124,7 @@ public class TestIssues {
 		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMatchCount(), values.length - 1);
-			assertTrue(result.checkCounts());
+			assertNull(result.checkCounts());
 		}
 	}
 
@@ -156,7 +156,7 @@ public class TestIssues {
 		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMatchCount(), values.length - 1);
-			assertTrue(result.checkCounts());
+			assertNull(result.checkCounts());
 		}
 	}
 
@@ -195,7 +195,7 @@ public class TestIssues {
 
 		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
-			assertTrue(result.checkCounts());
+			assertNull(result.checkCounts());
 			assertEquals(result.getMatchCount(), values.length - 6);
 		}
 	}
@@ -230,7 +230,7 @@ public class TestIssues {
 		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMatchCount(), values.length);
-			assertTrue(result.checkCounts());
+			assertNull(result.checkCounts());
 		}
 	}
 
@@ -262,12 +262,12 @@ public class TestIssues {
 		assertEquals(streetName.getSampleCount(), rows);
 		assertEquals(streetName.getType(), FTAType.STRING);
 		assertEquals(streetName.getSemanticType(), "STREET_NAME_EN");
-		assertTrue(streetName.checkCounts());
+		assertNull(streetName.checkCounts());
 
 		TextAnalysisResult streetNumber = analyzer.getResult().getStreamResults()[0];
 		assertEquals(streetNumber.getSampleCount(), rows);
 		assertEquals(streetNumber.getType(), FTAType.LONG);
 		assertEquals(streetNumber.getSemanticType(), "STREET_NUMBER");
-		assertTrue(streetNumber.checkCounts());
+		assertNull(streetNumber.checkCounts());
 	}
 }

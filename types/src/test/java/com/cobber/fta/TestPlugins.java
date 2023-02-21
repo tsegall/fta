@@ -99,7 +99,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -133,7 +133,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -168,7 +168,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -200,7 +200,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		final LogicalType logicalGender = analysis.getPlugins().getRegistered(Gender.SEMANTIC_TYPE + "EN");
 		for (final String input : inputs) {
@@ -234,7 +234,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -266,7 +266,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -295,7 +295,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -326,7 +326,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -357,7 +357,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -394,7 +394,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -434,7 +434,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -478,7 +478,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -516,7 +516,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -580,7 +580,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -614,7 +614,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -659,7 +659,7 @@ public class TestPlugins {
 		assertEquals(only.getKey(), "X02469358");
 		assertEquals(only.getValue(), 1);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -688,7 +688,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getOutlierCount(), 0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.trim().matches(result.getRegExp()), input);
@@ -715,7 +715,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), 1);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			if (!"Not Stated".equals(input))
@@ -749,7 +749,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), 1);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			if (!"Not Stated".equals(input))
@@ -779,7 +779,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -813,7 +813,7 @@ public class TestPlugins {
 		// Confidence is 1.0 because we got a boost from seeing the valid header - i.e. 'phone'
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.trim().matches(result.getRegExp()), input);
@@ -847,7 +847,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length - result.getInvalidCount());
 		assertEquals(result.getConfidence(), 1.0 - (double)1/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.trim().matches(result.getRegExp()), input);
@@ -879,7 +879,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.trim().matches(result.getRegExp()), input);
@@ -909,7 +909,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.trim().matches(result.getRegExp()), input);
@@ -940,7 +940,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		final LogicalType logicalGender = analysis.getPlugins().getRegistered(Gender.SEMANTIC_TYPE + "EN");
 		for (final String input : inputs) {
@@ -977,7 +977,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -1010,7 +1010,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -1073,7 +1073,7 @@ public class TestPlugins {
 		}
 		assertEquals(matchCount, result.getMatchCount() + 1);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1138,7 +1138,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), PluginCreditCard.REGEXP);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String s : samples)
 			assertTrue(s.matches(result.getRegExp()), s);
@@ -1190,7 +1190,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), GUID.REGEXP);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -1238,7 +1238,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), EmailLT.REGEXP);
 		assertEquals(result.getConfidence(), 1 - (double)2/(result.getSampleCount() - result.getNullCount()));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -1278,7 +1278,7 @@ public class TestPlugins {
 
 		assertEquals(matches, result.getMatchCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	private final static String INPUT_URLS = "http://www.lavastorm.com|ftp://ftp.sun.com|https://www.google.com|" +
@@ -1316,7 +1316,7 @@ public class TestPlugins {
 		assertEquals(result.getSemanticType(), URLLT.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("URI.URL").signature);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -1347,7 +1347,7 @@ public class TestPlugins {
 		assertEquals(result.getSemanticType(), URLLT.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("URI.URL").signature);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -1415,7 +1415,7 @@ public class TestPlugins {
 		assertEquals(result.getSemanticType(), URLLT.SEMANTIC_TYPE);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("URI.URL").signature);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -1450,7 +1450,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), KnownTypes.freezeANY(1, 35, 1, 35, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
@@ -1490,7 +1490,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 2);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -1521,7 +1521,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), USZip5.REGEXP_ZIP5);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1550,7 +1550,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), USZip5.REGEXP_VARIABLE);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1666,7 +1666,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), USZip5.REGEXP_ZIP5);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1695,7 +1695,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "\\d{15}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1723,7 +1723,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{9}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1750,7 +1750,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), CheckDigitSEDOL.REGEXP);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1779,7 +1779,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), CheckDigitEAN13.REGEXP);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1807,7 +1807,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), CheckDigitISIN.REGEXP);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1837,7 +1837,7 @@ public class TestPlugins {
  		assertEquals(result.getRegExp(), CheckDigitISBN.REGEXP);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 
@@ -1865,7 +1865,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), IPV4Address.REGEXP);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -1896,7 +1896,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "\\d{5}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1975,7 +1975,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "\\d{5}");
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		int matches = 0;
 		for (final String input : inputs) {
@@ -2058,7 +2058,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "\\d{5}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -2091,7 +2091,7 @@ public class TestPlugins {
 		assertEquals(result.getConfidence(), 1.0);
 		assertTrue(sample.matches(result.getRegExp()));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -2122,7 +2122,7 @@ public class TestPlugins {
 		assertEquals(result.getConfidence(), 1.0);
 		assertTrue(sample.matches(result.getRegExp()));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -2151,7 +2151,7 @@ public class TestPlugins {
 		assertEquals(invalids.get("UK"), Long.valueOf(1));
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -2184,7 +2184,7 @@ public class TestPlugins {
 		assertEquals(invalids.get("SA"), Long.valueOf(1));
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		final LogicalType logical = analysis.getPlugins().getRegistered("STATE_PROVINCE.STATE_US");
 		for (final String input : inputs) {
@@ -2223,7 +2223,7 @@ public class TestPlugins {
 		assertEquals(invalids.get("UK"), Long.valueOf(1));
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -2255,7 +2255,7 @@ public class TestPlugins {
 		assertEquals(invalids.get("UK"), Long.valueOf(1));
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs) {
 			if (!"UK".equals(input))
@@ -2302,7 +2302,7 @@ public class TestPlugins {
 		assertEquals(invalids.size(), 5);
 		assertEquals(result.getConfidence(), 0.9696969696969697);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -2339,7 +2339,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), EmailLT.REGEXP);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		// Only simple emails match the regexp, so the count will not the 4 that include email lists :-(
 		int matches = 0;
@@ -2385,7 +2385,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), EmailLT.REGEXP);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -2419,7 +2419,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
 		assertEquals(result.getConfidence(), 1 - (double)5/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -2452,7 +2452,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -2490,7 +2490,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
 		assertEquals(result.getConfidence(), 1 - (double)5/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs) {
 			if (!"-".equals(input))
@@ -2530,7 +2530,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -2709,7 +2709,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -2739,7 +2739,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -2771,7 +2771,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "(?i)(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -2802,7 +2802,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), end - start);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -2834,7 +2834,7 @@ public class TestPlugins {
 		assertTrue("10000".matches(result.getRegExp()));
 		assertTrue("A99998".matches(result.getRegExp()));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	// Set of valid months + 4 x "UNK"
@@ -2909,7 +2909,7 @@ public class TestPlugins {
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
 		assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -2939,7 +2939,7 @@ public class TestPlugins {
 		assertEquals(result.getConfidence(), 1.0);
 		assertTrue(inputs[0].matches(result.getRegExp()));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		int matches = 0;
 		for (final String input : inputs) {
@@ -2978,7 +2978,7 @@ public class TestPlugins {
 		assertEquals(result.getConfidence(), 1.0);
 		assertTrue(inputs[0].matches(result.getRegExp()));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -3013,7 +3013,7 @@ public class TestPlugins {
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
 		assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		// Even the UNK match the RE
 		for (final String input : inputs)
@@ -3070,7 +3070,7 @@ public class TestPlugins {
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
 		assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		// Even the UNK match the RE
 		for (final String input : inputs)
@@ -3108,7 +3108,7 @@ public class TestPlugins {
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
 		assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		// Even the UNK match the RE
 		for (final String input : inputs)
@@ -3149,7 +3149,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getConfidence(), 1 - (double)UNKNOWN/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3185,7 +3185,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -3218,7 +3218,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -3261,7 +3261,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getSampleCount(), samples.length);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
@@ -3307,7 +3307,7 @@ public class TestPlugins {
 		assertEquals(invalids.size(), 1);
 		assertEquals(invalids.get("032--45-0981"), Long.valueOf(1));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3345,7 +3345,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getSampleCount(), SAMPLES + 2);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3383,7 +3383,7 @@ public class TestPlugins {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getConfidence(), 1 - (double)2/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	/*@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS }) - TODO dates do not support Semantic Types :-( */
@@ -3428,7 +3428,7 @@ public class TestPlugins {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getConfidence(), 1 - (double)2/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3454,7 +3454,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.trim().matches(result.getRegExp()), input);
@@ -3613,7 +3613,7 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
@@ -3658,7 +3658,7 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
@@ -3732,7 +3732,7 @@ public class TestPlugins {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getStructureSignature(), "Frd1mNXRneO3yWDzQa4eEdRgtJs=");
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
@@ -3784,7 +3784,7 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
@@ -3831,7 +3831,7 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
@@ -3864,7 +3864,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -3922,7 +3922,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}][-\\p{IsAlphabetic} '\\.(),]+");
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3952,7 +3952,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}][-\\p{IsAlphabetic} '\\.(),]+");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3985,7 +3985,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), ".+");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4098,7 +4098,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), ".+");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4130,7 +4130,7 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getInvalidCount());
 		assertEquals(result.getNullCount(), 0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4163,7 +4163,7 @@ public class TestPlugins {
 
 		assertTrue(knownSemanticType.isValid("Segall"));
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4215,7 +4215,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}][-\\p{IsAlphabetic} '\\.(),]+");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 }
 
 	private final String validUSStreets2[] = {
@@ -4325,7 +4325,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), ".+");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4349,7 +4349,7 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), ".+");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4402,7 +4402,7 @@ public class TestPlugins {
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.IBAN").signature);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -4435,7 +4435,7 @@ public class TestPlugins {
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.ABA").signature);
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -4469,7 +4469,7 @@ public class TestPlugins {
 		assertEquals(result.getSemanticType(), "DAY.ABBR_en-US");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -4504,7 +4504,7 @@ public class TestPlugins {
 		assertEquals(result.getSemanticType(), "DAY.ABBR_en-CA");
 		assertEquals(result.getConfidence(), 1.0);
 
-		assertTrue(result.checkCounts());
+		assertNull(result.checkCounts());
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
