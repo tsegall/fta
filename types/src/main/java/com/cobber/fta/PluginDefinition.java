@@ -137,7 +137,7 @@ public class PluginDefinition {
 		}
 
 		for (final PluginDefinition pluginDefinition : builtinPlugins)
-			if (pluginDefinition.semanticType.equals(qualifier))
+			if (pluginDefinition.semanticType.equalsIgnoreCase(qualifier))
 				return pluginDefinition;
 
 		return null;

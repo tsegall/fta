@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 12.9.1
+ - ENH: Extend validation examples and allow case independent matching in PluginDefinition.findByQualifier()
+ - ENH: I18N - Dutch - Add FRYSLÂN to the list of valid provinces
+ - ENH: I18N - Colombian - Add a set of municipalities without diacritical marks
+ - ENH: Improve STREET_MARKER_EN detection
+
 ### 12.9.0
  - INT: Improve count validation
  - ENH: Improve STREET_NAME_EN detection
