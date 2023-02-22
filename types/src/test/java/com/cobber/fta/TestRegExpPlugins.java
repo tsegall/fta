@@ -108,6 +108,7 @@ public class TestRegExpPlugins {
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpLogicalType_SSN_plus_outlier() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SSN");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String samples[] = {
 				"899-15-7132", "403-63-7601", "449-65-4529", "386-17-2441", "544-48-5289", "001-02-6231", "282-09-6397", "772-89-9633", "732-69-1882", "683-70-7033",
 				"804-64-1609", "671-19-4599", "140-04-4156", "136-33-8247", "658-02-4787", "681-85-5591", "314-42-0145", "078-25-1656", "344-13-3607", "307-16-4602",
@@ -184,9 +185,9 @@ public class TestRegExpPlugins {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("Month");
-		for (final String sample : samples) {
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		for (final String sample : samples)
 			analysis.train(sample);
-		}
 
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
@@ -414,9 +415,9 @@ public class TestRegExpPlugins {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("Billing City");
-		for (final String sample : samples) {
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		for (final String sample : samples)
 			analysis.train(sample);
-		}
 
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
@@ -428,7 +429,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertNull(result.checkCounts());
 
-		final LogicalTypeCode logical = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("CITY"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("CITY"), new AnalysisConfig(Locale.forLanguageTag("en-US")));
 
 		for (final String sample : samples) {
 			if (!sample.matches(result.getRegExp()))

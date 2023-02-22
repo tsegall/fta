@@ -1830,7 +1830,7 @@ public class TextAnalyzer {
 		if (semanticType != null && semanticType.trim().length() != 0) {
 			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
 			if (pluginDefinition == null) {
-				System.err.printf("ERROR: Failed to locate plugin named '%s', use --help%n", semanticType);
+				debug("ERROR: Failed to locate plugin named '{}'", semanticType);
 				return false;
 			}
 
@@ -1838,7 +1838,7 @@ public class TextAnalyzer {
 			try {
 				logical = LogicalTypeFactory.newInstance(pluginDefinition, analysisConfig);
 			} catch (FTAPluginException e) {
-				System.err.printf("ERROR: Failed to instantiate plugin named '%s', use --help%n", semanticType);
+				debug("ERROR: Failed to instantiate plugin named '{}', error: {}", semanticType, e.getMessage());
 				return false;
 			}
 			final TypeInfo answer = new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo());

@@ -292,6 +292,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void zip50() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("zip50");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.setPluginThreshold(90);
 		int locked = -1;
 		final int COUNT = 46;
@@ -477,6 +478,7 @@ public class RandomTests {
 				int index = copy * demos.length + i;
 				logicals[index] = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 				analyzers[index] = new TextAnalyzer(demos[i]);
+				analyzers[index].setLocale(Locale.forLanguageTag("en-US"));
 			}
 
 		for (int rows = 0; rows < 1000; rows++) {
@@ -487,6 +489,7 @@ public class RandomTests {
 
 		for (int field = 0; field < analyzers.length; field++) {
 			final TextAnalysisResult result = analyzers[field].getResult();
+			assertNotNull(result);
 			assertEquals(result.getSemanticType(), demos[field%demos.length]);
 		}
 	}
@@ -667,6 +670,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void mixedZipHypen() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("mixedZip");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"98115-2654", "98007", "98042-8501", "98311-3239", "98074-3322", "98039", "98466-2041", "98136-2633", "98166-3212", "98042-8213",
 				"98121", "98038-8314", "98112-4739", "98059-7315", "20017-4261", "21204-2055", "21158-3604", "21784", "21776-9719", "20854",
@@ -716,6 +720,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void mixedZip() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("mixedZip");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"981152654", "98007", "980428501", "983113239", "980743322", "98039", "984662041", "981362633", "981663212", "980428213",
 				"98121", "980388314", "981124739", "980597315", "200174261", "212042055", "211583604", "21784", "217769719", "20854",
@@ -1402,6 +1407,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void setDetectWindow() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("setDetectWindow");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		int locked = -1;
 		int sample = 0;
 
@@ -1666,9 +1672,9 @@ public class RandomTests {
 
 
 		final TextAnalyzer analysis = new TextAnalyzer("USPhone");
-		for (final String sample : samples) {
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		for (final String sample : samples)
 			analysis.train(sample);
-		}
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -1703,9 +1709,9 @@ public class RandomTests {
 
 
 		final TextAnalyzer analysis = new TextAnalyzer("USPhone2");
-		for (final String sample : samples) {
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		for (final String sample : samples)
 			analysis.train(sample);
-		}
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -1717,9 +1723,8 @@ public class RandomTests {
 		assertEquals(result.getRegExp(), "\\d\\.\\d{3}\\.\\d{3}\\.\\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (final String sample : samples) {
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
@@ -1738,11 +1743,10 @@ public class RandomTests {
 			samples[i] = b.toString();
 		}
 
-
 		final TextAnalyzer analysis = new TextAnalyzer("USPhone3");
-		for (final String sample : samples) {
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		for (final String sample : samples)
 			analysis.train(sample);
-		}
 
 		final TextAnalysisResult result = analysis.getResult();
 
@@ -2685,6 +2689,7 @@ public class RandomTests {
 			}
 			System.err.printf("%s: %d%n", semanticType, index);
 			final TextAnalyzer analysis = new TextAnalyzer(heading);
+			analysis.setLocale(Locale.US);
 			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
 			final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, analysis.getConfig());
 
@@ -2824,13 +2829,14 @@ public class RandomTests {
 		@Override
 		public void run() {
 			LogicalType logical = null;
+			final Locale locale = Locale.forLanguageTag("en-US");
 			do {
 				final String semanticType = someSemanticTypes[random.nextInt(someSemanticTypes.length)];
 				try {
 					final PluginDefinition defn = PluginDefinition.findByQualifier(semanticType);
-					if (!defn.isLocaleSupported(Locale.getDefault()))
+					if (!defn.isLocaleSupported(locale))
 						System.err.println("Attempting to create an intance of LogicalType: " + defn.semanticType + " in an unsupported Locale");
-					logical = LogicalTypeFactory.newInstance(defn, new AnalysisConfig());
+					logical = LogicalTypeFactory.newInstance(defn, new AnalysisConfig(locale));
 				} catch (FTAException e) {
 					e.printStackTrace();
 				}

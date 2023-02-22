@@ -22,6 +22,7 @@ import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.testng.annotations.Test;
@@ -70,18 +71,19 @@ public class TestInvalidSupport {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.INVALID_SUPPORT })
 	public void doubleTest() throws IOException, FTAException {
-		final TextAnalyzer analyzer = new TextAnalyzer("doubleTest");
+		final TextAnalyzer analysis = new TextAnalyzer("doubleTest");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int SIZE = 1000;
 
 		for (long i = 0; i < SIZE; i++)
-			analyzer.train(String.valueOf(i) + "." + String.valueOf(i%10));
+			analysis.train(String.valueOf(i) + "." + String.valueOf(i%10));
 
-		analyzer.train(null);
+		analysis.train(null);
 
 		// The letter 'O' not the number '0'
-		analyzer.train("O");
+		analysis.train("O");
 
-		TextAnalysisResult result = analyzer.getResult();
+		TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getSampleCount(), SIZE + 2);
 		assertEquals(result.getMatchCount(), SIZE);
@@ -157,7 +159,8 @@ public class TestInvalidSupport {
 	@Test(groups = { TestGroups.ALL, TestGroups.INVALID_SUPPORT })
 	public void openSemanticTypeStringFinite() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("openSemanticTypeStringFinite");
-		final LogicalTypeCode logical = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), new AnalysisConfig());
+		analyzer.setLocale(Locale.US);
+		final LogicalTypeCode logical = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), new AnalysisConfig(Locale.US));
 		final int SIZE = 1000;
 
 		for (int i = 0; i < SIZE; i++) {
@@ -239,6 +242,7 @@ public class TestInvalidSupport {
 	@Test(groups = { TestGroups.ALL, TestGroups.INVALID_SUPPORT })
 	public void closedSemanticTypeLong() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("closedSemanticTypeLong");
+		analyzer.setLocale(Locale.forLanguageTag("en-US"));
 		final String inputs[] = TestUtils.validZips.split("\\|");
 		int locked = -1;
 

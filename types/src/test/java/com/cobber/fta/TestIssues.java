@@ -83,6 +83,7 @@ public class TestIssues {
 			String[] header = parser.getRecordMetadata().headers();
 			AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "pickup", header);
 			TextAnalyzer template = new TextAnalyzer(context);
+			template.setLocale(Locale.forLanguageTag("en-US"));
 			analyzer = new RecordAnalyzer(template);
 
 			String[] row;
@@ -147,7 +148,7 @@ public class TestIssues {
 		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "miCountMismatch",
 				new String[] { "MI" });
 		TextAnalyzer template = new TextAnalyzer(context);
-		template.setLocale(Locale.getDefault());
+		template.setLocale(Locale.forLanguageTag("en-US"));
 		RecordAnalyzer analyzer = new RecordAnalyzer(template);
 
 		for (String[] value : asRecords(values))
@@ -187,7 +188,7 @@ public class TestIssues {
 		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "middleInitialCountMismatch",
 				new String[] { "middle_init" });
 		TextAnalyzer template = new TextAnalyzer(context);
-		template.setLocale(Locale.getDefault());
+		template.setLocale(Locale.forLanguageTag("en-US"));
 		RecordAnalyzer analyzer = new RecordAnalyzer(template);
 
 		for (String[] value : asRecords(values))
@@ -249,6 +250,7 @@ public class TestIssues {
 			String[] header = parser.getRecordMetadata().headers();
 			AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "pickup", header);
 			TextAnalyzer template = new TextAnalyzer(context);
+			template.setLocale(Locale.forLanguageTag("en-US"));
 			analyzer = new RecordAnalyzer(template);
 
 			String[] row;

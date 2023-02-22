@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -632,6 +633,7 @@ public class TestStrings {
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testCompressUSD() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCompressUSD");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String[] inputs = {
 				"$411.00", "$420.00", "$407.00", "$80.00", "$453.00", "$401.00", "$490.00", "$430.00", "$4.00", "$40.00",
@@ -662,6 +664,7 @@ public class TestStrings {
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testCompressGBP() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCompressGBP");
+		analysis.setLocale(Locale.UK);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String[] inputs = {
 				"£41.99", "£51.99", "£28.56", "£7.82", "£9.78", ""
@@ -811,6 +814,7 @@ public class TestStrings {
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testCompressCoordinates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCompressCoordinates");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String[] inputs = {
 				"-69.97345,12.51678", "66.00845,33.83627", "17.53646,12.29118",

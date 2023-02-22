@@ -146,7 +146,7 @@ public class TestDates {
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		analysis.setLocale(locale);
 		final String dateTimeFormat = "MM/dd/yy h:mm:ss aaa";
-		final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat);
+		final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat, locale);
 		final int sampleCount = 100;
 		final Set<String> samples = new HashSet<>();
 		int locked = -1;
@@ -499,6 +499,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void fiscalYear() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Fiscal Year");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"2014", "2004", "2005", " 2006", " 2008", " 2009", " 2010", " 2012", " 2013", " 2011", " 2007" };
 
@@ -561,6 +562,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void fixedWidthDay() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
+		analysis.setLocale(Locale.US);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput = "Oct  1 2019 12:14AM|Jan  5 2020 12:31AM|Feb  2 2020 11:20AM|Mar  8 2020 10:20AM|Mar 15 2020 10:20AM|Mar 22 2020 10:20AM|Mar 29 2020 10:20AM|Jan 12 2020 12:12AM|Jan 19 2020 12:12AM|Jan 26 2020 12:12AM|Jun  1 2020 11:11AM|Jun  8 2020 11:11AM|Jun 15 2020 11:11AM|Jun 22 2020 11:11AM|Jun 29 2020 11:11AM|Oct  1 2019 12:14AM|Jan  5 2020 12:31AM|Feb  2 2020 11:20AM|Mar  8 2020 10:20AM|Mar 15 2020 10:20AM|Mar 22 2020 10:20AM|Mar 29 2020 10:20AM|Jan 12 2020 12:12AM|Jan 19 2020 12:12AM|Jan 26 2020 12:12AM|Jun  1 2020 11:11AM|Jun  8 2020 11:11AM|Jun 15 2020 11:11AM|Jun 22 2020 11:11AM|Jun 29 2020 11:11AM|";
 		final String inputs[] = pipedInput.split("\\|");
@@ -585,7 +587,7 @@ public class TestDates {
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
-		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeModifier());
+		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeModifier(), Locale.US);
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 			validator.parse(input);
@@ -595,6 +597,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void withComma() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
+		analysis.setLocale(Locale.US);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput = "Jul 21, 2020 9:00 AM|Jul 21, 2020 9:00 AM|Jul 23, 2020 5:00 PM|Jun 03, 2020 3:00 PM|Jun 09, 2020 10:30 AM|Jun 17, 2020 4:00 PM|Jun 23, 2020 3:00 PM|Jun 25, 2020 2:00 PM|Jun 30, 2020 2:30 PM|Jun 30, 2020 8:00 AM|May 19, 2020 9:00 AM|May 19, 2020 9:00 AM|May 28, 2020 2:00 PM|Jul 23, 2020 5:00 PM|Jun 03, 2020 3:00 PM|Jun 09, 2020 10:30 AM|Jun 17, 2020 4:00 PM|Jun 23, 2020 3:00 PM|Jun 25, 2020 2:00 PM|Jun 30, 2020 2:30 PM|Jun 30, 2020 8:00 AM|May 19, 2020 9:00 AM|May 19, 2020 9:00 AM|May 28, 2020 2:00 PM|";
 		final String inputs[] = pipedInput.split("\\|");
@@ -619,7 +622,7 @@ public class TestDates {
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
-		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeModifier());
+		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeModifier(), Locale.US);
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 			validator.parse(input);
@@ -630,6 +633,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void fixedWidthHour() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TransactionDate", DateResolutionMode.MonthFirst);
+		analysis.setLocale(Locale.US);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput =
 		"Oct 1 2019  2:14AM|Oct 1 2019 10:08AM|Oct 9 2019 12:49PM|Oct 9 2019  2:52PM|Oct 9 2019  6:10PM|" +
@@ -661,7 +665,7 @@ public class TestDates {
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
-		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeModifier());
+		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeModifier(), Locale.US);
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 			validator.parse(input);
@@ -671,6 +675,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void fixedWidthDayHour() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
+		analysis.setLocale(Locale.US);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput =
 				"Oct  1 2019  2:14AM|Oct  1 2019 10:08AM|Oct  9 2019 12:49PM|Oct  9 2019  2:52PM|Oct  9 2019  6:10PM|" +
@@ -702,7 +707,7 @@ public class TestDates {
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
-		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeModifier());
+		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeModifier(), Locale.US);
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 			validator.parse(input);
@@ -712,6 +717,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void variableHour() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TimeSent", DateResolutionMode.MonthFirst);
+		analysis.setLocale(Locale.US);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput =
 				"Oct 1 2019 2:14AM|Oct 1 2019 10:08AM|Oct 9 2019 12:49PM|Oct 9 2019 2:52PM|Oct 9 2019 6:10PM|" +
@@ -743,7 +749,7 @@ public class TestDates {
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
-		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeModifier());
+		final DateTimeFormatter validator = DateTimeFormatter.ofPattern(result.getTypeModifier(), Locale.US);
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
 			validator.parse(input);
@@ -1214,6 +1220,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicDateDDMMMYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicDateDDMMMYYY");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = "22 Jan 1971|12 Mar 2019|02 Jun 1996|11 Dec 1916|19 Apr 1993|26 Sep 1998|09 Dec 1959|14 Jul 2000|18 Aug 2008".split("\\|");
 		int locked = -1;
 
@@ -2305,6 +2312,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateYYYY_with_zeroes() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Date");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput =
 				"1801|1802|1900|1901|1902|1903|1904|1801|1802|1900|1901|1902|1903|" +
@@ -2413,6 +2421,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicDateDMMMYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicDateDMMMYY");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput = "1-Jan-14|2-Jan-14|3-Jan-14|6-Jan-14|7-Jan-14|7-Jan-14|8-Jan-14|9-Jan-14|10-Jan-14|" +
 				"13-Jan-14|14-Jan-14|15-Jan-14|16-Jan-14|17-Jan-14|20-Jan-14|21-Jan-14|22-Jan-14|" +
@@ -2449,6 +2458,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicUnixDateCommand() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicUnixDateCommand");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.setDebug(1);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, true);
 		final String pipedInput =
@@ -2486,6 +2496,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void badDatesGoodFormat() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicUnixDateCommand");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.setDebug(1);
 		// ** Note: June 16 was NOT a Sunday! We still return the 'correct' format.
 		final String[] inputs = {
@@ -2636,6 +2647,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicMMMM_d_yyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMMMM_d_yyyy");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput = "September-17-2014|September-11-2011|September-4-2008|August-29-2005|August-23-2002|August-17-1999|" +
 				"August-10-1996|August-4-1993|July-29-1990|July-23-1987|July-16-1984|July-10-1981|July-4-1978|June-28-1975|" +
@@ -3223,6 +3235,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void novelApproachDateTime() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 
 		final String inputs[] = {
@@ -3262,6 +3275,7 @@ public class TestDates {
 
 	public void novelApproachDate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("SUB_ACTIVE_DATE_ONLY");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 
 		final String inputs[] = {
@@ -3982,6 +3996,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateIssueAMPM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CREATED_ON");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 
 		final String inputs[] = {
@@ -4122,6 +4137,7 @@ public class TestDates {
 
 		for (final String test : tests) {
 			final TextAnalyzer analysis = new TextAnalyzer("dqplus" + test);
+			analysis.setLocale(Locale.forLanguageTag("en-US"));
 			final String dateTimeFormat = test;
 			final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat);
 			final int sampleCount = 1000;
@@ -4221,6 +4237,8 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicMMMdcommayyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMMMdcommayyyy");
+		Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
 		final String pipedInput = "August 20, 2017|August 20, 2017|July 22, 2017|August 5, 2017|July 22, 2017|June 23, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
 				"May 25, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 25, 2017|April 26, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
 				"May 25, 2017|April 26, 2017|March 28, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 25, 2017|April 26, 2017|March 28, 2017|" +
@@ -4251,13 +4269,15 @@ public class TestDates {
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
-			assertNull(checkParseable(result, input));
+			assertNull(checkParseable(result, input, locale));
 		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void inputZ() throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("inputZ");
+		Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
 		final String[] inputs = {
 				"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
 				"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
@@ -4291,14 +4311,15 @@ public class TestDates {
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
-			assertNull(checkParseable(result, input));
+			assertNull(checkParseable(result, input, locale));
 		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicJapanese() throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicJapanese");
-		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		Locale locale = Locale.forLanguageTag("ja-JP");
+		analysis.setLocale(locale);
 		final String[] inputs = {
 				"2018年10月6日", "2019年4月30日", "2017年3月12日", "2008年4月30日", "2087年5月20日",
 				"2019年6月10日", "2019年7月30日", "2019年4月30日", "2017年8月12日", "2019年4月30日",
@@ -4329,7 +4350,7 @@ public class TestDates {
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
-			assertNull(checkParseable(result, input));
+			assertNull(checkParseable(result, input, locale));
 		}
 	}
 
@@ -4337,7 +4358,8 @@ public class TestDates {
 	public void japaneseEra() throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("japaneseEra");
-		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		Locale locale = Locale.forLanguageTag("ja-JP");
+		analysis.setLocale(locale);
 		final String[] inputs = {
 				"平成12年", "平成13年", "平成14年",
 				"平成15年", "平成16年", "明治23年",
@@ -4364,14 +4386,15 @@ public class TestDates {
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
-			assertNull(checkParseable(result, input));
+			assertNull(checkParseable(result, input, locale));
 		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void chineseAM() throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("japaneseEra");
-		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		Locale locale = Locale.forLanguageTag("ja-JP");
+		analysis.setLocale(locale);
 		final String[] inputs = {
 				"2015/1/5 上午 12:00:00", "2015/1/30 上午 12:00:00", "2014/12/30 上午 12:00:00",
 				"2015/1/13 上午 12:00:00", "2015/1/20 上午 12:00:00", "2014/12/24 上午 12:00:00",
@@ -4402,14 +4425,15 @@ public class TestDates {
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
-			assertNull(checkParseable(result, input));
+			assertNull(checkParseable(result, input, locale));
 		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void bulgarianddMMyyyy() throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("bulgarian");
-		analysis.setLocale(Locale.forLanguageTag("bg-BG"));
+		Locale locale = Locale.forLanguageTag("bg-BG");
+		analysis.setLocale(locale);
 		final String[] inputs = {
 				"14.02.2017г.", "10.01.2017г.", "02.02.2017г.", "07.02.2017г.", "16.02.2017г.",
 				"28.02.2017г.", "01.03.2017г.", "23.03.2017г.", "28.03.2017г.", "30.03.2017г.",
@@ -4443,7 +4467,7 @@ public class TestDates {
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()));
-			assertNull(checkParseable(result, input));
+			assertNull(checkParseable(result, input, locale));
 		}
 	}
 
@@ -4506,15 +4530,15 @@ public class TestDates {
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(result.getRegExp()), input);
-			assertNull(checkParseable(result, input));
+			assertNull(checkParseable(result, input, bulgarian));
 		}
 	}
 
 
-	protected static String checkParseable(TextAnalysisResult result, String input) {
+	protected static String checkParseable(final TextAnalysisResult result, final String input, final Locale locale) {
 		final String formatString = result.getTypeModifier();
 		final FTAType type = result.getType();
-		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString, locale);
 
 		try {
 			if (FTAType.LOCALTIME.equals(type))
@@ -4540,6 +4564,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicDDMMMMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicDDMMMMYYYY");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput = "25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 August 1984|10 January 2000|1 January 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 August 1984|10 May 2000|1 April 1970|16 July 1934|06 July 1961|" +

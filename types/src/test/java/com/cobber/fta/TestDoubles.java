@@ -52,6 +52,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void positiveDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("positiveDouble");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = "43.80|1.1|0.1|2.03|.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
 
@@ -115,6 +116,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void positiveDouble2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("positiveDouble2");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = "43.80|1.1|0.1|2.03|0.1|99.23|14.08976|14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
 
@@ -148,6 +150,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void negativeDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("negativeDouble");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = "43.80|-1.1|-.1|2.03|.1|-99.23|14.08976|-14.085576|3.141592654|2.7818|1.414|2.713".split("\\|");
 		int locked = -1;
 
@@ -183,6 +186,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void basicPromoteToDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicPromoteToDouble");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInut =
 					"8|172.67|22.73|150|30.26|54.55|45.45|433.22|172.73|7.73|" +
 						"218.18|47.27|31.81|22.73|21.43|7.27|26.25|7.27|45.45|80.91|" +
@@ -221,6 +225,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void trailingMinus() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("trailingMinus");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = "458.00-|123.00|901.21|404.064|209.01-|12.0|0.0|0|676.00|1894.80-|2903.22-|111.14-|5234.00".split("\\|");
 		int locked = -1;
 
@@ -261,6 +266,7 @@ public class TestDoubles {
 				"0.24983460286935077", "0.772409965970719", "1.1388812589363528E-4", "0.78120115126727", "0.6386556468768979",
 				"0.8730028156182696", "0.8296568674820993", "0.3250682023283127", "0.7261517112855164", "0.09470135380197953" };
 		final TextAnalyzer analysis = new TextAnalyzer("floatBug");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		int locked = -1;
 		int index = 0;
 
@@ -310,6 +316,7 @@ public class TestDoubles {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("verySmall");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		for (final String sample : samples)
 			analysis.train(sample);
@@ -344,6 +351,7 @@ public class TestDoubles {
 				"0.24983460286935077", "0.772409965970719", "1.1388812589363528E+4", "0.78120115126727", "0.6386556468768979",
 				"0.8730028156182696", "0.8296568674820993", "0.3250682023283127", "0.7261517112855164", "0.09470135380197953" };
 		final TextAnalyzer analysis = new TextAnalyzer("signedFloatBug");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		int locked = -1;
 		int index = 0;
 
@@ -384,6 +392,7 @@ public class TestDoubles {
 				"218.18", "47.27", "31.81", "22.73", "21.43", "7.27", "26.25", "7.27", "45.45" };
 
 		final TextAnalyzer analysis = new TextAnalyzer("mixedInput");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		for (final String sample : samples)
 			analysis.train(sample);
@@ -484,6 +493,7 @@ public class TestDoubles {
 
 		};
 		final TextAnalyzer analysis = new TextAnalyzer("EURO_OUTSTANDING");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		for (final String sample : samples)
 			analysis.train(sample);
@@ -554,6 +564,7 @@ public class TestDoubles {
 				"-1393.26"
 		};
 		final TextAnalyzer analysis = new TextAnalyzer("CDS Notional:unicode");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		assertEquals(analysis.getThreshold(), AnalysisConfig.DETECTION_THRESHOLD_DEFAULT);
 		analysis.setThreshold(96);
 		assertEquals(analysis.getThreshold(), 96);
@@ -583,6 +594,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void manyRandomDoubles() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyRandomDoubles");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final int nullIterations = 50;
 		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;
@@ -722,6 +734,7 @@ public class TestDoubles {
 				"22.24", "1202.43", "-0.234", "71.45", "3.411", "234.321", "-0.4848", "0.66666", "1.23", "10.0"
 		};
 		final TextAnalyzer analysis = new TextAnalyzer("doublesWithNan");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		for (final String sample : samples)
 			analysis.train(sample);
@@ -751,6 +764,7 @@ public class TestDoubles {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 
 		analysis.train("1010e:");
@@ -786,6 +800,7 @@ public class TestDoubles {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 
 		double min = Double.MAX_VALUE;
@@ -826,6 +841,7 @@ public class TestDoubles {
 		final int SAMPLE_COUNT = 100;
 		final Set<String> samples = new HashSet<>();
 		final TextAnalyzer analysis = new TextAnalyzer("Simple");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 
 		analysis.train("1010e:");
@@ -971,6 +987,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void testFromFuzz1() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testFromFuzz1");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String input =
 				"100|-101.0|102|103|104|105|106|107|hello|109|110|111|112|113|114|115|116|117|118|119|";
 		final String inputs[] = input.split("\\|");
@@ -1001,6 +1018,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void backoutToDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("backoutToDouble");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput =
 				"0|0|0|0|0|0|0|0|0|1|2|3|0|0|0|0|0|" +
 						"0|0|0|0|0.25|0|0|0|0|0|0|0|0|0|0|0|0|" +
@@ -1279,6 +1297,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void spacedDoubles() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("AMT");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String inputs[] = {
 				" 000000512.80", "-000000512.80", "-000000006.96", "-000000206.43", "-000000078.40", " 000000000.03", "-000000000.03", "-000000010.60", " 000000244.87", " 000000917.60",
@@ -1541,6 +1560,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void doublesWithGroupingAndExponent() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("doublesWithGroupingAndExponent");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.setDebug(2);
 		final String[] inputs = {
 				"5,000,000E12", "2,000,000E11", "6,000,000E21", "1,000,000E12", "2,000,000E11", "6,000,000E4",
@@ -1583,6 +1603,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void signedDoublesWithGroupingAndExponent() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("signedDoublesWithGroupingAndExponent");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.setDebug(2);
 		final String[] inputs = {
 				"-5,000,000E12", "2,000,000E11", "6,000,000E21", "1,000,000E12", "2,000,000E11", "6,000,000E4",
@@ -2021,6 +2042,7 @@ public class TestDoubles {
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void doublesWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("doublesWithSpaces");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput =
 				" 0.56000537| 0.4644182| 0.53597438| 0.66897142| 0.58498305| 0.53236401| 0.57459098| 0.66013932| 0.52850509| 0.59274352| 0.63449258|" +
 						" 0.53062689| 0.62101597| 0.54467571| 0.55982822| 0.55236143| 0.52536035| -9999| 0.60300124| 0.56447577| 0.52936405| 0.529791|" +

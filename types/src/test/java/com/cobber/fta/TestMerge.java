@@ -94,8 +94,7 @@ public class TestMerge {
 		List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			shardTwo.add("FEMALE");
-
-		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "MALE_FEMALE", null, true);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "MALE_FEMALE", Locale.forLanguageTag("en-US"), true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
@@ -206,7 +205,7 @@ public class TestMerge {
 		for (int i = 40000; i < 100000; i++)
 			shardTwo.add(longFormatter.format(i));
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededLong", null, true);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededLong", Locale.ENGLISH, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LONG);
@@ -220,10 +219,12 @@ public class TestMerge {
 		longFormatter.setGroupingUsed(true);
 
 		TextAnalyzer shardOne = new TextAnalyzer("cardinalityExceededLongNoSerialization");
+		shardOne.setLocale(Locale.forLanguageTag("en-US"));
 		for (int i = 0; i < 20000; i++)
 			shardOne.train(longFormatter.format(i));
 
 		TextAnalyzer shardTwo = new TextAnalyzer("cardinalityExceededLongNoSerialization");
+		shardTwo.setLocale(Locale.forLanguageTag("en-US"));
 		for (int i = 40000; i < 100000; i++)
 			shardTwo.train(longFormatter.format(i));
 
@@ -639,7 +640,7 @@ public class TestMerge {
 		samplesTwo.add(null);
 		samplesTwo.add(null);
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localdate_localdate", null, true);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localdate_localdate", Locale.US, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getSampleCount(), inputsOne.length + inputsTwo.length + 4);
@@ -671,7 +672,7 @@ public class TestMerge {
 		samplesTwo.add(null);
 		samplesTwo.add(null);
 
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localdate_localdate", null, true);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localdate_localdate", Locale.US, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getSampleCount(), inputsOne.length + inputsTwo.length + 4);

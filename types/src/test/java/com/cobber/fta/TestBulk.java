@@ -20,6 +20,7 @@ import static org.testng.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.testng.annotations.Test;
@@ -33,6 +34,7 @@ public class TestBulk {
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void basicBulk() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBulk");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.setTrace("enabled=true");
 
 		final HashMap<String, Long> basic = new HashMap<>();
@@ -63,6 +65,7 @@ public class TestBulk {
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void basicBulkFromDB() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBulk");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.setKeyConfidence(1.0);
 		analysis.setTotalCount(4_000_000L);
 
@@ -134,7 +137,9 @@ public class TestBulk {
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void basicBulkSignature() throws IOException, FTAException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer("basicBulkSignature_bulk");
+		analysisBulk.setLocale(Locale.forLanguageTag("en-US"));
 		final TextAnalyzer analysis = new TextAnalyzer("basicBulkSignature");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final long ITERATIONS = 10000;
 
 		final HashMap<String, Long> basic = new HashMap<>();
@@ -200,25 +205,26 @@ public class TestBulk {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void basicDate() throws IOException, FTAException {
-		final TextAnalyzer analysisBulk = new TextAnalyzer("ModifiedDate", DateResolutionMode.Auto);
+		final TextAnalyzer analysis = new TextAnalyzer("ModifiedDate", DateResolutionMode.Auto);
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("2002-06-01 00:00:00", 10L);
 		basic.put("2008-03-11 10:17:21", 99L);
-		analysisBulk.trainBulk(basic);
-		final TextAnalysisResult resultBulk = analysisBulk.getResult();
+		analysis.trainBulk(basic);
+		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(resultBulk.getSampleCount(), 109);
-		assertEquals(resultBulk.getType(), FTAType.LOCALDATETIME);
-		assertEquals(resultBulk.getTypeModifier(), "yyyy-MM-dd HH:mm:ss");
-		assertNull(resultBulk.getSemanticType());
-		assertEquals(resultBulk.getNullCount(), 0);
-		assertEquals(resultBulk.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
-		assertEquals(resultBulk.getMatchCount(), 109);
-		assertEquals(resultBulk.getConfidence(), 1.0);
-		assertEquals(resultBulk.getName(), "ModifiedDate");
+		assertEquals(result.getSampleCount(), 109);
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd HH:mm:ss");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
+		assertEquals(result.getMatchCount(), 109);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getName(), "ModifiedDate");
 
-		assertNull(resultBulk.checkCounts());
+		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
@@ -284,6 +290,7 @@ public class TestBulk {
 	@Test(groups = { TestGroups.ALL, TestGroups.BULK })
 	public void dateFieldDot6() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dateFieldDot6", DateResolutionMode.Auto);
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int SAMPLES = 40;
 
 		final HashMap<String, Long> basic = new HashMap<>();

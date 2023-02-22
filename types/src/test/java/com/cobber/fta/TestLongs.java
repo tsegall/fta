@@ -242,6 +242,7 @@ public class TestLongs {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void similar() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("trailingMinus");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = { "47", " 47", " 47 ", "47.0", "47.000" };
 
 		for (String input: inputs)
@@ -264,7 +265,6 @@ public class TestLongs {
 		assertEquals(result.getValueAtQuantile(.5), "47");
 		assertNull(result.checkCounts());
 
-		TestSupport.dumpRaw(result.getHistogram(10));
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
@@ -590,6 +590,7 @@ public class TestLongs {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void groupingSeparatorLarge() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int SAMPLE_SIZE = 10000;
 		long min = Long.MAX_VALUE;
 		long max = Long.MIN_VALUE;
@@ -952,6 +953,7 @@ public class TestLongs {
 		assertTrue(analysis.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING));
 		analysis.configure(TextAnalyzer.Feature.NUMERIC_WIDENING, false);
 		assertFalse(analysis.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING));
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		int minLength = Integer.MAX_VALUE;
 		int maxLength = Integer.MIN_VALUE;
 		int locked = -1;
@@ -1277,6 +1279,7 @@ public class TestLongs {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void groupingSeparator() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput = "3600|7500|3600|3600|800|3600|1200|1200|600|" +
 				"1200|1200|1200|1200|3600|1200|13,000|1200|200|" +
 				"1200|1200|1200|1200|1200|1200|1200|1200|200|" +
@@ -1326,6 +1329,7 @@ public class TestLongs {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void groupingSeparatorSigned() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int SAMPLE_SIZE = 100;
 		long min = Long.MAX_VALUE;
 		long max = Long.MIN_VALUE;

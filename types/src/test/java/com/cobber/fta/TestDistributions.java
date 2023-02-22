@@ -278,6 +278,7 @@ public class TestDistributions {
 
 	public void baseYYYY(final long size) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("year");
+		analysis.setLocale(Locale.forLanguageTag("en-IN"));
 		final double RELATIVE_ACCURACY = 0.01;
 
 		for (int i = 1900; i < 1900 + size; i++)
@@ -729,6 +730,7 @@ public class TestDistributions {
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void leadingPlus() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("latitude");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String testCases[] = {
 				"+37.4417477", "+37.3159742", "+37.3504209", "+37.3515288", "+37.3504209",
 				"+37.2303267", "+37.3805678", "+37.4157026", "+37.3511428", "+37.3444821",
@@ -764,6 +766,7 @@ public class TestDistributions {
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void normalCurve() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("normalCurve");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final SecureRandom random = new SecureRandom();
 		final int SIZE = 100000;
 
@@ -1024,6 +1027,7 @@ public class TestDistributions {
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void simpleHistogramDate() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramDate");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final long SIZE = 1000;
 		final int WIDTH = 10;
 

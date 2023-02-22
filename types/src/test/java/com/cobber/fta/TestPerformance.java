@@ -20,6 +20,7 @@ import static org.testng.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -61,7 +62,8 @@ public class TestPerformance {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PERFORMANCE })
 	public void basePerformanceBulkDate() throws IOException, FTAException {
-		final TextAnalyzer analyzer = new TextAnalyzer("basePerformanceBulkDate");
+		final TextAnalyzer analysis = new TextAnalyzer("basePerformanceBulkDate");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final Map<String, Long> testCase = new HashMap<>();
 		final long SIZE = 1_000_000_000L;
 
@@ -70,9 +72,9 @@ public class TestPerformance {
 		testCase.put("Mon May 18 21:01:27 PDT 1970", SIZE/4);
 		testCase.put("Wed Dec  9 12:44:29 PDT 1959", SIZE/4);
 
-		analyzer.trainBulk(testCase);
+		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analyzer.getResult();
+		TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getSampleCount(), SIZE);
 		assertEquals(result.getMatchCount(), SIZE);

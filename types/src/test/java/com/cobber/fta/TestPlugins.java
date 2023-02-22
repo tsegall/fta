@@ -75,6 +75,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderTwoValues() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Male|" +
 				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
 				"MALE|FEMALE|MALE|FEMALE|FEMALE|MALE|FEMALE|MALE|" +
@@ -109,6 +110,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderTwoValuesMF() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput = "F|M|M|F|F|M|F|F|M|" +
 				"M|F|M|M|M|F|F|M|M|M|" +
 				"M|F|M|F|F|M|F|M|" +
@@ -143,6 +145,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderThreeValues() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int UNKNOWNS = 3;
 		final String pipedInput = "F|M|M|F|F|M|F|F|M|U|" +
 				"M|F|M|M|M|F|F|M|M|M|U|" +
@@ -178,6 +181,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGender() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
 				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
 				"Female|Male|Female|FEMALE|Male|Female|male|Male|Male|male|";
@@ -788,6 +792,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPhoneNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Phone");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"+1 339 223 3709", "(650) 867-3450", "+44 191 4956203", "(650) 450-8810", "(512) 757-6000", "(336) 222-7000", "(014) 427-4427",
 				"(785) 241-6200", "(312) 596-1000", "(503) 421-7800", "(520) 773-9050", "+1 617 875 9183", "(212) 842-5500", "(415) 901-7000",
@@ -822,6 +827,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPhoneNumberUnrecognizedHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BTN");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"+1 339 223 3709", "(650) 867-3450", "+44 191 4956203", "(650) 450-8810", "(512) 757-6000", "(336) 222-7000", "(014) 427-4427",
 				"(785) 241-6200", "(312) 596-1000", "(503) 421-7800", "(520) 773-9050", "+1 617 875 9183", "(212) 842-5500", "(415) 901-7000",
@@ -856,6 +862,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void trickyPhoneNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Phone");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"617.875.9182", "7818609182", "+13392237279", "+13392237280", "7818201295", "617.875.9183",
 				"7818609182", "+13392237271", "+13392237281", "7818201295", "617.875.9184", "7818609182",
@@ -888,6 +895,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void phoneManyFormats() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("phone");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"432.2133750", "210.296.6710", "8174411241", "2145005481", "210.844.7221", "956.580.1568",
 				"2102966710", "8322372014", "830.625.2279", "3615503009", "7132563691", "254-741-4612",
@@ -918,6 +926,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput = " Female| MALE|Male| Female|Female|MALE |Female |Female |Unknown |Male |" +
 				" Male|Female |Male|Male|Male|Female | Female|Male |Male |Male |" +
 				" Female|Male |Female|FEMALE|Male| Female| male| Male| Male|  male |";
@@ -953,6 +962,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderTriValue() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput = "Female|MALE|Male|Female|Female|MALE|Female|Female|Unknown|Male|" +
 				"Male|Female|Male|Male|Male|Female|Female|Male|Male|Male|" +
 				"Unknown|Female|Unknown|Male|Unknown|Female|Unknown|Male|Unknown|Male|" +
@@ -1035,6 +1045,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegisterFinite() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CUSIP");
+		analysis.setLocale(Locale.forLanguageTag("en-AU"));
 		analysis.setMaxCardinality(20000);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		final PluginDefinition plugin = new PluginDefinition("CUSIP", "com.cobber.fta.PluginCUSIP");
@@ -1079,6 +1090,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegisterInfinite() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
+		analysis.setLocale(Locale.forLanguageTag("en-AU"));
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		final PluginDefinition pluginDefinition = new PluginDefinition("CC", "com.cobber.fta.PluginCreditCard");
@@ -1499,6 +1511,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicZip() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicZ_ip");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String inputs[] = TestUtils.validZips.split("\\|");
 		int locked = -1;
 
@@ -1527,6 +1540,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicZipVariable() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicZ_ipVariable");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String inputs[] = TestUtils.validZips.split("\\|");
 		int locked = -1;
 
@@ -1645,6 +1659,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicZipHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingPostalCode");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String inputs[] = {
 			"", "", "", "", "", "", "", "", "", "27215", "75251", "66045", "", "",
 			"", "", "", "", "94087", "", "", "", "", "", "", "", "", "", "", ""
@@ -2097,6 +2112,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void sameZipWithHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ZipCode");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int copies = 100;
 		final String sample = "02421";
 
@@ -2128,6 +2144,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStateHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("BillingState");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		final String[] inputs = {
 				"NY", "CA", "CA", "", "", "CA", "UK", "TX", "NC", "", "", "", "", "", "MA",
@@ -2157,6 +2174,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStateSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput = " AL| AK| AZ| KY| KS| LA| ME| MD| MI| MA| MN| MS|MO |NE| MT| SD|TN | TX| UT| VT| WI|" +
 						" VA| WA| WV| HI| ID| IL| IN| IA| KS| ky| LA| ME| MD| MA| MI| MN| MS| MO| MT| NE| NV|" +
 						" NH| NJ| NM| NY| NC| ND| OH| OK| OR| PA| RI| SC| SD| TN| TX| UT| VT| VA| WA|  WV | WI|" +
@@ -2198,6 +2216,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStateMX() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Estado");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		final String[] inputs = {
 				"SLP", "SON", "TAB", "TAM", "TLA", "VER", "YUC", "ZAC",
@@ -2266,6 +2285,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicNAStateName() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Billing State/Province");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		final String[] inputs = {
 				"ST", "ST", "NY", "IN", "IN", "Georgia", "WI", "WI", "WI", "WI", "WI", "WI", "WI",
@@ -2391,6 +2411,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStates() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicS_tates");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		final String inputs[] = TestUtils.validUSStates.split("\\|");
 		int locked = -1;
@@ -2461,6 +2482,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStatesWithDash() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicS_tatesWithDash");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		final String pipedInput = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
 				"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|-|" +
@@ -2682,6 +2704,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStatesLower() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicS_tatesLower");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String pipedInput = "al|ak|az|ky|ks|la|me|md|mi|ma|mn|ms|mo|ne|mt|sd|tn|tx|ut|vt|wi|" +
 				"va|wa|wv|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|" +
 				"nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|" +
@@ -2718,6 +2741,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicCA() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicCA");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String inputs[] = TestUtils.validCAProvinces.split("\\|");
 		int locked = -1;
 
@@ -2987,6 +3011,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicMonthAbbr() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbr");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int badCount = 4;
 		final String inputs[] = TestUtils.months.split("\\|");
 
@@ -3118,6 +3143,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStateLowCard() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String input = "MA|MI|ME|MO|MS|";
 		final String inputs[] = input.split("\\|");
 		final int iters = 20;
@@ -3278,6 +3304,7 @@ public class TestPlugins {
 
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(pluginDefinition);
 
@@ -3351,6 +3378,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testInfiniteDoublePlugin() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("PERCENTAGES");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int COUNT = 1000;
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		final PluginDefinition plugin = new PluginDefinition("PERCENT", "com.cobber.fta.PluginPercent");
@@ -3434,6 +3462,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void nameManySpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("contact_full_name");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"Rodney D.  Jones", "Margaret A.  Baldwin", "Patricia A.  Greenfield", "Tena D.  Golden", "Melissa A.  Baxter-Kosub",
 				"Renee S.  Martin", "Margaret A.  Baldwin", "Charles L.  Bertani Sr", "Stephen  S.  Nishimuta", "Thomas M.  Dornak",
@@ -3478,6 +3507,7 @@ public class TestPlugins {
 			analysis = new TextAnalyzer[header.length];
 			for (int i = 0; i < header.length; i++) {
 				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "Names.txt", header));
+				analysis[i].setLocale(Locale.forLanguageTag("en-US"));
 			}
 			while ((row = parser.parseNext()) != null) {
 				for (int i = 0; i < row.length; i++) {
@@ -3528,6 +3558,7 @@ public class TestPlugins {
 		for (int i = 0; i < 100; i++) {
 			for (final String header : headersGood) {
 				final TextAnalyzer analysis = new TextAnalyzer(header);
+				analysis.setLocale(Locale.forLanguageTag("en-US"));
 				for (int s = 0; s < 2; s++)
 					analysis.train(samplesGoodFirstOnly[s]);
 
@@ -3543,6 +3574,7 @@ public class TestPlugins {
 		for (int i = 0; i < 100; i++) {
 			for (final String header : headersMaybe) {
 				final TextAnalyzer analysis = new TextAnalyzer(header);
+				analysis.setLocale(Locale.forLanguageTag("en-US"));
 				for (int s = 0; s < 5; s++)
 					analysis.train(samplesGoodFirstOnly[s]);
 
@@ -3557,6 +3589,7 @@ public class TestPlugins {
 		// With 'bad' headers you really need good data, and more of it!
 		for (final String header : headersBad) {
 			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("en-US"));
 			for (int i = 0; i < 4; i++)
 				for (final String sample : samplesGoodFirstOnly)
 					analysis.train(sample);
@@ -3568,6 +3601,7 @@ public class TestPlugins {
 		// With 'bad' headers you really need good data - this is an example of not enough data!
 		for (final String header : headersBad) {
 			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("en-US"));
 			for (final String sample : samplesGoodFirstOnly) {
 				analysis.train(sample);
 			}
@@ -3958,6 +3992,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void thinAddress() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Example_Address");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"123 Test St",
 				"124 Test St",
@@ -4135,7 +4170,8 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void nameLast() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("name");
+		final TextAnalyzer analysis = new TextAnalyzer("naam");
+		analysis.setLocale(Locale.forLanguageTag("nl-NL"));
 
 		final String[] inputs = {
 				"LEE", "WALKER", "SIMS", "SLAUGHTER", "ACHENBACH", "BARNES", "GALIS", "RAMPAGE", "GUINN", "HALLAT",
@@ -4159,7 +4195,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 
 		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("NAME.LAST");
-		final LogicalType knownSemanticType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
+		final LogicalType knownSemanticType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(Locale.forLanguageTag("nl-NL")));
 
 		assertTrue(knownSemanticType.isValid("Segall"));
 
@@ -4308,6 +4344,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicUSStreet() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicUSStreet");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		for (final String s : TestUtils.validUSStreets) {
 			analysis.train(s);
@@ -4331,6 +4368,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicUSStreetTwo() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicUSStreetTwo");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
 		for (final String s : validUSStreets2) {
 			analysis.train(s);
@@ -4444,6 +4482,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void dayofweekUS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("dayofweekUS");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"Sat", "Sat", "Sun", "Sun", "Sun", "Sun",
 				"Tue", "Thu", "Thu", "Tue", "Tue", "Tue",

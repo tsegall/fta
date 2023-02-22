@@ -28,7 +28,7 @@ import com.cobber.fta.text.TextProcessor;
 public class TestText {
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void reallySimple() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("The quick brown fox jumped over the lazy dog");
 
@@ -41,7 +41,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void example() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("I.e. is an abbreviation for the phrase id est, which means \"that is.\" I.e. is used to restate something said previously in order to clarify its meaning. E.g. is short for exempli gratia, which means \"for example.\" E.g. is used before an item or list of items that serve as examples for the previous statement.");
 
@@ -54,7 +54,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void offWithTheirHeads() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("Off with their heads!");
 
@@ -67,7 +67,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void sixImpossibleThings() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("Why, sometimes I've believed as many as six impossible things before breakfast.");
 
@@ -80,7 +80,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void goingBackToYesterday() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("It's no use going back to yesterday,  because I was a different person then.");
 
@@ -93,7 +93,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void dreadfullyUglyChild() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("It would have made a dreadfully ugly child; but it makes rather a handsome pig.");
 
@@ -106,7 +106,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void quotes() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("'And what is the use of a book,' thought Alice, 'without pictures or conversation?'");
 
@@ -119,7 +119,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void whoInTheWorldAmI() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("'Who in the world am I?' Ah, that's the great puzzle!");
 
@@ -132,7 +132,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void singleWord() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("F944277490");
 
@@ -141,7 +141,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void noRealWords() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("F944277490 PAGE X1233456");
 
@@ -150,7 +150,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void tooLong() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("Sometimes antidisestablishmentarianism is just too long to be real.");
 
@@ -168,7 +168,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void averageLow() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("I am a very tiny tract of land.");
 
@@ -177,7 +177,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void averageHigh() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("Tergiversation - definition: equivocation, circumlocution, prevarication.");
 
@@ -186,7 +186,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void randomNoise() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("=aaaaaaa= =bbbbbbbb= =ccccccc= =dddddddd= =eeeeeeee=.");
 
@@ -195,7 +195,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void hyphens() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("Netex - LocalTails-Unmatched");
 
@@ -204,7 +204,7 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void addresses() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		TextProcessor processor = new TextProcessor(Locale.US);
 
 		TextProcessor.TextResult result = processor.analyze("Station Road");
 

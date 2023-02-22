@@ -113,7 +113,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomZip() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US"), new AnalysisConfig(Locale.forLanguageTag("en-US")));
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -133,8 +133,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomGender() throws IOException, FTAPluginException {
-		final PluginDefinition plugin = new PluginDefinition("GENDER", "com.cobber.fta.plugins.Gender");
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(plugin, new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("GENDER.TEXT_<LANGUAGE>"), new AnalysisConfig(Locale.forLanguageTag("nl-NL")));
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 

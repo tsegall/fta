@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.9.2
+ - BUG: Test Suite does not run cleanly when default locale is other than en-US (Issue #28)
+
 ### 12.9.1
  - ENH: Extend validation examples and allow case independent matching in PluginDefinition.findByQualifier()
  - ENH: I18N - Dutch - Add FRYSLÂN to the list of valid provinces

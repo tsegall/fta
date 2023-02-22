@@ -94,7 +94,7 @@ public class PluginDefinition {
 	public PluginDefinition() {
 	}
 
-	// *** Only use this for internal testing ***
+	// *** Only use this for internal testing - be warned only works in English language ***
 	public PluginDefinition(final String semanticType, final String clazz) {
 		this.semanticType = semanticType;
 		this.clazz = clazz;

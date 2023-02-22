@@ -83,7 +83,7 @@ public class DetermineDateTimeFormatTests {
 						"25 July 2018|25-July-2018|7 June 2017|7-June-2017|June 23, 2017|" +
 						"August 8, 2017|August 18 2017|December 9 2017|January-14-2017|February-4-2017|";
 
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 		assertEquals(dtp.determineFormatString("9:57"), "H:mm");
 		final String inputs[] = pipedInput.split("\\|");
 		final String fmts[] = new String[inputs.length];
@@ -122,7 +122,7 @@ public class DetermineDateTimeFormatTests {
 				if (ignore.contains(i)) {
 					continue;
 				}
-				final DateTimeParser det = new DateTimeParser();
+				final DateTimeParser det = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 				det.train(inputs[i]);
 				final DateTimeParserResult result = det.getResult();
 				final FTAType type = result.getType();
@@ -424,7 +424,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void manyEyes1() {
-		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst).withLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"Fri 08 Jan 2010 14:34:29 +0000", "Fri 08 Jan 2010 14:34:29 +0000", "Fri 08 Jan 2010 14:42:51 +0000", "Fri 08 Jan 2010 14:44:15 +0000",
 				"Fri 08 Jan 2010 14:44:26 +0000", "Fri 08 Jan 2010 14:44:51 +0000", "Fri 08 Jan 2010 14:46:13 +0000", "Fri 08 Jan 2010 14:48:16 +0000",
@@ -473,7 +473,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void manyEyes2() {
-		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst).withLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"Sunday, June  6, 2010 23:02:18 UTC", "Sunday, June  6, 2010 22:58:45 UTC", "Sunday, June  6, 2010 22:58:20 UTC",
 				"Sunday, June  6, 2010 22:35:06 UTC", "Sunday, June  6, 2010 22:21:39 UTC", "Sunday, June  6, 2010 22:07:59 UTC",
@@ -503,7 +503,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void manyEyes3() {
-		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst).withLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"Sunday, June 6, 2010 23:02:18 UTC", "Sunday, June 6, 2010 22:58:45 UTC", "Sunday, June 6, 2010 22:58:20 UTC",
 				"Sunday, June 6, 2010 22:35:06 UTC", "Sunday, June 6, 2010 22:21:39 UTC", "Sunday, June 6, 2010 22:07:59 UTC",
@@ -532,7 +532,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void manyEyes4() {
-		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst).withLocale(Locale.forLanguageTag("en-US"));
 		// ** Note: June 16 was NOT a Sunday! We still return the 'correct' format.
 		final String[] inputs = {
 				"Sunday, June 16, 2010 23:02:18 UTC", "Sunday, June 16, 2010 22:58:45 UTC", "Sunday, June 16, 2010 22:58:20 UTC",
@@ -604,7 +604,7 @@ public class DetermineDateTimeFormatTests {
 
 		for (final String input : inputs) {
 			assertTrue(input.matches(regExp), regExp);
-			assertNull(checkParseable(result, input));
+			assertNull(checkParseable(result, input, Locale.forLanguageTag("nl-NL")));
 		}
 	}
 
@@ -862,7 +862,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void fullMonths() {
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 
 		assertEquals(dtp.determineFormatString("25 July 2018"), "dd MMMM yyyy");
 		assertEquals(dtp.determineFormatString("25-July-2018"), "dd-MMMM-yyyy");
@@ -968,7 +968,7 @@ public class DetermineDateTimeFormatTests {
 		final String pipedInput = "Thu Jul  2 09:48:00 PDT 2020|Wed Jul  1 10:00:56 PDT 2020|Thu Jul  2 04:56:56 PDT 2020|Wed Jul 22 09:48:56 PDT 2020|";
 		final String inputs[] = pipedInput.split("\\|");
 
-		final DateTimeParser dtp = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final DateTimeParser dtp = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst).withLocale(Locale.forLanguageTag("en-US"));
 
 		for (final String input : inputs) {
 			dtp.train(input);
@@ -992,7 +992,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void EEE_With_Offset() {
-		final DateTimeParser det = new DateTimeParser();
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 		det.train("Wed Apr 21 08:10:38 GMT+8 2021");
 		final DateTimeParserResult result = det.getResult();
 		assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss O yyyy");
@@ -1000,13 +1000,13 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void fixedWidthDay() {
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 		assertEquals(dtp.determineFormatString("Oct  1 2019 12:14AM"), "MMM ppd yyyy hh:mma");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void fixedWidthHour() {
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 		assertEquals(dtp.determineFormatString("Oct 1 2019  1:53PM"), "MMM d yyyy pph:mma");
 	}
 
@@ -1017,7 +1017,7 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format, Locale.US);
 		OffsetDateTime.parse(sample, dtf);
 
-		final DateTimeParser det = new DateTimeParser();
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 		det.train(sample);
 		final DateTimeParserResult result = det.getResult();
 		assertEquals(result.getFormatString(), format);
@@ -1029,7 +1029,8 @@ public class DetermineDateTimeFormatTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void EEE_With_Offset_mmss() {
 		final String sample = "Wed Apr 21 08:10:38 GMT-07:12:34 2021";
-		final DateTimeFormatter dtf = new DateTimeParser().ofPattern("EEE MMM dd HH:mm:ss OOOO yyyy");
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
+		final DateTimeFormatter dtf = dtp.ofPattern("EEE MMM dd HH:mm:ss OOOO yyyy");
 
 		try {
 			ZonedDateTime.parse("Wed Apr 21 08:10:38 GMT-07:12:34 2021", dtf);
@@ -1038,9 +1039,8 @@ public class DetermineDateTimeFormatTests {
 			fail(e.getMessage());
 		}
 
-		final DateTimeParser det = new DateTimeParser();
-		det.train(sample);
-		final DateTimeParserResult result = det.getResult();
+		dtp.train(sample);
+		final DateTimeParserResult result = dtp.getResult();
 		assertEquals(result.getFormatString(), "EEE MMM dd HH:mm:ss OOOO yyyy");
 
 		assertTrue(result.isValid8(sample));
@@ -1080,7 +1080,7 @@ public class DetermineDateTimeFormatTests {
 				"25 July 2018|13 August 1984|10 January 2000|1 May 1970|16 July 1934|06 July 1961|" +
 				"25 July 2018|12 November 1984|10 October 2000|1 January 1970|16 June 1934|06 July 1961|";
 		final String inputs[] = pipedInput.split("\\|");
-		final DateTimeParser det = new DateTimeParser();
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 
 		for (String input : inputs)
 			det.train(input);
@@ -1100,7 +1100,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicAMPM() {
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 
 		assertEquals(dtp.determineFormatString("09/Mar/17 3:14 PM"), "dd/MMM/yy h:mm a");
 
@@ -1111,12 +1111,11 @@ public class DetermineDateTimeFormatTests {
 				"02/Mar/17 10:57 AM|01/Mar/17 11:56 AM|01/Mar/17 6:14 AM|28/Feb/17 4:56 AM|27/Feb/17 5:58 AM|27/Feb/17 5:58 AM|" +
 				"22/Feb/17 6:48 AM|18/Jan/17 8:29 AM|04/Jan/17 7:37 AM|10/Nov/16 10:42 AM|";
 		final String inputs[] = pipedInput.split("\\|");
-		final DateTimeParser det = new DateTimeParser();
 
 		for (String input : inputs)
-			det.train(input);
+			dtp.train(input);
 
-		final DateTimeParserResult result = det.getResult();
+		final DateTimeParserResult result = dtp.getResult();
 
 		final String formatString = result.getFormatString();
 
@@ -1190,7 +1189,7 @@ public class DetermineDateTimeFormatTests {
 				"09:23:13 PM|11:40:44 PM|01:01:02 AM|04:24:19 AM|08:51:48 AM|02:29:26 AM|08:48:32 AM|11:03:13 PM|" +
 				"07:52:27 PM|04:51:40 PM|08:31:11 AM|07:53:57 AM|07:04:03 PM|12:05:00 AM|01:50:13 AM|";
 		final String inputs[] = pipedInput.split("\\|");
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 
 		for (final String input : inputs)
 			dtp.train(input);
@@ -1346,7 +1345,7 @@ public class DetermineDateTimeFormatTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitMMMDDYYYY() {
 		final String trimmed = "May 1, 2018";
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.US);
 		dtp.train(trimmed);
 
 		final DateTimeParserResult result = checkSerialization(dtp).getResult();
@@ -1359,7 +1358,7 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(regExp, KnownTypes.PATTERN_ALPHA + "{3} \\d{1,2}, \\d{4}");
 		assertTrue(trimmed.matches(regExp));
 
-		assertNull(checkParseable(result, trimmed));
+		assertNull(checkParseable(result, trimmed, Locale.US));
 
 		assertTrue(result.isValid8("Jun 30, 2023"));
 		assertTrue(result.isValid("Jun 30, 2023"));
@@ -1374,12 +1373,12 @@ public class DetermineDateTimeFormatTests {
 		assertTrue(result.isValid8("Jun 31, 2023"));
 	}
 
-	private static String checkParseable(DateTimeParserResult result, String input) {
+	private static String checkParseable(final DateTimeParserResult result, final String input, final Locale locale) {
 		final String formatString = result.getFormatString();
 		final FTAType type = result.getType();
 
 		try {
-			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
+			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString, locale);
 			if (FTAType.LOCALTIME.equals(type))
 				LocalTime.parse(input, formatter);
 			else if (FTAType.LOCALDATE.equals(type))
@@ -1453,14 +1452,14 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void padding() {
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.US);
 		final String PADDED_INPUT = "23/01/88  3:14:16";
 
 		String fmt = dtp.determineFormatString(PADDED_INPUT);
 		DateTimeParserResult result = DateTimeParserResult.asResult(fmt, DateResolutionMode.None, dtp.getConfig());
 		assertEquals(fmt, result.getFormatString());
 		assertEquals(result.getFormatString(), "dd/MM/yy ppH:mm:ss");
-		assertNull(checkParseable(result, PADDED_INPUT));
+		assertNull(checkParseable(result, PADDED_INPUT, Locale.US));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -1719,7 +1718,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitMMMM_d_yyyy() {
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 		final String sample = "September-17-2014";
 
 		dtp.train(sample);
@@ -2023,8 +2022,8 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
-	public void parseddMMMyyyy() {
-		final DateTimeParser dtp = new DateTimeParser();
+	public void parsedMMMyyyy() {
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 
 		assertEquals(dtp.determineFormatString("12-May-14"), "dd-MMM-yy");
 		assertEquals(dtp.determineFormatString("2-Jan-2017"), "d-MMM-yyyy");
@@ -2136,7 +2135,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void yyyyMd() {
-		final DateTimeParser det = new DateTimeParser();
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.US);
 		final String sample = "8547 8 6";
 		det.train(sample);
 
@@ -2146,7 +2145,7 @@ public class DetermineDateTimeFormatTests {
 		final String regExp = result.getRegExp();
 		assertEquals(regExp, "\\d{4} \\d{1,2} \\d{1,2}");
 		assertTrue(sample.matches(regExp));
-		assertNull(checkParseable(result, sample));
+		assertNull(checkParseable(result, sample, Locale.US));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -2169,7 +2168,7 @@ public class DetermineDateTimeFormatTests {
 
 		DateTimeParser dtp = new DateTimeParser()
 		   .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
-		    .withStrictMode(true);
+		    .withStrictMode(true).withLocale(Locale.US);
 
 		for (final String s : months)
 			dtp.train(s);
@@ -2178,13 +2177,13 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(result.getFormatString(), "MMMM d, yyyy");
 
 		for (final String s : months)
-			assertNull(checkParseable(result, s));
+			assertNull(checkParseable(result, s, Locale.US));
 
 		final String[] monthAbbr = { "25 Sep, 2018", "21 Mar, 2015", "2 Sep, 2010" };
 
 		dtp = new DateTimeParser()
 		    .withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto)
-		    .withStrictMode(true);
+		    .withStrictMode(true).withLocale(Locale.forLanguageTag("en-US"));
 
 		for (final String s : monthAbbr)
 			dtp.train(s);
@@ -2193,7 +2192,7 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(result.getFormatString(), "d MMM, yyyy");
 
 		for (final String s : monthAbbr)
-			assertNull(checkParseable(result, s));
+			assertNull(checkParseable(result, s, Locale.US));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -2219,7 +2218,7 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(result.getFormatString(), "M/dd/yyyy H:mm");
 
 		for (final String s : inputs)
-			assertNull(checkParseable(result, s));
+			assertNull(checkParseable(result, s, Locale.ENGLISH));
 
 		final String[] fails = {
 			"6/30/2008 17:30", "6/30/2008 17:34", "7/31/2008 17:35", "12/15/2007 10:52",
@@ -2245,7 +2244,7 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(result.getFormatString(), "M/dd/yyyy H:mm");
 
 		for (final String s : fails)
-			assertNull(checkParseable(result, s));
+			assertNull(checkParseable(result, s, Locale.ENGLISH));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -2692,7 +2691,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void javaSimple() {
-		final DateTimeParser det = new DateTimeParser();
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 		long millis = System.currentTimeMillis();
 		Date d = new Date();
 		final Set<String> samples = new HashSet<>();
