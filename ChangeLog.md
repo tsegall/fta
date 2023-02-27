@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 12.9.3
+ - ENH: Add support for en-NL (along with existing support for nl-NL)
+ - ENH: If the header looks good then do one more pass with the worst invalid removed (significant uptick in detection - ~1%)
+ - ENH: Move getDefaultAnalysis from DriverUtils to TextAnalyzer (now a supported interface)
+ - ENH: I18N - minor tweaks to Colombian Municipalities, airlines(en), titles(en), colors(en), countries(en), countries(nl)
+ - ENH: Bump google phonenumber
+
 ### 12.9.2
  - BUG: Test Suite does not run cleanly when default locale is other than en-US (Issue #28)
 

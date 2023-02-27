@@ -27,9 +27,11 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Objects;
@@ -638,6 +640,24 @@ public class Facts {
 		}
 
 		return ret;
+	}
+
+	protected Map<String, Long> synthesizeBulk() {
+		final Map<String, Long> details = new HashMap<>(cardinality);
+		if (nullCount != 0)
+			details.put(null, nullCount);
+		if (blankCount != 0) {
+			// It is possible that the blank fields determine both the maximum and minimum length
+			long blanksNeeded = blankCount;
+			if (maxRawLength > maxRawNonBlankLength) {
+				details.put(Utils.repeat(' ', maxRawLength), 1L);
+				blanksNeeded--;
+			}
+			if (blanksNeeded != 0)
+				details.put(Utils.repeat(' ', minRawLength), blanksNeeded);
+		}
+
+		return details;
 	}
 
 	public boolean equals(final Object obj, final double epsilon) {

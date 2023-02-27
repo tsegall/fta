@@ -30,7 +30,7 @@ import com.cobber.fta.PluginLocaleEntry;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.core.Utils;
+import com.cobber.fta.core.WordProcessor;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -41,6 +41,7 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 	private PluginLocaleEntry cityEntry;
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
+	private WordProcessor wordProcessor = new WordProcessor("-#");
 
 	/**
 	 * Construct a plugin to detect the second line of an Address based on the Plugin Definition.
@@ -100,7 +101,7 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 	}
 
 	private boolean validation(final String trimmedUpper, final boolean detectMode) {
-		final List<String> words = Utils.asWords(trimmedUpper, "-#");
+		final List<String> words = wordProcessor.asWords(trimmedUpper);
 
 		final int wordCount = words.size();
 		for (int i = 0; i < wordCount; i++) {

@@ -31,7 +31,7 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.core.Utils;
+import com.cobber.fta.core.WordProcessor;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -49,6 +49,7 @@ public class NameFull extends LogicalTypeInfinite {
 	private static final int MAX_LAST_NAMES = 100;
 	private Set<String> lastNames;
 	private Set<String> firstNames;
+	private WordProcessor wordProcessor = new WordProcessor("-");
 
 	/**
 	 * Construct a plugin to detect Last name followed by First name based on the Plugin Definition.
@@ -101,7 +102,7 @@ public class NameFull extends LogicalTypeInfinite {
 	}
 
 	private boolean validation(final String trimmedUpper, final boolean detectMode, final long count) {
-		final List<String> words = Utils.asWords(trimmedUpper, "-");
+		final List<String> words = wordProcessor.asWords(trimmedUpper);
 		final int wordCount = words.size();
 
 		if (words.size() < 2)

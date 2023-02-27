@@ -20,6 +20,7 @@ import java.util.Set;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.Utils;
+import com.cobber.fta.core.WordProcessor;
 
 /**
  * All Semantic Types that consist of a constrained domain, for example, a finite (small) number of elements should
@@ -34,6 +35,8 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	public LogicalTypeFinite(final PluginDefinition plugin) {
 		super(plugin);
 	}
+
+	private WordProcessor wordProcessor = new WordProcessor();
 
 	/*
 	 * Note: The input String will be both trimmed and converted to upper Case
@@ -55,7 +58,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 			final boolean all = "all".equalsIgnoreCase(value);
 			final boolean first = "first".equalsIgnoreCase(value);
 
-			final List<String> words = Utils.asWords(trimmedUpper, null);
+			final List<String> words = wordProcessor.asWords(trimmedUpper);
 			boolean found = false;
 			for (final String word : words) {
 				found = getMembers().contains(Utils.cleanse(word).toUpperCase(locale));

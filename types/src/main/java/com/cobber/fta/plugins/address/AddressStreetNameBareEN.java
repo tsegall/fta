@@ -29,7 +29,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.core.Utils;
+import com.cobber.fta.core.WordProcessor;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -39,6 +39,7 @@ public class AddressStreetNameBareEN extends LogicalTypeInfinite {
 	private boolean multiline;
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
+	private WordProcessor wordProcessor = new WordProcessor("-#");
 
 	/**
 	 * Construct a plugin to detect a Street Name based on the Plugin Definition.
@@ -101,7 +102,7 @@ public class AddressStreetNameBareEN extends LogicalTypeInfinite {
 	}
 
 	private boolean validation(final String trimmedUpper, final boolean detectMode, final long count) {
-		final List<String> words = Utils.asWords(trimmedUpper, "-#");
+		final List<String> words = wordProcessor.asWords(trimmedUpper);
 		final int wordCount = words.size();
 
 		if (wordCount == 0)

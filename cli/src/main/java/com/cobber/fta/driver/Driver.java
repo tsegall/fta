@@ -227,7 +227,7 @@ public class Driver {
 
 		// Are we generating a signature?
 		if (options.signature) {
-			final TextAnalyzer analyzer = DriverUtils.getDefaultAnalysis(options.locale);
+			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
 
 			LogicalType logical = DriverUtils.getLogicalType(analyzer, options.pluginName);
 			error.println(logical.getSignature());
@@ -244,7 +244,7 @@ public class Driver {
 		// Are we generating all samples?
 		if (options.samples) {
 			final long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
-			final TextAnalyzer analyzer = DriverUtils.getDefaultAnalysis(options.locale);
+			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
 			for (final LogicalType logical : registered) {
@@ -262,7 +262,7 @@ public class Driver {
 		}
 
 		if (helpRequested && options.verbose != 0) {
-			final TextAnalyzer analyzer = DriverUtils.getDefaultAnalysis(options.locale);
+			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 			final Set<String> qualifiers = new TreeSet<>();
 

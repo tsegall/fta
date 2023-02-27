@@ -34,6 +34,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.core.WordOffset;
+import com.cobber.fta.core.WordProcessor;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -48,10 +49,9 @@ public class AddressFullEN extends LogicalTypeInfinite {
 	private LogicalTypeInfinite logicalZipPlus;
 	private LogicalTypeFiniteSimple logicalState;
 	private LogicalTypeFiniteSimple logicalCountry;
-
 	private Pattern poBox;
-
 	private String country;
+	private WordProcessor wordProcessor = new WordProcessor("-#");
 
 	/**
 	 * Construct a plugin to detect an Address based on the Plugin Definition.
@@ -152,7 +152,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 
 	public boolean validation(final String input) {
 		final String upper = input.toUpperCase(Locale.ENGLISH);
-		final List<WordOffset> words = Utils.asWordOffsets(upper, "-#");
+		final List<WordOffset> words = wordProcessor.asWordOffsets(upper);
 		final int wordCount = words.size();
 
 		if (wordCount < 4 || wordCount > 12)

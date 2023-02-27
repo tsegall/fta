@@ -255,6 +255,7 @@ public class TextAnalyzer {
 	private final List<LogicalTypeInfinite> infiniteTypes = new ArrayList<>();
 	private final List<LogicalTypeFinite> finiteTypes = new ArrayList<>();
 	private final List<LogicalTypeRegExp> regExpTypes = new ArrayList<>();
+	private final List<LogicalType> allTypes = new ArrayList<>();
 	private int[] candidateCounts;
 
 	private final KnownTypes knownTypes = new KnownTypes();
@@ -668,7 +669,7 @@ public class TextAnalyzer {
 	/**
 	 * Set the maximum value for Numeric, Boolean and String across the entire data stream.
 	 * Only used when there is an external source that has visibility into the entire data stream.
-	 * @param totalMaxValue The manimum value of all elements in the data stream, as opposed to the manimum of the sampled set.
+	 * @param totalMaxValue The maximum value of all elements in the data stream, as opposed to the maximum of the sampled set.
 	 */
 	public void setTotalMaxValue(final String totalMaxValue) {
 		facts.external.totalMaxValue = totalMaxValue;
@@ -688,7 +689,7 @@ public class TextAnalyzer {
 	 * Set the maximum length for Numeric, Boolean and String across the entire data stream.
 	 * Only used when there is an external source that has visibility into the entire data stream.
 	 * Note: For String and Boolean types this length includes any whitespace.
-	 * @param totalMaxLength The manimum length of all elements in the data stream, as opposed to the manimum length of the sampled set.
+	 * @param totalMaxLength The maximum length of all elements in the data stream, as opposed to the maximum length of the sampled set.
 	 */
 	public void setTotalMaxLength(final int totalMaxLength) {
 		facts.external.totalMaxLength = totalMaxLength;
@@ -770,6 +771,23 @@ public class TextAnalyzer {
 	 */
 	public int getMaxInputLength() {
 		return analysisConfig.getMaxInputLength();
+	}
+
+	/**
+	 * Gets a 'magic' TextAnalyzer based on a locale that can be used to inspect the current set of plugins.
+	 * @param locale The Locale used for the TextAnalyzer.
+	 * @return A TextAnalyzer.
+	 */
+	public static TextAnalyzer getDefaultAnalysis(final Locale locale) {
+		// Create an Analyzer to retrieve the Semantic Types (magically will be all - since passed in '*')
+		final TextAnalyzer analysis = new TextAnalyzer("*");
+		if (locale != null)
+			analysis.setLocale(locale);
+
+		// Load the default set of plugins for Semantic Type detection (normally done by a call to train())
+		analysis.registerDefaultPlugins(analysis.getConfig());
+
+		return  analysis;
 	}
 
 	protected String getRegExp(final KnownTypes.ID id) {
@@ -1475,7 +1493,8 @@ public class TextAnalyzer {
 		if (facts.getMatchTypeInfo() != null && facts.getMatchTypeInfo().getBaseType() != null)
 			return true;
 
-		raw.add(rawInput);
+		for (int i = 0; i < count; i++)
+			raw.add(rawInput);
 
 		final int length = trimmed.length();
 
@@ -2713,6 +2732,7 @@ public class TextAnalyzer {
 		final TextAnalyzer analysisBulk = new TextAnalyzer(getContext());
 		analysisBulk.setExternalFacts(getFacts().external);
 		analysisBulk.setConfig(getConfig());
+		analysisBulk.getContext().setNested();
 
 		analysisBulk.trainBulk(details);
 		return analysisBulk.getResult();
@@ -3000,10 +3020,41 @@ public class TextAnalyzer {
 			facts.streamFormat = Utils.determineStreamFormat(mapper, facts.cardinality);
 
 		TextAnalysisResult result = null;
+		// If we have not detected a Semantic Type but the header looks really good, then try excluding the
+		// most popular non-valid entry in the hope that it is something like 'NA', 'XX', etc.
+		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType() && !getContext().isNested() && pluginThreshold != 100 && facts.cardinality.size() >= 4) {
+			for (final LogicalType logical : plugins.getRegisteredLogicalTypes()) {
+				Map<String, Long> details = facts.synthesizeBulk();
+				long worst = (facts.sampleCount - (facts.nullCount + facts.blankCount)) / 20;
+				Map.Entry<String, Long> worstEntry = null;
+				if (logical.getHeaderConfidence(getContext().getStreamName()) >= 90) {
+					for (Map.Entry<String, Long> entry : details.entrySet()) {
+						if (isInteresting(entry.getKey()) && !logical.isValid(entry.getKey()) && entry.getValue() > worst) {
+							worstEntry = entry;
+							worst = entry.getValue();
+						}
+					}
+					if (worstEntry != null) {
+						details.remove(worstEntry.getKey());
+						final TextAnalysisResult newResult = reAnalyze(details);
+						if (newResult.isSemanticType() && newResult.getSemanticType().equals(logical.getSemanticType())) {
+							newResult.getFacts().invalid.put(worstEntry.getKey(), worstEntry.getValue());
+							newResult.getFacts().sampleCount += worstEntry.getValue();
+							newResult.getFacts().confidence -= 0.05;
+							result = newResult;
+							debug("Type determination - was STRING, post exclusion analyis ({}, {}), matchTypeInfo - {}",
+									worstEntry.getKey(), worstEntry.getValue(), facts.getMatchTypeInfo());
+							break;
+						}
+					}
+				}
+			}
+		}
+
 		// If we are in SIMPLE mode (i.e. not Bulk) and we have not detected a Semantic Type - try replaying accumulated set in Bulk mode,
 		// this has the potential to pick up entries where the first <n> (by default 20 are misleading).
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType() && analysisConfig.getTrainingMode() == AnalysisConfig.TrainingMode.SIMPLE && pluginThreshold != 100) {
-			final TextAnalysisResult bulkResult = reAnalyze(RecordAnalyzer.synthesizeBulk(facts));
+			final TextAnalysisResult bulkResult = reAnalyze(facts.synthesizeBulk());
 			if (bulkResult.isSemanticType()) {
 				result = bulkResult;
 				debug("Type determination - was STRING, post Bulk analyis, matchTypeInfo - {}", facts.getMatchTypeInfo());
@@ -3017,6 +3068,10 @@ public class TextAnalyzer {
 			traceConfig.recordResult(result, internalErrors);
 
 		return result;
+	}
+
+	private boolean isInteresting(final String input) {
+		return input != null && input.trim().length() != 0;
 	}
 
 	private boolean checkRegExpTypes() {

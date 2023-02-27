@@ -15,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -35,18 +34,6 @@ public class DriverUtils {
 				return logical;
 
 		return null;
-	}
-
-	public static TextAnalyzer getDefaultAnalysis(final Locale locale) {
-		// Create an Analyzer to retrieve the Semantic Types (magically will be all - since passed in '*')
-		final TextAnalyzer analysis = new TextAnalyzer("*");
-		if (locale != null)
-			analysis.setLocale(locale);
-
-		// Load the default set of plugins for Semantic Type detection (normally done by a call to train())
-		analysis.registerDefaultPlugins(analysis.getConfig());
-
-		return  analysis;
 	}
 
 	public static void createNormalizedOutput(final String inputName) throws UnsupportedEncodingException, FileNotFoundException, IOException {

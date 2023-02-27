@@ -26,7 +26,6 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.driver.DriverOptions;
-import com.cobber.fta.driver.DriverUtils;
 
 public class Faker {
 	private DriverOptions options;
@@ -40,7 +39,7 @@ public class Faker {
 	}
 
 	public void fake() {
-		final TextAnalyzer analyzer = DriverUtils.getDefaultAnalysis(options.locale);
+		final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
 		final Random random = new Random(31415926);
 		final long outputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
 		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();

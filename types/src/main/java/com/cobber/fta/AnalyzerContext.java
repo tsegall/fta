@@ -38,6 +38,8 @@ public class AnalyzerContext {
 	/** The 'known' answer for the Semantic Type - typically based on user input or a prior run. */
 	private String[] semanticTypes;
 
+	private boolean nested;
+
 	AnalyzerContext() {
 	}
 
@@ -169,6 +171,14 @@ public class AnalyzerContext {
 		}
 
 		return false;
+	}
+
+	public boolean isNested() {
+		return nested;
+	}
+
+	public void setNested() {
+		this.nested = true;
 	}
 
 	@Override

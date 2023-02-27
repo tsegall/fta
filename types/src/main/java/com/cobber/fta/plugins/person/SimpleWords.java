@@ -14,7 +14,6 @@
 */
 package com.cobber.fta.plugins.person;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +29,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.core.WordProcessor;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -37,8 +37,12 @@ import com.cobber.fta.token.TokenStreams;
 */
 public abstract class SimpleWords extends LogicalTypeInfinite {
 	private Set<String> keywordsHash;
+	private WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("_=");
 
 	protected abstract String[] getWords();
+	protected int getMaxWords() {
+		return 3;
+	}
 
 	private String regExp = "[-\\p{IsAlphabetic} /]+";
 	private final Set<String> rejected = new HashSet<>();
@@ -86,36 +90,16 @@ public abstract class SimpleWords extends LogicalTypeInfinite {
 		return false;
 	}
 
-	private static List<String> splitIntoWords(final String input) {
-		final ArrayList<String> ret = new ArrayList<>();
-
-		int start = -1;
-		for (int i = 0; i < input.length(); i++) {
-			final char ch = input.charAt(i);
-			if (Character.isLetter(ch)) {
-				if (start == -1)
-					start = i;
-			}
-			else {
-				if (start != -1) {
-					ret.add(input.substring(start, i));
-					start = -1;
-				}
-			}
-		}
-
-		if (start != -1)
-			ret.add(input.substring(start, input.length()));
-
-		return ret;
-	}
-
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		if (keywordsHash.contains(input.toUpperCase(locale)))
 			return true;
 
-		final List<String> words = splitIntoWords(input);
+		final List<String> words = wordProcessor.asWords(input);
+
+		// We don't want to mistake whole paragraphs with key words - so bail if too many words
+		if (words.size() > getMaxWords())
+			return false;
 
 		for (final String word : words)
 			// Good if any of the words is in the list of happy words

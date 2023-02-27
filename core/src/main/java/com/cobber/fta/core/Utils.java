@@ -20,11 +20,9 @@ import java.io.StringReader;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -213,55 +211,6 @@ public final class Utils {
 		}
 
 		return b != null ? b.toString() : input;
-	}
-
-	/**
-	 * Split the input String into 'words' based on the break characters.  By default anything that is
-	 * not an alpha or numeric is not returned as part of the word array.  Additional characters can be included
-	 * in the words by adding them to the additionalWordCards.
-	 * @param input String to break into words.
-	 * @param additionalWordChars Additional characters to include in the words returned.
-	 * @return A list of words based on the input string.
-	 */
-	public static List<String> asWords(final String input, final String additionalWordChars) {
-		return asWordOffsets(input, additionalWordChars).stream().map(x -> x.word).collect(Collectors.toList());
-	}
-
-	/**
-	 * Split the input String into 'words' based on the break characters.  By default anything that is
-	 * not an alpha or numeric is not returned as part of the word array.  Additional characters can be included
-	 * in the words by adding them to the additionalWordCards.
-	 * @param input String to break into words.
-	 * @param additionalWordChars Additional characters to include in the words returned.
-	 * @return A list of words based on the input string.
-	 */
-	public static List<WordOffset> asWordOffsets(final String input, final String additionalWordChars) {
-		final ArrayList<WordOffset> ret = new ArrayList<>();
-		final String breakChars = " \u00A0\n\t,/-;";
-
-		int start = -1;
-		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < input.length(); i++) {
-			char ch = input.charAt(i);
-			if (breakChars.indexOf(ch) != -1 && (additionalWordChars == null || additionalWordChars.indexOf(ch) == -1)) {
-				if (start != -1) {
-					ret.add(new WordOffset(b.toString(), start));
-					b.setLength(0);
-					start = -1;
-				}
-			}
-			else if (Character.isAlphabetic(ch) || Character.isDigit(ch) ||
-					(additionalWordChars != null && additionalWordChars.indexOf(ch) != -1)) {
-				if (start == -1)
-					start = i;
-				b.append(ch);
-			}
-		}
-
-		if (start != -1)
-			ret.add(new WordOffset(b.toString(), start));
-
-		return ret;
 	}
 
 	private static String version = Utils.class.getPackage().getImplementationVersion();

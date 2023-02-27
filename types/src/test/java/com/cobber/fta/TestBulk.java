@@ -441,7 +441,7 @@ public class TestBulk {
 		analysis.setTrace("enabled=true,samples=1000");
 		analysis.setDebug(2);
 		final int GOOD_SAMPLES = 400;
-		final int BAD_SAMPLES = 90;
+		final int BAD_SAMPLES = 120;
 
 		final HashMap<String, Long> basic = new HashMap<>();
 		basic.put("AMERICAN SAMOA", 20L);
@@ -468,6 +468,7 @@ public class TestBulk {
 		basic.put("Rubbish that looks like text.", 30L);
 		basic.put("Garbage, and other recyclables.", 30L);
 		basic.put("Trash, not to be recycled.", 30L);
+		basic.put("Detritus, that should be cleaned up.", 30L);
 
 		analysis.trainBulk(basic);
 
@@ -479,7 +480,7 @@ public class TestBulk {
 		assertEquals(result.getMatchCount(), GOOD_SAMPLES + BAD_SAMPLES);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getCardinality(), 23);
+		assertEquals(result.getCardinality(), 24);
 		assertNull(result.getTypeModifier());
 		assertNull(result.getSemanticType());
 

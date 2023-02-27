@@ -27,7 +27,7 @@ public class Race extends SimpleWords {
 	private static final String[] raceWordsEN = {
 			"ABORIGINAL", "AFRICAN", "ALLRACE", "AMERICAN", "ANGLO", "ARAB", "ASIAN", "ASIATIC", "BAME", "BLACK", "BLK", "CARIBBEAN", "CAUCASIAN", "CHINESE",
 			"FILIPINO", "HAWAIIAN", "HISP", "HISPANIC", "INDIAN", "INUIT", "ISLANDER", "JAPANESE", "KOREAN", "LATINA", "LATINO", "LATINX", "METIS", "MIDDLE EASTERN",
-			"MULTIRACIAL", "MULTI-RACIAL", "NATIVE", "NON-HISPANIC", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "RACES", "VIETNAMESE", "WHITE", "WHT",
+			"MULTIRACIAL", "MULTI-RACIAL", "NATIVE", "NON-HISPANIC", "OCEANIA", "OCEANIC", "PACIFIC", "PAKISTANI", "RACES", "VIETNAMESE", "WHI", "WHITE", "WHT",
 
 			"N/A", "NA", "NO DATA", "NONE", "OTHER", "OTH", "UNK", "UNANSWERED", "UNKNOWN"
 	};
@@ -35,5 +35,10 @@ public class Race extends SimpleWords {
 	@Override
 	protected String[] getWords() {
 		return raceWordsEN;
+	}
+
+	@Override
+	protected int getMaxWords() {
+		return 8;
 	}
 }

@@ -28,7 +28,7 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
-import com.cobber.fta.core.Utils;
+import com.cobber.fta.core.WordProcessor;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -42,6 +42,8 @@ public class IndustryEN extends LogicalTypeInfinite {
 	private Set<String> hotWords;
 	private SingletonSet industriesRef;
 	private Set<String> industries;
+
+	private WordProcessor wordProcessor = new WordProcessor();
 
 	/**
 	 * Construct a Industry plugin based on the Plugin Definition.
@@ -87,7 +89,7 @@ public class IndustryEN extends LogicalTypeInfinite {
 		if (length > 200 || length < 2)
 			return false;
 
-		List<String> words = Utils.asWords(trimmedUpper, null);
+		List<String> words = wordProcessor.asWords(trimmedUpper);
 
 		if (words.size() > 10)
 			return false;

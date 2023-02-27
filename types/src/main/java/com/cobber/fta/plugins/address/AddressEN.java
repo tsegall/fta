@@ -30,7 +30,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.core.Utils;
+import com.cobber.fta.core.WordProcessor;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -44,8 +44,8 @@ public class AddressEN extends LogicalTypeInfinite {
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
 	private String country;
-
 	private Pattern poBox;
+	private WordProcessor wordProcessor;
 
 	/**
 	 * Construct a plugin to detect an Address based on the Plugin Definition.
@@ -81,6 +81,8 @@ public class AddressEN extends LogicalTypeInfinite {
 
 		poBox = Pattern.compile(AddressCommon.POBOX);
 
+		wordProcessor = new WordProcessor("AU".equals(country) ? "/-#" : "-#");
+
 		return true;
 	}
 
@@ -114,7 +116,7 @@ public class AddressEN extends LogicalTypeInfinite {
 
 	private boolean validation(final String trimmedUpper, final boolean detectMode) {
 		// Australia commonly uses unit/number in the address so allow '/' to be part of words
-		final List<String> words = Utils.asWords(trimmedUpper, "AU".equals(country) ? "/-#" : "-#");
+		final List<String> words = wordProcessor.asWords(trimmedUpper);
 		final int wordCount = words.size();
 
 		if (wordCount < 2)

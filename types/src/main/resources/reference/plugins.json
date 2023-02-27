@@ -148,7 +148,7 @@
 		"signature": "zPoRG8ivy1ZRtQmx2dYu/pc6Prk=",
 		"validLocales": [
 			{
-				"localeTag":  "nl-NL",
+				"localeTag":  "en-NL,nl-NL",
 				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 95 }, { "regExp": ".*(?i)(code).*", "confidence": 75 } ],
 				"matchEntries": [
 					{
@@ -1097,7 +1097,7 @@
 		"signature": "LfF0rgcJobv3P/9fW8+SAzpl//c=",
 		"validLocales": [
 			{
-				"localeTag": "nl-NL",
+				"localeTag": "en-NL,nl-NL",
 				"headerRegExps": [ { "regExp": ".*(?i)(province|provincie).*", "confidence": 99 } ],
 				"matchEntries": [ {
 					"regExpReturned": "[- \\p{IsAlphabetic}]+"
@@ -1399,7 +1399,7 @@
 		"pluginType": "list",
 		"signature": "eHt5Aj3a8lO9nvH9CeV/O3NgZZs=",
 		"validLocales": [
-			{ "localeTag": "nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(gemeente).*", "confidence": 90 } ] }
+			{ "localeTag": "en-NL,nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(gemeente).*", "confidence": 90 } ] }
 		],
 		"content": "/reference/nl_municipalities.csv",
 		"contentType": "resource",
@@ -1413,7 +1413,7 @@
 		"signature": "6jAs4X5jVlK2N0D0PxVkpA7+/oM=",
 		"clazz": "com.cobber.fta.plugins.MunicipalityCodeNL",
 		"validLocales": [
-			{ "localeTag":  "nl-NL", "headerRegExps": [ { "regExp": ".*(?i)gemeente.?(code|nummer|nr).*", "confidence": 95, "mandatory": true } ] }
+			{ "localeTag":  "en-NL,nl-NL", "headerRegExps": [ { "regExp": ".*(?i)gemeente.?(code|nummer|nr).*", "confidence": 95, "mandatory": true } ] }
 		],
 		"threshold": 95,
 		"priority": 151
@@ -1913,7 +1913,7 @@
 		"signature": "7Q98Lrd+aZrOHv6KdG81YGOV4fk=",
 		"clazz": "com.cobber.fta.plugins.identity.BSN_NL",
 		"validLocales": [
-			{ "localeTag": "nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(BSN)", "confidence": 95 } ] }
+			{ "localeTag": "en-NL,nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(BSN)", "confidence": 95 } ] }
 		],
 		"threshold": 98,
 		"priority": 235
@@ -1958,7 +1958,7 @@
 			{ "localeTag": "en-GB,en-UK", "headerRegExps": [ { "regExp": ".*(?i)(VAT).*", "confidence": 95, "mandatory": true } ] },
 			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(IVA).*", "confidence": 95, "mandatory": true } ] },
 			{ "localeTag": "es-ES,ca-ES", "headerRegExps": [ { "regExp": ".*(?i)(NIF|CIF).*", "confidence": 95, "mandatory": true } ] },
-			{ "localeTag": "nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(BTW).*", "confidence": 95, "mandatory": true } ] },
+			{ "localeTag": "en-NL,nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(BTW).*", "confidence": 95, "mandatory": true } ] },
 			{ "localeTag": "pl-PL", "headerRegExps": [ { "regExp": ".*(?i)(NIP).*", "confidence": 95, "mandatory": true } ] },
 			{ "localeTag": "de-AT", "headerRegExps": [ { "regExp": "(?i)(UID)", "confidence": 95, "mandatory": true } ] },
 			{ "localeTag": "fr-FR", "headerRegExps": [ { "regExp": "(?i)(TVA)", "confidence": 95, "mandatory": true } ] }

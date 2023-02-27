@@ -24,6 +24,7 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.core.WordOffset;
+import com.cobber.fta.core.WordProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestUtils {
@@ -72,14 +73,14 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsHelloWorld() {
-		final List<String> words = Utils.asWords("Hello world!", null);
+		final List<String> words = (new WordProcessor()).asWords("Hello world!");
 		assertEquals(words.get(0), "Hello");
 		assertEquals(words.get(1), "world");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsCount() {
-		final List<String> words = Utils.asWords("   One, two, three,four!", null);
+		final List<String> words = (new WordProcessor()).asWords("   One, two, three,four!");
 		assertEquals(words.get(0), "One");
 		assertEquals(words.get(1), "two");
 		assertEquals(words.get(2), "three");
@@ -88,7 +89,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsWithNumbersCount() {
-		final List<String> words = Utils.asWords("4814 Hollywood Blvd., Los Angeles, CA 90027", null);
+		final List<String> words = (new WordProcessor()).asWords("4814 Hollywood Blvd., Los Angeles, CA 90027");
 		assertEquals(words.get(0), "4814");
 		assertEquals(words.get(1), "Hollywood");
 		assertEquals(words.get(2), "Blvd");
@@ -100,7 +101,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsWithHyphens() {
-		final List<String> words = Utils.asWords("586 E 800 N         Orem UT 84097-4146", "-#");
+		final List<String> words = (new WordProcessor()).withAdditionalWordChars("-#").asWords("586 E 800 N         Orem UT 84097-4146");
 		assertEquals(words.get(0), "586");
 		assertEquals(words.get(1), "E");
 		assertEquals(words.get(2), "800");
@@ -112,7 +113,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsWithHashes() {
-		final List<String> words = Utils.asWords("9350   WILSHIRE BLVD   SUITE #203", "-#");
+		final List<String> words = (new WordProcessor()).withAdditionalWordChars("-#").asWords("9350   WILSHIRE BLVD   SUITE #203");
 		assertEquals(words.get(0), "9350");
 		assertEquals(words.get(1), "WILSHIRE");
 		assertEquals(words.get(2), "BLVD");
@@ -122,13 +123,13 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsWithPeriods() {
-		final List<String> words = Utils.asWords("sanne.stienstra@state.or.us", "-#");
+		final List<String> words = (new WordProcessor()).asWords("sanne.stienstra@state.or.us");
 		assertEquals(words.get(0), "sannestienstrastateorus");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsWithSlashes() {
-		final List<String> words = Utils.asWords("WHITE/RED/STRIPES", "-#");
+		final List<String> words = (new WordProcessor()).asWords("WHITE/RED/STRIPES");
 		assertEquals(words.get(0), "WHITE");
 		assertEquals(words.get(1), "RED");
 		assertEquals(words.get(2), "STRIPES");
@@ -136,7 +137,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsWithNewLines() {
-		final List<String> words = Utils.asWords("100 Aldrich Street, Bldg 15A\nBronx, NY 10475\n(40.87007051900008, -73.83225591699994)", "-#");
+		final List<String> words = (new WordProcessor()).withAdditionalWordChars("-#").asWords("100 Aldrich Street, Bldg 15A\nBronx, NY 10475\n(40.87007051900008, -73.83225591699994)");
 		assertEquals(words.get(0), "100");
 		assertEquals(words.get(1), "Aldrich");
 		assertEquals(words.get(2), "Street");
@@ -147,20 +148,20 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsRedGreenDefault() {
-		final List<String> words = Utils.asWords("RED-GREEN", null);
+		final List<String> words = (new WordProcessor()).asWords("RED-GREEN");
 		assertEquals(words.get(0), "RED");
 		assertEquals(words.get(1), "GREEN");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsRedGreenNonDefault() {
-		final List<String> words = Utils.asWords("RED-GREEN", "-#");
+		final List<String> words = (new WordProcessor()).withAdditionalWordChars("-#").asWords("RED-GREEN");
 		assertEquals(words.get(0), "RED-GREEN");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsLanguages() {
-		final List<String> words = Utils.asWords("french;german;italian", "-#");
+		final List<String> words = (new WordProcessor()).asWords("french;german;italian");
 		assertEquals(words.get(0), "french");
 		assertEquals(words.get(1), "german");
 		assertEquals(words.get(2), "italian");
@@ -168,7 +169,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsNBSP() {
-		final List<String> words = Utils.asWords("122 Amsterdam Ave  New York, NY 10023", "-#");
+		final List<String> words = (new WordProcessor()).asWords("122 Amsterdam Ave  New York, NY 10023");
 		assertEquals(words.get(0), "122");
 		assertEquals(words.get(1), "Amsterdam");
 		assertEquals(words.get(2), "Ave");
@@ -177,7 +178,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsAmpersand() {
-		final List<String> words = Utils.asWords("Cnr Gungahlin Drive & The Valley Avenue", "-#");
+		final List<String> words = (new WordProcessor()).asWords("Cnr Gungahlin Drive & The Valley Avenue");
 		assertEquals(words.get(0), "Cnr");
 		assertEquals(words.get(1), "Gungahlin");
 		assertEquals(words.get(2), "Drive");
@@ -186,7 +187,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordsSlash() {
-		final List<String> words = Utils.asWords("N ANDREWS AV/NE 62ND ST", "-#");
+		final List<String> words = (new WordProcessor()).asWords("N ANDREWS AV/NE 62ND ST");
 		assertEquals(words.get(0), "N");
 		assertEquals(words.get(1), "ANDREWS");
 		assertEquals(words.get(2), "AV");
@@ -198,7 +199,7 @@ public class TestUtils {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void wordOffsets() {
 		final String testCase = "1025 41st Avenue\nQueens, NEW YORK 11101";
-		final List<WordOffset> words = Utils.asWordOffsets(testCase, "-#");
+		final List<WordOffset> words = (new WordProcessor()).asWordOffsets(testCase);
 		assertEquals(words.get(0).word, "1025");
 		assertEquals(words.get(0).offset, testCase.indexOf("1025"));
 		assertEquals(words.get(1).word, "41st");
