@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+	<head>
+		<title>FTA Analysis</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Bootstrap CSS -->
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	</head>
+	<body>
+		<div class= "container-fluid">
+			<h1>FTA (<span th:text="${analysis.ftaVersion}">version</span>) Analysis</h1>
+				<form action="#" th:action="@{/analysis}" th:object="${analysis}" method="post" enctype="multipart/form-data">
+				<div class="mb-3">
+					<label for="formFile" class="form-label">File to process</label>
+					<input class="form-control" type="file" id="formFile" th:field="*{file}" accept="text/csv"/>
+				</div>
+				<div class="mb-3">
+					<label for="formLocale" class="form-label">Locale</label>
+					<input class="form-control" type="text" id="formLocale" th:field="*{locale}" />
+				</div>
+				<div class="mb-3">
+					<label for="formRecordCount" class="form-label">Record Count</label>
+					<input class="form-control" type="text" value="100" id="formRecordCount" th:field="*{recordCount}" />
+				</div>
+				<div class="mb-3">
+					<button type="submit" class="btn btn-primary">Analyze</button>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>

@@ -6,6 +6,10 @@ wrapper {
 	gradleVersion = '8.0'
 }
 
+tasks.register('examples') {
+    dependsOn gradle.includedBuilds*.task(':build')
+}
+
 subprojects {
 	repositories {
 		mavenCentral()

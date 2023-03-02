@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 12.9.4
+ - ENH: Add simple web interface
+ - INT: Update build to include examples (via composite build)
+
 ### 12.9.3
  - ENH: Add support for en-NL (along with existing support for nl-NL)
  - ENH: If the header looks good then do one more pass with the worst invalid removed (significant uptick in detection - ~1%)

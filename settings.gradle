@@ -16,10 +16,16 @@ include 'core'
 include 'types'
 include 'cli'
 
+includeBuild 'examples/minicli'
+includeBuild 'examples/modebulk'
+includeBuild 'examples/moderecord'
+includeBuild 'examples/modestreaming'
+includeBuild 'examples/web'
+
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '12.9.3')
+			version('fta', '12.9.4')
 			version('jacoco', '0.8.8')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
