@@ -20,7 +20,9 @@ includeBuild 'examples/minicli'
 includeBuild 'examples/modebulk'
 includeBuild 'examples/moderecord'
 includeBuild 'examples/modestreaming'
-includeBuild 'examples/web'
+
+// Need to use Java 17+ to run the Web
+// includeBuild 'examples/web'
 
 dependencyResolutionManagement {
 	versionCatalogs {
