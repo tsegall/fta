@@ -24,25 +24,25 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.token.TokenStreams;
 
 /**
  * Plugin to detect GUIDs (with hyphens).
  */
 public class GUID extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "GUID";
-
-	/** The Regular Expression for this Semantic type. */
-	public static final String REGEXP = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
-
+	private static final String REGEXP_32 = "[a-fA-F0-9]{32}";
+	private static final String REGEXP_36 = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
 	private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
+	private Character left;
+	private Character right;
+	private int len38 = 0;
 	private int len36 = 0;
 	private int len32 = 0;
 
 	/**
-	 * Construct a plugin to detect GUIDs (Gloabally Unique Identifiers) based on the Plugin Definition.
+	 * Construct a plugin to detect GUIDs (Globally Unique Identifiers) based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
 	public GUID(final PluginDefinition plugin) {
@@ -70,18 +70,18 @@ public class GUID extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
-	}
-
-	@Override
 	public FTAType getBaseType() {
 		return FTAType.STRING;
 	}
 
 	@Override
 	public String getRegExp() {
-		return REGEXP;
+		if (len38 != 0)
+			return RegExpGenerator.slosh(left) + REGEXP_36 + RegExpGenerator.slosh(right);
+		if (len32 != 0)
+			return REGEXP_32;
+
+		return REGEXP_36;
 	}
 
 	@Override
@@ -91,11 +91,26 @@ public class GUID extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
-		final int len = input.length();
-
-		if (len == 36) {
+		int len = input.length();
+		String check = input;
+		if (len == 38) {
+			if (left == null) {
+				if (Character.isLetterOrDigit(0) && !Character.isLetterOrDigit(37))
+					return false;
+				left = input.charAt(0);
+				right = input.charAt(37);
+			}
+			if (left != input.charAt(0) || right != input.charAt(37))
+				return false;
+			check = input.substring(1, 37);
+			len = 36;
+			len38++;
+		}
+		else if (len == 36) {
 			len36++;
 			if (len32 != 0)
+				return false;
+			if (check.charAt(8) != '-' || check.charAt(13) != '-' || check.charAt(18) != '-' || check.charAt(23) != '-')
 				return false;
 		}
 		else if (len == 32) {
@@ -106,13 +121,10 @@ public class GUID extends LogicalTypeInfinite {
 		else
 			return false;
 
-		if (len == 36 && (input.charAt(8) != '-' || input.charAt(13) != '-' || input.charAt(18) != '-' || input.charAt(23) != '-'))
-			return false;
-
 		for (int i = 0; i < len; i++) {
 			if (len == 36 && (i == 8 || i == 13 || i == 18 || i == 23))
 				continue;
-			final char ch = input.charAt(i);
+			final char ch = check.charAt(i);
 			if ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))
 				continue;
 			return false;
@@ -123,13 +135,18 @@ public class GUID extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return trimmed.length() == 36 && charCounts['-'] == 4 || trimmed.length() == 32;
+		return trimmed.chars().filter(Character::isLetterOrDigit).count() == 32;
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if (len36 != 0 && len32 != 0)
+		int typesSeen = len32 != 0 ? 1 : 0;
+		if (len36 != 0)
+			typesSeen++;
+		if (len38 != 0)
+			typesSeen++;
+		if (typesSeen != 1)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Insist on a plausible header if it is just 32 hex digits

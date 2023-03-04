@@ -1199,7 +1199,6 @@ public class TestPlugins {
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("GUID").signature);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getRegExp(), GUID.REGEXP);
 		assertEquals(result.getConfidence(), 1.0);
 
 		assertNull(result.checkCounts());

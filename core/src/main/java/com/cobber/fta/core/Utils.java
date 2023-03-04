@@ -188,7 +188,10 @@ public final class Utils {
 	}
 
 	/**
-	 * Clean a string replacing evil characters like LEFT and RIGHT SINGLE QUOTATION MARK and backticks - with a standard quote.
+	 * Clean a string.
+	 * Replacing evil characters:
+	 *  - like LEFT and RIGHT SINGLE QUOTATION MARK and backticks - with a standard quote.
+	 *  - like en-dash and em-dash with a simple hyphen.
 	 * Note: We delay allocating a StringBuilder until we find out it is required.
 	 * @param input String to cleanse
 	 * @return The original String if no cleansing required - or a cleansed copy if necessary.
@@ -205,6 +208,11 @@ public final class Utils {
 				if (b == null)
 					b = new StringBuilder(input.substring(0, i));
 				b.append('\'');
+			}
+			else if (ch == '\u2013' || ch == '\u2014') {
+				if (b == null)
+					b = new StringBuilder(input.substring(0, i));
+				b.append('-');
 			}
 			else if (b != null)
 				b.append(ch);

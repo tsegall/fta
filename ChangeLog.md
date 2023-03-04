@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 12.10.0
+ - ENH: Add new Semantic Type - PERSON.AGE_RANGE (en, es, fr, it, nl, pt)
+ - ENH: Improve GUID detection
+ - ENH: I18N - added wijk, wijknaam, buurt, buurtnaam as synonyms for CITY (nl)
+
 ### 12.9.4
  - ENH: Add simple web interface
  - INT: Update build to include examples (via composite build)

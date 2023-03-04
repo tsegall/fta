@@ -38,6 +38,11 @@ public class WordProcessor {
 		return this;
 	}
 
+	public WordProcessor withBreakChars(final String breakChars) {
+		this.breakChars = breakChars;
+		return this;
+	}
+
 	public WordProcessor withAdditionalBreakChars(final String additionalBreakChars) {
 		breakChars += additionalBreakChars;
 		return this;

@@ -32,8 +32,8 @@ import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
-* Plugin to detect Age (Person).
-*/
+ * Plugin to detect Age (Person).
+ */
 public class Age extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
 	public static final String LONG_REGEXP = "\\d{1,3}";
@@ -70,11 +70,6 @@ public class Age extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		return String.valueOf(random.nextInt(99) + 1);
-	}
-
-	@Override
-	public String getSemanticType() {
-		return defn.semanticType;
 	}
 
 	@Override

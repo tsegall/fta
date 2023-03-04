@@ -539,6 +539,36 @@
 		"priority": 88
 	},
 	{
+		"semanticType" : "PERSON.AGE_RANGE",
+		"description": "Age range (person)",
+		"pluginType": "java",
+		"signature": "GrV4FjafBbHWYAXm6qKNFdpmfi8=",
+		"clazz": "com.cobber.fta.plugins.person.AgeRange",
+		"validLocales": [
+			{
+				"localeTag":  "en,fr",
+				"headerRegExps": [ { "regExp": "(?i)(age|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true } ]
+			},
+			{
+				"localeTag":  "es",
+				"headerRegExps": [ { "regExp": "(?i).*edad.*", "confidence": 90, "mandatory": true } ]
+			},
+			{
+				"localeTag":  "it",
+				"headerRegExps": [ { "regExp": "(?i)(?u)(età)", "confidence": 90, "mandatory": true } ]
+			},
+			{
+				"localeTag":  "nl",
+				"headerRegExps": [ { "regExp": "(?i)leeftijd.*", "confidence": 90, "mandatory": true } ]
+			},
+			{
+				"localeTag":  "pt",
+				"headerRegExps": [ { "regExp": "(?i)idade.*", "confidence": 90, "mandatory": true } ]
+			}
+		],
+		"priority": 89
+	},
+	{
 		"semanticType" : "PERSON.RACE_EN",
 		"description": "Race/Ethnicity (person)",
 		"pluginType": "java",
@@ -550,7 +580,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(race|ethnic).*", "confidence": 95, "mandatory": true } ]
 			}
 		],
-		"priority": 89
+		"priority": 90
 	},
 	{
 		"semanticType" : "PERSON.RACE_ABBR_EN",
@@ -564,7 +594,7 @@
 				"headerRegExps": [ { "regExp": "(?i)(race|ethnic).*|.*(?i)(race|ethnicity)", "confidence": 95, "mandatory": true } ]
 			}
 		],
-		"priority": 90
+		"priority": 91
 	},
 	{
 		"semanticType" : "PERSON.MARITAL_STATUS_EN",
@@ -578,7 +608,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(marital.?status).*", "confidence": 95, "mandatory": true } ]
 			}
 		],
-		"priority": 91
+		"priority": 92
 	},
 	{
 		"semanticType": "NATIONALITY_EN",
@@ -592,7 +622,7 @@
 		"content": "/reference/en_nationality.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 92
+		"priority": 93
 	},
 	{
 		"semanticType": "NATIONALITY_NL",
@@ -606,7 +636,7 @@
 		"content": "/reference/nl_nationality.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 93
+		"priority": 94
 	},
 	{
 		"semanticType": "HONORIFIC_EN",
@@ -620,7 +650,7 @@
 		"content": "/reference/en_honorific.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 94
+		"priority": 95
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_EN",
@@ -638,7 +668,7 @@
 			}
 		],
 		"threshold": 85,
-		"priority": 95
+		"priority": 96
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_DE",
@@ -651,7 +681,7 @@
 		"content": "/reference/de_countries.csv",
 		"contentType": "resource",
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 96
+		"priority": 97
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_ES",
@@ -665,7 +695,7 @@
 		"contentType": "resource",
 		"threshold": 90,
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 97
+		"priority": 98
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_NL",
@@ -679,7 +709,7 @@
 		"contentType": "resource",
 		"threshold": 90,
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 98
+		"priority": 99
 	},
 	{
 		"semanticType": "MONTH.ABBR_<LOCALE>",
@@ -1771,7 +1801,7 @@
 			},
 			{
 				"localeTag": "nl",
-				"headerRegExps": [ { "regExp": "^(?i)(plaats|woonplaats|woonplaatsnaam)$", "confidence": 99, "mandatory": true } ]
+				"headerRegExps": [ { "regExp": "^(?i)(plaats|woonplaats|woonplaatsnaam|wijk|wijknaam|buurt|buurtnaam)$", "confidence": 99, "mandatory": true } ]
 			}
 		],
 		"content": "/reference/en_city_samples.csv",

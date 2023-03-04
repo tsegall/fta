@@ -1,7 +1,7 @@
 [
 	{
 		"keytag": "YEAR",
-		"keyType": "HEADER",
+		"keyType": "REGEX",
 		"validLocales": [
 			{ "localeTag": "bg",
 				"headerRegExps": [ { "regExp": "(?i).*(година|year).*", "confidence": 90 } ] },
@@ -48,8 +48,26 @@
 		]
 	},
 	{
+		"keytag": "YEARS",
+		"keyType": "REGEX",
+		"validLocales": [
+			{ "localeTag": "en",
+				"headerRegExps": [ { "regExp": "(?i)(years|yrs)", "confidence": 90 } ] },
+			{ "localeTag": "fr",
+				"headerRegExps": [ { "regExp": "(?i)(?u)(années|ans|years)", "confidence": 90 } ] },
+			{ "localeTag": "es",
+				"headerRegExps": [ { "regExp": "(?i)(?u)(años|years)", "confidence": 90 } ] },
+			{ "localeTag": "it",
+				"headerRegExps": [ { "regExp": "(?i)(anni|years)", "confidence": 90 } ] },
+			{ "localeTag": "nl",
+				"headerRegExps": [ { "regExp": "(?i)(jaar|years)", "confidence": 90 } ] },
+			{ "localeTag": "pt",
+				"headerRegExps": [ { "regExp": "(?i)(anos|years)", "confidence": 90 } ] }
+		]
+	},
+	{
 		"keytag": "DATE",
-		"keyType": "HEADER",
+		"keyType": "REGEX",
 		"validLocales": [
 			{ "localeTag": "bg",
 				"headerRegExps": [ { "regExp": "(?i).*(дата).*", "confidence": 90 } ] },

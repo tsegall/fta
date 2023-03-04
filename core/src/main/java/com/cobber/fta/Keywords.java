@@ -40,11 +40,11 @@ public class Keywords {
 
 	/** Keyword Tag. */
 	public String keytag;
-	/** keyType is either HEADER or WORD. */
+	/** keyType is either REGEX or WORD. */
 	public String keyType;
 	/** Used if keyType == WORD. */
 	public WordLocaleEntry[] wordLocales;
-	/** Used if keyType == HEADER. */
+	/** Used if keyType == REGEX. */
 	public HeaderLocaleEntry[] validLocales;
 
 	private Locale locale;
@@ -99,7 +99,7 @@ public class Keywords {
 
 		// Find our Keyword
 		for (final Keywords keyword : keywords) {
-			if (!"HEADER".equals(keyword.keyType))
+			if (!"REGEX".equals(keyword.keyType))
 				continue;
 			if (keyword.keytag.equals(keyTag))
 				// Find our locale
