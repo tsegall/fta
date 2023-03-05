@@ -320,6 +320,10 @@ public class Driver {
 			DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
 			error.printf("\tDecimal Separator: '%c'%n", symbols.getDecimalSeparator());
 			error.printf("\tGrouping Separator: '%c'%n", symbols.getGroupingSeparator());
+			error.printf("\tMinus Sign: '%c'%n", symbols.getMinusSign());
+			final NumberFormat simple = NumberFormat.getNumberInstance(locale);
+			if (simple instanceof DecimalFormat)
+				error.printf("\tNegative Prefix: '%s'%n", ((DecimalFormat) simple).getNegativePrefix());
 
 			System.exit(0);
 		}

@@ -1589,7 +1589,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		// Handle doubles stored in non-localized for (e.g. latitude is often stored with a '.')
+		// Handle doubles stored in non-localized format (e.g. latitude is often stored with a '.')
 		// This case handles the case where the grouping separator is not a '.'
 		if (alphasSeen == 0 && periodOffset != -1 && periods == 1 && numericDecimalSeparators == 0 && numericGroupingSeparators == 0) {
 			couldBeNumeric = true;
@@ -1619,7 +1619,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		// Handle doubles stored in non-localized for (e.g. latitude is often stored with a '.')
+		// Handle doubles stored in non-localized format (e.g. latitude is often stored with a '.')
 		// This case handles the case where the grouping separator is a '.'
 		if (couldBeNumeric && numericGroupingSeparators == 1 && numericDecimalSeparators == 0 && localeGroupingSeparator == '.' &&
 				(digitsSeen - 1) / 3 > numericGroupingSeparators) {

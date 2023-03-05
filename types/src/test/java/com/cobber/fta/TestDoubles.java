@@ -1144,6 +1144,11 @@ public class TestDoubles {
 			final TextAnalysisResult result = analysis.getResult();
 			TestUtils.checkSerialization(analysis);
 
+			if (result.getType() != FTAType.DOUBLE) {
+				System.err.println("locale: " + locale);
+				for (String sample : samples)
+					System.err.println(sample);
+			}
 			assertEquals(result.getType(), FTAType.DOUBLE);
 			assertEquals(result.getTypeModifier(), "SIGNED,GROUPING");
 			assertNull(result.getSemanticType());

@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 12.10.1
+ - BUG: Introduced issue with 12.10.0  - null not recognized when NULL_AS_TEXT set to false
+
 ### 12.10.0
  - ENH: Add new Semantic Type - PERSON.AGE_RANGE (en, es, fr, it, nl, pt)
  - ENH: Improve GUID detection
