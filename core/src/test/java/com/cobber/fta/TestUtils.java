@@ -135,6 +135,16 @@ public class TestUtils {
 		assertEquals(words.get(2), "STRIPES");
 	}
 
+	/*
+	@Test(groups = { TestGroups.ALL })
+	public void wordsNoBreaks() {
+		final List<String> words = (new WordProcessor()).asWords("< 18yrs");
+		assertEquals(words.get(0), "WHITE");
+		assertEquals(words.get(1), "RED");
+		assertEquals(words.get(2), "STRIPES");
+	}
+	*/
+
 	@Test(groups = { TestGroups.ALL })
 	public void wordsWithNewLines() {
 		final List<String> words = (new WordProcessor()).withAdditionalWordChars("-#").asWords("100 Aldrich Street, Bldg 15A\nBronx, NY 10475\n(40.87007051900008, -73.83225591699994)");

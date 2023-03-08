@@ -213,7 +213,9 @@ public class Gender extends LogicalTypeFinite {
 		case "EN":
 			// English
 			genderData = new GenderData(
-					new String[][] { new String[] { "FEMALE", "MALE" }, new String[] { "FEMALES", "MALES" }, new String[] { "WOMEN", "MEN" } },
+					new String[][] { new String[] { "FEMALE", "MALE" }, new String[] { "FEMALES", "MALES" }, new String[] { "WOMEN", "MEN" },
+						new String[] { "GF", "GM" } // CDC Gender Categories
+					},
 					new String[][] { new String[] { "F", "M" } } );
 			break;
 		}

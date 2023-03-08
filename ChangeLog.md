@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 12.10.2
+ - ENH: Improve Gender(en), Race(en), and Age Range detection
+ - ENH: Improve CompanyName (en) detection
+
 ### 12.10.1
  - BUG: Introduced issue with 12.10.0  - null not recognized when NULL_AS_TEXT set to false
 
@@ -95,7 +99,7 @@
  - ENH: I18N - Add 'ciudad' to detect CITY in Spanish
 
 ### 12.6.2
- - BUG: Fix typo in JSON file - introduced in 3.6.1
+ - BUG: Fix typo in JSON file - introduced in 12.6.1
 
 ### 12.6.1
  - ENH: I18N - Detect PERSON.AGE in Dutch

@@ -1818,7 +1818,7 @@
 			{
 				"localeTag": "en",
 				"headerRegExps": [
-					{ "regExp": "^(?i)(company|business|company.?name|business.?name|organization.?name|dba.?name)$", "confidence": 99, "mandatory": true },
+					{ "regExp": "^(?i)(company|business|organization|company.?name|business.?name|organization.?name|dba.?name|org.?name|dba)$", "confidence": 99, "mandatory": true },
 					{ "regExp": "^.*(?i)(company.?name|business.?name|organization.?name|dba.?name).*$", "confidence": 90, "mandatory": true }
 				 ],
 				"matchEntries": [ {

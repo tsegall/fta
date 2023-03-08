@@ -14,7 +14,9 @@
 */
 package com.cobber.fta.plugins.person;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
@@ -41,14 +43,24 @@ import com.cobber.fta.token.TokenStreams;
  *  85 years and over
  *  85+
  *  &lt;1
+ *  under 10
+ *  over 65
+ *  CDC PUF (Public Use Files) AGES - AGEALL, AGE017, AGE1839, AGE4064, AGE6584, AGE85PLUS
  */
 public class AgeRange extends LogicalTypeInfinite {
-	/** The Regular Expression for this Semantic type. */
-	public static final String LONG_REGEXP = "\\d{1,3}";
-	public static final String DOUBLE_REGEXP = "\\d{1,3}\\.\\d+";
-
 	private final int MAX_AGE = 120;
+	private String symbols = "<>+≤≥";
 	private final Keywords keywords = new Keywords();
+	private final static Set<String> agesPUF = new HashSet<>();
+
+	static {
+		agesPUF.add("AGEALL");
+		agesPUF.add("AGE017");
+		agesPUF.add("AGE1839");
+		agesPUF.add("AGE4064");
+		agesPUF.add("AGE6584");
+		agesPUF.add("AGE85PLUS");
+	}
 
 	private WordProcessor wordProcessor = new WordProcessor().withBreakChars(" \u00A0-");
 	
@@ -90,6 +102,12 @@ public class AgeRange extends LogicalTypeInfinite {
 	}
 
 	private boolean validate(final String trimmed) {
+		if (trimmed.length() > 40)
+			return false;
+
+		if (agesPUF.contains(trimmed))
+			return true;
+
 		final List<String> words = wordProcessor.asWords(Utils.cleanse(trimmed));
 		final int wordCount = words.size();
 
@@ -133,7 +151,7 @@ public class AgeRange extends LogicalTypeInfinite {
 				return true;
 		}
 		
-		return yearIndex != -1 || trimmed.charAt(0) == '<' || trimmed.charAt(trimmed.length() - 1) == '+';
+		return yearIndex != -1 || symbols.indexOf(trimmed.charAt(0)) != -1 || trimmed.charAt(trimmed.length() - 1) == '+';
 	}
 
 	@Override
