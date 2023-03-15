@@ -3,7 +3,7 @@
 Metadata/data identification Java library. Identifies Semantic Type information (e.g. Gender, Age, Color, Country,...).
 Extensive country/language support. Extensible via user-defined plugins. Comprehensive Profiling support.
 
-Design objectives of the library include:
+Design objectives:
 * Large set of built-in Semantic Types (extensible via JSON defined plugins).  See list below.
 * Extensive Profiling metrics (e.g. Min, Max, Distinct, signatures, …)
 * Sufficiently fast to be used inline.   See Speed notes below.
@@ -16,18 +16,12 @@ Design objectives of the library include:
 Notes:
 * Date detection supports ~750 locales (no support for locales using non-Gregorian calendars or non-Arabic numerals).
 
-## Mode
+## Modes
 
 ### Streaming
 Used when the source is inherently continuous, e.g. IOT device, flat file, etc.
 
-### Bulk
-Used when the source offers the ability to group at source, e.g. a Database.  The advantages of using Bulk mode are that as the data is pre-aggregated the analysis is significantly faster, and the Semantic Type detection is not biased by a set of outliers present early in the analysis.
-
-### Record
-Used when the primary objective is Semantic Type information and not profiling, or when the focus is on a subset of the data (e.g. fewer than MAX_CARDINALITY records).  The advantage of using Record mode is that the Semantic Type detection is stronger and there is support for cross-stream analysis.
-
-Streaming example:
+Example:
 ```java
 public static void main(final String[] args) throws FTAException {
 	final String[] inputs = {
@@ -54,7 +48,10 @@ public static void main(final String[] args) throws FTAException {
 
 Result: Semantic Type: **NAME.FIRST_LAST** (String)
 
-Bulk example:
+### Bulk
+Used when the source offers the ability to group at source, e.g. a Database.  The advantages of using Bulk mode are that as the data is pre-aggregated the analysis is significantly faster, and the Semantic Type detection is not biased by a set of outliers present early in the analysis.
+
+Example:
 ```java
 public static void main(final String[] args) throws FTAException {
 
@@ -77,7 +74,10 @@ public static void main(final String[] args) throws FTAException {
 
 Result: Semantic Type: **GENDER.TEXT_EN** (String)
 
-Record example:
+### Record
+Used when the primary objective is Semantic Type information and not profiling, or when the focus is on a subset of the data (e.g. fewer than MAX_CARDINALITY records).  The advantage of using Record mode is that the Semantic Type detection is stronger and there is support for cross-stream analysis.
+
+Example:
 ```java
 public static void main(final String[] args) throws FTAException {
 		final String[] headers = { "First", "Last", "MI" };
