@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 12.10.3
+ - ENH: Improve PERSON.AGE, PERSON.AGE_RANGE, ADDRESS_FULL_EN, STREET_ADDRESS_EN detection
+ - INT: Reimplement WordProcessor()
+ - INT: Bump gradle to 8.0.2
+
 ### 12.10.2
  - ENH: Improve Gender(en), Race(en), and Age Range detection
  - ENH: Improve CompanyName (en) detection

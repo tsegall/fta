@@ -49,7 +49,7 @@ public class NameFull extends LogicalTypeInfinite {
 	private static final int MAX_LAST_NAMES = 100;
 	private Set<String> lastNames;
 	private Set<String> firstNames;
-	private WordProcessor wordProcessor = new WordProcessor("-");
+	private WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-");
 
 	/**
 	 * Construct a plugin to detect Last name followed by First name based on the Plugin Definition.

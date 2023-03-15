@@ -100,6 +100,12 @@ public class TestUtils {
 	}
 
 	@Test(groups = { TestGroups.ALL })
+	public void wordWithHyphen() {
+		final List<String> words = (new WordProcessor()).withAdditionalWordChars("-#").asWords("84097-4146");
+		assertEquals(words.get(0), "84097-4146");
+	}
+
+	@Test(groups = { TestGroups.ALL })
 	public void wordsWithHyphens() {
 		final List<String> words = (new WordProcessor()).withAdditionalWordChars("-#").asWords("586 E 800 N         Orem UT 84097-4146");
 		assertEquals(words.get(0), "586");
@@ -122,9 +128,22 @@ public class TestUtils {
 	}
 
 	@Test(groups = { TestGroups.ALL })
+	public void wordsQuoted() {
+		final List<String> words = (new WordProcessor()).withAdditionalWordChars("'").asWords("'RED' 'GREEN'");
+		assertEquals(words.get(0), "'RED'");
+		assertEquals(words.get(1), "'GREEN'");
+	}
+
+	@Test(groups = { TestGroups.ALL })
 	public void wordsWithPeriods() {
 		final List<String> words = (new WordProcessor()).asWords("sanne.stienstra@state.or.us");
-		assertEquals(words.get(0), "sannestienstrastateorus");
+		assertEquals(words.get(0), "sanne");
+		assertEquals(words.get(1), "stienstra");
+		assertEquals(words.get(2), "@");
+		assertEquals(words.get(3), "state");
+		assertEquals(words.get(4), "or");
+		assertEquals(words.get(5), "us");
+		assertEquals(words.size(), 6);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -133,17 +152,26 @@ public class TestUtils {
 		assertEquals(words.get(0), "WHITE");
 		assertEquals(words.get(1), "RED");
 		assertEquals(words.get(2), "STRIPES");
+		assertEquals(words.size(), 3);
 	}
 
-	/*
 	@Test(groups = { TestGroups.ALL })
 	public void wordsNoBreaks() {
 		final List<String> words = (new WordProcessor()).asWords("< 18yrs");
-		assertEquals(words.get(0), "WHITE");
-		assertEquals(words.get(1), "RED");
-		assertEquals(words.get(2), "STRIPES");
+		assertEquals(words.get(0), "<");
+		assertEquals(words.get(1), "18yrs");
+		assertEquals(words.size(), 2);
 	}
-	*/
+
+	@Test(groups = { TestGroups.ALL })
+	public void wordsNoBreaksAlphaTransition() {
+		final List<String> words = (new WordProcessor()).withAlphaNumberTransition(true).asWords("< 18yrs");
+		assertEquals(words.get(0), "<");
+		assertEquals(words.get(1), "18");
+		assertEquals(words.get(2), "yrs");
+		assertEquals(words.size(), 3);
+	}
+
 
 	@Test(groups = { TestGroups.ALL })
 	public void wordsWithNewLines() {
@@ -154,6 +182,20 @@ public class TestUtils {
 		assertEquals(words.get(3), "Bldg");
 		assertEquals(words.get(4), "15A");
 		assertEquals(words.get(5), "Bronx");
+		assertEquals(words.get(6), "NY");
+		assertEquals(words.get(7), "10475");
+		//(40.87007051900008, -73.83225591699994)"
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void wordsKillChars() {
+		final List<String> words = (new WordProcessor()).withAdditionalWordChars("-#").asWords("\"7469 GRACELY DR, CINC - \"");
+		assertEquals(words.get(0), "7469");
+		assertEquals(words.get(1), "GRACELY");
+		assertEquals(words.get(2), "DR");
+		assertEquals(words.get(3), "CINC");
+		assertEquals(words.get(4), "-");
+		assertEquals(words.size(), 5);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -161,12 +203,14 @@ public class TestUtils {
 		final List<String> words = (new WordProcessor()).asWords("RED-GREEN");
 		assertEquals(words.get(0), "RED");
 		assertEquals(words.get(1), "GREEN");
+		assertEquals(words.size(), 2);
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void wordsRedGreenNonDefault() {
 		final List<String> words = (new WordProcessor()).withAdditionalWordChars("-#").asWords("RED-GREEN");
 		assertEquals(words.get(0), "RED-GREEN");
+		assertEquals(words.size(), 1);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -175,6 +219,7 @@ public class TestUtils {
 		assertEquals(words.get(0), "french");
 		assertEquals(words.get(1), "german");
 		assertEquals(words.get(2), "italian");
+		assertEquals(words.size(), 3);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -229,5 +274,25 @@ public class TestUtils {
 		assertEquals(words.get(4).offset, testCase.indexOf("NEW"));
 		assertEquals(words.get(5).word, "YORK");
 		assertEquals(words.get(5).offset, testCase.indexOf("YORK"));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void wordRace() {
+		final List<String> words = (new WordProcessor()).asWords("White or Caucasian (e.g. Anglo, European, etc.)");
+		assertEquals(words.get(0), "White");
+		assertEquals(words.get(1), "or");
+		assertEquals(words.get(2), "Caucasian");
+		assertEquals(words.get(3), "e");
+		assertEquals(words.get(4), "g");
+		assertEquals(words.get(5), "Anglo");
+		assertEquals(words.get(6), "European");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void wordLanguage() {
+		final List<String> words = (new WordProcessor()).asWords("Tagalog (Pilipino_ Filipino)");
+		assertEquals(words.get(0), "Tagalog");
+		assertEquals(words.get(1), "Pilipino");
+		assertEquals(words.get(2), "Filipino");
 	}
 }

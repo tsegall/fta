@@ -1,11 +1,3 @@
-# Record Level detection
- - Enables a set of additional detection if Pass One determines Semantic Types, and subsequent pass(es) use this information
- - Can improve detection - i.e. reject a description field as FREE_TEXT if highly correlated with another field
-
-# Rework Address Detection
- - Improve precision - e.g. Full Address
- - Improve detection - e.g. locate Street Number
-
 # DataSet attributes
  - Identify recency fields (e.g. tlm_dt)
  - Identify reference/lookup tables
@@ -17,7 +9,7 @@
 # Field attributes
  - Improve PII detection (e.g. DOB, Age, ...)
  - Improve Semantic Type detection
-	- IDENTITY.VAT_<COUNTRY>
+	- IDENTITY.VAT_<COUNTRY> (DONE)
 	- PERSON.DOB
 	- PERSON.AGE_RANGE
 	- PERSON.RACE (Done)
@@ -26,8 +18,8 @@
 	- UserAgent
  - Outlier detection in numeric fields
  - Improved anomaly detection (see https://www.sciencedirect.com/science/article/pii/S0925231217309864)
- - Add Filename detection
- - Add ContentFormat attribute: e.g. JSON, XML, base64 encoded, encrypted?
+ - Add Filename detection 
+ - Add ContentFormat attribute: e.g. JSON, XML, base64 encoded, encrypted? (DONE)
  - Add Distribution attribute: uniform, normal, log-normal, exponential, other? (Kolmogorov-Smirnov test?)
  - Distinguish between HOME/WORK attributes (e.g. EMAIL, PHONE, ADDRESS)
 
@@ -35,9 +27,18 @@
  - Chinese SSN
  - Belgian SSN
  - German SSN
+ - Canadian SIN
  - ...
 
 # Generalize Bloom Filter support for large static reference lists
+
+# Rework Address Detection (DONE)
+ - Improve precision - e.g. Full Address
+ - Improve detection - e.g. locate Street Number
+
+# Record Level detection (DONE)
+ - Enables a set of additional detection if Pass One determines Semantic Types, and subsequent pass(es) use this information
+ - Can improve detection - i.e. reject a description field as FREE_TEXT if highly correlated with another field
 
 # Add distinction between invalid entries and outliers (DONE)
 

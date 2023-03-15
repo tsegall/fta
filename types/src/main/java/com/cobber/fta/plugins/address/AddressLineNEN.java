@@ -41,7 +41,7 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 	private PluginLocaleEntry cityEntry;
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
-	private WordProcessor wordProcessor = new WordProcessor("-#");
+	private WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
 
 	/**
 	 * Construct a plugin to detect the second line of an Address based on the Plugin Definition.

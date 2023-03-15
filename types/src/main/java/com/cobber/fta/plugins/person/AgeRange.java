@@ -33,7 +33,7 @@ import com.cobber.fta.token.TokenStreams;
 
 /**
  * Plugin to detect Age Range (Person).
- * 
+ *
  * Handle:
  *  Aged 18-44 years
  * 	10 - 20 years
@@ -46,6 +46,7 @@ import com.cobber.fta.token.TokenStreams;
  *  under 10
  *  over 65
  *  CDC PUF (Public Use Files) AGES - AGEALL, AGE017, AGE1839, AGE4064, AGE6584, AGE85PLUS
+ *
  */
 public class AgeRange extends LogicalTypeInfinite {
 	private final int MAX_AGE = 120;
@@ -63,7 +64,7 @@ public class AgeRange extends LogicalTypeInfinite {
 	}
 
 	private WordProcessor wordProcessor = new WordProcessor().withBreakChars(" \u00A0-");
-	
+
 	/**
 	 * Construct an Age Range plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
@@ -96,15 +97,45 @@ public class AgeRange extends LogicalTypeInfinite {
 	public boolean isRegExpComplete() {
 		return false;
 	}
-	
-	private boolean isYear(final String yearWord) {
-		return keywords.match(yearWord, "YEARS", Keywords.MatchStyle.EQUALS) >= 90;
+
+	private boolean isYear(final String word) {
+		return keywords.match(word, "YEARS", Keywords.MatchStyle.EQUALS) >= 90;
 	}
 
+	private boolean isDateQualifier(final String word) {
+		return keywords.match(word, "MONTHS", Keywords.MatchStyle.EQUALS) >= 90 ||
+				keywords.match(word, "WEEKS", Keywords.MatchStyle.EQUALS) >= 90;
+	}
+
+	private boolean isAgeModifier(final String modifier) {
+		final int len = modifier.length();
+		if (len == 1 && symbols.indexOf(modifier.charAt(0)) != -1)
+			return true;
+
+		if (keywords.match(modifier, "UNDER", Keywords.MatchStyle.EQUALS) >= 90 ||
+				keywords.match(modifier, "OVER", Keywords.MatchStyle.EQUALS) >= 90)
+			return true;
+
+		return false;
+	}
+
+	/*
+	 * Approximate BNF.
+	 *
+	 *  [<IgnoreWord>] [<AgeModifier>] <Age> [<YearsMarker>]
+	 *  [<IgnoreWord>] <Age> [<AgeModifier>] [<YearsMarker>]
+	 *  [<IgnoreWord>] <Age> <AnyWord> <Age> [<YearsMarker>]
+	 *  <CDCWord>
+	 *
+	 *  <AgeModifier> ::= '<' | '>' | '+' | '≤' | '≥' | localized('over') | localized('under')
+	 *  <IgnoreWord> ::=  AnyWord
+	 *  <CDCWord> ::= "AGEALL" | "AGE017" | "AGE1839" | "AGE4064" | "AGE6584" | "AGE85PLUS"
+	 */
 	private boolean validate(final String trimmed) {
 		if (trimmed.length() > 40)
 			return false;
 
+		// Handle CDCWord
 		if (agesPUF.contains(trimmed))
 			return true;
 
@@ -113,45 +144,60 @@ public class AgeRange extends LogicalTypeInfinite {
 
 		if (wordCount == 0)
 			return false;
-		String lowAge = words.get(0);
-		int initialOffset = 1;
-		if (!Utils.isNumeric(lowAge)) {
-			// Maybe we can just skip the first word
-			if (wordCount <= 2)
+
+		int rangeStartIndex = -1;
+		int rangeEndIndex = -1;
+		int rangeStart = -1;
+		int rangeEnd = -1;
+		int ageModifier = -1;
+		int yearIndex = -1;
+		int dateQualifierIndex = -1;
+
+		for (int i = 0; i < wordCount; i++) {
+			final String word = words.get(i);
+			if (Utils.isNumeric(word)) {
+				int value = -1;
+				// If it is numeric but not a plausible AGE call it a day
+				if (word.length() >= 4)
+					return false;
+				value = Integer.parseInt(word);
+				if (value > MAX_AGE)
+					return false;
+				if (rangeStartIndex == -1) {
+					rangeStartIndex = i;
+					rangeStart = value;
+					continue;
+				}
+				if (rangeEndIndex == -1) {
+					rangeEndIndex = i;
+					rangeEnd = value;
+					continue;
+				}
 				return false;
-			lowAge = words.get(1);
-			if (!Utils.isNumeric(lowAge))
-				return false;
-			initialOffset++;
+			}
+			else if (isAgeModifier(word))
+				ageModifier = i;
+			else if (isYear(word))
+				yearIndex = i;
+			else if (isDateQualifier(word))
+				dateQualifierIndex = i;
 		}
 
-		if (lowAge.length() > 3 || Integer.parseInt(lowAge) > MAX_AGE)
+		// No <Age>'s found so we are done
+		if (rangeStartIndex == -1 && rangeEndIndex == -1)
 			return false;
 
-		int rangeEnd = -1;
-		int yearIndex = -1;
-		for (int i = initialOffset; i < wordCount; i++) {
-			final String word = words.get(i); 
-			if (Utils.isNumeric(word)) {
-				if (rangeEnd != -1)
-					return false;
-				if (word.length() > 3 || Integer.parseInt(word) > MAX_AGE)
-					return false;
-				rangeEnd = i;
-			}
-			else if (isYear(word)) {
-				yearIndex = i;
-			}
-		}
-		
-		if (rangeEnd != -1) {
-			if (wordCount == rangeEnd + 1)
+		// We expect some text/symbol to qualify the single <Age>
+		if (rangeEndIndex == -1) {
+			if (ageModifier != -1)
 				return true;
-			if (rangeEnd + 2 == wordCount && yearIndex != -1)
-				return true;
+
+			return yearIndex != -1 && yearIndex > rangeStartIndex;
 		}
-		
-		return yearIndex != -1 || symbols.indexOf(trimmed.charAt(0)) != -1 || trimmed.charAt(trimmed.length() - 1) == '+';
+		else if (dateQualifierIndex == -1 && rangeStart >= rangeEnd)
+			return false;
+
+		return true;
 	}
 
 	@Override

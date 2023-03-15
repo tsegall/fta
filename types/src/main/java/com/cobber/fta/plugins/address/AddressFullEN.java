@@ -15,6 +15,7 @@
  */
 package com.cobber.fta.plugins.address;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -44,6 +45,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 	private boolean multiline;
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
+	private Set<String> statesWithSpaces;
 
 	private LogicalTypeInfinite logicalPostCode;
 	private LogicalTypeInfinite logicalZipPlus;
@@ -51,7 +53,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 	private LogicalTypeFiniteSimple logicalCountry;
 	private Pattern poBox;
 	private String country;
-	private WordProcessor wordProcessor = new WordProcessor("-#");
+	private WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
 
 	/**
 	 * Construct a plugin to detect an Address based on the Plugin Definition.
@@ -105,6 +107,10 @@ public class AddressFullEN extends LogicalTypeInfinite {
 						i + 1 < words.size() && logicalPostCode.isValid(word + " " + words.get(i + 1).word, true, -1)))
 					ret = i;
 			}
+			else if ("AU".equals(country)) {
+				if (word.length() == 4 && logicalPostCode.isValid(word, true, -1))
+					ret = i;
+			}
 
 		}
 		return ret;
@@ -123,14 +129,24 @@ public class AddressFullEN extends LogicalTypeInfinite {
 			logicalZipPlus = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_PLUS4_US"), analysisConfig);
 			logicalState = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_NAME_US"), analysisConfig);
 		}
-		else {
+		else if ("CA".equals(country)) {
 			logicalPostCode = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.POSTAL_CODE_CA"), analysisConfig);
 			logicalState = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STATE_PROVINCE.PROVINCE_NAME_CA"), analysisConfig);
 		}
+		else if ("AU".equals(country)) {
+			logicalPostCode = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.POSTAL_CODE_AU"), analysisConfig);
+			logicalState = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_NAME_AU"), analysisConfig);
+		}
+
 		logicalCountry = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("COUNTRY.TEXT_EN"), analysisConfig);
 
 		addressMarkersRef = new SingletonSet("resource", "/reference/en_street_markers.csv");
 		addressMarkers = addressMarkersRef.getMembers();
+
+		statesWithSpaces = new HashSet<>();
+		for (final String state : logicalState.getMembers())
+			if (state.indexOf(' ') != -1)
+				statesWithSpaces.add(state);
 
 		return true;
 	}
@@ -151,59 +167,81 @@ public class AddressFullEN extends LogicalTypeInfinite {
 	}
 
 	public boolean validation(final String input) {
-		final String upper = input.toUpperCase(Locale.ENGLISH);
+		String upper = input;
+		boolean geoCoded = false;
+
+		// A number of addresses end with a geo-coded location of the form (LAT, LONG) - if so remove it.
+		final int len = input.length();
+		if (len > 10 && input.charAt(len - 1) == ')') {
+			final int start = input.lastIndexOf('(');
+			if (start != -1)
+				upper = input.substring(0, start);
+			geoCoded = true;
+		}
+		upper = upper.toUpperCase(Locale.ENGLISH);
+
 		final List<WordOffset> words = wordProcessor.asWordOffsets(upper);
 		final int wordCount = words.size();
 
 		if (wordCount < 4 || wordCount > 12)
 			return false;
 
-		int score = 0;
-		int start = 0;
-		if (AddressCommon.isAddressNumber(words.get(0).word)) {
-			score = 1;
-			start = 1;
-		}
-
+		int score = 1;
 		int postCodeIndex = -1;
 		int stateIndex = -1;
 		int countryIndex = -1;
 		int addressMarkerIndex = -1;
 		int hintIndex = -1;
+		int directionIndex = -1;
 		boolean poBoxFound = false;
 
 		postCodeIndex = getPostCodeIndex(words);
-		if (postCodeIndex >= wordCount - 3)
-			score++;
 
-		if (upper.charAt(0) == 'P' && poBox.matcher(upper).find()) {
+		if (poBox.matcher(upper).find())
 			poBoxFound = true;
-			score++;
+
+		// Decide where to start - skip any words that are non-numeric, when we find the first numeric back up one (if possible)
+		int start = -1;
+		for (int i = 0; i < wordCount; i++) {
+			final String word = words.get(i).word;
+			if ((word.length() <= 5 && Utils.isNumeric(word)) || AddressCommon.isAddressNumber(word)) {
+				start = i == 0 ? 0 : i - 1;
+				break;
+			}
 		}
+		if (start == -1)
+			return false;
 
 		for (int i = start; i < wordCount; i++) {
 			final String word = words.get(i).word;
-			if (logicalState.isValid(word, true, -1))
-				stateIndex = i;
-			else if (logicalCountry.isValid(word, true, -1))
-				countryIndex = i;
-			else if (addressMarkers.contains(word)) {
-				if (addressMarkerIndex == -1)
-					score++;
+			if (i != start && addressMarkerIndex == -1 && addressMarkers.contains(word)) {
+				score++;
 				addressMarkerIndex = i;
 				// Skip a Direction if it exists
 				if (i + 1 < wordCount && AddressCommon.isDirection(words.get(i + 1).word))
 					i++;
 			}
+			else if (directionIndex == -1 && AddressCommon.isDirection(word))
+				directionIndex = i;
+			else if (logicalState.isValid(word, true, -1))
+				stateIndex = i;
+			else if (logicalCountry.isValid(word, true, -1))
+				countryIndex = i;
 			else if (AddressCommon.isModifier(input, i == wordCount - 1))
 				hintIndex = i;
+			else if (!poBoxFound && "BOX".equals(word))
+				poBoxFound = true;
 		}
+
+		if (!poBoxFound && !AddressCommon.isAddressNumber(words.get(0).word) &&
+				(addressMarkerIndex == -1 || addressMarkerIndex < 2 || !AddressCommon.isAddressNumber(words.get(addressMarkerIndex - 2).word)))
+			return false;
 
 		// Unfortunately some States have spaces in them so if we have not found a state but and it is worth searching (look harder)
 		if (stateIndex == -1 && score >= 2) {
-			for (final String state : logicalState.getMembers()) {
+			for (final String state : statesWithSpaces) {
 				int offset = -1;
-				if (state.indexOf(' ') != -1 && (offset = upper.indexOf(state)) != -1) {
+				if ((offset = upper.indexOf(state)) != -1) {
 					for (int i = 0; i < wordCount; i++) {
 						if (words.get(i).offset == offset) {
 							stateIndex = i;
@@ -216,27 +254,39 @@ public class AddressFullEN extends LogicalTypeInfinite {
 			}
 		}
 
+		if (postCodeIndex >= wordCount - 3)
+			score++;
+		if (poBoxFound)
+			score++;
 		if (hintIndex >= wordCount - 3)
 			score++;
 		if (stateIndex >= wordCount - 3)
 			score++;
 		if (countryIndex >= wordCount - 3)
 			score++;
+		if (directionIndex != -1 && directionIndex < wordCount - 2)
+			score++;
+		if (geoCoded)
+			score++;
 
-		if (score >= 4 && (stateIndex != -1 || postCodeIndex != -1))
+		// If no State and no PostCode then it is not a FULL address
+		if (stateIndex == -1 && postCodeIndex == -1)
+			return false;
+
+		if (score >= 4)
 			return true;
 
-		if (score >= 2 && (stateIndex != -1 || postCodeIndex != -1)) {
+		if (score >= 2) {
 			// Do we have a PO BOX and a State?
 			if (poBoxFound && stateIndex != -1)
 				return true;
-			// Are he State and Zip are next to each other?
+			// Are the State and Zip are next to each other?
 			if (postCodeIndex != -1 && Math.abs(stateIndex - postCodeIndex) == 1)
 				return true;
-			// Is the State is after the addressMarker?
+			// Is the State after the addressMarker?
 			if (addressMarkerIndex != -1 && stateIndex != -1 && (stateIndex > addressMarkerIndex || stateIndex == wordCount - 1))
 				return true;
-			// IS the ZIP is after the addressMarker?
+			// Is the ZIP after the addressMarker?
 			if (addressMarkerIndex != -1 && postCodeIndex != -1 && postCodeIndex > addressMarkerIndex)
 				return true;
 		}

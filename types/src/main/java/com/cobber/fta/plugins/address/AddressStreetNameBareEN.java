@@ -39,7 +39,7 @@ public class AddressStreetNameBareEN extends LogicalTypeInfinite {
 	private boolean multiline;
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
-	private WordProcessor wordProcessor = new WordProcessor("-#");
+	private WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
 
 	/**
 	 * Construct a plugin to detect a Street Name based on the Plugin Definition.

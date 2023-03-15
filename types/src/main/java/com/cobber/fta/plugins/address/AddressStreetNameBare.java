@@ -37,7 +37,7 @@ import com.cobber.fta.token.TokenStreams;
 public class AddressStreetNameBare extends LogicalTypeInfinite {
 	private static final String SEMANTIC_TYPE = "STREET_NAME_BARE_";
 	private String language;
-	private WordProcessor wordProcessor = new WordProcessor("-#");
+	private WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
 
 	/**
 	 * Construct a plugin to detect a Street Name based on the Plugin Definition.

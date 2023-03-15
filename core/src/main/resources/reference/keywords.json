@@ -66,6 +66,38 @@
 		]
 	},
 	{
+		"keytag": "MONTHS",
+		"keyType": "REGEX",
+		"validLocales": [
+			{ "localeTag": "*",
+				"headerRegExps": [ { "regExp": "(?i)(months|mths)", "confidence": 90 } ] }
+		]
+	},
+	{
+		"keytag": "WEEKS",
+		"keyType": "REGEX",
+		"validLocales": [
+			{ "localeTag": "*",
+				"headerRegExps": [ { "regExp": "(?i)(weeks|wks)", "confidence": 90 } ] }
+		]
+	},
+	{
+		"keytag": "OVER",
+		"keyType": "REGEX",
+		"validLocales": [
+			{ "localeTag": "*",
+				"headerRegExps": [ { "regExp": "(?i)(over|older)", "confidence": 90 } ] }
+		]
+	},
+	{
+		"keytag": "UNDER",
+		"keyType": "REGEX",
+		"validLocales": [
+			{ "localeTag": "*",
+				"headerRegExps": [ { "regExp": "(?i)(under)", "confidence": 90 } ] }
+		]
+	},
+	{
 		"keytag": "DATE",
 		"keyType": "REGEX",
 		"validLocales": [

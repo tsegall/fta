@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '3.0.3'
+	id 'org.springframework.boot' version '3.0.4'
 	id 'io.spring.dependency-management' version '1.1.0'
 	id "com.github.ben-manes.versions" version '0.46.0'
 	id 'java'
@@ -8,7 +8,7 @@ plugins {
 }
 
 wrapper {
-        gradleVersion = '8.0'
+        gradleVersion = '8.0.2'
 }
 
 group = 'com.cobber.fta'

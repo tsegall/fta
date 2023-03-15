@@ -123,19 +123,22 @@ public class Age extends LogicalTypeInfinite {
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Find a gender or first name field (both highly correlated with the presence of age)
-		int gender = -1;
-		int firstName = -1;
+		boolean signalFound = false;
 		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
 			if (logicalGender.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
-				gender = i;
+				signalFound = true;
 				break;
 			}
 			if (logicalFirst.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
-				firstName = i;
+				signalFound = true;
 				break;
 			}
 		}
 
-		return (gender != -1 || firstName != -1) && (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
+		// This check is similar to the one above but will fire if a suitable Semantic Type was identified on a previous pass
+		if (!signalFound && context.findSemanticType("NAME.FIRST", analysisConfig.bindSemanticType("GENDER.TEXT_<LANGUAGE>")))
+			signalFound = true;
+
+		return signalFound && (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 }

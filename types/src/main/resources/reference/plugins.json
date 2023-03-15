@@ -547,7 +547,10 @@
 		"validLocales": [
 			{
 				"localeTag":  "en,fr",
-				"headerRegExps": [ { "regExp": "(?i)(age|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true } ]
+				"headerRegExps": [
+					{ "regExp": "(?i)(age|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true },
+					{ "regExp": "(?i)age.*", "confidence": 60, "mandatory": true }
+				 ]
 			},
 			{
 				"localeTag":  "es",

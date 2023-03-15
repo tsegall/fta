@@ -173,6 +173,25 @@ public class AnalyzerContext {
 		return false;
 	}
 
+	/*
+	 * Check whether any of the supplied Semantic Types exist on this record.
+	 * @param searching The Semantic Types to check.
+	 * @return True if any of the Semantic Types exists on this record.
+	 */
+	public boolean findSemanticType(final String... searching) {
+		if (semanticTypes == null)
+			return false;
+
+		for (String semanticType : searching) {
+			for (String currentType : semanticTypes) {
+				if (semanticType.equals(currentType))
+					return true;
+			}
+		}
+
+		return false;
+	}
+
 	public boolean isNested() {
 		return nested;
 	}

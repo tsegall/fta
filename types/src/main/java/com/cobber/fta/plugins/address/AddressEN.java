@@ -30,6 +30,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.core.WordProcessor;
 import com.cobber.fta.token.TokenStreams;
 
@@ -81,7 +82,10 @@ public class AddressEN extends LogicalTypeInfinite {
 
 		poBox = Pattern.compile(AddressCommon.POBOX);
 
-		wordProcessor = new WordProcessor("AU".equals(country) ? "/-#" : "-#");
+		wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
+		// Australia commonly uses unit/number in the address so allow '/' to be part of words
+		if ("AU".equals(country))
+			wordProcessor = wordProcessor.withAdditionalWordChars("/");
 
 		return true;
 	}
@@ -115,54 +119,70 @@ public class AddressEN extends LogicalTypeInfinite {
 	}
 
 	private boolean validation(final String trimmedUpper, final boolean detectMode) {
-		// Australia commonly uses unit/number in the address so allow '/' to be part of words
 		final List<String> words = wordProcessor.asWords(trimmedUpper);
 		final int wordCount = words.size();
+		int addressMarkerIndex = -1;
+		int directionIndex = -1;
+		int modifierIndex = -1;
+		int blockIndex = -1;
+		int start = 0;
+		int firstSpace = -1;
 
-		if (wordCount < 2)
+		if (wordCount < 2 || (firstSpace = trimmedUpper.indexOf(' ')) == -1)
 			return false;
 
-		final String firstWord = words.get(0);
-		if ("BOX".equals(firstWord))
+		String initialWord = words.get(0);
+
+		// Handle an initial Unit #
+		if ("#".equals(initialWord) && Utils.isNumeric(words.get(1))) {
+			if (wordCount < 3)
+				return false;
+			modifierIndex = 0;
+			start = 2;
+			initialWord = words.get(2);
+		}
+		final boolean initialNumeric = AddressCommon.isAddressNumber(initialWord);
+
+		if (start == 0 && words.size() == 2 && initialNumeric && "BROADWAY".equals(words.get(1)))
 			return true;
 
-		final boolean initialNumeric = AddressCommon.isAddressNumber(firstWord);
-
-		if (words.size() == 2 && initialNumeric && "BROADWAY".equals(words.get(1)))
-			return true;
-
+		// If we have a P.O. Box then we are all good
 		if (trimmedUpper.charAt(0) == 'P' && poBox.matcher(trimmedUpper).find())
 			return true;
 
-		if (wordCount < 3)
+		if (wordCount < 3 || trimmedUpper.lastIndexOf(' ') == firstSpace)
 			return false;
 
-		int addressMarkerIndex = -1;
-		int score = 0;
-
-		if (!AddressCommon.isModifier(firstWord, false) && !addressMarkers.contains(firstWord) && !initialNumeric)
+		// If don't start with a number and it is not a modifier like Apartment, Suite, ... then we are done
+		if (start == 0 && !AddressCommon.isModifier(initialWord, false) && !addressMarkers.contains(initialWord) && !initialNumeric)
 			return false;
 
-		// Only get credit if the number starts with something non-zero in detect mode (despite the fact that they do occur)
-		if (initialNumeric && (!detectMode || words.get(0).charAt(0) != '0'))
-			score++;
-
-		for (int i = 0; i < wordCount; i++) {
+		for (int i = start; i < wordCount; i++) {
 			final String word = words.get(i);
-			if (addressMarkers.contains(word)) {
+			if ((addressMarkers.contains(word) && i >= 2) || (AddressCommon.isInitialMarker(word) && i >= 1)) {
 				if (addressMarkerIndex == -1)
-					score++;
-				addressMarkerIndex = i;
+					addressMarkerIndex = i;
 			}
-			else if (AddressCommon.isDirection(word) || AddressCommon.isModifier(word, i == wordCount - 1))
-				score++;
+			else if (AddressCommon.isDirection(word)) {
+				if (directionIndex == -1)
+					directionIndex = i;
+			}
+			else if (AddressCommon.isModifier(word, i == wordCount - 1))
+				modifierIndex = i;
+			else if ("BLOCK".equals(word))
+				blockIndex = i;
+			else if ("BOX".equals(word) && i + 1 < wordCount && Character.isDigit(words.get(i).charAt(0)))
+				return true;
 		}
 
-		if (score >= 2)
+		if (modifierIndex == 0 && addressMarkerIndex != -1 && addressMarkerIndex - 2 > 0 && Utils.isNumeric(words.get(addressMarkerIndex - 2)))
+			return true;
+
+		if (initialNumeric && (addressMarkerIndex != -1 || modifierIndex != -1 || blockIndex != -1))
 			return true;
 
 		// If it looks like '1280 SE XXXXX' declare it good
-		if (initialNumeric && AddressCommon.isDirection(words.get(1)))
+		if (initialNumeric && directionIndex == 1)
 			return true;
 
 		return false;

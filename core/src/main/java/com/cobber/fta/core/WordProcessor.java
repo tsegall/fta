@@ -19,39 +19,78 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Split an input string into words.
+ *  - Break chars are used to split words and are not returned.
+ *  - AlphaNumeric transition (if true then this is treated as a word break)
+ */
 public class WordProcessor {
-	private final String defaultBreakChars = " \u00A0\n\t,/-;";
-	private String breakChars = null;
+	private final StringBuilder defaultBreakChars = new StringBuilder(" \u00A0\n\t,/-_;!.|&");
+	private StringBuilder breakChars = null;
+	private String killChars = "\"()[]";
+	private String breakCharsString = null;
 	private String additionalWordChars = null;
+	private boolean alphaNumberTransition = false;
+	private boolean lastAlpha = false;
+	private boolean lastNumeric = false;
+	private boolean lastSimpleWordChar = false;
 
 	public WordProcessor() {
 		breakChars = defaultBreakChars;
+		breakCharsString = breakChars.toString();
 	}
 
-	public WordProcessor(final String additionalWordChars) {
-		breakChars = defaultBreakChars;
-		this.additionalWordChars = additionalWordChars;
-	}
-
+	/**
+	 * Modify the WordProcessor() appending a set of additional characters to the valid word characters.
+	 * @param additionalWordChars The set of additional characters to treat as part of the word.
+	 * @return The WordProcessor
+	 */
 	public WordProcessor withAdditionalWordChars(final String additionalWordChars) {
 		this.additionalWordChars = additionalWordChars;
-		return this;
-	}
-
-	public WordProcessor withBreakChars(final String breakChars) {
-		this.breakChars = breakChars;
-		return this;
-	}
-
-	public WordProcessor withAdditionalBreakChars(final String additionalBreakChars) {
-		breakChars += additionalBreakChars;
+		// If it is a Word character it cannot also be a Break character
+		for (int i = 0; i < additionalWordChars.length(); i++) {
+			final char ch = additionalWordChars.charAt(i);
+			final int breakIndex = breakCharsString.indexOf(ch);
+			if (breakIndex != -1) {
+				breakChars.deleteCharAt(breakIndex);
+				breakCharsString = breakChars.toString();
+			}
+		}
 		return this;
 	}
 
 	/**
-	 * Split the input String into 'words' based on the break characters.  By default anything that is
-	 * not an alpha or numeric is not returned as part of the word array.  Additional characters can be included
-	 * in the words by adding them to the additionalWordCards.
+	 * Modify the WordProcessor() setting the set of characters to use as break characters.
+	 * @param breakChars The set of characters to treat as break characters.
+	 * @return The WordProcessor
+	 */
+	public WordProcessor withBreakChars(final String breakChars) {
+		this.breakChars = new StringBuilder(breakChars);
+		return this;
+	}
+
+	/**
+	 * Modify the WordProcessor() appending a set of additional characters to the valid break characters.
+	 * @param additionalBreakChars The set of additional characters to treat as break characters.
+	 * @return The WordProcessor
+	 */
+	public WordProcessor withAdditionalBreakChars(final String additionalBreakChars) {
+		breakChars.append(additionalBreakChars);
+		return this;
+	}
+
+	public WordProcessor withAdditionalKillChars(final String additionalKillChars) {
+		killChars += additionalKillChars;
+		return this;
+	}
+
+	public WordProcessor withAlphaNumberTransition(final boolean alphaNumberTransition) {
+		this.alphaNumberTransition = alphaNumberTransition;
+		return this;
+	}
+
+	/**
+	 * Split the input String into 'words' based on the break characters.
 	 * @param input String to break into words.
 	 * @return A list of words based on the input string.
 	 */
@@ -59,36 +98,68 @@ public class WordProcessor {
 		return asWordOffsets(input).stream().map(x -> x.word).collect(Collectors.toList());
 	}
 
+	private boolean isSimpleWordChar(char ch) {
+		return Character.isAlphabetic(ch) || Character.isDigit(ch) || (additionalWordChars != null && additionalWordChars.indexOf(ch) != -1);
+	}
+
+	private void append(StringBuilder b, char ch) {
+		b.append(ch);
+		lastAlpha = Character.isAlphabetic(ch);
+		lastNumeric = Character.isDigit(ch);
+		lastSimpleWordChar = isSimpleWordChar(ch);
+	}
+
 	/**
-	 * Split the input String into 'words' based on the break characters.  By default anything that is
-	 * not an alpha or numeric is not returned as part of the word array.  Additional characters can be included
-	 * in the words by adding them to the additionalWordCards.
+	 * Split the input String into 'words' based on the break characters.
 	 * @param input String to break into words.
 	 * @return A list of words based on the input string.
 	 */
 	public List<WordOffset> asWordOffsets(final String input) {
 		final ArrayList<WordOffset> ret = new ArrayList<>();
-
+		boolean midWord = false;
 		int start = -1;
 		StringBuilder b = new StringBuilder();
 		for (int i = 0; i < input.length(); i++) {
 			char ch = input.charAt(i);
-			if (breakChars.indexOf(ch) != -1 && (additionalWordChars == null || additionalWordChars.indexOf(ch) == -1)) {
-				if (start != -1) {
-					ret.add(new WordOffset(b.toString(), start));
-					b.setLength(0);
-					start = -1;
-				}
+			if (killChars.indexOf(ch) != -1)
+				continue;
+			if (!midWord) {
+				if (breakCharsString.indexOf(ch) != -1)
+					continue;
+				midWord = true;
+				append(b, ch);
+				start = i;
+				continue;
 			}
-			else if (Character.isAlphabetic(ch) || Character.isDigit(ch) ||
-					(additionalWordChars != null && additionalWordChars.indexOf(ch) != -1)) {
-				if (start == -1)
+
+			// If we have <DIGIT>.<DIGIT> then it does not count as a break!
+			if (ch == '.' && lastNumeric && i + 1 < input.length() && Character.isDigit(input.charAt(i + 1))) {
+				append(b, ch);
+				continue;
+			}
+
+			// At this point we are in the middle of a word
+			final boolean isBreak = breakCharsString.indexOf(ch) != -1;
+			if (isBreak ||
+					(alphaNumberTransition && (lastAlpha && Character.isDigit(ch) || lastNumeric && Character.isAlphabetic(ch))) ||
+					lastSimpleWordChar ^ isSimpleWordChar(ch)) {
+				// End of word reached
+				ret.add(new WordOffset(b.toString(), start));
+				b.setLength(0);
+				midWord = !isBreak;
+				// If it was a valid word character as opposed to a break character that caused us to detect the end of the
+				// previous word then start a new word with this character.
+				if (midWord) {
+					append(b, ch);
 					start = i;
-				b.append(ch);
+				}
+				continue;
 			}
+
+			append(b, ch);
 		}
 
-		if (start != -1)
+		if (start != -1 && b.length() != 0)
 			ret.add(new WordOffset(b.toString(), start));
 
 		return ret;

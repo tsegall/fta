@@ -43,7 +43,7 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
 	private Set<String> markersSeen;
-	private WordProcessor wordProcessor = new WordProcessor("-#");
+	private WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
 
 	/**
 	 * Construct a plugin to detect a Street Name based on the Plugin Definition.
@@ -98,7 +98,7 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 		if (words.size() <= 2 && "BROADWAY".equals(words.get(0)))
 			return true;
 
-		if (wordCount < 2)
+		if (wordCount < 2 || trimmedUpper.indexOf(' ') == -1)
 			return false;
 
 		int extrasPresent = 0;
