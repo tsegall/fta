@@ -1,6 +1,8 @@
-# Text Profiling and Semantic Type Detection #
+# Semantic Type Detection and Data Profiling #
 
-Analyze Text data to determine Base Type and Semantic type information and other key metrics associated with a text stream.
+Metadata/data identification Java library. Identifies Semantic Type information (e.g. Gender, Age, Color, Country,...).
+Extensive country/language support. Extensible via user-defined plugins. Comprehensive Profiling support.
+
 Design objectives of the library include:
 * Large set of built-in Semantic Types (extensible via JSON defined plugins).  See list below.
 * Extensive Profiling metrics (e.g. Min, Max, Distinct, signatures, …)
@@ -12,9 +14,6 @@ Design objectives of the library include:
 * Once stream is profiled then subsequent samples can be validated and/or new samples can be generated
 
 Notes:
-* By default analysis is performed on the initial 4096 characters (adjustable via setMaxInputLength()).
-* Semantic Type detection is typically predicated on plausible input data, for example, a field that contains data that looks
-like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
 * Date detection supports ~750 locales (no support for locales using non-Gregorian calendars or non-Arabic numerals).
 
 ## Mode
@@ -276,9 +275,17 @@ Note 4: Histograms are precise for any set where the cardinality is less than ma
 
 ## Semantic Type detection ##
 
-In addition to detecting a set of Base types fta will also, when enabled (default on - setDefaultLogicalTypes(false) to disable) infer Semantic type information along with the Base types.
+In addition to detecting a set of Base types FTA will also, when enabled (default on - setDefaultLogicalTypes(false) to disable) infer Semantic type information along with the Base types.
 
-Detection of some Semantic Types is dependent on the current locale as indicated below:
+* Semantic Type detection is typically predicated on plausible input data, for example, a field that contains data that looks
+like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
+* The data stream name (e.g. the database field name or CSV field name) is commonly used to bias the detection.  For example, if the locale language is English and the data stream matches the regular expression '.\*(?i)(surname|last.?name|lname|maiden.?name|name.?last|last_nm).\*|last' then the detection is more likely to declare this stream a NAME.LAST Semantic Type. The data stream name can also be negatively bias the detection.  Consult the plugins.json file for more details.
+* Assuming the entire set of stream names is available, Semantic Type detection of a particular column may be impacted by other stream names, for example the Semantic Type PERSON.AGE is detected if we detect another field of type GENDER or NAME.FIRST.
+* When using Record mode for Semantic Type analysis - the detection of Semantic Types for a stream may be impacted by prior determination of the Semantic Type of another Stream (either via detection or provided with the Context)
+* By default analysis is performed on the initial 4096 characters (adjustable via setMaxInputLength()).
+
+
+The list of Semantic Types detected is dependent on the current locale as indicated below:
 
 <details>
 <summary><b>Semantic Types Supported</b></summary>
