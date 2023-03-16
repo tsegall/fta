@@ -282,7 +282,7 @@ like phone numbers, but that are in fact invalid, will NOT be detected as the Se
 * The data stream name (e.g. the database field name or CSV field name) is commonly used to bias the detection.  For example, if the locale language is English and the data stream matches the regular expression '.\*(?i)(surname|last.?name|lname|maiden.?name|name.?last|last_nm).\*|last' then the detection is more likely to declare this stream a NAME.LAST Semantic Type. The data stream name can also be negatively bias the detection.  Consult the plugins.json file for more details.
 * Assuming the entire set of stream names is available, Semantic Type detection of a particular column may be impacted by other stream names, for example the Semantic Type PERSON.AGE is detected if we detect another field of type GENDER or NAME.FIRST.
 * When using Record mode for Semantic Type analysis - the detection of Semantic Types for a stream may be impacted by prior determination of the Semantic Type of another Stream (either via detection or provided with the Context)
-* By default analysis is performed on the initial 4096 characters (adjustable via setMaxInputLength()).
+* By default analysis is performed on the initial 4096 characters of the field (adjustable via setMaxInputLength()).
 
 
 The list of Semantic Types detected is dependent on the current locale as indicated below:
