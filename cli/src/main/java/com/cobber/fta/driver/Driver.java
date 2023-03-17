@@ -38,11 +38,10 @@ import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.Utils;
-import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.driver.faker.Faker;
 
 public class Driver {
-	private static DriverOptions options;
+	private static DriverOptions cmdLineOptions;
 
 	public static void main(final String[] args) throws IOException {
 		PrintStream output = System.out;
@@ -50,201 +49,107 @@ public class Driver {
 		boolean helpRequested = false;
 		String replayFile = null;
 
-		options = new DriverOptions();
+		cmdLineOptions = new DriverOptions();
+		final String[] unprocessed = cmdLineOptions.addFromStringArray(args);
 		int idx = 0;
-		while (idx < args.length && args[idx].charAt(0) == '-') {
-			if ("--abbreviationPunctuation".equals(args[idx]))
-				options.abbreviationPunctuation = true;
-			else if ("--bloomfilter".equals(args[idx])) {
-				DriverUtils.createBloomOutput(args[idx + 1], args[idx + 2]);
-				System.exit(0);
-			}
-			else if ("--bulk".equals(args[idx]))
-				options.bulk = true;
-			else if ("--charset".equals(args[idx]))
-				options.charset = args[++idx];
-			else if ("--col".equals(args[idx]))
-				options.col = Integer.valueOf(args[++idx]);
-			else if ("--debug".equals(args[idx]))
-				options.debug = Integer.valueOf(args[++idx]);
-			else if ("--delimiter".equals(args[idx]))
-				options.delimiter = args[++idx];
-			else if ("--detectWindow".equals(args[idx]))
-				options.detectWindow = Integer.valueOf(args[++idx]);
-			else if ("--faker".equals(args[idx]))
-				options.faker = args[++idx];
-			else if ("--formatDetection".equals(args[idx]))
-				options.formatDetection = true;
-			else if ("--help".equals(args[idx])) {
-				error.println("Usage: fta [OPTIONS] file ...");
-				error.println("Valid OPTIONS are:");
-				error.println(" --abbreviationPunctuation - Disable NO_ABBREVIATION_PUNCTUATION mode");
-				error.println(" --bloomfilter <input> <type> - Create Bloom Filter from CSV input, type: 'integer'|'string'");
-				error.println(" --bulk - Enable bulk mode");
-				error.println(" --charset <charset> - Use the supplied <charset> to read the input files");
-				error.println(" --col <n> - Only analyze column <n>");
-				error.println(" --debug <n> - Set the debug level to <n>");
-				error.println(" --delimiter <ch> - Set the delimiter to the character <ch>");
-				error.println(" --detectWindow <n> - Set the size of the detect window to <n>");
-				error.println(" --faker <header> - Header is a comma separated list of Semantic Types");
-				error.println(" --formatDetection - Enable Format Detection");
-				error.println(" --help - Print this help");
-				error.println(" --json - Output as JSON");
-				error.println(" --knownTypes <SemanticTypes> - Comma separated list of Semantic Types");
-				error.println(" --legacyJSON - Output legacy JSON - compatible with FTA 11.X or lower");
-				error.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
-				error.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
-				error.println(" --maxInputLength <n> - Set the Maximum Input length supported");
-				error.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
-				error.println(" --normalize <input> - Create Normalized output from CSV input");
-				error.println(" --noAnalysis - Do not do analysis");
-				error.println(" --noPretty - Do not pretty print analysis");
-				error.println(" --noQuantiles - Do not track quantiles");
-				error.println(" --noSemanticTypes - Do not register any Semantic Types");
-				error.println(" --noStatistics - Do not track statistics");
-				error.println(" --pluginDefinition - Output the plugin definitions from the training data set");
-				error.println(" --pluginMode true|false - Set the detect mode when running Plugin validate");
-				error.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a signature (record count based on --records)");
-				error.println(" --pluginThreshold <n> - Set the plugin threshold percentage (0-100) for detection");
-				error.println(" --quoteChar <ch> - Set the quote character to  <ch>");
-				error.println(" --records <n> - The number of records to analyze");
-				error.println(" --replay <file>.fta - Replay the FTA trace file");
-				error.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
-				error.println(" --samples - If set then generate samples");
-				error.println(" --semanticType <JSON representation of Semantic Types> - Can be inline or as a File");
-				error.println(" --signature - Output the Signature for the supplied pluginName");
-				error.println(" --skip <n> - Skip the initial <n> rows of the input");
-				error.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
-				error.println(" --trace <trace_options> - Set trace options");
-				error.println(" --validate <n> - Set the validations level to <n>, 1 == counts, 2 == regExp");
-				error.println(" --verbose - Output each record as it is processed");
-				error.println(" --xMaxCharsPerColumn <n> - Set the maximum column width (CSV parsing option)");
-				error.println(" --xMaxColumns <n> - Set the maximum number of columns (CSV parsing option - default 1024)");
-				helpRequested = true;
+		if (unprocessed != null) {
+			while (idx < unprocessed.length && unprocessed[idx].charAt(0) == '-') {
+				if ("--bloomfilter".equals(unprocessed[idx])) {
+					DriverUtils.createBloomOutput(unprocessed[idx + 1], unprocessed[idx + 2]);
+					System.exit(0);
+				}
+				else if ("--help".equals(unprocessed[idx])) {
+					error.println("Usage: fta [OPTIONS] file ...");
+					error.println("Valid OPTIONS are:");
+					error.println(" --abbreviationPunctuation - Disable NO_ABBREVIATION_PUNCTUATION mode");
+					error.println(" --bloomfilter <input> <type> - Create Bloom Filter from CSV input, type: 'integer'|'string'");
+					error.println(" --bulk - Enable bulk mode");
+					error.println(" --charset <charset> - Use the supplied <charset> to read the input files");
+					error.println(" --col <n> - Only analyze column <n>");
+					error.println(" --debug <n> - Set the debug level to <n>");
+					error.println(" --delimiter <ch> - Set the delimiter to the character <ch>");
+					error.println(" --detectWindow <n> - Set the size of the detect window to <n>");
+					error.println(" --faker <header> - Header is a comma separated list of Semantic Types");
+					error.println(" --formatDetection - Enable Format Detection");
+					error.println(" --help - Print this help");
+					error.println(" --json - Output as JSON");
+					error.println(" --knownTypes <SemanticTypes> - Comma separated list of Semantic Types");
+					error.println(" --legacyJSON - Output legacy JSON - compatible with FTA 11.X or lower");
+					error.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
+					error.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
+					error.println(" --maxInputLength <n> - Set the Maximum Input length supported");
+					error.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
+					error.println(" --normalize <input> - Create Normalized output from CSV input");
+					error.println(" --noAnalysis - Do not do analysis");
+					error.println(" --noPretty - Do not pretty print analysis");
+					error.println(" --noQuantiles - Do not track quantiles");
+					error.println(" --noSemanticTypes - Do not register any Semantic Types");
+					error.println(" --noStatistics - Do not track statistics");
+					error.println(" --pluginDefinition - Output the plugin definitions from the training data set");
+					error.println(" --pluginMode true|false - Set the detect mode when running Plugin validate");
+					error.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a signature (record count based on --records)");
+					error.println(" --pluginThreshold <n> - Set the plugin threshold percentage (0-100) for detection");
+					error.println(" --quoteChar <ch> - Set the quote character to  <ch>");
+					error.println(" --records <n> - The number of records to analyze");
+					error.println(" --replay <file>.fta - Replay the FTA trace file");
+					error.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
+					error.println(" --samples - If set then generate samples");
+					error.println(" --semanticType <JSON representation of Semantic Types> - Can be inline or as a File");
+					error.println(" --signature - Output the Signature for the supplied pluginName");
+					error.println(" --skip <n> - Skip the initial <n> rows of the input");
+					error.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
+					error.println(" --trace <trace_options> - Set trace options");
+					error.println(" --validate <n> - Set the validations level to <n>, 1 == counts, 2 == regExp");
+					error.println(" --verbose - Output each record as it is processed");
+					error.println(" --xMaxCharsPerColumn <n> - Set the maximum column width (CSV parsing option)");
+					error.println(" --xMaxColumns <n> - Set the maximum number of columns (CSV parsing option - default 1024)");
+					helpRequested = true;
 
-			}
-			else if ("--locale".equals(args[idx])) {
-				String tag = args[++idx];
-				options.locale = Locale.forLanguageTag(tag);
-				if (!options.locale.toLanguageTag().equals(tag)) {
-					error.printf("ERROR: Language tag '%s' not known - using '%s'?%n", tag, options.locale.toLanguageTag());
-					System.exit(1);
 				}
-			}
-			else if ("--json".equals(args[idx]))
-				options.json = true;
-			else if ("--knownTypes".equals(args[idx]))
-				options.knownTypes = args[++idx];
-			else if ("--legacyJSON".equals(args[idx]))
-				options.legacyJSON = true;
-			else if ("--maxInputLength".equals(args[idx]))
-				options.maxInputLength = Integer.valueOf(args[++idx]);
-			else if ("--maxOutlierCardinality".equals(args[idx]))
-				options.maxOutlierCardinality = Integer.valueOf(args[++idx]);
-			else if ("--normalize".equals(args[idx])) {
-				DriverUtils.createNormalizedOutput(args[idx + 1]);
-				System.exit(0);
-			}
-			else if ("--noAnalysis".equals(args[idx]))
-				options.noAnalysis = true;
-			else if ("--noPretty".equals(args[idx]))
-				options.pretty = false;
-			else if ("--noDistributions".equals(args[idx]))
-				options.noDistributions = true;
-			else if ("--noSemanticTypes".equals(args[idx]))
-				options.noSemanticTypes = true;
-			else if ("--noStatistics".equals(args[idx]))
-				options.noStatistics = true;
-			else if ("--noNullAsText".equals(args[idx]))
-				options.noNullAsText = true;
-			else if ("--output".equals(args[idx]))
-				options.output = true;
-			else if ("--pluginDefinition".equals(args[idx]))
-				options.pluginDefinition = true;
-			else if ("--pluginMode".equals(args[idx]))
-				options.pluginMode = Boolean.valueOf(args[++idx]);
-			else if ("--pluginName".equals(args[idx]))
-				options.pluginName = args[++idx];
-			else if ("--pluginThreshold".equals(args[idx]))
-				options.pluginThreshold = Integer.valueOf(args[++idx]);
-			else if ("--quoteChar".equals(args[idx]))
-				options.quoteChar = args[++idx];
-			else if ("--records".equals(args[idx]))
-				options.recordsToProcess = Long.valueOf(args[++idx]);
-			else if ("--replay".equals(args[idx]))
-				replayFile = args[++idx];
-			else if ("--resolutionMode".equals(args[idx])) {
-				final String mode = args[++idx];
-				if ("DayFirst".equals(mode))
-					options.resolutionMode = DateResolutionMode.DayFirst;
-				else if ("MonthFirst".equals(mode))
-					options.resolutionMode = DateResolutionMode.MonthFirst;
-				else if ("Auto".equals(mode))
-					options.resolutionMode = DateResolutionMode.Auto;
-				else if ("None".equals(mode))
-					options.resolutionMode = DateResolutionMode.None;
+				else if ("--normalize".equals(unprocessed[idx])) {
+					DriverUtils.createNormalizedOutput(unprocessed[idx + 1]);
+					System.exit(0);
+				}
+				else if ("--replay".equals(unprocessed[idx]))
+					replayFile = unprocessed[++idx];
+				else if ("--version".equals(unprocessed[idx])) {
+					error.printf("%s%n", Utils.getVersion());
+					System.exit(0);
+				}
 				else {
-					error.printf("ERROR: Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None%n", mode);
+					error.printf("ERROR: Unrecognized option: '%s', use --help%n", unprocessed[idx]);
 					System.exit(1);
 				}
+				idx++;
 			}
-			else if ("--samples".equals(args[idx]))
-				options.samples = true;
-			else if ("--semanticType".equals(args[idx]))
-				options.semanticTypes = args[++idx];
-			else if ("--signature".equals(args[idx]))
-				options.signature = true;
-			else if ("--skip".equals(args[idx]))
-				options.skip = Integer.valueOf(args[++idx]);
-			else if ("--threshold".equals(args[idx]))
-				options.threshold = Integer.valueOf(args[++idx]);
-			else if ("--trace".equals(args[idx]))
-				options.trace = args[++idx];
-			else if ("--validate".equals(args[idx]))
-				options.validate = Integer.valueOf(args[++idx]);
-			else if ("--verbose".equals(args[idx]))
-				options.verbose++;
-			else if ("--version".equals(args[idx])) {
-				error.printf("%s%n", Utils.getVersion());
-				System.exit(0);
-			}
-			else if ("--xMaxCharsPerColumn".equals(args[idx]))
-				options.xMaxCharsPerColumn = Integer.valueOf(args[++idx]);
-			else if ("--xMaxColumns".equals(args[idx]))
-				options.xMaxColumns = Integer.valueOf(args[++idx]);
-			else {
-				error.printf("ERROR: Unrecognized option: '%s', use --help%n", args[idx]);
-				System.exit(1);
-			}
-			idx++;
 		}
 
 		// Are we are replaying a trace file?
 		if (replayFile != null) {
-			Replay.replay(replayFile, options);
+			Replay.replay(replayFile, cmdLineOptions);
 			System.exit(0);
 		}
 
 		// Are we generating a signature?
-		if (options.signature) {
-			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
+		if (cmdLineOptions.signature) {
+			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
 
-			LogicalType logical = DriverUtils.getLogicalType(analyzer, options.pluginName);
+			LogicalType logical = DriverUtils.getLogicalType(analyzer, cmdLineOptions.pluginName);
 			error.println(logical.getSignature());
 			System.exit(0);
 		}
 
 		// Are we generating synthetic data?
-		if (options.faker != null) {
-			Faker faker = new Faker(options, output, error);
+		if (cmdLineOptions.faker != null) {
+			Faker faker = new Faker(cmdLineOptions, output, error);
 			faker.fake();
 			System.exit(0);
 		}
 
 		// Are we generating all samples?
-		if (options.samples) {
-			final long ouputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
-			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
+		if (cmdLineOptions.samples) {
+			final long ouputRecords = cmdLineOptions.recordsToProcess == -1 ? 20 : cmdLineOptions.recordsToProcess;
+			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 
 			for (final LogicalType logical : registered) {
@@ -261,8 +166,8 @@ public class Driver {
 			System.exit(0);
 		}
 
-		if (helpRequested && options.verbose != 0) {
-			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
+		if (helpRequested && cmdLineOptions.verbose != 0) {
+			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 			final Set<String> qualifiers = new TreeSet<>();
 
@@ -289,7 +194,7 @@ public class Driver {
 				}
 			}
 
-			Locale locale = options.locale == null ? Locale.getDefault() : options.locale;
+			Locale locale = cmdLineOptions.locale == null ? Locale.getDefault() : cmdLineOptions.locale;
 			final DateFormatSymbols dfs = DateFormatSymbols.getInstance(locale);
 			final GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(locale);
 
@@ -328,28 +233,24 @@ public class Driver {
 			System.exit(0);
 		}
 
-		if (idx == args.length) {
+		if (unprocessed == null || idx == unprocessed.length) {
 			error.printf("ERROR: No file to process supplied, use --help%n");
 			System.exit(1);
 		}
 
 		// Loop over all the file arguments
-		while (idx < args.length) {
-			final String filename = args[idx++];
+		while (idx < unprocessed.length) {
+			final String filename = unprocessed[idx++];
 
-			if (options.output)
-				output = new PrintStream(filename + ".out");
-			final FileProcessor fileProcessor = new FileProcessor(output, System.err, filename, options);
+			final FileProcessor fileProcessor = new FileProcessor(System.err, filename, cmdLineOptions);
 
 			try {
 				fileProcessor.process();
-				if (options.output)
-					output.close();
 			} catch (FTAPluginException e) {
 				error.printf("ERROR: Plugin Exception: %s%n", e.getMessage());
 				System.exit(1);
 			} catch (FTAUnsupportedLocaleException e) {
-				final Locale activeLocale = options.locale != null ? options.locale : Locale.getDefault();
+				final Locale activeLocale = cmdLineOptions.locale != null ? cmdLineOptions.locale : Locale.getDefault();
 				error.printf("ERROR: Unsupported Locale: %s, error: %s%n", activeLocale.toLanguageTag(), e.getMessage());
 				System.exit(1);
 			}

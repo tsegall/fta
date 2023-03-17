@@ -58,7 +58,6 @@ import com.cobber.fta.plugins.CheckDigitSEDOL;
 import com.cobber.fta.plugins.CountryEN;
 import com.cobber.fta.plugins.EmailLT;
 import com.cobber.fta.plugins.FirstName;
-import com.cobber.fta.plugins.GUID;
 import com.cobber.fta.plugins.Gender;
 import com.cobber.fta.plugins.IPV4Address;
 import com.cobber.fta.plugins.PhoneNumberLT;

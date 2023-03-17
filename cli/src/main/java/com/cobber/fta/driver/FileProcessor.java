@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,18 +40,23 @@ import com.univocity.parsers.csv.CsvParserSettings;
 
 class FileProcessor {
 	private final DriverOptions options;
-	private final PrintStream output;
 	private final PrintStream error;
 	private final String filename;
+	private PrintStream output;
 
-	FileProcessor(final PrintStream output, final PrintStream error, final String filename, final DriverOptions options) {
-		this.output = output;
+	FileProcessor(final PrintStream error, final String filename, final DriverOptions cmdLineOptions) {
 		this.error = error;
 		this.filename = filename;
-		this.options = options;
+		this.options = new DriverOptions(cmdLineOptions);
 	}
 
 	protected void process() throws IOException, FTAPluginException, FTAUnsupportedLocaleException {
+		if (Files.exists(Paths.get(filename + ".options"))) {
+			options.addFromFile(filename + ".options");
+		}
+
+		output = options.output ? new PrintStream(filename + ".out") : System.out;
+
 		final CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);
 		settings.detectFormatAutomatically();
@@ -78,6 +84,9 @@ class FileProcessor {
 			processBulk(settings);
 		else
 			processAllFields(settings);
+
+		if (options.output)
+			output.close();
 	}
 
 	private void processBulk(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException {

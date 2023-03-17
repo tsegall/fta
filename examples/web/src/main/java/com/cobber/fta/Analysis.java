@@ -1,25 +1,20 @@
 package com.cobber.fta;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
-
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
-import com.cobber.fta.AnalyzerContext;
-import com.cobber.fta.RecordAnalyzer;
-import com.cobber.fta.TextAnalyzer;
-import com.cobber.fta.TextAnalysisResult;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 
 public class Analysis {
 
@@ -76,7 +71,7 @@ public class Analysis {
 			return json;
 		}
 	}
-	
+
 	public Analysis(Locale locale) {
 		if (locale != null)
 			this.locale = locale.toLanguageTag();

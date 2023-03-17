@@ -255,7 +255,6 @@ public class TextAnalyzer {
 	private final List<LogicalTypeInfinite> infiniteTypes = new ArrayList<>();
 	private final List<LogicalTypeFinite> finiteTypes = new ArrayList<>();
 	private final List<LogicalTypeRegExp> regExpTypes = new ArrayList<>();
-	private final List<LogicalType> allTypes = new ArrayList<>();
 	private int[] candidateCounts;
 
 	private final KnownTypes knownTypes = new KnownTypes();

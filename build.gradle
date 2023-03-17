@@ -16,16 +16,6 @@ subprojects {
 		gradlePluginPortal()
 	}
 
-	// We should always build a Java 8 compatible library
-	if (JavaVersion.current().java9Compatible) {
-		project.afterEvaluate {
-			tasks.withType(JavaCompile) {
-				options.compilerArgs.addAll(['--release', 8])
-//				options.compilerArgs.addAll(['-Xlint'])
-			}
-		}
-	}
-
 	apply plugin: "java"
 	apply plugin: 'eclipse'
 	apply plugin: 'jacoco'
@@ -35,6 +25,10 @@ subprojects {
 
 	version = libs.versions.fta.get()
 	group = "com.cobber.fta"
+
+	compileJava {
+	    options.release = 11
+	}
 
 	java {
 		withSourcesJar()
