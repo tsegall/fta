@@ -1,7 +1,7 @@
 
 ## Changes ##
 
-### 13.0.0
+### 13.0.1
  - ENH: Improve performance of STREET_NUMBER (Recall - 82% -> 97%)
 
 ### 13.0.0
