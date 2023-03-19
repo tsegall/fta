@@ -2,6 +2,9 @@
 ## Changes ##
 
 ### 13.0.0
+ - ENH: Improve performance of STREET_NUMBER (Recall - 82% -> 97%)
+
+### 13.0.0
  - **ENH:** Library is now targetting Java 11+, use 12.X if you still require Java 8 support
  - ENH: Bump logback-classic
  - ENH: Support associated .options file directly (speeds up reference test run x3)

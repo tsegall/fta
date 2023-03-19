@@ -396,7 +396,7 @@
 		"signature": "JFmqXYZjmq/aTw/EALlxloQ/tgQ=",
 		"clazz": "com.cobber.fta.plugins.address.AddressStreetNumber",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street.?number)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(number|no)", "confidence": 90, "mandatory": true } ] },
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street|house).?number", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(number|no|num)", "confidence": 90, "mandatory": true } ] },
 			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)(huisnummer|huisnr.*)", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 95,

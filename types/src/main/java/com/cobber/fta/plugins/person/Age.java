@@ -136,7 +136,7 @@ public class Age extends LogicalTypeInfinite {
 		}
 
 		// This check is similar to the one above but will fire if a suitable Semantic Type was identified on a previous pass
-		if (!signalFound && context.findSemanticType("NAME.FIRST", analysisConfig.bindSemanticType("GENDER.TEXT_<LANGUAGE>")))
+		if (!signalFound && context.existsSemanticType("NAME.FIRST", analysisConfig.bindSemanticType("GENDER.TEXT_<LANGUAGE>")))
 			signalFound = true;
 
 		return signalFound && (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;

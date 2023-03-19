@@ -178,7 +178,7 @@ public class AnalyzerContext {
 	 * @param searching The Semantic Types to check.
 	 * @return True if any of the Semantic Types exists on this record.
 	 */
-	public boolean findSemanticType(final String... searching) {
+	public boolean existsSemanticType(final String... searching) {
 		if (semanticTypes == null)
 			return false;
 
@@ -190,6 +190,32 @@ public class AnalyzerContext {
 		}
 
 		return false;
+	}
+
+	/*
+	 * Find the relative index of the closest Semantic Type from the list.
+	 * @param searching The Semantic Types to check.
+	 * @return The index of the closest supplied Semantic Type or Null if not found.
+	 */
+	public Integer indexOfSemanticType(final String... searching) {
+		if (semanticTypes == null)
+			return null;
+
+		final int current = getStreamIndex();
+		if (current == -1 || current == 0)
+			return null;
+
+		Integer closest = null;
+
+		for (String semanticType : searching) {
+			for (int i = 0; i < semanticTypes.length; i++) {
+				if (i != current && semanticType.equals(semanticTypes[i]))
+					if (closest == null || Math.abs(closest) > Math.abs(i - current))
+						closest = i - current;
+			}
+		}
+
+		return closest;
 	}
 
 	public boolean isNested() {

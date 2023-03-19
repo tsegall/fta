@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'com.cobber.fta', name: 'fta', version: "12.+"
+    implementation group: 'com.cobber.fta', name: 'fta', version: "13.+"
     implementation 'com.univocity:univocity-parsers:2.9.1'
 }
 

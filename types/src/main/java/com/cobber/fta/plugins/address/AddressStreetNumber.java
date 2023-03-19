@@ -96,8 +96,9 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 		if (getHeaderConfidence(context.getStreamName()) >= 99)
 			return confidence;
 
-		// The next field must have a Semantic Type that indicates it is a Street name (with or without the marker)
-		if (!context.isNextSemanticType("STREET_NAME_EN", "STREET_NAME_BARE_EN"))
+		// A close field must have a Semantic Type that indicates it is a Street name (with or without the marker)
+		Integer closest = context.indexOfSemanticType(analysisConfig.bindSemanticType("STREET_NAME_<LANGUAGE>"), analysisConfig.bindSemanticType("STREET_NAME_BARE_<LANGUAGE>"));
+		if (closest == null || Math.abs(closest) > 2)
 			return 0.0;
 
 		return confidence;
