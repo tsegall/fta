@@ -16,17 +16,31 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class AnalysisController {
+	Analysis analysis = null;
 
 	@RequestMapping(value = "/analysis", method = RequestMethod.GET)
 	public ModelAndView analysisForm(Model model) {
-		model.addAttribute("analysis", new Analysis(LocaleContextHolder.getLocale()));
+		analysis = new Analysis(LocaleContextHolder.getLocale());
+		model.addAttribute("analysis", analysis);
 		return new ModelAndView("analysis");
 	}
 
 	@RequestMapping(value = "/analysis", method = RequestMethod.POST)
 	public ModelAndView analysisSubmit(@ModelAttribute Analysis analysis, Model model) {
-		model.addAttribute("analysis", analysis);
+		this.analysis = analysis;
 		return new ModelAndView("result");
+	}
+
+	@RequestMapping(value = "/types", method = RequestMethod.GET)
+	public ModelAndView typesForm(Model model) {
+		model.addAttribute("analysis", analysis);
+		return new ModelAndView("types");
+	}
+
+	@RequestMapping(value = "/about", method = RequestMethod.GET)
+	public ModelAndView about(Model model) {
+		model.addAttribute("analysis", analysis);
+		return new ModelAndView("about");
 	}
 
 	@ControllerAdvice

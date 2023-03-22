@@ -184,17 +184,25 @@ public class DriverOptions {
 		while (idx < args.length && args[idx].charAt(0) == '-') {
 			if ("--abbreviationPunctuation".equals(args[idx]))
 				abbreviationPunctuation = true;
-			else if ("--bloomfilter".equals(args[idx])) {
-				unprocessed.add(args[idx]);
-				unprocessed.add(args[++idx]);
-				unprocessed.add(args[++idx]);
-			}
 			else if ("--bulk".equals(args[idx]))
 				bulk = true;
 			else if ("--charset".equals(args[idx]))
 				charset = args[++idx];
 			else if ("--col".equals(args[idx]))
 				col = Integer.valueOf(args[++idx]);
+			else if ("--createBloomfilter".equals(args[idx])) {
+				unprocessed.add(args[idx]);
+				unprocessed.add(args[++idx]);
+				unprocessed.add(args[++idx]);
+			}
+			else if ("--createNormalized".equals(args[idx])) {
+				unprocessed.add(args[idx]);
+				unprocessed.add(args[++idx]);
+			}
+			else if ("--createSemanticHTML".equals(args[idx])) {
+				unprocessed.add(args[idx]);
+				unprocessed.add(args[++idx]);
+			}
 			else if ("--debug".equals(args[idx]))
 				debug = Integer.valueOf(args[++idx]);
 			else if ("--delimiter".equals(args[idx]))
@@ -226,10 +234,6 @@ public class DriverOptions {
 				maxInputLength = Integer.valueOf(args[++idx]);
 			else if ("--maxOutlierCardinality".equals(args[idx]))
 				maxOutlierCardinality = Integer.valueOf(args[++idx]);
-			else if ("--normalize".equals(args[idx])) {
-				unprocessed.add(args[idx]);
-				unprocessed.add(args[++idx]);
-			}
 			else if ("--noAnalysis".equals(args[idx]))
 				noAnalysis = true;
 			else if ("--noPretty".equals(args[idx]))

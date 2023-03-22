@@ -656,6 +656,47 @@
 		"priority": 95
 	},
 	{
+		"semanticType": "COUNTRY.TEXT_DE",
+		"description": "Country as a string (German)",
+		"pluginType": "list",
+		"signature": "Rs6U63buoAAlnITZdPtJuxUrgNg=",
+		"validLocales": [
+			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/de_countries.csv",
+		"contentType": "resource",
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 96
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_ES",
+		"description": "Country as a string (Spanish)",
+		"pluginType": "list",
+		"signature": "fot3XHPIh18wTcBDyeN3DlY7LYY=",
+		"validLocales": [
+			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(pais).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/es_countries.csv",
+		"contentType": "resource",
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 97
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_NL",
+		"description": "Country as a string (Dutch)",
+		"pluginType": "list",
+		"signature": "SVnejJJWKhuw1LMRsCaHojewEOk=",
+		"validLocales": [
+			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
+		],
+		"content": "/reference/nl_countries.csv",
+		"contentType": "resource",
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 98
+	},
+	{
 		"semanticType": "COUNTRY.TEXT_EN",
 		"description": "Country as a string (English language)",
 		"pluginType": "java",
@@ -671,47 +712,6 @@
 			}
 		],
 		"threshold": 85,
-		"priority": 96
-	},
-	{
-		"semanticType": "COUNTRY.TEXT_DE",
-		"description": "Country as a string (German)",
-		"pluginType": "list",
-		"signature": "Rs6U63buoAAlnITZdPtJuxUrgNg=",
-		"validLocales": [
-			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
-		],
-		"content": "/reference/de_countries.csv",
-		"contentType": "resource",
-		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 97
-	},
-	{
-		"semanticType": "COUNTRY.TEXT_ES",
-		"description": "Country as a string (Spanish)",
-		"pluginType": "list",
-		"signature": "fot3XHPIh18wTcBDyeN3DlY7LYY=",
-		"validLocales": [
-			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(pais).*", "confidence": 90 } ] }
-		],
-		"content": "/reference/es_countries.csv",
-		"contentType": "resource",
-		"threshold": 90,
-		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 98
-	},
-	{
-		"semanticType": "COUNTRY.TEXT_NL",
-		"description": "Country as a string (Dutch)",
-		"pluginType": "list",
-		"signature": "SVnejJJWKhuw1LMRsCaHojewEOk=",
-		"validLocales": [
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
-		],
-		"content": "/reference/nl_countries.csv",
-		"contentType": "resource",
-		"threshold": 90,
-		"backout": "[\\p{IsAlphabetic}\\.]+",
 		"priority": 99
 	},
 	{

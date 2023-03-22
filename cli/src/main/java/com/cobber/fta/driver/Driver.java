@@ -54,15 +54,24 @@ public class Driver {
 		int idx = 0;
 		if (unprocessed != null) {
 			while (idx < unprocessed.length && unprocessed[idx].charAt(0) == '-') {
-				if ("--bloomfilter".equals(unprocessed[idx])) {
+				if ("--createBloomfilter".equals(unprocessed[idx])) {
 					DriverUtils.createBloomOutput(unprocessed[idx + 1], unprocessed[idx + 2]);
+					System.exit(0);
+				}
+				else if ("--createNormalized".equals(unprocessed[idx])) {
+					DriverUtils.createNormalizedOutput(unprocessed[idx + 1]);
+					System.exit(0);
+				}
+				else if ("--createSemanticHTML".equals(unprocessed[idx])) {
+					DriverUtils.createSemanticHTML(unprocessed[idx + 1]);
 					System.exit(0);
 				}
 				else if ("--help".equals(unprocessed[idx])) {
 					error.println("Usage: fta [OPTIONS] file ...");
 					error.println("Valid OPTIONS are:");
 					error.println(" --abbreviationPunctuation - Disable NO_ABBREVIATION_PUNCTUATION mode");
-					error.println(" --bloomfilter <input> <type> - Create Bloom Filter from CSV input, type: 'integer'|'string'");
+					error.println(" --createBloomfilter <input> <type> - Create Bloom Filter from CSV input, type: 'integer'|'string'");
+					error.println(" --createNormalized <input> - Create Normalized output from CSV input");
 					error.println(" --bulk - Enable bulk mode");
 					error.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 					error.println(" --col <n> - Only analyze column <n>");
@@ -79,7 +88,6 @@ public class Driver {
 					error.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
 					error.println(" --maxInputLength <n> - Set the Maximum Input length supported");
 					error.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
-					error.println(" --normalize <input> - Create Normalized output from CSV input");
 					error.println(" --noAnalysis - Do not do analysis");
 					error.println(" --noPretty - Do not pretty print analysis");
 					error.println(" --noQuantiles - Do not track quantiles");
@@ -105,10 +113,6 @@ public class Driver {
 					error.println(" --xMaxColumns <n> - Set the maximum number of columns (CSV parsing option - default 1024)");
 					helpRequested = true;
 
-				}
-				else if ("--normalize".equals(unprocessed[idx])) {
-					DriverUtils.createNormalizedOutput(unprocessed[idx + 1]);
-					System.exit(0);
 				}
 				else if ("--replay".equals(unprocessed[idx]))
 					replayFile = unprocessed[++idx];

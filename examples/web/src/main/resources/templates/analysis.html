@@ -8,25 +8,45 @@
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 	</head>
 	<body>
-		<div class= "container-fluid">
-			<h1>FTA (<span th:text="${analysis.ftaVersion}">version</span>) Analysis</h1>
-				<form action="#" th:action="@{/analysis}" th:object="${analysis}" method="post" enctype="multipart/form-data">
-				<div class="mb-3">
-					<label for="formFile" class="form-label">File to process</label>
-					<input class="form-control" type="file" id="formFile" th:field="*{file}" accept="text/csv"/>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-auto bg-light sticky-top">
+					<div class="d-flex flex-sm-column flex-row flex-nowrap bg-light align-items-center sticky-top">
+						<ul class="nav nav-pills nav-flush flex-sm-column flex-row flex-nowrap mb-auto mx-auto text-center align-items-center">
+							<li class="nav-item">
+								<a href="analysis" class="nav-link py-3 px-2" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">Analysis</a>
+							</li>
+							<li>
+								<a href="types" class="nav-link py-3 px-2" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Types">Types</a>
+							</li>
+							<li>
+								<a href="about" class="nav-link py-3 px-2" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="About">About</a>
+							</li>
+						</ul>
+					</div>
 				</div>
-				<div class="mb-3">
-					<label for="formLocale" class="form-label">Locale</label>
-					<input class="form-control" type="text" id="formLocale" th:field="*{locale}" />
+				<div class="col-sm p-3 min-vh-100">
+					<div class= "container-fluid">
+						<form action="#" th:action="@{/analysis}" th:object="${analysis}" method="post" enctype="multipart/form-data">
+							<div class="mb-3">
+								<label for="formFile" class="form-label">File to process</label>
+								<input class="form-control" type="file" id="formFile" th:field="*{file}" accept="text/csv"/>
+							</div>
+							<div class="mb-3">
+								<label for="formLocale" class="form-label">Locale</label>
+								<input class="form-control" type="text" id="formLocale" th:field="*{locale}" />
+							</div>
+							<div class="mb-3">
+								<label for="formRecordCount" class="form-label">Record Count</label>
+								<input class="form-control" type="text" value="100" id="formRecordCount" th:field="*{recordCount}" />
+							</div>
+							<div class="mb-3">
+								<button type="submit" class="btn btn-primary">Analyze</button>
+							</div>
+						</form>
+					</div>
 				</div>
-				<div class="mb-3">
-					<label for="formRecordCount" class="form-label">Record Count</label>
-					<input class="form-control" type="text" value="100" id="formRecordCount" th:field="*{recordCount}" />
-				</div>
-				<div class="mb-3">
-					<button type="submit" class="btn btn-primary">Analyze</button>
-				</div>
-			</form>
+			</div>
 		</div>
 	</body>
 </html>

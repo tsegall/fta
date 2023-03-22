@@ -688,15 +688,15 @@ Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and f
 ### Executing ###
 Using FTA from the command line, list options:
 
-`$ types/build/install/fta/bin/types --help`
+`$ cli/build/install/fta/bin/cli --help`
 
-Report on a CSV file:
+Analyze a Dutch CSV file:
 
-`$ types/build/install/fta/bin/types filename.csv`
+`$ cli/build/install/fta/bin/cli --locale nl-NL ~/Downloads/sample.csv`
 
 Generate a set of samples:
 
-`$ types/build/install/fta/bin/types --pluginName FREE_TEXT --records 1000`
+`$ cli/build/install/fta/bin/cli --faker "Country[type=COUNTRY.TEXT_EN]" --records 20`
 
 ## Java code ##
 

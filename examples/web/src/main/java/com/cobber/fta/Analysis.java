@@ -75,13 +75,19 @@ public class Analysis {
 	public Analysis(Locale locale) {
 		if (locale != null)
 			this.locale = locale.toLanguageTag();
+
+		final SemanticType semanticType = new SemanticType();
+		semanticType.initialize(locale);
+
+		allTypes = semanticType.getActiveSemanticTypes();
 	}
 
 	private static String ftaVersion = Utils.getVersion();
 	private MultipartFile file;
 	private String locale;
 	private int recordCount = 100;
-	private List<FTAInfo> analysis = new ArrayList<>();
+	private List<FTAInfo> analysisResult = new ArrayList<>();
+	private List<SemanticType> allTypes = null;
 
 	public String getFile() {
 		if (file == null)
@@ -125,7 +131,7 @@ public class Analysis {
 
 				final TextAnalysisResult[] results = recordAnalyzer.getResult().getStreamResults();
 				for (TextAnalysisResult result : results)
-					analysis.add(new FTAInfo(result));
+					analysisResult.add(new FTAInfo(result));
 			}
 			catch (FTAPluginException e) {
 				System.err.println("ERROR: FTAPluginException - " + e.getMessage());
@@ -155,11 +161,15 @@ public class Analysis {
 		this.recordCount = recordCount;
 	}
 
-	public List<FTAInfo> getAnalysis() {
-		return analysis;
+	public List<FTAInfo> getAnalysisResult() {
+		return analysisResult;
 	}
 
 	public String getFtaVersion() {
 		return ftaVersion;
+	}
+
+	public List<SemanticType> getAllTypes() {
+		return allTypes;
 	}
 }

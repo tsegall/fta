@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 13.0.2
+ - ENH: Improve Web UI
+ - ENH: Bump google phonenumber
+ - ENH: Bump slf4jAPI
+ - BUG: Fix command line invocations in the README
+
 ### 13.0.1
  - ENH: Improve performance of STREET_NUMBER (Recall - 82% -> 97%)
 

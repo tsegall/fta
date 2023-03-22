@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.cobber.fta.LogicalType;
+import com.cobber.fta.SemanticType;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.Utils;
@@ -130,5 +131,32 @@ public class DriverUtils {
 					out.write(sample + "\n");
 			}
 		}
+	}
+
+	public static void createSemanticHTML(final String locale) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+		final SemanticType semanticTypes = new SemanticType();
+		semanticTypes.initialize(null);
+
+		System.err.println("<table border=1>");
+		System.err.println("	<thead>");
+		System.err.println("		<tr>");
+		System.err.println("			<th>id</th>");
+		System.err.println("			<th>description</th>");
+		System.err.println("			<th>language</th>");
+		System.err.println("		</tr>");
+		System.err.println("	</thead>");
+
+		System.err.println("	<tbody>");
+
+		for (SemanticType semanticType : semanticTypes.getAllSemanticTypes()) {
+			System.err.printf("		<tr>%n");
+			System.err.printf("			<th>%s</th>%n", semanticType.id);
+			System.err.printf("			<th>%s</th>%n", semanticType.description);
+			System.err.printf("			<th></th>%n");
+			System.err.printf("		</tr>%n");
+		}
+
+		System.err.println("	</tbody>");
+		System.err.println("</table>");
 	}
 }
