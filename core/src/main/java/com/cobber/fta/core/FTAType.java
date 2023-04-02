@@ -83,31 +83,28 @@ public enum FTAType {
 	/**
 	 * Is this Type Numeric?
 	 *
-	 * @param type The FTA type to test.
 	 * @return A boolean indicating if the Type for this pattern is numeric.
 	 */
-	public static boolean isNumeric(final FTAType type) {
-		return FTAType.LONG.equals(type) || FTAType.DOUBLE.equals(type);
+	public boolean isNumeric() {
+		return FTAType.LONG.equals(this) || FTAType.DOUBLE.equals(this);
 	}
 
 	/**
 	 * Is this Type a Date Type?
 	 *
-	 * @param type The FTA type to test.
 	 * @return A boolean indicating if the Type for this pattern includes a Date.
 	 */
-	public static boolean isDateType(final FTAType type) {
-		return FTAType.LOCALDATE.equals(type) || FTAType.LOCALDATETIME.equals(type) ||
-				FTAType.OFFSETDATETIME.equals(type) || FTAType.ZONEDDATETIME.equals(type);
+	public boolean isDateType() {
+		return FTAType.LOCALDATE.equals(this) || FTAType.LOCALDATETIME.equals(this) ||
+				FTAType.OFFSETDATETIME.equals(this) || FTAType.ZONEDDATETIME.equals(this);
 	}
 
 	/**
 	 * Is this Type a Date or Time Type?
 	 *
-	 * @param type The FTA type to test.
 	 * @return A boolean indicating if the Type for this pattern includes a Date.
 	 */
-	public static boolean isDateOrTimeType(final FTAType type) {
-		return FTAType.LOCALTIME.equals(type) || isDateType(type);
+	public boolean isDateOrTimeType() {
+		return FTAType.LOCALTIME.equals(this) || this.isDateType();
 	}
 }

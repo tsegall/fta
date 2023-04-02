@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 13.0.3
+ - ENH: If we have a Long type and no Semantic Type detected, exclude outliers (using density-based clustering) and re-analyze
+ - ENH: ISO 3166-2 insist on the presence of some signal from the header
+ - ENH: Improve PERSON.AGE detection
+ - ENH: Bump google phonenumber
+
 ### 13.0.2
  - ENH: Improve Web UI
  - ENH: Bump google phonenumber

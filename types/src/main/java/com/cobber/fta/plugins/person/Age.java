@@ -45,6 +45,9 @@ public class Age extends LogicalTypeInfinite {
 
 	private LogicalTypeFinite logicalGender;
 	private LogicalTypeCode logicalFirst;
+	private LogicalTypeCode logicalRace;
+
+	private String raceSemanticType;
 
 	/**
 	 * Construct an Age plugin based on the Plugin Definition.
@@ -63,6 +66,11 @@ public class Age extends LogicalTypeInfinite {
 		final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
 		final AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
 		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, pluginConfig);
+
+		raceSemanticType = analysisConfig.bindSemanticType("PERSON.RACE_<LANGUAGE>");
+		final PluginDefinition pluginRace = PluginDefinition.findByQualifier(raceSemanticType);
+		if (pluginRace != null)
+			logicalRace = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginRace, pluginConfig);
 
 		return true;
 	}
@@ -119,24 +127,29 @@ public class Age extends LogicalTypeInfinite {
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
-		if (((Number)(facts.getMax())).longValue() > MAX_AGE || ((Number)(facts.getMin())).longValue() < 0 || getHeaderConfidence(context.getStreamName()) == 0)
+		if (((Number)(facts.getMax())).longValue() > MAX_AGE || ((Number)(facts.getMin())).longValue() < 0 || facts.mean < 5.0 || getHeaderConfidence(context.getStreamName()) == 0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		// Find a gender or first name field (both highly correlated with the presence of age)
+		// Find a any field that is highly correlated with the presence of age
 		boolean signalFound = false;
 		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
-			if (logicalGender.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
+			if (logicalGender != null && logicalGender.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
 				signalFound = true;
 				break;
 			}
-			if (logicalFirst.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
+			if (logicalFirst != null && logicalFirst.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
+				signalFound = true;
+				break;
+			}
+			if (logicalRace != null && logicalRace.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
 				signalFound = true;
 				break;
 			}
 		}
 
 		// This check is similar to the one above but will fire if a suitable Semantic Type was identified on a previous pass
-		if (!signalFound && context.existsSemanticType("NAME.FIRST", analysisConfig.bindSemanticType("GENDER.TEXT_<LANGUAGE>")))
+		if (!signalFound &&
+				context.existsSemanticType("NAME.FIRST", analysisConfig.bindSemanticType("GENDER.TEXT_<LANGUAGE>"), raceSemanticType))
 			signalFound = true;
 
 		return signalFound && (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;

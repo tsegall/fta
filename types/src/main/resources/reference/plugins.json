@@ -1499,7 +1499,7 @@
 		"pluginType": "list",
 		"signature": "2ySMIn/48aoAVrw/OwOCKdYI4OE=",
 		"validLocales": [
-			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90 }, { "regExp": ".*(?i)(country|pais|land.?code).*", "confidence": 80 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(iso|3166).*", "confidence": 90, "mandatory": true }, { "regExp": ".*(?i)(country|pais|land.?code).*", "confidence": 80, "mandatory": true } ] }
 		],
 		"content": "/reference/ISO-3166-2.csv",
 		"contentType": "resource",
@@ -1811,41 +1811,6 @@
 		"contentType": "resource",
 		"baseType": "STRING",
 		"priority": 210
-	},
-	{
-		"semanticType": "COMPANY_NAME",
-		"description": "Organization/Company Name",
-		"pluginType": "regex",
-		"signature": "gTynrjgOpvdzfWdVMRddP2Ksv8k=",
-		"validLocales": [
-			{
-				"localeTag": "en",
-				"headerRegExps": [
-					{ "regExp": "^(?i)(company|business|organization|company.?name|business.?name|organization.?name|dba.?name|org.?name|dba)$", "confidence": 99, "mandatory": true },
-					{ "regExp": "^.*(?i)(company.?name|business.?name|organization.?name|dba.?name).*$", "confidence": 90, "mandatory": true }
-				 ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
-					"regExpReturned": "[-+|*:;!@\"/()',&# \\.\\p{IsAlphabetic}\\d]*",
-					"isRegExpComplete": false
-				} ]
-			},
-			{
-				"localeTag": "nl",
-				"headerRegExps": [
-					{ "regExp": "^(?i)(Handelsnaam|naam.?organisatie|organisatie)$", "confidence": 99, "mandatory": true }
-				 ],
-				"matchEntries": [ {
-					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
-					"regExpReturned": "[-+|*:;!@\"/()',&# \\.\\p{IsAlphabetic}\\d]*",
-					"isRegExpComplete": false
-				} ]
-			}
-		],
-		"content": "/reference/us_companies_samples.csv",
-		"contentType": "resource",
-		"baseType": "STRING",
-		"priority": 211
 	},
 	{
 		"semanticType": "CREDIT_CARD_TYPE",
@@ -2428,7 +2393,7 @@
 			{
 				"localeTag": "en",
 				"headerRegExps": [ { "regExp": ".*(?i)(first.?name|fname|given.?name|forename|first_nm).*", "confidence": 95 },
-					{ "regExp": "(?i)(name|.*first.*)", "confidence": 60 }, { "regExp": "(?i).*city.*", "confidence": -100 } ],
+					{ "regExp": "(?i)(name|.*first.*|.*given.*)", "confidence": 60 }, { "regExp": "(?i).*city.*", "confidence": -100 } ],
 				"matchEntries": [ {
 					"regExpReturned": "[\\p{IsAlphabetic}]+[- \\p{IsAlphabetic}]*\\.?"
 				} ]
@@ -2597,6 +2562,41 @@
 		"threshold": 90,
 		"baseType": "STRING",
 		"priority": 376
+	},
+	{
+		"semanticType": "COMPANY_NAME",
+		"description": "Organization/Company Name",
+		"pluginType": "regex",
+		"signature": "gTynrjgOpvdzfWdVMRddP2Ksv8k=",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [
+					{ "regExp": "^(?i)(company|business|dba|organization|company.?name|business.?name|dba.?name|organization.?name|org.?name|vendor.?name)$", "confidence": 99, "mandatory": true },
+					{ "regExp": "^.*(?i)(company.?name|business.?name|organization.?name|dba.?name).*$", "confidence": 90, "mandatory": true }
+				 ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
+					"regExpReturned": "[-+|*:;!@\"/()',&# \\.\\p{IsAlphabetic}\\d]*",
+					"isRegExpComplete": false
+				} ]
+			},
+			{
+				"localeTag": "nl",
+				"headerRegExps": [
+					{ "regExp": "^(?i)(Handelsnaam|naam.?organisatie|organisatie)$", "confidence": 99, "mandatory": true }
+				 ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ ".+", "\\p{IsAlphabetic}+" ],
+					"regExpReturned": "[-+|*:;!@\"/()',&# \\.\\p{IsAlphabetic}\\d]*",
+					"isRegExpComplete": false
+				} ]
+			}
+		],
+		"content": "/reference/us_companies_samples.csv",
+		"contentType": "resource",
+		"baseType": "STRING",
+		"priority": 380
 	},
 	{
 		"semanticType": "FREE_TEXT",

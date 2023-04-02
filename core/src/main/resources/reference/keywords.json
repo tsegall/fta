@@ -94,7 +94,7 @@
 		"keyType": "REGEX",
 		"validLocales": [
 			{ "localeTag": "*",
-				"headerRegExps": [ { "regExp": "(?i)(under)", "confidence": 90 } ] }
+				"headerRegExps": [ { "regExp": "(?i)(under|less)", "confidence": 90 } ] }
 		]
 	},
 	{

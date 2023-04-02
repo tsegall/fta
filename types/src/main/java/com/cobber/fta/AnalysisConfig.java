@@ -93,7 +93,7 @@ public class AnalysisConfig {
 	/** Internal-only debugging flag. */
 	private int debug;
 
-	/** Should track distributions (Quantiles/Histograms). */
+	/** Should we track distributions (Quantiles/Histograms). */
 	private boolean distributions = true;
 
 	/** Should we enable Default Semantic Type detection. */

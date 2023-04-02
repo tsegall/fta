@@ -42,6 +42,8 @@ public class Histogram {
 		private double lowCut;
 		private double highCut;
 		private long count;
+		private long clusterCount;
+		private double clusterPercent;
 
 		public Entry(final double lowCut, final double highCut) {
 			this.lowCut = lowCut;
@@ -72,6 +74,14 @@ public class Histogram {
 
 		public void setCount(final long count) {
 			this.count = count;
+		}
+
+		public long getClusterCount() {
+			return clusterCount;
+		}
+
+		public double getClusterPercent() {
+			return clusterPercent;
 		}
 	}
 
@@ -197,5 +207,68 @@ public class Histogram {
 		}
 
 		return this;
+	}
+
+	/**
+	 * Given a Histogram analysis mark each bucket as part of a cluster and then attach the count and percent for the cluster
+	 * to all buckets in the cluster.  For example, with the following distribution:
+	 * 		1, 1, 0, 0, 0, 0, 10, 20, 30, 30, 8
+	 * We would declare two clusters - the first one having 2% and the second having 98%, so the percentages would look as follows:
+	 * 		2, 2, 0, 0, 0, 0, 98, 98, 98, 98, 98
+	 * @param buckets The set of Histogram buckets for this analysis
+	 */
+	public static void tagClusters(final Histogram.Entry[] buckets) {
+		long total = 0;
+		for (int i = 0; i < buckets.length; i++)
+			total += buckets[i].count;
+
+		int clusterStart = -1;
+		int clusterEnd = -1;
+		long clusterTotal = 0;
+		for (int i = 0; i < buckets.length; i++) {
+			if (buckets[i].count == 0) {
+				if (clusterStart == -1)
+					continue;
+				clusterEnd = i - 1;
+				for (int c = clusterStart; c <= clusterEnd; c++) {
+					buckets[c].clusterCount = clusterTotal;
+					buckets[c].clusterPercent = (double)clusterTotal/total;
+				}
+				clusterStart = clusterEnd = -1;
+				clusterTotal = 0;
+				continue;
+			}
+			if (clusterStart == -1)
+				clusterStart = i;
+			clusterTotal += buckets[i].count;
+		}
+		for (int c = clusterStart; c <= buckets.length - 1; c++) {
+			buckets[c].clusterCount = clusterTotal;
+			buckets[c].clusterPercent = (double)clusterTotal/total;
+		}
+	}
+
+	/**
+	 * Given a value and set of buckets - locate the bucket holding this value.
+	 * @param buckets The set of Histogram buckets for this analysis
+	 * @param value The value we are searching for
+	 * @return The bucket containing the supplied value.
+	 */
+	public static Histogram.Entry getBucket(final Histogram.Entry[] buckets, final double value) {
+		for (int i = 0; i < buckets.length; i++) {
+			// By definition any value cannot be lower than the first bucket low bound
+			if (i == 0 && value < buckets[i].getLowCut())
+				return buckets[0];
+
+			// If this is the last bucket then any value is by definition < the high bound
+			if (i == buckets.length - 1)
+				return buckets[buckets.length - 1];
+
+			if (value < buckets[i].getHighCut())
+				return buckets[i];
+		}
+
+		// Should never get here!!
+		return null;
 	}
 }

@@ -83,7 +83,7 @@ public class TypeInfo {
 	 *            The ID of interest.
 	 * @param regexp
 	 *            The pattern of interest.
-	 * @param type
+	 * @param baseType
 	 *            The type of the pattern.
 	 * @param newType
 	 *            Either the Type Modifier or the Semantic Type (if is Semantic Type is true) (optional).
@@ -98,12 +98,12 @@ public class TypeInfo {
 	 * @param format
 	 *            The Java format specified for a date pattern (optional).
 	 */
-	public TypeInfo(final ID id, final String regexp, final FTAType type, final String newType,
+	public TypeInfo(final ID id, final String regexp, final FTAType baseType, final String newType,
 			final boolean isSemanticType, final int minLength, final int maxLength, final String generalPattern,
 			final String format) {
 		this.id = id;
 		this.regexp = regexp;
-		this.baseType = type;
+		this.baseType = baseType;
 		if (isSemanticType)
 			this.semanticType = newType;
 		else
@@ -119,14 +119,14 @@ public class TypeInfo {
 	 * Construct a new information block for the supplied pattern (simple only - not Semantic Type).
 	 * @param id The ID of interest.
 	 * @param regexp The pattern of interest.
-	 * @param type The type of the pattern.
+	 * @param baseType The type of the pattern.
 	 * @param typeModifier The type modifier of the pattern (optional).
 	 * @param typeModifierFlags For numerics a set of flags representing the modifier.
 	 */
-	public TypeInfo(final ID id, final String regexp, final FTAType type, final String typeModifier, int typeModifierFlags) {
+	public TypeInfo(final ID id, final String regexp, final FTAType baseType, final String typeModifier, int typeModifierFlags) {
 		this.id = id;
 		this.regexp = regexp;
-		this.baseType = type;
+		this.baseType = baseType;
 		this.typeModifier = typeModifier;
 		this.isSemanticType = false;
 		this.minLength = -1;
@@ -139,14 +139,14 @@ public class TypeInfo {
 	/**
 	 * Construct a new information block for the supplied pattern (Semantic Type).
 	 * @param regexp The pattern of interest.
-	 * @param type The type of the pattern.
+	 * @param baseType The type of the pattern.
 	 * @param semanticType The Semantic Type of the pattern.
 	 * @param prior The previous TypeInfo (we preserve information about the Base Type).
 	 */
-	public TypeInfo(final String regexp, final FTAType type, final String semanticType, final TypeInfo prior) {
+	public TypeInfo(final String regexp, final FTAType baseType, final String semanticType, final TypeInfo prior) {
 		this.id = null;
 		this.regexp = regexp;
-		this.baseType = type;
+		this.baseType = baseType;
 		if (prior != null && prior.getBaseType().equals(baseType)) {
 			this.typeModifier = prior.typeModifier;
 			this.typeModifierFlags = prior.typeModifierFlags;
@@ -187,7 +187,7 @@ public class TypeInfo {
 	 */
 	@JsonIgnore
 	public boolean isNumeric() {
-		return FTAType.isNumeric(this.baseType);
+		return this.baseType.isNumeric();
 	}
 
 	/**
@@ -197,7 +197,7 @@ public class TypeInfo {
 	 */
 	@JsonIgnore
 	public boolean isDateType() {
-		return FTAType.isDateType(this.baseType);
+		return this.baseType.isDateType();
 	}
 
 	/**
@@ -207,6 +207,16 @@ public class TypeInfo {
 	 */
 	public FTAType getBaseType() {
 		return baseType;
+	}
+
+	/**
+	 * Set the base FTAType - use this method with care!
+	 * @param baseType The type of the pattern.
+	 */
+	protected void setBaseType(final FTAType baseType) {
+		this.baseType = baseType;
+		this.typeModifier = null;
+		this.typeModifierFlags = 0;
 	}
 
 	/**

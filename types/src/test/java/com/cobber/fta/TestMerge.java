@@ -1159,7 +1159,7 @@ public class TestMerge {
 		boolean failed = false;
 		// If we captured all the observation then the merge should be roughly perfect :-)
 		if (referenceResult.getCardinality() < reference.getMaxCardinality()) {
-			if (FTAType.isNumeric(mergedResult.getType())) {
+			if (mergedResult.getType().isNumeric()) {
 				if (!merged.equals(reference, TestUtils.EPSILON))
 					failed = true;
 			}
@@ -1197,7 +1197,7 @@ public class TestMerge {
 					!Objects.equals(mergedResult.getTopK(), referenceResult.getTopK())
 					))
 				failed = true;
-			if (merged.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) && FTAType.isNumeric(mergedResult.getType())) {
+			if (merged.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) && mergedResult.getType().isNumeric()) {
 				if (
 						Math.abs(mergedResult.getMean() - referenceResult.getMean()) > TestUtils.EPSILON
 //						||

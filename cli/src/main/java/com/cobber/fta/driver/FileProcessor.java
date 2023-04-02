@@ -324,7 +324,7 @@ class FileProcessor {
 				sampleCount += result.getSampleCount();
 
 				// Check the counts if we are validating
-				if (options.validate == 1) {
+				if (options.validate >= 1) {
 					String ret = result.checkCounts();
 					if (ret != null) {
 						System.err.printf("Composite: %s, field: %s (%d), failed count validation - %s\n",

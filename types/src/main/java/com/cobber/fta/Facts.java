@@ -400,9 +400,9 @@ public class Facts {
 			multiline = input.indexOf('\n') != -1 || input.indexOf('\r') != -1;
 	}
 
-	public void killZeroes() {
+	protected void killZeroes() {
 		if (minLongNonZero != minLong) {
-			// Need to remove '0' (and similar friends) from cardinality map and put in outlier map
+			// Need to remove '0' (and similar friends) from cardinality map and put in invalid map
 			final Iterator<Entry<String, Long>> it = cardinality.entrySet().iterator();
 
 			while (it.hasNext()) {

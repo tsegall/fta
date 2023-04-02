@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -3040,12 +3041,55 @@ public class TextAnalyzer {
 							newResult.getFacts().invalid.put(worstEntry.getKey(), worstEntry.getValue());
 							newResult.getFacts().sampleCount += worstEntry.getValue();
 							newResult.getFacts().confidence -= 0.05;
+							newResult.getFacts().getMatchTypeInfo().setBaseType(FTAType.STRING);
 							result = newResult;
-							debug("Type determination - was STRING, post exclusion analyis ({}, {}), matchTypeInfo - {}",
-									worstEntry.getKey(), worstEntry.getValue(), facts.getMatchTypeInfo());
+							debug("Type determination - was STRING, post exclusion analyis ({}, {}), matchTypeInfo {} -> {} ",
+									worstEntry.getKey(), worstEntry.getValue(), facts.matchTypeInfo, newResult.getFacts().getMatchTypeInfo());
 							break;
 						}
 					}
+				}
+			}
+		}
+
+		// If we have not detected a Semantic Type - then attempt to exclude outliers and re-analyze
+		if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) &&
+				analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS) &&
+				FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType()) &&
+				!facts.getMatchTypeInfo().isSemanticType() &&
+				!getContext().isNested() && pluginThreshold != 100 && facts.matchCount >= 20) {
+			final Map<String, Long> details = facts.synthesizeBulk();
+			final Map<String, Long> outliers = new HashMap<>();
+			final Histogram.Entry[] buckets = facts.calculateFacts().getHistogram().getHistogram(10);
+			final StringConverter stringConverter = facts.getStringConverter();
+
+			// Associate each bucket with a cluster - so that we can do the outlier detection
+			Histogram.tagClusters(buckets);
+
+			// Identify any outliers based on 'density-based clustering' (using the Histograms to generate the clusters)
+			for (Map.Entry<String, Long> entry : details.entrySet()) {
+				if (Utils.isNumeric(entry.getKey())) {
+					final double value = stringConverter.toDouble(entry.getKey());
+					Histogram.Entry bucket = Histogram.getBucket(buckets, value);
+					// Scratch any cluster with less than 2% of the samples
+					if (bucket.getClusterPercent() < .02)
+						outliers.put(entry.getKey(), entry.getValue());
+				}
+			}
+
+			// If we identified any outliers then re-analyze using the 'cleaned' set and see if we have success
+			if (outliers.size() != 0) {
+				details.keySet().removeAll(outliers.keySet());
+				final TextAnalysisResult newResult = reAnalyze(details);
+
+				final FTAType newType = newResult.getFacts().getMatchTypeInfo().getBaseType();
+
+				if (newResult.isSemanticType() || newType.isDateOrTimeType()) {
+					newResult.getFacts().outliers.putAll(outliers);
+					newResult.getFacts().sampleCount += outliers.values().stream().mapToLong(l-> l).sum();
+					newResult.getFacts().confidence -= 0.05;
+					result = newResult;
+					debug("Type determination - was LONG, post outlier analyis, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
 				}
 			}
 		}
@@ -3154,7 +3198,7 @@ public class TextAnalyzer {
 				DateTimeParser.plausibleDateLong(facts.minLongNonZero, 4) && DateTimeParser.plausibleDateLong(facts.maxLong, 4) &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("date"))) {
 			facts.setMatchTypeInfo(new TypeInfo(null, "\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd"));
-			facts.killZeroes();
+			killInvalidDates();
 			final DateTimeFormatter dtf = dateTimeParser.ofPattern(facts.getMatchTypeInfo().format);
 			facts.minLocalDate = LocalDate.parse(String.valueOf(facts.minLongNonZero), dtf);
 			facts.maxLocalDate = LocalDate.parse(String.valueOf(facts.maxLong), dtf);
@@ -3219,6 +3263,31 @@ public class TextAnalyzer {
 				facts.outliers.clear();
 			}
 		}
+	}
+
+	protected void killInvalidDates() {
+		final Iterator<Entry<String, Long>> it = facts.cardinality.entrySet().iterator();
+
+		while (it.hasNext()) {
+			final Entry<String, Long> entry = it.next();
+			boolean kill = false;
+			if (Long.parseLong(entry.getKey()) == 0)
+				kill = true;
+			else {
+				try {
+					trackDateTime(entry.getKey(), facts.getMatchTypeInfo(), false);
+				}
+				catch (DateTimeException e) {
+					kill = true;
+				}
+			}
+
+			if (kill) {
+				facts.invalid.put(entry.getKey(), entry.getValue());
+				facts.matchCount -= entry.getValue();
+				it.remove();
+			}
+		 }
 	}
 
 	private void finalizeBoolean(final long realSamples) {

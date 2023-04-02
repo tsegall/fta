@@ -39,7 +39,7 @@ public class MunicipalityCodeNL extends LogicalTypeInfinite {
 	private int maxLength = Integer.MIN_VALUE;
 
 	/**
-	 * Construct a ZIP+4 (See also @link USZip) plugin based on the Plugin Definition.
+	 * Construct a plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
 	public MunicipalityCodeNL(final PluginDefinition plugin) {
@@ -59,12 +59,23 @@ public class MunicipalityCodeNL extends LogicalTypeInfinite {
 	}
 
 	private boolean validate(final String trimmed, final int len, final long digits) {
+		boolean ret = false;
 		if (len == 6)
-			return trimmed.charAt(0) == 'G' && trimmed.charAt(1) == 'M' && digits == 4;
-		if (len == 5)
-			return trimmed.charAt(0) == 'G' && digits == 4;
+			ret = trimmed.charAt(0) == 'G' && trimmed.charAt(1) == 'M' && digits == 4;
+		else if (len == 5)
+			ret = trimmed.charAt(0) == 'G' && digits == 4;
+		else
+			ret = len == digits;
 
-		return len == digits;
+		if (!ret)
+			return false;
+
+		if (len < minLength)
+			minLength = len;
+		if (len > maxLength)
+			maxLength = len;
+
+		return true;
 	}
 
 	@Override
@@ -84,14 +95,14 @@ public class MunicipalityCodeNL extends LogicalTypeInfinite {
 		if (minLength == 6)
 			return REGEXP_GM;
 		else if (minLength == 5)
-			return REGEXP_GM;
+			return REGEXP_G;
 
 		return REGEXP_DIGITS;
 	}
 
 	@Override
 	public FTAType getBaseType() {
-		return FTAType.STRING;
+		return minLength == 5 || minLength == 6 ? FTAType.STRING : FTAType.LONG;
 	}
 
 	@Override
@@ -102,14 +113,7 @@ public class MunicipalityCodeNL extends LogicalTypeInfinite {
 	@Override
 	public boolean isValid(String input, final boolean detectMode, long count) {
 		final String trimmed = input.trim();
-		final int len = trimmed.length();
-
-		if (len < minLength)
-			minLength = len;
-		if (len > maxLength)
-			maxLength = len;
-
-		return validate(trimmed, len, input.chars().filter(Character::isDigit).count());
+		return validate(trimmed, trimmed.length(), input.chars().filter(Character::isDigit).count());
 	}
 
 	private String backout() {
