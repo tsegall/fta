@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 13.1.1
+ - BUG: Add missing file
+
 ### 13.1.0
  - ENH: Detect longs masquerading as doubles
  - ENH: Improve DIRECTION detection - NB/SB/EB/WB (and friends) (Recall - 66% -> 93%)
