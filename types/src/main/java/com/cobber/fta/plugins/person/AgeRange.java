@@ -55,12 +55,32 @@ public class AgeRange extends LogicalTypeInfinite {
 	private final static Set<String> agesPUF = new HashSet<>();
 
 	static {
-		agesPUF.add("AGEALL");
+		agesPUF.add("AGE011");
 		agesPUF.add("AGE017");
+		agesPUF.add("AGE1217");
+		agesPUF.add("AGE1824");
+		agesPUF.add("AGE1834");
 		agesPUF.add("AGE1839");
+		agesPUF.add("AGE18PLUS");
+		agesPUF.add("AGE2529");
+		agesPUF.add("AGE3034");
+		agesPUF.add("AGE3539");
+		agesPUF.add("AGE4044");
 		agesPUF.add("AGE4064");
+		agesPUF.add("AGE4549");
+		agesPUF.add("AGE5054");
+		agesPUF.add("AGE5559");
+		agesPUF.add("AGE6064");
+		agesPUF.add("AGE6569");
+		agesPUF.add("AGE6579");
 		agesPUF.add("AGE6584");
+		agesPUF.add("AGE65PLUS");
+		agesPUF.add("AGE7074");
+		agesPUF.add("AGE7579");
+		agesPUF.add("AGE8084");
+		agesPUF.add("AGE80PLUS");
 		agesPUF.add("AGE85PLUS");
+		agesPUF.add("AGEALL");
 	}
 
 	private WordProcessor wordProcessor = new WordProcessor().withBreakChars(" \u00A0-");

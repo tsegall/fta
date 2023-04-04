@@ -64,6 +64,9 @@ public class Facts {
 	public long leadingZeroCount;
 	/** Get the Decimal Separator used to interpret Doubles.  Only relevant for type double. */
 	public char decimalSeparator = '.';
+	/** Does every double value have a 0 fractional component. */
+	public boolean allZeroes = true;
+	public int zeroesLength = -1;
 	/** What is the uniqueness percentage of this column. */
 	public Double uniqueness;
 

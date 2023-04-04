@@ -555,9 +555,11 @@ Note: The Regular Expression used to detect a Semantic type may differ from the 
 
 ## Outlier Set ##
 
-An outlier is a data point that differs significantly from other member of the data set.  There are a set of algorithms used to detect outliers in the input stream.
+An outlier is a data point that differs significantly from other members of the data set.  There are a set of algorithms used to detect outliers in the input stream.
 
-- In certain cases, where an enumerated type is detected, for example 1000 instances of RED, 1000 instances of BLUE, 1000 instances of GREEN, and one instance of 'GREEEN' then the instance of 'GREEEN' would be identified as an outlier based on its Levenshtein distance from one of the other elements in the set.
+- In certain cases, where a field is an enumerated type an outlier may be detected based on its Levenshtein distance from one of the other elements in the set. For example, 1000 instances of RED, 1000 instances of BLUE, 1000 instances of GREEN, and one instance of 'GREEEN'.
+
+- In certain cases, where a field is a Long with no Semantic Type identified an outlier may be detected using density-based clustering. For example, a field (with a header of Month) containing many copies of 1-12 and then one instance of 44 would be detected as the Semantic Type MONTH.DIGITS after recognizing the '44' as an outlier.
 
 ## Regular Expressions ##
 
@@ -684,6 +686,14 @@ Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and f
 2. Find and select the latest version in the Staging Repository
 3. Close the staging repository (wait until complete)
 4. Release the staging repository
+
+Then add Tag and Release.
+
+`$ git tag v<VERSION> <COMMIT_ID>`
+
+`$ git push origin v<VERSION>`
+
+`$ gh release create v<VERSION> --notes "Description ..."`
 
 ### Executing ###
 Using FTA from the command line, list options:

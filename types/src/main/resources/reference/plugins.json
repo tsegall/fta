@@ -2046,7 +2046,7 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": ".*(?i)(month)|(i?)(month).*", "confidence": 99, "mandatory": true } ]
+				"headerRegExps": [ { "regExp": ".*(?i)(month|month.?number)|(i?)(month|month.?number).*", "confidence": 99, "mandatory": true } ]
 			},
 			{
 				"localeTag": "es",

@@ -74,7 +74,7 @@ public class TypeInfo {
 	public String typeModifier;
 	public int typeModifierFlags;
 	public boolean isSemanticType;
-	public String semanticType;
+	private String semanticType;
 	private boolean isForce;
 
 	/**
@@ -203,7 +203,7 @@ public class TypeInfo {
 	/**
 	 * The base FTAType that this pattern is based on.
 	 *
-	 * @return The FTAType of the pattern.
+	 * @return The FTAType of the TypeInfo.
 	 */
 	public FTAType getBaseType() {
 		return baseType;
@@ -211,7 +211,7 @@ public class TypeInfo {
 
 	/**
 	 * Set the base FTAType - use this method with care!
-	 * @param baseType The type of the pattern.
+	 * @param baseType The type of the TypeInfo.
 	 */
 	protected void setBaseType(final FTAType baseType) {
 		this.baseType = baseType;
@@ -226,6 +226,16 @@ public class TypeInfo {
 	 */
 	public String getSemanticType() {
 		return semanticType;
+	}
+
+	/**
+	 * Set the Semantic Type - use this method with care!
+	 * @param semanticType The Semantic type of the TypeInfo.
+	 */
+	protected void setSemanticType(final String semanticType) {
+		this.semanticType = semanticType;
+		if (semanticType != null)
+			this.isSemanticType = true;
 	}
 
 	/**

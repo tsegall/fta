@@ -32,8 +32,10 @@ import com.cobber.fta.token.TokenStreams;
 public class Direction extends LogicalTypeInfinite {
 	enum Form {
 		CARDINAL("(?i)(E|N|S|W)", new String[] { "E", "N", "S", "W" }),
+		BOUND_SHORT("(?i)(EB|NB|SB|WB)", new String[] { "EB", "NB", "SB", "WB" }),
+		BOUND_LONG("(?i)(EASTBOUND|NORTHBOUND|SOUTHBOUND|WESTBOUND)", new String[] { "EASTBOUND", "NORTHBOUND", "SOUTHBOUND", "WESTBOUND" }),
 		INTERCARDINAL("(?i)(NE|NW|SE|SW)", new String[] { "NE", "NW", "SE", "SW" }),
-		BOTH("(?i)(E|N|NE|NW|S|SE|SW|W)", new String[] { "E", "N", "NE", "NW", "S", "SE", "SW", "W" }),
+		CARDINAL_BOTH("(?i)(E|N|NE|NW|S|SE|SW|W)", new String[] { "E", "N", "NE", "NW", "S", "SE", "SW", "W" }),
 		FULL("(?i)(EAST|NORTH|SOUTH|WEST)", new String[] { "EAST", "NORTH", "SOUTH", "WEST" }),
 		UNKNOWN("(?i)(E|N|S|W)", new String[] { "E", "N", "S", "W" });
 
@@ -56,6 +58,8 @@ public class Direction extends LogicalTypeInfinite {
 		}
 	};
 
+	private int[] boundShortCounts = new int[4];
+	private int[] boundLongCounts = new int[4];
 	private int[] cardinalCounts = new int[4];
 	private int[] intercardinalCounts = new int[4];
 	private int[] fullCounts = new int[4];
@@ -108,17 +112,26 @@ public class Direction extends LogicalTypeInfinite {
 			if (currentForm == Form.UNKNOWN)
 				currentForm = Form.CARDINAL;
 			else if (currentForm == Form.INTERCARDINAL)
-				currentForm = Form.BOTH;
+				currentForm = Form.CARDINAL_BOTH;
 			return true;
 		}
 
-		index = indexOf(upper, Form.INTERCARDINAL.getMembers());
-		if (len == 2 && index != -1) {
-			intercardinalCounts[index]++;
+		if (len == 2) {
+			index = indexOf(upper, Form.INTERCARDINAL.getMembers());
+			if (index != -1) {
+				intercardinalCounts[index]++;
+				if (currentForm == Form.UNKNOWN)
+					currentForm = Form.INTERCARDINAL;
+				else if (currentForm == Form.CARDINAL)
+					currentForm = Form.CARDINAL_BOTH;
+				return true;
+			}
+			index = indexOf(upper, Form.BOUND_SHORT.getMembers());
+			if (index == -1)
+				return false;
+			boundShortCounts[index]++;
 			if (currentForm == Form.UNKNOWN)
-				currentForm = Form.INTERCARDINAL;
-			else if (currentForm == Form.CARDINAL)
-				currentForm = Form.BOTH;
+				currentForm = Form.BOUND_SHORT;
 			return true;
 		}
 
@@ -130,7 +143,15 @@ public class Direction extends LogicalTypeInfinite {
 			return true;
 		}
 
-		return false;
+		index = indexOf(upper, Form.BOUND_LONG.getMembers());
+		if (index == -1)
+			return false;
+
+		boundLongCounts[index]++;
+		if (currentForm == Form.UNKNOWN)
+			currentForm = Form.BOUND_LONG;
+
+		return true;
 	}
 
 	@Override
@@ -144,6 +165,16 @@ public class Direction extends LogicalTypeInfinite {
 
 		if (currentForm == Form.UNKNOWN)
 			return PluginAnalysis.SIMPLE_NOT_OK;
+		else if (currentForm == Form.BOUND_SHORT) {
+			int numberSeen = seenCount(boundShortCounts);
+			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
+				return PluginAnalysis.SIMPLE_NOT_OK;
+		}
+		else if (currentForm == Form.BOUND_LONG) {
+			int numberSeen = seenCount(boundLongCounts);
+			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
+				return PluginAnalysis.SIMPLE_NOT_OK;
+		}
 		else if (currentForm == Form.CARDINAL) {
 			int numberSeen = seenCount(cardinalCounts);
 			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
@@ -159,7 +190,7 @@ public class Direction extends LogicalTypeInfinite {
 			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
 		}
-		else if (currentForm == Form.BOTH) {
+		else if (currentForm == Form.CARDINAL_BOTH) {
 			int numberSeen = seenCount(cardinalCounts) + seenCount(intercardinalCounts);
 			if (numberSeen < 5 && getHeaderConfidence(context.getStreamName()) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;

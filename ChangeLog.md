@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 13.1.0
+ - ENH: Detect longs masquerading as doubles
+ - ENH: Improve DIRECTION detection - NB/SB/EB/WB (and friends) (Recall - 66% -> 93%)
+ - ENH: Improve AGE, MONTH.DIGITS, ZIP+4 detection
+
 ### 13.0.3
  - ENH: If we have a Long type and no Semantic Type detected, exclude outliers (using density-based clustering) and re-analyze
  - ENH: ISO 3166-2 insist on the presence of some signal from the header

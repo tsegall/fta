@@ -57,17 +57,25 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		final int len = trimmed.length();
-		if (len != 10 && len != 9 && len != 5)
+		if (len != 10 && len != 9 && len != 5 && len != 4 && len != 3)
 			return false;
 
 		final int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
 				charCounts['5'] + charCounts['6'] + charCounts['7'] + charCounts['8'] + charCounts['9'];
-		if (len == 5)
+		switch (len) {
+		case 3:
+			return digits == 3 && zips.contains("00" + trimmed);
+		case 4:
+			return digits == 4 && zips.contains("0" + trimmed);
+		case 5:
 			return digits == 5;
-		if (len == 9)
+		case 9:
 			return digits == 9;
+		case 10:
+			return trimmed.charAt(5) == '-' && digits == 9;
+		}
 
-		return len == 10 && trimmed.charAt(5) == '-' && digits == 9;
+		return false;
 	}
 
 	@Override
@@ -112,7 +120,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	public boolean isValid(String input, final boolean detectMode, long count) {
 		final int len = input.length();
 
-		if (len != 10 && len != 9 && len != 5)
+		if (len != 10 && len != 9 && len != 5 && len != 4 && len != 3)
 			return false;
 
 		if (len == 9 || len == 10)
@@ -122,6 +130,9 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 			minLength = len;
 		if (len > maxLength)
 			maxLength = len;
+
+		if (len < 5)
+			input = (len == 3 ? "00" : "0") + input;
 
 		return zips.contains(input);
 	}

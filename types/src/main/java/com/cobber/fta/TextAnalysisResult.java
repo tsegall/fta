@@ -150,7 +150,7 @@ public class TextAnalysisResult {
 	 * @return The Semantic Type detected - only valid if isSemanticType() is true.
 	 */
 	public String getSemanticType() {
-		return facts.getMatchTypeInfo().semanticType;
+		return facts.getMatchTypeInfo().getSemanticType();
 	}
 
 	/**
@@ -840,7 +840,7 @@ public class TextAnalysisResult {
 			analysis.put(legacyJSON ? "logicalType" : "isSemanticType", isSemanticType());
 			if (legacyJSON) {
 				if (isSemanticType())
-					analysis.put("typeQualifier", facts.getMatchTypeInfo().semanticType);
+					analysis.put("typeQualifier", facts.getMatchTypeInfo().getSemanticType());
 				else if (facts.getMatchTypeInfo().typeModifier != null)
 					analysis.put("typeQualifier", facts.getMatchTypeInfo().typeModifier);
 			}
@@ -848,7 +848,7 @@ public class TextAnalysisResult {
 				if (facts.getMatchTypeInfo().typeModifier != null)
 					analysis.put("typeModifier", facts.getMatchTypeInfo().typeModifier);
 				if (isSemanticType())
-					analysis.put("semanticType", facts.getMatchTypeInfo().semanticType);
+					analysis.put("semanticType", facts.getMatchTypeInfo().getSemanticType());
 			}
 			if (analysisConfig.isEnabled(TextAnalyzer.Feature.FORMAT_DETECTION))
 				analysis.put("contentFormat", facts.streamFormat);

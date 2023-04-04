@@ -866,7 +866,7 @@ public class TextAnalyzer {
 
 		if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
-			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
+			final LogicalType logical = plugins.getRegistered(typeInfo.getSemanticType());
 			if (logical.acceptsBaseType(FTAType.LONG) && !logical.isValid(trimmed, false, count))
 				return false;
 		}
@@ -947,7 +947,7 @@ public class TextAnalyzer {
 		}
 		else if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
-			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
+			final LogicalType logical = plugins.getRegistered(typeInfo.getSemanticType());
 			if (logical.acceptsBaseType(FTAType.STRING) && !logical.isValid(rawInput, false, count))
 				return false;
 		}
@@ -1034,11 +1034,24 @@ public class TextAnalyzer {
 				}
 
 			facts.tbDouble.observe(d);
+
+			// Track whether we have ever seen a double with a non-zero fractional component
+			if (facts.allZeroes) {
+				int separatorIndex = input.indexOf(facts.decimalSeparator);
+				if (separatorIndex != -1 && !Utils.allZeroes(input.substring(separatorIndex + 1)))
+					facts.allZeroes = false;
+				else {
+					if (facts.zeroesLength == -1)
+						facts.zeroesLength = input.length() - separatorIndex - 1;
+					else if (facts.zeroesLength != input.length() - separatorIndex - 1)
+						facts.allZeroes = false;
+				}
+			}
 		}
 
 		if (typeInfo.isSemanticType()) {
 			// If it is a registered Infinite Semantic Type then validate it
-			final LogicalType logical = plugins.getRegistered(typeInfo.semanticType);
+			final LogicalType logical = plugins.getRegistered(typeInfo.getSemanticType());
 			if (logical.acceptsBaseType(FTAType.DOUBLE) && !logical.isValid(input, false, count))
 				return false;
 		}
@@ -2472,7 +2485,7 @@ public class TextAnalyzer {
 				}
 				else if (!facts.getMatchTypeInfo().isForce()) {
 					// Do we need to back out from any of our Infinite type determinations
-					final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
+					final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
 					final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
 					if (!pluginAnalysis.isValid())
 						backout(logical, realSamples, pluginAnalysis);
@@ -2650,7 +2663,7 @@ public class TextAnalyzer {
 		LogicalType priorLogical = null;
 		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
 		if (facts.getMatchTypeInfo().isSemanticType()) {
-			priorLogical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
+			priorLogical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
 			scoreToBeat = facts.confidence;
 		}
 		else
@@ -2779,7 +2792,7 @@ public class TextAnalyzer {
 		// that this is a subsequent call to getResult()!!
 		final long outlierCount = facts.outliers.values().stream().mapToLong(l-> l).sum();
 		if (facts.getMatchTypeInfo().isSemanticType() && !facts.getMatchTypeInfo().isForce()) {
-			final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
+			final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
 
 			final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
 			if (!pluginAnalysis.isValid()) {
@@ -2810,7 +2823,7 @@ public class TextAnalyzer {
 
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType())) {
 			if (facts.getMatchTypeInfo().isSemanticType()) {
-				final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().semanticType);
+				final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
 				boolean recalcConfidence = false;
 
 				// Sweep the outliers - flipping them to invalid if they do not pass the relaxed isValid definition
@@ -2967,7 +2980,7 @@ public class TextAnalyzer {
 			if (facts.sampleCount > MIN_SAMPLES_FOR_KEY && analysisConfig.getMaxCardinality() >= MIN_SAMPLES_FOR_KEY / 2 &&
 					(facts.cardinality.size() == analysisConfig.getMaxCardinality() || facts.cardinality.size() == facts.sampleCount) &&
 					facts.blankCount == 0 && facts.nullCount == 0 &&
-					((facts.getMatchTypeInfo().isSemanticType() && facts.getMatchTypeInfo().semanticType.equals("GUID")) ||
+					((facts.getMatchTypeInfo().isSemanticType() && facts.getMatchTypeInfo().getSemanticType().equals("GUID")) ||
 					(facts.getMatchTypeInfo().typeModifier == null &&
 					((FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && facts.minRawLength == facts.maxRawLength && facts.minRawLength < 32)
 							|| FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType()))))) {
@@ -3091,6 +3104,36 @@ public class TextAnalyzer {
 					result = newResult;
 					debug("Type determination - was LONG, post outlier analyis, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
 				}
+			}
+		}
+
+		// If we have not detected a Semantic Type and we have a double masquerading as a Long then re-analyze with a long set
+		if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) &&
+				FTAType.DOUBLE.equals(facts.getMatchTypeInfo().getBaseType()) &&
+				!facts.getMatchTypeInfo().isSemanticType() &&
+				facts.allZeroes &&
+				!getContext().isNested() && pluginThreshold != 100 && facts.matchCount >= 20) {
+			final Map<String, Long> doubleDetails = facts.synthesizeBulk();
+			final Map<String, Long> details = new HashMap<>();
+			final StringConverter stringConverter = facts.getStringConverter();
+
+			for (Map.Entry<String, Long> entry : doubleDetails.entrySet())
+				if (entry.getKey() == null || entry.getKey().isBlank())
+					details.put(entry.getKey(), entry.getValue());
+				else
+					details.put(String.valueOf(((Double)stringConverter.getValue(entry.getKey())).longValue()), entry.getValue());
+
+			final TextAnalysisResult newResult = reAnalyze(details);
+
+			final FTAType newType = newResult.getFacts().getMatchTypeInfo().getBaseType();
+
+			if (newResult.isSemanticType()) {
+				facts.getMatchTypeInfo().setSemanticType(newResult.getSemanticType());
+				debug("Type determination - was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
+			}
+			else if (newType.isDateOrTimeType()) {
+				result = newResult;
+				debug("Type determination - was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
 			}
 		}
 

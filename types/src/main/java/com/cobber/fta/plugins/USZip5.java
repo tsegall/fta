@@ -121,7 +121,13 @@ public class USZip5 extends LogicalTypeInfinite {
 		if (headerConfidence == 0 && cardinality.size() < 5)
 			return new PluginAnalysis(backout());
 
-		if (getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0)
+		// Remove any 0's since these are commonly used as an indicator for missing values
+		long zeroes = 0;
+		Long zeroCount = outliers.get("0");
+		if (zeroCount != null)
+			zeroes += zeroCount;
+
+		if (getConfidence(matchCount, realSamples - zeroes, context) >= getThreshold()/100.0)
 			return PluginAnalysis.OK;
 
 		return new PluginAnalysis(backout());
