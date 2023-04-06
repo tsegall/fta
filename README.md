@@ -346,6 +346,7 @@ IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH
 IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number (Japan)|ja
 IDENTITY.VAT_&lt;COUNTRY&gt;|Value-added Tax Identification Number|de-AT, ca-ES, es-ES, fr-FR, it-IT, en-GB, en-UK, nl-NL, pl-PL
+INDUSTRY_CODE.NAICS|Industry Code - NAICS|en-CA,en-MX,en-US,es-MX
 INDUSTRY_EN|Industry Name|en
 IPADDRESS.IPV4|IP V4 Address|*
 IPADDRESS.IPV6|IP V6 Address|*

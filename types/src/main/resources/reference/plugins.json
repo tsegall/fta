@@ -2343,10 +2343,23 @@
 		"signature": "eQbFEkaZaWJM4Quexoibt1QJsnw=",
 		"clazz": "com.cobber.fta.plugins.Direction",
 		"validLocales": [
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(directions).*", "confidence": 99 }, { "regExp": ".*(?i)(dir).*", "confidence": 90 } ] }
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(directions).*", "confidence": 99 },
+			 { "regExp": ".*(?i)(dir|suffix|prefix).*", "confidence": 90 } ] }
 		],
 		"baseType": "STRING",
 		"priority": 307
+	},
+	{
+		"semanticType": "INDUSTRY_CODE.NAICS",
+		"description": "Industry Code - NAICS",
+		"pluginType": "java",
+		"signature": "i2DkepwVwjhGYOf7BbaemLrr1GI=",
+		"clazz": "com.cobber.fta.plugins.IndustryNAICS",
+		"validLocales": [
+			{ "localeTag":  "en-US,en-CA,en-MX,es-MX,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(naics.?code).*", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(naics).*", "confidence": 90, "mandatory": true } ] }
+		],
+		"baseType": "LONG",
+		"priority": 308
 	},
 	{
 		"semanticType": "NAME.LAST_FIRST",

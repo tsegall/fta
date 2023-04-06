@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 13.1.2
+ - ENH: Improve DIRECTION detection - Support InterCardinal Full names (NORTHEAST|NORTHWEST|SOUTHEAST|SOUTHWEST) (Recall - 93% -> 97%)
+ - ENH: Add new Semantic Type - INDUSTRY_CODE.NAICS
+
 ### 13.1.1
  - BUG: Add missing file
 

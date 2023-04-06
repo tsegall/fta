@@ -32,11 +32,19 @@ import com.cobber.fta.token.TokenStreams;
 public class Direction extends LogicalTypeInfinite {
 	enum Form {
 		CARDINAL("(?i)(E|N|S|W)", new String[] { "E", "N", "S", "W" }),
-		BOUND_SHORT("(?i)(EB|NB|SB|WB)", new String[] { "EB", "NB", "SB", "WB" }),
-		BOUND_LONG("(?i)(EASTBOUND|NORTHBOUND|SOUTHBOUND|WESTBOUND)", new String[] { "EASTBOUND", "NORTHBOUND", "SOUTHBOUND", "WESTBOUND" }),
 		INTERCARDINAL("(?i)(NE|NW|SE|SW)", new String[] { "NE", "NW", "SE", "SW" }),
 		CARDINAL_BOTH("(?i)(E|N|NE|NW|S|SE|SW|W)", new String[] { "E", "N", "NE", "NW", "S", "SE", "SW", "W" }),
-		FULL("(?i)(EAST|NORTH|SOUTH|WEST)", new String[] { "EAST", "NORTH", "SOUTH", "WEST" }),
+
+		CARDINAL_FULL("(?i)(EAST|NORTH|SOUTH|WEST)", new String[] { "EAST", "NORTH", "SOUTH", "WEST" }),
+		INTERCARDINAL_FULL("(?i)(NORTHEAST|NORTHWEST|SOUTHEAST|SOUTHWEST)",
+				new String[] { "NORTHEAST", "NORTHWEST", "SOUTHEAST", "SOUTHWEST" }),
+		CARDINAL_FULL_BOTH("(?i)(EAST|NORTH|NORTHEAST|NORTHWEST|SOUTH|SOUTHEAST|SOUTHWEST|WEST)",
+				new String[] { "EAST", "NORTH", "NORTHEAST", "NORTHWEST", "SOUTH", "SOUTHEAST", "SOUTHWEST", "WEST" }),
+
+		BOUND_SHORT("(?i)(EB|NB|SB|WB)", new String[] { "EB", "NB", "SB", "WB" }),
+		BOUND_LONG("(?i)(EASTBOUND|NORTHBOUND|SOUTHBOUND|WESTBOUND)",
+				new String[] { "EASTBOUND", "NORTHBOUND", "SOUTHBOUND", "WESTBOUND" }),
+
 		UNKNOWN("(?i)(E|N|S|W)", new String[] { "E", "N", "S", "W" });
 
 		/** The RegExp that represents this Form */
@@ -62,7 +70,8 @@ public class Direction extends LogicalTypeInfinite {
 	private int[] boundLongCounts = new int[4];
 	private int[] cardinalCounts = new int[4];
 	private int[] intercardinalCounts = new int[4];
-	private int[] fullCounts = new int[4];
+	private int[] cardinalFullCounts = new int[4];
+	private int[] intercardinalFullCounts = new int[4];
 
 	private Form currentForm = Form.UNKNOWN;
 
@@ -135,23 +144,35 @@ public class Direction extends LogicalTypeInfinite {
 			return true;
 		}
 
-		index = indexOf(upper, Form.FULL.getMembers());
+		index = indexOf(upper, Form.CARDINAL_FULL.getMembers());
 		if (index != -1) {
-			fullCounts[index]++;
+			cardinalFullCounts[index]++;
 			if (currentForm == Form.UNKNOWN)
-				currentForm = Form.FULL;
+				currentForm = Form.CARDINAL_FULL;
+			else if (currentForm == Form.INTERCARDINAL_FULL)
+				currentForm = Form.CARDINAL_FULL_BOTH;
 			return true;
 		}
 
 		index = indexOf(upper, Form.BOUND_LONG.getMembers());
-		if (index == -1)
-			return false;
+		if (index != -1) {
+			boundLongCounts[index]++;
+			if (currentForm == Form.UNKNOWN)
+				currentForm = Form.BOUND_LONG;
+			return true;
+		}
 
-		boundLongCounts[index]++;
-		if (currentForm == Form.UNKNOWN)
-			currentForm = Form.BOUND_LONG;
+		index = indexOf(upper, Form.INTERCARDINAL_FULL.getMembers());
+		if (index != -1) {
+			intercardinalFullCounts[index]++;
+			if (currentForm == Form.UNKNOWN)
+				currentForm = Form.INTERCARDINAL_FULL;
+			else if (currentForm == Form.CARDINAL_FULL)
+				currentForm = Form.CARDINAL_FULL_BOTH;
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	@Override
@@ -163,37 +184,50 @@ public class Direction extends LogicalTypeInfinite {
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
-		if (currentForm == Form.UNKNOWN)
+		long numberSeen = 0;
+		switch (currentForm) {
+		case UNKNOWN:
 			return PluginAnalysis.SIMPLE_NOT_OK;
-		else if (currentForm == Form.BOUND_SHORT) {
-			int numberSeen = seenCount(boundShortCounts);
+		case BOUND_SHORT:
+			numberSeen = seenCount(boundShortCounts);
 			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
-		}
-		else if (currentForm == Form.BOUND_LONG) {
-			int numberSeen = seenCount(boundLongCounts);
+			break;
+		case BOUND_LONG:
+			numberSeen = seenCount(boundLongCounts);
 			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
-		}
-		else if (currentForm == Form.CARDINAL) {
-			int numberSeen = seenCount(cardinalCounts);
+			break;
+		case CARDINAL:
+			numberSeen = seenCount(cardinalCounts);
 			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
-		}
-		else if (currentForm == Form.INTERCARDINAL) {
-			int numberSeen = seenCount(intercardinalCounts);
+			break;
+		case INTERCARDINAL:
+			numberSeen = seenCount(intercardinalCounts);
 			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
-		}
-		else if (currentForm == Form.FULL) {
-			int numberSeen = seenCount(intercardinalCounts);
+			break;
+		case INTERCARDINAL_FULL:
+			numberSeen = seenCount(intercardinalFullCounts);
 			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
-		}
-		else if (currentForm == Form.CARDINAL_BOTH) {
-			int numberSeen = seenCount(cardinalCounts) + seenCount(intercardinalCounts);
+			break;
+		case CARDINAL_FULL:
+			numberSeen = seenCount(intercardinalCounts);
+			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
+				return PluginAnalysis.SIMPLE_NOT_OK;
+			break;
+		case CARDINAL_BOTH:
+			numberSeen = seenCount(cardinalCounts) + seenCount(intercardinalCounts);
 			if (numberSeen < 5 && getHeaderConfidence(context.getStreamName()) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
+			break;
+		case CARDINAL_FULL_BOTH:
+			numberSeen = seenCount(cardinalFullCounts) + seenCount(intercardinalFullCounts);
+			if (numberSeen < 5 && getHeaderConfidence(context.getStreamName()) < 90)
+				return PluginAnalysis.SIMPLE_NOT_OK;
+			break;
 		}
 
 		return 	(double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;

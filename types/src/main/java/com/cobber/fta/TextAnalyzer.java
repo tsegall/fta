@@ -2710,7 +2710,7 @@ public class TextAnalyzer {
 		facts.outliers = bestResult.newOutliers;
 		facts.cardinality = bestResult.newCardinality;
 		facts.matchCount = bestResult.validCount;
-		facts.setMatchTypeInfo(new TypeInfo(bestResult.logical.getRegExp(), FTAType.STRING, bestResult.logical.getSemanticType(), facts.getMatchTypeInfo()));
+		facts.setMatchTypeInfo(new TypeInfo(bestResult.logical.getRegExp(), bestResult.logical.getBaseType(), bestResult.logical.getSemanticType(), facts.getMatchTypeInfo()));
 
 		debug("Type determination - new matchTypeInfo - {}", facts.getMatchTypeInfo());
 
