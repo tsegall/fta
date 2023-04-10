@@ -34,6 +34,8 @@ import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFinite;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.LogicalTypeRegExp;
+import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.PluginDocumentationEntry;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
@@ -194,7 +196,15 @@ public class Driver {
 						error.printf("\t%s (RegExp): Priority: %d, RegExp: '%s'",
 								logical.getSemanticType(), logical.getPriority(), logical.getRegExp());
 					}
-					error.printf(", Locales: '%s'%n\t\t%s%n", logical.getPluginDefinition().getLocaleDescription(), logical.getDescription());
+
+					PluginDefinition defn = logical.getPluginDefinition();
+					error.printf(", Locales: '%s'%n\t\t%s%n", defn.getLocaleDescription(), logical.getDescription());
+
+					if (defn.documentation != null) {
+						for (final PluginDocumentationEntry entry : defn.documentation)
+							System.err.printf("\t\t-> \"%s\": \"%s\"%n", entry.source, entry.reference);
+					}
+
 				}
 			}
 

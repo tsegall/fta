@@ -42,13 +42,21 @@ public class SemanticType {
 	public String description;
 	/** Languages supported by the Semantic Type. */
 	public String[] language;
+	/** Documentation for the Semantic Type. */
+	public String[] documentation;
 
 	public SemanticType() {
 	}
 
-	public SemanticType(final String id, final String description) {
-		this.id = id;
-		this.description = description;
+	public SemanticType(final PluginDefinition defn) {
+		this.id = defn.semanticType;
+		this.description = defn.description;
+		if (defn.documentation != null) {
+			List<String> doco = new ArrayList<>();
+			for (final PluginDocumentationEntry entry : defn.documentation)
+				doco.add(entry.reference);
+			documentation = doco.toArray(new String[doco.size()]);
+		}
 	}
 
 	/**
@@ -76,7 +84,7 @@ public class SemanticType {
 		if (!registered.isEmpty()) {
 			for (final String qualifier : qualifiers) {
 				final LogicalType logical = analyzer.getPlugins().getRegistered(qualifier);
-				activeSemanticTypes.add(new SemanticType(logical.getSemanticType(), logical.getDescription()));
+				activeSemanticTypes.add(new SemanticType(logical.getPluginDefinition()));
 			}
 		}
 	}
@@ -95,6 +103,10 @@ public class SemanticType {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public String[] getDocumentation() {
+		return documentation;
 	}
 
 	public String[] getLanguage() {

@@ -23,7 +23,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.univocity:univocity-parsers:2.9.1'
-	implementation 'com.cobber.fta:fta:13.+'
+	implementation fileTree(dir: '/Users/tsegall/src/fta/cli/build/install/fta/lib', include: '*.jar')
 	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

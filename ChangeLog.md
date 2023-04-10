@@ -1,7 +1,11 @@
 
 ## Changes ##
 
-### 13.1.2
+### 13.3.0
+ - BUG: ISO 639-1 incorrectly switched with ISO 639-2
+ - ENH: Add Documentation tag to plugins file to document the Semantic Type (also display in Web)
+
+### 13.2.0
  - ENH: Improve DIRECTION detection - Support InterCardinal Full names (NORTHEAST|NORTHWEST|SOUTHEAST|SOUTHWEST) (Recall - 93% -> 97%)
  - ENH: Add new Semantic Type - INDUSTRY_CODE.NAICS
 

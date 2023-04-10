@@ -59,6 +59,8 @@ public class PluginDefinition {
 	/** locales this plugin applies to - empty set, implies all locales.  Can use just language instead of tag, e.g. "en" rather than "en_US". */
 	public PluginLocaleEntry[] validLocales;
 
+	public PluginDocumentationEntry[] documentation;
+
 	/** Is this plugin sensitive to the input locale? */
 	public boolean localeSensitive;
 	/** The relative priority of this plugin. */
