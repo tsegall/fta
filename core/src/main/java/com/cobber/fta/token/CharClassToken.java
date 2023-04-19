@@ -171,7 +171,7 @@ public class CharClassToken extends Token {
 				lastToken = token.newInstance();
 			}
         }
-		b.append(lastToken.getSimpleRegExp(enumerateRanges) + RegExpSplitter.qualify(lastToken.minObserved, lastToken.maxObserved));
+		b.append(lastToken.getSimpleRegExp(enumerateRanges)).append(RegExpSplitter.qualify(lastToken.minObserved, lastToken.maxObserved));
 
 		return b.toString();
 	}

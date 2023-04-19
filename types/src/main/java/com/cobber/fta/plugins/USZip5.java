@@ -36,8 +36,6 @@ import com.cobber.fta.token.TokenStreams;
  * Note: we used an Infinite :-) Semantic Type since the domains is so large.
  */
 public class USZip5 extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_US";
 	public static final String REGEXP_ZIP5 = "\\d{5}";
 	public static final String REGEXP_VARIABLE = "\\d{3,5}";
 	private int minLength = 5;
@@ -82,11 +80,6 @@ public class USZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
-	}
-
-	@Override
 	public String getRegExp() {
 		return minLength == 3 ? REGEXP_VARIABLE : REGEXP_ZIP5;
 	}
@@ -123,7 +116,7 @@ public class USZip5 extends LogicalTypeInfinite {
 
 		// Remove any 0's since these are commonly used as an indicator for missing values
 		long zeroes = 0;
-		Long zeroCount = outliers.get("0");
+		final Long zeroCount = outliers.get("0");
 		if (zeroCount != null)
 			zeroes += zeroCount;
 

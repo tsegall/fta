@@ -224,14 +224,14 @@ public class Gender extends LogicalTypeFinite {
 		opposites = new HashMap<>();
 
 		// Add the Gender Words (e.g. MALE, FEMALE) and setup opposites
-		for (GenderPair candidate : genderData.getWords()) {
+		for (final GenderPair candidate : genderData.getWords()) {
 			languageMembers.add(candidate.feminine);
 			languageMembers.add(candidate.masculine);
 			opposites.put(candidate.feminine, candidate.masculine);
 			opposites.put(candidate.masculine, candidate.feminine);
 		}
 		// Add the Gender Abbreviations (e.g. M, F) and setup opposites
-		for (GenderPair candidate : genderData.getAbbreviations()) {
+		for (final GenderPair candidate : genderData.getAbbreviations()) {
 			languageMembers.add(candidate.feminine);
 			languageMembers.add(candidate.masculine);
 			opposites.put(candidate.feminine, candidate.masculine);
@@ -266,9 +266,9 @@ public class Gender extends LogicalTypeFinite {
 		final boolean positiveStreamName = getHeaderConfidence(context.getStreamName()) > 0;
 
 		if (positiveStreamName) {
-			for (GenderPair candidate : genderData.getAll()) {
-				Long feminine = cardinality.get(candidate.feminine);
-				Long masculine = cardinality.get(candidate.masculine);
+			for (final GenderPair candidate : genderData.getAll()) {
+				final Long feminine = cardinality.get(candidate.feminine);
+				final Long masculine = cardinality.get(candidate.masculine);
 				long thisPairCount = 0;
 				if (feminine != null)
 					thisPairCount += feminine;
@@ -281,7 +281,7 @@ public class Gender extends LogicalTypeFinite {
 					final RegExpGenerator re = new RegExpGenerator(8, locale);
 					cardinality.putAll(outliers);
 					outliers.clear();
-					for (String item : cardinality.keySet())
+					for (final String item : cardinality.keySet())
 						re.train(item);
 
 					// We might have a great header and a set of one or other of the pair - in this case add the opposite
@@ -300,17 +300,17 @@ public class Gender extends LogicalTypeFinite {
 			return new PluginAnalysis(BACKOUT_REGEX);
 
 		// We have at most one outlier and if the sum of one of the word pairs == matchCount then declare success
-		for (GenderPair candidate : genderData.getWords()) {
-			Long feminine = cardinality.get(candidate.feminine);
-			Long masculine = cardinality.get(candidate.masculine);
+		for (final GenderPair candidate : genderData.getWords()) {
+			final Long feminine = cardinality.get(candidate.feminine);
+			final Long masculine = cardinality.get(candidate.masculine);
 			if (feminine == null || masculine == null)
 				continue;
-			long thisPairCount = feminine + masculine;
+			final long thisPairCount = feminine + masculine;
 			if (thisPairCount == matchCount) {
 				final RegExpGenerator re = new RegExpGenerator(8, locale);
 				cardinality.putAll(outliers);
 				outliers.clear();
-				for (String item : cardinality.keySet())
+				for (final String item : cardinality.keySet())
 					re.train(item);
 				happyRegex = re.getResult();
 				return PluginAnalysis.OK;

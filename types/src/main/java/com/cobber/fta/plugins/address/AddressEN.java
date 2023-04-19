@@ -38,9 +38,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect an Address line. (English-language only).
  */
 public class AddressEN extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "STREET_ADDRESS_EN";
-
 	private boolean multiline;
 	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
@@ -88,11 +85,6 @@ public class AddressEN extends LogicalTypeInfinite {
 			wordProcessor = wordProcessor.withAdditionalWordChars("/");
 
 		return true;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

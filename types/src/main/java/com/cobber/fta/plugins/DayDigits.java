@@ -24,7 +24,6 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.PluginLocaleEntry;
 import com.cobber.fta.core.FTAPluginException;
-import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
@@ -64,16 +63,6 @@ public class DayDigits extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getSemanticType() {
-		return defn.semanticType;
-	}
-
-	@Override
-	public FTAType getBaseType() {
-		return defn.baseType;
-	}
-
-	@Override
 	public String getRegExp() {
 		return REGEXP;
 	}
@@ -87,7 +76,7 @@ public class DayDigits extends LogicalTypeInfinite {
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		if (input.length() >= 3 || !Utils.isNumeric(input))
 			return false;
-		final int day = Integer.valueOf(input);
+		final int day = Integer.parseInt(input);
 		return day >= 1 && day <= 31;
 	}
 
@@ -117,7 +106,7 @@ public class DayDigits extends LogicalTypeInfinite {
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Locate the current column
-		int current = context.getStreamIndex();
+		final int current = context.getStreamIndex();
 		// If we have no real context - then nothing we can really do
 		if (current == -1)
 			return PluginAnalysis.SIMPLE_NOT_OK;
@@ -125,7 +114,7 @@ public class DayDigits extends LogicalTypeInfinite {
 		// Check the previous column for either a day, month, or year to boost our confidence
 		// We check for day as some times month as a number is adjacent to day as a string
 		if (current >= 1) {
-			String previousStreamName = context.getCompositeStreamNames()[current - 1];
+			final String previousStreamName = context.getCompositeStreamNames()[current - 1];
 			if (monthEntry.getHeaderConfidence(previousStreamName) >= 99)
 				return PluginAnalysis.OK;
 			if (keywords.match(previousStreamName, "YEAR", Keywords.MatchStyle.EQUALS) >= 90)
@@ -136,7 +125,7 @@ public class DayDigits extends LogicalTypeInfinite {
 
 		// Check the next column for either a day, month, or year to boost our confidence
 		if (current < context.getCompositeStreamNames().length - 1) {
-			String nextStreamName = context.getCompositeStreamNames()[current + 1];
+			final String nextStreamName = context.getCompositeStreamNames()[current + 1];
 			if (monthEntry.getHeaderConfidence(nextStreamName) >= 99)
 				return PluginAnalysis.OK;
 			if (keywords.match(nextStreamName, "YEAR", Keywords.MatchStyle.EQUALS) >= 90)

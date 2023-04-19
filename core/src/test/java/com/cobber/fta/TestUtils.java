@@ -36,7 +36,7 @@ public class TestUtils {
 		cardinality.put("SGVsbG8=", 2000000L);
 		cardinality.put("V29ybGQ=", 2000000L);
 
-		String result = Utils.determineStreamFormat(mapper, cardinality);
+		final String result = Utils.determineStreamFormat(mapper, cardinality);
 		assertEquals(result, "Base64");
 	}
 
@@ -47,7 +47,7 @@ public class TestUtils {
 		cardinality.put("{ \"name\": \"Anna\" }", 2000000L);
 		cardinality.put("{ \"name\": \"Bill\" }", 2000000L);
 
-		String result = Utils.determineStreamFormat(mapper, cardinality);
+		final String result = Utils.determineStreamFormat(mapper, cardinality);
 		assertEquals(result, "JSON");
 	}
 
@@ -57,7 +57,7 @@ public class TestUtils {
 		cardinality.put("<!DOCTYPE html><html></html>", 2000000L);
 		cardinality.put("<head><title>My fabulous blog</title></head>", 2000000L);
 
-		String result = Utils.determineStreamFormat(mapper, cardinality);
+		final String result = Utils.determineStreamFormat(mapper, cardinality);
 		assertEquals(result, "XML");
 	}
 
@@ -67,7 +67,7 @@ public class TestUtils {
 		cardinality.put("<p>Hello", 2000000L);
 		cardinality.put("<head><title>My fabulous blog</title></head>", 2000000L);
 
-		String result = Utils.determineStreamFormat(mapper, cardinality);
+		final String result = Utils.determineStreamFormat(mapper, cardinality);
 		assertEquals(result, "HTML");
 	}
 

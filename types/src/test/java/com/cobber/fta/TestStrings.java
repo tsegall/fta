@@ -1156,7 +1156,7 @@ public class TestStrings {
 		final long sampleCount = 100_000_000_000L;
 		boolean saveOutput = false;
 		BufferedWriter bw = null;
-		String[] samples = new String[10000];
+		final String[] samples = new String[10000];
 
 		if (saveOutput)
 			bw = new BufferedWriter(new FileWriter("/tmp/stringPerf.csv"));

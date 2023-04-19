@@ -12,13 +12,13 @@ public class TestSupport {
 
 	public static long countHistogram(final Histogram.Entry[] histogram) {
 		long count = 0;
-		for (Histogram.Entry entry : histogram)
+		for (final Histogram.Entry entry : histogram)
 			count += entry.getCount();
 
 		return count;
 	}
 
-	public static void checkHistogram(final TextAnalysisResult result, int width, boolean checkCounts) {
+	public static void checkHistogram(final TextAnalysisResult result, final int width, final boolean checkCounts) {
 		// If no Statistics enabled then not much checking we can do
 		if (!result.getConfig().isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			return;
@@ -27,7 +27,7 @@ public class TestSupport {
 		if (FTAType.STRING.equals(result.getType()) || FTAType.BOOLEAN.equals(result.getType()))
 			return;
 
-		Histogram.Entry[] histogram = result.getHistogram(width);
+		final Histogram.Entry[] histogram = result.getHistogram(width);
 
 		if (histogram == null)
 			return;
@@ -52,10 +52,10 @@ public class TestSupport {
 
 		if (result.getCardinality() < result.getConfig().getMaxCardinality()) {
 			if (FTAType.LONG.equals(result.getType())) {
-				NumberFormat longFormatter = NumberFormat.getIntegerInstance(result.getConfig().getLocale());
+				final NumberFormat longFormatter = NumberFormat.getIntegerInstance(result.getConfig().getLocale());
 
-				long min = Utils.parseLong(result.getMinValue(), longFormatter);
-				long max = Utils.parseLong(result.getMaxValue(), longFormatter);
+				final long min = Utils.parseLong(result.getMinValue(), longFormatter);
+				final long max = Utils.parseLong(result.getMaxValue(), longFormatter);
 
 				assertEquals(Utils.parseLong(result.getValueAtQuantile(0.0), longFormatter), min);
 				assertEquals(Utils.parseLong(result.getValueAtQuantile(1.0), longFormatter), max);
@@ -63,10 +63,10 @@ public class TestSupport {
 				assertEquals(Utils.parseLong(result.getCardinalityDetails().lastKey(), longFormatter), max);
 			}
 			else if (FTAType.DOUBLE.equals(result.getType())) {
-				NumberFormat doubleFormatter = NumberFormat.getInstance(result.getConfig().getLocale());
+				final NumberFormat doubleFormatter = NumberFormat.getInstance(result.getConfig().getLocale());
 
-				double min = Utils.parseDouble(result.getMinValue(), doubleFormatter);
-				double max = Utils.parseDouble(result.getMaxValue(), doubleFormatter);
+				final double min = Utils.parseDouble(result.getMinValue(), doubleFormatter);
+				final double max = Utils.parseDouble(result.getMaxValue(), doubleFormatter);
 
 				assertEquals(Utils.parseDouble(result.getValueAtQuantile(0.0), doubleFormatter), min);
 				assertEquals(Utils.parseDouble(result.getValueAtQuantile(1.0), doubleFormatter), max);
@@ -106,7 +106,7 @@ public class TestSupport {
 
 	public static void dumpPicture(final Histogram.Entry[] histogram) {
 		System.err.println("Entries: " + countHistogram(histogram));
-		long max = getMaxCount(histogram);
+		final long max = getMaxCount(histogram);
 		long sizeX = max / 100;
 		if (sizeX == 0)
 			sizeX = max / 10;
@@ -114,7 +114,7 @@ public class TestSupport {
 			sizeX = max / 1;
 
 		for (int i = 0; i < histogram.length; i++) {
-			long xCount = histogram[i].getCount()/sizeX;
+			final long xCount = histogram[i].getCount()/sizeX;
 			String output;
 			if (histogram[i].getCount() == 0)
 				output = "";

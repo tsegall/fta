@@ -80,7 +80,7 @@ public abstract class CoordinateDMS extends LogicalTypeInfinite {
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final int spaceIndex = input.indexOf(' ');
 		if (spaceIndex != -1) {
-			String[] components = input.split(" ");
+			final String[] components = input.split(" ");
 			if (components.length != 3 && components.length != 4)
 				return false;
 
@@ -97,7 +97,7 @@ public abstract class CoordinateDMS extends LogicalTypeInfinite {
 			if (!isNumeric(components[0]) || !isNumeric(components[1]) || !isNumeric(components[2]))
 				return false;
 
-			return checkDMS(Integer.valueOf(components[0]), Integer.valueOf(components[1]), Integer.valueOf(components[2]));
+			return checkDMS(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]));
 		}
 
 		int len = input.length();
@@ -111,7 +111,7 @@ public abstract class CoordinateDMS extends LogicalTypeInfinite {
 
 		len--;
 
-		return checkDMS(Integer.valueOf(DMS.substring(0, len - 4)), Integer.valueOf(DMS.substring(len - 4, len - 2)), Integer.valueOf(DMS.substring(len - 2, len)));
+		return checkDMS(Integer.parseInt(DMS.substring(0, len - 4)), Integer.parseInt(DMS.substring(len - 4, len - 2)), Integer.parseInt(DMS.substring(len - 2, len)));
 	}
 
 	@Override

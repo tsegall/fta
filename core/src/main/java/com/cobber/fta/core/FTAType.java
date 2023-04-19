@@ -86,7 +86,7 @@ public enum FTAType {
 	 * @return A boolean indicating if the Type for this pattern is numeric.
 	 */
 	public boolean isNumeric() {
-		return FTAType.LONG.equals(this) || FTAType.DOUBLE.equals(this);
+		return LONG.equals(this) || DOUBLE.equals(this);
 	}
 
 	/**
@@ -95,8 +95,8 @@ public enum FTAType {
 	 * @return A boolean indicating if the Type for this pattern includes a Date.
 	 */
 	public boolean isDateType() {
-		return FTAType.LOCALDATE.equals(this) || FTAType.LOCALDATETIME.equals(this) ||
-				FTAType.OFFSETDATETIME.equals(this) || FTAType.ZONEDDATETIME.equals(this);
+		return LOCALDATE.equals(this) || LOCALDATETIME.equals(this) ||
+				OFFSETDATETIME.equals(this) || ZONEDDATETIME.equals(this);
 	}
 
 	/**
@@ -105,6 +105,6 @@ public enum FTAType {
 	 * @return A boolean indicating if the Type for this pattern includes a Date.
 	 */
 	public boolean isDateOrTimeType() {
-		return FTAType.LOCALTIME.equals(this) || this.isDateType();
+		return LOCALTIME.equals(this) || this.isDateType();
 	}
 }

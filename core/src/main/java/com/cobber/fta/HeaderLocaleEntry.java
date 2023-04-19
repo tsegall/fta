@@ -32,7 +32,7 @@ public class HeaderLocaleEntry {
 	 */
 	public int getHeaderConfidence(final String dataStreamName) {
 		if (headerRegExps != null)
-			for (HeaderEntry headerEntry : headerRegExps) {
+			for (final HeaderEntry headerEntry : headerRegExps) {
 				if (headerEntry.matches(dataStreamName))
 					return headerEntry.confidence;
 			}

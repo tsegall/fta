@@ -217,14 +217,14 @@ public class TestTopBottomK {
 		// Should be lowest to highest
 		current = Integer.MIN_VALUE;
 		for (final String i : t.bottomKasString()) {
-			assertTrue(Integer.valueOf(i) >= current);
-			current = Integer.valueOf(i);
+			assertTrue(Integer.parseInt(i) >= current);
+			current = Integer.parseInt(i);
 		}
 		current = Integer.MAX_VALUE;
 		// Should be highest to lowest
 		for (final String i : t.topKasString()) {
-			assertTrue(Integer.valueOf(i) <= current);
-			current = Integer.valueOf(i);
+			assertTrue(Integer.parseInt(i) <= current);
+			current = Integer.parseInt(i);
 		}
 	}
 

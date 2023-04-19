@@ -30,9 +30,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect ISBN-13 identifiers (with hyphens).
  */
 public class CheckDigitISBN extends CheckDigitLT {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "CHECKDIGIT.ISBN";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "[-\\d]{17}";
 
@@ -126,11 +123,6 @@ public class CheckDigitISBN extends CheckDigitLT {
 			return new PluginAnalysis(BACKOUT_REGEXP);
 
 		return PluginAnalysis.OK;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

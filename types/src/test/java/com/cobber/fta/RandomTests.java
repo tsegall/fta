@@ -43,8 +43,6 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
-import com.cobber.fta.plugins.FreeText;
-import com.cobber.fta.plugins.USZip5;
 import com.cobber.fta.plugins.USZipPlus4;
 
 public class RandomTests {
@@ -305,7 +303,8 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getSemanticType(), USZip5.SEMANTIC_TYPE);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US");
+		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), COUNT);
 		assertEquals(result.getMatchCount(), COUNT - INVALID);
@@ -475,7 +474,7 @@ public class RandomTests {
 		for (int copy = 0; copy < COPIES; copy++)
 			for (int i = 0; i < demos.length; i++) {
 				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(demos[i]);
-				int index = copy * demos.length + i;
+				final int index = copy * demos.length + i;
 				logicals[index] = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 				analyzers[index] = new TextAnalyzer(demos[i]);
 				analyzers[index].setLocale(Locale.forLanguageTag("en-US"));
@@ -703,7 +702,8 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), USZipPlus4.SEMANTIC_TYPE);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_PLUS4_US");
+		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
@@ -754,7 +754,8 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), USZipPlus4.SEMANTIC_TYPE);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_PLUS4_US");
+		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
@@ -1656,7 +1657,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void USPhone() throws IOException, FTAException {
-		String[] samples = new String[1000];
+		final String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
@@ -1693,7 +1694,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void USPhone2() throws IOException, FTAException {
-		String[] samples = new String[1000];
+		final String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
@@ -1729,7 +1730,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void USPhone3() throws IOException, FTAException {
-		String[] samples = new String[1000];
+		final String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
@@ -1788,8 +1789,8 @@ public class RandomTests {
 		assertEquals(result.getShapeCount(), 6);
 		final Map<String, Long> shapes = result.getShapeDetails();
 		assertEquals(shapes.size(), result.getShapeCount());
-		assertEquals(shapes.get("999999999999"), Long.valueOf(1));
-		assertEquals(shapes.get("9999XXX99999"), Long.valueOf(2));
+		assertEquals(shapes.get("999999999999"), 1L);
+		assertEquals(shapes.get("9999XXX99999"), 2L);
 
 		for (final String sample : samples) {
 			assertTrue(sample.matches(result.getRegExp()));
@@ -1798,7 +1799,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void difficultRegExp() throws IOException, FTAException {
-		String[] samples = new String[1000];
+		final String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
@@ -2156,7 +2157,7 @@ public class RandomTests {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-2");
 		assertEquals(result.getMaxValue(), "10000");
-		NavigableMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
+		final NavigableMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
 		assertEquals(cardinalityDetails.firstKey(), "-2");
 		assertEquals(cardinalityDetails.lastKey(), "10000");
 	}
@@ -2182,7 +2183,7 @@ public class RandomTests {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-2.0");
 		assertEquals(result.getMaxValue(), "10000.45");
-		NavigableMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
+		final NavigableMap<String, Long> cardinalityDetails = result.getCardinalityDetails();
 		assertEquals(cardinalityDetails.firstKey(), "-2.0");
 		assertEquals(cardinalityDetails.lastKey(), "10000.45");
 	}
@@ -2315,7 +2316,8 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), FreeText.SEMANTIC_TYPE);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("FREE_TEXT");
+		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getRegExp(), ".{36,185}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -2347,7 +2349,8 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), FreeText.SEMANTIC_TYPE);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("FREE_TEXT");
+		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getRegExp(), ".{16,25}");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -2573,7 +2576,7 @@ public class RandomTests {
 	};
 
 	public String[] generateTestData(final int type, final int length) {
-		String[] result = new String[length];
+		final String[] result = new String[length];
 		final String[] candidatesISO3166_3 = TestUtils.valid3166_3.split("\\|");
 		final String[] candidatesISO3166_2 = TestUtils.valid3166_2.split("\\|");
 		final String[] candidatesZips = TestUtils.validZips.split("\\|");
@@ -2725,7 +2728,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testThreading() throws IOException, FTAException, FTAException, InterruptedException {
 		final int THREADS = 500;
-		Thread[] threads = new Thread[THREADS];
+		final Thread[] threads = new Thread[THREADS];
 
 		for (int t = 0; t < THREADS; t++) {
 			final int type = random.nextInt(decoder.length);
@@ -2782,7 +2785,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testThreadingIssue() throws IOException, FTAException, InterruptedException {
 		final int THREADS = 1000;
-		Thread[] threads = new Thread[THREADS];
+		final Thread[] threads = new Thread[THREADS];
 
 		for (int t = 0; t < THREADS; t++)
 			threads[t] = new Thread(new PluginThread(String.valueOf(t)));
@@ -2855,7 +2858,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testLogicalTypeThreading() throws IOException, FTAException, InterruptedException {
 		final int THREADS = 1000;
-		Thread[] threads = new Thread[THREADS];
+		final Thread[] threads = new Thread[THREADS];
 
 		for (int t = 0; t < THREADS; t++)
 			threads[t] = new Thread(new LogicalTypeThread(String.valueOf(t)));

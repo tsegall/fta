@@ -24,9 +24,6 @@ import com.cobber.fta.core.FTAType;
  * Plugin to detect valid SEDOL identifiers.
  */
 public class CheckDigitSEDOL extends CheckDigitLT {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "CHECKDIGIT.SEDOL";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "[\\p{IsAlphabetic}\\d]{6}\\d";
 
@@ -47,11 +44,6 @@ public class CheckDigitSEDOL extends CheckDigitLT {
 	@Override
 	public String getRegExp() {
 		return REGEXP;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

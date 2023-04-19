@@ -24,9 +24,6 @@ import com.cobber.fta.core.FTAType;
  * Plugin to detect valid CUSIPs .
  */
 public class CheckDigitCUSIP extends CheckDigitLT {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "CHECKDIGIT.CUSIP";
-
 	/** The Regular Expression for this Semantic type. */
 	private static final String REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 
@@ -52,11 +49,6 @@ public class CheckDigitCUSIP extends CheckDigitLT {
 	@Override
 	public String getRegExp() {
 		return REGEXP;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

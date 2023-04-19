@@ -35,8 +35,6 @@ import com.cobber.fta.token.TokenStreams;
  * Note: we used an Infinite :-) Semantic Type since the domains is so large.
  */
 public class USZipPlus4 extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "POSTAL_CODE.ZIP5_PLUS4_US";
 	public static final String REGEXP_ZIP_PLUS4_HYPHEN = "\\d{5}-\\d{4}";
 	public static final String REGEXP_ZIP_PLUS4 = "\\d{9}";
 	public static final String REGEXP_VARIABLE_HYPHEN = "\\d{5}(-\\d{4})?";
@@ -91,11 +89,6 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		return random.nextInt(10) >= 8 ? zipsRef.getRandom(random) : zipsRef.getRandom(random) + "-" + random.nextInt(10) + random.nextInt(10) + random.nextInt(10) + random.nextInt(10);
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

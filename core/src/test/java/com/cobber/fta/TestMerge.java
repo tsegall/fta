@@ -63,13 +63,13 @@ public class TestMerge {
 		final DateTimeParser shardTwo = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None);
 		for (int i = 0; i < 500; i++)
 			shardTwo.train("21/3/2009");
-		DateTimeParserResult shardTwoResult = shardTwo.getResult();
+		final DateTimeParserResult shardTwoResult = shardTwo.getResult();
 		assertEquals(shardTwoResult.getFormatString(), "dd/M/yyyy");
 
 		final DateTimeParser shardThree = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None);
 		for (int i = 0; i < 1000; i++)
 			shardThree.train("3/30/2010");
-		DateTimeParserResult shardThreeResult = shardThree.getResult();
+		final DateTimeParserResult shardThreeResult = shardThree.getResult();
 		assertEquals(shardThreeResult.getFormatString(), "M/dd/yyyy");
 
 		shardOne.merge(shardTwo);
@@ -93,14 +93,14 @@ public class TestMerge {
 		final DateTimeParser shardTwo = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None);
 		for (int i = 0; i < 500; i++)
 			shardTwo.train("21/3/2009");
-		DateTimeParserResult shardTwoResult = shardTwo.getResult();
+		final DateTimeParserResult shardTwoResult = shardTwo.getResult();
 		assertEquals(shardTwoResult.getFormatString(), "dd/M/yyyy");
 		final DateTimeParser shardTwoHydrated = DateTimeParser.deserialize(shardTwo.serialize());
 
 		final DateTimeParser shardThree = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None);
 		for (int i = 0; i < 1000; i++)
 			shardThree.train("3/30/2010");
-		DateTimeParserResult shardThreeResult = shardThree.getResult();
+		final DateTimeParserResult shardThreeResult = shardThree.getResult();
 		assertEquals(shardThreeResult.getFormatString(), "M/dd/yyyy");
 		final DateTimeParser shardThreeHydrated = DateTimeParser.deserialize(shardThree.serialize());
 
@@ -128,7 +128,7 @@ public class TestMerge {
 			shardTwo.train(null);
 			shardTwo.train("  ");
 		}
-		DateTimeParserResult shardTwoResult = shardTwo.getResult();
+		final DateTimeParserResult shardTwoResult = shardTwo.getResult();
 		assertEquals(shardTwoResult.getFormatString(), "dd/M/yyyy");
 
 		final DateTimeParser shardThree = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None);
@@ -137,7 +137,7 @@ public class TestMerge {
 			shardThree.train(null);
 			shardThree.train("   ");
 		}
-		DateTimeParserResult shardThreeResult = shardThree.getResult();
+		final DateTimeParserResult shardThreeResult = shardThree.getResult();
 		assertEquals(shardThreeResult.getFormatString(), "M/dd/yyyy");
 
 		shardOne.merge(shardTwo);
@@ -154,7 +154,7 @@ public class TestMerge {
 		final DateTimeParser shardOne = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None);
 		for (int i = 0; i < 100; i++)
 			shardOne.train("10/20/2008");
-		DateTimeParserResult shardOneResult = shardOne.getResult();
+		final DateTimeParserResult shardOneResult = shardOne.getResult();
 		assertEquals(shardOneResult.getFormatString(), "MM/dd/yyyy");
 
 		try {
@@ -178,13 +178,13 @@ public class TestMerge {
 		final DateTimeParser shardTwo = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None);
 		for (int i = 0; i < 500; i++)
 			shardTwo.train("21/3/2009");
-		DateTimeParserResult shardTwoResult = shardTwo.getResult();
+		final DateTimeParserResult shardTwoResult = shardTwo.getResult();
 		assertEquals(shardTwoResult.getFormatString(), "dd/M/yyyy");
 
 		final DateTimeParser shardThree = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None);
 		for (int i = 0; i < 1000; i++)
 			shardThree.train("11/30/2010");
-		DateTimeParserResult shardThreeResult = shardThree.getResult();
+		final DateTimeParserResult shardThreeResult = shardThree.getResult();
 		assertEquals(shardThreeResult.getFormatString(), "MM/dd/yyyy");
 
 		shardOne.merge(shardTwo);
@@ -201,13 +201,13 @@ public class TestMerge {
 		final DateTimeParser shardOne = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None).withLocale(Locale.ENGLISH);
 		for (int i = 0; i < 100; i++)
 			shardOne.train("10/20/2008");
-		DateTimeParserResult shardOneResult = shardOne.getResult();
+		final DateTimeParserResult shardOneResult = shardOne.getResult();
 		assertEquals(shardOneResult.getFormatString(), "MM/dd/yyyy");
 
 		final DateTimeParser shardTwo = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None).withLocale(Locale.GERMAN);
 		for (int i = 0; i < 500; i++)
 			shardTwo.train("21/3/2009");
-		DateTimeParserResult shardTwoResult = shardTwo.getResult();
+		final DateTimeParserResult shardTwoResult = shardTwo.getResult();
 		assertEquals(shardTwoResult.getFormatString(), "dd/M/yyyy");
 
 		try {
@@ -222,18 +222,18 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void simpleStrictOn() throws FTAMergeException {
-		List<String> list = Arrays.asList("21/01/2022", "test string 1", "test string 2");
-		DateTimeParser dateTimeParser = new DateTimeParser().withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto).withStrictMode(true);
+		final List<String> list = Arrays.asList("21/01/2022", "test string 1", "test string 2");
+		final DateTimeParser dateTimeParser = new DateTimeParser().withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto).withStrictMode(true);
 		list.forEach(dateTimeParser::train);
 		assertNull(dateTimeParser.getResult());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void simpleStrictOff() throws FTAMergeException {
-		List<String> list = Arrays.asList("21/01/2022", "test string 1", "test string 2");
-		DateTimeParser dateTimeParser = new DateTimeParser().withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto).withStrictMode(false);
+		final List<String> list = Arrays.asList("21/01/2022", "test string 1", "test string 2");
+		final DateTimeParser dateTimeParser = new DateTimeParser().withDateResolutionMode(DateTimeParser.DateResolutionMode.Auto).withStrictMode(false);
 		list.forEach(dateTimeParser::train);
-		DateTimeParserResult result = dateTimeParser.getResult();
+		final DateTimeParserResult result = dateTimeParser.getResult();
 		assertNotNull(result);
 		assertEquals(result.getFormatString(), "dd/MM/yyyy");
 	}

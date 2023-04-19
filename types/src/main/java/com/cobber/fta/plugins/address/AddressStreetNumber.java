@@ -92,12 +92,12 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
-		double confidence = (double)matchCount/realSamples;
+		final double confidence = (double)matchCount/realSamples;
 		if (getHeaderConfidence(context.getStreamName()) >= 99)
 			return confidence;
 
 		// A close field must have a Semantic Type that indicates it is a Street name (with or without the marker)
-		Integer closest = context.indexOfSemanticType(analysisConfig.bindSemanticType("STREET_NAME_<LANGUAGE>"), analysisConfig.bindSemanticType("STREET_NAME_BARE_<LANGUAGE>"));
+		final Integer closest = context.indexOfSemanticType(analysisConfig.bindSemanticType("STREET_NAME_<LANGUAGE>"), analysisConfig.bindSemanticType("STREET_NAME_BARE_<LANGUAGE>"));
 		if (closest == null || Math.abs(closest) > 2)
 			return 0.0;
 

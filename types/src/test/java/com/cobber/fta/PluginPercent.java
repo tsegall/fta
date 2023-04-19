@@ -29,7 +29,7 @@ public class PluginPercent extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		try {
-			return Double.valueOf(trimmed) < 1.0;
+			return Double.parseDouble(trimmed) < 1.0;
 		}
 		catch (NumberFormatException e) {
 			return false;
@@ -66,7 +66,7 @@ public class PluginPercent extends LogicalTypeInfinite {
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		try {
-			return Double.valueOf(input) < 1.0;
+			return Double.parseDouble(input) < 1.0;
 		}
 		catch (NumberFormatException e) {
 			return false;

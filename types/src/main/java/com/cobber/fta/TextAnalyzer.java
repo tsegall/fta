@@ -1037,7 +1037,7 @@ public class TextAnalyzer {
 
 			// Track whether we have ever seen a double with a non-zero fractional component
 			if (facts.allZeroes) {
-				int separatorIndex = input.indexOf(facts.decimalSeparator);
+				final int separatorIndex = input.indexOf(facts.decimalSeparator);
 				if (separatorIndex != -1 && !Utils.allZeroes(input.substring(separatorIndex + 1)))
 					facts.allZeroes = false;
 				else {
@@ -1291,7 +1291,7 @@ public class TextAnalyzer {
 
 	private StringBuilder[]
 	determineNumericPattern(final SignStatus signStatus, final int numericDecimalSeparators, final int possibleExponentSeen, final boolean nonLocalizedDouble) {
-		StringBuilder[] result = new StringBuilder[2];
+		final StringBuilder[] result = new StringBuilder[2];
 
 		if (signStatus == SignStatus.TRAILING_MINUS) {
 			result[0] = result[1] = new StringBuilder(numericDecimalSeparators == 1 ? knownTypes.PATTERN_SIGNED_DOUBLE_TRAILING : knownTypes.PATTERN_SIGNED_LONG_TRAILING);
@@ -1361,7 +1361,7 @@ public class TextAnalyzer {
 
 		// Sort so we have the most frequent first
 		observed = Utils.sortByValue(observed);
-		Observation[] facts = new Observation[observed.size()];
+		final Observation[] facts = new Observation[observed.size()];
 		int i = 0;
 		long total = 0;
 
@@ -1376,9 +1376,9 @@ public class TextAnalyzer {
 
 		// Each element in the array has the probability that an observation is in this location or an earlier one
 		long running = 0;
-		for (int f = 0; f < facts.length; f++) {
-			running += facts[f].count;
-			facts[f].percentage = (double)running/total;
+		for (final Observation fact : facts) {
+			running += fact.count;
+			fact.percentage = (double)running/total;
 		}
 
 		// First send in a random set of samples until we are trained
@@ -1523,8 +1523,8 @@ public class TextAnalyzer {
 		int possibleExponentSeen = -1;
 		int digitsSeen = 0;
 		int alphasSeen = 0;
-		int[] charCounts = new int[128];
-		int[] lastIndex = new int[128];
+		final int[] charCounts = new int[128];
+		final int[] lastIndex = new int[128];
 		int startLooking = 0;
 		int stopLooking = length;
 
@@ -2741,7 +2741,7 @@ public class TextAnalyzer {
 	private final static int EARLY_LONG_YYYYMMDD = 19000101;
 	private final static int LATE_LONG_YYYYMMDD = 20510101;
 
-	protected TextAnalysisResult reAnalyze(Map<String, Long> details) throws FTAPluginException, FTAUnsupportedLocaleException {
+	protected TextAnalysisResult reAnalyze(final Map<String, Long> details) throws FTAPluginException, FTAUnsupportedLocaleException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer(getContext());
 		analysisBulk.setExternalFacts(getFacts().external);
 		analysisBulk.setConfig(getConfig());
@@ -3037,11 +3037,11 @@ public class TextAnalyzer {
 		// most popular non-valid entry in the hope that it is something like 'NA', 'XX', etc.
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType() && !getContext().isNested() && pluginThreshold != 100 && facts.cardinality.size() >= 4) {
 			for (final LogicalType logical : plugins.getRegisteredLogicalTypes()) {
-				Map<String, Long> details = facts.synthesizeBulk();
+				final Map<String, Long> details = facts.synthesizeBulk();
 				long worst = (facts.sampleCount - (facts.nullCount + facts.blankCount)) / 20;
 				Map.Entry<String, Long> worstEntry = null;
 				if (logical.getHeaderConfidence(getContext().getStreamName()) >= 90) {
-					for (Map.Entry<String, Long> entry : details.entrySet()) {
+					for (final Map.Entry<String, Long> entry : details.entrySet()) {
 						if (isInteresting(entry.getKey()) && !logical.isValid(entry.getKey()) && entry.getValue() > worst) {
 							worstEntry = entry;
 							worst = entry.getValue();
@@ -3080,10 +3080,10 @@ public class TextAnalyzer {
 			Histogram.tagClusters(buckets);
 
 			// Identify any outliers based on 'density-based clustering' (using the Histograms to generate the clusters)
-			for (Map.Entry<String, Long> entry : details.entrySet()) {
+			for (final Map.Entry<String, Long> entry : details.entrySet()) {
 				if (Utils.isNumeric(entry.getKey())) {
 					final double value = stringConverter.toDouble(entry.getKey());
-					Histogram.Entry bucket = Histogram.getBucket(buckets, value);
+					final Histogram.Entry bucket = Histogram.getBucket(buckets, value);
 					// Scratch any cluster with less than 2% of the samples
 					if (bucket.getClusterPercent() < .02)
 						outliers.put(entry.getKey(), entry.getValue());
@@ -3117,7 +3117,7 @@ public class TextAnalyzer {
 			final Map<String, Long> details = new HashMap<>();
 			final StringConverter stringConverter = facts.getStringConverter();
 
-			for (Map.Entry<String, Long> entry : doubleDetails.entrySet())
+			for (final Map.Entry<String, Long> entry : doubleDetails.entrySet())
 				if (entry.getKey() == null || entry.getKey().isBlank())
 					details.put(entry.getKey(), entry.getValue());
 				else
@@ -3212,7 +3212,7 @@ public class TextAnalyzer {
 	 */
 	private void generateTopBottom() {
 		for (final String s : facts.cardinality.keySet())
-			if (Integer.valueOf(s.trim()) != 0)
+			if (Integer.parseInt(s.trim()) != 0)
 				try {
 					trackDateTime(s, facts.getMatchTypeInfo(), true);
 				}
@@ -3531,7 +3531,7 @@ public class TextAnalyzer {
 	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
 	 */
 	public static TextAnalyzer merge(final TextAnalyzer first, final TextAnalyzer second) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException  {
-		TextAnalyzer ret = new TextAnalyzer(first.context);
+		final TextAnalyzer ret = new TextAnalyzer(first.context);
 
 		if (!first.analysisConfig.equals(second.analysisConfig))
 			throw new FTAMergeException("The AnalysisConfig for both TextAnalyzers must be identical.");

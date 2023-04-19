@@ -329,8 +329,8 @@ public class TestDoubles {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(Double.valueOf(result.getMinValue()), Double.valueOf(smallest), TestUtils.EPSILON);
-		assertEquals(Double.valueOf(result.getMaxValue()), Double.valueOf(largest), TestUtils.EPSILON);
+		assertEquals(Double.parseDouble(result.getMinValue()), Double.parseDouble(smallest), TestUtils.EPSILON);
+		assertEquals(Double.parseDouble(result.getMaxValue()), Double.parseDouble(largest), TestUtils.EPSILON);
 		assertNull(result.checkCounts());
 
 		TestSupport.checkHistogram(result, 10, true);
@@ -407,7 +407,7 @@ public class TestDoubles {
 		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMean(), Double.valueOf(80.26315789473685));
+		assertEquals(result.getMean(), 80.26315789473685);
 		assertNull(result.checkCounts());
 
 		TestSupport.checkHistogram(result, 10, true);
@@ -628,7 +628,7 @@ public class TestDoubles {
 		assertEquals(result.getInvalidCount(), 3);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 3);
-		assertEquals(invalids.get("Zoomer"), Long.valueOf(1));
+		assertEquals(invalids.get("Zoomer"), 1L);
 		assertNull(result.checkCounts());
 
 		TestSupport.checkHistogram(result, 10, true);
@@ -640,7 +640,7 @@ public class TestDoubles {
 		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthDoublesI18N_1");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final int nullIterations = 50;
-		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
+		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;
 		int locked = -1;
 		final Locale locale = Locale.forLanguageTag("de-AT");
 		analysis.setLocale(locale);
@@ -689,7 +689,7 @@ public class TestDoubles {
 				"44876900.00", "681023.00", "460198.00", "1123220.00", "18300.00"
 
 		};
-		String[] samples = new String[samplesUS.length];
+		final String[] samples = new String[samplesUS.length];
 		final TextAnalyzer analysis = new TextAnalyzer("manyFrenchDoubles");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final Locale locale = Locale.forLanguageTag("fr-FR");
@@ -700,7 +700,7 @@ public class TestDoubles {
 		formatter.setMaximumFractionDigits(2);
 
 		for (int i = 0; i < samples.length; i++) {
-			final double d = Double.valueOf(samplesUS[i]);
+			final double d = Double.parseDouble(samplesUS[i]);
 			samples[i] = formatter.format(d);
 		}
 
@@ -809,7 +809,7 @@ public class TestDoubles {
 			final String sample = String.format("%04d.0e%d",
 					random.nextInt(10000), random.nextInt(10));
 			samples.add(sample);
-			double d = Double.valueOf(sample.toUpperCase(Locale.ROOT));
+			final double d = Double.parseDouble(sample.toUpperCase(Locale.ROOT));
 			if (d < min)
 				min = d;
 			analysis.train(sample);
@@ -945,7 +945,7 @@ public class TestDoubles {
 	public void manyConstantLengthDoublesI18N_2() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthDoublesI18N_2");
 		final int nullIterations = 50;
-		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
+		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;
 		int locked = -1;
 		final Locale locale = Locale.forLanguageTag("de-DE");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
@@ -1146,7 +1146,7 @@ public class TestDoubles {
 
 			if (result.getType() != FTAType.DOUBLE) {
 				System.err.println("locale: " + locale);
-				for (String sample : samples)
+				for (final String sample : samples)
 					System.err.println(sample);
 			}
 			assertEquals(result.getType(), FTAType.DOUBLE);
@@ -2302,7 +2302,7 @@ public void localeDoubleES_CO() throws IOException, FTAException {
 		final long sampleCount = 100_000_000_000L;
 		boolean saveOutput = false;
 		BufferedWriter bw = null;
-		String[] samples = new String[10000];
+		final String[] samples = new String[10000];
 
 		if (saveOutput)
 			bw = new BufferedWriter(new FileWriter("/tmp/doublePerf.csv"));

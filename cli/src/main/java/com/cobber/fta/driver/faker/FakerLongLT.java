@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ public class FakerLongLT extends FakerLT {
 	private long range;
 	private long last = Long.MIN_VALUE;
 
-	public FakerLongLT(PluginDefinition plugin) {
+	public FakerLongLT(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -62,7 +62,7 @@ public class FakerLongLT extends FakerLT {
 
 		long l = 0;
 		if (distribution.equals("random")) {
-			double d = random.nextDouble();
+			final double d = random.nextDouble();
 			l = Math.round(d * range);
 
 			if (low != null)

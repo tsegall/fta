@@ -32,8 +32,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect URLs.
  */
 public class URLLT extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "URI.URL";
 	public static final String REGEXP_PROTOCOL = "(https?|ftp|file)";
 	public static final String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 	private static UrlValidator validator;
@@ -73,11 +71,6 @@ public class URLLT extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		return sitesList[random.nextInt(sitesList.length)];
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

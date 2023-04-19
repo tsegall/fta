@@ -73,7 +73,7 @@ public class TestDistributions {
 		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, rehydrated.serialize());
 
-		TextAnalysisResult result = rehydrated.getResult();
+		final TextAnalysisResult result = rehydrated.getResult();
 
 		// Test post getResult()
 		serialized = rehydrated.serialize();
@@ -86,17 +86,17 @@ public class TestDistributions {
 
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), String.valueOf(size - 1));
-		String q0_0 = result.getValueAtQuantile(0);
-		String q0_5 = result.getValueAtQuantile(.5);
-		String q1_0 = result.getValueAtQuantile(1.0);
+		final String q0_0 = result.getValueAtQuantile(0);
+		final String q0_5 = result.getValueAtQuantile(.5);
+		final String q1_0 = result.getValueAtQuantile(1.0);
 
-		long actual_0_0 = Long.valueOf(q0_0);
-		long actual_0_5 = Long.valueOf(q0_5);
-		long actual_1_0 = Long.valueOf(q1_0);
+		final long actual_0_0 = Long.valueOf(q0_0);
+		final long actual_0_5 = Long.valueOf(q0_5);
+		final long actual_1_0 = Long.valueOf(q1_0);
 
-		long expected_0_0 = 0;
-		long expected_0_5 = (size - 1) / 2;
-		long expected_1_0 = size - 1;
+		final long expected_0_0 = 0;
+		final long expected_0_5 = (size - 1) / 2;
+		final long expected_1_0 = size - 1;
 
 		assertEquals(actual_0_0, expected_0_0, expected_0_0 * relativeAccuracy);
 		assertEquals(actual_0_5, expected_0_5, expected_0_5 * relativeAccuracy);
@@ -164,17 +164,17 @@ public class TestDistributions {
 
 		assertEquals(result.getMinValue(), String.valueOf(-size + 1));
 		assertEquals(result.getMaxValue(), String.valueOf(size - 1));
-		String q0_0 = result.getValueAtQuantile(0);
-		String q0_5 = result.getValueAtQuantile(.5);
-		String q1_0 = result.getValueAtQuantile(1.0);
+		final String q0_0 = result.getValueAtQuantile(0);
+		final String q0_5 = result.getValueAtQuantile(.5);
+		final String q1_0 = result.getValueAtQuantile(1.0);
 
-		long actual_0_0 = Long.valueOf(q0_0);
-		long actual_0_5 = Long.valueOf(q0_5);
-		long actual_1_0 = Long.valueOf(q1_0);
+		final long actual_0_0 = Long.valueOf(q0_0);
+		final long actual_0_5 = Long.valueOf(q0_5);
+		final long actual_1_0 = Long.valueOf(q1_0);
 
-		long expected_0_0 = -size + 1;
-		long expected_0_5 = 0;
-		long expected_1_0 = size - 1;
+		final long expected_0_0 = -size + 1;
+		final long expected_0_5 = 0;
+		final long expected_1_0 = size - 1;
 
 		assertEquals(actual_0_0, expected_0_0, Math.abs(expected_0_0) * relativeAccuracy);
 		assertEquals(actual_0_5, expected_0_5, expected_0_5 * relativeAccuracy);
@@ -206,7 +206,7 @@ public class TestDistributions {
 		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, rehydrated.serialize());
 
-		TextAnalysisResult result = rehydrated.getResult();
+		final TextAnalysisResult result = rehydrated.getResult();
 
 		// Test post getResult()
 		serialized = rehydrated.serialize();
@@ -220,18 +220,18 @@ public class TestDistributions {
 		assertEquals(result.getMinValue(), "0.0");
 		assertEquals(result.getMaxValue(), String.valueOf(1.0 * (size - 1)));
 
-		String[] quantiles = result.getValuesAtQuantiles(new double[] { 0.0, 0.5, 1.0 });
-		String q0_0 = quantiles[0];
-		String q0_5 = quantiles[1];
-		String q1_0 = quantiles[2];
+		final String[] quantiles = result.getValuesAtQuantiles(new double[] { 0.0, 0.5, 1.0 });
+		final String q0_0 = quantiles[0];
+		final String q0_5 = quantiles[1];
+		final String q1_0 = quantiles[2];
 
-		double actual_0_0 = Double.valueOf(q0_0);
-		double actual_0_5 = Double.valueOf(q0_5);
-		double actual_1_0 = Double.valueOf(q1_0);
+		final double actual_0_0 = Double.valueOf(q0_0);
+		final double actual_0_5 = Double.valueOf(q0_5);
+		final double actual_1_0 = Double.valueOf(q1_0);
 
-		double expected_0_0 = 0.0;
-		double expected_0_5 = Math.floor(1.0 * (size - 1) / 2);
-		double expected_1_0 = 1.0 * (size - 1);
+		final double expected_0_0 = 0.0;
+		final double expected_0_5 = Math.floor(1.0 * (size - 1) / 2);
+		final double expected_1_0 = 1.0 * (size - 1);
 
 		assertEquals(actual_0_0, expected_0_0, expected_0_0 * relativeAccuracy);
 		assertEquals(actual_0_5, expected_0_5, expected_0_5 * relativeAccuracy);
@@ -296,7 +296,7 @@ public class TestDistributions {
 		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, rehydrated.serialize());
 
-		TextAnalysisResult result = rehydrated.getResult();
+		final TextAnalysisResult result = rehydrated.getResult();
 
 		// Test post getResult()
 		serialized = rehydrated.serialize();
@@ -309,17 +309,17 @@ public class TestDistributions {
 
 		assertEquals(result.getMinValue(), "1900");
 		assertEquals(result.getMaxValue(), String.valueOf(1900 + size - 1));
-		String q0_0 = result.getValueAtQuantile(0);
-		String q0_5 = result.getValueAtQuantile(.5);
-		String q1_0 = result.getValueAtQuantile(1.0);
+		final String q0_0 = result.getValueAtQuantile(0);
+		final String q0_5 = result.getValueAtQuantile(.5);
+		final String q1_0 = result.getValueAtQuantile(1.0);
 
-		long actual_0_0 = Long.valueOf(q0_0);
-		long actual_0_5 = Long.valueOf(q0_5);
-		long actual_1_0 = Long.valueOf(q1_0);
+		final long actual_0_0 = Long.valueOf(q0_0);
+		final long actual_0_5 = Long.valueOf(q0_5);
+		final long actual_1_0 = Long.valueOf(q1_0);
 
-		long expected_0_0 = 1900;
-		long expected_0_5 = 1900 + (size - 1) / 2;
-		long expected_1_0 = 1900 + (size - 1);
+		final long expected_0_0 = 1900;
+		final long expected_0_5 = 1900 + (size - 1) / 2;
+		final long expected_1_0 = 1900 + (size - 1);
 
 		assertEquals(actual_0_0, expected_0_0, expected_0_0 * RELATIVE_ACCURACY);
 		assertEquals(actual_0_5, expected_0_5, expected_0_5 * RELATIVE_ACCURACY);
@@ -346,7 +346,7 @@ public class TestDistributions {
 				"19880101", "19960701", "20100701", "20120830", "20120908", "20130101", "20130702", "20140701", "20160701", "20170701"
 		};
 
-		for (String testCase : testCases)
+		for (final String testCase : testCases)
 			analysis.train(testCase);
 
 		// Test pre getResult()
@@ -359,7 +359,7 @@ public class TestDistributions {
 		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, rehydrated.serialize());
 
-		TextAnalysisResult result = rehydrated.getResult();
+		final TextAnalysisResult result = rehydrated.getResult();
 
 		// Test post getResult()
 		serialized = rehydrated.serialize();
@@ -373,9 +373,9 @@ public class TestDistributions {
 		assertEquals(result.getMinValue(), "19880101");
 		assertEquals(result.getMaxValue(), "20180703");
 
-		String actual_0_0 = result.getValueAtQuantile(0);
-		String actual_0_5 = result.getValueAtQuantile(.5);
-		String actual_1_0 = result.getValueAtQuantile(1.0);
+		final String actual_0_0 = result.getValueAtQuantile(0);
+		final String actual_0_5 = result.getValueAtQuantile(.5);
+		final String actual_1_0 = result.getValueAtQuantile(1.0);
 
 		assertEquals(actual_0_0, "19880101");
 		assertEquals(actual_0_5, "20130101");
@@ -387,9 +387,9 @@ public class TestDistributions {
 		final TextAnalyzer analysis = new TextAnalyzer("localeDateTime");
 		analysis.setQuantileRelativeAccuracy(relativeAccuracy);
 		analysis.setLocale(locale);
-		DateTimeParser dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false);
-		DateTimeFormatter dtf = dateTimeParser.ofPattern("MM/dd/yyyy h:mm:ss a");
-		LocalDateTime start = LocalDateTime.parse("01/01/1990 8:30:00 AM", dtf);
+		final DateTimeParser dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false);
+		final DateTimeFormatter dtf = dateTimeParser.ofPattern("MM/dd/yyyy h:mm:ss a");
+		final LocalDateTime start = LocalDateTime.parse("01/01/1990 8:30:00 AM", dtf);
 
 		LocalDateTime ldt = start;
 		LocalDateTime mid = null;
@@ -413,7 +413,7 @@ public class TestDistributions {
 		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, rehydrated.serialize());
 
-		TextAnalysisResult result = rehydrated.getResult();
+		final TextAnalysisResult result = rehydrated.getResult();
 
 		// Test post getResult()
 		serialized = rehydrated.serialize();
@@ -428,9 +428,9 @@ public class TestDistributions {
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeModifier(), "MM/dd/yyyy h:mm:ss a");
 
-		String q0_0 = result.getValueAtQuantile(0);
-		String q0_5 = result.getValueAtQuantile(.5);
-		String q1_0 = result.getValueAtQuantile(1.0);
+		final String q0_0 = result.getValueAtQuantile(0);
+		final String q0_5 = result.getValueAtQuantile(.5);
+		final String q1_0 = result.getValueAtQuantile(1.0);
 
 		if (size <= analysis.getMaxCardinality()) {
 			assertEquals(q0_0, dtf.format(ldt));
@@ -473,15 +473,15 @@ public class TestDistributions {
 		int digits = 0;
 		for(; num != 0; num/=10, ++digits)
 			;
-		String format = "%0" + digits + "d";
-		char[] mapping = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
+		final String format = "%0" + digits + "d";
+		final char[] mapping = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
 
-		StringBuilder s = new StringBuilder();
+		final StringBuilder s = new StringBuilder();
 		String sample = null;
 
 		for (int i = 0; i < size; i++) {
 			s.setLength(0);
-			String result = String.format(format, i);
+			final String result = String.format(format, i);
 			for (int l = 0; l < result.length(); l++) {
 				s.append(mapping[result.charAt(l) - '0']);
 			}
@@ -509,9 +509,9 @@ public class TestDistributions {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertNull(result.getTypeModifier());
 
-		String q0_0 = result.getValueAtQuantile(0);
-		String q0_5 = result.getValueAtQuantile(.5);
-		String q1_0 = result.getValueAtQuantile(1.0);
+		final String q0_0 = result.getValueAtQuantile(0);
+		final String q0_5 = result.getValueAtQuantile(.5);
+		final String q1_0 = result.getValueAtQuantile(1.0);
 
 		assertEquals(q0_0, min);
 		assertEquals(q0_5, mid);
@@ -546,9 +546,9 @@ public class TestDistributions {
 		assertEquals(result.getType(), FTAType.BOOLEAN);
 		assertEquals(result.getTypeModifier(), "TRUE_FALSE");
 
-		Boolean q0_0 = Boolean.valueOf(result.getValueAtQuantile(0));
-		Boolean q0_5 = Boolean.valueOf(result.getValueAtQuantile(.5));
-		Boolean q1_0 = Boolean.valueOf(result.getValueAtQuantile(1.0));
+		final Boolean q0_0 = Boolean.valueOf(result.getValueAtQuantile(0));
+		final Boolean q0_5 = Boolean.valueOf(result.getValueAtQuantile(.5));
+		final Boolean q1_0 = Boolean.valueOf(result.getValueAtQuantile(1.0));
 
 		assertEquals(q0_0, input);
 		assertEquals(q0_5, input);
@@ -593,7 +593,7 @@ public class TestDistributions {
 		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, rehydrated.serialize());
 
-		TextAnalysisResult result = rehydrated.getResult();
+		final TextAnalysisResult result = rehydrated.getResult();
 
 		// Test post getResult()
 		serialized = rehydrated.serialize();
@@ -608,9 +608,9 @@ public class TestDistributions {
 		assertEquals(result.getType(), FTAType.BOOLEAN);
 		assertEquals(result.getTypeModifier(), "TRUE_FALSE");
 
-		Boolean q0_0 = Boolean.valueOf(result.getValueAtQuantile(0));
-		Boolean q0_5 = Boolean.valueOf(result.getValueAtQuantile(.5));
-		Boolean q1_0 = Boolean.valueOf(result.getValueAtQuantile(1.0));
+		final Boolean q0_0 = Boolean.valueOf(result.getValueAtQuantile(0));
+		final Boolean q0_5 = Boolean.valueOf(result.getValueAtQuantile(.5));
+		final Boolean q1_0 = Boolean.valueOf(result.getValueAtQuantile(1.0));
 
 		assertEquals(q0_0, false);
 		assertEquals(q0_5, false);
@@ -623,10 +623,10 @@ public class TestDistributions {
 		analysis.setQuantileRelativeAccuracy(relativeAccuracy);
 		analysis.setLocale(locale);
 
-		DateTimeParser dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false);
-		DateTimeFormatter dtf = dateTimeParser.ofPattern("HH:mm:ss.SSS");
+		final DateTimeParser dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false);
+		final DateTimeFormatter dtf = dateTimeParser.ofPattern("HH:mm:ss.SSS");
 
-		LocalTime start = LocalTime.MIN;
+		final LocalTime start = LocalTime.MIN;
 		LocalTime mid = null;
 		LocalTime lt = start;
 
@@ -649,7 +649,7 @@ public class TestDistributions {
 		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, rehydrated.serialize());
 
-		TextAnalysisResult result = rehydrated.getResult();
+		final TextAnalysisResult result = rehydrated.getResult();
 
 		// Test post getResult()
 		serialized = rehydrated.serialize();
@@ -664,9 +664,9 @@ public class TestDistributions {
 		assertEquals(result.getType(), FTAType.LOCALTIME);
 		assertEquals(result.getTypeModifier(), "HH:mm:ss.SSS");
 
-		String q0_0 = result.getValueAtQuantile(0);
-		String q0_5 = result.getValueAtQuantile(.5);
-		String q1_0 = result.getValueAtQuantile(1.0);
+		final String q0_0 = result.getValueAtQuantile(0);
+		final String q0_5 = result.getValueAtQuantile(.5);
+		final String q1_0 = result.getValueAtQuantile(1.0);
 
 		if (size <= analysis.getMaxCardinality()) {
 			assertEquals(q0_0, dtf.format(start));
@@ -718,9 +718,9 @@ public class TestDistributions {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeModifier(), "HH:mm:ss.SSS");
 
-		String q0_0 = result.getValueAtQuantile(0);
-		String q0_5 = result.getValueAtQuantile(.5);
-		String q1_0 = result.getValueAtQuantile(1.0);
+		final String q0_0 = result.getValueAtQuantile(0);
+		final String q0_5 = result.getValueAtQuantile(.5);
+		final String q1_0 = result.getValueAtQuantile(1.0);
 
 		assertEquals(q0_0, "0");
 		assertEquals(q0_5, "49");
@@ -740,7 +740,7 @@ public class TestDistributions {
 				"+37.4140278", "+37.3504209", "+37.3504209", "+37.4124017", "+37.4436377"
 		};
 
-		for (String testCase : testCases)
+		for (final String testCase : testCases)
 			analysis.train(testCase);
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -754,9 +754,9 @@ public class TestDistributions {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");
 
-		String q0_0 = result.getValueAtQuantile(0);
-		String q0_5 = result.getValueAtQuantile(.5);
-		String q1_0 = result.getValueAtQuantile(1.0);
+		final String q0_0 = result.getValueAtQuantile(0);
+		final String q0_5 = result.getValueAtQuantile(.5);
+		final String q1_0 = result.getValueAtQuantile(1.0);
 
 		assertEquals(q0_0, "+37.0185369");
 		assertEquals(q0_5, "+37.3504209");
@@ -783,7 +783,7 @@ public class TestDistributions {
 		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, rehydrated.serialize());
 
-		TextAnalysisResult result = rehydrated.getResult();
+		final TextAnalysisResult result = rehydrated.getResult();
 
 		// Test post getResult()
 		serialized = rehydrated.serialize();
@@ -800,9 +800,9 @@ public class TestDistributions {
 		assertEquals(result.getMean(), 0.0, 1.0);
 		assertEquals(result.getStandardDeviation(), 100, 1);
 
-		String q0_0 = result.getValueAtQuantile(0);
-		String q0_5 = result.getValueAtQuantile(.5);
-		String q1_0 = result.getValueAtQuantile(1.0);
+		final String q0_0 = result.getValueAtQuantile(0);
+		final String q0_5 = result.getValueAtQuantile(.5);
+		final String q1_0 = result.getValueAtQuantile(1.0);
 
 		// Median should be seriously close to 0
 		assertEquals(Double.valueOf(q0_5), 0.0, 1);
@@ -812,7 +812,7 @@ public class TestDistributions {
 		assertTrue(Double.valueOf(q1_0) > 350);
 
 		// 101 because we want 0.0 and 1.0 plus everything in between
-		double[] percentiles = new double[101];
+		final double[] percentiles = new double[101];
 		double value = 0.0;
 		for (int i = 0; i < 100; i++) {
 			percentiles[i] = value;
@@ -821,7 +821,7 @@ public class TestDistributions {
 		// Make sure the last one is precisely 1.0
 		percentiles[100] = 1.0;
 
-		String[] answers = result.getValuesAtQuantiles(percentiles);
+		final String[] answers = result.getValuesAtQuantiles(percentiles);
 		assertEquals(answers[0], q0_0);
 		assertEquals(answers[50], q0_5);
 		assertEquals(answers[100], q1_0);
@@ -857,30 +857,30 @@ public class TestDistributions {
 		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
 		final SecureRandom random = new SecureRandom();
 		final int SIZE = 100000;
-		ArrayList<String> samples = new ArrayList<>();
+		final ArrayList<String> samples = new ArrayList<>();
 
 		for (int i = 0; i < SIZE; i++)
 			samples.add(String.valueOf(random.nextGaussian()*5 + 20));
 
-		for (String sample : samples)
+		for (final String sample : samples)
 			shardOne.train(sample);
 
-		TextAnalysisResult shardOneResult = shardOne.getResult();
+		final TextAnalysisResult shardOneResult = shardOne.getResult();
 		assertEquals(shardOneResult.getMatchCount(), SIZE);
 //		TestSupport.dumpPicture(shardOneResult.getHistogram(50));
 
-		Histogram.Entry[] histogram = shardOneResult.getHistogram(10);
+		final Histogram.Entry[] histogram = shardOneResult.getHistogram(10);
 
 		if (histogram == null)
 			return;
 
 		long histogramCount = 0;
-		for (Histogram.Entry entry : histogram)
+		for (final Histogram.Entry entry : histogram)
 			histogramCount += entry.getCount();
 
 		if (histogramCount  != shardOneResult.getMatchCount()) {
-			FileWriter myWriter = new FileWriter("/tmp/bug.csv");
-			for (String sample : samples)
+			final FileWriter myWriter = new FileWriter("/tmp/bug.csv");
+			for (final String sample : samples)
 				myWriter.write(sample + "\n");
 			myWriter.close();
 			System.err.println("PROBLEM!!!!!!!!!!");
@@ -894,13 +894,13 @@ public class TestDistributions {
 		for (int i = 0; i < SIZE; i++)
 			shardTwo.train(String.valueOf(random.nextGaussian()*5 + 1020));
 
-		TextAnalysisResult shardTwoResult = shardTwo.getResult();
+		final TextAnalysisResult shardTwoResult = shardTwo.getResult();
 //		TestSupport.dumpPicture(shardTwoResult.getHistogram(10));
 		TestSupport.checkHistogram(shardTwoResult, 10, true);
 		TestSupport.checkQuantiles(shardTwoResult);
 
-		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
-		TextAnalysisResult mergedResult = merged.getResult();
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
 //		System.err.println("**** " + mergedResult.getSampleCount());
 //		TestSupport.dumpPicture(mergedResult.getHistogram(40));
 		// Histogram numbers reflect everything we have seen in the merged case which is not
@@ -915,7 +915,7 @@ public class TestDistributions {
 		analysis.train(null);
 		analysis.train(null);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		try {
 			result.getHistogram(10);
@@ -936,17 +936,17 @@ public class TestDistributions {
 		for (int i = 0; i < SIZE; i++)
 			shardOne.train(String.valueOf(random.nextGaussian()*5 + 20));
 
-		TextAnalysisResult shardOneResult = shardOne.getResult();
-		Histogram.Entry[] shardOneHistogram = shardOneResult.getHistogram(10);
-		long shardOneHistogramCount = TestSupport.countHistogram(shardOneHistogram);
+		final TextAnalysisResult shardOneResult = shardOne.getResult();
+		final Histogram.Entry[] shardOneHistogram = shardOneResult.getHistogram(10);
+		final long shardOneHistogramCount = TestSupport.countHistogram(shardOneHistogram);
 		assertEquals(shardOneHistogramCount, shardOneResult.getMatchCount());
 
 		final String serializedOne = shardOne.serialize();
 		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(serializedOne);
 
-		TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
-		Histogram.Entry[] histogramOne = hydratedOneResult.getHistogram(10);
-		long histogramOneCount = TestSupport.countHistogram(histogramOne);
+		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
+		final Histogram.Entry[] histogramOne = hydratedOneResult.getHistogram(10);
+		final long histogramOneCount = TestSupport.countHistogram(histogramOne);
 		assertEquals(hydratedOneResult.getMatchCount(), SIZE);
 		assertEquals(histogramOneCount, hydratedOneResult.getMatchCount());
 
@@ -960,9 +960,9 @@ public class TestDistributions {
 		final String serializedTwo = shardTwo.serialize();
 		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(serializedTwo);
 
-		TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
-		Histogram.Entry[] histogramTwo = hydratedTwoResult.getHistogram(10);
-		long histogramTwoCount = TestSupport.countHistogram(histogramTwo);
+		final TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
+		final Histogram.Entry[] histogramTwo = hydratedTwoResult.getHistogram(10);
+		final long histogramTwoCount = TestSupport.countHistogram(histogramTwo);
 		assertEquals(hydratedTwoResult.getMatchCount(), SIZE);
 		assertEquals(histogramTwoCount, hydratedTwoResult.getMatchCount());
 
@@ -970,9 +970,9 @@ public class TestDistributions {
 		TestSupport.checkQuantiles(hydratedTwoResult);
 		TestSupport.checkHistogram(hydratedTwoResult, 10, true);
 
-		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
-		TextAnalysisResult mergedResult = merged.getResult();
-		Histogram.Entry[] histogramResult = mergedResult.getHistogram(20);
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
+		final Histogram.Entry[] histogramResult = mergedResult.getHistogram(20);
 		long mergedCount = TestSupport.countHistogram(histogramResult);
 //		assertEquals(mergedCount, SIZE * 2);
 
@@ -1000,7 +1000,7 @@ public class TestDistributions {
 		// Merge the two hydrated TextAnalyzers
 		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
 
-		TextAnalysisResult result = merged.getResult();
+		final TextAnalysisResult result = merged.getResult();
 
 		assertEquals(result.getTotalCount(), 2 * size);
 		assertEquals(result.getOutlierCount(), 0);
@@ -1013,9 +1013,9 @@ public class TestDistributions {
 
 		assertEquals(result.getMean(), 100000.0);
 
-		String q0_0 = result.getValueAtQuantile(0);
-		String q0_5 = result.getValueAtQuantile(.5);
-		String q1_0 = result.getValueAtQuantile(1.0);
+		final String q0_0 = result.getValueAtQuantile(0);
+		final String q0_5 = result.getValueAtQuantile(.5);
+		final String q1_0 = result.getValueAtQuantile(1.0);
 
 		assertEquals(Long.valueOf(q0_0), 0);
 		assertEquals(Long.valueOf(q1_0), 200000.0, 200000 * RELATIVE_ACCURACY);
@@ -1040,9 +1040,9 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
-		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		final Histogram.Entry[] histogram = result.getHistogram(WIDTH);
 
 		for (int i = 0; i < WIDTH; i++)
 			System.err.printf("%s-%s: %d%n", histogram[i].getLow(), histogram[i].getHigh(), histogram[i].getCount());
@@ -1064,9 +1064,9 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
-		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		final Histogram.Entry[] histogram = result.getHistogram(WIDTH);
 		assertEquals(histogram[0].getCount(), 2000);
 		assertEquals(histogram[1].getCount(), 1000);
 		assertEquals(histogram[9].getCount(), 2000);
@@ -1087,9 +1087,9 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
-		Histogram.Entry[] histogram = result.getHistogram(BUCKETS);
+		final Histogram.Entry[] histogram = result.getHistogram(BUCKETS);
 
 		for (int i = 0; i < BUCKETS - 1; i++)
 			assertEquals(histogram[i].getCount(), SIZE / BUCKETS * RECORDS);
@@ -1111,9 +1111,9 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
-		Histogram.Entry[] histogram = result.getHistogram(BUCKETS);
+		final Histogram.Entry[] histogram = result.getHistogram(BUCKETS);
 
 		for (int i = 0; i < BUCKETS - 1; i++)
 			assertEquals(histogram[i].getCount(), SIZE / BUCKETS * RECORDS);
@@ -1129,12 +1129,12 @@ public class TestDistributions {
 		for (int i = 0; i < SIZE; i++)
 			analysis.train(String.valueOf(random.nextGaussian()*100));
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 		assertEquals(result.getMatchCount(), SIZE);
 
 		final int WIDTH = 20;
 
-		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		final Histogram.Entry[] histogram = result.getHistogram(WIDTH);
 		TestSupport.checkHistogram(result, WIDTH, true);
 
 		TestSupport.dumpRawDouble(histogram);
@@ -1151,12 +1151,12 @@ public class TestDistributions {
 		analysis.train("7");
 		analysis.train("9");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 		assertEquals(result.getMatchCount(), 5);
 
 		final int WIDTH = 10;
 
-		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		final Histogram.Entry[] histogram = result.getHistogram(WIDTH);
 		// Range is 8 split into 10 buckets so each bucket is .8
 		assertEquals(histogram[0].getCount(), 1);
 		assertEquals(histogram[0].getLow(), "1");
@@ -1177,13 +1177,13 @@ public class TestDistributions {
 		analysis.train("1");
 		analysis.train("4");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		TestSupport.checkHistogram(result, 2, true);
 
 		final int WIDTH = 2;
 
-		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		final Histogram.Entry[] histogram = result.getHistogram(WIDTH);
 		TestSupport.checkHistogram(result, WIDTH, true);
 
 		assertEquals(histogram[0].getCount(), 1);
@@ -1204,7 +1204,7 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.BOOLEAN);
 
@@ -1231,7 +1231,7 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.BOOLEAN);
 
@@ -1257,11 +1257,11 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.LONG);
 
-		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		final Histogram.Entry[] histogram = result.getHistogram(WIDTH);
 		TestSupport.dumpRaw(histogram);
 
 		TestSupport.checkQuantiles(result);
@@ -1281,7 +1281,7 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.BOOLEAN);
 
@@ -1307,7 +1307,7 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.BOOLEAN);
 
@@ -1332,7 +1332,7 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getValueAtQuantile(0.0), "Abacus");
 		assertEquals(result.getValueAtQuantile(0.25), "Abacus");
@@ -1356,12 +1356,12 @@ public class TestDistributions {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 		assertEquals(result.getMatchCount(), total);
 
 		final int WIDTH = 20;
 
-		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		final Histogram.Entry[] histogram = result.getHistogram(WIDTH);
 		TestSupport.checkHistogram(result, WIDTH, true);
 
 		TestSupport.dumpRawDouble(histogram);
@@ -1378,14 +1378,14 @@ public class TestDistributions {
 
 		analysis.train("1000000");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 		assertEquals(result.getMatchCount(), SIZE + 1);
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), "1000000");
 
 		final int WIDTH = 10;
 
-		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		final Histogram.Entry[] histogram = result.getHistogram(WIDTH);
 		assertEquals(TestSupport.countHistogram(histogram), SIZE + 1);
 
 		TestSupport.checkHistogram(result, WIDTH, true);
@@ -1404,14 +1404,14 @@ public class TestDistributions {
 
 		analysis.train("100000000");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 		assertEquals(result.getMatchCount(), SIZE + 1);
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), "100000000");
 
 		final int WIDTH = 10;
 
-		Histogram.Entry[] histogram = result.getHistogram(WIDTH);
+		final Histogram.Entry[] histogram = result.getHistogram(WIDTH);
 		TestSupport.checkHistogram(result, WIDTH, true);
 
 		TestSupport.dumpRaw(histogram);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-20232 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ import com.cobber.fta.token.TokenStreams;
 public abstract class FakerLT extends LogicalTypeCode {
 	FakerParameters parameters;
 
-	public FakerLT(PluginDefinition plugin) {
+	public FakerLT(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
-	public void setControl(FakerParameters parameters) {
+	public void setControl(final FakerParameters parameters) {
 		this.parameters = parameters;
 	}
 
@@ -41,13 +41,13 @@ public abstract class FakerLT extends LogicalTypeCode {
 	}
 
 	@Override
-	public boolean isValid(String input, boolean detectMode, long count) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		return false;
 	}
 
 	@Override
-	public PluginAnalysis analyzeSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp,
-			Facts facts, FiniteMap cardinality, FiniteMap outliers, TokenStreams tokenStreams,
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams,
 			AnalysisConfig analysisConfig) {
 		return null;
 	}

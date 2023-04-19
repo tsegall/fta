@@ -28,7 +28,6 @@ import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
-import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
@@ -36,9 +35,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect '&lt;Last Name&gt;, &lt;First Name&gt;'.
  */
 public class NameLastFirst extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "NAME.LAST_FIRST";
-
 	/** The Regular Expression for this Semantic type. */
 	private static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*, ?[- \\p{IsAlphabetic}]+";
 	private static final String BACKOUT = ".+";
@@ -73,16 +69,6 @@ public class NameLastFirst extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		return logicalLast.nextRandom() + ", " + logicalFirst.nextRandom();
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
-	}
-
-	@Override
-	public FTAType getBaseType() {
-		return FTAType.STRING;
 	}
 
 	@Override

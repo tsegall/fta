@@ -39,7 +39,7 @@ public class Age extends LogicalTypeInfinite {
 	public static final String LONG_REGEXP = "\\d{1,3}";
 	public static final String DOUBLE_REGEXP = "\\d{1,3}\\.\\d+";
 
-	private final int MAX_AGE = 120;
+	private final static int MAX_AGE = 120;
 
 	private boolean longType = true;
 
@@ -114,7 +114,7 @@ public class Age extends LogicalTypeInfinite {
 
 		if (integerPart.length() > 3 || !Utils.isNumeric(integerPart))
 			return false;
-		final int age = Integer.valueOf(integerPart);
+		final int age = Integer.parseInt(integerPart);
 		return age >= 0 && age < MAX_AGE;
 	}
 

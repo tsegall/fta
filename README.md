@@ -23,8 +23,7 @@ Used when the source is inherently continuous, e.g. IOT device, flat file, etc.
 
 Example:
 ```java
-public static void main(final String[] args) throws FTAException {
-	final String[] inputs = {
+	String[] inputs = {
 				"Anaïs Nin", "Gertrude Stein", "Paul Cézanne", "Pablo Picasso", "Theodore Roosevelt",
 				"Henri Matisse", "Georges Braque", "Henri de Toulouse-Lautrec", "Ernest Hemingway",
 				"Alice B. Toklas", "Eleanor Roosevelt", "Edgar Degas", "Pierre-Auguste Renoir",
@@ -32,18 +31,17 @@ public static void main(final String[] args) throws FTAException {
 				"Camille Pissarro", "Franklin Delano Roosevelt", "Winston Churchill" };
 
 	// Use simple constructor - for improved detection provide an AnalyzerContext (see Contextual example).
-	final TextAnalyzer analysis = new TextAnalyzer("Famous");
+	TextAnalyzer analysis = new TextAnalyzer("Famous");
 
 	for (String input : inputs)
 		analysis.train(input);
 
-	final TextAnalysisResult result = analysis.getResult();
+	TextAnalysisResult result = analysis.getResult();
 
 	System.err.printf("Semantic Type: %s (%s)%n",
 			result.getSemanticType(), result.getType());
 
 	System.err.println("Detail: " + result.asJSON(true, 1));
-}
 ```
 
 Result: Semantic Type: **NAME.FIRST_LAST** (String)
@@ -53,23 +51,20 @@ Used when the source offers the ability to group at source, e.g. a Database.  Th
 
 Example:
 ```java
-public static void main(final String[] args) throws FTAException {
+	TextAnalyzer analysis = new TextAnalyzer("Gender");
+	HashMap<String, Long> basic = new HashMap<>();
 
-		final TextAnalyzer analysis = new TextAnalyzer("Gender");
-		final HashMap<String, Long> basic = new HashMap<>();
+	basic.put("Male", 2_000_000L);
+	basic.put("Female", 1_000_000L);
+	basic.put("Unknown", 10_000L);
 
-		basic.put("Male", 2_000_000L);
-		basic.put("Female", 1_000_000L);
-		basic.put("Unknown", 10_000L);
+	analysis.trainBulk(basic);
 
-		analysis.trainBulk(basic);
+	TextAnalysisResult result = analysis.getResult();
 
-		final TextAnalysisResult result = analysis.getResult();
+	System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
 
-		System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
-
-		System.err.println("Detail: " + result.asJSON(true, 1));
-	}
+	System.err.println("Detail: " + result.asJSON(true, 1));
 ```
 
 Result: Semantic Type: **GENDER.TEXT_EN** (String)
@@ -79,30 +74,28 @@ Used when the primary objective is Semantic Type information and not profiling, 
 
 Example:
 ```java
-public static void main(final String[] args) throws FTAException {
-		final String[] headers = { "First", "Last", "MI" };
-		final String[][] names = {
-				{ "Anaïs", "Nin", "" }, { "Gertrude", "Stein", "" }, { "Paul", "Campbell", "" },
-				{ "Pablo", "Picasso", "" }, { "Theodore", "Camp", "" }, { "Henri", "Matisse", "" },
-				{ "Georges", "Braque", "" }, { "Ernest", "Hemingway", "" }, { "Alice", "Toklas", "B." },
-				{ "Eleanor", "Roosevelt", "" }, { "Edgar", "Degas", "" }, { "Pierre-Auguste", "Wren", "" },
-				{ "Claude", "Monet", "" }, { "Édouard", "Sorenson", "" }, { "Mary", "Dunning", "" },
-				{ "Alfred", "Jones", "" }, { "Joseph", "Smith", "" }, { "Camille", "Pissarro", "" },
-				{ "Franklin", "Roosevelt", "Delano" }, { "Winston", "Churchill", "" }
-		};
+	String[] headers = { "First", "Last", "MI" };
+	String[][] names = {
+			{ "Anaïs", "Nin", "" }, { "Gertrude", "Stein", "" }, { "Paul", "Campbell", "" },
+			{ "Pablo", "Picasso", "" }, { "Theodore", "Camp", "" }, { "Henri", "Matisse", "" },
+			{ "Georges", "Braque", "" }, { "Ernest", "Hemingway", "" }, { "Alice", "Toklas", "B." },
+			{ "Eleanor", "Roosevelt", "" }, { "Edgar", "Degas", "" }, { "Pierre-Auguste", "Wren", "" },
+			{ "Claude", "Monet", "" }, { "Édouard", "Sorenson", "" }, { "Mary", "Dunning", "" },
+			{ "Alfred", "Jones", "" }, { "Joseph", "Smith", "" }, { "Camille", "Pissarro", "" },
+			{ "Franklin", "Roosevelt", "Delano" }, { "Winston", "Churchill", "" }
+	};
 
-		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", headers );
-		final TextAnalyzer template = new TextAnalyzer(context);
+	AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", headers );
+	TextAnalyzer template = new TextAnalyzer(context);
 
-		final RecordAnalyzer analysis = new RecordAnalyzer(template);
-		for (final String [] name : names)
-			analysis.train(name);
+	RecordAnalyzer analysis = new RecordAnalyzer(template);
+	for (String [] name : names)
+		analysis.train(name);
 
-		final RecordAnalysisResult recordResult = analysis.getResult();
+	RecordAnalysisResult recordResult = analysis.getResult();
 
-		for (final TextAnalysisResult result : recordResult.getStreamResults()) {
-			System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
-		}
+	for (TextAnalysisResult result : recordResult.getStreamResults()) {
+		System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
 	}
 ```
 
@@ -120,76 +113,52 @@ Semantic Type: ***NAME.MIDDLE*** (String)
 If you are solely interested in determining the format of a date from a **single** sample, then the following example is a good starting point:
 
 ```java
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+	final DateTimeParser dtp = new DateTimeParser().withDateResolutionMode(DateResolutionMode.MonthFirst).withLocale(Locale.ENGLISH);
 
-import com.cobber.fta.dates.DateTimeParser;
-import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+	// Determine the DataTimeFormatter for the following examples
+	System.err.printf("Format is: '%s'%n", dtp.determineFormatString("26 July 2012"));
+	System.err.printf("Format is: '%s'%n", dtp.determineFormatString("March 9 2012"));
+	// Note: Detected as MM/dd/yyyy despite being ambiguous as we indicated MonthFirst above when insufficient data
+	System.err.printf("Format is: '%s'%n", dtp.determineFormatString("07/04/2012"));
+	System.err.printf("Format is: '%s'%n", dtp.determineFormatString("2012 March 20"));
+	System.err.printf("Format is: '%s'%n", dtp.determineFormatString("2012/04/09 18:24:12"));
 
-public abstract class DetermineDateFormat {
+	// Determine format of the input below and then parse it
+	String input = "Wed Mar 04 05:09:06 GMT-06:00 2009";
 
-	public static void main(final String[] args) {
-		final DateTimeParser dtp = new DateTimeParser().withDateResolutionMode(DateResolutionMode.MonthFirst).withLocale(Locale.ENGLISH);
+	String formatString = dtp.determineFormatString(input);
 
-		// Determine the DataTimeFormatter for the following examples
-		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("26 July 2012"));
-		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("March 9 2012"));
-		// Note: Detected as MM/dd/yyyy despite being ambiguous as we indicated MonthFirst above when insufficient data
-		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("07/04/2012"));
-		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("2012 March 20"));
-		System.err.printf("Format is: '%s'%n", dtp.determineFormatString("2012/04/09 18:24:12"));
+	// Grab the DateTimeFormatter from fta as this creates a case-insensitive parser and it supports a slightly wider set set of formats
+	// For example, "yyyy" does not work out of the box if you use DateTimeFormatter.ofPattern
+	DateTimeFormatter formatter = DateTimeParser.ofPattern(formatString);
 
-		// Determine format of the input below and then parse it
-		String input = "Wed Mar 04 05:09:06 GMT-06:00 2009";
+	OffsetDateTime parsedDate = OffsetDateTime.parse(input, formatter);
 
-		String formatString = dtp.determineFormatString(input);
-
-		// Grab the DateTimeFormatter from fta as this creates a case-insensitive parser and it supports a slightly wider set set of formats
-		// For example, "yyyy" does not work out of the box if you use DateTimeFormatter.ofPattern
-		DateTimeFormatter formatter = DateTimeParser.ofPattern(formatString);
-
-		OffsetDateTime parsedDate = OffsetDateTime.parse(input, formatter);
-
-		System.err.printf("Format is: '%s', Date is: '%s'%n", formatString, parsedDate.toString());
-	}
-}
+	System.err.printf("Format is: '%s', Date is: '%s'%n", formatString, parsedDate.toString());
 ```
 
 If you are interested in determining the format based on a set of inputs, then the following example is good starting point:
 
 ```java
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+	final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.ENGLISH);
 
-import com.cobber.fta.dates.DateTimeParser;
-import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+	final List<String> inputs = Arrays.asList( "10/1/2008", "10/2/2008", "10/3/2008", "10/4/2008", "10/5/2008", "10/10/2008" );
 
-public abstract class DetermineDateFormatTrained {
+	inputs.forEach(dtp::train);
 
-	public static void main(final String[] args) {
-		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.ENGLISH);
+	// At this stage we are not sure of the date format, since with 'DateResolutionMode == None' we make no
+	// assumption whether it is MM/DD or DD/MM and the format String is unbound (??/?/yyyy)
+	System.err.println(dtp.getResult().getFormatString());
 
-		final List<String> inputs = Arrays.asList( "10/1/2008", "10/2/2008", "10/3/2008", "10/4/2008", "10/5/2008", "10/10/2008" );
+	// Once we train with another value which indicates that the Day must be the second field then the new
+	// result is correctly determined to be MM/d/yyyy
+	dtp.train("10/15/2008");
+	System.err.println(dtp.getResult().getFormatString());
 
-		inputs.forEach(dtp::train);
-
-		// At this stage we are not sure of the date format, since with 'DateResolutionMode == None' we make no
-		// assumption whether it is MM/DD or DD/MM and the format String is unbound (??/?/yyyy)
-		System.err.println(dtp.getResult().getFormatString());
-
-		// Once we train with another value which indicates that the Day must be the second field then the new
-		// result is correctly determined to be MM/d/yyyy
-		dtp.train("10/15/2008");
-		System.err.println(dtp.getResult().getFormatString());
-
-		// Once we train with another value which indicates that the Month is expressed using one or two digits the
-		// result is correctly determined to be M/d/yyyy
-		dtp.train("3/15/2008");
-		System.err.println(dtp.getResult().getFormatString());
-	}
-}
+	// Once we train with another value which indicates that the Month is expressed using one or two digits the
+	// result is correctly determined to be M/d/yyyy
+	dtp.train("3/15/2008");
+	System.err.println(dtp.getResult().getFormatString());
 ```
 
 Note: For Date Format determination you only need fta-core.jar.
@@ -338,14 +307,17 @@ HASH.SHA1_HEX|SHA1 Hash - hexadecimal|*
 HASH.SHA256_HEX|SHA256 Hash - hexadecimal|*
 HONORIFIC_EN|Title (English language)|en
 IDENTITY.AADHAAR_IN|Aadhar|en-IN, hi-IN
-IDENTITY.BSN_NL|Burger Service Nummer|nl-NL
+IDENTITY.BSN_NL|Burger Service Nummer|en-NL,nl-NL
 IDENTITY.DUNS|Data Universal Numbering System (Dun & Bradstreet)|*
 IDENTITY.EIN_US|Employer Identification Number|en-US
+IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number (Japan)|ja
 IDENTITY.NHS_UK|NHS Number|en-UK
+IDENTITY.NI_UK|National Insurance Number (UK)|en-UK
+IDENTITY.PERSONNUMMER_SE|Personal identity number (Sweden)|sv-SE
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH
-IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number (Japan)|ja
-IDENTITY.VAT_&lt;COUNTRY&gt;|Value-added Tax Identification Number|de-AT, ca-ES, es-ES, fr-FR, it-IT, en-GB, en-UK, nl-NL, pl-PL
+IDENTITY.VAT_&lt;Country&gt;|Value-added Tax Identification Number|de-AT, ca-ES, es-ES, fr-FR, it-IT, en-GB, en-NL, en-UK, nl-NL, pl-PL
+IMEI|International Mobile Equipment Identity|*
 INDUSTRY_CODE.NAICS|Industry Code - NAICS|en-CA,en-MX,en-US,es-MX
 INDUSTRY_EN|Industry Name|en
 IPADDRESS.IPV4|IP V4 Address|*
@@ -371,6 +343,7 @@ PERIOD.QUARTER|Quarter (Year)|*
 PERIOD.YEAR_RANGE|Year Range|*
 PERSON.AGE|Age (Person)|en, es, fr, it, nl, pt
 PERSON.AGE_RANGE|Age range (Person)|en, es, fr, it, nl, pt
+PERSON.MARITAL_STATUS_&lt;Language&gt;|Marital Status|en
 PERSON.RACE_ABBR_EN|Race/Ethinicity abbreviation (person)|*
 PERSON.RACE_EN|Race/Ethinicity (person)|*
 POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, CO, FR, JA, NL, UK, ES, MX, PT, SE, UY
@@ -385,21 +358,13 @@ STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
 STATE_PROVINCE.DEPARTMENT_CO|Colombian Department|es-CO
 STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|pt-PT
 STATE_PROVINCE.INSEE_CODE_FR|French Insee Code (5 digit)|fr-FR
-STATE_PROVINCE.MUNICIPALITY_BR|Brazilian Municipality|pt-BR
-STATE_PROVINCE.MUNICIPALITY_CO|Colombian Municipality|es-CO
-STATE_PROVINCE.MUNICIPALITY_NL|Dutch Municipality|nl-NL
-STATE_PROVINCE.MUNICIPALITY_CODE_NL|Dutch Municipality Code|nl-NL
+STATE_PROVINCE.MUNICIPALITY_&lt;Country&gt;|Municipality|en-NL, es-CO, es-MX, nl-NL, pt-BR
+STATE_PROVINCE.MUNICIPALITY_CODE_NL|Dutch Municipality Code|en-NL,nl-NL
 STATE_PROVINCE.PREFECTURE_NAME_JP|Japanese Prefecture Name|ja
 STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA, en-US
 STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
 STATE_PROVINCE.PROVINCE_ZA|South African Province Code|en-ZA
-STATE_PROVINCE.PROVINCE_NAME_CA|Canadian Province Name|en-CA, en-US
-STATE_PROVINCE.PROVINCE_NAME_EC|Ecuadorian Province Name|es-EC
-STATE_PROVINCE.PROVINCE_NAME_ES|Spanish Province Name|es-ES
-STATE_PROVINCE.PROVINCE_NAME_IE|Irish Province Name|en-IE
-STATE_PROVINCE.PROVINCE_NAME_IT|Italian Province Name|it-IT
-STATE_PROVINCE.PROVINCE_NAME_NL|Dutch Province Name|nl-NL
-STATE_PROVINCE.PROVINCE_NAME_ZA|South African Province Name|en-ZA
+STATE_PROVINCE.PROVINCE_NAME_&lt;Country&gt;|Province Name|en-EI, en-CA, en-NL, en-US, en-ZA, es-EC, es-ES, it-IT, nl-NL
 STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
 STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US
 STATE_PROVINCE.STATE_NAME_&lt;Country&gt;|State Name|en-AU, pt-BR, de-DE, es-MX, en-US

@@ -593,7 +593,7 @@ public class TextProcessor {
 		final int len = trimmed.length();
 		char lastCh = ' ';
 		boolean wordStarted = false;
-		WordState wordState = new WordState();
+		final WordState wordState = new WordState();
 
 		wordsInSentence = 0;
 		lastOffset = 0;

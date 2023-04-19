@@ -133,7 +133,7 @@ public class LastName extends PersonName {
 
 	private boolean hasValidSuffix(final String input) {
 		final String trimmed = input.trim();
-		for (String suffix : suffixes)
+		for (final String suffix : suffixes)
 			if (trimmed.endsWith(suffix))
 				return true;
 		return false;
@@ -195,7 +195,7 @@ public class LastName extends PersonName {
 		int wordCount = 2;
 		String second = trimmedUpper.substring(separatorOffset + 1).trim();
 		if (separator == ' ' && spaces != 0) {
-			String[] words = second.split(" ");
+			final String[] words = second.split(" ");
 			second = words[0];
 			wordCount = words.length + 1;
 			if (wordCount > 3)

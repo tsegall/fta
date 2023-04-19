@@ -23,9 +23,9 @@ import com.univocity.parsers.csv.CsvParserSettings;
 public class TestIssues {
 
 	private List<String[]> asRecords(String[] fieldValues) {
-		ArrayList<String[]> ret = new ArrayList<>();
+		final ArrayList<String[]> ret = new ArrayList<>();
 
-		for (String fieldValue : fieldValues)
+		for (final String fieldValue : fieldValues)
 			ret.add(new String[] { fieldValue });
 
 		return ret;
@@ -51,16 +51,16 @@ public class TestIssues {
 				shortBlank, longBlank
 		};
 
-		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "withBlanks",
+		final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "withBlanks",
 				new String[] { "email" });
-		TextAnalyzer template = new TextAnalyzer(context);
+		final TextAnalyzer template = new TextAnalyzer(context);
 		template.setLocale(Locale.getDefault());
-		RecordAnalyzer analyzer = new RecordAnalyzer(template);
+		final RecordAnalyzer analyzer = new RecordAnalyzer(template);
 
-		for (String[] value : asRecords(values))
+		for (final String[] value : asRecords(values))
 			analyzer.train(value);
 
-		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
+		for (final TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMaxLength(), LONGEST);
 			assertEquals(result.getMinLength(), SHORTEST);
@@ -80,9 +80,9 @@ public class TestIssues {
 			final CsvParser parser = new CsvParser(settings);
 			parser.beginParsing(in);
 
-			String[] header = parser.getRecordMetadata().headers();
-			AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "pickup", header);
-			TextAnalyzer template = new TextAnalyzer(context);
+			final String[] header = parser.getRecordMetadata().headers();
+			final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "pickup", header);
+			final TextAnalyzer template = new TextAnalyzer(context);
 			template.setLocale(Locale.forLanguageTag("en-US"));
 			analyzer = new RecordAnalyzer(template);
 
@@ -93,7 +93,7 @@ public class TestIssues {
 			}
 		}
 
-		TextAnalysisResult streetName = analyzer.getResult().getStreamResults()[0];
+		final TextAnalysisResult streetName = analyzer.getResult().getStreamResults()[0];
 		assertEquals(streetName.getSampleCount(), rows);
 		assertEquals(streetName.getType(), FTAType.STRING);
 		assertEquals(streetName.getSemanticType(), "STREET_ADDRESS_EN");
@@ -113,16 +113,16 @@ public class TestIssues {
 				"Lithium", "Lithium", "Lithium", "Lithium", "Bad Egg."
 		};
 
-		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "enumCountMismatch",
+		final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "enumCountMismatch",
 				new String[] { "Mineral" });
-		TextAnalyzer template = new TextAnalyzer(context);
+		final TextAnalyzer template = new TextAnalyzer(context);
 		template.setLocale(Locale.getDefault());
-		RecordAnalyzer analyzer = new RecordAnalyzer(template);
+		final RecordAnalyzer analyzer = new RecordAnalyzer(template);
 
-		for (String[] value : asRecords(values))
+		for (final String[] value : asRecords(values))
 			analyzer.train(value);
 
-		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
+		for (final TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMatchCount(), values.length - 1);
 			assertNull(result.checkCounts());
@@ -145,16 +145,16 @@ public class TestIssues {
 				"L", "D", "R", "A", "D", "R", "L", "D", "L", "C", "M", "N", "S", "W", "S", "C"
 		};
 
-		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "miCountMismatch",
+		final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "miCountMismatch",
 				new String[] { "MI" });
-		TextAnalyzer template = new TextAnalyzer(context);
+		final TextAnalyzer template = new TextAnalyzer(context);
 		template.setLocale(Locale.forLanguageTag("en-US"));
-		RecordAnalyzer analyzer = new RecordAnalyzer(template);
+		final RecordAnalyzer analyzer = new RecordAnalyzer(template);
 
-		for (String[] value : asRecords(values))
+		for (final String[] value : asRecords(values))
 			analyzer.train(value);
 
-		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
+		for (final TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMatchCount(), values.length - 1);
 			assertNull(result.checkCounts());
@@ -185,16 +185,16 @@ public class TestIssues {
 				"R", "W", "R", "F", "C", "R", "N", "L", "L"
 		};
 
-		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "middleInitialCountMismatch",
+		final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "middleInitialCountMismatch",
 				new String[] { "middle_init" });
-		TextAnalyzer template = new TextAnalyzer(context);
+		final TextAnalyzer template = new TextAnalyzer(context);
 		template.setLocale(Locale.forLanguageTag("en-US"));
-		RecordAnalyzer analyzer = new RecordAnalyzer(template);
+		final RecordAnalyzer analyzer = new RecordAnalyzer(template);
 
-		for (String[] value : asRecords(values))
+		for (final String[] value : asRecords(values))
 			analyzer.train(value);
 
-		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
+		for (final TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertNull(result.checkCounts());
 			assertEquals(result.getMatchCount(), values.length - 6);
@@ -219,16 +219,16 @@ public class TestIssues {
 				"4", "4", "4", "4", "4", "4", "4", "4", "4", "4", "4", "2.2"
 		};
 
-		AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "numericalMismatch",
+		final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "numericalMismatch",
 				new String[] { "age_num" });
-		TextAnalyzer template = new TextAnalyzer(context);
+		final TextAnalyzer template = new TextAnalyzer(context);
 		template.setLocale(Locale.getDefault());
-		RecordAnalyzer analyzer = new RecordAnalyzer(template);
+		final RecordAnalyzer analyzer = new RecordAnalyzer(template);
 
-		for (String[] value : asRecords(values))
+		for (final String[] value : asRecords(values))
 			analyzer.train(value);
 
-		for (TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
+		for (final TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMatchCount(), values.length);
 			assertNull(result.checkCounts());
@@ -247,9 +247,9 @@ public class TestIssues {
 			final CsvParser parser = new CsvParser(settings);
 			parser.beginParsing(in);
 
-			String[] header = parser.getRecordMetadata().headers();
-			AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "pickup", header);
-			TextAnalyzer template = new TextAnalyzer(context);
+			final String[] header = parser.getRecordMetadata().headers();
+			final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "pickup", header);
+			final TextAnalyzer template = new TextAnalyzer(context);
 			template.setLocale(Locale.forLanguageTag("en-US"));
 			analyzer = new RecordAnalyzer(template);
 
@@ -260,13 +260,13 @@ public class TestIssues {
 			}
 		}
 
-		TextAnalysisResult streetName = analyzer.getResult().getStreamResults()[1];
+		final TextAnalysisResult streetName = analyzer.getResult().getStreamResults()[1];
 		assertEquals(streetName.getSampleCount(), rows);
 		assertEquals(streetName.getType(), FTAType.STRING);
 		assertEquals(streetName.getSemanticType(), "STREET_NAME_EN");
 		assertNull(streetName.checkCounts());
 
-		TextAnalysisResult streetNumber = analyzer.getResult().getStreamResults()[0];
+		final TextAnalysisResult streetNumber = analyzer.getResult().getStreamResults()[0];
 		assertEquals(streetNumber.getSampleCount(), rows);
 		assertEquals(streetNumber.getType(), FTAType.LONG);
 		assertEquals(streetNumber.getSemanticType(), "STREET_NUMBER");

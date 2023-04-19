@@ -23,9 +23,6 @@ import com.cobber.fta.PluginDefinition;
  * Plugin to detect valid UPC identifiers.
  */
 public class CheckDigitUPC extends CheckDigitLT {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "CHECKDIGIT.UPC";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "\\d{12}";
 
@@ -51,11 +48,6 @@ public class CheckDigitUPC extends CheckDigitLT {
 	@Override
 	public String getRegExp() {
 		return REGEXP;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

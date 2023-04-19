@@ -234,7 +234,7 @@ public class DateTimeParser {
 		int whitespace = 0;
 
 		for (int i = 0; i < len; i++) {
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			if (ch == 'd')
 				return false;
 			else if (ch == 'M')
@@ -311,9 +311,9 @@ public class DateTimeParser {
 
 			// Setup the Monthly abbreviations, in Java some countries (e.g. Canada) have the short months defined with a
 			// period after them, for example 'AUG.' - we compensate by removing the punctuation
-			Map<Long, String> lookup = new HashMap<>();
+			final Map<Long, String> lookup = new HashMap<>();
 			long index = 1;
-			for (String month : localeInfo.getShortMonthsArray())
+			for (final String month : localeInfo.getShortMonthsArray())
 				lookup.put(index++, month);
 
 			final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
@@ -621,7 +621,7 @@ public class DateTimeParser {
 	 * @param day The Day to test
 	 * @return True if the year/month/day reflects a valid date.
 	 */
-	public static boolean isValidDate(int year, int month, int day) {
+	public static boolean isValidDate(final int year, final int month, final int day) {
 		if (year == 0 || month == 0 || day == 0 || month > 12 || day > 31)
 			return false;
 
@@ -691,7 +691,7 @@ public class DateTimeParser {
 		for (final Locale locale : config.locales) {
 			config.setLocale(locale);
 			localeInfo = LocaleInfo.getInstance(locale, config.noAbbreviationPunctuation);
-			String ret = determineFormatStringCore(input, resolutionMode);
+			final String ret = determineFormatStringCore(input, resolutionMode);
 			if (ret != null)
 				return ret;
 		}
@@ -737,7 +737,7 @@ public class DateTimeParser {
 		}
 
 		// We have special case handling for Japanese and Chinese
-		boolean jaOrZh = "ja".equals(config.getLocale().getLanguage()) || "zh".equals(config.getLocale().getLanguage());
+		final boolean jaOrZh = "ja".equals(config.getLocale().getLanguage()) || "zh".equals(config.getLocale().getLanguage());
 
 		// Fail fast if we can
 		if (!jaOrZh && (matcher.getComponentCount() < 2 || !Character.isLetterOrDigit(codePoint0)))
@@ -784,17 +784,17 @@ public class DateTimeParser {
 
 		if ("d{4}".equals(compressed)) {
 			// To assume it is a year it needs to be in the range [EARLY_LONG_YYYY,LATE_LONG_YYYY]
-			int year = Utils.getValue(trimmed, 0, 4, 4);
+			final int year = Utils.getValue(trimmed, 0, 4, 4);
 			return year >= EARLY_LONG_YYYY && year <= LATE_LONG_YYYY  ? "yyyy" : null;
 		}
 
 		// 8 digits so should be looking at yyyyMMdd, MMddyyyy, or ddMMyyyy
 		if ("d{8}".equals(compressed)) {
 			// Split input digits (AABBCCDD) into four ints AA, BB, CC, DD
-			int one = Utils.getValue(trimmed, 0, 2, 2);
-			int two = Utils.getValue(trimmed, 2, 2, 2);
-			int three = Utils.getValue(trimmed, 4, 2, 2);
-			int four = Utils.getValue(trimmed, 6, 2, 2);
+			final int one = Utils.getValue(trimmed, 0, 2, 2);
+			final int two = Utils.getValue(trimmed, 2, 2, 2);
+			final int three = Utils.getValue(trimmed, 4, 2, 2);
+			final int four = Utils.getValue(trimmed, 6, 2, 2);
 
 			// In general assume the Century is either 19 or 20
 			if ((one == 20 || one == 19) && isValidDate(one * 100 + two, three, four))
@@ -896,9 +896,9 @@ public class DateTimeParser {
 					result.append(Utils.repeat(workingOn, digits));
 					// Need to check if this is an Era formatted date
 					if (workingOn == 'y' && i >= 1) {
-						String maybeEra = String.valueOf(input.charAt(i - 1)) + String.valueOf(ch);
-						for (JapaneseEra c : JapaneseEra.values()) {
-							String era = c.getDisplayName(TextStyle.FULL, config.getLocale());
+						final String maybeEra = String.valueOf(input.charAt(i - 1)) + String.valueOf(ch);
+						for (final JapaneseEra c : JapaneseEra.values()) {
+							final String era = c.getDisplayName(TextStyle.FULL, config.getLocale());
 							if (era.equals(maybeEra)) {
 								result.append("GGGG");
 								i--;
@@ -941,7 +941,7 @@ public class DateTimeParser {
 	 * @return a DateTimeFormatter pattern.
 	 */
 	private String passOne(final SimpleDateMatcher matcher) {
-		SimpleFacts simpleFacts = SimpleDateMatcher.getSimpleDataFacts().get(matcher.getCompressed());
+		final SimpleFacts simpleFacts = SimpleDateMatcher.getSimpleDataFacts().get(matcher.getCompressed());
 
 		if (simpleFacts == null)
 			return null;
@@ -1079,7 +1079,7 @@ public class DateTimeParser {
 		String timeZone = "";
 		boolean ampmDetected = false;
 		boolean iso8601 = false;
-		Tracker tracker = new Tracker();
+		final Tracker tracker = new Tracker();
 
 		int lastCh = '¶';
 		for (int i = 0; i < len && timeZone.length() == 0; i++) {
@@ -1313,7 +1313,7 @@ public class DateTimeParser {
 							timeZone = "X";
 						else {
 							final String currentTimeZone = trimmed.substring(i, len);
-							if (!DateTimeParser.timeZones.contains(currentTimeZone))
+							if (!timeZones.contains(currentTimeZone))
 								return null;
 							timeZone = "z";
 						}
@@ -1517,7 +1517,7 @@ public class DateTimeParser {
 		return ret.toString();
 	}
 
-	private boolean closeDate(Tracker tracker, DateTracker dateTracker) {
+	private boolean closeDate(final Tracker tracker, final DateTracker dateTracker) {
 		// Need to close out the date
 		if (tracker.yearInDateFirst) {
 			if (tracker.digits != 1 && tracker.digits != 2)
@@ -1740,8 +1740,8 @@ public class DateTimeParser {
 		// Add a relatively naive check to see if we have any characters that make it look unlikely this is an actual date.
 		int suspect = 0;
 		for (int i = 0; i < compressed.length(); i++) {
-			char ch = compressed.charAt(i);
-			boolean possiblePatternCharacter = Character.isLetter(ch);
+			final char ch = compressed.charAt(i);
+			final boolean possiblePatternCharacter = Character.isLetter(ch);
 			if (possiblePatternCharacter &&
 					ch != 'E' && ch != 'H' && ch != 'M' && ch != 'S' &&
 					ch != 'a' && ch != 'd' && ch != 'h' && ch != 'm' && ch != 'p' && ch != 's' & ch != 'x' && ch != 'y' && ch != 'z' &&

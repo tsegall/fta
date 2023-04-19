@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -234,7 +234,7 @@ class FileProcessor {
 			error.printf("ERROR: Filename '%s' not found.%n", filename);
 			System.exit(1);
 		}
-		catch (TextParsingException|java.lang.ArrayIndexOutOfBoundsException e) {
+		catch (TextParsingException|ArrayIndexOutOfBoundsException e) {
 			error.printf("ERROR: Filename '%s' Univocity exception. %s%n", filename, e.getMessage());
 			System.exit(1);
 		}
@@ -243,9 +243,9 @@ class FileProcessor {
 			System.exit(0);
 
 		// Validate the result of the analysis if requested
-		int[] matched = new int[numFields];
-		int[] nulls = new int[numFields];
-		int[] blanks = new int[numFields];
+		final int[] matched = new int[numFields];
+		final int[] nulls = new int[numFields];
+		final int[] blanks = new int[numFields];
 		final Set<String> failures = new HashSet<>();
 
 		// Check the RegExp at level 2 validation
@@ -256,8 +256,8 @@ class FileProcessor {
 				parser.beginParsing(in);
 				numFields = parser.getRecordMetadata().headers().length;
 
-				TextAnalysisResult[] results = processor.getResult();
-				Pattern[] patterns = new Pattern[numFields];
+				final TextAnalysisResult[] results = processor.getResult();
+				final Pattern[] patterns = new Pattern[numFields];
 
 				for (int i = 0; i < numFields; i++)
 					if (options.col == -1 || options.col == i)
@@ -298,7 +298,7 @@ class FileProcessor {
 		TextAnalysisResult result = null;
 		if (options.json)
 			output.printf("[%n");
-		TextAnalysisResult[] results = processor.getResult();
+		final TextAnalysisResult[] results = processor.getResult();
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
 				final TextAnalyzer analyzer = processor.getAnalyzer(i);
@@ -325,7 +325,7 @@ class FileProcessor {
 
 				// Check the counts if we are validating
 				if (options.validate >= 1) {
-					String ret = result.checkCounts();
+					final String ret = result.checkCounts();
 					if (ret != null) {
 						System.err.printf("Composite: %s, field: %s (%d), failed count validation - %s\n",
 								analyzer.getContext().getCompositeName(), analyzer.getContext().getStreamName(),

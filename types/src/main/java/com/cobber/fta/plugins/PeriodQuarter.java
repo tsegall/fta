@@ -56,7 +56,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 		String getRegExp(final boolean spaceSeen) {
 			return spaceSeen ? regExpWithSpace : regExp;
 		}
-	};
+	}
 
 	private Form form = Form.Unknown;
 
@@ -83,11 +83,6 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getSemanticType() {
-		return defn.semanticType;
-	}
-
-	@Override
 	public FTAType getBaseType() {
 		return form == Form.Digit ? FTAType.LONG : FTAType.STRING;
 	}
@@ -107,7 +102,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 		return true;
 	}
 
-	private boolean validQuarter(final String input, int initialOffset) {
+	private boolean validQuarter(final String input, final int initialOffset) {
 		final int len = input.length();
 		if (initialOffset == len)
 			return false;
@@ -118,18 +113,18 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 			offset++;
 		}
 
-		char q = input.charAt(offset);
+		final char q = input.charAt(offset);
 
 		return q == '1' || q == '2' || q == '3' || q == '4';
 	}
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
-		int len = input.length();
+		final int len = input.length();
 		if (len == 0)
 			return false;
 		final String upper = input.toUpperCase(locale);
-		char first = input.charAt(0);
+		final char first = input.charAt(0);
 
 		switch (form) {
 		case Digit:
@@ -167,7 +162,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		return isValid(trimmed, true, -1);
 	}
 

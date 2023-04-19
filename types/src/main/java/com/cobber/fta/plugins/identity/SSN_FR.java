@@ -30,9 +30,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect French SSN's.
  */
 public class SSN_FR extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "IDENTITY.SSN_FR";
-
 	private static final int SSN_LENGTH = 15;
 	private static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
@@ -94,11 +91,6 @@ public class SSN_FR extends LogicalTypeInfinite {
 		final long check = 97 - insee % 97;
 
 		return inseeStr + String.format(" %02d", check);
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

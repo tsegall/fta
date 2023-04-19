@@ -28,7 +28,7 @@ public class Analysis {
 		private String minValue;
 		private String json;
 
-		FTAInfo(TextAnalysisResult result) {
+		FTAInfo(final TextAnalysisResult result) {
 			this.fieldName = result.getName();
 			this.isSemanticType = result.isSemanticType();
 			this.type = result.getType().toString();
@@ -72,7 +72,7 @@ public class Analysis {
 		}
 	}
 
-	public Analysis(Locale locale) {
+	public Analysis(final Locale locale) {
 		if (locale != null)
 			this.locale = locale.toLanguageTag();
 
@@ -95,7 +95,7 @@ public class Analysis {
 		return file.getOriginalFilename();
 	}
 
-	public void setFile(MultipartFile file) {
+	public void setFile(final MultipartFile file) {
 		try {
 			this.file = file;
 
@@ -109,7 +109,7 @@ public class Analysis {
 				settings.setEmptyValue("");
 				final CsvParser parser = new CsvParser(settings);
 				parser.beginParsing(in);
-				String[] header = parser.getRecordMetadata().headers();
+				final String[] header = parser.getRecordMetadata().headers();
 				final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, file.getOriginalFilename(), header);
 				final TextAnalyzer template = new TextAnalyzer(context);
 				if (locale != null)
@@ -130,7 +130,7 @@ public class Analysis {
 				}
 
 				final TextAnalysisResult[] results = recordAnalyzer.getResult().getStreamResults();
-				for (TextAnalysisResult result : results)
+				for (final TextAnalysisResult result : results)
 					analysisResult.add(new FTAInfo(result));
 			}
 			catch (FTAPluginException e) {

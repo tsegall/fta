@@ -32,9 +32,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect a middle name.
  */
 public class MiddleName extends FirstName {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "NAME.MIDDLE";
-
 	private LogicalTypeFiniteSimple logicalFirst;
 	private LogicalTypeFiniteSimple logicalLast;
 
@@ -53,11 +50,6 @@ public class MiddleName extends FirstName {
 		logicalLast = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.LAST"), analysisConfig);
 
 		return true;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	/*

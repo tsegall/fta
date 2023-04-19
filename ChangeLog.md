@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 13.4.0
+ - ENH: I18N - Add new Semantic Type - IDENTITY.NI_UK (National Insurance Number (UK))
+ - ENH: I18N - Add new Semantic Type - IDENTITY.PERSONNUMMER_SE (Personal identity number (Sweden))
+ - ENH: Add new Semantic Type - IMEI (15 digit CHECKDIGIT.LUHN with header signal)
+ - ENH: Bump google phonenumber
+ - INT: Some code cleanups
+
 ### 13.3.0
  - BUG: ISO 639-1 incorrectly switched with ISO 639-2
  - ENH: Add Documentation tag to plugins file to document the Semantic Type (also display in Web)

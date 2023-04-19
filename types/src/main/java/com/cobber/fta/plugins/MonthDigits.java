@@ -24,7 +24,6 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.PluginLocaleEntry;
 import com.cobber.fta.core.FTAPluginException;
-import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
@@ -64,16 +63,6 @@ public class MonthDigits extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getSemanticType() {
-		return defn.semanticType;
-	}
-
-	@Override
-	public FTAType getBaseType() {
-		return defn.baseType;
-	}
-
-	@Override
 	public String getRegExp() {
 		return REGEXP;
 	}
@@ -87,7 +76,7 @@ public class MonthDigits extends LogicalTypeInfinite {
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		if (input.length() >= 3 || !Utils.isNumeric(input))
 			return false;
-		final int month = Integer.valueOf(input);
+		final int month = Integer.parseInt(input);
 		return month >= 1 && month <= 12;
 	}
 
@@ -125,7 +114,7 @@ public class MonthDigits extends LogicalTypeInfinite {
 		// Check the previous column for either a day, month, or year to boost our confidence
 		// We check for month as some times month as a number is adjacent to month as a string
 		if (myIndex >= 1) {
-			String previousStreamName = context.getCompositeStreamNames()[myIndex - 1];
+			final String previousStreamName = context.getCompositeStreamNames()[myIndex - 1];
 			if (dayEntry.getHeaderConfidence(previousStreamName) >= 99)
 				return PluginAnalysis.OK;
 			if (keywords.match(previousStreamName, "YEAR", Keywords.MatchStyle.EQUALS) >= 90)
@@ -136,7 +125,7 @@ public class MonthDigits extends LogicalTypeInfinite {
 
 		// Check the next column for either a day, month, or year to boost our confidence
 		if (myIndex < columns - 1) {
-			String nextStreamName = context.getCompositeStreamNames()[myIndex + 1];
+			final String nextStreamName = context.getCompositeStreamNames()[myIndex + 1];
 			if (dayEntry.getHeaderConfidence(nextStreamName) >= 99)
 				return PluginAnalysis.OK;
 			if (keywords.match(nextStreamName, "YEAR", Keywords.MatchStyle.EQUALS) >= 90)

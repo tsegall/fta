@@ -66,7 +66,7 @@ public class IndustryNAICS extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
-		String trimmed = input.trim();
+		final String trimmed = input.trim();
 		if (!validate(trimmed, detectMode, count))
 			return false;
 

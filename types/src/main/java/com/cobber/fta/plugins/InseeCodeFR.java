@@ -96,11 +96,6 @@ public class InseeCodeFR extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getSemanticType() {
-		return defn.semanticType;
-	}
-
-	@Override
 	public String getRegExp() {
 		return REGEXP_INSEE_CODE;
 	}

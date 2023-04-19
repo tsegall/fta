@@ -32,9 +32,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Vehicle Identification Numbers (VINs).
  */
 public class VIN extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "VIN";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "[A-HJ-NPR-Z0-9]{17}";
 
@@ -109,11 +106,6 @@ public class VIN extends LogicalTypeInfinite {
 		final int remainder = sum % 11;
 
 		return remainder < 10 ? (char)('0' + remainder) : 'X';
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

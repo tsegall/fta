@@ -5,7 +5,7 @@ import com.cobber.fta.PluginDefinition;
 
 public class SuburbAU extends LogicalTypeBloomFilter {
 
-	public SuburbAU(PluginDefinition plugin) {
+	public SuburbAU(final PluginDefinition plugin) {
 		super(plugin);
 	}
 

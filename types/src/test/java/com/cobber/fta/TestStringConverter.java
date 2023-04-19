@@ -29,7 +29,7 @@ import com.cobber.fta.core.FTAType;
  * Tests StringConverter.
  */
 public class TestStringConverter {
-	public void baseTest(String header, String[] testCases, final Locale locale, final TypeInfo typeInfo) throws IOException, FTAException {
+	public void baseTest(final String header, final String[] testCases, final Locale locale, final TypeInfo typeInfo) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer(header);
 		analysis.setLocale(locale);
 
@@ -46,9 +46,9 @@ public class TestStringConverter {
 
 		for (final String testCase : testCases) {
 			// Take the String representation of type typeInfo.getBaseType() and convert it to an equivalent double
-			double d = sc.toDouble(testCase);
+			final double d = sc.toDouble(testCase);
 			// Take the double and convert it back to the original type and then format it appropriately
-			String s = sc.formatted(sc.fromDouble(d));
+			final String s = sc.formatted(sc.fromDouble(d));
 			// Must round-trip!
 			assertEquals(s, testCase);
 		}

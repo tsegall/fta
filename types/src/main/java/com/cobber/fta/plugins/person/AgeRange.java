@@ -176,11 +176,10 @@ public class AgeRange extends LogicalTypeInfinite {
 		for (int i = 0; i < wordCount; i++) {
 			final String word = words.get(i);
 			if (Utils.isNumeric(word)) {
-				int value = -1;
 				// If it is numeric but not a plausible AGE call it a day
 				if (word.length() >= 4)
 					return false;
-				value = Integer.parseInt(word);
+				final int value = Integer.parseInt(word);
 				if (value > MAX_AGE)
 					return false;
 				if (rangeStartIndex == -1) {

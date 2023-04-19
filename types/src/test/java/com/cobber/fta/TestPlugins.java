@@ -45,15 +45,13 @@ import java.util.Set;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
-import com.cobber.fta.plugins.CheckDigitABA;
-import com.cobber.fta.plugins.CheckDigitCUSIP;
 import com.cobber.fta.plugins.CheckDigitEAN13;
-import com.cobber.fta.plugins.CheckDigitIBAN;
 import com.cobber.fta.plugins.CheckDigitISBN;
 import com.cobber.fta.plugins.CheckDigitISIN;
-import com.cobber.fta.plugins.CheckDigitLuhn;
 import com.cobber.fta.plugins.CheckDigitSEDOL;
 import com.cobber.fta.plugins.CountryEN;
 import com.cobber.fta.plugins.EmailLT;
@@ -63,7 +61,6 @@ import com.cobber.fta.plugins.IPV4Address;
 import com.cobber.fta.plugins.PhoneNumberLT;
 import com.cobber.fta.plugins.URLLT;
 import com.cobber.fta.plugins.USZip5;
-import com.cobber.fta.plugins.address.AddressEN;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -658,7 +655,7 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), 1);
-		Entry<String, Long> only = result.getInvalidDetails().entrySet().iterator().next();
+		final Entry<String, Long> only = result.getInvalidDetails().entrySet().iterator().next();
 		assertEquals(only.getKey(), "X02469358");
 		assertEquals(only.getValue(), 1);
 
@@ -1240,8 +1237,9 @@ public class TestPlugins {
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), inputs.length + 2 + result.getNullCount());
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "EMAIL");
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("EMAIL").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("EMAIL");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getInvalidCount(), 1);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 2);
@@ -1274,8 +1272,9 @@ public class TestPlugins {
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getSampleCount(), inputs.length + result.getNullCount());
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "EMAIL");
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("EMAIL").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("EMAIL");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getMatchCount(), inputs.length - ERRORS);
 		assertEquals(result.getNullCount(), 2);
 		assertEquals(result.getRegExp(), EmailLT.REGEXP);
@@ -1323,8 +1322,9 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), URLLT.REGEXP_PROTOCOL + URLLT.REGEXP_RESOURCE);
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), URLLT.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("URI.URL").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("URI.URL");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 
 		assertNull(result.checkCounts());
 
@@ -1354,7 +1354,8 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), URLLT.REGEXP_RESOURCE);
 		assertEquals(result.getConfidence(), 0.95);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), URLLT.SEMANTIC_TYPE);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("URI.URL");
+		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("URI.URL").signature);
 
 		assertNull(result.checkCounts());
@@ -1367,7 +1368,7 @@ public class TestPlugins {
 	public void testFullAddressCA() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testFullAddressCA");
 		analysis.setLocale(Locale.forLanguageTag("en-CA"));
-		LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("FULL_ADDRESS_EN"), analysis.getConfig());
+		final LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("FULL_ADDRESS_EN"), analysis.getConfig());
 
 		assertTrue(logicalFullAddress.isValid("510 Chaton Ave, NW H6J 1S5"));
 	}
@@ -1376,7 +1377,7 @@ public class TestPlugins {
 	public void testFullAddressUS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testFullAddressUS");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
-		LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("FULL_ADDRESS_EN"), analysis.getConfig());
+		final LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("FULL_ADDRESS_EN"), analysis.getConfig());
 
 		assertTrue(logicalFullAddress.isValid("PO Box 554, Oakley, UT"));
 	}
@@ -1385,7 +1386,7 @@ public class TestPlugins {
 	public void testStreetNameUS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testStreetNameUS");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
-		LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STREET_NAME_EN"), analysis.getConfig());
+		final LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STREET_NAME_EN"), analysis.getConfig());
 
 		assertTrue(logicalFullAddress.isValid("S CAPITAL OF TEXAS HWY STE B5"));
 		assertTrue(logicalFullAddress.isValid("ROUTE 17"));
@@ -1395,7 +1396,7 @@ public class TestPlugins {
 	public void testStreetAddressUS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testStreetAddressUS");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
-		LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STREET_ADDRESS_EN"), analysis.getConfig());
+		final LogicalTypeInfinite logicalFullAddress = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STREET_ADDRESS_EN"), analysis.getConfig());
 
 		assertTrue(logicalFullAddress.isValid("P.O. BOX 769"));
 		assertTrue(logicalFullAddress.isValid("P.O.BOX 1387"));
@@ -1422,8 +1423,9 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), URLLT.REGEXP_PROTOCOL + "?" + URLLT.REGEXP_RESOURCE);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), URLLT.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("URI.URL").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("URI.URL");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 
 		assertNull(result.checkCounts());
 
@@ -1522,8 +1524,9 @@ public class TestPlugins {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getSemanticType(), USZip5.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1552,8 +1555,9 @@ public class TestPlugins {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getSemanticType(), USZip5.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1631,7 +1635,7 @@ public class TestPlugins {
 		final TextAnalyzer analyzer = new TextAnalyzer("testRegister");
 		analyzer.registerDefaultPlugins(analyzer.getConfig());
 
-		LogicalType logical = analyzer.getPlugins().getRegistered(URLLT.SEMANTIC_TYPE);
+		LogicalType logical = analyzer.getPlugins().getRegistered("URI.URL");
 
 		final String valid = "http://www.infogix.com";
 		final String invalid = "www infogix.com";
@@ -1669,8 +1673,9 @@ public class TestPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getSemanticType(), USZip5.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), 4);
@@ -1684,7 +1689,16 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicLuhn() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("IMEI");
+		luhnTest("Basic", "CHECKDIGIT.LUHN");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void IMEI() throws IOException, FTAException {
+		luhnTest("IMEI", "IMEI");
+	}
+
+	private void luhnTest(final String header, final String semanticType) throws FTAPluginException, FTAUnsupportedLocaleException {
+		final TextAnalyzer analysis = new TextAnalyzer(header);
 		final String inputs[] = {
 				"518328079297586", "494238109049246", "497201528898871", "916790719773953", "991640416096547", "517179040180885", "496180503928286",
 				"512689883394604", "496164591404293", "545307005094090", "359268076686757", "451386551229690", "010396357738673", "541276254953906",
@@ -1697,9 +1711,10 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
+		final PluginDefinition defn = PluginDefinition.findByQualifier(semanticType);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getSemanticType(), CheckDigitLuhn.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.LUHN").signature);
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1726,8 +1741,9 @@ public class TestPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), CheckDigitCUSIP.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.CUSIP").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("CHECKDIGIT.CUSIP");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1753,8 +1769,9 @@ public class TestPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), CheckDigitSEDOL.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.SEDOL").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("CHECKDIGIT.SEDOL");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1781,9 +1798,10 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
+		final PluginDefinition defn = PluginDefinition.findByQualifier("CHECKDIGIT.EAN13");
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getSemanticType(), CheckDigitEAN13.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.EAN13").signature);
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1810,8 +1828,9 @@ public class TestPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), CheckDigitISIN.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.ISIN").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("CHECKDIGIT.ISIN");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -1840,8 +1859,9 @@ public class TestPlugins {
  		final TextAnalysisResult result = analysis.getResult();
 
  		assertEquals(result.getType(), FTAType.STRING);
- 		assertEquals(result.getSemanticType(), CheckDigitISBN.SEMANTIC_TYPE);
- 		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.ISBN").signature);
+ 		final PluginDefinition defn = PluginDefinition.findByQualifier("CHECKDIGIT.ISBN");
+ 		assertEquals(result.getSemanticType(), defn.semanticType);
+ 		assertEquals(result.getStructureSignature(), defn.signature);
  		assertEquals(result.getSampleCount(), inputs.length);
  		assertEquals(result.getOutlierCount(), 0);
  		assertEquals(result.getMatchCount(), inputs.length);
@@ -1868,8 +1888,9 @@ public class TestPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), IPV4Address.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IPADDRESS.IPV4").signature);
+ 		final PluginDefinition defn = PluginDefinition.findByQualifier("IPADDRESS.IPV4");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -2125,8 +2146,9 @@ public class TestPlugins {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getSemanticType(), USZip5.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), copies);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), copies);
@@ -2348,8 +2370,9 @@ public class TestPlugins {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), EmailLT.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("EMAIL").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("EMAIL");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -2393,8 +2416,9 @@ public class TestPlugins {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), EmailLT.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("EMAIL").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("EMAIL");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), 1);
@@ -2905,7 +2929,7 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		int javaVersion = TestUtils.getJavaVersion();
+		final int javaVersion = TestUtils.getJavaVersion();
 		String expected = "untested";
 		switch (javaVersion) {
 		case 8:
@@ -3250,7 +3274,7 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testGenderPT() throws IOException, FTAException {
-		String[] samples = new String[1000];
+		final String[] samples = new String[1000];
 
 		for (int i = 0; i < samples.length; i++) {
 			samples[i] = random.nextInt(2) == 1 ? "femenino" : "masculino";
@@ -4009,8 +4033,9 @@ public class TestPlugins {
 		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), AddressEN.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STREET_ADDRESS_EN").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("STREET_ADDRESS_EN");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -4355,8 +4380,9 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), AddressEN.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STREET_ADDRESS_EN").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("STREET_ADDRESS_EN");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getRegExp(), ".+");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -4380,8 +4406,9 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), AddressEN.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("STREET_ADDRESS_EN").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("STREET_ADDRESS_EN");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getRegExp(), ".+");
 		assertEquals(result.getConfidence(), 1.0);
 
@@ -4434,8 +4461,9 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), CheckDigitIBAN.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.IBAN").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("CHECKDIGIT.IBAN");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
 
 		assertNull(result.checkCounts());
@@ -4467,8 +4495,9 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getSemanticType(), CheckDigitABA.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("CHECKDIGIT.ABA").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("CHECKDIGIT.ABA");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
 
 		assertNull(result.checkCounts());

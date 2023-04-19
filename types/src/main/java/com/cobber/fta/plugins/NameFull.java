@@ -114,7 +114,7 @@ public class NameFull extends LogicalTypeInfinite {
 		int nameCount = 0;
 
 		for (int i = 0; i < wordCount; i++) {
-			String word = words.get(i);
+			final String word = words.get(i);
 			if (!initialSeen && word.length() == 1 && Character.isAlphabetic(word.charAt(0))) {
 				initialSeen = true;
 				continue;

@@ -19,7 +19,7 @@ public class AnalysisController {
 	Analysis analysis = null;
 
 	@RequestMapping(value = "/analysis", method = RequestMethod.GET)
-	public ModelAndView analysisForm(Model model) {
+	public ModelAndView analysisForm(final Model model) {
 		analysis = new Analysis(LocaleContextHolder.getLocale());
 		model.addAttribute("analysis", analysis);
 		return new ModelAndView("analysis");
@@ -32,13 +32,13 @@ public class AnalysisController {
 	}
 
 	@RequestMapping(value = "/types", method = RequestMethod.GET)
-	public ModelAndView typesForm(Model model) {
+	public ModelAndView typesForm(final Model model) {
 		model.addAttribute("analysis", analysis);
 		return new ModelAndView("types");
 	}
 
 	@RequestMapping(value = "/about", method = RequestMethod.GET)
-	public ModelAndView about(Model model) {
+	public ModelAndView about(final Model model) {
 		model.addAttribute("analysis", analysis);
 		return new ModelAndView("about");
 	}
@@ -56,7 +56,7 @@ public class AnalysisController {
 	}
 
 	private ModelAndView Error(final String message) {
-		ModelAndView modelAndView = new ModelAndView("error");
+		final ModelAndView modelAndView = new ModelAndView("error");
 		modelAndView.getModel().put("message", message);
 		return modelAndView;
 	}

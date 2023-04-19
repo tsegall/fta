@@ -42,9 +42,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect free text - for example, Comments, Descriptions, Notes, ....
  */
 public class FreeText extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "FREE_TEXT";
-
 	/** The Regular Expression for this Semantic type. */
 	private static final String REGEXP = ".+";
 
@@ -176,11 +173,6 @@ public class FreeText extends LogicalTypeInfinite {
 
 	private boolean isText(final String trimmed) {
 		return processor.analyze(trimmed).getDetermination() == TextProcessor.Determination.OK;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

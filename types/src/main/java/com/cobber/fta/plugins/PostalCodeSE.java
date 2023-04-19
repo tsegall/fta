@@ -37,9 +37,6 @@ import com.google.common.hash.Funnels;
  * Plugin to detect valid Swedish Postal Codes.
  */
 public class PostalCodeSE extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_SE";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP_POSTAL_CODE = "\\d{3} \\d{2}";
 
@@ -92,11 +89,6 @@ public class PostalCodeSE extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		return examples[random.nextInt(examples.length)];
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

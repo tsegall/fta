@@ -22,9 +22,6 @@ import com.cobber.fta.core.FTAType;
  * Plugin to detect a Longitude as Degrees, minutes, and seconds.
  */
 public class LongitudeDMS extends CoordinateDMS {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "COORDINATE.LONGITUDE_DMS";
-
 	/** The Regular Expression for this Semantic type. */
 	private static final String REGEXP = "(\\d{5,7}|\\d{1,2} \\d{1,2} \\d{1,2} ?)[EeWw]";
 	private static final char[] DIRECTION = { 'E', 'W', 'e', 'w' };
@@ -48,11 +45,6 @@ public class LongitudeDMS extends CoordinateDMS {
 	protected
 	int getMaxDegrees() {
 		return MAX_DEGREES;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

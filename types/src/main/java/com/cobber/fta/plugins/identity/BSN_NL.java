@@ -31,15 +31,12 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Dutch BSN's (Burger Service Nummer).
  */
 public class BSN_NL extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "IDENTITY.BSN_NL";
-
 	private static final int LENGTH = 9;
 	private static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
 
 	/**
-	 * Construct a plugin to detect French SSN's based on the Plugin Definition.
+	 * Construct a plugin to detect Dutch BSN's based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
 	public BSN_NL(final PluginDefinition plugin) {
@@ -71,14 +68,9 @@ public class BSN_NL extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		String base = Utils.getRandomDigits(random, 8);
+		final String base = Utils.getRandomDigits(random, 8);
 
 		return base + VAT.getCheckDigitNL(base);
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

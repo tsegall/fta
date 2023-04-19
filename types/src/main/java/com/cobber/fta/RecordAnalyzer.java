@@ -73,7 +73,7 @@ public class RecordAnalyzer {
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
 	public RecordAnalysisResult getResult() throws FTAPluginException, FTAUnsupportedLocaleException {
-		TextAnalysisResult[] results = new TextAnalysisResult[streamCount];
+		final TextAnalysisResult[] results = new TextAnalysisResult[streamCount];
 
 		// Build an array of the Semantic Types detected as a result of the analysis so far
 		final String[] semanticTypes = new String[streamCount];

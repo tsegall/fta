@@ -33,9 +33,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect UK NHS numbers.
  */
 public class NHS_UK extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "IDENTITY.NHS_UK";
-
 	private static final int LENGTH = 10;
 	private static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
@@ -100,11 +97,6 @@ public class NHS_UK extends LogicalTypeInfinite {
 		}
 
 		return nhs.substring(0, 3) + " " + nhs.substring(3, 6) + " " + nhs.substring(6, 9) + check;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

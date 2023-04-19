@@ -364,7 +364,7 @@ public class Facts {
 
 	@JsonIgnore
 	public Histogram getHistogram() {
-		Histogram ret = new Histogram(CommonComparator.getTypedMap(matchTypeInfo.getBaseType(), getStringConverter()), getStringConverter(), analysisConfig.getHistogramBins(),  analysisConfig.getDebug());
+		final Histogram ret = new Histogram(CommonComparator.getTypedMap(matchTypeInfo.getBaseType(), getStringConverter()), getStringConverter(), analysisConfig.getHistogramBins(),  analysisConfig.getDebug());
 		ret.setCardinality(cardinality);
 		ret.setCardinalityOverflow(cardinalityOverflow);
 		return ret;

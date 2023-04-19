@@ -24,9 +24,6 @@ import com.cobber.fta.core.FTAType;
  * Plugin to detect valid International Bank Account Numbers (IBAN) .
  */
 public class CheckDigitIBAN extends CheckDigitLT {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "CHECKDIGIT.IBAN";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "([A-Z]{2}[ \\-]?[0-9]{2})(?=(?:[ \\-]?[A-Z0-9]){9,30}$)((?:[ \\-]?[A-Z0-9]{3,5}){2,7})([ \\-]?[A-Z0-9]{1,3})";
 
@@ -84,11 +81,6 @@ public class CheckDigitIBAN extends CheckDigitLT {
 	@Override
 	public String getRegExp() {
 		return REGEXP;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

@@ -46,9 +46,9 @@ public class DriverUtils {
 		memberSet = new SingletonSet("file", inputName);
 		final Set<String> newSet = new TreeSet<>(memberSet.getMembers());
 
-		for (String member : memberSet.getMembers()) {
+		for (final String member : memberSet.getMembers()) {
 			if (!Normalizer.isNormalized(member, Normalizer.Form.NFKD)) {
-				String cleaned = Normalizer.normalize(member, Normalizer.Form.NFKD).replaceAll("\\p{M}", "");
+				final String cleaned = Normalizer.normalize(member, Normalizer.Form.NFKD).replaceAll("\\p{M}", "");
 				newSet.add(cleaned);
 			}
 		}
@@ -57,7 +57,7 @@ public class DriverUtils {
 			final File newFile = new File(baseDirectory, baseName + "_new.csv");
 
 			try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newFile), "UTF-8"))) {
-				for (String member : newSet)
+				for (final String member : newSet)
 					out.write(member + "\n");
 			}
 		}
@@ -89,7 +89,7 @@ public class DriverUtils {
 		final int samplingFrequency = (lineCount + SAMPLE_SIZE - 1) / SAMPLE_SIZE;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(source), "UTF-8"))) {
-			ArrayList<String> samples = new ArrayList<>(SAMPLE_SIZE);
+			final ArrayList<String> samples = new ArrayList<>(SAMPLE_SIZE);
 			String input;
 			int recordCount = 0;
 
@@ -148,7 +148,7 @@ public class DriverUtils {
 
 		System.err.println("	<tbody>");
 
-		for (SemanticType semanticType : semanticTypes.getAllSemanticTypes()) {
+		for (final SemanticType semanticType : semanticTypes.getAllSemanticTypes()) {
 			System.err.printf("		<tr>%n");
 			System.err.printf("			<th>%s</th>%n", semanticType.id);
 			System.err.printf("			<th>%s</th>%n", semanticType.description);

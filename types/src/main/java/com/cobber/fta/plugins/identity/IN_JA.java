@@ -30,9 +30,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Japanese Individual Number (個人番号, kojin bangō), also known as My Number (マイナンバー, mai nambā).
  */
 public class IN_JA extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "IDENTITY.INDIVIDUAL_NUMBER_JA";
-
 	private static final int IN_LENGTH = 12;
 	private static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
@@ -84,11 +81,6 @@ public class IN_JA extends LogicalTypeInfinite {
 	public String nextRandom() {
 		final String in = String.valueOf(random.nextInt(90000) + 10000) + String.format("%06d", random.nextInt(1000000));
 		return in + calculateCheckDigit(in);
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

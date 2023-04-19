@@ -67,7 +67,7 @@ public class Trace {
 					throw new TraceException("Supplied directory either does not exist or is not writable");
 				break;
 			case "samples":
-				traceSampleCount = Long.valueOf(traceComponents[1]);
+				traceSampleCount = Long.parseLong(traceComponents[1]);
 				break;
 			default:
 				throw new TraceException("Unrecognized trace option: '" + traceComponents[0] +

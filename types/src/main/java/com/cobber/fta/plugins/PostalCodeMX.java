@@ -37,9 +37,6 @@ import com.google.common.hash.Funnels;
  * Plugin to detect valid Mexican Postal Codes.
  */
 public class PostalCodeMX extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_MX";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP_POSTAL_CODE_5 = "\\d{5}";
 	public static final String REGEXP_POSTAL_CODE_45 = "\\d{4,5}";
@@ -89,11 +86,6 @@ public class PostalCodeMX extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		return examples[random.nextInt(examples.length)];
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

@@ -87,11 +87,11 @@ public class TestMerge {
 	public void splitLogical() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			shardOne.add("MALE");
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			shardTwo.add("FEMALE");
 		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "MALE_FEMALE", Locale.forLanguageTag("en-US"), true);
@@ -106,13 +106,13 @@ public class TestMerge {
 	public void testBulkLong() throws IOException, FTAException {
 		final long SAMPLE_COUNT = 100L;
 
-		List<String> samplesLong100 = new ArrayList<>();
+		final List<String> samplesLong100 = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			samplesLong100.add("100");
 		samplesLong100.add(null);
 		samplesLong100.add(" ");
 
-		List<String> samplesLong200 = new ArrayList<>();
+		final List<String> samplesLong200 = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			samplesLong200.add("200");
 		samplesLong200.add(null);
@@ -131,13 +131,13 @@ public class TestMerge {
 	public void testBulkLongNoStats() throws IOException, FTAException {
 		final long SAMPLE_COUNT = 100L;
 
-		List<String> samplesLong100 = new ArrayList<>();
+		final List<String> samplesLong100 = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			samplesLong100.add("100");
 		samplesLong100.add(null);
 		samplesLong100.add(" ");
 
-		List<String> samplesLong200 = new ArrayList<>();
+		final List<String> samplesLong200 = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			samplesLong200.add("200");
 		samplesLong200.add(null);
@@ -171,13 +171,13 @@ public class TestMerge {
 	public void testBulkLongFrench() throws IOException, FTAException {
 		final long SAMPLE_COUNT = 100L;
 
-		List<String> samplesLong100 = new ArrayList<>();
+		final List<String> samplesLong100 = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			samplesLong100.add("100");
 		samplesLong100.add(null);
 		samplesLong100.add(" ");
 
-		List<String> samplesLong200 = new ArrayList<>();
+		final List<String> samplesLong200 = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			samplesLong200.add("200");
 		samplesLong200.add(null);
@@ -197,11 +197,11 @@ public class TestMerge {
 		final NumberFormat longFormatter = NumberFormat.getIntegerInstance(Locale.ENGLISH);
 		longFormatter.setGroupingUsed(true);
 
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(longFormatter.format(i));
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 40000; i < 100000; i++)
 			shardTwo.add(longFormatter.format(i));
 
@@ -218,12 +218,12 @@ public class TestMerge {
 		final NumberFormat longFormatter = NumberFormat.getIntegerInstance(Locale.ENGLISH);
 		longFormatter.setGroupingUsed(true);
 
-		TextAnalyzer shardOne = new TextAnalyzer("cardinalityExceededLongNoSerialization");
+		final TextAnalyzer shardOne = new TextAnalyzer("cardinalityExceededLongNoSerialization");
 		shardOne.setLocale(Locale.forLanguageTag("en-US"));
 		for (int i = 0; i < 20000; i++)
 			shardOne.train(longFormatter.format(i));
 
-		TextAnalyzer shardTwo = new TextAnalyzer("cardinalityExceededLongNoSerialization");
+		final TextAnalyzer shardTwo = new TextAnalyzer("cardinalityExceededLongNoSerialization");
 		shardTwo.setLocale(Locale.forLanguageTag("en-US"));
 		for (int i = 40000; i < 100000; i++)
 			shardTwo.train(longFormatter.format(i));
@@ -239,11 +239,11 @@ public class TestMerge {
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededLongNoStats() throws IOException, FTAException {
 
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(String.valueOf(i));
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(String.valueOf(100000 + i));
 
@@ -252,38 +252,38 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void mergeWithInvalid() throws IOException, FTAException {
-		TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
 		for (int i = 0; i < 1000; i++)
 			shardOne.train(String.valueOf(i));
 		shardOne.train("x");
-		TextAnalysisResult shardOneResult = shardOne.getResult();
+		final TextAnalysisResult shardOneResult = shardOne.getResult();
 
-		TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
 		for (int i = 0; i < 1000; i++)
 			shardTwo.train(String.valueOf(100000 + i));
 		shardTwo.train("y");
-		TextAnalysisResult shardTwoResult = shardTwo.getResult();
+		final TextAnalysisResult shardTwoResult = shardTwo.getResult();
 
-		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
-		TextAnalysisResult mergedResult = merged.getResult();
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
 		assertEquals(mergedResult.getCardinality(), shardOneResult.getCardinality() + shardTwoResult.getCardinality());
 		assertEquals(mergedResult.getInvalidCount(), shardOneResult.getInvalidCount() + shardTwoResult.getInvalidCount());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testUniquenessTrue() throws IOException, FTAException {
-		TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
 		for (int i = 0; i < 20000; i++)
 			shardOne.train(String.valueOf(i));
-		TextAnalysisResult shardOneResult = shardOne.getResult();
+		final TextAnalysisResult shardOneResult = shardOne.getResult();
 
-		TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
 		for (int i = 0; i < 20000; i++)
 			shardTwo.train(String.valueOf(100000 + i));
-		TextAnalysisResult shardTwoResult = shardTwo.getResult();
+		final TextAnalysisResult shardTwoResult = shardTwo.getResult();
 
-		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
-		TextAnalysisResult mergedResult = merged.getResult();
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
 		assertEquals(mergedResult.getInvalidCount(), shardOneResult.getInvalidCount() + shardTwoResult.getInvalidCount());
 		assertEquals(mergedResult.getMinValue(), shardOneResult.getMinValue());
 		assertEquals(mergedResult.getMaxValue(), shardTwoResult.getMaxValue());
@@ -292,18 +292,18 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testUniquenessFalse() throws IOException, FTAException {
-		TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
 		for (int i = 0; i < 20000; i++)
 			shardOne.train(String.valueOf(i));
-		TextAnalysisResult shardOneResult = shardOne.getResult();
+		final TextAnalysisResult shardOneResult = shardOne.getResult();
 
-		TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
 		for (int i = 0; i < 20000; i++)
 			shardTwo.train(String.valueOf(1000 + i));
-		TextAnalysisResult shardTwoResult = shardTwo.getResult();
+		final TextAnalysisResult shardTwoResult = shardTwo.getResult();
 
-		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
-		TextAnalysisResult mergedResult = merged.getResult();
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
 		assertEquals(mergedResult.getInvalidCount(), shardOneResult.getInvalidCount() + shardTwoResult.getInvalidCount());
 		assertEquals(mergedResult.getMinValue(), shardOneResult.getMinValue());
 		assertEquals(mergedResult.getMaxValue(), shardTwoResult.getMaxValue());
@@ -313,11 +313,11 @@ public class TestMerge {
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededLongFrench() throws IOException, FTAException {
 
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(String.valueOf(i));
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(String.valueOf(100000 + i));
 
@@ -327,11 +327,11 @@ public class TestMerge {
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededDouble() throws IOException, FTAException {
 
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(String.valueOf(i) + ".0");
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(String.valueOf(100000 + i) + ".0");
 
@@ -341,11 +341,11 @@ public class TestMerge {
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededDoubleNoStats() throws IOException, FTAException {
 
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(String.valueOf(i) + ".0");
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(String.valueOf(100000 + i) + ".0");
 
@@ -355,11 +355,11 @@ public class TestMerge {
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededDoubleFrench0() throws IOException, FTAException {
 
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(String.valueOf(i) + ",0");
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(String.valueOf(100000 + i) + ",0");
 
@@ -377,11 +377,11 @@ public class TestMerge {
 	// @Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededDoubleFrench00() throws IOException, FTAException {
 
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(String.valueOf(i) + ",00");
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(String.valueOf(100000 + i) + ",00");
 
@@ -393,11 +393,11 @@ public class TestMerge {
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void doubleFrench() throws IOException, FTAException {
 
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20; i++)
 			shardOne.add(String.valueOf(i) + ",0");
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20; i++)
 			shardTwo.add(String.valueOf(100000 + i) + ",0");
 
@@ -406,11 +406,11 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityNotExceededString() throws IOException, FTAException {
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(shortStrings[random.nextInt(shortStrings.length)]);
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(longStrings[random.nextInt(longStrings.length)]);
 
@@ -421,9 +421,9 @@ public class TestMerge {
 
 	}
 
-	private static String randomString(int length) {
-		String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		StringBuilder b = new StringBuilder(length);
+	private static String randomString(final int length) {
+		final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		final StringBuilder b = new StringBuilder(length);
 		for (int i = 0; i < length; i++)
 			b.append(alphabet.charAt(random.nextInt(alphabet.length())));
 
@@ -432,11 +432,11 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededString() throws IOException, FTAException {
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(randomString(5));
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(randomString(9));
 
@@ -451,12 +451,12 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededStringTrailingSpace() throws IOException, FTAException {
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(randomString(5));
 		shardOne.add("SPACE     ");
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(randomString(9));
 
@@ -471,12 +471,12 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededStringLeadingSpace() throws IOException, FTAException {
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(randomString(5));
 		shardOne.add("    SPACE");
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(randomString(9));
 
@@ -491,12 +491,12 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededStringMultiline() throws IOException, FTAException {
-		List<String> shardOne = new ArrayList<>();
+		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardOne.add(randomString(5));
 		shardOne.add("SPACE\n\n");
 
-		List<String> shardTwo = new ArrayList<>();
+		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
 			shardTwo.add(randomString(9));
 
@@ -527,7 +527,7 @@ public class TestMerge {
 		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, rehydrated.serialize());
 
-		TextAnalysisResult result = rehydrated.getResult();
+		final TextAnalysisResult result = rehydrated.getResult();
 		assertEquals(result.getType(), FTAType.LONG);
 
 		// Test post getResult()
@@ -552,7 +552,7 @@ public class TestMerge {
 		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
 		assertEquals(serialized, rehydrated.serialize());
 
-		TextAnalysisResult result = rehydrated.getResult();
+		final TextAnalysisResult result = rehydrated.getResult();
 		assertEquals(result.getType(), FTAType.LONG);
 
 		// Test post getResult()
@@ -564,13 +564,13 @@ public class TestMerge {
 	public void simpleLongSerialize() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 
-		List<String> samplesLong100 = new ArrayList<>();
+		final List<String> samplesLong100 = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			samplesLong100.add("100");
 		samplesLong100.add(null);
 		samplesLong100.add(" ");
 
-		List<String> samplesLong200 = new ArrayList<>();
+		final List<String> samplesLong200 = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			samplesLong200.add("200");
 		samplesLong200.add(null);
@@ -586,13 +586,13 @@ public class TestMerge {
 	public void simpleDoubleMerge() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 
-		List<String> samplesDouble100 = new ArrayList<>();
+		final List<String> samplesDouble100 = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			samplesDouble100.add("100.0");
 		samplesDouble100.add(null);
 		samplesDouble100.add(" ");
 
-		List<String> samplesDouble200 = new ArrayList<>();
+		final List<String> samplesDouble200 = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			samplesDouble200.add("100.0");
 		samplesDouble200.add(null);
@@ -1032,7 +1032,7 @@ public class TestMerge {
 		checkTextAnalyzerMerge(samplesAlphaData, samplesAlphaData, "ALPHADATA_ALPHADATA", null, true);
 	}
 
-	public void testHistogramMerge(long sizeOne, long sizeTwo) throws IOException, FTAException {
+	public void testHistogramMerge(final long sizeOne, final long sizeTwo) throws IOException, FTAException {
 		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
 		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
 		final SecureRandom random = new SecureRandom();
@@ -1041,17 +1041,17 @@ public class TestMerge {
 //			shardOne.train(String.valueOf(random.nextGaussian()*5 + 20));
 			shardOne.train(String.valueOf(i%100));
 
-		TextAnalysisResult shardOneResult = shardOne.getResult();
-		Histogram.Entry[] shardOneHistogram = shardOneResult.getHistogram(10);
-		long shardOneHistogramCount = TestSupport.countHistogram(shardOneHistogram);
+		final TextAnalysisResult shardOneResult = shardOne.getResult();
+		final Histogram.Entry[] shardOneHistogram = shardOneResult.getHistogram(10);
+		final long shardOneHistogramCount = TestSupport.countHistogram(shardOneHistogram);
 		assertEquals(shardOneHistogramCount, shardOneResult.getMatchCount());
 
 		final String serializedOne = shardOne.serialize();
 		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(serializedOne);
 
-		TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
-		Histogram.Entry[] histogramOne = hydratedOneResult.getHistogram(10);
-		long histogramOneCount = TestSupport.countHistogram(histogramOne);
+		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
+		final Histogram.Entry[] histogramOne = hydratedOneResult.getHistogram(10);
+		final long histogramOneCount = TestSupport.countHistogram(histogramOne);
 		assertEquals(hydratedOneResult.getMatchCount(), sizeOne);
 		assertEquals(histogramOneCount, hydratedOneResult.getMatchCount());
 
@@ -1065,9 +1065,9 @@ public class TestMerge {
 
 		final String serializedTwo = shardTwo.serialize();
 		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(serializedTwo);
-		TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
-		Histogram.Entry[] histogramTwo = hydratedTwoResult.getHistogram(10);
-		long histogramTwoCount = TestSupport.countHistogram(histogramTwo);
+		final TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
+		final Histogram.Entry[] histogramTwo = hydratedTwoResult.getHistogram(10);
+		final long histogramTwoCount = TestSupport.countHistogram(histogramTwo);
 		assertEquals(hydratedTwoResult.getMatchCount(), sizeTwo);
 		assertEquals(histogramTwoCount, hydratedTwoResult.getMatchCount());
 
@@ -1075,10 +1075,10 @@ public class TestMerge {
 		TestSupport.checkQuantiles(hydratedTwoResult);
 		TestSupport.checkHistogram(hydratedTwoResult, 10, true);
 
-		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
-		TextAnalysisResult mergedResult = merged.getResult();
-		Histogram.Entry[] histogramResult = mergedResult.getHistogram(20);
-		long mergedCount = TestSupport.countHistogram(histogramResult);
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
+		final Histogram.Entry[] histogramResult = mergedResult.getHistogram(20);
+		final long mergedCount = TestSupport.countHistogram(histogramResult);
 		assertEquals(mergedCount, sizeOne + sizeTwo);
 
 		TestSupport.dumpPicture(mergedResult.getHistogram(20));
@@ -1105,8 +1105,8 @@ public class TestMerge {
 		testHistogramMerge(AnalysisConfig.MAX_CARDINALITY_DEFAULT + 1000, AnalysisConfig.MAX_CARDINALITY_DEFAULT + 1000);
 	}
 
-	private TextAnalyzer checkTextAnalyzerMerge(List<String> samplesOne, List<String> samplesTwo, String streamName,
-			Locale locale, boolean collectStatistics) throws FTAException {
+	private TextAnalyzer checkTextAnalyzerMerge(final List<String> samplesOne, final List<String> samplesTwo, final String streamName,
+			final Locale locale, final boolean collectStatistics) throws FTAException {
 		final TextAnalyzer shardOne = new TextAnalyzer(streamName);
 		shardOne.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
 

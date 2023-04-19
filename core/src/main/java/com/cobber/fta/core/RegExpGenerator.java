@@ -215,7 +215,7 @@ public class RegExpGenerator {
 	 * @return A regular expression matching the training set.
 	 */
 	public String getResult() {
-		final StringBuilder result = new StringBuilder();
+		final StringBuilder result = new StringBuilder(100);
 
 		if (asSet) {
 			final boolean constantLength = shortest == longest;
@@ -250,7 +250,7 @@ public class RegExpGenerator {
 				if (memory.size() != 1)
 					result.append('(');
 				for (final String element : memory) {
-					result.append(RegExpGenerator.slosh(element)).append('|');
+					result.append(slosh(element)).append('|');
 				}
 				result.deleteCharAt(result.length() - 1);
 				if (memory.size() != 1)

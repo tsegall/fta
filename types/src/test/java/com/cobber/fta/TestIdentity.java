@@ -32,10 +32,6 @@ import org.testng.annotations.Test;
 import com.cobber.fta.TextAnalyzer.Feature;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.plugins.identity.IN_JA;
-import com.cobber.fta.plugins.identity.NHS_UK;
-import com.cobber.fta.plugins.identity.SSN_CH;
-import com.cobber.fta.plugins.identity.SSN_FR;
 
 public class TestIdentity {
 	private static final SecureRandom random = new SecureRandom();
@@ -210,8 +206,91 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), SSN_FR.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_FR").signature);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.SSN_FR");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
+		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.checkCounts());
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicPersonNummer_yyyy_SE() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("PersonNummer");
+		analysis.setLocale(Locale.forLanguageTag("sv-SE"));
+
+		final String[] inputs = {
+				"19781216-2449", "19781211-2444", "19600518-9557", "19570105-5401",
+				"19570602-5540", "19431023-5918", "19970113-8183", "19320417-7699",
+				"19220110+2924", "19870117-9643", "19680430-7822", "20080413-5689",
+				"20200315-9502", "19300728-5699", "19300417-3385", "20020317-4388",
+				"19620227-1331", "19331216-9414", "20080102-2823", "20030211-8492",
+				"19250925-4658", "19420426-9635", "19720805-1438", "19461011-2924",
+				"20140515-9656"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getCardinality(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.PERSONNUMMER_SE");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
+		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.checkCounts());
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicPersonNummer_yy_SE() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("PersonNummer");
+		analysis.setLocale(Locale.forLanguageTag("sv-SE"));
+
+		final String[] inputs = {
+				"781216-2449", "781211-2444", "600518-9557", "570105-5401",
+				"570602-5540", "431023-5918", "970113-8183", "320417-7699",
+				"220110+2924", "870117-9643", "680430-7822", "080413-5689",
+				"200315-9502", "300728-5699", "300417-3385", "020317-4388",
+				"620227-1331", "331216-9414", "080102-2823", "030211-8492",
+				"250925-4658", "420426-9635", "720805-1438", "461011-2924",
+				"140515-9656"
+		};
+
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getCardinality(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.PERSONNUMMER_SE");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
 		assertNull(result.checkCounts());
 
@@ -249,8 +328,9 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), IN_JA.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA").signature);
+		PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
 		assertNull(result.checkCounts());
 
@@ -288,8 +368,9 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), SSN_CH.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.SSN_CH").signature);
+		PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.SSN_CH");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
 		assertNull(result.checkCounts());
 
@@ -320,14 +401,16 @@ public class TestIdentity {
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
 
-		assertEquals(result.getSampleCount(), inputs.length);
+		PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.NHS_UK");
+
+				assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), NHS_UK.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("IDENTITY.NHS_UK").signature);
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
 		assertNull(result.checkCounts());
 

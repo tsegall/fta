@@ -49,7 +49,7 @@ public class TestInvalidSupport {
 		// The letter 'O' not the number '0'
 		analyzer.train("O");
 
-		TextAnalysisResult result = analyzer.getResult();
+		final TextAnalysisResult result = analyzer.getResult();
 
 		assertEquals(result.getSampleCount(), SIZE + 2);
 		assertEquals(result.getMatchCount(), SIZE);
@@ -83,7 +83,7 @@ public class TestInvalidSupport {
 		// The letter 'O' not the number '0'
 		analysis.train("O");
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getSampleCount(), SIZE + 2);
 		assertEquals(result.getMatchCount(), SIZE);
@@ -164,7 +164,7 @@ public class TestInvalidSupport {
 		final int SIZE = 1000;
 
 		for (int i = 0; i < SIZE; i++) {
-			String testCase = logical.nextRandom();
+			final String testCase = logical.nextRandom();
 			analyzer.train(testCase);
 			assertTrue(logical.isValid(testCase));
 		}
@@ -207,7 +207,7 @@ public class TestInvalidSupport {
 		final int SIZE = 1000;
 
 		for (int i = 0; i < SIZE; i++) {
-			String testCase = logical.nextRandom();
+			final String testCase = logical.nextRandom();
 			analyzer.train(testCase);
 			assertTrue(logical.isValid(testCase));
 		}
@@ -260,9 +260,10 @@ public class TestInvalidSupport {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getSemanticType(), USZip5.SEMANTIC_TYPE);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US");
+		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertNull(result.getTypeModifier());
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US").signature);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length + 2);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 1);
@@ -291,7 +292,7 @@ public class TestInvalidSupport {
 		analyzer.trainBulk(colors);
 
 
-		TextAnalysisResult result = analyzer.getResult();
+		final TextAnalysisResult result = analyzer.getResult();
 
 		assertEquals(result.getSampleCount(), SIZE * 3 + 1);
 		assertEquals(result.getMatchCount(), SIZE * 3);

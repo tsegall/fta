@@ -24,9 +24,6 @@ import com.cobber.fta.core.FTAType;
  * Plugin to detect valid International Securities Identification Number.
  */
 public class CheckDigitISIN extends CheckDigitLT {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "CHECKDIGIT.ISIN";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "\\p{IsAlphabetic}\\p{IsAlphabetic}[\\p{IsAlphabetic}\\d]{9}\\d";
 
@@ -48,11 +45,6 @@ public class CheckDigitISIN extends CheckDigitLT {
 	@Override
 	public String getRegExp() {
 		return REGEXP;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

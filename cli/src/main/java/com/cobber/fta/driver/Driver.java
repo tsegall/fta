@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@ public class Driver {
 	private static DriverOptions cmdLineOptions;
 
 	public static void main(final String[] args) throws IOException {
-		PrintStream output = System.out;
-		PrintStream error = System.err;
+		final PrintStream output = System.out;
+		final PrintStream error = System.err;
 		boolean helpRequested = false;
 		String replayFile = null;
 
@@ -140,14 +140,14 @@ public class Driver {
 		if (cmdLineOptions.signature) {
 			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
 
-			LogicalType logical = DriverUtils.getLogicalType(analyzer, cmdLineOptions.pluginName);
+			final LogicalType logical = DriverUtils.getLogicalType(analyzer, cmdLineOptions.pluginName);
 			error.println(logical.getSignature());
 			System.exit(0);
 		}
 
 		// Are we generating synthetic data?
 		if (cmdLineOptions.faker != null) {
-			Faker faker = new Faker(cmdLineOptions, output, error);
+			final Faker faker = new Faker(cmdLineOptions, output, error);
 			faker.fake();
 			System.exit(0);
 		}
@@ -197,7 +197,7 @@ public class Driver {
 								logical.getSemanticType(), logical.getPriority(), logical.getRegExp());
 					}
 
-					PluginDefinition defn = logical.getPluginDefinition();
+					final PluginDefinition defn = logical.getPluginDefinition();
 					error.printf(", Locales: '%s'%n\t\t%s%n", defn.getLocaleDescription(), logical.getDescription());
 
 					if (defn.documentation != null) {
@@ -208,7 +208,7 @@ public class Driver {
 				}
 			}
 
-			Locale locale = cmdLineOptions.locale == null ? Locale.getDefault() : cmdLineOptions.locale;
+			final Locale locale = cmdLineOptions.locale == null ? Locale.getDefault() : cmdLineOptions.locale;
 			final DateFormatSymbols dfs = DateFormatSymbols.getInstance(locale);
 			final GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(locale);
 
@@ -235,8 +235,8 @@ public class Driver {
 			final String[] amPmStrings = dfs.getAmPmStrings();
 			error.printf("%n\tAM/PM: %s, %s%n", amPmStrings[0], amPmStrings[1]);
 
-			DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(locale);
-			DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
+			final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(locale);
+			final DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
 			error.printf("\tDecimal Separator: '%c'%n", symbols.getDecimalSeparator());
 			error.printf("\tGrouping Separator: '%c'%n", symbols.getGroupingSeparator());
 			error.printf("\tMinus Sign: '%c'%n", symbols.getMinusSign());

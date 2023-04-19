@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,13 +43,13 @@ public class Faker {
 		final Random random = new Random(31415926);
 		final long outputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
 		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
-		String[] pluginDefinitions = options.faker.split(",");
-		LogicalType[] logicals = new LogicalType[pluginDefinitions.length];
-		FakerParameters[] parameters = new FakerParameters[pluginDefinitions.length];
-		String[] pluginNames = new String[pluginDefinitions.length];
+		final String[] pluginDefinitions = options.faker.split(",");
+		final LogicalType[] logicals = new LogicalType[pluginDefinitions.length];
+		final FakerParameters[] parameters = new FakerParameters[pluginDefinitions.length];
+		final String[] pluginNames = new String[pluginDefinitions.length];
 
 		for (int i = 0; i < pluginDefinitions.length; i++) {
-			int parameterIndex = pluginDefinitions[i].indexOf('[');
+			final int parameterIndex = pluginDefinitions[i].indexOf('[');
 			if (parameterIndex == -1) {
 				error.printf("ERROR: Failed to retrieve parameters for '%s', missing open ('[')?, use --help%n", pluginDefinitions[i]);
 				System.exit(1);
@@ -69,7 +69,7 @@ public class Faker {
 
 			// If we did not find the Semantic Type it must be one of the Base Types
 			if (logicals[i] == null) {
-				String baseType = parameters[i].type;
+				final String baseType = parameters[i].type;
 				if (!"DOUBLE".equals(baseType) && !"LONG".equals(baseType) && !"LOCALDATE".equals(baseType) && !"LOCALDATETIME".equals(baseType) && !"ENUM".equals(baseType)) {
 					error.printf("ERROR: Unknown type '%s', use --help%n", baseType);
 					System.exit(1);
@@ -85,7 +85,7 @@ public class Faker {
 			}
 		}
 
-		StringBuilder line = new StringBuilder();
+		final StringBuilder line = new StringBuilder();
 
 		// Build the Header
 		for (int i = 0; i < logicals.length; i++) {
@@ -105,9 +105,9 @@ public class Faker {
 				if (parameters[i].nullPercent != 0 && random.nextDouble() <= parameters[i].nullPercent)
 					;		// Don't output anything which generates a null
 				else if (parameters[i].blankPercent != 0 && random.nextDouble() <= parameters[i].blankPercent) {
-					StringBuilder blank = new StringBuilder();
+					final StringBuilder blank = new StringBuilder();
 					blank.append('"');
-					int blankLength = parameters[i].blankLength == -1 ? random.nextInt(6) : parameters[i].blankLength;
+					final int blankLength = parameters[i].blankLength == -1 ? random.nextInt(6) : parameters[i].blankLength;
 					for (int b = 0; b < blankLength; b++)
 						blank.append(' ');
 					blank.append('"');

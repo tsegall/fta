@@ -35,7 +35,7 @@ public abstract class CheckDigitLT extends LogicalTypeInfinite {
 	public static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
 	protected CheckDigit validator;
-	private final int length;				/* Length of check digit - -1 indicates variable length */
+	protected final int length;				/* Length of check digit - -1 indicates variable length */
 
 	public CheckDigitLT(final PluginDefinition plugin, final int length) {
 		super(plugin);
@@ -78,7 +78,6 @@ public abstract class CheckDigitLT extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-
 		if (cardinality.size() < 20 || (double)matchCount/realSamples < getThreshold()/100.0)
 			return new PluginAnalysis(BACKOUT_REGEXP);
 

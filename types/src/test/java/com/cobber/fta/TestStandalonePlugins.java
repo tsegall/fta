@@ -189,7 +189,7 @@ public class TestStandalonePlugins {
 			for (int iters = 0; iters < 10; iters++) {
 				for (final LogicalType logical : registered) {
 
-					PluginDefinition definition = logical.getPluginDefinition();
+					final PluginDefinition definition = logical.getPluginDefinition();
 					// TODO
 					if ("STATE_PROVINCE.COMMUNE_IT".equals(definition.semanticType))
 						continue;

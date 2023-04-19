@@ -39,7 +39,7 @@ public class Correlation {
 	}
 
 	void initialize() {
-		InputStream is = Correlation.class.getResourceAsStream("/data/SemanticTypes__" + tag + ".json");
+		final InputStream is = Correlation.class.getResourceAsStream("/data/SemanticTypes__" + tag + ".json");
 		if (is != null) {
 			try (BufferedReader JSON = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 				semanticTypesList = new ObjectMapper().readValue(JSON, new TypeReference<List<SemanticTypeInfo>>(){});

@@ -34,9 +34,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Job Titles. (English-language only).
  */
 public class JobTitleEN extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "JOB_TITLE_EN";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = ".+";
 
@@ -75,11 +72,6 @@ public class JobTitleEN extends LogicalTypeInfinite {
 		titleHotWords = titleHotWordsRef.getMembers();
 
 		return true;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

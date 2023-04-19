@@ -91,11 +91,6 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	}
 
 	@Override
-	public String getSemanticType() {
-		return defn.semanticType;
-	}
-
-	@Override
 	public FTAType getBaseType() {
 		return onlyDigits ? FTAType.LONG : FTAType.STRING;
 	}
@@ -142,7 +137,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 
 		// Some countries (e.g. Colombia) often record Phone Numbers in their local-only format, if this
 		// is the case check whether the number is valid as a local number.
-		ValidationResult result = phoneUtil.isPossibleNumberWithReason(number);
+		final ValidationResult result = phoneUtil.isPossibleNumberWithReason(number);
 		if (result == ValidationResult.IS_POSSIBLE_LOCAL_ONLY) {
 			nonLocal++;
 			if (onlyDigits)

@@ -48,7 +48,7 @@ public class TestPerformance {
 
 		analyzer.trainBulk(testCase);
 
-		TextAnalysisResult result = analyzer.getResult();
+		final TextAnalysisResult result = analyzer.getResult();
 
 		assertEquals(result.getSampleCount(), SIZE);
 		assertEquals(result.getMatchCount(), SIZE);
@@ -74,7 +74,7 @@ public class TestPerformance {
 
 		analysis.trainBulk(testCase);
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getSampleCount(), SIZE);
 		assertEquals(result.getMatchCount(), SIZE);
@@ -96,15 +96,15 @@ public class TestPerformance {
 		for (long l = 0; l < SIZE; l++)
 			testCase.put(String.valueOf(l), l);
 
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 
 		analyzer.trainBulk(testCase);
 
-		long trained = System.currentTimeMillis();
+		final long trained = System.currentTimeMillis();
 
-		TextAnalysisResult result = analyzer.getResult();
+		final TextAnalysisResult result = analyzer.getResult();
 
-		long completed = System.currentTimeMillis();
+		final long completed = System.currentTimeMillis();
 
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getInvalidCount(), 0);

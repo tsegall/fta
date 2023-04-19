@@ -24,7 +24,7 @@ class TimeDateElement {
 		TimeZone,
 		Indicator_8601,
 		Constant
-	};
+	}
 
 	final static TimeDateElement Time = new TimeDateElement(TimeDateElementType.Time);
 	final static TimeDateElement Date = new TimeDateElement(TimeDateElementType.Date);

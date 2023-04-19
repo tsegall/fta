@@ -59,7 +59,7 @@ public class FiniteMap implements Map<String, Long> {
 	}
 
 	public boolean mergeIfSpace(final String key, final Long value,
-			BiFunction<? super Long, ? super Long, ? extends Long> remappingFunction) {
+			final BiFunction<? super Long, ? super Long, ? extends Long> remappingFunction) {
 		final Long oldValue = get(key);
 
 		// If it is not already present and we are full then just return
@@ -135,7 +135,7 @@ public class FiniteMap implements Map<String, Long> {
 
 	@Override
 	public boolean equals(final Object o) {
-		FiniteMap other = (FiniteMap)o;
+		final FiniteMap other = (FiniteMap)o;
 		return o != null && impl.equals(other.impl) && maxCapacity == other.maxCapacity;
 	}
 }

@@ -58,14 +58,9 @@ public class PeriodYearRange extends LogicalTypeInfinite {
 	public String nextRandom() {
 		final StringBuilder ret = new StringBuilder(9);
 
-		int yearOne = 1980 + random.nextInt(40);
-		int yearTwo = yearOne + random.nextInt(20);
+		final int yearOne = 1980 + random.nextInt(40);
+		final int yearTwo = yearOne + random.nextInt(20);
 		return ret.append(yearOne).append('-').append(yearTwo).toString();
-	}
-
-	@Override
-	public String getSemanticType() {
-		return defn.semanticType;
 	}
 
 	@Override
@@ -87,8 +82,8 @@ public class PeriodYearRange extends LogicalTypeInfinite {
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		if (input.length() != 9 || input.charAt(4) != '-' || input.chars().filter(Character::isDigit).count() != 8)
 			return false;
-		int yearOne = Utils.getValue(input, 0, 4, 4);
-		int yearTwo = Utils.getValue(input, 0, 5, 4);
+		final int yearOne = Utils.getValue(input, 0, 4, 4);
+		final int yearTwo = Utils.getValue(input, 0, 5, 4);
 
 		return yearOne >= DateTimeParser.EARLY_LONG_YYYY && yearOne <= DateTimeParser.LATE_LONG_YYYY &&
 				yearTwo >= DateTimeParser.EARLY_LONG_YYYY && yearTwo <= DateTimeParser.LATE_LONG_YYYY &&

@@ -106,9 +106,9 @@ public final class Utils {
 	public static int getValue(final String input, final int offset, final int minLength, final int maxLength) {
 		try {
 			if (minLength == maxLength || (offset + maxLength > input.length()) || !Character.isDigit(input.charAt(offset + maxLength - 1)))
-				return Integer.valueOf(input.substring(offset, offset + minLength));
+				return Integer.parseInt(input.substring(offset, offset + minLength));
 
-			return Integer.valueOf(input.substring(offset, offset + maxLength));
+			return Integer.parseInt(input.substring(offset, offset + maxLength));
 		}
 		catch (NumberFormatException e) {
 			return -1;
@@ -260,8 +260,8 @@ public final class Utils {
 			samples++;
 			if (sample.length() < 2)
 				continue;
-			char first = sample.charAt(0);
-			char last = sample.charAt(sample.length() - 1);
+			final char first = sample.charAt(0);
+			final char last = sample.charAt(sample.length() - 1);
 			if (first == '{' || first == '[' && first == last && samples - fmtJSON < 5) {
 				try {
 					mapper.readTree(sample);
@@ -340,6 +340,6 @@ public final class Utils {
 		if (digits >= 2 && dParse.charAt(digits - 1) == '-')
 			return -Double.parseDouble(dParse.substring(0, digits - 1));
 
-		return Double.valueOf(dParse);
+		return Double.parseDouble(dParse);
 	}
 }

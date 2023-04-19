@@ -356,20 +356,20 @@ public class AnalysisConfig {
 		this.trainingMode = trainingMode;
 	}
 
-	public String bindSemanticType(String unbound) {
-		Locale locale = getLocale();
+	public String bindSemanticType(final String unbound) {
+		final Locale locale = getLocale();
 		if (locale == null)
 			return unbound;
 
-		int languageOffset = unbound.indexOf("<LANGUAGE>");
+		final int languageOffset = unbound.indexOf("<LANGUAGE>");
 		if (languageOffset != -1)
 			return unbound.substring(0, languageOffset) + locale.getLanguage().toUpperCase(Locale.ROOT);
 
-		int countryOffset = unbound.indexOf("<COUNTRY>");
+		final int countryOffset = unbound.indexOf("<COUNTRY>");
 		if (countryOffset != -1)
 			return unbound.substring(0, countryOffset) + locale.getCountry().toUpperCase(Locale.ROOT);
 
-		int localeOffset = unbound.indexOf("<LOCALE>");
+		final int localeOffset = unbound.indexOf("<LOCALE>");
 		if (localeOffset != -1)
 			return unbound.substring(0, localeOffset) + locale.toLanguageTag();
 

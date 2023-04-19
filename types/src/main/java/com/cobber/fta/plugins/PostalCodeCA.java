@@ -51,7 +51,7 @@ public class PostalCodeCA extends LogicalTypeInfinite {
 		super(plugin);
 	}
 
-	private boolean validLetter(char ch) {
+	private boolean validLetter(final char ch) {
 		if (!Utils.isSimpleAlpha(ch))
 			return false;
 		return ch != 'D' && ch != 'F' && ch != 'I' && ch != 'O' && ch != 'Q' && ch != 'U';
@@ -77,11 +77,6 @@ public class PostalCodeCA extends LogicalTypeInfinite {
 		}
 
 		return generator.generate();
-	}
-
-	@Override
-	public String getSemanticType() {
-		return defn.semanticType;
 	}
 
 	@Override
@@ -112,7 +107,7 @@ public class PostalCodeCA extends LogicalTypeInfinite {
 			merged = trimmed;
 		merged = merged.toUpperCase(Locale.ROOT);
 
-		char first = merged.charAt(0);
+		final char first = merged.charAt(0);
 
 		// Validity
 		//  - Format A9A 9A9, where A is a [A-Za-z] and 9 is [0-9]

@@ -111,7 +111,7 @@ public class MunicipalityCodeNL extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input, final boolean detectMode, long count) {
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String trimmed = input.trim();
 		return validate(trimmed, trimmed.length(), input.chars().filter(Character::isDigit).count());
 	}

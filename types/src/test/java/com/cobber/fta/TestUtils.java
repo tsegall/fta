@@ -182,7 +182,7 @@ public class TestUtils {
 		final String originalSerialized = toCheck.serialize();
 		final TextAnalyzer hydrated = TextAnalyzer.deserialize(originalSerialized);
 
-		boolean equals = hydrated.equals(toCheck, TestUtils.EPSILON);
+		final boolean equals = hydrated.equals(toCheck, TestUtils.EPSILON);
 
 		if (!equals) {
 			System.err.println("Original:\n" + originalSerialized);

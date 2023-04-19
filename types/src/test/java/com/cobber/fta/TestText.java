@@ -28,9 +28,9 @@ import com.cobber.fta.text.TextProcessor;
 public class TestText {
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void reallySimple() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("The quick brown fox jumped over the lazy dog");
+		final TextProcessor.TextResult result = processor.analyze("The quick brown fox jumped over the lazy dog");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 9);
@@ -41,9 +41,9 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void example() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("I.e. is an abbreviation for the phrase id est, which means \"that is.\" I.e. is used to restate something said previously in order to clarify its meaning. E.g. is short for exempli gratia, which means \"for example.\" E.g. is used before an item or list of items that serve as examples for the previous statement.");
+		final TextProcessor.TextResult result = processor.analyze("I.e. is an abbreviation for the phrase id est, which means \"that is.\" I.e. is used to restate something said previously in order to clarify its meaning. E.g. is short for exempli gratia, which means \"for example.\" E.g. is used before an item or list of items that serve as examples for the previous statement.");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 23);
@@ -54,9 +54,9 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void offWithTheirHeads() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("Off with their heads!");
+		final TextProcessor.TextResult result = processor.analyze("Off with their heads!");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 4);
@@ -67,9 +67,9 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void sixImpossibleThings() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("Why, sometimes I've believed as many as six impossible things before breakfast.");
+		final TextProcessor.TextResult result = processor.analyze("Why, sometimes I've believed as many as six impossible things before breakfast.");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 12);
@@ -80,9 +80,9 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void goingBackToYesterday() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("It's no use going back to yesterday,  because I was a different person then.");
+		final TextProcessor.TextResult result = processor.analyze("It's no use going back to yesterday,  because I was a different person then.");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 14);
@@ -93,9 +93,9 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void dreadfullyUglyChild() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("It would have made a dreadfully ugly child; but it makes rather a handsome pig.");
+		final TextProcessor.TextResult result = processor.analyze("It would have made a dreadfully ugly child; but it makes rather a handsome pig.");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 15);
@@ -106,9 +106,9 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void quotes() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("'And what is the use of a book,' thought Alice, 'without pictures or conversation?'");
+		final TextProcessor.TextResult result = processor.analyze("'And what is the use of a book,' thought Alice, 'without pictures or conversation?'");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 14);
@@ -119,9 +119,9 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void whoInTheWorldAmI() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("'Who in the world am I?' Ah, that's the great puzzle!");
+		final TextProcessor.TextResult result = processor.analyze("'Who in the world am I?' Ah, that's the great puzzle!");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 		assertEquals(result.getWords(), 11);
@@ -132,81 +132,81 @@ public class TestText {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void singleWord() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("F944277490");
+		final TextProcessor.TextResult result = processor.analyze("F944277490");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.SINGLE_WORD);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void noRealWords() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("F944277490 PAGE X1233456");
+		final TextProcessor.TextResult result = processor.analyze("F944277490 PAGE X1233456");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.PERCENT_TOO_LOW);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void tooLong() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("Sometimes antidisestablishmentarianism is just too long to be real.");
+		final TextProcessor.TextResult result = processor.analyze("Sometimes antidisestablishmentarianism is just too long to be real.");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.TOO_LONG);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void sentenceTooShort() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.getDefault());
+		final TextProcessor processor = new TextProcessor(Locale.getDefault());
 
-		TextProcessor.TextResult result = processor.analyze("Stop!");
+		final TextProcessor.TextResult result = processor.analyze("Stop!");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.SENTENCE_TOO_SHORT);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void averageLow() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("I am a very tiny tract of land.");
+		final TextProcessor.TextResult result = processor.analyze("I am a very tiny tract of land.");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.BAD_AVERAGE_LENGTH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void averageHigh() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("Tergiversation - definition: equivocation, circumlocution, prevarication.");
+		final TextProcessor.TextResult result = processor.analyze("Tergiversation - definition: equivocation, circumlocution, prevarication.");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.BAD_AVERAGE_LENGTH);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void randomNoise() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("=aaaaaaa= =bbbbbbbb= =ccccccc= =dddddddd= =eeeeeeee=.");
+		final TextProcessor.TextResult result = processor.analyze("=aaaaaaa= =bbbbbbbb= =ccccccc= =dddddddd= =eeeeeeee=.");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.NOT_ENOUGH_REAL_WORDS);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void hyphens() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("Netex - LocalTails-Unmatched");
+		final TextProcessor.TextResult result = processor.analyze("Netex - LocalTails-Unmatched");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
 	public void addresses() throws IOException, FTAException {
-		TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor processor = new TextProcessor(Locale.US);
 
-		TextProcessor.TextResult result = processor.analyze("Station Road");
+		final TextProcessor.TextResult result = processor.analyze("Station Road");
 
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 	}

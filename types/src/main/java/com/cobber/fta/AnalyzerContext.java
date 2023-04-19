@@ -144,7 +144,7 @@ public class AnalyzerContext {
 		if (current == -1 || current == semanticTypes.length - 1)
 			return false;
 
-		for (String semanticType : searching) {
+		for (final String semanticType : searching) {
 			if (semanticType.equals(semanticTypes[current + 1]))
 				return true;
 		}
@@ -165,7 +165,7 @@ public class AnalyzerContext {
 		if (current == -1 || current == 0)
 			return false;
 
-		for (String semanticType : searching) {
+		for (final String semanticType : searching) {
 			if (semanticType.equals(semanticTypes[current - 1]))
 				return true;
 		}
@@ -182,8 +182,8 @@ public class AnalyzerContext {
 		if (semanticTypes == null)
 			return false;
 
-		for (String semanticType : searching) {
-			for (String currentType : semanticTypes) {
+		for (final String semanticType : searching) {
+			for (final String currentType : semanticTypes) {
 				if (semanticType.equals(currentType))
 					return true;
 			}
@@ -207,7 +207,7 @@ public class AnalyzerContext {
 
 		Integer closest = null;
 
-		for (String semanticType : searching) {
+		for (final String semanticType : searching) {
 			for (int i = 0; i < semanticTypes.length; i++) {
 				if (i != current && semanticType.equals(semanticTypes[i]))
 					if (closest == null || Math.abs(closest) > Math.abs(i - current))

@@ -1608,7 +1608,7 @@ public class TestDates {
 		//	Output as "EEE MMM dd HH:mm:ss z yyyy"
 		final String sample = "Fri Nov 19 13:25:20 GMT-08:00 2021";
 		final DateTimeParser dtp = new DateTimeParser();
-		String format = dtp.determineFormatString(sample);
+		final String format = dtp.determineFormatString(sample);
 		System.err.println("format: " + format);
 	}
 
@@ -2841,8 +2841,8 @@ public class TestDates {
 				locked = i;
 		}
 		final TextAnalysisResult result1 = analysis1.getResult();
-		String structureSignature1 = result1.getStructureSignature();
-		String dateSignature1 = result1.getDataSignature();
+		final String structureSignature1 = result1.getStructureSignature();
+		final String dateSignature1 = result1.getDataSignature();
 
 		assertEquals(result1.getSampleCount(), inputs1.length);
 		assertEquals(result1.getMatchCount(), inputs1.length);
@@ -3125,14 +3125,14 @@ public class TestDates {
 
 		final Set <String> problems = new HashSet<>();
 		int countTests = 0;
-		Set<String> localesTested = new HashSet<>();
+		final Set<String> localesTested = new HashSet<>();
 		int countNotGregorian = 0;
 		int countNotArabicNumerals = 0;
 		int	countNoMonthAbbreviations = 0;
 		int countNotSupported = 0;
 		int countProblems = 0;
 
-		Set<String> unsupportedLocales = new HashSet<>();
+		final Set<String> unsupportedLocales = new HashSet<>();
 
 		for (final String testCase : testCases) {
 			System.err.println(testCase + " ");
@@ -3159,7 +3159,7 @@ public class TestDates {
 					continue;
 
 				if (LocaleInfo.isSupported(locale) != null) {
-					String reason = LocaleInfo.isSupported(locale);
+					final String reason = LocaleInfo.isSupported(locale);
 					if (reason.contains("No support for locales that do not use Arabic numerals"))
 						countNotArabicNumerals++;
 					else if (reason.contains("No support for locales that do not use the Gregorian Calendar"))
@@ -3171,7 +3171,7 @@ public class TestDates {
 					unsupportedLocales.add(locale.toLanguageTag());
 					continue;
 				}
-				LocaleInfo localeInfo = LocaleInfo.getInstance(locale, analysis.getConfig().isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION));
+				final LocaleInfo localeInfo = LocaleInfo.getInstance(locale, analysis.getConfig().isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION));
 
 				if (localeInfo.getShortMonths() == null || localeInfo.getShortMonths().size() == 0) {
 						countNoMonthAbbreviations++;
@@ -3189,7 +3189,7 @@ public class TestDates {
 				countTests++;
 				localesTested.add(locale.toLanguageTag());
 
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(testCase, locale);
+				final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(testCase, locale);
 				final FTAType type = SimpleDateMatcher.getType(testCase);
 
 				if (type == null)
@@ -4237,7 +4237,7 @@ public class TestDates {
 			final String dateTimeFormat = test;
 			final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat);
 			final int sampleCount = 1000;
-			String[] samples = new String[sampleCount];
+			final String[] samples = new String[sampleCount];
 
 			final Calendar calendar = Calendar.getInstance();
 
@@ -4282,7 +4282,7 @@ public class TestDates {
 		final int sampleCount = 100_000_000;
 		boolean saveOutput = false;
 		BufferedWriter bw = null;
-		String[] samples = new String[10000];
+		final String[] samples = new String[10000];
 
 		if (saveOutput)
 			bw = new BufferedWriter(new FileWriter("/tmp/dateTimePerf.csv"));
@@ -4295,7 +4295,7 @@ public class TestDates {
 			localDateTime = localDateTime.minusMinutes(1).minusSeconds(1);
 		}
 
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 
 		// Run for about reasonable number of seconds
 		final int seconds = 5;
@@ -4334,7 +4334,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicMMMdcommayyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMMMdcommayyyy");
-		Locale locale = Locale.forLanguageTag("en-US");
+		final Locale locale = Locale.forLanguageTag("en-US");
 		analysis.setLocale(locale);
 		final String pipedInput = "August 20, 2017|August 20, 2017|July 22, 2017|August 5, 2017|July 22, 2017|June 23, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
 				"May 25, 2017|August 20, 2017|July 22, 2017|June 23, 2017|May 25, 2017|April 26, 2017|August 20, 2017|July 22, 2017|June 23, 2017|" +
@@ -4374,7 +4374,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void inputZ() throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("inputZ");
-		Locale locale = Locale.forLanguageTag("en-US");
+		final Locale locale = Locale.forLanguageTag("en-US");
 		analysis.setLocale(locale);
 		final String[] inputs = {
 				"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
@@ -4389,7 +4389,7 @@ public class TestDates {
 				"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
 		};
 
-		for (String input : inputs)
+		for (final String input : inputs)
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -4417,7 +4417,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicJapanese() throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicJapanese");
-		Locale locale = Locale.forLanguageTag("ja-JP");
+		final Locale locale = Locale.forLanguageTag("ja-JP");
 		analysis.setLocale(locale);
 		final String[] inputs = {
 				"2018年10月6日", "2019年4月30日", "2017年3月12日", "2008年4月30日", "2087年5月20日",
@@ -4429,7 +4429,7 @@ public class TestDates {
 				"2019年7月30日", "2019年4月30日", "2017年8月12日"
 		};
 
-		for (String input : inputs)
+		for (final String input : inputs)
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -4458,7 +4458,7 @@ public class TestDates {
 	public void japaneseEra() throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("japaneseEra");
-		Locale locale = Locale.forLanguageTag("ja-JP");
+		final Locale locale = Locale.forLanguageTag("ja-JP");
 		analysis.setLocale(locale);
 		final String[] inputs = {
 				"平成12年", "平成13年", "平成14年",
@@ -4466,7 +4466,7 @@ public class TestDates {
 				"昭和22年", "令和5年"
 		};
 
-		for (String input : inputs)
+		for (final String input : inputs)
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -4494,7 +4494,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void chineseAM() throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("japaneseEra");
-		Locale locale = Locale.forLanguageTag("ja-JP");
+		final Locale locale = Locale.forLanguageTag("ja-JP");
 		analysis.setLocale(locale);
 		final String[] inputs = {
 				"2015/1/5 上午 12:00:00", "2015/1/30 上午 12:00:00", "2014/12/30 上午 12:00:00",
@@ -4506,7 +4506,7 @@ public class TestDates {
 				"2015/2/24 上午 12:00:00"
 		};
 
-		for (String input : inputs)
+		for (final String input : inputs)
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -4534,7 +4534,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void bulgarianddMMyyyy() throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("bulgarian");
-		Locale locale = Locale.forLanguageTag("bg-BG");
+		final Locale locale = Locale.forLanguageTag("bg-BG");
 		analysis.setLocale(locale);
 		final String[] inputs = {
 				"14.02.2017г.", "10.01.2017г.", "02.02.2017г.", "07.02.2017г.", "16.02.2017г.",
@@ -4549,7 +4549,7 @@ public class TestDates {
 				//, "31.10.2017", "13.11.2017", "14.11.2017", "21.11.2017", "28.11.2017",
 		};
 
-		for (String input : inputs)
+		for (final String input : inputs)
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -4587,7 +4587,7 @@ public class TestDates {
 				"INFO/0135/16", "INFO/0136/16", "INFO/0137/16", "A12/1137/16", "A12/1138/16"
 		};
 
-		for (String input : inputs)
+		for (final String input : inputs)
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -4598,7 +4598,7 @@ public class TestDates {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void bulgarianddMMyy() throws FTAException {
-		Locale bulgarian = Locale.forLanguageTag("bg-BG");
+		final Locale bulgarian = Locale.forLanguageTag("bg-BG");
 		final TextAnalyzer analysis = new TextAnalyzer("bulgarian", DateResolutionMode.DayFirst);
 		analysis.setLocale(bulgarian);
 		final String[] inputs = {
@@ -4611,7 +4611,7 @@ public class TestDates {
 		};
 
 		final DateTimeParser dtp = new DateTimeParser().withLocale(bulgarian).withDateResolutionMode(DateResolutionMode.DayFirst);
-		for (String input : inputs) {
+		for (final String input : inputs) {
 			assertEquals(dtp.determineFormatString(input), "dd.MM.yy'г.'");
 			analysis.train(input);
 		}

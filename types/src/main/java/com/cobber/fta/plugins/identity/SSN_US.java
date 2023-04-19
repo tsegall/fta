@@ -31,9 +31,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect US SSN's
  */
 public class SSN_US extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "SSN";
-
 	private static final int SSN_LENGTH = 11;
 
 	/** The Regular Expression for this Semantic type. */
@@ -68,18 +65,9 @@ public class SSN_US extends LogicalTypeInfinite {
 		int component = random.nextInt(899) + 1;
 		if (component == 666)
 			component = 667;
-		b.append(String.format("%03d", component));
-		b.append('-');
-		b.append(String.format("%02d", random.nextInt(99) + 1));
-		b.append('-');
-		b.append(String.format("%04d", random.nextInt(9999) + 1));
+		b.append(String.format("%03d", component)).append('-').append(String.format("%02d", random.nextInt(99) + 1)).append('-').append(String.format("%04d", random.nextInt(9999) + 1));
 
 		return b.toString();
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

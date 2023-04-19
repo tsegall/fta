@@ -83,7 +83,7 @@ public class MinMax implements Comparable<MinMax> {
 		if (min == max)
 			return Utils.repeat(field, min);
 		// if min != max then we have <Field>{min,max} - e.g. S{1,3}
-		return "" + field + '{' + min + ',' + max + '}';
+		return String.valueOf(field) + '{' + min + ',' + max + '}';
 	}
 
 	@Override

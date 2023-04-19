@@ -138,7 +138,7 @@ public class AddressCommon {
 	public static boolean isAddressNumber(final String input) {
 		// Check for a simple text digit - e.g. 'One', 'Two' etc.
 		final char firstCh = input.charAt(0);
-		if (Character.isAlphabetic(firstCh) && AddressCommon.isTextDigit(input))
+		if (Character.isAlphabetic(firstCh) && isTextDigit(input))
 			return true;
 
 		final int len = input.length();

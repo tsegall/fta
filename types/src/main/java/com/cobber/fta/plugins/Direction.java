@@ -64,7 +64,7 @@ public class Direction extends LogicalTypeInfinite {
 		String[] getMembers() {
 			return members;
 		}
-	};
+	}
 
 	private int[] boundShortCounts = new int[4];
 	private int[] boundLongCounts = new int[4];
@@ -176,7 +176,7 @@ public class Direction extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		return isValid(trimmed, true, 0);
 	}
 

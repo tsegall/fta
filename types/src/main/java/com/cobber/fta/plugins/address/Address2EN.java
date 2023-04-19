@@ -21,20 +21,12 @@ import com.cobber.fta.PluginDefinition;
  * Plugin to detect the third line of an Address. (English-language only).
  */
 public class Address2EN extends AddressLineNEN {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "STREET_ADDRESS2_EN";
-
 	/**
 	 * Construct a plugin to detect the second line of an Address based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
 	public Address2EN(final PluginDefinition plugin) {
 		super(plugin);
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

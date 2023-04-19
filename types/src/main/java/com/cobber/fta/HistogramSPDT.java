@@ -205,8 +205,8 @@ public class HistogramSPDT {
 
 	private long totalCount() {
 		long totalCount = 0;
-		for (int i = 0; i < bins.size(); i++)
-			totalCount += bins.get(i).count;
+		for (final Bin bin : bins)
+			totalCount += bin.count;
 
 		return totalCount;
 	}

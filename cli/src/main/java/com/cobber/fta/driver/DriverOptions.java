@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class DriverOptions {
 	public DriverOptions() {
 	}
 
-	public DriverOptions(DriverOptions other) {
+	public DriverOptions(final DriverOptions other) {
 		this.abbreviationPunctuation = other.abbreviationPunctuation;
 		this.charset = other.charset;
 		this.bulk = other.bulk;
@@ -178,8 +178,8 @@ public class DriverOptions {
 		addFromStringArray(Files.readString(Paths.get(filePath)).split("[ \n]"));
 	}
 
-	public String[] addFromStringArray(String[] args) {
-		List<String> unprocessed = new ArrayList<>();
+	public String[] addFromStringArray(final String[] args) {
+		final List<String> unprocessed = new ArrayList<>();
 		int idx = 0;
 		while (idx < args.length && args[idx].charAt(0) == '-') {
 			if ("--abbreviationPunctuation".equals(args[idx]))
@@ -189,7 +189,7 @@ public class DriverOptions {
 			else if ("--charset".equals(args[idx]))
 				charset = args[++idx];
 			else if ("--col".equals(args[idx]))
-				col = Integer.valueOf(args[++idx]);
+				col = Integer.parseInt(args[++idx]);
 			else if ("--createBloomfilter".equals(args[idx])) {
 				unprocessed.add(args[idx]);
 				unprocessed.add(args[++idx]);
@@ -204,11 +204,11 @@ public class DriverOptions {
 				unprocessed.add(args[++idx]);
 			}
 			else if ("--debug".equals(args[idx]))
-				debug = Integer.valueOf(args[++idx]);
+				debug = Integer.parseInt(args[++idx]);
 			else if ("--delimiter".equals(args[idx]))
 				delimiter = args[++idx];
 			else if ("--detectWindow".equals(args[idx]))
-				detectWindow = Integer.valueOf(args[++idx]);
+				detectWindow = Integer.parseInt(args[++idx]);
 			else if ("--faker".equals(args[idx]))
 				faker = args[++idx];
 			else if ("--formatDetection".equals(args[idx]))
@@ -217,7 +217,7 @@ public class DriverOptions {
 				unprocessed.add(args[idx]);
 			}
 			else if ("--locale".equals(args[idx])) {
-				String tag = args[++idx];
+				final String tag = args[++idx];
 				locale = Locale.forLanguageTag(tag);
 				if (!locale.toLanguageTag().equals(tag)) {
 					System.err.printf("ERROR: Language tag '%s' not known - using '%s'?%n", tag, locale.toLanguageTag());
@@ -231,9 +231,9 @@ public class DriverOptions {
 			else if ("--legacyJSON".equals(args[idx]))
 				legacyJSON = true;
 			else if ("--maxInputLength".equals(args[idx]))
-				maxInputLength = Integer.valueOf(args[++idx]);
+				maxInputLength = Integer.parseInt(args[++idx]);
 			else if ("--maxOutlierCardinality".equals(args[idx]))
-				maxOutlierCardinality = Integer.valueOf(args[++idx]);
+				maxOutlierCardinality = Integer.parseInt(args[++idx]);
 			else if ("--noAnalysis".equals(args[idx]))
 				noAnalysis = true;
 			else if ("--noPretty".equals(args[idx]))
@@ -255,11 +255,11 @@ public class DriverOptions {
 			else if ("--pluginName".equals(args[idx]))
 				pluginName = args[++idx];
 			else if ("--pluginThreshold".equals(args[idx]))
-				pluginThreshold = Integer.valueOf(args[++idx]);
+				pluginThreshold = Integer.parseInt(args[++idx]);
 			else if ("--quoteChar".equals(args[idx]))
 				quoteChar = args[++idx];
 			else if ("--records".equals(args[idx]))
-				recordsToProcess = Long.valueOf(args[++idx]);
+				recordsToProcess = Long.parseLong(args[++idx]);
 			else if ("--replay".equals(args[idx])) {
 				unprocessed.add(args[idx]);
 				unprocessed.add(args[++idx]);
@@ -286,22 +286,22 @@ public class DriverOptions {
 			else if ("--signature".equals(args[idx]))
 				signature = true;
 			else if ("--skip".equals(args[idx]))
-				skip = Integer.valueOf(args[++idx]);
+				skip = Integer.parseInt(args[++idx]);
 			else if ("--threshold".equals(args[idx]))
-				threshold = Integer.valueOf(args[++idx]);
+				threshold = Integer.parseInt(args[++idx]);
 			else if ("--trace".equals(args[idx]))
 				trace = args[++idx];
 			else if ("--validate".equals(args[idx]))
-				validate = Integer.valueOf(args[++idx]);
+				validate = Integer.parseInt(args[++idx]);
 			else if ("--verbose".equals(args[idx]))
 				verbose++;
 			else if ("--version".equals(args[idx])) {
 				unprocessed.add(args[idx]);
 			}
 			else if ("--xMaxCharsPerColumn".equals(args[idx]))
-				xMaxCharsPerColumn = Integer.valueOf(args[++idx]);
+				xMaxCharsPerColumn = Integer.parseInt(args[++idx]);
 			else if ("--xMaxColumns".equals(args[idx]))
-				xMaxColumns = Integer.valueOf(args[++idx]);
+				xMaxColumns = Integer.parseInt(args[++idx]);
 			else {
 				unprocessed.add(args[idx]);
 				System.err.printf("ERROR: Unrecognized option: '%s', use --help%n", args[idx]);

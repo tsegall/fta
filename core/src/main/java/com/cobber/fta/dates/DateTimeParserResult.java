@@ -245,12 +245,12 @@ public class DateTimeParserResult {
 		int hourLength = -1;
 		int dateElements = 0;
 		int timeElements = 0;
-		int[] dateFieldLengths = {-1, -1, -1};
-		int[] dateFieldOffsets = {-1, -1, -1};
-		int[] dateFieldPad = {0, 0, 0};
+		final int[] dateFieldLengths = {-1, -1, -1};
+		final int[] dateFieldOffsets = {-1, -1, -1};
+		final int[] dateFieldPad = {0, 0, 0};
 		final MinMax[] timeFieldLengths = {new MinMax(), new MinMax(), new MinMax(), new MinMax()};
-		int[] timeFieldOffsets = {-1, -1, -1, -1};
-		int[] timeFieldPad = {0, 0, 0, 0};
+		final int[] timeFieldOffsets = {-1, -1, -1, -1};
+		final int[] timeFieldPad = {0, 0, 0, 0};
 		String timeZone = "";
 		Boolean timeFirst = null;
 		Character dateSeparator = null;
@@ -949,23 +949,23 @@ public class DateTimeParserResult {
 				case TIMEZONE_OFFSET_ZERO:
 					switch (token.getCount()) {
 					case 1:
-						ret.append("(" + x + "|Z)");
+						ret.append("(").append(x).append("|Z)");
 						break;
 
 					case 2:
-						ret.append("(" + xx + "|Z)");
+						ret.append("(").append(xx).append("|Z)");
 						break;
 
 					case 3:
-						ret.append("(" + xxx + "|Z)");
+						ret.append("(").append(xxx).append("|Z)");
 						break;
 
 					case 4:
-						ret.append("(" + xxxx + "|Z)");
+						ret.append("(").append(xxxx).append("|Z)");
 						break;
 
 					case 5:
-						ret.append("(" + xxxxx + "|Z)");
+						ret.append("(").append(xxxxx).append("|Z)");
 						break;
 					}
 					break;

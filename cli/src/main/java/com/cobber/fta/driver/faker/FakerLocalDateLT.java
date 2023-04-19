@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class FakerLocalDateLT extends FakerLT {
 	private DateTimeFormatter dtf;
 	private long range;
 
-	public FakerLocalDateLT(PluginDefinition plugin) {
+	public FakerLocalDateLT(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -55,8 +55,8 @@ public class FakerLocalDateLT extends FakerLT {
 			initialized = true;
 		}
 
-		long offset = random.nextInt((int)range);
-        LocalDate newDateTime = low.plusDays(offset);
+		final long offset = random.nextInt((int)range);
+		final LocalDate newDateTime = low.plusDays(offset);
 
         return dtf.format(newDateTime);
 	}

@@ -65,11 +65,6 @@ public class EIN extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getSemanticType() {
-		return defn.semanticType;
-	}
-
-	@Override
 	public FTAType getBaseType() {
 		return stringType ? FTAType.STRING : FTAType.LONG;
 	}
@@ -98,7 +93,7 @@ public class EIN extends LogicalTypeInfinite {
 
 		String nInput = input;
 		if (len == 10) {
-			char sep = input.charAt(2);
+			final char sep = input.charAt(2);
 			if ('-' != sep && '‐' != sep)
 				return false;
 			nInput = input.substring(0, 2) + input.substring(3);
@@ -110,7 +105,7 @@ public class EIN extends LogicalTypeInfinite {
 				return false;
 		}
 
-		int initialTwo = Integer.parseInt(nInput.subSequence(0, 2).toString());
+		final int initialTwo = Integer.parseInt(nInput.subSequence(0, 2).toString());
 		if (invalid[initialTwo])
 			return false;
 
@@ -122,7 +117,7 @@ public class EIN extends LogicalTypeInfinite {
 
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		return isValid(trimmed, true, -1);
 	}
 

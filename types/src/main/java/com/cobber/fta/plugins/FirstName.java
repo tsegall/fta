@@ -107,9 +107,9 @@ public class FirstName extends PersonName {
 		if (getMembers().contains(trimmedUpper))
 			return true;
 
-		int space = trimmedUpper.indexOf(' ');
+		final int space = trimmedUpper.indexOf(' ');
 		if (space != -1 && getMembers().contains(trimmedUpper.substring(0, space)) && Character.isAlphabetic(trimmedUpper.charAt(space + 1))) {
-			int len = trimmedUpper.length();
+			final int len = trimmedUpper.length();
 			if (len == space + 2 ||
 					(len == space + 3 && trimmedUpper.charAt(space + 2) == '.') ||
 					getMembers().contains(trimmedUpper.substring(space + 1)))

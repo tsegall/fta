@@ -108,6 +108,7 @@
 			{ "localeTag":  "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 } ] }
 		],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ZIP_Code" }
 		],
 		"baseType": "LONG",
@@ -124,6 +125,7 @@
 			{ "localeTag":  "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 } ] }
 		],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ZIP_Code" }
 		],
 		"threshold": 90,
@@ -154,6 +156,7 @@
 			}
 		],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Canada" }
 		],
 		"threshold": 95,
@@ -175,6 +178,7 @@
 			}
 		],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postcodes_in_Australia" }
 		],
 		"threshold": 98,
@@ -198,6 +202,7 @@
 			}
 		],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_the_Netherlands" }
 		],
 		"threshold": 95,
@@ -216,6 +221,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(code.postal|cp).*", "confidence": 95 } ]
 			} ],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_France" }
 		],
 		"baseType": "LONG",
@@ -230,6 +236,7 @@
 		"clazz": "com.cobber.fta.plugins.PostalCodeJA",
 		"validLocales": [ { "localeTag":  "ja" } ],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Japan" }
 		],
 		"priority": 67
@@ -249,6 +256,7 @@
 			}
 		],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Portugal" }
 		],
 		"threshold": 99,
@@ -266,6 +274,7 @@
 		"content": "/reference/de_postal_code.csv",
 		"contentType": "resource",
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Germany" }
 		],
 		"threshold": 99,
@@ -284,6 +293,7 @@
 		"content": "/reference/es_postal_code.csv",
 		"contentType": "resource",
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Spain" }
 		],
 		"threshold": 99,
@@ -301,6 +311,7 @@
 			{ "localeTag":  "sv-SE", "headerRegExps": [ { "regExp": ".*(?i)(postnummer).*", "confidence": 99 } ] }
 		],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Sweden" }
 		],
 		"threshold": 99,
@@ -317,6 +328,9 @@
 		],
 		"content": "/reference/uy_postal_code.csv",
 		"contentType": "resource",
+		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" }
+		],
 		"threshold": 99,
 		"baseType": "LONG",
 		"backout": "\\d{5}",
@@ -332,6 +346,7 @@
 			{ "localeTag":  "es-MX", "headerRegExps": [ { "regExp": ".*(?i)(c.digo.*postal).*", "confidence": 99 } ] }
 		],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Mexico" }
 		],
 		"threshold": 99,
@@ -349,6 +364,7 @@
 		"content": "/reference/bg_postal_code.csv",
 		"contentType": "resource",
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Bulgaria" }
 		],
 		"threshold": 99,
@@ -368,6 +384,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(codigo.postal).*", "confidence": 95 }, { "regExp": ".*(?i)(postal).*", "confidence": 85 } ]
 			} ],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Colombia" }
 		],
 		"baseType": "LONG",
@@ -2142,6 +2159,21 @@
 		"priority": 226
 	},
 	{
+		"semanticType": "IDENTITY.PERSONNUMMER_SE",
+		"description": "Personal identity number (Sweden)",
+		"pluginType": "java",
+		"signature": "lBrcRccn22VRzUfFCmzK2pGDehE=",
+		"clazz": "com.cobber.fta.plugins.identity.Personnummer_SE",
+		"validLocales": [
+			{ "localeTag": "sv-SE", "headerRegExps": [ { "regExp": ".*(?i)(personnummer)", "confidence": 95 } ] }
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Personal_identity_number_(Sweden)" }
+		],
+		"threshold": 98,
+		"priority": 230
+	},
+	{
 		"semanticType": "IDENTITY.SSN_FR",
 		"description": "Social Security Number (France)",
 		"pluginType": "java",
@@ -2151,6 +2183,7 @@
 			{ "localeTag": "fr-FR", "headerRegExps": [ { "regExp": ".*(?i)(SSN)", "confidence": 95 } ] }
 		],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P374" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/INSEE_code" }
 		],
 		"threshold": 98,
@@ -2232,6 +2265,21 @@
 		"priority": 236
 	},
 	{
+		"semanticType": "IDENTITY.NI_UK",
+		"description": "National Insurance Number (UK)",
+		"pluginType": "java",
+		"signature": "Q+g0UIYDCi5HMGM64y1jNs9LBdw=",
+		"clazz": "com.cobber.fta.plugins.identity.NI_UK",
+		"validLocales": [
+			{ "localeTag": "en-GB,en-UK", "headerRegExps": [ { "regExp": "(?i)(NI|NINO|.*National.?Insurance.*)", "confidence": 95 } ] }
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/National_Insurance_number" }
+		],
+		"threshold": 98,
+		"priority": 237
+	},
+	{
 		"semanticType": "IDENTITY.DUNS",
 		"description": "Data Universal Numbering System (Dun & Bradstreet)",
 		"pluginType": "regex",
@@ -2251,7 +2299,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Data_Universal_Numbering_System" }
 		],
 		"baseType": "LONG",
-		"priority": 237
+		"priority": 238
 	},
 	{
 		"semanticType": "IDENTITY.VAT_<COUNTRY>",
@@ -2273,7 +2321,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Value-added_tax" }
 		],
 		"threshold": 95,
-		"priority": 238
+		"priority": 239
 	},
 	{
 		"semanticType": "LANGUAGE.ISO-639-2",
@@ -2463,6 +2511,19 @@
 		"priority": 273
 	},
 	{
+		"semanticType": "IMEI",
+		"description": "International Mobile Equipment Identity",
+		"pluginType": "java",
+		"signature": "QPHqJewHLBbpUTGQg7hc1+Zzu/g=",
+		"clazz": "com.cobber.fta.plugins.IMEI",
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(imei).*", "confidence": 99, "mandatory": true } ] } ],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity" }
+		],
+		"baseType": "LONG",
+		"priority": 289
+	},
+	{
 		"semanticType": "CHECKDIGIT.LUHN",
 		"description": "LUHN Checkdigit (Credit Cards, IMEI, etc)",
 		"pluginType": "java",
@@ -2514,6 +2575,7 @@
 		"clazz": "com.cobber.fta.plugins.CheckDigitISIN",
 		"validLocales": [ { "localeTag":  "*" } ],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P946" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/International_Securities_Identification_Number" }
 		],
 		"priority": 293

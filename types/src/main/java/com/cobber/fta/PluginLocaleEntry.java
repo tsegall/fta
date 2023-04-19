@@ -105,7 +105,7 @@ public class PluginLocaleEntry {
 	 * @return An array of Locale Entries with only the tag set - no header information.
 	 */
 	public static PluginLocaleEntry[] simple(final String[] localeTags) {
-		PluginLocaleEntry[] ret = new PluginLocaleEntry[localeTags.length];
+		final PluginLocaleEntry[] ret = new PluginLocaleEntry[localeTags.length];
 
 		for (int i = 0; i < ret.length; i++) {
 			ret[i] = new PluginLocaleEntry(localeTags[i]);

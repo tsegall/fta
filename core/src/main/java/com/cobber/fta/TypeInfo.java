@@ -123,7 +123,7 @@ public class TypeInfo {
 	 * @param typeModifier The type modifier of the pattern (optional).
 	 * @param typeModifierFlags For numerics a set of flags representing the modifier.
 	 */
-	public TypeInfo(final ID id, final String regexp, final FTAType baseType, final String typeModifier, int typeModifierFlags) {
+	public TypeInfo(final ID id, final String regexp, final FTAType baseType, final String typeModifier, final int typeModifierFlags) {
 		this.id = id;
 		this.regexp = regexp;
 		this.baseType = baseType;
@@ -340,14 +340,13 @@ public class TypeInfo {
 
 	@Override
 	public String toString() {
-		StringBuilder ret = new StringBuilder();
+		final StringBuilder ret = new StringBuilder(100);
 
-		ret.append("type: " + baseType)
-			.append(", typeModifier: " + typeModifier);
+		ret.append("type: ").append(baseType).append(", typeModifier: ").append(typeModifier);
 
 		if (isSemanticType)
-			ret.append(", SemanticType: " + semanticType);
-		ret.append(", regexp: " + regexp);
+			ret.append(", SemanticType: ").append(semanticType);
+		ret.append(", regexp: ").append(regexp);
 
 		return ret.toString();
 	}
@@ -359,14 +358,14 @@ public class TypeInfo {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TypeInfo other = (TypeInfo) obj;
+		final TypeInfo other = (TypeInfo) obj;
 		return baseType == other.baseType && Objects.equals(format, other.format)
 				&& Objects.equals(generalPattern, other.generalPattern) && id == other.id
 				&& isSemanticType == other.isSemanticType && maxLength == other.maxLength && minLength == other.minLength

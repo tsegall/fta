@@ -52,10 +52,10 @@ public class SemanticType {
 		this.id = defn.semanticType;
 		this.description = defn.description;
 		if (defn.documentation != null) {
-			List<String> doco = new ArrayList<>();
+			final List<String> doco = new ArrayList<>();
 			for (final PluginDocumentationEntry entry : defn.documentation)
 				doco.add(entry.reference);
-			documentation = doco.toArray(new String[doco.size()]);
+			documentation = doco.toArray(new String[0]);
 		}
 	}
 

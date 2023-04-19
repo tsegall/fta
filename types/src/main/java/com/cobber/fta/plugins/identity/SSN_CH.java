@@ -34,9 +34,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Swiss SSN's (AVH Number/Sozialversicherungsnummer).
  */
 public class SSN_CH extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "IDENTITY.SSN_CH";
-
 	private static final int SSN_LENGTH = 13;
 	private static final String BACKOUT_REGEXP = ".*";
 	private String regExp = BACKOUT_REGEXP;
@@ -94,11 +91,6 @@ public class SSN_CH extends LogicalTypeInfinite {
 
 		return avh.substring(0, 3) + "." + avh.substring(3, 7) + "." +
 			avh.substring(7, 11) + "." + avh.substring(11) + check;
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

@@ -38,9 +38,6 @@ import com.cobber.fta.token.TokenStreams;
  * Note: we used an Infinite :-) Semantic Type since the domain is so large.
  */
 public class PostalCodeUK extends LogicalTypeInfinite {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "POSTAL_CODE.POSTAL_CODE_UK";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "([A-Za-z][A-Ha-hK-Yk-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})";
 
@@ -106,11 +103,6 @@ public class PostalCodeUK extends LogicalTypeInfinite {
 		}
 
 		return result.toString();
-	}
-
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
 	}
 
 	@Override

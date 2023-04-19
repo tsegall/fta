@@ -24,29 +24,29 @@ public abstract class Speed {
 
 	public static void main(final String[] args) {
 		final int ITERATIONS = 10_000_000;
-		LocalDateTime localDateTime = LocalDateTime.now();
+		final LocalDateTime localDateTime = LocalDateTime.now();
 
-		String value = localDateTime.toString();
+		final String value = localDateTime.toString();
 
 		final DateTimeParser dtp = new DateTimeParser();
 
 		dtp.train(value);
 
-		DateTimeParserResult result = dtp.getResult();
+		final DateTimeParserResult result = dtp.getResult();
 
 		// Use the FTA date parser to validate dates
 		// Note: this is ~10x faster than the Java parser, **however** you do not get any object back
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < ITERATIONS; i++)
 			result.parse(value);
-		long timeFTA = System.currentTimeMillis() - start;
+		final long timeFTA = System.currentTimeMillis() - start;
 		System.err.printf("Elapsed (FTA): %dms, type: %s%n", timeFTA, result.getType());
 
 		// Use the Java date parser to validate dates
 		start = System.currentTimeMillis();
 		for (int i = 0; i < ITERATIONS; i++)
 			LocalDateTime.parse(value);
-		long timeLDT = System.currentTimeMillis() - start;
+		final long timeLDT = System.currentTimeMillis() - start;
 		System.err.printf("Elapsed (LDT): %dms%n", timeLDT);
 	}
 }

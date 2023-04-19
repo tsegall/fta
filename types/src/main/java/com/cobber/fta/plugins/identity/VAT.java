@@ -79,21 +79,21 @@ public class VAT extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		String ret = prefixPresent != 0 ? prefix : "";
+		final String ret = prefixPresent == 0 ? "" : prefix;
 
 		if ("AT".equals(country)) {
-			String noCheckDigit = Utils.getRandomDigits(random, 7);
-			return ret += "U" + noCheckDigit + getCheckDigitAT(noCheckDigit);
+			final String noCheckDigit = Utils.getRandomDigits(random, 7);
+			return ret + "U" + noCheckDigit + getCheckDigitAT(noCheckDigit);
 		}
 
 		if ("ES".equals(country)) {
 			final String tester = "0123456789KLMNOPQRSWXYZ";
-			String noCheckDigit = tester.charAt(random.nextInt(tester.length())) + Utils.getRandomDigits(random, 7);
+			final String noCheckDigit = tester.charAt(random.nextInt(tester.length())) + Utils.getRandomDigits(random, 7);
 			return ret + noCheckDigit + getCheckDigitES(noCheckDigit);
 		}
 
 		if ("FR".equals(country)) {
-			String noCheckDigit = Utils.getRandomDigits(random, 9);
+			final String noCheckDigit = Utils.getRandomDigits(random, 9);
 			return ret + getCheckDigitFR(noCheckDigit) + noCheckDigit;
 		}
 
@@ -101,7 +101,7 @@ public class VAT extends LogicalTypeInfinite {
 			return ret + Utils.getRandomDigits(random, 9);
 
 		if ("IT".equals(country)) {
-			String noCheckDigit = Utils.getRandomDigits(random, 10);
+			final String noCheckDigit = Utils.getRandomDigits(random, 10);
 			try {
 				return ret + noCheckDigit + validator.calculate(noCheckDigit);
 			} catch (CheckDigitException e) {
@@ -110,7 +110,7 @@ public class VAT extends LogicalTypeInfinite {
 		}
 
 		if ("NL".equals(country)) {
-			String noCheckDigit = Utils.getRandomDigits(random, 8);
+			final String noCheckDigit = Utils.getRandomDigits(random, 8);
 			return ret + noCheckDigit + getCheckDigitNL(noCheckDigit) + "B00";
 		}
 
@@ -127,7 +127,7 @@ public class VAT extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		String ret = prefixPresent != 0 ? "(" + prefix + ")?" : "";
+		final String ret = prefixPresent != 0 ? "(" + prefix + ")?" : "";
 
 		if ("AT".equals(country))
 			return ret + "U\\d{8}";
@@ -206,7 +206,7 @@ public class VAT extends LogicalTypeInfinite {
 		if (input.length() != 8 || !Utils.isNumeric(input))
 			return false;
 
-		String checkDigit = getCheckDigitAT(input.substring(0, 7));
+		final String checkDigit = getCheckDigitAT(input.substring(0, 7));
 
 		// Check digit should be the same as the last digit
 		return checkDigit.charAt(0) == input.charAt(7);
@@ -240,7 +240,7 @@ public class VAT extends LogicalTypeInfinite {
 			return false;
 
 
-		String checkDigit = getCheckDigitES(input);
+		final String checkDigit = getCheckDigitES(input);
 
 		if (checkDigit == null)
 			return false;
@@ -259,7 +259,7 @@ public class VAT extends LogicalTypeInfinite {
 		final int[] multipliers = { 2, 1, 2, 1, 2, 1, 2 };
 		long total = 0;
 		long temp;
-		char first = input.charAt(0);
+		final char first = input.charAt(0);
 
 		if (nationalJuridical.indexOf(first) != -1 && Utils.isSimpleAlphaNumeric(input.charAt(8))) {
 			// National juridical entities
@@ -313,12 +313,12 @@ public class VAT extends LogicalTypeInfinite {
 			else
 				newNumber = input.substring(0, 8);
 
-			return String.valueOf(personalCheckDigit.charAt(Integer.valueOf(newNumber) % personalCheckDigit.length()));
+			return String.valueOf(personalCheckDigit.charAt(Integer.parseInt(newNumber) % personalCheckDigit.length()));
 		}
 
 		if (personalTwo.indexOf(first) != -1) {
 			// Personal number (NIF) (starting with K, L, M, or X)
-			return String.valueOf(personalCheckDigit.charAt(Integer.valueOf(input.substring(1, 8)) % personalCheckDigit.length()));
+			return String.valueOf(personalCheckDigit.charAt(Integer.parseInt(input.substring(1, 8)) % personalCheckDigit.length()));
 		}
 
 		return null;
@@ -330,7 +330,7 @@ public class VAT extends LogicalTypeInfinite {
 			return false;
 
 		// Calculate the CheckSum based on the last 9 digits
-		String checkDigit = getCheckDigitFR(input.substring(2));
+		final String checkDigit = getCheckDigitFR(input.substring(2));
 
 		// Compare the calculated check digits with the first two digits of the input
 		return checkDigit.equals(input.substring(0, 2));
@@ -338,7 +338,7 @@ public class VAT extends LogicalTypeInfinite {
 
 	private String getCheckDigitFR(final String input) {
 
-		long total = Integer.valueOf(input);
+		long total = Integer.parseInt(input);
 
 		// Calculate check digit
 		total = (12 + 3 * (total % 97)) % 97;
@@ -365,7 +365,7 @@ public class VAT extends LogicalTypeInfinite {
 		if (input.length() != 12 || input.charAt(9) != 'B' || !Character.isDigit(input.charAt(10)) || !Character.isDigit(input.charAt(11)))
 			return false;
 
-		char checkDigit = getCheckDigitNL(input.substring(0, 8));
+		final char checkDigit = getCheckDigitNL(input.substring(0, 8));
 
 		// Check digit should be the same as the last digit
 		return checkDigit == input.charAt(8);

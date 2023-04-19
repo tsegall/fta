@@ -89,7 +89,7 @@ public class IndustryEN extends LogicalTypeInfinite {
 		if (length > 200 || length < 2)
 			return false;
 
-		List<String> words = wordProcessor.asWords(trimmedUpper);
+		final List<String> words = wordProcessor.asWords(trimmedUpper);
 
 		if (words.size() > 10)
 			return false;
@@ -112,8 +112,8 @@ public class IndustryEN extends LogicalTypeInfinite {
 		if (getHeaderConfidence(context.getStreamName()) >= 99)
 			return PluginAnalysis.OK;
 
-		int minCardinality = 5;
-		int minSamples = 5;
+		final int minCardinality = 5;
+		final int minSamples = 5;
 
 		if (getHeaderConfidence(context.getStreamName()) <= 0 || cardinality.size() < minCardinality || realSamples < minSamples)
 			return PluginAnalysis.SIMPLE_NOT_OK;

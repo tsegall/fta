@@ -266,7 +266,7 @@ public class TextAnalysisResult {
 				throw new IllegalArgumentException("Quantiles array must be ordered.");
 		}
 
-		String[] ret = new String[quantiles.length];
+		final String[] ret = new String[quantiles.length];
 
 		for (int i = 0; i < quantiles.length; i++)
 			ret[i] = getValueAtQuantile(quantiles[i]);
@@ -916,7 +916,7 @@ public class TextAnalysisResult {
 			// We have support for arbitrary quantiles - but output percentiles in the JSON
 			final ArrayNode detailQ = analysis.putArray("percentiles");
 			// 101 because we want 0.0 and 1.0 plus everything in between
-			double[] percentiles = new double[101];
+			final double[] percentiles = new double[101];
 			double value = 0.0;
 			for (int i = 0; i < 100; i++) {
 				percentiles[i] = value;

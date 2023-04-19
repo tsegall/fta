@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class FakerLocalDateTimeLT extends FakerLT {
 	private DateTimeFormatter dtf;
 	private long range;
 
-	public FakerLocalDateTimeLT(PluginDefinition plugin) {
+	public FakerLocalDateTimeLT(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -56,8 +56,8 @@ public class FakerLocalDateTimeLT extends FakerLT {
 			initialized = true;
 		}
 
-		long offset = (long)(Math.abs(random.nextDouble() * range));
-        LocalDateTime newDateTime = low.plusSeconds(offset);
+		final long offset = (long)(Math.abs(random.nextDouble() * range));
+		final LocalDateTime newDateTime = low.plusSeconds(offset);
 
         return dtf.format(newDateTime);
 	}

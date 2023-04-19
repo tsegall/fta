@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,26 +22,28 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.Utils;
 
 /**
- * Plugin to detect valid Luhn check digits (commonly Credit Cards or IMEI Numbers).
+ * Plugin to detect IMEI numbers (15 digits with a valid LUHN check digit)
  */
-public class CheckDigitLuhn extends CheckDigitLT {
+public class IMEI extends CheckDigitLuhn {
+	private final static int IMEI_LENGTH = 15;
+
 	/**
-	 * Construct a plugin to detect Luhn Check Digits based on the Plugin Definition.
+	 * Construct a plugin to detect an IMEI.
 	 * @param plugin The definition of this plugin.
 	 */
-	public CheckDigitLuhn(final PluginDefinition plugin) {
-		super(plugin, -1);
+	public IMEI(final PluginDefinition plugin) {
+		super(plugin);
 		validator = new LuhnCheckDigit();
 	}
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
-		return input.length() >= 8 && input.length() < 30 && validator.isValid(input);
+		return input.length() == IMEI_LENGTH && validator.isValid(input);
 	}
 
 	@Override
 	public String nextRandom() {
-		final String base = Utils.getRandomDigits(random, 14 + random.nextInt(3));
+		final String base = Utils.getRandomDigits(random, IMEI_LENGTH - 1);
 		try {
 			return base + validator.calculate(base);
 		} catch (CheckDigitException e) {

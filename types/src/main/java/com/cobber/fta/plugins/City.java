@@ -96,7 +96,7 @@ public class City extends LogicalTypeInfinite {
 		int periods = 0;
 		int chars = 0;
 		for (int i = 0; i < len; i++) {
-			char ch = trimmedUpper.charAt(i);
+			final char ch = trimmedUpper.charAt(i);
 			if (Character.isAlphabetic(ch))
 				chars++;
 			else if (ch == ',') {
@@ -137,7 +137,7 @@ public class City extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isCandidate(String trimmed, StringBuilder compressed, int[] charCounts, int[] lastIndex) {
+	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		return isValid(trimmed, true, 0);
 	}
 

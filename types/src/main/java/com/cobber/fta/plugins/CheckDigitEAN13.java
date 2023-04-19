@@ -23,9 +23,6 @@ import com.cobber.fta.PluginDefinition;
  * Plugin to detect valid EAN-13 (UPC, ISBN-13) identifiers.
  */
 public class CheckDigitEAN13 extends CheckDigitLT {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "CHECKDIGIT.EAN13";
-
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "\\d{13}";
 
@@ -46,13 +43,27 @@ public class CheckDigitEAN13 extends CheckDigitLT {
 	}
 
 	@Override
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
+		final String cleaned = removeDashes(input);
+		return (length == -1 || cleaned.length() == length) && validator.isValid(cleaned);
+	}
+
+	@Override
 	public String getRegExp() {
 		return REGEXP;
 	}
 
-	@Override
-	public String getSemanticType() {
-		return SEMANTIC_TYPE;
+	private String removeDashes(final String input) {
+		if (input.indexOf('-') == -1)
+			return input;
+		final StringBuilder ret = new StringBuilder();
+		for (int i = 0; i < input.length(); i++) {
+			final char ch = input.charAt(i);
+			if (ch != '-')
+				ret.append(ch);
+		}
+
+		return ret.toString();
 	}
 
 	@Override

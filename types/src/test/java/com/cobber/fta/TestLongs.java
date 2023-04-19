@@ -245,7 +245,7 @@ public class TestLongs {
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = { "47", " 47", " 47 ", "47.0", "47.000" };
 
-		for (String input: inputs)
+		for (final String input: inputs)
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -259,7 +259,7 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "47.0");
 		assertEquals(result.getMaxValue(), "47.0");
 		assertEquals(result.getCardinality(), 5);
-		for (Map.Entry<String, Long> entry : result.getCardinalityDetails().entrySet()) {
+		for (final Map.Entry<String, Long> entry : result.getCardinalityDetails().entrySet()) {
 			System.err.printf("Key: %s, Count: %s\n", entry.getKey(), entry.getValue());
 		}
 		assertEquals(result.getValueAtQuantile(.5), "47");
@@ -1163,7 +1163,7 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), "29");
-		assertEquals(result.getMean(), Double.valueOf(14.5));
+		assertEquals(result.getMean(), 14.5);
 		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE + "\\d{1,2}");
 		assertNull(result.checkCounts());
 
@@ -1533,7 +1533,7 @@ public class TestLongs {
 		final TextAnalyzer analysis = new TextAnalyzer("meanSDBulk");
 		final long SAMPLE_SIZE = 100;
 
-		Map<String, Long> data = new HashMap<>();
+		final Map<String, Long> data = new HashMap<>();
 		data.put("2", SAMPLE_SIZE * 2);
 		data.put("1", SAMPLE_SIZE);
 		data.put("3", SAMPLE_SIZE);
@@ -1564,7 +1564,7 @@ public class TestLongs {
 		final TextAnalyzer shardTwo = new TextAnalyzer("meanSDBulkMerge");
 		final long SAMPLE_SIZE = 100;
 
-		Map<String, Long> data = new HashMap<>();
+		final Map<String, Long> data = new HashMap<>();
 
 		data.put("2", SAMPLE_SIZE * 2);
 		data.put("1", SAMPLE_SIZE);
@@ -1629,7 +1629,7 @@ public class TestLongs {
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		final long SAMPLE_SIZE = 100;
 
-		Map<String, Long> data = new HashMap<>();
+		final Map<String, Long> data = new HashMap<>();
 		for (int i = 1; i < SAMPLE_SIZE; i++)
 			data.put(String.valueOf(i), 1L);
 		data.put("x", 1L);
@@ -1665,7 +1665,7 @@ public class TestLongs {
 
 		final TextAnalyzer shardReference = new TextAnalyzer("shardReference");
 
-		Map<String, Long> data = new TreeMap<>();
+		final Map<String, Long> data = new TreeMap<>();
 
 		// Add 1-99 + 'x' to shard One which has a Max Cardinality of 40
 		for (int i = 1; i < SAMPLE_SIZE; i++) {
@@ -1778,7 +1778,7 @@ public class TestLongs {
 		final long sampleCount = 100_000_000_000L;
 		boolean saveOutput = false;
 		BufferedWriter bw = null;
-		String[] samples = new String[10000];
+		final String[] samples = new String[10000];
 
 		if (saveOutput)
 			bw = new BufferedWriter(new FileWriter("/tmp/longPerf.csv"));

@@ -202,8 +202,8 @@ public class PluginDefinition {
 
 	public String getLocaleDescription() {
 		final StringBuilder ret = new StringBuilder();
-		for (int i = 0; i < validLocales.length; i++)
-			ret.append(validLocales[i].toString());
+		for (PluginLocaleEntry validLocale : validLocales)
+			ret.append(validLocale.toString());
 
 		return ret.toString();
 	}

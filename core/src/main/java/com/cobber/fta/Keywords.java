@@ -93,7 +93,7 @@ public class Keywords {
 	 * @return An integer (1-100) indicating how well the input 'matches' the supplied tag.
 	 */
 	public int match(final String input, final String keyTag, MatchStyle matchStyle) {
-		String lower = input.trim().toLowerCase(locale);
+		final String lower = input.trim().toLowerCase(locale);
 		if (lower.isEmpty())
 			return 0;
 

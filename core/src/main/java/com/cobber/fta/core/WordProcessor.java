@@ -98,11 +98,11 @@ public class WordProcessor {
 		return asWordOffsets(input).stream().map(x -> x.word).collect(Collectors.toList());
 	}
 
-	private boolean isSimpleWordChar(char ch) {
+	private boolean isSimpleWordChar(final char ch) {
 		return Character.isAlphabetic(ch) || Character.isDigit(ch) || (additionalWordChars != null && additionalWordChars.indexOf(ch) != -1);
 	}
 
-	private void append(StringBuilder b, char ch) {
+	private void append(final StringBuilder b, final char ch) {
 		b.append(ch);
 		lastAlpha = Character.isAlphabetic(ch);
 		lastNumeric = Character.isDigit(ch);
@@ -118,9 +118,9 @@ public class WordProcessor {
 		final ArrayList<WordOffset> ret = new ArrayList<>();
 		boolean midWord = false;
 		int start = -1;
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < input.length(); i++) {
-			char ch = input.charAt(i);
+			final char ch = input.charAt(i);
 			if (killChars.indexOf(ch) != -1)
 				continue;
 			if (!midWord) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ public class FakerEnumLT extends FakerLT {
 	private String[] options;
 	private int last = -1;
 
-	public FakerEnumLT(PluginDefinition plugin) {
+	public FakerEnumLT(final PluginDefinition plugin) {
 		super(plugin);
 	}
 

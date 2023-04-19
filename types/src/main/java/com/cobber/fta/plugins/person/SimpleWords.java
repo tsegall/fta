@@ -71,11 +71,6 @@ public abstract class SimpleWords extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public String getSemanticType() {
-		return defn.semanticType;
-	}
-
-	@Override
 	public FTAType getBaseType() {
 		return FTAType.STRING;
 	}

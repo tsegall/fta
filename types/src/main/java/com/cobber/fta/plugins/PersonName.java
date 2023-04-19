@@ -90,7 +90,7 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 		if (getMembers().contains(trimmedUpper))
 			return true;
 
-		int space = trimmedUpper.indexOf(' ');
+		final int space = trimmedUpper.indexOf(' ');
 		if (space != -1 && getMembers().contains(trimmedUpper.substring(0, space))
 				&& getMembers().contains(trimmedUpper.substring(space + 1)))
 			return true;
