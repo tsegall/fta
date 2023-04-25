@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1347,12 +1347,11 @@ public class TextAnalyzer {
 	 * This routine is commonly used to support training using the results aggregated from a
 	 * database query.
 	 *
-	 * @param observed
-	 *            A Map containing the observed items and the corresponding count
+	 * @param input A Map containing the observed items and the corresponding count
 	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
-	public void trainBulk(Map<String, Long> observed) throws FTAPluginException, FTAUnsupportedLocaleException {
+	public void trainBulk(final Map<String, Long> input) throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Initialize if we have not already done so
 		if (!initialized) {
 			initialize(AnalysisConfig.TrainingMode.BULK);
@@ -1360,13 +1359,25 @@ public class TextAnalyzer {
 		}
 
 		// Sort so we have the most frequent first
-		observed = Utils.sortByValue(observed);
-		final Observation[] facts = new Observation[observed.size()];
-		int i = 0;
-		long total = 0;
+		final Map<String, Long> observed = Utils.sortByValue(input);
 
 		if (traceConfig != null)
 			traceConfig.recordBulk(observed);
+
+		// Strip out the uninteresting entries (i.e. nulls and blanks)
+		final Map<String, Long> uninteresting = new HashMap<>();
+		Iterator<Entry<String, Long>> it = observed.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<String, Long> entry = it.next();
+			if (isNullEquivalent(entry.getKey()) || entry.getKey().isBlank()) {
+				uninteresting.put(entry.getKey(), entry.getValue());
+				it.remove();
+			}
+		 }
+
+		final Observation[] facts = new Observation[observed.size()];
+		int i = 0;
+		long total = 0;
 
 		// Setup the array of observations and calculate the total number of observations
 		for (final Map.Entry<String, Long> entry : observed.entrySet()) {
@@ -1395,12 +1406,16 @@ public class TextAnalyzer {
 			}
 		}
 
-		// Now send in the rest of the samples in bulk
+		// Now send in the balance of the interesting samples in bulk
 		for (final Observation fact : facts) {
 			final long remaining = fact.count - fact.used;
 			if (remaining != 0)
 				trainBulkCore(fact.observed, remaining);
 		}
+
+		// Now send in the uninteresting elements
+		for (Entry<String, Long> entry : uninteresting.entrySet())
+			trainBulkCore(entry.getKey(), entry.getValue());
 	}
 
 	private void trainBulkCore(final String rawInput, final long count) {
@@ -1457,7 +1472,7 @@ public class TextAnalyzer {
 
 		final FTAType matchType = facts.getMatchTypeInfo() != null ? facts.getMatchTypeInfo().getBaseType() : null;
 
-		if (rawInput == null || isNullEquivalent(rawInput)) {
+		if (isNullEquivalent(rawInput)) {
 			facts.nullCount++;
 			return matchType != null;
 		}

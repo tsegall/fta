@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import com.cobber.fta.token.TokenStreams;
 public class AddressStreetNameBare extends LogicalTypeInfinite {
 	private static final String SEMANTIC_TYPE = "STREET_NAME_BARE_";
 	private String language;
-	private WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
+	private final WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
 
 	/**
 	 * Construct a plugin to detect a Street Name based on the Plugin Definition.

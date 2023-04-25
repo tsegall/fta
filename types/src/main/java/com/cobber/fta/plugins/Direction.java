@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,9 @@ public class Direction extends LogicalTypeInfinite {
 		UNKNOWN("(?i)(E|N|S|W)", new String[] { "E", "N", "S", "W" });
 
 		/** The RegExp that represents this Form */
-		private String regExp;
+		private final String regExp;
 		/** The set of members valid for this Form. */
-		private String[] members;
+		private final String[] members;
 
 		Form(final String regExp, final String[] members) {
 			this.regExp = regExp;
@@ -66,12 +66,12 @@ public class Direction extends LogicalTypeInfinite {
 		}
 	}
 
-	private int[] boundShortCounts = new int[4];
-	private int[] boundLongCounts = new int[4];
-	private int[] cardinalCounts = new int[4];
-	private int[] intercardinalCounts = new int[4];
-	private int[] cardinalFullCounts = new int[4];
-	private int[] intercardinalFullCounts = new int[4];
+	private final int[] boundShortCounts = new int[4];
+	private final int[] boundLongCounts = new int[4];
+	private final int[] cardinalCounts = new int[4];
+	private final int[] intercardinalCounts = new int[4];
+	private final int[] cardinalFullCounts = new int[4];
+	private final int[] intercardinalFullCounts = new int[4];
 
 	private Form currentForm = Form.UNKNOWN;
 

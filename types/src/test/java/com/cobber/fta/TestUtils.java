@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,7 +182,7 @@ public class TestUtils {
 		final String originalSerialized = toCheck.serialize();
 		final TextAnalyzer hydrated = TextAnalyzer.deserialize(originalSerialized);
 
-		final boolean equals = hydrated.equals(toCheck, TestUtils.EPSILON);
+		final boolean equals = hydrated.equals(toCheck, EPSILON);
 
 		if (!equals) {
 			System.err.println("Original:\n" + originalSerialized);
@@ -233,6 +233,6 @@ public class TestUtils {
 		if ("1.8".equals(javaVersion))
 			return 8;
 
-		return Integer.valueOf(javaVersion);
+		return Integer.parseInt(javaVersion);
 	}
 }

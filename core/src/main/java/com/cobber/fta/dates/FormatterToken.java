@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ class FormatterToken {
 	}
 
 	public static List<FormatterToken> tokenize(final String formatString) {
-		final ArrayList<FormatterToken> ret = new ArrayList<>();
+		final List<FormatterToken> ret = new ArrayList<>();
 
 		final int formatLength = formatString.length();
 

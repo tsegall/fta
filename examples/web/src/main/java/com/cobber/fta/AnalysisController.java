@@ -26,7 +26,7 @@ public class AnalysisController {
 	}
 
 	@RequestMapping(value = "/analysis", method = RequestMethod.POST)
-	public ModelAndView analysisSubmit(@ModelAttribute Analysis analysis, Model model) {
+	public ModelAndView analysisSubmit(@ModelAttribute Analysis analysis, final Model model) {
 		this.analysis = analysis;
 		return new ModelAndView("result");
 	}

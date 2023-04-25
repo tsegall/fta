@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1131,7 +1131,7 @@ public class TestDoubles {
 			try {
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
 					final double d = random.nextDouble() * random.nextInt();
-					final String sample = nf.format(d).toString();
+					final String sample = nf.format(d);
 					samples.add(sample);
 					analysis.train(sample);
 				}
@@ -1189,7 +1189,7 @@ public class TestDoubles {
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			final double d = random.nextDouble() * random.nextInt();
-			sample = df.format(d).toString();
+			sample = df.format(d);
 			samples.add(sample);
 			analysis.train(sample);
 		}
@@ -1261,7 +1261,7 @@ public class TestDoubles {
 					else
 						d *= Math.pow(d,  -pow);
 
-					final String sample = df.format(d).toString();
+					final String sample = df.format(d);
 					samples.add(sample);
 					analysis.train(sample);
 				}
@@ -1475,7 +1475,7 @@ public class TestDoubles {
 		decimalFormatter.setMinimumFractionDigits(1);
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			final double d = random.nextDouble();
-			final String sample = decimalFormatter.format(d).toString();
+			final String sample = decimalFormatter.format(d);
 			if (d < min) {
 				min = d;
 				minValue = sample;
@@ -1527,7 +1527,7 @@ public class TestDoubles {
 		nf.applyPattern("#.##################E0");
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			final double d = random.nextDouble() * 10000;
-			final String sample = nf.format(d).toString();
+			final String sample = nf.format(d);
 			if (d < min) {
 				min = d;
 				minValue = sample;
@@ -2112,7 +2112,7 @@ public class TestDoubles {
 			try {
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
 					final double d = random.nextDouble() * 100000000;
-					final String sample = nf.format(d).toString();
+					final String sample = nf.format(d);
 					samples.add(sample);
 					analysis.train(sample);
 				}

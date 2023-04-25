@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -700,12 +700,19 @@ public class Facts {
 				&& external.totalCount == other.external.totalCount
 				&& external.totalNullCount == other.external.totalNullCount && external.totalBlankCount == other.external.totalBlankCount
 				&& external.totalMean == other.external.totalMean && external.totalStandardDeviation == other.external.totalStandardDeviation
-				&& external.totalMinValue == other.external.totalMinValue && external.totalMaxValue == other.external.totalMaxValue
+				&& safeEquals(external.totalMinValue, other.external.totalMinValue)
+				&& safeEquals(external.totalMaxValue, other.external.totalMaxValue)
 				&& external.totalMinLength == other.external.totalMinLength && external.totalMaxLength == other.external.totalMaxLength
 				&& Objects.equals(uniqueness, other.uniqueness)
 				&& Objects.equals(distinctCount, other.distinctCount)
 				&& Objects.equals(streamFormat, other.streamFormat)
 				&& ((mean == 0.0 && other.mean == 0.0) || Math.abs(mean - other.mean) < epsilon)
 				&& ((variance == null && other.variance == null) || (variance == 0.0 && other.variance == 0.0) || Math.abs(variance - other.variance) < epsilon);
+	}
+
+	private boolean safeEquals(final String one, final String two) {
+		if (one == null)
+			return two == null;
+		return one.equals(two);
 	}
 }

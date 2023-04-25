@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -155,7 +156,7 @@ public class LocaleInfo {
 		// Setup the Monthly abbreviations, in Java some countries (e.g. AU, CA) have the short months defined with a
 		// period after them, for example 'AUG.' - if useStandardAbbreviations is set just using the US definition of 'truth'
 		shortMonthsArray = dfs.getShortMonths();
-		final TreeMap<String, Integer> shortMonthsLocale = new TreeMap<>(new LengthComparator());
+		final NavigableMap<String, Integer> shortMonthsLocale = new TreeMap<>(new LengthComparator());
 		generator = new RegExpGenerator();
 
 		boolean useShortMonths = true;

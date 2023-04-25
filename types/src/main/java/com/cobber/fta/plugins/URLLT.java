@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class URLLT extends LogicalTypeInfinite {
 	}
 
 	// Count of items with protocol specified (e.g. http://) at index 0 and no protocol index 1
-	private int[] protocol = new int[2];
+	private final int[] protocol = new int[2];
 
 	/**
 	 * Construct a URL plugin based on the Plugin Definition.
@@ -109,13 +109,13 @@ public class URLLT extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		// Quickly rule out rubbish
-		if (charCounts[' '] != 0)
-				return false;
-
 		// Does it have a protocol?
 		if (charCounts[':'] != 0 && compressed.indexOf("://") != -1)
 			return true;
+
+		// Quickly rule out rubbish
+		if (charCounts[' '] != 0)
+			return false;
 
 		return validator.isValid("http://" + trimmed);
 	}

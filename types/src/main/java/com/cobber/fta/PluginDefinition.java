@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,7 +202,7 @@ public class PluginDefinition {
 
 	public String getLocaleDescription() {
 		final StringBuilder ret = new StringBuilder();
-		for (PluginLocaleEntry validLocale : validLocales)
+		for (final PluginLocaleEntry validLocale : validLocales)
 			ret.append(validLocale.toString());
 
 		return ret.toString();

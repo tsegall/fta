@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1733,7 +1733,7 @@ public class TestLongs {
 		TestSupport.checkQuantiles(mergedResult);
 	}
 
-	private void dump(TextAnalysisResult result) {
+	private void dump(final TextAnalysisResult result) {
 		System.err.printf("%s: Total: %d, Real Samples: %d, Matches: %d, Mean: %f, Standard Deviation: %.10f%n",
 				result.getName(), result.getTotalCount(),
 				result.getSampleCount() - result.getNullCount() - result.getBlankCount(), result.getMatchCount(),

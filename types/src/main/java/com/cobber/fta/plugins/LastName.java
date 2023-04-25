@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import com.cobber.fta.token.TokenStreams;
  */
 public class LastName extends PersonName {
 	// This set covers the first two letters of ~95% of our last name list - assume this is a reasonable proxy for last names more generally
-	private String plausibleStarters[] = {
+	private final String plausibleStarters[] = {
 		"AB", "AC", "AD", "AG", "AL", "AM", "AN", "AP", "AR", "AS", "AT", "AU", "AV", "AY",
 		"BA", "BE", "BI", "BL", "BO", "BR", "BU", "BY",
 		"CA", "CE", "CH", "CL", "CO", "CR", "CU",
@@ -62,21 +62,21 @@ public class LastName extends PersonName {
 		"YA", "YO", "ZA",
 		"ZE",
 	};
-	private String badFirstWords[] = {
+	private final String badFirstWords[] = {
 			"NORTH",  "SOUTH", "EAST", "WEST", "NEW", "OLD", "MOUNT", "LAKE"
 	};
-	private String badSecondWords[] = {
+	private final String badSecondWords[] = {
 			"HILL",  "HILLS", "PARK", "SPRING", "SPRINGS", "RIDGE", "PARK", "VALLEY", "LAKE", "CREEK"
 	};
 
-	private Set<String> plausibleSet = new HashSet<>();
-	private Set<String> badFirstSet = new HashSet<>();
-	private Set<String> badSecondSet = new HashSet<>();
+	private final Set<String> plausibleSet;
+	private final Set<String> badFirstSet;
+	private final Set<String> badSecondSet;
 	private String language;
-	private Set<String> suffixes = null;
-	private long lengthSum = 0;
-	private long sampleCount = 0;
-	private long bad = 0;
+	private Set<String> suffixes;
+	private long lengthSum;
+	private long sampleCount;
+	private long bad;
 
 	/**
 	 * Construct a Last Name plugin based on the Plugin Definition.
@@ -99,7 +99,6 @@ public class LastName extends PersonName {
 
 		return true;
 	}
-
 
 	@Override
 	protected boolean isPlausible(final String candidate) {

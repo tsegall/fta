@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.cobber.fta;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -51,7 +52,7 @@ public class HistogramSPDT {
 	}
 
 	// The array of bins we use to track the Histogram
-	private ArrayList<Bin> bins;
+	private List<Bin> bins;
 	// The configured maximum number of bins
 	private int maxBins;
 	// Minimum value ever observed
@@ -129,10 +130,10 @@ public class HistogramSPDT {
 	}
 
 	/**
-	 * Accessor for the ArrayList of all bins.
+	 * Accessor for the List of all bins.
 	 * @return The bins that constitute the Histogram.
 	 */
-	public ArrayList<Bin> getBins() {
+	public List<Bin> getBins() {
 		return bins;
 	}
 

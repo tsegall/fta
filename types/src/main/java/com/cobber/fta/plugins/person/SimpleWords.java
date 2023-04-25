@@ -1,4 +1,4 @@
-/* Copyright 2017-2022 Tim Segall
+/* Copyright 2017-2023 Tim Segall
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import com.cobber.fta.token.TokenStreams;
 */
 public abstract class SimpleWords extends LogicalTypeInfinite {
 	private Set<String> keywordsHash;
-	private WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("_=");
+	private final WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("_=");
 
 	protected abstract String[] getWords();
 	protected int getMaxWords() {

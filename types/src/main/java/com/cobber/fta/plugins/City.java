@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.cobber.fta.plugins;
+
+import java.util.Locale;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
@@ -34,6 +36,8 @@ public class City extends LogicalTypeInfinite {
 	private boolean randomInitialized;
 	private SingletonSet samples;
 	private int maxLength = 0;
+	private String country;
+	private boolean isNetherlands;
 
 	/**
 	 * Construct a plugin based on the Plugin Definition.
@@ -46,6 +50,9 @@ public class City extends LogicalTypeInfinite {
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
+
+		country = locale.getCountry().toUpperCase(Locale.ROOT);
+		isNetherlands = "NL".equals(country);
 
 		return true;
 	}
@@ -88,6 +95,10 @@ public class City extends LogicalTypeInfinite {
 		final int len = trimmedUpper.length();
 		if (len > maxLength)
 			maxLength = len;
+
+		// Common abbreviation for 'en omgeving' = and environs
+		if (isNetherlands && trimmedUpper.endsWith("E.O."))
+			return true;
 
 		int spaces = 0;
 		int commas = 0;

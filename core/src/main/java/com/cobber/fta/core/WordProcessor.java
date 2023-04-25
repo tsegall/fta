@@ -115,7 +115,7 @@ public class WordProcessor {
 	 * @return A list of words based on the input string.
 	 */
 	public List<WordOffset> asWordOffsets(final String input) {
-		final ArrayList<WordOffset> ret = new ArrayList<>();
+		final List<WordOffset> ret = new ArrayList<>();
 		boolean midWord = false;
 		int start = -1;
 		final StringBuilder b = new StringBuilder();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TreeMap;
 
 import com.cobber.fta.core.InternalErrorException;
@@ -31,7 +32,7 @@ public class Correlation {
 	private Locale locale;
 	private String tag;
 	private List<SemanticTypeInfo> semanticTypesList;
-	private TreeMap<String, SemanticTypeInfo>  semanticTypes;
+	private Map<String, SemanticTypeInfo>  semanticTypes;
 
 	Correlation(final Locale locale) {
 		this.locale = locale;

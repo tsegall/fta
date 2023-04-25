@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.cobber.fta;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 
@@ -161,7 +161,7 @@ public class Histogram {
 		int upto = 0;
 
 		if (histogramFull != null) {
-			final ArrayList<HistogramSPDT.Bin> bins = histogramFull.getBins();
+			final List<HistogramSPDT.Bin> bins = histogramFull.getBins();
 			for (final HistogramSPDT.Bin bin : bins) {
 				// All the buckets except for the last are [low, high) the last bucket is [low,high]
 				while (!inThisBucket(ret[upto], bin.value, buckets, upto))
@@ -219,8 +219,8 @@ public class Histogram {
 	 */
 	public static void tagClusters(final Histogram.Entry[] buckets) {
 		long total = 0;
-		for (int i = 0; i < buckets.length; i++)
-			total += buckets[i].count;
+		for (Entry bucket : buckets)
+			total += bucket.count;
 
 		int clusterStart = -1;
 		int clusterEnd = -1;

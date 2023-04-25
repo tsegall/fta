@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -357,7 +357,7 @@ public class KnownTypes {
 		return knownIDs.get(id);
 	}
 
-	protected TypeInfo getByTypeAndModifier(final FTAType type, int typeModifier) {
+	protected TypeInfo getByTypeAndModifier(final FTAType type, final int typeModifier) {
 		for (final TypeInfo typeInfo : knownTypes.values()) {
 			if (typeInfo.getBaseType() == type && typeInfo.typeModifierFlags == typeModifier)
 				return typeInfo;

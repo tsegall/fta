@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,7 +130,7 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} OOOO d{4}", "EEE MMM dd HH:mm:ss OOOO yyyy", FTAType.OFFSETDATETIME));
 		matchers.add(new SimpleFacts("EEE d{2} MMM d{4} d{2}:d{2}:d{2} +d{4}", "EEE dd MMM yyyy HH:mm:ss x", FTAType.OFFSETDATETIME));
 
-		final HashMap<String, SimpleFacts> knownFacts = new HashMap<>();
+		final Map<String, SimpleFacts> knownFacts = new HashMap<>();
 		for (final SimpleFacts sdm : matchers) {
 			knownFacts.put(sdm.getMatcher(), sdm);
 			knownFacts.put(sdm.getFormat(), sdm);

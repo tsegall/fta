@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -34,7 +35,7 @@ import com.google.common.hash.Funnels;
  */
 public class LogicalTypeBloomFilter extends LogicalTypeInfinite {
 	private BloomFilter<CharSequence> reference;
-	private static ArrayList<String> examples;
+	private static List<String> examples;
 
 	/**
 	 * Construct a BloomFilter plugin based on the Plugin Definition.

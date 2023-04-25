@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class FirstName extends PersonName {
 	public static final String SEMANTIC_TYPE = "NAME.FIRST";
 
 	// This set covers the first two letters of ~92% of our first name list - assume this is a reasonable proxy for first names more generally
-	private String plausibleStarters[] = {
+	private final String plausibleStarters[] = {
 			"AB", "AD", "AL", "AM", "AN", "AR", "AS", "AU", "AY",
 			"BA", "BE", "BI", "BO", "BR",
 			"CA", "CE", "CH", "CI", "CL", "CO", "CR",
@@ -60,7 +60,7 @@ public class FirstName extends PersonName {
 			"YA", "YO",
 			"ZA", "ZO",
 	};
-	private Set<String> plausibleSet = new HashSet<>();
+	private final Set<String> plausibleSet = new HashSet<>();
 	private long bad = 0;
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ import dk.brics.automaton.Transition;
  */
 public class TokenStream {
 	/* The set of uncompressed tokens. */
-	private Token[] tokens;
-	private String key;
+	private final Token[] tokens;
+	private final String key;
 
 	/* The set of compressed tokens - compression typically coalesces adjacent similar token, but may also do float identification. */
 	private Token[] compressedTokens;

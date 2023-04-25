@@ -1,4 +1,4 @@
-/* Copyright 2017-2022 Tim Segall
+/* Copyright 2017-2023 Tim Segall
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -49,8 +49,8 @@ import com.cobber.fta.token.TokenStreams;
  *
  */
 public class AgeRange extends LogicalTypeInfinite {
-	private final int MAX_AGE = 120;
-	private String symbols = "<>+≤≥";
+	private static final int MAX_AGE = 120;
+	private final String symbols = "<>+≤≥";
 	private final Keywords keywords = new Keywords();
 	private final static Set<String> agesPUF = new HashSet<>();
 
@@ -83,7 +83,7 @@ public class AgeRange extends LogicalTypeInfinite {
 		agesPUF.add("AGEALL");
 	}
 
-	private WordProcessor wordProcessor = new WordProcessor().withBreakChars(" \u00A0-");
+	private final WordProcessor wordProcessor = new WordProcessor().withBreakChars(" \u00A0-");
 
 	/**
 	 * Construct an Age Range plugin based on the Plugin Definition.

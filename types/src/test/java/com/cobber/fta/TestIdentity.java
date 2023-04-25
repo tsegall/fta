@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public class TestIdentity {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void possibleSSN() throws IOException, FTAException {
-		String[] samples = new String[1000];
+		final String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
@@ -115,14 +115,13 @@ public class TestIdentity {
 		assertEquals(result.getConfidence(), 1.0);
 		assertNull(result.checkCounts());
 
-		for (int l = 0; l < samples.length; l++) {
-			assertTrue(samples[l].matches(result.getRegExp()));
-		}
+		for (final String sample : samples)
+			assertTrue(sample.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_SSN() throws IOException, FTAException {
-		String[] samples = new String[1000];
+		final String[] samples = new String[1000];
 
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
@@ -167,12 +166,11 @@ public class TestIdentity {
 		assertEquals(result.getSampleCount(), samples.length + 1);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 1);
-		assertEquals(invalids.get("032--45-0981"), Long.valueOf(1));
+		assertEquals(invalids.get("032--45-0981"), 1L);
 		assertNull(result.checkCounts());
 
-		for (final String sample : samples) {
+		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -328,7 +326,7 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA");
+		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
@@ -368,7 +366,7 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.SSN_CH");
+		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.SSN_CH");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
@@ -401,7 +399,7 @@ public class TestIdentity {
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
 
-		PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.NHS_UK");
+		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.NHS_UK");
 
 				assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
@@ -448,7 +446,7 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.AADHAAR_IN");
+		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.AADHAAR_IN");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);

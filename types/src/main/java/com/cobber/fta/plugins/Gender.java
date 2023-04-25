@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,9 +58,9 @@ public class Gender extends LogicalTypeFinite {
 	}
 
 	class GenderData {
-		private GenderPair[] words;
-		private GenderPair[] abbreviations;
-		private GenderPair[] all;
+		private final GenderPair[] words;
+		private final GenderPair[] abbreviations;
+		private final GenderPair[] all;
 
 		GenderData(final String[][] words, final String[][] abbreviations) {
 			this.words = new GenderPair[words.length];

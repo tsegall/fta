@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -236,7 +236,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 * @param analysisConfig The Configuration of the current analysis
 	 * @return Null if we think this is an instance of this Semantic type (backout pattern otherwise)
 	 */
-	public abstract PluginAnalysis analyzeSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp, Facts facts, FiniteMap cardinality, FiniteMap outliers, TokenStreams tokenStreams, AnalysisConfig analysisConfig);
+	public abstract PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig);
 
 	/**
 	 * Does the set of members enumerated reflect the entire set.  For example any of the ISO sets are reference sets and

@@ -444,9 +444,9 @@ public class TestMerge {
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
-		assertEquals(mergedResult.getLeadingWhiteSpace(), false);
-		assertEquals(mergedResult.getTrailingWhiteSpace(), false);
-		assertEquals(mergedResult.getMultiline(), false);
+		assertFalse(mergedResult.getLeadingWhiteSpace());
+		assertFalse(mergedResult.getTrailingWhiteSpace());
+		assertFalse(mergedResult.getMultiline());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -464,9 +464,9 @@ public class TestMerge {
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
-		assertEquals(mergedResult.getLeadingWhiteSpace(), false);
-		assertEquals(mergedResult.getTrailingWhiteSpace(), true);
-		assertEquals(mergedResult.getMultiline(), false);
+		assertFalse(mergedResult.getLeadingWhiteSpace());
+		assertTrue(mergedResult.getTrailingWhiteSpace());
+		assertFalse(mergedResult.getMultiline());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -484,9 +484,9 @@ public class TestMerge {
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
-		assertEquals(mergedResult.getLeadingWhiteSpace(), true);
-		assertEquals(mergedResult.getTrailingWhiteSpace(), false);
-		assertEquals(mergedResult.getMultiline(), false);
+		assertTrue(mergedResult.getLeadingWhiteSpace());
+		assertFalse(mergedResult.getTrailingWhiteSpace());
+		assertFalse(mergedResult.getMultiline());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -504,9 +504,9 @@ public class TestMerge {
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.STRING);
-		assertEquals(mergedResult.getLeadingWhiteSpace(), false);
-		assertEquals(mergedResult.getTrailingWhiteSpace(), false);
-		assertEquals(mergedResult.getMultiline(), true);
+		assertFalse(mergedResult.getLeadingWhiteSpace());
+		assertFalse(mergedResult.getTrailingWhiteSpace());
+		assertTrue(mergedResult.getMultiline());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })

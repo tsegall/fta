@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,6 +132,20 @@ public class AnalyzerContext {
 	}
 
 	/*
+	 * Check whether any of the supplied Semantic Types is the type of the supplied field Index.
+	 * @param searching The list of Semantic Types to check.
+	 * @return True if the type of the supplied field exists and matches an item from the list.
+	 */
+	public boolean isSemanticType(final int fieldIndex, final String... searching) {
+		for (final String semanticType : searching) {
+			if (semanticType.equals(semanticTypes[fieldIndex]))
+				return true;
+		}
+
+		return false;
+	}
+
+	/*
 	 * Check whether any of the supplied Semantic Types is the type subsequent to this one.
 	 * @param searching The list of Semantic Types to check.
 	 * @return True if the subsequent type exists and matches an item from the list.
@@ -144,12 +158,7 @@ public class AnalyzerContext {
 		if (current == -1 || current == semanticTypes.length - 1)
 			return false;
 
-		for (final String semanticType : searching) {
-			if (semanticType.equals(semanticTypes[current + 1]))
-				return true;
-		}
-
-		return false;
+		return isSemanticType(current + 1, searching);
 	}
 
 	/*
@@ -165,12 +174,7 @@ public class AnalyzerContext {
 		if (current == -1 || current == 0)
 			return false;
 
-		for (final String semanticType : searching) {
-			if (semanticType.equals(semanticTypes[current - 1]))
-				return true;
-		}
-
-		return false;
+		return isSemanticType(current - 1, searching);
 	}
 
 	/*
@@ -194,24 +198,24 @@ public class AnalyzerContext {
 
 	/*
 	 * Find the relative index of the closest Semantic Type from the list.
+	 * @param focus the focus point of the search
 	 * @param searching The Semantic Types to check.
 	 * @return The index of the closest supplied Semantic Type or Null if not found.
 	 */
-	public Integer indexOfSemanticType(final String... searching) {
+	public Integer indexOfSemanticType(final int focus, final String... searching) {
 		if (semanticTypes == null)
 			return null;
 
-		final int current = getStreamIndex();
-		if (current == -1 || current == 0)
+		if (focus == -1 || focus == 0)
 			return null;
 
 		Integer closest = null;
 
 		for (final String semanticType : searching) {
 			for (int i = 0; i < semanticTypes.length; i++) {
-				if (i != current && semanticType.equals(semanticTypes[i]))
-					if (closest == null || Math.abs(closest) > Math.abs(i - current))
-						closest = i - current;
+				if (i != focus && semanticType.equals(semanticTypes[i]))
+					if (closest == null || Math.abs(closest) > Math.abs(i - focus))
+						closest = i - focus;
 			}
 		}
 

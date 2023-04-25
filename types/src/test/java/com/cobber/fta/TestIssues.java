@@ -22,8 +22,8 @@ import com.univocity.parsers.csv.CsvParserSettings;
 
 public class TestIssues {
 
-	private List<String[]> asRecords(String[] fieldValues) {
-		final ArrayList<String[]> ret = new ArrayList<>();
+	private List<String[]> asRecords(final String[] fieldValues) {
+		final List<String[]> ret = new ArrayList<>();
 
 		for (final String fieldValue : fieldValues)
 			ret.add(new String[] { fieldValue });

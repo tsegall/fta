@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -407,7 +407,7 @@ public class TestStrings {
 		final TextAnalyzer analysis = new TextAnalyzer("manyConstantLengthStrings");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final int nullIterations = 50;
-		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;;
+		final int iterations = 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT;
 		final int length = 12;
 		final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		final StringBuilder b = new StringBuilder(length);

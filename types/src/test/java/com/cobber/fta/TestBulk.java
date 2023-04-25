@@ -37,7 +37,7 @@ public class TestBulk {
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.setTrace("enabled=true");
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("Male", 2000000L);
 		basic.put("Female", 1000000L);
 		basic.put("", 1000000L);
@@ -56,8 +56,8 @@ public class TestBulk {
 		assertEquals(result.getMatchCount(), 3000000);
 		assertEquals(result.getConfidence(), 1.0);
 		final Map<String, Long> details = result.getCardinalityDetails();
-		assertEquals(details.get("MALE"), Long.valueOf(2000000));
-		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
+		assertEquals(details.get("MALE"), 2000000L);
+		assertEquals(details.get("FEMALE"), 1000000L);
 
 		assertNull(result.checkCounts());
 	}
@@ -68,7 +68,7 @@ public class TestBulk {
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.setTrace("enabled=true");
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("Male", 200L);
 		basic.put("Female", 100L);
 		basic.put("", 1000000L);
@@ -98,7 +98,7 @@ public class TestBulk {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBulk");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("Male", 200L);
 		basic.put("Female", 100L);
 		basic.put(null, 1000000L);
@@ -129,7 +129,7 @@ public class TestBulk {
 		final TextAnalyzer analysis = new TextAnalyzer("SSN");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("837-22-8866", 1L);
 		basic.put("726-68-8208", 1L);
 		basic.put("341-91-4353", 1L);
@@ -232,8 +232,10 @@ public class TestBulk {
 		basic.put("719-91-3237", 1L);
 		basic.put(null, NULL_COUNT);
 
+		final long start = System.currentTimeMillis();
 		analysis.trainBulk(basic);
 		final TextAnalysisResult result = analysis.getResult();
+		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), NULL_COUNT + 100);
@@ -254,7 +256,7 @@ public class TestBulk {
 		final TextAnalyzer analysis = new TextAnalyzer("SSN");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("837-22-8866", 1L);
 		basic.put("726-68-8208", 1L);
 		basic.put("341-91-4353", 1L);
@@ -380,7 +382,7 @@ public class TestBulk {
 		analysis.setKeyConfidence(1.0);
 		analysis.setTotalCount(4_000_000L);
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("Male", 2_000_000L);
 		basic.put("Female", 1_000_000L);
 		basic.put("", 1_000_000L);
@@ -399,8 +401,8 @@ public class TestBulk {
 		assertEquals(result.getMatchCount(), 3000000);
 		assertEquals(result.getConfidence(), 1.0);
 		final Map<String, Long> details = result.getCardinalityDetails();
-		assertEquals(details.get("MALE"), Long.valueOf(2000000));
-		assertEquals(details.get("FEMALE"), Long.valueOf(1000000));
+		assertEquals(details.get("MALE"), 2000000L);
+		assertEquals(details.get("FEMALE"), 1000000L);
 
 		assertNull(result.checkCounts());
 	}
@@ -453,7 +455,7 @@ public class TestBulk {
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final long ITERATIONS = 10000;
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("Male", 2 *  ITERATIONS);
 		basic.put("Female", ITERATIONS);
 		analysisBulk.trainBulk(basic);
@@ -476,8 +478,8 @@ public class TestBulk {
 		assertEquals(resultBulk.getMatchCount(), 3 * ITERATIONS);
 		assertEquals(resultBulk.getConfidence(), 1.0);
 		final Map<String, Long> details = resultBulk.getCardinalityDetails();
-		assertEquals(details.get("MALE"), Long.valueOf(2 * ITERATIONS));
-		assertEquals(details.get("FEMALE"), Long.valueOf(ITERATIONS));
+		assertEquals(details.get("MALE"), 2 * ITERATIONS);
+		assertEquals(details.get("FEMALE"), ITERATIONS);
 
 		assertEquals(resultBulk.getStructureSignature(), result.getStructureSignature());
 		assertEquals(resultBulk.getDataSignature(), result.getDataSignature());
@@ -490,7 +492,7 @@ public class TestBulk {
 		final TextAnalyzer analysisBulk = new TextAnalyzer("basicDistance");
 		final long SAMPLES = 3622;
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("Disconnect Fractional", 100L);
 		basic.put("Disconnect Other", 137L);
 		basic.put("Disconnect Still Billing", 172L);
@@ -519,7 +521,7 @@ public class TestBulk {
 		final TextAnalyzer analysis = new TextAnalyzer("ModifiedDate", DateResolutionMode.Auto);
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("2002-06-01 00:00:00", 10L);
 		basic.put("2008-03-11 10:17:21", 99L);
 		analysis.trainBulk(basic);
@@ -542,7 +544,7 @@ public class TestBulk {
 	public void justBlanks() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("justBlanks");
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("", 1000000L);
 		analysis.trainBulk(basic);
 
@@ -568,7 +570,7 @@ public class TestBulk {
 		final TextAnalyzer analysis = new TextAnalyzer("dateBug");
 		final int SAMPLES = 26;
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("2016-10-10 17:12:06.263", 1L);
 		basic.put("2016-11-18 12:42:45.98", 2L);
 		basic.put("2016-10-10 17:12:06.267", 3L);
@@ -604,7 +606,7 @@ public class TestBulk {
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int SAMPLES = 40;
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("1970-01-01 10:22:45.000000", 10L);
 		basic.put("1970-01-01 04:10:32.000000", 10L);
 		basic.put("1970-01-01 05:28:44.000000", 10L);
@@ -635,7 +637,7 @@ public class TestBulk {
 		analysis.setTrace("enabled=true");
 		final int SAMPLES = 50;
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("2021-03-16 00:00:00.0000000", 10L);
 		basic.put("2021-07-26 00:00:00.0000000", 10L);
 		basic.put("2020-05-10 00:00:00.0000000", 10L);
@@ -668,7 +670,7 @@ public class TestBulk {
 		analysis.setDebug(2);
 		final int SAMPLES = 355;
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("General Business", 200L);
 		basic.put(null, 68L);
 		basic.put("Financial Services & Insurance", 40L);
@@ -703,7 +705,7 @@ public class TestBulk {
 		final int GOOD_SAMPLES = 400;
 		final int BAD_SAMPLES = 6;
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("AMERICAN SAMOA", 20L);
 		basic.put("BRITISH VIRGIN ISLANDS", 20L);
 		basic.put("FALKLAND ISLANDS", 20L);
@@ -754,7 +756,7 @@ public class TestBulk {
 		final int GOOD_SAMPLES = 400;
 		final int BAD_SAMPLES = 120;
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("AMERICAN SAMOA", 20L);
 		basic.put("BRITISH VIRGIN ISLANDS", 20L);
 		basic.put("FALKLAND ISLANDS", 20L);

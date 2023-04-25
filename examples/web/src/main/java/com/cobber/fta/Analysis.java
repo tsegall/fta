@@ -19,14 +19,14 @@ import com.univocity.parsers.csv.CsvParserSettings;
 public class Analysis {
 
 	public class FTAInfo {
-		private String fieldName;
-		private boolean isSemanticType;
-		private String type;
-		private String typeModifier;
-		private String semanticType;
-		private String maxValue;
-		private String minValue;
-		private String json;
+		private final String fieldName;
+		private final boolean isSemanticType;
+		private final String type;
+		private final String typeModifier;
+		private final String semanticType;
+		private final String maxValue;
+		private final String minValue;
+		private final String json;
 
 		FTAInfo(final TextAnalysisResult result) {
 			this.fieldName = result.getName();
@@ -86,8 +86,8 @@ public class Analysis {
 	private MultipartFile file;
 	private String locale;
 	private int recordCount = 100;
-	private List<FTAInfo> analysisResult = new ArrayList<>();
-	private List<SemanticType> allTypes = null;
+	private final List<FTAInfo> analysisResult = new ArrayList<>();
+	private final List<SemanticType> allTypes;
 
 	public String getFile() {
 		if (file == null)

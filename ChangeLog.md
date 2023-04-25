@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 13.4.1
+ - ENH: Bump logback-classic
+ - ENH: Bulk mode should prioritize 'interesting' values in preference to null or blanks (#33)
+ - ENH: Bump jackson
+ - INT: Update copyright
+ - INT: Some code cleanups
+
 ### 13.4.0
  - ENH: I18N - Add new Semantic Type - IDENTITY.NI_UK (National Insurance Number (UK))
  - ENH: I18N - Add new Semantic Type - IDENTITY.PERSONNUMMER_SE (Personal identity number (Sweden))

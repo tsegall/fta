@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,7 +142,6 @@ public class TestPlugins {
 	public void basicGenderThreeValues() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
-		final int UNKNOWNS = 3;
 		final String pipedInput = "F|M|M|F|F|M|F|F|M|U|" +
 				"M|F|M|M|M|F|F|M|M|M|U|" +
 				"M|F|M|F|F|M|F|M|U|" +
@@ -2185,7 +2184,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
 		final Map<String, Long> invalids = result.getInvalidDetails();
-		assertEquals(invalids.get("UK"), Long.valueOf(1));
+		assertEquals(invalids.get("UK"), 1L);
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 
 		assertNull(result.checkCounts());
@@ -2219,7 +2218,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2}");
 		final Map<String, Long> invalids = result.getInvalidDetails();
-		assertEquals(invalids.get("SA"), Long.valueOf(1));
+		assertEquals(invalids.get("SA"), 1L);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 
 		assertNull(result.checkCounts());
@@ -2259,7 +2258,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3}");
 		final Map<String, Long> invalids = result.getInvalidDetails();
-		assertEquals(invalids.get("UK"), Long.valueOf(1));
+		assertEquals(invalids.get("UK"), 1L);
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 
 		assertNull(result.checkCounts());
@@ -2291,7 +2290,7 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic} ]+");
 		final Map<String, Long> invalids = result.getInvalidDetails();
-		assertEquals(invalids.get("UK"), Long.valueOf(1));
+		assertEquals(invalids.get("UK"), 1L);
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
 
 		assertNull(result.checkCounts());
@@ -2949,7 +2948,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 1);
-		assertEquals(invalids.get("UNKN"), Long.valueOf(4));
+		assertEquals(invalids.get("UNKN"), 4L);
 		assertEquals(result.getMatchCount(), iterations * actualMonths);
 		assertEquals(result.getNullCount(), 0);
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -3054,7 +3053,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 1);
-		assertEquals(invalids.get("UNK"), Long.valueOf(4));
+		assertEquals(invalids.get("UNK"), 4L);
 		assertEquals(result.getMatchCount(), inputs.length - badCount);
 		assertEquals(result.getNullCount(), 0);
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -3111,7 +3110,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 1);
-		assertEquals(invalids.get("UNK"), Long.valueOf(4));
+		assertEquals(invalids.get("UNK"), 4L);
 		assertEquals(result.getMatchCount(), inputs.length - badCount);
 		assertEquals(result.getNullCount(), 0);
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -3149,7 +3148,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 1);
-		assertEquals(invalids.get("UNK"), Long.valueOf(4));
+		assertEquals(invalids.get("UNK"), 4L);
 		assertEquals(result.getMatchCount(), inputs.length - badCount);
 		assertEquals(result.getNullCount(), 0);
 		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
@@ -3178,7 +3177,7 @@ public class TestPlugins {
 					locked = i;
 			}
 		}
-		final int UNKNOWN = 4;
+		final long UNKNOWN = 4;
 		for (int k = 0; k < UNKNOWN; k++)
 			analysis.train("NA");
 
@@ -3192,7 +3191,7 @@ public class TestPlugins {
 		assertEquals(result.getOutlierCount(), 0);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 1);
-		assertEquals(invalids.get("NA"), Long.valueOf(UNKNOWN));
+		assertEquals(invalids.get("NA"), UNKNOWN);
 		assertEquals(result.getMatchCount(), inputs.length * iters);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getConfidence(), 1 - (double)UNKNOWN/result.getSampleCount());
@@ -3354,7 +3353,7 @@ public class TestPlugins {
 		assertEquals(result.getSampleCount(), SAMPLES + 1);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 1);
-		assertEquals(invalids.get("032--45-0981"), Long.valueOf(1));
+		assertEquals(invalids.get("032--45-0981"), 1L);
 
 		assertNull(result.checkCounts());
 	}
@@ -3749,13 +3748,13 @@ public class TestPlugins {
 
 		final Map.Entry<String, Long> first = shapes.next();
 		assertEquals(first.getKey(), "X99999999");
-		assertEquals(first.getValue().longValue(), 12);
+		assertEquals(first.getValue(), 12L);
 		final Map.Entry<String, Long> second = shapes.next();
 		assertEquals(second.getKey(), "X99999XX9");
-		assertEquals(second.getValue().longValue(), 2);
+		assertEquals(second.getValue(), 2L);
 		final Map.Entry<String, Long> third = shapes.next();
 		assertEquals(third.getKey(), "X9999X999");
-		assertEquals(third.getValue().longValue(), 16);
+		assertEquals(third.getValue(), 16L);
 
 		for (final String sample : samples) {
 			assertTrue(sample.matches(preResult.getRegExp()));

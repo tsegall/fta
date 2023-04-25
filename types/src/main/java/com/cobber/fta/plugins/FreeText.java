@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,11 +47,11 @@ public class FreeText extends LogicalTypeInfinite {
 
 	private String regExp = REGEXP;
 
-	private int SAMPLE_COUNT = 100;
+	private final int SAMPLE_COUNT = 100;
 	private LogicalTypeCode logicalFirst;
 	private String[] samples;
 	private TextProcessor processor;
-	private Map<String, SimpleSamples> simpleSamples = new HashMap<>();
+	private final Map<String, SimpleSamples> simpleSamples = new HashMap<>();
 
 	private static String[] de_verbs = { "betrachtet", "gemalt", "sah", "beobachtet", "studiert" };
 	private static String[] de_base_pronouns = { "sie", "er" };
@@ -144,7 +144,7 @@ public class FreeText extends LogicalTypeInfinite {
 		if (samples == null)
 			constructSamples();
 
-		StringBuilder result = new StringBuilder(samples[random.nextInt(samples.length)]);
+		final StringBuilder result = new StringBuilder(samples[random.nextInt(samples.length)]);
 		for (int i = 0; i < random.nextInt(4); i++)
 			result.append("  ").append(samples[random.nextInt(samples.length)]);
 

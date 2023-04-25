@@ -97,7 +97,7 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 			return confidence;
 
 		// A close field must have a Semantic Type that indicates it is a Street name (with or without the marker)
-		final Integer closest = context.indexOfSemanticType(analysisConfig.bindSemanticType("STREET_NAME_<LANGUAGE>"), analysisConfig.bindSemanticType("STREET_NAME_BARE_<LANGUAGE>"));
+		final Integer closest = context.indexOfSemanticType(context.getStreamIndex(), analysisConfig.bindSemanticType("STREET_NAME_<LANGUAGE>"), analysisConfig.bindSemanticType("STREET_NAME_BARE_<LANGUAGE>"));
 		if (closest == null || Math.abs(closest) > 2)
 			return 0.0;
 

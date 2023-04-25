@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,9 +90,9 @@ public class TestDistributions {
 		final String q0_5 = result.getValueAtQuantile(.5);
 		final String q1_0 = result.getValueAtQuantile(1.0);
 
-		final long actual_0_0 = Long.valueOf(q0_0);
-		final long actual_0_5 = Long.valueOf(q0_5);
-		final long actual_1_0 = Long.valueOf(q1_0);
+		final long actual_0_0 = Long.parseLong(q0_0);
+		final long actual_0_5 = Long.parseLong(q0_5);
+		final long actual_1_0 = Long.parseLong(q1_0);
 
 		final long expected_0_0 = 0;
 		final long expected_0_5 = (size - 1) / 2;
@@ -168,9 +168,9 @@ public class TestDistributions {
 		final String q0_5 = result.getValueAtQuantile(.5);
 		final String q1_0 = result.getValueAtQuantile(1.0);
 
-		final long actual_0_0 = Long.valueOf(q0_0);
-		final long actual_0_5 = Long.valueOf(q0_5);
-		final long actual_1_0 = Long.valueOf(q1_0);
+		final long actual_0_0 = Long.parseLong(q0_0);
+		final long actual_0_5 = Long.parseLong(q0_5);
+		final long actual_1_0 = Long.parseLong(q1_0);
 
 		final long expected_0_0 = -size + 1;
 		final long expected_0_5 = 0;
@@ -225,9 +225,9 @@ public class TestDistributions {
 		final String q0_5 = quantiles[1];
 		final String q1_0 = quantiles[2];
 
-		final double actual_0_0 = Double.valueOf(q0_0);
-		final double actual_0_5 = Double.valueOf(q0_5);
-		final double actual_1_0 = Double.valueOf(q1_0);
+		final double actual_0_0 = Double.parseDouble(q0_0);
+		final double actual_0_5 = Double.parseDouble(q0_5);
+		final double actual_1_0 = Double.parseDouble(q1_0);
 
 		final double expected_0_0 = 0.0;
 		final double expected_0_5 = Math.floor(1.0 * (size - 1) / 2);
@@ -313,9 +313,9 @@ public class TestDistributions {
 		final String q0_5 = result.getValueAtQuantile(.5);
 		final String q1_0 = result.getValueAtQuantile(1.0);
 
-		final long actual_0_0 = Long.valueOf(q0_0);
-		final long actual_0_5 = Long.valueOf(q0_5);
-		final long actual_1_0 = Long.valueOf(q1_0);
+		final long actual_0_0 = Long.parseLong(q0_0);
+		final long actual_0_5 = Long.parseLong(q0_5);
+		final long actual_1_0 = Long.parseLong(q1_0);
 
 		final long expected_0_0 = 1900;
 		final long expected_0_5 = 1900 + (size - 1) / 2;
@@ -805,11 +805,11 @@ public class TestDistributions {
 		final String q1_0 = result.getValueAtQuantile(1.0);
 
 		// Median should be seriously close to 0
-		assertEquals(Double.valueOf(q0_5), 0.0, 1);
+		assertEquals(Double.parseDouble(q0_5), 0.0, 1);
 
 		// 3.5 Standard Deviations should cover low and high points
-		assertTrue(Double.valueOf(q0_0) < -350);
-		assertTrue(Double.valueOf(q1_0) > 350);
+		assertTrue(Double.parseDouble(q0_0) < -350);
+		assertTrue(Double.parseDouble(q1_0) > 350);
 
 		// 101 because we want 0.0 and 1.0 plus everything in between
 		final double[] percentiles = new double[101];
@@ -921,7 +921,7 @@ public class TestDistributions {
 			result.getHistogram(10);
 			fail("Should have thrown an exception!");
 		}
-		catch (java.lang.IllegalArgumentException e) {
+		catch (IllegalArgumentException e) {
 			assertEquals(e.getMessage(), "No Histogram support for either STRING or BOOLEAN types.");
 		}
 	}

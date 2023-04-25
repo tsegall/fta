@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,14 +111,12 @@ public class MiddleName extends FirstName {
 		// Find the index of the First & Last Name fields and of the current field
 		int first = -1;
 		int last = -1;
-		int current = -1;
+		int current = context.getStreamIndex();
 		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
 			if (first == -1 && logicalFirst.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90)
 				first = i;
 			if (last == -1 && logicalLast.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90)
 				last = i;
-			if (context.getStreamName().equals(context.getCompositeStreamNames()[i]))
-				current = i;
 		}
 
 		// We want to see fields we recognize as first and last names and a header that looks reasonable and a set of names that look good

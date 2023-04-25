@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -2995,7 +2995,7 @@ public class TestDates {
 				"00/00/0000", "00/00/0000", "00/00/0000", "09/01/2018", "06/01/2018", "00/00/0000", "00/00/0000", "09/01/2018", "09/01/2018"
 		};
 		int locked = -1;
-		final int zeroes = 50;
+		final long zeroes = 50;
 
 		for (int i = 0; i < inputs.length; i++) {
 			if (analysis.train(inputs[i]) && locked == -1)
@@ -3012,7 +3012,7 @@ public class TestDates {
 		assertEquals(result.getOutlierCount(), 1);
 		final Map<String, Long> outliers = result.getOutlierDetails();
 		assertEquals(outliers.size(), 1);
-		assertEquals(outliers.get("00/00/0000"), Long.valueOf(zeroes));
+		assertEquals(outliers.get("00/00/0000"), zeroes);
 		assertEquals(result.getMatchCount(), inputs.length - zeroes);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{4}");
@@ -4180,7 +4180,7 @@ public class TestDates {
 		SimpleResult(final String regExp, final String typeModifier, final String typeString) {
 			this.regExp = regExp;
 			this.typeModifier = typeModifier;
-			this.type = FTAType.valueOf(typeString.toUpperCase());
+			this.type = FTAType.valueOf(typeString.toUpperCase(Locale.ROOT));
 		}
 	}
 
@@ -4233,9 +4233,10 @@ public class TestDates {
 
 		for (final String test : tests) {
 			final TextAnalyzer analysis = new TextAnalyzer("dqplus" + test);
-			analysis.setLocale(Locale.forLanguageTag("en-US"));
+			final Locale locale = Locale.forLanguageTag("en-US");
+			analysis.setLocale(locale);
 			final String dateTimeFormat = test;
-			final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat);
+			final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat, locale);
 			final int sampleCount = 1000;
 			final String[] samples = new String[sampleCount];
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ public class TestInvalidSupport {
 		final int GOOD_SAMPLES = 400;
 		final int BAD_SAMPLES = 6;
 
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 		basic.put("AMERICAN SAMOA", 20L);
 		basic.put("BRITISH VIRGIN ISLANDS", 20L);
 		basic.put("FALKLAND ISLANDS", 20L);

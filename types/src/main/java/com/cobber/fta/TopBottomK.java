@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import java.util.Iterator;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -29,9 +30,9 @@ import java.util.TreeSet;
 public class TopBottomK<T extends Comparable<C>, C> {
 	private static final int DEFAULT_SIZE = 10;
 	private int size;
-	private TreeSet<T> starter;
-	private TreeSet<T> top;
-	private TreeSet<T> bottom;
+	private NavigableSet<T> starter;
+	private NavigableSet<T> top;
+	private NavigableSet<T> bottom;
 	private boolean split;
 
 	TopBottomK() {

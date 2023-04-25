@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 		Unknown("Unknown");
 
 		/** The RegExp that represents this token. */
-		private String regExp;
+		private final String regExp;
 		/** The RegExp that represents this token. */
 		private String regExpWithSpace;
 

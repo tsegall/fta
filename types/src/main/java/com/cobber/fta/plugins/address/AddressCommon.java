@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.cobber.fta.plugins.address;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import com.cobber.fta.core.Utils;
 
@@ -31,13 +32,13 @@ public class AddressCommon {
 			"Winifred", "Pratt", "Hillview", "Rosemont", "Romines Mill", "School House", "Candlelight"
 	};
 
-	private static HashSet<String> directions = new HashSet<>();
-	private static HashSet<String> modifiersWithArgument = new HashSet<>();
-	private static HashSet<String> modifiersAny = new HashSet<>();
-	private static HashSet<String> textDigit = new HashSet<>();
-	private static HashSet<String> ordinal = new HashSet<>();
-	private static HashSet<String> ordinalIndicator = new HashSet<>();
-	private static HashSet<String> initialMarker = new HashSet<>();
+	private static final Set<String> directions = new HashSet<>();
+	private static final Set<String> modifiersWithArgument = new HashSet<>();
+	private static final Set<String> modifiersAny = new HashSet<>();
+	private static final Set<String> textDigit = new HashSet<>();
+	private static final Set<String> ordinal = new HashSet<>();
+	private static final Set<String> ordinalIndicator = new HashSet<>();
+	private static final Set<String> initialMarker = new HashSet<>();
 
 	static {
 		directions.add("N");

@@ -486,7 +486,7 @@
 		"signature": "JFmqXYZjmq/aTw/EALlxloQ/tgQ=",
 		"clazz": "com.cobber.fta.plugins.address.AddressStreetNumber",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street|house).?number", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(number|no|num)", "confidence": 90, "mandatory": true } ] },
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street|house|address).?(number|num|no)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(number|no|num)", "confidence": 80, "mandatory": true } ] },
 			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)(huisnummer|huisnr.*)", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 95,
@@ -2776,7 +2776,7 @@
 		"signature": "eQbFEkaZaWJM4Quexoibt1QJsnw=",
 		"clazz": "com.cobber.fta.plugins.Direction",
 		"validLocales": [
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(directions).*", "confidence": 99 },
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(direction).*", "confidence": 99 },
 			 { "regExp": ".*(?i)(dir|suffix|prefix).*", "confidence": 90 } ] }
 		],
 		"baseType": "STRING",

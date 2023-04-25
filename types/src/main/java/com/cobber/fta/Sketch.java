@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import com.datadoghq.sketch.ddsketch.DDSketches;
  * data is tracked via DDSketch which provides for a specifiable relative-accuracy quantile sketch algorithms.
  */
 public class Sketch {
-	private NavigableMap<String, Long> typedMap;
+	private final NavigableMap<String, Long> typedMap;
 	protected long totalMapEntries;
 	protected long totalSketchEntries;
 	private DDSketch ddSketch;
@@ -37,7 +37,7 @@ public class Sketch {
 	protected StringConverter stringConverter;
 	protected double relativeAccuracy;
 	private boolean isComplete = false;
-	private int debug;
+	private final int debug;
 
 	Sketch(final FTAType type, final NavigableMap<String, Long> typedMap, final StringConverter stringConverter, final double relativeAccuracy, final int debug) {
 		this.type = type;

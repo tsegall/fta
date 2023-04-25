@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Tim Segall
+ * Copyright 2017-2023 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -266,7 +266,7 @@ public class TestBooleans {
 	@Test(groups = { TestGroups.ALL, TestGroups.BOOLEANS })
 	public void basicBooleanYN() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicBooleanYN");
-		final String[] inputs = new String[] {
+		final String[] inputs = {
 				"Y", "Y", "Y", "Y", "Y", "", "Y", "", "", "Y",
 				"N", "Y", "Y", "Y", "Y", "", "", "", "Y", "",
 				"Y", "N", "N", "N", "", "Y", "Y", "Y", "Y", "N",
@@ -465,8 +465,8 @@ public class TestBooleans {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getCardinality(), 2);
 		final Map<String, Long> details = result.getCardinalityDetails();
-		assertEquals(details.get("0"), Long.valueOf(13));
-		assertEquals(details.get("5"), Long.valueOf(14));
+		assertEquals(details.get("0"), 13L);
+		assertEquals(details.get("5"), 14L);
 		assertTrue(inputs[0].matches(result.getRegExp()));
 
 		int matches = 0;
