@@ -24,6 +24,7 @@ import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
+import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParserConfig;
 import com.cobber.fta.dates.DateTimeParserResult;
 import com.cobber.fta.token.TokenStreams;
@@ -36,6 +37,7 @@ public class DOB extends LogicalTypeInfinite {
 	private final String REGEXP_DEFAULT = "\\d{4}/\\d{1,2}/\\d{1,2}";
 
 	private String regExp;
+	private DateTimeParserResult dtpResult;
 
 	/**
 	 * Construct a plugin based on the Plugin Definition.
@@ -78,6 +80,17 @@ public class DOB extends LogicalTypeInfinite {
 	}
 
 	@Override
+	public FTAType getBaseType() {
+		// If dtpResult is null then analyzeSet has never been called - so we must be generating samples
+		return dtpResult == null ? FTAType.LOCALDATE : dtpResult.getType();
+	}
+
+	@Override
+	public boolean acceptsBaseType(final FTAType type) {
+		return type == FTAType.LOCALDATE || type == FTAType.LOCALDATETIME;
+	}
+
+	@Override
 	public String getRegExp() {
 		// If regExp is null then analyzeSet has never been called - so we must be generating samples
 		return regExp == null ? REGEXP_DEFAULT : regExp;
@@ -90,8 +103,8 @@ public class DOB extends LogicalTypeInfinite {
 		// Set the regExp based on the Date Format we detected
 		regExp = facts.getMatchTypeInfo().regexp;
 
-		// Need to check that the Date Format we detected has at least Year, Month and Day fields
-		final DateTimeParserResult result = DateTimeParserResult.asResult(facts.getMatchTypeInfo().format, context.getDateResolutionMode(), new DateTimeParserConfig());
-		return result.isDateBound() && getConfidence(matchCount, realSamples, context) >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
+		dtpResult = DateTimeParserResult.asResult(facts.getMatchTypeInfo().format, context.getDateResolutionMode(), new DateTimeParserConfig());
+
+		return getConfidence(matchCount, realSamples, context) >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 }

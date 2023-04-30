@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 13.5.1
+ - ENH: Improve PERSON.DATE_OF_BIRTH detection allow LocalDateTime (also es,nl support)
+ - INT: Bump gradle to 8.1.1
+
 ### 13.5.0
  - ENH: Add general support for Semantic Types with Date/DateTime types
  - ENH: Add new Semantic Types - PERSON.YEAR_OF_BIRTH and PERSON.DATE_OF_BIRTH

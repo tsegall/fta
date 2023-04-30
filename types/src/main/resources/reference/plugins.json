@@ -1888,9 +1888,17 @@
 		"semanticType": "PERSON.DATE_OF_BIRTH",
 		"description": "Person - Date of Birth",
 		"pluginType": "java",
-		"signature": "Ab7pK1UhBPb+X7OovQAVNYTgLJE=",
+		"signature": "Z7j4EoOy8qSVaYqEGBrpSkqpwRo=",
 		"clazz": "com.cobber.fta.plugins.person.DOB",
 		"validLocales": [
+			{
+				"localeTag": "es",
+				"headerRegExps": [ { "regExp": ".*(?i)(fecha.*nacimiento|date.*birth|birth.*date).*", "confidence": 99, "mandatory": true } ]
+			},
+			{
+				"localeTag": "nl",
+				"headerRegExps": [ { "regExp": ".*(?i)(geboortedatum|date.*birth|birth.*date).*", "confidence": 99, "mandatory": true } ]
+			},
 			{
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(date.*birth|birth.*date).*|DOB", "confidence": 99, "mandatory": true } ]
@@ -1899,7 +1907,6 @@
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://www.wikidata.org/wiki/Property:P569" }
 		],
-		"baseType": "LOCALDATE",
 		"priority": 181
 	},
 	{

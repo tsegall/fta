@@ -836,8 +836,8 @@ public class DateTimeParserResult {
 
 	/**
 	 * Return the detected type of this input.
-	 * @return The detected type of this input, will be either "Date", "Time",
-	 *  "DateTime", "ZonedDateTime" or "OffsetDateTime".
+	 * @return The detected type of this input, will be either "LocalDate", "LocalTime",
+	 *  "LocalDateTime", "ZonedDateTime" or "OffsetDateTime".
 	 */
 	public FTAType getType() {
 		if (tokenized == null)

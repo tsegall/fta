@@ -2844,18 +2844,20 @@ public class TextAnalyzer {
 		}
 
 		final FiniteMap cardinalityUpper = new FiniteMap(facts.cardinality.getMaxCapacity());
+		final FTAType currentType = facts.getMatchTypeInfo().getBaseType();
 
-		if (FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType()))
+		if (FTAType.LONG.equals(currentType))
 			finalizeLong(realSamples);
-		else if (FTAType.BOOLEAN.equals(facts.getMatchTypeInfo().getBaseType()) && facts.getMatchTypeInfo().id == KnownTypes.ID.ID_BOOLEAN_Y_N && facts.cardinality.size() == 1)
+		else if (FTAType.BOOLEAN.equals(currentType) && facts.getMatchTypeInfo().id == KnownTypes.ID.ID_BOOLEAN_Y_N && facts.cardinality.size() == 1)
 			finalizeBoolean(realSamples);
-		else if (FTAType.DOUBLE.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType())
+		else if (FTAType.DOUBLE.equals(currentType) && !facts.getMatchTypeInfo().isSemanticType())
 			finalizeDouble(realSamples);
-		else if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()))
+		else if (FTAType.STRING.equals(currentType))
 			finalizeString(realSamples, cardinalityUpper);
 
-		// finalizeLong() above may have switched a long to a date - hence this is not an else!
-		if (FTAType.LOCALDATE.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType()) {
+		// Check Date/Time types for a Semantic Type
+		// NOTE: finalizeLong() above may have switched a long to a date - hence this is not an else!
+		if (facts.getMatchTypeInfo().getBaseType().isDateOrTimeType() && !facts.getMatchTypeInfo().isSemanticType()) {
 			for (final LogicalTypeInfinite logical : infiniteTypes) {
 				if (logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType()) && logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
 					facts.getMatchTypeInfo().setSemanticType(logical.getSemanticType());

@@ -343,7 +343,7 @@ PERIOD.QUARTER|Quarter (Year)|*
 PERIOD.YEAR_RANGE|Year Range|*
 PERSON.AGE|Age (Person)|en, es, fr, it, nl, pt
 PERSON.AGE_RANGE|Age range (Person)|en, es, fr, it, nl, pt
-PERSON.DATE_OF_BIRTH|Date of Birth|en
+PERSON.DATE_OF_BIRTH|Date of Birth|en,es,nl
 PERSON.MARITAL_STATUS_&lt;Language&gt;|Marital Status|en
 PERSON.RACE_ABBR_EN|Race/Ethinicity abbreviation (person)|*
 PERSON.RACE_EN|Race/Ethinicity (person)|*
