@@ -111,7 +111,7 @@ public class MiddleName extends FirstName {
 		// Find the index of the First & Last Name fields and of the current field
 		int first = -1;
 		int last = -1;
-		int current = context.getStreamIndex();
+		final int current = context.getStreamIndex();
 		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
 			if (first == -1 && logicalFirst.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90)
 				first = i;

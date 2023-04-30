@@ -36,7 +36,7 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 		super(plugin);
 	}
 
-	private WordProcessor wordProcessor = new WordProcessor();
+	private final WordProcessor wordProcessor = new WordProcessor();
 
 	/*
 	 * Note: The input String will be both trimmed and converted to upper Case

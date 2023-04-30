@@ -60,7 +60,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 
 	private Form form = Form.Unknown;
 
-	private boolean spaceSeen = false;
+	private boolean spaceSeen;
 
 	/**
 	 * Construct a plugin based on the Plugin Definition.

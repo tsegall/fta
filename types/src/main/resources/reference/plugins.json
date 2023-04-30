@@ -1533,7 +1533,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Regions_of_Italy" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 14
+		"priority": 141
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COMMUNE_IT",
@@ -1865,6 +1865,42 @@
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"threshold": 85,
 		"priority": 169
+	},
+	{
+		"semanticType": "PERSON.YEAR_OF_BIRTH",
+		"description": "Person - Year of Birth",
+		"pluginType": "java",
+		"signature": "MwDOGFRD1CFBe0yMNQwdyIN+QQg=",
+		"clazz": "com.cobber.fta.plugins.person.BirthYear",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(year.*birth|birth.*year).*", "confidence": 99, "mandatory": true } ]
+			}
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://www.wikidata.org/wiki/Property:P569" }
+		],
+		"baseType": "LOCALDATE",
+		"priority": 180
+	},
+	{
+		"semanticType": "PERSON.DATE_OF_BIRTH",
+		"description": "Person - Date of Birth",
+		"pluginType": "java",
+		"signature": "Ab7pK1UhBPb+X7OovQAVNYTgLJE=",
+		"clazz": "com.cobber.fta.plugins.person.DOB",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(date.*birth|birth.*date).*|DOB", "confidence": 99, "mandatory": true } ]
+			}
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://www.wikidata.org/wiki/Property:P569" }
+		],
+		"baseType": "LOCALDATE",
+		"priority": 181
 	},
 	{
 		"semanticType": "COORDINATE.LATITUDE_DECIMAL",

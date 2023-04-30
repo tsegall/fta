@@ -29,10 +29,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Correlation {
-	private Locale locale;
-	private String tag;
+	private final Locale locale;
+	private final String tag;
 	private List<SemanticTypeInfo> semanticTypesList;
-	private Map<String, SemanticTypeInfo>  semanticTypes;
+	private Map<String, SemanticTypeInfo> semanticTypes;
 
 	Correlation(final Locale locale) {
 		this.locale = locale;

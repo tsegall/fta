@@ -38,11 +38,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class Trace {
 	private Writer traceWriter;
+	private File traceFile;
 	private long traceSampleCount = 1000;
 	private long batchCount;
 	private boolean enabled = true;
 	private	final JsonStringEncoder jsonStringEncoder = JsonStringEncoder.getInstance();
-	private File traceFile;
 
 	public Trace(final String trace, final AnalyzerContext context, final AnalysisConfig analysisConfig) {
 		final String[] traceSettings = trace.split(",");

@@ -343,9 +343,11 @@ PERIOD.QUARTER|Quarter (Year)|*
 PERIOD.YEAR_RANGE|Year Range|*
 PERSON.AGE|Age (Person)|en, es, fr, it, nl, pt
 PERSON.AGE_RANGE|Age range (Person)|en, es, fr, it, nl, pt
+PERSON.DATE_OF_BIRTH|Date of Birth|en
 PERSON.MARITAL_STATUS_&lt;Language&gt;|Marital Status|en
 PERSON.RACE_ABBR_EN|Race/Ethinicity abbreviation (person)|*
 PERSON.RACE_EN|Race/Ethinicity (person)|*
+PERSON.YEAR_OF_BIRTH|Year of Birth|en
 POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, CO, FR, JA, NL, UK, ES, MX, PT, SE, UY
 POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
 POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
@@ -607,6 +609,17 @@ If either shard has a cardinality greater than the maximum cardinality then cert
 If the sum of the cardinality is greater than the maximum cardinality but neither individual shard has a cardinality greater than the maximum cardinality then the only attribute that will be indeterminate is the uniqueness of the merged set and clearly the cardinality of the resulting Analysis will be limited to the maximum cardinality.
 
 Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard. 
+
+## Frequently Asked Questions ##
+
+### Why is FTA not detecting the Semantic Type XXX? #
+Beware of synthetic data.  FTA assumes and is tuned to expect real world data.  For example, the 'Phone Numbers' 617.193.9182 and 781.192.1295 look real but have an invalid area code, exchange pair and hence cannot be Phone Numbers.
+
+### Why is FTA not detecting the Semantic Type CITY? #
+
+CITY is relatively unusual in that it is based  primarily on the header and not on the data. As per the discussion above there are fundamentally three types of plugins (regexp, list-backed, and Java). CITY is a regexp plugin where the Regular Expression is relatively forgiving.
+
+For real word data (see for example https://github.com/tsegall/semantic-types) the detection performance for CITY is ~99.5%.
 
 ## Getting Starting ##
 

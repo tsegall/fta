@@ -105,7 +105,7 @@ public class NameFull extends LogicalTypeInfinite {
 		final List<String> words = wordProcessor.asWords(trimmedUpper);
 		final int wordCount = words.size();
 
-		if (words.size() < 2)
+		if (wordCount < 2)
 			return false;
 
 		boolean initialSeen = false;

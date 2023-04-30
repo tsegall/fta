@@ -47,7 +47,7 @@ import com.cobber.fta.plugins.USZipPlus4;
 
 public class RandomTests {
 	private static final SecureRandom random = new SecureRandom();
-	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
+	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void getReflectionSampleSize() throws IOException, FTAException {
@@ -344,7 +344,7 @@ public class RandomTests {
 		assertEquals(result.getMaxValue(), "99");
 		assertNull(result.getTypeModifier());
 		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMean(), Double.valueOf((double)sum/COUNT));
+		assertEquals(result.getMean(), (double)sum/COUNT);
 		assertEquals(result.getStandardDeviation(), 28.86607004772212);
 	}
 
@@ -632,7 +632,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void change2() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("change2");
-		final String input = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+		final String pipedInput = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
@@ -641,7 +641,7 @@ public class RandomTests {
 				"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 				"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|NA|Sep|Jan|Oct|Oct|Oct|" +
 				"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|";
-		final String inputs[] = input.split("\\|");
+		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -661,8 +661,8 @@ public class RandomTests {
 		assertEquals(result.getRegExp(), "(?i)(AB|APR|AUG|BC|DEC|FEB|JAN|JUL|JUN|MAR|MAY|MB|NA|NB|NL|NOV|NS|NT|NU|OCT|ON|PE|QC|SEP|SK|YT)");
 		assertEquals(result.getConfidence(), 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			assertTrue(inputs[i].matches(result.getRegExp()));
+		for (final String input : inputs) {
+			assertTrue(input.matches(result.getRegExp()));
 		}
 	}
 
@@ -1108,8 +1108,8 @@ public class RandomTests {
 		assertEquals(result.getConfidence(), 1.0);
 
 		int matches = 0;
-		for (int i = 0; i < inputs.length; i++) {
-			if (!inputs[i].trim().isEmpty() && inputs[i].matches(result.getRegExp()))
+		for (final String input : inputs) {
+			if (!input.trim().isEmpty() && input.matches(result.getRegExp()))
 				matches++;
 		}
 		assertEquals(matches, result.getMatchCount());
@@ -1662,12 +1662,12 @@ public class RandomTests {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
-			b.append("+1 ");
-			b.append(String.format("%03d", random.nextInt(1000)));
-			b.append(' ');
-			b.append(String.format("%03d", random.nextInt(1000)));
-			b.append(' ');
-			b.append(String.format("%04d", random.nextInt(10000)));
+			b.append("+1 ")
+				.append(String.format("%03d", random.nextInt(1000)))
+				.append(' ')
+				.append(String.format("%03d", random.nextInt(1000)))
+				.append(' ')
+				.append(String.format("%04d", random.nextInt(10000)));
 			samples[i] = b.toString();
 		}
 
@@ -1699,12 +1699,12 @@ public class RandomTests {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
-			b.append("1.");
-			b.append(String.format("%03d", random.nextInt(1000)));
-			b.append('.');
-			b.append(String.format("%03d", random.nextInt(1000)));
-			b.append('.');
-			b.append(String.format("%04d", random.nextInt(10000)));
+			b.append("1.")
+				.append(String.format("%03d", random.nextInt(1000)))
+				.append('.')
+				.append(String.format("%03d", random.nextInt(1000)))
+				.append('.')
+				.append(String.format("%04d", random.nextInt(10000)));
 			samples[i] = b.toString();
 		}
 
@@ -1735,12 +1735,12 @@ public class RandomTests {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
-			b.append('(');
-			b.append(String.format("%03d", random.nextInt(1000)));
-			b.append(") ");
-			b.append(String.format("%03d", random.nextInt(1000)));
-			b.append(' ');
-			b.append(String.format("%04d", random.nextInt(10000)));
+			b.append('(')
+				.append(String.format("%03d", random.nextInt(1000)))
+				.append(") ")
+				.append(String.format("%03d", random.nextInt(1000)))
+				.append(' ')
+				.append(String.format("%04d", random.nextInt(10000)));
 			samples[i] = b.toString();
 		}
 
@@ -1804,12 +1804,12 @@ public class RandomTests {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
-			b.append('[');
-			b.append(String.format("%03d", random.nextInt(1000)));
-			b.append("){[0-9] ^");
-			b.append(String.format("%03d", random.nextInt(1000)));
-			b.append('$');
-			b.append(String.format("%04d", random.nextInt(10000)));
+			b.append('[')
+				.append(String.format("%03d", random.nextInt(1000)))
+				.append("){[0-9] ^")
+				.append(String.format("%03d", random.nextInt(1000)))
+				.append('$')
+				.append(String.format("%04d", random.nextInt(10000)));
 			samples[i] = b.toString();
 		}
 
@@ -2823,7 +2823,7 @@ public class RandomTests {
 	};
 
 	class LogicalTypeThread implements Runnable {
-		private String id;
+		private final String id;
 
 		LogicalTypeThread(final String id) throws IOException, FTAException {
 			this.id = id;

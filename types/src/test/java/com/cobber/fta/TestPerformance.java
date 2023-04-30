@@ -33,7 +33,7 @@ import com.cobber.fta.core.FTAType;
 /**
  */
 public class TestPerformance {
-	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
+	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PERFORMANCE })
 	public void basePerformanceBulkString() throws IOException, FTAException {

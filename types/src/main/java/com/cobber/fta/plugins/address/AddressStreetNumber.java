@@ -23,17 +23,18 @@ import com.cobber.fta.KnownTypes;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.PluginLocaleEntry;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * Plugin to detect a Street Name (no number!). (English-language only).
- * Note: This will also detect a Street Intersection.
+ * Plugin to detect a Street Number.
  */
 public class AddressStreetNumber extends LogicalTypeInfinite {
 	private boolean onlyNumeric = true;
+	private PluginLocaleEntry directionEntry;
 
 	/**
 	 * Construct a plugin to detect a Street Number based on the Plugin Definition.
@@ -51,6 +52,8 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
+
+		directionEntry = PluginDefinition.findByQualifier("DIRECTION").getLocaleEntry(locale);
 
 		return true;
 	}
@@ -94,14 +97,34 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double confidence = (double)matchCount/realSamples;
 		if (getHeaderConfidence(context.getStreamName()) >= 99)
-			return confidence;
+			return 1.0;
+
+		// If there is already an existing close field identified as the Street Number we are done
+		final Integer existingNumber = context.indexOfSemanticType(context.getStreamIndex(), "STREET_NUMBER");
+		if (existingNumber != null && Math.abs(existingNumber) < 3)
+			return 0.0;
 
 		// A close field must have a Semantic Type that indicates it is a Street name (with or without the marker)
 		final Integer closest = context.indexOfSemanticType(context.getStreamIndex(), analysisConfig.bindSemanticType("STREET_NAME_<LANGUAGE>"), analysisConfig.bindSemanticType("STREET_NAME_BARE_<LANGUAGE>"));
 		if (closest == null || Math.abs(closest) > 2)
 			return 0.0;
 
-		return confidence;
+		// If we are next to the Street Name then call it success
+		if (Math.abs(closest) == 1)
+			return Math.min(confidence, 0.95);
+
+		// If the field between us and the Street Name is not recognized then we are done
+		if (!isDirectionField(context.getStreamIndex() + (closest == 2 ? 1 : -1), context))
+			return 0.0;
+
+		return Math.min(confidence, 0.95);
+	}
+
+	private boolean isDirectionField(final int fieldIndex, final AnalyzerContext context) {
+        final String streamName = context.getCompositeStreamNames()[fieldIndex];
+        if (directionEntry.getHeaderConfidence(streamName) >= 99)
+                return true;
+        return context.isSemanticType(fieldIndex, "DIRECTION");
 	}
 
 	@Override

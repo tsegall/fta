@@ -16,6 +16,7 @@
 package com.cobber.fta.plugins.identity;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
@@ -54,7 +55,7 @@ public class NI_UK extends LogicalTypeInfinite {
 			"YA", "YB", "YE", "YH", "YK", "YL", "YM", "YP", "YR", "YS", "YT", "YW", "YX", "YY", "YZ",
 			"ZA", "ZB", "ZE", "ZH", "ZK", "ZL", "ZM", "ZP", "ZR", "ZS", "ZT", "ZW", "ZX", "ZY"
 		};
-	private static final HashSet<String> validPrefixes = new HashSet<>();
+	private static final Set<String> validPrefixes = new HashSet<>();
 
 	static {
 		for (final String prefix : validPrefixesList)

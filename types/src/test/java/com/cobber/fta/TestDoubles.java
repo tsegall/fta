@@ -47,7 +47,7 @@ import com.cobber.fta.core.RegExpGenerator;
 
 public class TestDoubles {
 	private static final SecureRandom random = new SecureRandom();
-	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
+	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void positiveDouble() throws IOException, FTAException {

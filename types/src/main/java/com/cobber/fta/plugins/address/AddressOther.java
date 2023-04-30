@@ -111,11 +111,12 @@ public class AddressOther extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
-		final double confidence = (double)matchCount/realSamples;
 
 		// We really want to see a great header
 		if (headerConfidence < 99)
 			return 0;
+
+		final double confidence = (double)matchCount/realSamples;
 
 		return	Math.min(confidence + Math.min((1.0 - confidence)/2, 0.30), 1.0);
 	}

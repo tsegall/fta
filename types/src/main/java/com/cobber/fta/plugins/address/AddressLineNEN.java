@@ -175,11 +175,12 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final int confidence = headerConfidence(context);
-		final double matchConfidence = (double)matchCount/realSamples;
 
 		// If we really don't like the header call it a day
 		if (confidence == 0)
 			return 0.0;
+
+		final double matchConfidence = (double)matchCount/realSamples;
 
 		// If we are super confident in the header boost if we like the data
 		if (confidence == 99)

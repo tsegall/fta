@@ -92,10 +92,10 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 		final List<String> words = wordProcessor.asWords(trimmedUpper);
 		final int wordCount = words.size();
 
-		if (words.size() == 0)
+		if (wordCount == 0)
 			return false;
 
-		if (words.size() <= 2 && "BROADWAY".equals(words.get(0)))
+		if (wordCount <= 2 && "BROADWAY".equals(words.get(0)))
 			return true;
 
 		if (wordCount < 2 || trimmedUpper.indexOf(' ') == -1)

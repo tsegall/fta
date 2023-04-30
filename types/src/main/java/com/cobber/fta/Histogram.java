@@ -37,10 +37,10 @@ public class Histogram {
 	 * NOTE: All the buckets except for the last are [low, high) the last bucket is [low,high].
 	 */
 	public class Entry {
-		private String low;
-		private String high;
-		private double lowCut;
-		private double highCut;
+		private final String low;
+		private final String high;
+		private final double lowCut;
+		private final double highCut;
 		private long count;
 		private long clusterCount;
 		private double clusterPercent;
@@ -219,7 +219,7 @@ public class Histogram {
 	 */
 	public static void tagClusters(final Histogram.Entry[] buckets) {
 		long total = 0;
-		for (Entry bucket : buckets)
+		for (final Entry bucket : buckets)
 			total += bucket.count;
 
 		int clusterStart = -1;

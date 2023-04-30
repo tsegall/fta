@@ -16,7 +16,7 @@
 package com.cobber.fta;
 
 public class RecordAnalysisResult {
-	private TextAnalysisResult[] streamResults;
+	private final TextAnalysisResult[] streamResults;
 
 	RecordAnalysisResult(final TextAnalysisResult[] streamResults) {
 		this.streamResults = streamResults;

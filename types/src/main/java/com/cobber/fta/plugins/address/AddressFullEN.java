@@ -187,7 +187,6 @@ public class AddressFullEN extends LogicalTypeInfinite {
 			return false;
 
 		int score = 1;
-		int postCodeIndex = -1;
 		int stateIndex = -1;
 		int countryIndex = -1;
 		int addressMarkerIndex = -1;
@@ -195,7 +194,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 		int directionIndex = -1;
 		boolean poBoxFound = false;
 
-		postCodeIndex = getPostCodeIndex(words);
+		int postCodeIndex = getPostCodeIndex(words);
 
 		if (poBox.matcher(upper).find())
 			poBoxFound = true;

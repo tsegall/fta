@@ -37,9 +37,9 @@ public class GUID extends LogicalTypeInfinite {
 
 	private Character left;
 	private Character right;
-	private int len38 = 0;
-	private int len36 = 0;
-	private int len32 = 0;
+	private int len38;
+	private int len36;
+	private int len32;
 
 	/**
 	 * Construct a plugin to detect GUIDs (Globally Unique Identifiers) based on the Plugin Definition.

@@ -854,7 +854,7 @@ public class TextAnalyzer {
 				facts.groupingSeparators++;
 				if (!facts.getMatchTypeInfo().isSemanticType() && !facts.getMatchTypeInfo().hasGrouping()) {
 					facts.setMatchTypeInfo(knownTypes.grouping(facts.getMatchTypeInfo().regexp));
-					debug("Type determination - now with grouping {}", facts.getMatchTypeInfo());
+					ctxdebug("Type determination", "now with grouping {}", facts.getMatchTypeInfo());
 				}
 			}
 			digits = trimmed.length();
@@ -1063,7 +1063,7 @@ public class TextAnalyzer {
 	 * Validate (and track) the date/time/datetime input.
 	 * This routine is called for every date/time/datetime we see in the input, so performance is critical.
 	 */
-	private boolean trackDateTime(final String input, final TypeInfo typeInfo, final boolean register) {
+	private boolean trackDateTime(final String input, final TypeInfo typeInfo, final boolean register, final long count) {
 		final String dateFormat = typeInfo.format;
 
 		// Retrieve the (likely cached) DateTimeParserResult for the supplied dateFormat
@@ -1145,6 +1145,13 @@ public class TextAnalyzer {
 
 		default:
 			throw new InternalErrorException("Expected Date/Time type.");
+		}
+
+		if (typeInfo.isSemanticType()) {
+			// If it is a registered Infinite Semantic Type then validate it
+			final LogicalType logical = plugins.getRegistered(typeInfo.getSemanticType());
+			if (logical.acceptsBaseType(result.getType()) && !logical.isValid(input, false, count))
+				return false;
 		}
 
 		return true;
@@ -1366,9 +1373,9 @@ public class TextAnalyzer {
 
 		// Strip out the uninteresting entries (i.e. nulls and blanks)
 		final Map<String, Long> uninteresting = new HashMap<>();
-		Iterator<Entry<String, Long>> it = observed.entrySet().iterator();
+		final Iterator<Entry<String, Long>> it = observed.entrySet().iterator();
 		while (it.hasNext()) {
-			Entry<String, Long> entry = it.next();
+			final Entry<String, Long> entry = it.next();
 			if (isNullEquivalent(entry.getKey()) || entry.getKey().isBlank()) {
 				uninteresting.put(entry.getKey(), entry.getValue());
 				it.remove();
@@ -1414,7 +1421,7 @@ public class TextAnalyzer {
 		}
 
 		// Now send in the uninteresting elements
-		for (Entry<String, Long> entry : uninteresting.entrySet())
+		for (final Entry<String, Long> entry : uninteresting.entrySet())
 			trainBulkCore(entry.getKey(), entry.getValue());
 	}
 
@@ -1867,6 +1874,19 @@ public class TextAnalyzer {
 			LoggerFactory.getLogger("com.cobber.fta").debug(format, arguments);
 	}
 
+	void ctxdebug(final String area, final String format, final Object... arguments) {
+		if (analysisConfig.getDebug() >= 2) {
+			final StringBuilder formatWithContext = new StringBuilder().append(area).append(" ({}, {}) -- ").append(format);
+			final Object[] newArguments = new Object[2 + arguments.length];
+			int newIndex = 0;
+			newArguments[newIndex++] = context.getStreamName();
+			newArguments[newIndex++] = analysisConfig.getTrainingMode();
+			for (final Object arg : arguments)
+				newArguments[newIndex++] = arg;
+			LoggerFactory.getLogger("com.cobber.fta").debug(formatWithContext.toString(), newArguments);
+		}
+	}
+
 	private boolean handleForce() {
 		final String[] semanticTypes = context.getSemanticTypes();
 		if (semanticTypes == null)
@@ -1892,7 +1912,7 @@ public class TextAnalyzer {
 			answer.setForce(true);
 
 			facts.setMatchTypeInfo(answer);
-			debug("Type determination - infinite type, confidence: FORCED, matchTypeInfo - {}", facts.getMatchTypeInfo());
+			ctxdebug("Type determination", "infinite type, confidence: FORCED, matchTypeInfo - {}", facts.getMatchTypeInfo());
 
 			return true;
 		}
@@ -2008,7 +2028,7 @@ public class TextAnalyzer {
 				}
 			}
 
-			debug("Type determination - initial, matchTypeInfo - {}", facts.getMatchTypeInfo());
+			ctxdebug("Type determination", "initial, matchTypeInfo - {}", facts.getMatchTypeInfo());
 
 			// Check to see if it might be one of the known Infinite Semantic Types
 			int i = 0;
@@ -2032,8 +2052,6 @@ public class TextAnalyzer {
 								count++;
 							break;
 						default:
-							if (trackDateTime(sample, candidate, false))
-								count++;
 							break;
 						}
 					}
@@ -2043,7 +2061,7 @@ public class TextAnalyzer {
 					if (currentConfidence > bestConfidence && currentConfidence >= logical.getThreshold()/100.0) {
 						facts.setMatchTypeInfo(candidate);
 						bestConfidence = currentConfidence;
-						debug("Type determination - infinite type, confidence: {}, matchTypeInfo - {}", currentConfidence, facts.getMatchTypeInfo());
+						ctxdebug("Type determination", "infinite type, confidence: {}, matchTypeInfo - {}", currentConfidence, facts.getMatchTypeInfo());
 					}
 				}
 				i++;
@@ -2054,7 +2072,7 @@ public class TextAnalyzer {
 				if (logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType()) &&
 						logical.isMatch(facts.getMatchTypeInfo().regexp)) {
 					facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
-					debug("Type determination - was '{}', matchTypeInfo - {}", facts.getMatchTypeInfo().getBaseType(), facts.getMatchTypeInfo());
+					ctxdebug("Type determination", "was '{}', matchTypeInfo - {}", facts.getMatchTypeInfo().getBaseType(), facts.getMatchTypeInfo());
 					break;
 				}
 			}
@@ -2239,7 +2257,7 @@ public class TextAnalyzer {
 
 		facts.outliers.clear();
 		outliersSmashed.clear();
-		debug("Type determination - backing out, matchTypeInfo - {}", facts.getMatchTypeInfo());
+		ctxdebug("Type determination", "backing out, matchTypeInfo - {}", facts.getMatchTypeInfo());
 	}
 
 	private void backoutToTypeInfo(final long realSamples, final TypeInfo newTypeInfo) {
@@ -2264,7 +2282,7 @@ public class TextAnalyzer {
 
 		facts.outliers.clear();
 		outliersSmashed.clear();
-		debug("Type determination - backing out, matchTypeInfo - {}", facts.getMatchTypeInfo());
+		ctxdebug("Type determination", "backing out, matchTypeInfo - {}", facts.getMatchTypeInfo());
 	}
 
 	/**
@@ -2297,7 +2315,7 @@ public class TextAnalyzer {
 		for (final Map.Entry<String, Long> entry : doubleOutliers.entrySet())
 			addValid(entry.getKey(), entry.getValue());
 
-		debug("Type determination - backing out double, matchTypeInfo - {}", facts.getMatchTypeInfo());
+		ctxdebug("Type determination", "backing out double, matchTypeInfo - {}", facts.getMatchTypeInfo());
 	}
 
 	/**
@@ -2409,7 +2427,7 @@ public class TextAnalyzer {
 		case OFFSETDATETIME:
 		case ZONEDDATETIME:
 			try {
-				trackDateTime(input, facts.getMatchTypeInfo(), true);
+				trackDateTime(input, facts.getMatchTypeInfo(), true, count);
 				valid = true;
 			}
 			catch (DateTimeParseException reale) {
@@ -2474,7 +2492,7 @@ public class TextAnalyzer {
 				} while (!success);
 
 				try {
-					trackDateTime(input, facts.getMatchTypeInfo(), true);
+					trackDateTime(input, facts.getMatchTypeInfo(), true, count);
 					valid = true;
 				}
 				catch (DateTimeParseException eIgnore) {
@@ -2647,11 +2665,11 @@ public class TextAnalyzer {
 
 	private class FiniteMatchResult {
 		LogicalTypeFinite logical;
-		double score;
+		final double score;
 		FiniteMap newOutliers;
 		FiniteMap newCardinality;
 		long validCount;
-		boolean isMatch;
+		final boolean isMatch;
 
 		boolean matched() {
 			return isMatch;
@@ -2727,7 +2745,7 @@ public class TextAnalyzer {
 		facts.matchCount = bestResult.validCount;
 		facts.setMatchTypeInfo(new TypeInfo(bestResult.logical.getRegExp(), bestResult.logical.getBaseType(), bestResult.logical.getSemanticType(), facts.getMatchTypeInfo()));
 
-		debug("Type determination - new matchTypeInfo - {}", facts.getMatchTypeInfo());
+		ctxdebug("Type determination", "new matchTypeInfo - {}", facts.getMatchTypeInfo());
 
 		return bestResult.logical;
 	}
@@ -2836,6 +2854,16 @@ public class TextAnalyzer {
 		else if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()))
 			finalizeString(realSamples, cardinalityUpper);
 
+		// finalizeLong() above may have switched a long to a date - hence this is not an else!
+		if (FTAType.LOCALDATE.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType()) {
+			for (final LogicalTypeInfinite logical : infiniteTypes) {
+				if (logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType()) && logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+					facts.getMatchTypeInfo().setSemanticType(logical.getSemanticType());
+					ctxdebug("Type determination", "infinite type, matchTypeInfo - {}", facts.getMatchTypeInfo());
+				}
+			}
+		}
+
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType())) {
 			if (facts.getMatchTypeInfo().isSemanticType()) {
 				final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
@@ -2867,7 +2895,7 @@ public class TextAnalyzer {
 					if (newRegExp != null) {
 						facts.setMatchTypeInfo(new TypeInfo(null, newRegExp, FTAType.STRING, null, false, facts.minTrimmedLength,
 								facts.maxTrimmedLength, null, null));
-						debug("Type determination - updated based on Stream analysis {}", facts.getMatchTypeInfo());
+						ctxdebug("Type determination", "updated based on Stream analysis {}", facts.getMatchTypeInfo());
 					}
 				}
 
@@ -3071,7 +3099,7 @@ public class TextAnalyzer {
 							newResult.getFacts().confidence -= 0.05;
 							newResult.getFacts().getMatchTypeInfo().setBaseType(FTAType.STRING);
 							result = newResult;
-							debug("Type determination - was STRING, post exclusion analyis ({}, {}), matchTypeInfo {} -> {} ",
+							ctxdebug("Type determination", "was STRING, post exclusion analyis ({}, {}), matchTypeInfo {} -> {} ",
 									worstEntry.getKey(), worstEntry.getValue(), facts.matchTypeInfo, newResult.getFacts().getMatchTypeInfo());
 							break;
 						}
@@ -3106,7 +3134,7 @@ public class TextAnalyzer {
 			}
 
 			// If we identified any outliers then re-analyze using the 'cleaned' set and see if we have success
-			if (outliers.size() != 0) {
+			if (!outliers.isEmpty()) {
 				details.keySet().removeAll(outliers.keySet());
 				final TextAnalysisResult newResult = reAnalyze(details);
 
@@ -3117,7 +3145,7 @@ public class TextAnalyzer {
 					newResult.getFacts().sampleCount += outliers.values().stream().mapToLong(l-> l).sum();
 					newResult.getFacts().confidence -= 0.05;
 					result = newResult;
-					debug("Type determination - was LONG, post outlier analyis, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
+					ctxdebug("Type determination", "was LONG, post outlier analyis, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
 				}
 			}
 		}
@@ -3144,11 +3172,11 @@ public class TextAnalyzer {
 
 			if (newResult.isSemanticType()) {
 				facts.getMatchTypeInfo().setSemanticType(newResult.getSemanticType());
-				debug("Type determination - was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
+				ctxdebug("Type determination", "was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
 			}
 			else if (newType.isDateOrTimeType()) {
 				result = newResult;
-				debug("Type determination - was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
+				ctxdebug("Type determination", "was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
 			}
 		}
 
@@ -3158,7 +3186,7 @@ public class TextAnalyzer {
 			final TextAnalysisResult bulkResult = reAnalyze(facts.synthesizeBulk());
 			if (bulkResult.isSemanticType()) {
 				result = bulkResult;
-				debug("Type determination - was STRING, post Bulk analyis, matchTypeInfo - {}", facts.getMatchTypeInfo());
+				ctxdebug("Type determination", "was STRING, post Bulk analyis, matchTypeInfo - {}", facts.getMatchTypeInfo());
 			}
 		}
 
@@ -3210,7 +3238,7 @@ public class TextAnalyzer {
 							facts.matchCount = newMatchCount;
 							facts.cardinality = newCardinality;
 							facts.outliers = newOutliers;
-							debug("Type determination - updated to Regular Expression Semantic type {}", facts.getMatchTypeInfo());
+							ctxdebug("Type determination", "updated to Regular Expression Semantic type {}", facts.getMatchTypeInfo());
 							facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 							return true;
 						}
@@ -3229,7 +3257,7 @@ public class TextAnalyzer {
 		for (final String s : facts.cardinality.keySet())
 			if (Integer.parseInt(s.trim()) != 0)
 				try {
-					trackDateTime(s, facts.getMatchTypeInfo(), true);
+					trackDateTime(s, facts.getMatchTypeInfo(), true, 1);
 				}
 				catch (DateTimeException e) {
 					// Swallow - any we lost are no good so will not be in the top/bottom set!
@@ -3248,7 +3276,7 @@ public class TextAnalyzer {
 	void finalizeLong(final long realSamples) {
 		if (KnownTypes.ID.ID_LONG == facts.getMatchTypeInfo().id && facts.getMatchTypeInfo().typeModifier == null && facts.minLong < 0) {
 			facts.setMatchTypeInfo(knownTypes.negation(facts.getMatchTypeInfo().regexp));
-			debug("Type determination - now with sign {}", facts.getMatchTypeInfo());
+			ctxdebug("Type determination", "now with sign {}", facts.getMatchTypeInfo());
 		}
 
 		// Sometimes a Long is not a Long but it is really a date
@@ -3281,7 +3309,7 @@ public class TextAnalyzer {
 		} else {
 			if (!facts.getMatchTypeInfo().isSemanticType() && facts.groupingSeparators != 0 && !facts.getMatchTypeInfo().hasGrouping()) {
 				facts.setMatchTypeInfo(knownTypes.grouping(facts.getMatchTypeInfo().regexp));
-				debug("Type determination - now with grouping {}", facts.getMatchTypeInfo());
+				ctxdebug("Type determination", "now with grouping {}", facts.getMatchTypeInfo());
 			}
 
 			if (!facts.getMatchTypeInfo().isSemanticType()) {
@@ -3302,7 +3330,7 @@ public class TextAnalyzer {
 							logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
 						facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
 						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
-						debug("Type determination - was LONG, matchTypeInfo - {}", facts.getMatchTypeInfo());
+						ctxdebug("Type determination", "was LONG, matchTypeInfo - {}", facts.getMatchTypeInfo());
 						break;
 					}
 				}
@@ -3333,7 +3361,7 @@ public class TextAnalyzer {
 				kill = true;
 			else {
 				try {
-					trackDateTime(entry.getKey(), facts.getMatchTypeInfo(), false);
+					trackDateTime(entry.getKey(), facts.getMatchTypeInfo(), false, 1);
 				}
 				catch (DateTimeException e) {
 					kill = true;
@@ -3357,12 +3385,12 @@ public class TextAnalyzer {
 	private void finalizeDouble(final long realSamples) {
 		if (facts.minDouble < 0.0) {
 			facts.setMatchTypeInfo(knownTypes.negation(facts.getMatchTypeInfo().regexp));
-			debug("Type determination - now with sign {}", facts.getMatchTypeInfo());
+			ctxdebug("Type determination", "now with sign {}", facts.getMatchTypeInfo());
 		}
 
 		if (facts.groupingSeparators != 0 && !facts.getMatchTypeInfo().hasGrouping()) {
 			facts.setMatchTypeInfo(knownTypes.grouping(facts.getMatchTypeInfo().regexp));
-			debug("Type determination - now with grouping {}", facts.getMatchTypeInfo());
+			ctxdebug("Type determination", "now with grouping {}", facts.getMatchTypeInfo());
 		}
 
 		for (final LogicalTypeRegExp logical : regExpTypes) {
@@ -3642,7 +3670,7 @@ public class TextAnalyzer {
 //				throw new FTAMergeException("Total count required on both Analyses to be merged!!");
 //
 //			long outliers = 0;
-//			if (ret.facts.outliers.size() != 0)
+//			if (!ret.facts.outliers.isEmpty())
 //				for (final long value : ret.facts.outliers.values())
 //					outliers += value;
 //			ret.facts.matchCount = ret.facts.totalCount - ret.facts.nullCount - ret.facts.blankCount - outliers;

@@ -118,7 +118,7 @@ public class AddressEN extends LogicalTypeInfinite {
 		int modifierIndex = -1;
 		int blockIndex = -1;
 		int start = 0;
-		int firstSpace = -1;
+		int firstSpace;
 
 		if (wordCount < 2 || (firstSpace = trimmedUpper.indexOf(' ')) == -1)
 			return false;

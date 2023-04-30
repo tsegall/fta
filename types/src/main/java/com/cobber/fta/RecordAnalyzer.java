@@ -19,8 +19,8 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 
 public class RecordAnalyzer {
-	private TextAnalyzer[] analyzers;
-	private int streamCount;
+	private final TextAnalyzer[] analyzers;
+	private final int streamCount;
 
 	/**
 	 * Construct a Record Analyzer using the supplied template.
@@ -85,7 +85,10 @@ public class RecordAnalyzer {
 
 		// For any stream where we have not already determined a Semantic type - try again providing the overall Semantic Type context
 		int pickups;
+		int pass = 2;
 		do {
+			analyzers[0].debug("**** PASS {} ****", pass);
+			pass++;
 			pickups = 0;
 			for (int i = 0; i < streamCount; i++) {
 				if (!results[i].isSemanticType()) {

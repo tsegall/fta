@@ -35,7 +35,7 @@ import com.cobber.fta.token.TokenStreams;
 public class City extends LogicalTypeInfinite {
 	private boolean randomInitialized;
 	private SingletonSet samples;
-	private int maxLength = 0;
+	private int maxLength;
 	private String country;
 	private boolean isNetherlands;
 
@@ -161,9 +161,10 @@ public class City extends LogicalTypeInfinite {
 		if (headerConfidence <= 0 || maxLength <= 3)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		double confidence = (double)matchCount/realSamples;
 		if (headerConfidence >= 99)
 			return PluginAnalysis.OK;
+
+		double confidence = (double)matchCount/realSamples;
 
 		// Boost based on how much we like the header
 		if (headerConfidence >= 95)

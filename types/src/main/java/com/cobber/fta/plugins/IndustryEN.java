@@ -43,7 +43,7 @@ public class IndustryEN extends LogicalTypeInfinite {
 	private SingletonSet industriesRef;
 	private Set<String> industries;
 
-	private WordProcessor wordProcessor = new WordProcessor();
+	private final WordProcessor wordProcessor = new WordProcessor();
 
 	/**
 	 * Construct a Industry plugin based on the Plugin Definition.

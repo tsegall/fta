@@ -23,7 +23,4 @@ public class PluginDocumentationEntry {
 	public String source;
 	public String reference;
 	public PluginMatchEntry[] matchEntries;
-
-	public PluginDocumentationEntry() {
-	}
 }

@@ -151,6 +151,10 @@ public class DateTimeParserResult {
 		}
 	}
 
+	public boolean isDateBound() {
+		return dayOffset != -1 && monthOffset != -1 && yearOffset != -1;
+	}
+
 	protected boolean isDateUnbound() {
 		// If there is not a date then it is cannot be unbound
 		if (dateElements == -1)

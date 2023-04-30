@@ -2,19 +2,18 @@ package cli;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Locale;
 
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
-
-import com.cobber.fta.core.FTAException;
-import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.RecordAnalyzer;
-import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.TextAnalysisResult;
+import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.FTAException;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 
 public abstract class Cli {
 	public static void main(final String[] args) throws FTAException, IOException {
@@ -82,7 +81,6 @@ public abstract class Cli {
 			}
 
 			final TextAnalysisResult[] results = recordAnalyzer.getResult().getStreamResults();
-			StringBuilder ret = new StringBuilder();
 			for (TextAnalysisResult result : results) {
 				if (verbose)
 					System.err.printf("Field: '%s':\n%s\n", result.getName(), result.asJSON(true, 0));

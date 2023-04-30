@@ -729,8 +729,8 @@ public class TestPlugins {
 		};
 
 		final Map<String, Long> observed = new HashMap<>();
-		for (int i = 0; i < inputs.length; i++)
-			observed.put(inputs[i], 10L);
+		for (final String input : inputs)
+			observed.put(input, 10L);
 		observed.put(null, 10L);
 		observed.put("    ", 10L);
 		observed.put("Who Knows", 10L);
