@@ -1050,7 +1050,7 @@ public class TestLongs {
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertTrue(result.isSemanticType());
-		assertEquals(result.getSemanticType(), "EPOCH.MILLISECONDS");
+		assertEquals(result.getSemanticType(), "EPOCH.SECONDS");
 		assertEquals(result.getRegExp(), "\\d{10}");
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getMatchCount(), samples.length);
@@ -1082,7 +1082,7 @@ public class TestLongs {
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertTrue(result.isSemanticType());
-		assertEquals(result.getSemanticType(), "EPOCH.NANOSECONDS");
+		assertEquals(result.getSemanticType(), "EPOCH.MILLISECONDS");
 		assertEquals(result.getRegExp(), "\\d{13}");
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getMatchCount(), samples.length);

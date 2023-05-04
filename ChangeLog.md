@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 13.6.0
+ - BUG: EPOCH.MILLISECONDS was actually EPOCH.SECONDS, EPOCH.NANOSECONDS was actually EPOCH.MILLISECONDS (#37)
+
 ### 13.5.1
  - ENH: Improve PERSON.DATE_OF_BIRTH detection allow LocalDateTime (also es,nl support)
  - INT: Bump gradle to 8.1.1

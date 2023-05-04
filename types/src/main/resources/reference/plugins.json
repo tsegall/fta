@@ -2506,10 +2506,10 @@
 		"priority": 271
 	},
 	{
-		"semanticType": "EPOCH.MILLISECONDS",
-		"description": "Unix Epoch (Timestamp) - milliseconds",
+		"semanticType": "EPOCH.SECONDS",
+		"description": "Unix Epoch (Timestamp) - seconds",
 		"pluginType": "regex",
-		"signature": "viRZbKzQgIqtkppDhoCbAFLXEag=",
+		"signature": "SDOVIb658Bu1vG5h1htbJj0PMqg=",
 		"validLocales": [
 			{
 				"localeTag": "*",
@@ -2530,10 +2530,10 @@
 		"priority": 272
 	},
 	{
-		"semanticType": "EPOCH.NANOSECONDS",
-		"description": "Unix Epoch (Timestamp) - nanoseconds",
+		"semanticType": "EPOCH.MILLISECONDS",
+		"description": "Unix Epoch (Timestamp) - milliseconds",
 		"pluginType": "regex",
-		"signature": "J4XCZXZ7BfO/UL8stzuwRwBHFgc=",
+		"signature": "viRZbKzQgIqtkppDhoCbAFLXEag=",
 		"validLocales": [
 			{
 				"localeTag": "*",
