@@ -1,6 +1,7 @@
 # Semantic Type Detection and Data Profiling #
 
-Metadata/data identification Java library. Identifies Semantic Type information (e.g. Gender, Age, Color, Country,...).
+Metadata/data identification Java library. Identifies Base Type (e.g. Boolean, Double, Long, String, LocalDate, LocalTime, ...) and 
+Semantic Type information (e.g. Gender, Age, Color, Country, ...).
 Extensive country/language support. Extensible via user-defined plugins. Comprehensive Profiling support.
 
 Design objectives:
@@ -182,11 +183,11 @@ There are a large number of metrics detected, which vary based on the type of th
  * matchCount - Number of samples that match the detected Base (or Semantic) type
  * nullCount - Number of null samples
  * blankCount - Number of blank samples
- * distinctCount - Number of distinct (valid) samples, typically -1 if maxCardinality exceeded. See Note 2.
+ * distinctCount - Number of distinct (valid) samples, typically -1 if maxCardinality exceeded. See Note 1.
  * regExp - A Regular Expression (Java) that matches the detected Type
  * confidence - The percentage confidence (0-1.0) in the determination of the Type
  * type - The Base Type (one of Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
- * typeModifier - A modifier with respect to the Base Type. See Note 1.
+ * typeModifier - A modifier with respect to the Base Type. See Base Type discussion.
  * min - The minimum value observed
  * max - The maximum value observed
  * bottomK (Date, Time, Numeric, and String types only) - lowest 10 values
@@ -201,8 +202,8 @@ There are a large number of metrics detected, which vary based on the type of th
  * multiline - Does the observed set have leading multiline elements
  * isSemanticType - Does the observed stream, reflect a Semantic Type
  * semanticType - The Semantic Type detected (Only valid if isSemanticType is true)
- * uniqueness - The percentage (0.0-1.0) of elements in the stream with a cardinality of one, -1.0 if maxCardinality exceeded.  See Note 2.
- * keyConfidence - The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique).  See Note 2.
+ * uniqueness - The percentage (0.0-1.0) of elements in the stream with a cardinality of one, -1.0 if maxCardinality exceeded.  See Note 1.
+ * keyConfidence - The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique).  See Note 1.
  * cardinalityDetail - Details on the valid set, list of elements and occurrence count
  * outlierDetail - Details on the invalid set, list of elements and occurrence count
  * shapesDetail - Details on the shapes set, list of elements and occurrence count. This will collapse all numerics to '9', and all alphabetics to 'X'
@@ -213,8 +214,8 @@ There are a large number of metrics detected, which vary based on the type of th
  * standardDeviation (Numeric types only) - The population standard deviation (Uses Welford's algorithm)
  * leadingZeroCount (Long type only) - The leading number of zeroes
  * decimalSeparator (Double type only) - The character used to separate the integral component from the fractional component
- * quantiles - access to q-quantiles. See Note 3.
- * histograms - access to the associated histogram. See Note 4.
+ * quantiles - access to q-quantiles. See Note 2.
+ * histograms - access to the associated histogram. See Note 3.
 
 The following fields are *not* calculated by FTA (but may be set on the Analyzer).
  * totalCount - The total number of elements in the entire data stream (-1 unless set explicitly).
@@ -227,20 +228,25 @@ The following fields are *not* calculated by FTA (but may be set on the Analyzer
  * totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly).
  * totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly).
 
-Note 1: The value of the typeModifier is dependent on the Base Type as follows:
+
+Note 1: This field may be set on the Analyzer - and if so FTA attempts no further analysis.
+
+Note 2: quantiles are exact for any set where the cardinality is less than maxCardinality.  No support for quantiles for String types where maxCardinality is exceeded, for other types the quantiles are estimates that are within the relative-error guarantee.
+
+Note 3: Histograms are precise for any set where the cardinality is less than maxCardinality.  No support for histograms for String types where maxCardinality is exceeded, for other types the histograms are estimates - see A Streaming Parallel Decision Tree Algorithm (https://www.jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf) for more details.
+
+</details>
+
+## Base Type detection ##
+The Base Types detected are Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime.
+
+Associated with each Base Type is a typeModifier. The value of the typeModifier is dependent on the Base Type as follows:
+
  * Boolean - options are "TRUE_FALSE", "YES_NO", "Y_N", "ONE_ZERO"
  * String - options are "BLANK", "BLANKORNULL", "NULL"
  * Long - options are "GROUPING", "SIGNED", "SIGNED_TRAILING" ("GROUPING" and "SIGNED" are independent and can both be present).
  * Double - options are "GROUPING", "SIGNED", "SIGNED_TRAILING", "NON_LOCALIZED" ("GROUPING" and "SIGNED" are independent and can both be present).
  * LocalDate, LocalTime, LocalDateTime, ZonedDateTime, OffsetDateTime - The qualifier is the detailed date format string (See Java DateTimeFormatter for format details).
-
-Note 2: This field may be set on the Analyzer - and if so FTA attempts no further analysis.
-
-Note 3: quantiles are exact for any set where the cardinality is less than maxCardinality.  No support for quantiles for String types where maxCardinality is exceeded, for other types the quantiles are estimates that are within the relative-error guarantee.
-
-Note 4: Histograms are precise for any set where the cardinality is less than maxCardinality.  No support for histograms for String types where maxCardinality is exceeded, for other types the histograms are estimates - see A Streaming Parallel Decision Tree Algorithm (https://www.jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf) for more details.
-
-</details>
 
 ## Semantic Type detection ##
 

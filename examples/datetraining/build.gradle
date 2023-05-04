@@ -1,0 +1,19 @@
+plugins {
+    id 'application'
+}
+
+wrapper {
+	gradleVersion = '8.1.1'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'com.cobber.fta', name: 'fta-core', version: "13.+"
+}
+
+application {
+    mainClass = 'datetraining.DateTraining'
+}
