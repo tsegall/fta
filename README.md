@@ -246,7 +246,7 @@ Associated with each Base Type is a typeModifier. The value of the typeModifier 
  * String - options are "BLANK", "BLANKORNULL", "NULL"
  * Long - options are "GROUPING", "SIGNED", "SIGNED_TRAILING" ("GROUPING" and "SIGNED" are independent and can both be present).
  * Double - options are "GROUPING", "SIGNED", "SIGNED_TRAILING", "NON_LOCALIZED" ("GROUPING" and "SIGNED" are independent and can both be present).
- * LocalDate, LocalTime, LocalDateTime, ZonedDateTime, OffsetDateTime - The qualifier is the detailed date format string (See Java DateTimeFormatter for format details).
+ * LocalDate, LocalTime, LocalDateTime, ZonedDateTime, OffsetDateTime - The typeModifier is the detailed date format string (See Java DateTimeFormatter for format details).
 
 ## Semantic Type detection ##
 

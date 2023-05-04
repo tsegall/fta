@@ -19,6 +19,7 @@ import static org.testng.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.testng.annotations.Test;
 
@@ -32,7 +33,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void base64() {
-		final HashMap<String, Long> cardinality = new HashMap<>();
+		final Map<String, Long> cardinality = new HashMap<>();
 		cardinality.put("SGVsbG8=", 2000000L);
 		cardinality.put("V29ybGQ=", 2000000L);
 
@@ -42,7 +43,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void JSON() {
-		final HashMap<String, Long> cardinality = new HashMap<>();
+		final Map<String, Long> cardinality = new HashMap<>();
 		cardinality.put("{ \"name\": \"Tim\" }", 2000000L);
 		cardinality.put("{ \"name\": \"Anna\" }", 2000000L);
 		cardinality.put("{ \"name\": \"Bill\" }", 2000000L);
@@ -53,7 +54,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void wellFormedHTML() {
-		final HashMap<String, Long> cardinality = new HashMap<>();
+		final Map<String, Long> cardinality = new HashMap<>();
 		cardinality.put("<!DOCTYPE html><html></html>", 2000000L);
 		cardinality.put("<head><title>My fabulous blog</title></head>", 2000000L);
 
@@ -63,7 +64,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void HTML() {
-		final HashMap<String, Long> cardinality = new HashMap<>();
+		final Map<String, Long> cardinality = new HashMap<>();
 		cardinality.put("<p>Hello", 2000000L);
 		cardinality.put("<head><title>My fabulous blog</title></head>", 2000000L);
 

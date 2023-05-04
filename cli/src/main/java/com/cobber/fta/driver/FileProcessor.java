@@ -37,6 +37,7 @@ import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.univocity.parsers.common.TextParsingException;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+import com.univocity.parsers.csv.UnescapedQuoteHandling;
 
 class FileProcessor {
 	private final DriverOptions options;
@@ -63,6 +64,7 @@ class FileProcessor {
 		settings.setLineSeparatorDetectionEnabled(true);
 		settings.setIgnoreLeadingWhitespaces(false);
 		settings.setIgnoreTrailingWhitespaces(false);
+		settings.setUnescapedQuoteHandling(UnescapedQuoteHandling.STOP_AT_DELIMITER);
 //		settings.setNullValue("");
 		settings.setEmptyValue("");
 		if (options.delimiter != null) {

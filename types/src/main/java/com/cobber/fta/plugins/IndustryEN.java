@@ -38,7 +38,6 @@ public class IndustryEN extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = ".+";
 
-	private SingletonSet hotWordsRef;
 	private Set<String> hotWords;
 	private SingletonSet industriesRef;
 	private Set<String> industries;
@@ -62,8 +61,7 @@ public class IndustryEN extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		hotWordsRef = new SingletonSet("resource", "/reference/en_industry_hotwords.csv");
-		hotWords = hotWordsRef.getMembers();
+		hotWords = new SingletonSet("resource", "/reference/en_industry_hotwords.csv").getMembers();
 
 		industriesRef = new SingletonSet("resource", "/reference/en_industries.csv");
 		industries = industriesRef.getMembers();

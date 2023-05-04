@@ -59,7 +59,7 @@ public class LocaleInfo {
 
 	private String unsupportedReason;
 
-	private Locale locale;
+	private final Locale locale;
 	boolean noAbbreviationPunctuation;
 
 	private static Map<String, LocaleInfo> cache = new ConcurrentHashMap<>();

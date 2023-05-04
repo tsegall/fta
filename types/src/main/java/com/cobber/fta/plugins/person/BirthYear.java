@@ -34,7 +34,7 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Birth Year (Person).
  */
 public class BirthYear extends LogicalTypeInfinite {
-	private final String dateFormat = "yyyy";
+	private final static String dateFormat = "yyyy";
 	private String regExp;
 
 	/**
@@ -84,9 +84,9 @@ public class BirthYear extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public PluginAnalysis analyzeSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp,
-			Facts facts, FiniteMap cardinality, FiniteMap outliers, TokenStreams tokenStreams,
-			AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams,
+			final AnalysisConfig analysisConfig) {
 		return getConfidence(matchCount, realSamples, context) >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 }

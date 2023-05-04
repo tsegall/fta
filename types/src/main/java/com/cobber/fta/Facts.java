@@ -77,11 +77,13 @@ public class Facts {
 	public String maxBoolean;
 
 	public long minLong = Long.MAX_VALUE;
+	public long minLongNonZero = Long.MAX_VALUE;
 	public long maxLong = Long.MIN_VALUE;
 	public final TopBottomK<Long, Long> tbLong = new TopBottomK<>();
 
 	public double minDouble = Double.MAX_VALUE;
 	public double maxDouble = -Double.MAX_VALUE;
+	public double minDoubleNonZero = Double.MAX_VALUE;
 	public final TopBottomK<Double, Double> tbDouble = new TopBottomK<>();
 
 	public String minString;
@@ -108,7 +110,6 @@ public class Facts {
 	public ZonedDateTime maxZonedDateTime;
 	public final TopBottomK<ZonedDateTime, ChronoZonedDateTime<?>> tbZonedDateTime = new TopBottomK<>();
 
-	public long minLongNonZero = Long.MAX_VALUE;
 	public boolean monotonicIncreasing = true;
 	public boolean monotonicDecreasing = true;
 

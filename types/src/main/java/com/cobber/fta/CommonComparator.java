@@ -27,7 +27,7 @@ import java.util.TreeMap;
 import com.cobber.fta.core.FTAType;
 
 public class CommonComparator<T extends Comparable> implements Comparator<String> {
-	private StringConverter stringConverter;
+	private final StringConverter stringConverter;
 
 	CommonComparator(final StringConverter stringConverter) {
 		this.stringConverter = stringConverter;

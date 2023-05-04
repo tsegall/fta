@@ -38,6 +38,7 @@ public class AddressStreetNameBare extends LogicalTypeInfinite {
 	private static final String SEMANTIC_TYPE = "STREET_NAME_BARE_";
 	private String language;
 	private final WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
+	private boolean isNetherlands;
 
 	/**
 	 * Construct a plugin to detect a Street Name based on the Plugin Definition.
@@ -57,6 +58,7 @@ public class AddressStreetNameBare extends LogicalTypeInfinite {
 		super.initialize(analysisConfig);
 
 		language = locale.getLanguage().toUpperCase(Locale.ROOT);
+		isNetherlands = "NL".equals(locale.getCountry().toUpperCase(Locale.ROOT));
 
 		return true;
 	}
@@ -105,7 +107,12 @@ public class AddressStreetNameBare extends LogicalTypeInfinite {
 		if (wordCount == 0)
 			return false;
 
-		for (int i = wordCount - 1; i >= 0; i--)
+		// In the Netherlands Street names commonly have a trailing number
+		int startPoint = wordCount - 1;
+		if (isNetherlands && startPoint != 0)
+			startPoint--;
+
+		for (int i = startPoint; i >= 0; i--)
 			if (Utils.isNumeric(words.get(i)))
 				return false;
 

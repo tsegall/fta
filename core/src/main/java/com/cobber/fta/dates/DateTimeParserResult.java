@@ -953,23 +953,23 @@ public class DateTimeParserResult {
 				case TIMEZONE_OFFSET_ZERO:
 					switch (token.getCount()) {
 					case 1:
-						ret.append("(").append(x).append("|Z)");
+						ret.append('(').append(x).append("|Z)");
 						break;
 
 					case 2:
-						ret.append("(").append(xx).append("|Z)");
+						ret.append('(').append(xx).append("|Z)");
 						break;
 
 					case 3:
-						ret.append("(").append(xxx).append("|Z)");
+						ret.append('(').append(xxx).append("|Z)");
 						break;
 
 					case 4:
-						ret.append("(").append(xxxx).append("|Z)");
+						ret.append('(').append(xxxx).append("|Z)");
 						break;
 
 					case 5:
-						ret.append("(").append(xxxxx).append("|Z)");
+						ret.append('(').append(xxxxx).append("|Z)");
 						break;
 					}
 					break;

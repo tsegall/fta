@@ -49,8 +49,8 @@ public class PluginColor extends LogicalTypeFinite {
 	private String language;
 
 	static {
-		MEMBERS.put("EN", new HashSet<String>(Arrays.asList(colorsEN)));
-		MEMBERS.put("FR", new HashSet<String>(Arrays.asList(colorsFR)));
+		MEMBERS.put("EN", new HashSet<>(Arrays.asList(colorsEN)));
+		MEMBERS.put("FR", new HashSet<>(Arrays.asList(colorsFR)));
 	}
 
 	public PluginColor(final PluginDefinition plugin) throws FTAPluginException {

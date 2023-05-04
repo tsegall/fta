@@ -141,28 +141,6 @@ public class DateTimeParser {
 	}
 
 	/**
-	 * Construct a DateTimeParse with the specified DateResolutionMode.
-	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified.
-	 * @deprecated Since 8.X use the fluent API instead
-	 */
-	@Deprecated
-	public DateTimeParser(final DateResolutionMode resolutionMode) {
-		config.resolutionMode = resolutionMode;
-	}
-
-	/**
-	 * Construct a DateTimeParse with the specified DateResolutionMode and Locale.
-	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified.
-	 * @param locale Locale the input string is in
-	 * @deprecated Since 8.X use the fluent API instead
-	 */
-	@Deprecated
-	public DateTimeParser(final DateResolutionMode resolutionMode, final Locale locale) {
-		config.resolutionMode = resolutionMode;
-		config.setLocales(new Locale[] { locale });
-	}
-
-	/**
 	 * Set the DateResolutionMode on the Parser.
 	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified.
 	 * @return The DateTimeParser
@@ -280,6 +258,8 @@ public class DateTimeParser {
 		if (formatter != null)
 			return formatter;
 
+		final DateTimeParserResult result = DateTimeParserResult.asResult(formatString, config.resolutionMode, config);
+
 		int offset = formatString.indexOf("S{");
 		if (offset != -1) {
 			final MinMax minMax = new MinMax(formatString.substring(offset, formatString.indexOf('}', offset)));
@@ -291,15 +271,16 @@ public class DateTimeParser {
 				builder.appendPattern(formatString.substring(upto));
 			formatter = builder.toFormatter(config.getLocale());
 		}
-		else if ("yyyy".equals(formatString))
+		else if (result.dateElements == 1 && result.yearOffset != -1)
             // The default formatter with "yyyy" will not default the month/day, make it so!
             formatter = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy")
+            .appendPattern(formatString)
             .parseCaseInsensitive()
             .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
             .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
             .toFormatter(config.getLocale());
-		else if (justMonthAndYear(formatString))
+		else if (result.dateElements == 2 && result.yearOffset != -1 && result.monthOffset != -1)
+			// We have a Year and a Month but no day, so we need to default the day
 			formatter = new DateTimeFormatterBuilder()
 			.parseCaseInsensitive()
 			.parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
@@ -973,9 +954,9 @@ public class DateTimeParser {
 	}
 
 	class DateTimeTracker {
-		private int[] valueArray;
-		private int[] digitsArray;
-		private int[] padArray;
+		private final int[] valueArray;
+		private final int[] digitsArray;
+		private final int[] padArray;
 		/** Has we seen the start of a Date/Time. */
 		boolean seen;
 		/** Has the Date/Time been closed. */

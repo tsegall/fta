@@ -15,6 +15,8 @@
  */
 package modestreaming;
 
+import java.util.Locale;
+
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
@@ -37,8 +39,12 @@ public abstract class ModeStreaming {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
-
-		System.err.println("Detail: " + result.asJSON(true, 1));
+		if (result.getSemanticType() == null) {
+			System.err.printf("Current locale is '%s' - which does not support Semantic Type: NAME.FIRST_LAST\n", Locale.getDefault());
+		}
+		else {
+			System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
+			System.err.println("Detail: " + result.asJSON(true, 1));
+		}
 	}
 }

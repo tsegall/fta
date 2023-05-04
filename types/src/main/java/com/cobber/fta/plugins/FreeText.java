@@ -47,7 +47,7 @@ public class FreeText extends LogicalTypeInfinite {
 
 	private String regExp = REGEXP;
 
-	private final int SAMPLE_COUNT = 100;
+	private final static int SAMPLE_COUNT = 100;
 	private LogicalTypeCode logicalFirst;
 	private String[] samples;
 	private TextProcessor processor;

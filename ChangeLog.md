@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+-### 13.6.1
+ - ENH: I18N - minor improvement to STREET_NAME_BARE_NL detection
+ - ENH: Remove deprecated DateTimeParser constructors
+ - BUG: Fix regExp returned with Doubles that are actually LocalDates (also add test case)
+ - ENH: Improve ModeStreaming example to report if the Semantic Type is not detected due to non-supported locale (#35)
+ - INT: Some code cleanups
+
 ### 13.6.0
  - BUG: EPOCH.MILLISECONDS was actually EPOCH.SECONDS, EPOCH.NANOSECONDS was actually EPOCH.MILLISECONDS (#37)
 

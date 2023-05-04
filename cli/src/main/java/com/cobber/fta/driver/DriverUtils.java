@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -89,7 +90,7 @@ public class DriverUtils {
 		final int samplingFrequency = (lineCount + SAMPLE_SIZE - 1) / SAMPLE_SIZE;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(source), "UTF-8"))) {
-			final ArrayList<String> samples = new ArrayList<>(SAMPLE_SIZE);
+			final List<String> samples = new ArrayList<>(SAMPLE_SIZE);
 			String input;
 			int recordCount = 0;
 

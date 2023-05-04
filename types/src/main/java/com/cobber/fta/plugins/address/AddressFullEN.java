@@ -43,7 +43,6 @@ import com.cobber.fta.token.TokenStreams;
  */
 public class AddressFullEN extends LogicalTypeInfinite {
 	private boolean multiline;
-	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
 	private Set<String> statesWithSpaces;
 
@@ -53,7 +52,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 	private LogicalTypeFiniteSimple logicalCountry;
 	private Pattern poBox;
 	private String country;
-	private WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
+	private final WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
 
 	/**
 	 * Construct a plugin to detect an Address based on the Plugin Definition.
@@ -140,8 +139,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 
 		logicalCountry = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("COUNTRY.TEXT_EN"), analysisConfig);
 
-		addressMarkersRef = new SingletonSet("resource", "/reference/en_street_markers.csv");
-		addressMarkers = addressMarkersRef.getMembers();
+		addressMarkers = new SingletonSet("resource", "/reference/en_street_markers.csv").getMembers();
 
 		statesWithSpaces = new HashSet<>();
 		for (final String state : logicalState.getMembers())
@@ -194,7 +192,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 		int directionIndex = -1;
 		boolean poBoxFound = false;
 
-		int postCodeIndex = getPostCodeIndex(words);
+		final int postCodeIndex = getPostCodeIndex(words);
 
 		if (poBox.matcher(upper).find())
 			poBoxFound = true;

@@ -1023,6 +1023,9 @@ public class TextAnalyzer {
 			if (d > facts.maxDouble)
 				facts.maxDouble = d;
 
+			if (d != 0.0 && d < facts.minDoubleNonZero)
+				facts.minDoubleNonZero = d;
+
 			// This test avoids the loop if the existing mean is the same as the input
 			if (d != facts.mean)
 				for (int i = 0; i < count; i++) {
@@ -1894,7 +1897,7 @@ public class TextAnalyzer {
 
 		final String semanticType = semanticTypes[context.getStreamIndex()];
 
-		if (semanticType != null && semanticType.trim().length() != 0) {
+		if (isInteresting(semanticType)) {
 			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
 			if (pluginDefinition == null) {
 				debug("ERROR: Failed to locate plugin named '{}'", semanticType);
@@ -3176,8 +3179,16 @@ public class TextAnalyzer {
 				facts.getMatchTypeInfo().setSemanticType(newResult.getSemanticType());
 				ctxdebug("Type determination", "was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
 			}
-			else if (newType.isDateOrTimeType()) {
-				result = newResult;
+			else if (FTAType.LOCALDATE.equals(newType)) {
+				final TypeInfo interimTypeInfo = newResult.getFacts().getMatchTypeInfo();
+				final String trailingZeroes = "." + Utils.repeat('0',  facts.zeroesLength);
+				final String updatedModifier = interimTypeInfo.typeModifier + "'" + trailingZeroes + "'";
+				final int updatedLength = interimTypeInfo.typeModifier.length() + trailingZeroes.length();
+				final TypeInfo newTypeInfo = new TypeInfo(null, newResult.getFacts().getMatchTypeInfo().regexp + "\\Q" + trailingZeroes + "\\E", FTAType.LOCALDATE, updatedModifier, false, updatedLength, updatedLength, null, updatedModifier);
+				final DateTimeFormatter interimFormatter = dateTimeParser.ofPattern(interimTypeInfo.format);
+				switchToDate(newTypeInfo,
+						LocalDate.parse(String.valueOf(Double.valueOf(facts.minDoubleNonZero).longValue()), interimFormatter),
+						LocalDate.parse(String.valueOf(Double.valueOf(facts.maxDouble).longValue()), interimFormatter));
 				ctxdebug("Type determination", "was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
 			}
 		}
@@ -3257,13 +3268,12 @@ public class TextAnalyzer {
 	 */
 	private void generateTopBottom() {
 		for (final String s : facts.cardinality.keySet())
-			if (Integer.parseInt(s.trim()) != 0)
-				try {
-					trackDateTime(s, facts.getMatchTypeInfo(), true, 1);
-				}
-				catch (DateTimeException e) {
-					// Swallow - any we lost are no good so will not be in the top/bottom set!
-				}
+			try {
+				trackDateTime(s, facts.getMatchTypeInfo(), true, 1);
+			}
+			catch (DateTimeException e) {
+				// Swallow - any we lost are no good so will not be in the top/bottom set!
+			}
 	}
 
 	private boolean plausibleYear(final long realSamples) {
@@ -3272,6 +3282,18 @@ public class TextAnalyzer {
 				(facts.minLongNonZero >= DateTimeParser.EARLY_LONG_YYYY && facts.maxLong <= DateTimeParser.LATE_LONG_YYYY &&
 				(keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) >= 90 ||
 				keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90));
+	}
+
+	private void switchToDate(final TypeInfo newTypeInfo, final LocalDate newMin, final LocalDate newMax) {
+		facts.setMatchTypeInfo(newTypeInfo);
+		facts.minLocalDate = newMin;
+		facts.maxLocalDate = newMax;
+
+		killInvalidDates();
+
+		// If we are collecting statistics - we need to generate the topK and bottomK
+		if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
+			generateTopBottom();
 	}
 
 	// Called to finalize a LONG type determination when NOT a Semantic type
@@ -3285,24 +3307,13 @@ public class TextAnalyzer {
 		if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > EARLY_LONG_YYYYMMDD && facts.maxLong < LATE_LONG_YYYYMMDD &&
 				DateTimeParser.plausibleDateLong(facts.minLongNonZero, 4) && DateTimeParser.plausibleDateLong(facts.maxLong, 4) &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("date"))) {
-			facts.setMatchTypeInfo(new TypeInfo(null, "\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd"));
-			killInvalidDates();
-			final DateTimeFormatter dtf = dateTimeParser.ofPattern(facts.getMatchTypeInfo().format);
-			facts.minLocalDate = LocalDate.parse(String.valueOf(facts.minLongNonZero), dtf);
-			facts.maxLocalDate = LocalDate.parse(String.valueOf(facts.maxLong), dtf);
 
-			// If we are collecting statistics - we need to generate the topK and bottomK
-			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
-				generateTopBottom();
+			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
+			final DateTimeFormatter dtf = dateTimeParser.ofPattern(newTypeInfo.format);
+			switchToDate(newTypeInfo, LocalDate.parse(String.valueOf(facts.minLongNonZero), dtf), LocalDate.parse(String.valueOf(facts.maxLong), dtf));
 		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && plausibleYear(realSamples)) {
-			facts.setMatchTypeInfo(new TypeInfo(null, "\\d{4}", FTAType.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy"));
-			facts.killZeroes();
-			facts.minLocalDate = LocalDate.of((int)facts.minLongNonZero, 1, 1);
-			facts.maxLocalDate = LocalDate.of((int)facts.maxLong, 1, 1);
-
-			// If we are collecting statistics - we need to generate the topK and bottomK
-			if (analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
-				generateTopBottom();
+			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{4}", FTAType.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
+			switchToDate(newTypeInfo, LocalDate.of((int)facts.minLongNonZero, 1, 1), LocalDate.of((int)facts.maxLong, 1, 1));
 		} else if (facts.cardinality.size() == 2 && facts.minLong == 0 && facts.maxLong == 1) {
 			// boolean by any other name
 			facts.minBoolean = "0";
@@ -3359,15 +3370,11 @@ public class TextAnalyzer {
 		while (it.hasNext()) {
 			final Entry<String, Long> entry = it.next();
 			boolean kill = false;
-			if (Long.parseLong(entry.getKey()) == 0)
+			try {
+				trackDateTime(entry.getKey().trim(), facts.getMatchTypeInfo(), false, 1);
+			}
+			catch (DateTimeException e) {
 				kill = true;
-			else {
-				try {
-					trackDateTime(entry.getKey(), facts.getMatchTypeInfo(), false, 1);
-				}
-				catch (DateTimeException e) {
-					kill = true;
-				}
 			}
 
 			if (kill) {

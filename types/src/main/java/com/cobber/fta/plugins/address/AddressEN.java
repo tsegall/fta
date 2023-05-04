@@ -39,7 +39,6 @@ import com.cobber.fta.token.TokenStreams;
  */
 public class AddressEN extends LogicalTypeInfinite {
 	private boolean multiline;
-	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
 	private String country;
 	private Pattern poBox;
@@ -72,8 +71,7 @@ public class AddressEN extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		addressMarkersRef = new SingletonSet("resource", "/reference/en_street_markers.csv");
-		addressMarkers = addressMarkersRef.getMembers();
+		addressMarkers = new SingletonSet("resource", "/reference/en_street_markers.csv").getMembers();
 
 		country = locale.getCountry().toUpperCase(Locale.ROOT);
 

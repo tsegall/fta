@@ -36,7 +36,6 @@ public class City extends LogicalTypeInfinite {
 	private boolean randomInitialized;
 	private SingletonSet samples;
 	private int maxLength;
-	private String country;
 	private boolean isNetherlands;
 
 	/**
@@ -51,8 +50,7 @@ public class City extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		country = locale.getCountry().toUpperCase(Locale.ROOT);
-		isNetherlands = "NL".equals(country);
+		isNetherlands = "NL".equals(locale.getCountry().toUpperCase(Locale.ROOT));
 
 		return true;
 	}

@@ -30,13 +30,13 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 	protected int minLength = Integer.MAX_VALUE;
 	protected int maxLength = Integer.MIN_VALUE;
 
+	private final WordProcessor wordProcessor = new WordProcessor();
+
 	public abstract Set<String> getMembers();
 
 	public LogicalTypeFinite(final PluginDefinition plugin) {
 		super(plugin);
 	}
-
-	private final WordProcessor wordProcessor = new WordProcessor();
 
 	/*
 	 * Note: The input String will be both trimmed and converted to upper Case

@@ -37,9 +37,7 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = ".+";
 
-	private SingletonSet titleStartersRef;
 	private Set<String> titleStarters;
-	private SingletonSet titleHotWordsRef;
 	private Set<String> titleHotWords;
 
 	/**
@@ -66,10 +64,8 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		titleStartersRef = new SingletonSet("resource", "/reference/en_title_starters.csv");
-		titleStarters = titleStartersRef.getMembers();
-		titleHotWordsRef = new SingletonSet("resource", "/reference/en_title_hotwords.csv");
-		titleHotWords = titleHotWordsRef.getMembers();
+		titleStarters = new SingletonSet("resource", "/reference/en_title_starters.csv").getMembers();
+		titleHotWords = new SingletonSet("resource", "/reference/en_title_hotwords.csv").getMembers();
 
 		return true;
 	}

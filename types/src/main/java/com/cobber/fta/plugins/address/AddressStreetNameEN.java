@@ -40,7 +40,6 @@ import com.cobber.fta.token.TokenStreams;
  */
 public class AddressStreetNameEN extends LogicalTypeInfinite {
 	private boolean multiline;
-	private SingletonSet addressMarkersRef;
 	private Set<String> addressMarkers;
 	private Set<String> markersSeen;
 	private final WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("-#").withAdditionalKillChars("'");
@@ -64,8 +63,7 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		addressMarkersRef = new SingletonSet("resource", "/reference/en_street_markers.csv");
-		addressMarkers = addressMarkersRef.getMembers();
+		addressMarkers = new SingletonSet("resource", "/reference/en_street_markers.csv").getMembers();
 		markersSeen = new HashSet<>();
 
 		return true;

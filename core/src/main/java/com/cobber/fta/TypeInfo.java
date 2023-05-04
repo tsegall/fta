@@ -43,7 +43,7 @@ public class TypeInfo {
 		Y_N,
 		ONE_ZERO;
 
-		private int flag = 1 << ordinal();
+		private final int flag = 1 << ordinal();
 
 		int getFlag() {
 			return flag;

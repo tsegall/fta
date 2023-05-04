@@ -110,7 +110,7 @@ public class HistogramSPDT {
 		if (value > maxValue)
 			maxValue = value;
 
-		if (bins.size() == 0) {
+		if (bins.isEmpty()) {
 			bins.add(new Bin(value, count));
 			return;
 		}

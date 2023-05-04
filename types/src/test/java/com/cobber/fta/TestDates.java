@@ -2638,6 +2638,50 @@ public class TestDates {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void yearsAsDoubles() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Year");
+		final String[] inputs = {
+					"1971.000000", "1974.000000", "1972.000000", "1977.000000", "1979.000000",
+					"1971.000000", "1967.000000", "1966.000000", "1979.000000", "1970.000000",
+					"1983.000000", "1971.000000", "1975.000000", "1966.000000", "1969.000000",
+					"1980.000000", "1968.000000", "1977.000000", "1966.000000", "1978.000000",
+					"1969.000000", "1898.000000", "1971.000000", "1970.000000", "1974.000000",
+					"1979.000000", "1968.000000", "1968.000000", "1970.000000", "1968.000000",
+					"1971.000000", "1979.000000", "1965.000000", "1965.000000", "1972.000000",
+					"1970.000000", "1968.000000", "1974.000000", "1973.000000", "1970.000000",
+					"0.000000"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "yyyy'.000000'");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}\\Q.000000\\E");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "1898.000000");
+		assertEquals(result.getMaxValue(), "1983.000000");
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
+			if (!"0.000000".equals(input))
+				assertTrue(input.matches(result.getRegExp()));
+	}
+
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void datesMonthAbbr_enCA() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Date");
 		analysis.setLocale(Locale.CANADA);
@@ -3173,7 +3217,7 @@ public class TestDates {
 				}
 				final LocaleInfo localeInfo = LocaleInfo.getInstance(locale, analysis.getConfig().isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION));
 
-				if (localeInfo.getShortMonths() == null || localeInfo.getShortMonths().size() == 0) {
+				if (localeInfo.getShortMonths() == null || localeInfo.getShortMonths().isEmpty()) {
 						countNoMonthAbbreviations++;
 						continue;
 				}

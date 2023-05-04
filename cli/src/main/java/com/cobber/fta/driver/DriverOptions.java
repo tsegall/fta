@@ -313,7 +313,7 @@ public class DriverOptions {
 		while (idx < args.length)
 			unprocessed.add(args[idx++]);
 
-		return unprocessed.size() == 0 ? null : unprocessed.stream().toArray(String[] ::new);
+		return unprocessed.isEmpty() ? null : unprocessed.stream().toArray(String[] ::new);
 	}
 
 }

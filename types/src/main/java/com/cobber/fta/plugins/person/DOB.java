@@ -97,9 +97,9 @@ public class DOB extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public PluginAnalysis analyzeSet(AnalyzerContext context, long matchCount, long realSamples, String currentRegExp,
-			Facts facts, FiniteMap cardinality, FiniteMap outliers, TokenStreams tokenStreams,
-			AnalysisConfig analysisConfig) {
+	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
+			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams,
+			final AnalysisConfig analysisConfig) {
 		// Set the regExp based on the Date Format we detected
 		regExp = facts.getMatchTypeInfo().regexp;
 

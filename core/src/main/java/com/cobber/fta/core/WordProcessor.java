@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
  */
 public class WordProcessor {
 	private final StringBuilder defaultBreakChars = new StringBuilder(" \u00A0\n\t,/-_;!.|&");
-	private StringBuilder breakChars = null;
+	private StringBuilder breakChars;
 	private String killChars = "\"()[]";
-	private String breakCharsString = null;
+	private String breakCharsString;
 	private String additionalWordChars = null;
 	private boolean alphaNumberTransition = false;
 	private boolean lastAlpha = false;

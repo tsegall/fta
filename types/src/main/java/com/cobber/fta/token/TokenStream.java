@@ -320,7 +320,7 @@ public class TokenStream {
 		if (isCompressed)
 			return;
 
-		final ArrayList<Token> newTokens = new ArrayList<>();
+		final List<Token> newTokens = new ArrayList<>();
 		Token lastToken = null;
 
 		// Coalesce multiple numerics or alphas into one

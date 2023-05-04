@@ -127,14 +127,14 @@ public class Histogram {
 	 * @return An array of length 'buckets' that constitutes the Histogram (or null if cardinality is zero).
 	 */
 	public Histogram.Entry[] getHistogram(final int buckets) {
+		if (typedMap.isEmpty())
+			return null;
+
 		final Histogram.Entry[] ret = new Entry[buckets];
 		final double[] cutPoints = new double[buckets + 1];
 		HistogramSPDT histogramFull = null;
 		double low;
 		double high;
-
-		if (typedMap.isEmpty())
-			return null;
 
 		if (histogramOverflow != null) {
 			histogramFull = new HistogramSPDT(histogramOverflow);

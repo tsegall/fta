@@ -325,19 +325,19 @@ public class TextAnalysisResult {
 			return facts.getMatchTypeInfo().regexp;
 
 		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
-		String answer = "";
+		StringBuilder answer = new StringBuilder();
 		if (facts.leadingWhiteSpace)
-			answer = KnownTypes.PATTERN_WHITESPACE;
+			answer.append(KnownTypes.PATTERN_WHITESPACE);
 		final boolean optional = facts.getMatchTypeInfo().regexp.indexOf('|') != -1;
 		if (optional)
-			answer += "(";
-		answer += facts.getMatchTypeInfo().regexp;
+			answer.append('(');
+		answer.append(facts.getMatchTypeInfo().regexp);
 		if (optional)
-			answer += ")";
+			answer.append(')');
 		if (facts.trailingWhiteSpace)
-			answer += KnownTypes.PATTERN_WHITESPACE;
+			answer.append(KnownTypes.PATTERN_WHITESPACE);
 
-		return answer;
+		return answer.toString();
 	}
 
 	/**
