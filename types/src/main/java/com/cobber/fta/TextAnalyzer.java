@@ -3296,6 +3296,40 @@ public class TextAnalyzer {
 			generateTopBottom();
 	}
 
+	boolean isReallyDate(final long realSamples) {
+		if (facts.groupingSeparators != 0 || facts.minLongNonZero == Long.MAX_VALUE)
+			return false;
+
+		if (facts.minLongNonZero > EARLY_LONG_YYYYMMDD && facts.maxLong < LATE_LONG_YYYYMMDD &&
+				DateTimeParser.plausibleDateLong(facts.minLongNonZero, 4) && DateTimeParser.plausibleDateLong(facts.maxLong, 4) &&
+				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90)) {
+			// Sometimes a Long is not a Long but it is really a date (yyyyMMdd)
+			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
+			final DateTimeFormatter dtf = dateTimeParser.ofPattern(newTypeInfo.format);
+			switchToDate(newTypeInfo, LocalDate.parse(String.valueOf(facts.minLongNonZero), dtf), LocalDate.parse(String.valueOf(facts.maxLong), dtf));
+			return true;
+		}
+
+		if (facts.minLongNonZero > EARLY_LONG_YYYYMMDD/100 && facts.maxLong < LATE_LONG_YYYYMMDD/100 &&
+				DateTimeParser.plausibleDateLong(facts.minLongNonZero * 100 + 1, 4) && DateTimeParser.plausibleDateLong(facts.maxLong * 100 + 1, 4) &&
+				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || keywords.match(context.getStreamName(), "PERIOD", Keywords.MatchStyle.CONTAINS) >= 90)) {
+			// Sometimes a Long is not a Long but it is really a date (yyyyMM)
+			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{6}", FTAType.LOCALDATE, "yyyyMM", false, 6, 6, null, "yyyyMM");
+			final DateTimeFormatter dtf = dateTimeParser.ofPattern(newTypeInfo.format);
+			switchToDate(newTypeInfo, LocalDate.parse(String.valueOf(facts.minLongNonZero), dtf), LocalDate.parse(String.valueOf(facts.maxLong), dtf));
+			return true;
+		}
+
+		if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && plausibleYear(realSamples)) {
+			// Sometimes a Long is not a Long but it is really a date (yyyy)
+			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{4}", FTAType.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
+			switchToDate(newTypeInfo, LocalDate.of((int)facts.minLongNonZero, 1, 1), LocalDate.of((int)facts.maxLong, 1, 1));
+			return true;
+		}
+
+		return false;
+	}
+
 	// Called to finalize a LONG type determination when NOT a Semantic type
 	void finalizeLong(final long realSamples) {
 		if (KnownTypes.ID.ID_LONG == facts.getMatchTypeInfo().id && facts.getMatchTypeInfo().typeModifier == null && facts.minLong < 0) {
@@ -3303,64 +3337,57 @@ public class TextAnalyzer {
 			ctxdebug("Type determination", "now with sign {}", facts.getMatchTypeInfo());
 		}
 
-		// Sometimes a Long is not a Long but it is really a date
-		if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && facts.minLongNonZero > EARLY_LONG_YYYYMMDD && facts.maxLong < LATE_LONG_YYYYMMDD &&
-				DateTimeParser.plausibleDateLong(facts.minLongNonZero, 4) && DateTimeParser.plausibleDateLong(facts.maxLong, 4) &&
-				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || context.getStreamName().toLowerCase(locale).contains("date"))) {
+		if (isReallyDate(realSamples))
+			return;
 
-			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
-			final DateTimeFormatter dtf = dateTimeParser.ofPattern(newTypeInfo.format);
-			switchToDate(newTypeInfo, LocalDate.parse(String.valueOf(facts.minLongNonZero), dtf), LocalDate.parse(String.valueOf(facts.maxLong), dtf));
-		} else if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && plausibleYear(realSamples)) {
-			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{4}", FTAType.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
-			switchToDate(newTypeInfo, LocalDate.of((int)facts.minLongNonZero, 1, 1), LocalDate.of((int)facts.maxLong, 1, 1));
-		} else if (facts.cardinality.size() == 2 && facts.minLong == 0 && facts.maxLong == 1) {
+		if (facts.cardinality.size() == 2 && facts.minLong == 0 && facts.maxLong == 1) {
 			// boolean by any other name
 			facts.minBoolean = "0";
 			facts.maxBoolean = "1";
 			facts.setMatchTypeInfo(knownTypes.getByID(KnownTypes.ID.ID_BOOLEAN_ONE_ZERO));
-		} else {
-			if (!facts.getMatchTypeInfo().isSemanticType() && facts.groupingSeparators != 0 && !facts.getMatchTypeInfo().hasGrouping()) {
-				facts.setMatchTypeInfo(knownTypes.grouping(facts.getMatchTypeInfo().regexp));
-				ctxdebug("Type determination", "now with grouping {}", facts.getMatchTypeInfo());
-			}
+			return;
+		}
 
-			if (!facts.getMatchTypeInfo().isSemanticType()) {
-				// Create a new TypeInfo - we don't want to change a predefined one!
-				facts.setMatchTypeInfo(new TypeInfo(facts.getMatchTypeInfo()));
-				facts.getMatchTypeInfo().regexp = freezeNumeric(facts.getMatchTypeInfo().regexp);
-			}
+		if (!facts.getMatchTypeInfo().isSemanticType() && facts.groupingSeparators != 0 && !facts.getMatchTypeInfo().hasGrouping()) {
+			facts.setMatchTypeInfo(knownTypes.grouping(facts.getMatchTypeInfo().regexp));
+			ctxdebug("Type determination", "now with grouping {}", facts.getMatchTypeInfo());
+		}
 
-			// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
-			final LogicalTypeFinite logicalFinite = matchFiniteTypes(FTAType.LONG, facts.cardinality);
-			if (logicalFinite != null)
-				facts.confidence = logicalFinite.getConfidence(facts.matchCount, realSamples, context);
+		if (!facts.getMatchTypeInfo().isSemanticType()) {
+			// Create a new TypeInfo - we don't want to change a predefined one!
+			facts.setMatchTypeInfo(new TypeInfo(facts.getMatchTypeInfo()));
+			facts.getMatchTypeInfo().regexp = freezeNumeric(facts.getMatchTypeInfo().regexp);
+		}
 
-			if (!facts.getMatchTypeInfo().isSemanticType())
-				for (final LogicalTypeRegExp logical : regExpTypes) {
-					if (logical.acceptsBaseType(FTAType.LONG) &&
-							logical.isMatch(facts.getMatchTypeInfo().regexp) &&
-							logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-						facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
-						facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
-						ctxdebug("Type determination", "was LONG, matchTypeInfo - {}", facts.getMatchTypeInfo());
-						break;
-					}
+		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
+		final LogicalTypeFinite logicalFinite = matchFiniteTypes(FTAType.LONG, facts.cardinality);
+		if (logicalFinite != null)
+			facts.confidence = logicalFinite.getConfidence(facts.matchCount, realSamples, context);
+
+		if (!facts.getMatchTypeInfo().isSemanticType())
+			for (final LogicalTypeRegExp logical : regExpTypes) {
+				if (logical.acceptsBaseType(FTAType.LONG) &&
+						logical.isMatch(facts.getMatchTypeInfo().regexp) &&
+						logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+					facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
+					facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
+					ctxdebug("Type determination", "was LONG, matchTypeInfo - {}", facts.getMatchTypeInfo());
+					break;
 				}
-
-			if (!facts.getMatchTypeInfo().isSemanticType() && realSamples >= analysisConfig.getDetectWindow() &&
-					(facts.confidence < analysisConfig.getThreshold()/100.0 ||
-							(analysisConfig.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING) && !facts.outliers.isEmpty() && (new OutlierAnalysis(facts.outliers, facts.getMatchTypeInfo())).doubles == facts.outliers.size()))) {
-				// We thought it was an integer field, but on reflection it does not feel like it
-				conditionalBackoutToPattern(realSamples, facts.getMatchTypeInfo());
-				facts.confidence = (double) facts.matchCount / realSamples;
 			}
 
-			// If it is a Semantic type then the outliers are invalid, if it is not a Semantic type then it is garbage and so is also invalid
-			if (!facts.outliers.isEmpty()) {
-				facts.invalid.putAll(facts.outliers);
-				facts.outliers.clear();
-			}
+		if (!facts.getMatchTypeInfo().isSemanticType() && realSamples >= analysisConfig.getDetectWindow() &&
+				(facts.confidence < analysisConfig.getThreshold()/100.0 ||
+						(analysisConfig.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING) && !facts.outliers.isEmpty() && (new OutlierAnalysis(facts.outliers, facts.getMatchTypeInfo())).doubles == facts.outliers.size()))) {
+			// We thought it was an integer field, but on reflection it does not feel like it
+			conditionalBackoutToPattern(realSamples, facts.getMatchTypeInfo());
+			facts.confidence = (double) facts.matchCount / realSamples;
+		}
+
+		// If it is a Semantic type then the outliers are invalid, if it is not a Semantic type then it is garbage and so is also invalid
+		if (!facts.outliers.isEmpty()) {
+			facts.invalid.putAll(facts.outliers);
+			facts.outliers.clear();
 		}
 	}
 

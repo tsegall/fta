@@ -144,6 +144,16 @@
 		]
 	},
 	{
+		"keytag": "PERIOD",
+		"keyType": "REGEX",
+		"validLocales": [
+			{ "localeTag": "en",
+				"headerRegExps": [ { "regExp": "(?i).*(period).*", "confidence": 90 } ] },
+			{ "localeTag": "nl",
+				"headerRegExps": [ { "regExp": "(?i).*(periode).*", "confidence": 90 } ] }
+		]
+	},
+	{
 		"keytag": "NO_DATA",
 		"keyType": "REGEX",
 		"validLocales": [

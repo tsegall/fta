@@ -178,136 +178,165 @@ public class DriverOptions {
 		addFromStringArray(Files.readString(Paths.get(filePath)).split("[ \n]"));
 	}
 
+	private int nextIntegerArg(final String[] args, final int index) {
+		if (index + 1 >= args.length)
+			throw new IllegalArgumentException("Missing mandatory argument for '" + args[index] + "' option");
+
+		int ret;
+
+		try {
+			ret = Integer.parseInt(args[index + 1]);
+		}
+		catch (NumberFormatException e) {
+			throw new IllegalArgumentException("Expecting integer argument for '" + args[index] + "' option");
+		}
+
+		return ret;
+	}
+
+	private String nextStringArg(final String[] args, final int index) {
+		if (index + 1 >= args.length)
+			throw new IllegalArgumentException("Missing mandatory argument for '" + args[index] + "' option");
+		return args[index + 1];
+	}
+
 	public String[] addFromStringArray(final String[] args) {
 		final List<String> unprocessed = new ArrayList<>();
 		int idx = 0;
-		while (idx < args.length && args[idx].charAt(0) == '-') {
-			if ("--abbreviationPunctuation".equals(args[idx]))
-				abbreviationPunctuation = true;
-			else if ("--bulk".equals(args[idx]))
-				bulk = true;
-			else if ("--charset".equals(args[idx]))
-				charset = args[++idx];
-			else if ("--col".equals(args[idx]))
-				col = Integer.parseInt(args[++idx]);
-			else if ("--createBloomfilter".equals(args[idx])) {
-				unprocessed.add(args[idx]);
-				unprocessed.add(args[++idx]);
-				unprocessed.add(args[++idx]);
-			}
-			else if ("--createNormalized".equals(args[idx])) {
-				unprocessed.add(args[idx]);
-				unprocessed.add(args[++idx]);
-			}
-			else if ("--createSemanticHTML".equals(args[idx])) {
-				unprocessed.add(args[idx]);
-				unprocessed.add(args[++idx]);
-			}
-			else if ("--debug".equals(args[idx]))
-				debug = Integer.parseInt(args[++idx]);
-			else if ("--delimiter".equals(args[idx]))
-				delimiter = args[++idx];
-			else if ("--detectWindow".equals(args[idx]))
-				detectWindow = Integer.parseInt(args[++idx]);
-			else if ("--faker".equals(args[idx]))
-				faker = args[++idx];
-			else if ("--formatDetection".equals(args[idx]))
-				formatDetection = true;
-			else if ("--help".equals(args[idx])) {
-				unprocessed.add(args[idx]);
-			}
-			else if ("--locale".equals(args[idx])) {
-				final String tag = args[++idx];
-				locale = Locale.forLanguageTag(tag);
-				if (!locale.toLanguageTag().equals(tag)) {
-					System.err.printf("ERROR: Language tag '%s' not known - using '%s'?%n", tag, locale.toLanguageTag());
-					System.exit(1);
+
+		try {
+			while (idx < args.length && args[idx].charAt(0) == '-') {
+				if ("--abbreviationPunctuation".equals(args[idx]))
+					abbreviationPunctuation = true;
+				else if ("--bulk".equals(args[idx]))
+					bulk = true;
+				else if ("--charset".equals(args[idx]))
+					charset = nextStringArg(args, idx++);
+				else if ("--col".equals(args[idx]))
+					col = nextIntegerArg(args, idx++);
+				else if ("--createBloomfilter".equals(args[idx])) {
+					unprocessed.add(args[idx]);
+					unprocessed.add(nextStringArg(args, idx++));
+					unprocessed.add(nextStringArg(args, idx++));
 				}
-			}
-			else if ("--json".equals(args[idx]))
-				json = true;
-			else if ("--knownTypes".equals(args[idx]))
-				knownTypes = args[++idx];
-			else if ("--legacyJSON".equals(args[idx]))
-				legacyJSON = true;
-			else if ("--maxInputLength".equals(args[idx]))
-				maxInputLength = Integer.parseInt(args[++idx]);
-			else if ("--maxOutlierCardinality".equals(args[idx]))
-				maxOutlierCardinality = Integer.parseInt(args[++idx]);
-			else if ("--noAnalysis".equals(args[idx]))
-				noAnalysis = true;
-			else if ("--noPretty".equals(args[idx]))
-				pretty = false;
-			else if ("--noDistributions".equals(args[idx]))
-				noDistributions = true;
-			else if ("--noSemanticTypes".equals(args[idx]))
-				noSemanticTypes = true;
-			else if ("--noStatistics".equals(args[idx]))
-				noStatistics = true;
-			else if ("--noNullAsText".equals(args[idx]))
-				noNullAsText = true;
-			else if ("--output".equals(args[idx]))
-				output = true;
-			else if ("--pluginDefinition".equals(args[idx]))
-				pluginDefinition = true;
-			else if ("--pluginMode".equals(args[idx]))
-				pluginMode = Boolean.valueOf(args[++idx]);
-			else if ("--pluginName".equals(args[idx]))
-				pluginName = args[++idx];
-			else if ("--pluginThreshold".equals(args[idx]))
-				pluginThreshold = Integer.parseInt(args[++idx]);
-			else if ("--quoteChar".equals(args[idx]))
-				quoteChar = args[++idx];
-			else if ("--records".equals(args[idx]))
-				recordsToProcess = Long.parseLong(args[++idx]);
-			else if ("--replay".equals(args[idx])) {
-				unprocessed.add(args[idx]);
-				unprocessed.add(args[++idx]);
-			}
-			else if ("--resolutionMode".equals(args[idx])) {
-				final String mode = args[++idx];
-				if ("DayFirst".equals(mode))
-					resolutionMode = DateResolutionMode.DayFirst;
-				else if ("MonthFirst".equals(mode))
-					resolutionMode = DateResolutionMode.MonthFirst;
-				else if ("Auto".equals(mode))
-					resolutionMode = DateResolutionMode.Auto;
-				else if ("None".equals(mode))
-					resolutionMode = DateResolutionMode.None;
+				else if ("--createNormalized".equals(args[idx])) {
+					unprocessed.add(args[idx]);
+					unprocessed.add(nextStringArg(args, idx++));
+				}
+				else if ("--createSemanticHTML".equals(args[idx])) {
+					unprocessed.add(args[idx]);
+					unprocessed.add(nextStringArg(args, idx++));
+				}
+				else if ("--debug".equals(args[idx]))
+					debug = nextIntegerArg(args, idx++);
+				else if ("--delimiter".equals(args[idx]))
+					delimiter = nextStringArg(args, idx++);
+				else if ("--detectWindow".equals(args[idx]))
+					detectWindow = nextIntegerArg(args, idx++);
+				else if ("--faker".equals(args[idx]))
+					faker = nextStringArg(args, idx++);
+				else if ("--formatDetection".equals(args[idx]))
+					formatDetection = true;
+				else if ("--help".equals(args[idx])) {
+					unprocessed.add(args[idx]);
+				}
+				else if ("--locale".equals(args[idx])) {
+					final String tag = nextStringArg(args, idx++);;
+					locale = Locale.forLanguageTag(tag);
+					if (!locale.toLanguageTag().equals(tag)) {
+						System.err.printf("ERROR: Language tag '%s' not known - using '%s'?%n", tag, locale.toLanguageTag());
+						System.exit(1);
+					}
+				}
+				else if ("--json".equals(args[idx]))
+					json = true;
+				else if ("--knownTypes".equals(args[idx]))
+					knownTypes = nextStringArg(args, idx++);
+				else if ("--legacyJSON".equals(args[idx]))
+					legacyJSON = true;
+				else if ("--maxInputLength".equals(args[idx]))
+					maxInputLength = nextIntegerArg(args, idx++);
+				else if ("--maxOutlierCardinality".equals(args[idx]))
+					maxOutlierCardinality = nextIntegerArg(args, idx++);
+				else if ("--noAnalysis".equals(args[idx]))
+					noAnalysis = true;
+				else if ("--noPretty".equals(args[idx]))
+					pretty = false;
+				else if ("--noDistributions".equals(args[idx]))
+					noDistributions = true;
+				else if ("--noSemanticTypes".equals(args[idx]))
+					noSemanticTypes = true;
+				else if ("--noStatistics".equals(args[idx]))
+					noStatistics = true;
+				else if ("--noNullAsText".equals(args[idx]))
+					noNullAsText = true;
+				else if ("--output".equals(args[idx]))
+					output = true;
+				else if ("--pluginDefinition".equals(args[idx]))
+					pluginDefinition = true;
+				else if ("--pluginMode".equals(args[idx]))
+					pluginMode = Boolean.valueOf(args[++idx]);
+				else if ("--pluginName".equals(args[idx]))
+					pluginName = nextStringArg(args, idx++);
+				else if ("--pluginThreshold".equals(args[idx]))
+					pluginThreshold = nextIntegerArg(args, idx++);
+				else if ("--quoteChar".equals(args[idx]))
+					quoteChar = nextStringArg(args, idx++);
+				else if ("--records".equals(args[idx]))
+					recordsToProcess = Long.parseLong(args[++idx]);
+				else if ("--replay".equals(args[idx])) {
+					unprocessed.add(args[idx]);
+					unprocessed.add(nextStringArg(args, idx++));
+				}
+				else if ("--resolutionMode".equals(args[idx])) {
+					final String mode = nextStringArg(args, idx++);
+					if ("DayFirst".equals(mode))
+						resolutionMode = DateResolutionMode.DayFirst;
+					else if ("MonthFirst".equals(mode))
+						resolutionMode = DateResolutionMode.MonthFirst;
+					else if ("Auto".equals(mode))
+						resolutionMode = DateResolutionMode.Auto;
+					else if ("None".equals(mode))
+						resolutionMode = DateResolutionMode.None;
+					else {
+						System.err.printf("ERROR: Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None%n", mode);
+						System.exit(1);
+					}
+				}
+				else if ("--samples".equals(args[idx]))
+					samples = true;
+				else if ("--semanticType".equals(args[idx]))
+					semanticTypes = nextStringArg(args, idx++);
+				else if ("--signature".equals(args[idx]))
+					signature = true;
+				else if ("--skip".equals(args[idx]))
+					skip = nextIntegerArg(args, idx++);
+				else if ("--threshold".equals(args[idx]))
+					threshold = nextIntegerArg(args, idx++);
+				else if ("--trace".equals(args[idx]))
+					trace = nextStringArg(args, idx++);
+				else if ("--validate".equals(args[idx]))
+					validate = nextIntegerArg(args, idx++);
+				else if ("--verbose".equals(args[idx]))
+					verbose++;
+				else if ("--version".equals(args[idx])) {
+					unprocessed.add(args[idx]);
+				}
+				else if ("--xMaxCharsPerColumn".equals(args[idx]))
+					xMaxCharsPerColumn = nextIntegerArg(args, idx++);
+				else if ("--xMaxColumns".equals(args[idx]))
+					xMaxColumns = nextIntegerArg(args, idx++);
 				else {
-					System.err.printf("ERROR: Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None%n", mode);
+					unprocessed.add(args[idx]);
+					System.err.printf("ERROR: Unrecognized option: '%s', use --help%n", args[idx]);
 					System.exit(1);
 				}
+				idx++;
 			}
-			else if ("--samples".equals(args[idx]))
-				samples = true;
-			else if ("--semanticType".equals(args[idx]))
-				semanticTypes = args[++idx];
-			else if ("--signature".equals(args[idx]))
-				signature = true;
-			else if ("--skip".equals(args[idx]))
-				skip = Integer.parseInt(args[++idx]);
-			else if ("--threshold".equals(args[idx]))
-				threshold = Integer.parseInt(args[++idx]);
-			else if ("--trace".equals(args[idx]))
-				trace = args[++idx];
-			else if ("--validate".equals(args[idx]))
-				validate = Integer.parseInt(args[++idx]);
-			else if ("--verbose".equals(args[idx]))
-				verbose++;
-			else if ("--version".equals(args[idx])) {
-				unprocessed.add(args[idx]);
-			}
-			else if ("--xMaxCharsPerColumn".equals(args[idx]))
-				xMaxCharsPerColumn = Integer.parseInt(args[++idx]);
-			else if ("--xMaxColumns".equals(args[idx]))
-				xMaxColumns = Integer.parseInt(args[++idx]);
-			else {
-				unprocessed.add(args[idx]);
-				System.err.printf("ERROR: Unrecognized option: '%s', use --help%n", args[idx]);
-				System.exit(1);
-			}
-			idx++;
+		}
+		catch (IllegalArgumentException e) {
+			System.err.printf("ERROR: %s%n", e.getMessage());
+			System.exit(1);
 		}
 
 		while (idx < args.length)

@@ -1,7 +1,12 @@
 
 ## Changes ##
 
--### 13.6.1
+### 13.6.2
+ - ENH: Add support for period detection of the form yyyyMM (#38)
+ - ENH: I18N - yyyyMMdd detection (now look for localized "date" header)
+ - ENH: Improve robustness of command line processing
+
+### 13.6.1
  - ENH: I18N - minor improvement to STREET_NAME_BARE_NL detection
  - ENH: Remove deprecated DateTimeParser constructors
  - BUG: Fix regExp returned with Doubles that are actually LocalDates (also add test case)

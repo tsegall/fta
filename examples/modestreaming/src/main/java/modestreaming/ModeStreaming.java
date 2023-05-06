@@ -40,7 +40,7 @@ public abstract class ModeStreaming {
 		final TextAnalysisResult result = analysis.getResult();
 
 		if (result.getSemanticType() == null) {
-			System.err.printf("Current locale is '%s' - which does not support Semantic Type: NAME.FIRST_LAST\n", Locale.getDefault());
+			System.err.printf("Current locale is '%s' - which does not support Semantic Type: NAME.FIRST_LAST", Locale.getDefault());
 		}
 		else {
 			System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
