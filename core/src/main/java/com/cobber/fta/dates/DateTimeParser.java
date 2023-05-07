@@ -760,13 +760,30 @@ public class DateTimeParser {
 		}
 	}
 
+	private boolean validCentury(final String trimmed) {
+		final char initial = trimmed.charAt(0);
+		return initial == '1' || initial == '2';
+	}
+
 	private String passNumeric(final String trimmed, final SimpleDateMatcher matcher, final DateResolutionMode resolutionMode) {
 		final String compressed = matcher.getCompressed();
 
 		if ("d{4}".equals(compressed)) {
-			// To assume it is a year it needs to be in the range [EARLY_LONG_YYYY,LATE_LONG_YYYY]
+			if (!validCentury(trimmed))
+				return null;
 			final int year = Utils.getValue(trimmed, 0, 4, 4);
 			return year >= EARLY_LONG_YYYY && year <= LATE_LONG_YYYY  ? "yyyy" : null;
+		}
+
+		// 6 digits so should be looking at yyyyMM (it could of course be yyyyqq :-( )
+		if ("d{6}".equals(compressed)) {
+			if (!validCentury(trimmed))
+				return null;
+			final int year = Utils.getValue(trimmed, 0, 4, 4);
+			if (year < RECENT_EARLY_LONG_YYYY || year > LATE_LONG_YYYY)
+				return null;
+			final int MM = Utils.getValue(trimmed, 4, 2, 2);
+			return MM != 0 && MM <= 12 ? "yyyyMM" : null;
 		}
 
 		// 8 digits so should be looking at yyyyMMdd, MMddyyyy, or ddMMyyyy
@@ -801,6 +818,27 @@ public class DateTimeParser {
 				}
 			}
 			return null;
+		}
+
+		// 10 digits so could be looking at yyyyMMddHH
+		if ("d{10}".equals(compressed)) {
+			if (!validCentury(trimmed))
+				return null;
+			final int yyyy = Utils.getValue(trimmed, 0, 4, 4);
+			if (yyyy < RECENT_EARLY_LONG_YYYY || yyyy > LATE_LONG_YYYY)
+				return null;
+			final int MM = Utils.getValue(trimmed, 4, 2, 2);
+			if (MM > 12)
+				return null;
+			final int dd = Utils.getValue(trimmed, 6, 2, 2);
+			if (dd > 31)
+				return null;
+			final int HH = Utils.getValue(trimmed, 8, 2, 2);
+			if (HH >= 24)
+				return null;
+			if (!isValidDate(yyyy, MM, dd))
+				return null;
+			return "yyyyMMddHH";
 		}
 
 		// 12 or 14 digits so we are looking at yyyyMMddHHmm (12) or yyyyMMddHHmmss (14)

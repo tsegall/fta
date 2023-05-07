@@ -2323,6 +2323,21 @@
 		"priority": 237
 	},
 	{
+		"semanticType": "IDENTITY.NPI_US",
+		"description": "National Provider Identifier (US)",
+		"pluginType": "java",
+		"signature": "x+p/BP9gCPuonINo01fu324kuvE=",
+		"clazz": "com.cobber.fta.plugins.identity.NPI_US",
+		"validLocales": [
+			{ "localeTag": "en-US", "headerRegExps": [ { "regExp": "(?i)(NPI|national.?provider.?identifier)", "confidence": 95 } ] }
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/National_Provider_Identifier" }
+		],
+		"baseType": "LONG",
+		"priority": 238
+	},
+	{
 		"semanticType": "IDENTITY.DUNS",
 		"description": "Data Universal Numbering System (Dun & Bradstreet)",
 		"pluginType": "regex",
@@ -2342,7 +2357,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Data_Universal_Numbering_System" }
 		],
 		"baseType": "LONG",
-		"priority": 238
+		"priority": 239
 	},
 	{
 		"semanticType": "IDENTITY.VAT_<COUNTRY>",
@@ -2364,7 +2379,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Value-added_tax" }
 		],
 		"threshold": 95,
-		"priority": 239
+		"priority": 240
 	},
 	{
 		"semanticType": "LANGUAGE.ISO-639-2",
@@ -2381,7 +2396,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_639-2" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 240
+		"priority": 245
 	},
 	{
 		"semanticType": "LANGUAGE.ISO-639-1",
@@ -2398,7 +2413,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_639-1" }
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 241
+		"priority": 246
 	},
 	{
 		"semanticType": "LANGUAGE.TEXT_EN",
@@ -2513,7 +2528,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(timestamp).*", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(timestamp|_ts).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\d{10}",
 					"isRegExpComplete": false
@@ -2537,7 +2552,7 @@
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(timestamp).*", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(timestamp|_ts).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\d{13}",
 					"isRegExpComplete": false

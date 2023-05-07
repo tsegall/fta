@@ -281,6 +281,19 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void digits6() {
+		final DateTimeParser dtpNumericDayFirst = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+
+		assertEquals(dtpNumericDayFirst.determineFormatString("201407"), "yyyyMM");
+		assertNull(dtpNumericDayFirst.determineFormatString("201213"));
+
+
+		final DateTimeParser dtpNonNumeric = new DateTimeParser().withNumericMode(false);
+
+		assertNull(dtpNonNumeric.determineFormatString("201407"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void digits8() {
 		final DateTimeParser dtpNumericDayFirst = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
 
@@ -318,6 +331,19 @@ public class DetermineDateTimeFormatTests {
 
 		assertNull(dtpNonNumeric.determineFormatString("20121213"));
 		assertNull(dtpNonNumeric.determineFormatString("20140722105203"), "yyyyMMddHHmmss");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void digits10() {
+		final DateTimeParser dtpNumericDayFirst = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+
+		assertEquals(dtpNumericDayFirst.determineFormatString("2014072210"), "yyyyMMddHH");
+		assertNull(dtpNumericDayFirst.determineFormatString("2012131232"));
+
+
+		final DateTimeParser dtpNonNumeric = new DateTimeParser().withNumericMode(false);
+
+		assertNull(dtpNonNumeric.determineFormatString("2014072210"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

@@ -34,10 +34,10 @@ public class DateTimeParserConfig {
 	public boolean strictMode;
 	/** If Numeric mode is set, any numeric-only input to train() will be tested to see if it appears to be a date (Default: true). */
 	public boolean numericMode = true;
-	/** If noAbbreviationPunctuation is set we should use Month Abbreviations without periods, for example for the
-	 * Canadian locale, Java returns 'AUG.', and similarly for the AM/PM string which are defined in as A.M and P.M. */
+	/** If noAbbreviationPunctuation is set we should use Month Abbreviations without periods, for example in the
+	 * Canadian locale, Java returns 'AUG.', and similarly for the AM/PM string which are defined as A.M and P.M. (Default: true). */
 	public boolean noAbbreviationPunctuation = true;
-	/** lenient allows dates of the form '00/00/00' etc to be viewed as valid for the purpose of Format detection. */
+	/** lenient allows dates of the form '00/00/00' etc to be viewed as valid for the purpose of Format detection (Default: true). */
 	public boolean lenient = true;
 
 	public DateTimeParserConfig(final Locale... locales) {

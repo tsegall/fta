@@ -319,6 +319,7 @@ IDENTITY.EIN_US|Employer Identification Number|en-US
 IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number (Japan)|ja
 IDENTITY.NHS_UK|NHS Number|en-UK
 IDENTITY.NI_UK|National Insurance Number (UK)|en-UK
+IDENTITY.NPI_US|National Provider Identifier (US)|en-US
 IDENTITY.PERSONNUMMER_SE|Personal identity number (Sweden)|sv-SE
 IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
 IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH
@@ -700,7 +701,7 @@ Repository](https://mvnrepository.com/artifact/com.cobber.fta/fta) or [Maven.org
 
 ## Javadoc ##
 
-Javadoc is automatically updated to reflect the latest release at http://javadoc.io/doc/com.cobber.fta/fta/.
+Javadoc is automatically updated to reflect the latest release at http://javadoc.io/doc/com.cobber.fta/fta/ and http://javadoc.io/doc/com.cobber.fta/fta-core/ .
 
 ## Speed  ##
 

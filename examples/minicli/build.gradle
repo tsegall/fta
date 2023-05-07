@@ -1,5 +1,5 @@
 plugins {
-    id 'application'
+	id 'application'
 }
 
 wrapper {
@@ -7,14 +7,14 @@ wrapper {
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    implementation group: 'com.cobber.fta', name: 'fta', version: "13.+"
-    implementation 'com.univocity:univocity-parsers:2.9.1'
+	implementation 'com.cobber.fta:fta:13.+'
+	implementation 'com.univocity:univocity-parsers:2.9.1'
 }
 
 application {
-    mainClass = 'cli.Cli'
+	mainClass = 'cli.Cli'
 }

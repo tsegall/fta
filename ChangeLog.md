@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 13.7.0
+ - ENH: I18N - Add new Semantic Type - IDENTITY.NPI_US (National Provider Identifier (US))
+ - ENH: DateTimeParser: Add support for date detection of the form yyyyMM and yyyyMMddHH (#39)
+ - ENH: Improve detection of timestamps (minor)
+
 ### 13.6.2
  - ENH: Add support for period detection of the form yyyyMM (#38)
  - ENH: I18N - yyyyMMdd detection (now look for localized "date" header)
