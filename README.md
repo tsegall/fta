@@ -434,7 +434,7 @@ Note: The Context (the current Stream Name and other field names) can be used to
                         {
                                 "localeTag": "en-US",
                                 "headerRegExps": [ { "regExp": ".*(?i)(SSN|Social).*", "confidence": 70 } ],
-                                "matchEntries": [ { "regExpReturned" : "(?i)(冥王星|土星|地球|天王星|木星|水星|海王星|火星|金星)" } ]
+                                "matchEntries": [ { "regExpReturned" : "\\d{3}-\\d{2}-\\d{4}" } ]
                         }
                 ],
                 "threshold": 98,
@@ -464,8 +464,10 @@ Note: The Context (the current Stream Name and other field names) can be used to
                                 "matchEntries": [ { "regExpReturned" : "(?i)(冥王星|土星|地球|天王星|木星|水星|海王星|火星|金星)" } ]
                         }
                 ],
-                "contentType": "inline",
-                "content": "{ \"members\": [ \"冥王星\", \"土星\", \"地球\", \"天王星\", \"木星\", \"水星\", \"海王星\", \"火星\", \"金星\" ] }",
+				"content": {
+					"type": "inline",
+					"members": [ "冥王星", "土星", "地球", "天王星", "木星", "水星", "海王星", "火星", "金星" ]
+				}
                 "backout": ".*",
                 "baseType": "STRING"
         }
@@ -511,9 +513,10 @@ The optional 'invalidList' tag is a list of invalid values for this Semantic Typ
 
 ### Finite plugins ###
 
-The mandatory 'contentType' tag determines how the content is provided (possible values are 'inline', 'resource', or 'file').
+The mandatory 'content' element is required.
 
-The mandatory 'content' tag is either a file reference if the contentType is 'resource' or 'file' or the actual content if the contentType is 'inline'.  Note: the content is assumed to be UTF-8.
+The 'type' tag determines how the content is provided (possible values are 'inline', 'resource', or 'file').
+If the type is 'inline' then the tag 'members' is the array of possible values.  If the type is 'resource' or 'file' then the tag 'reference' is the file/resource that contains the list of values.  Note: the list of possible values is required to be upper case and encoded in UTF-8.
 
 ## Invalid Set ##
 
