@@ -138,7 +138,7 @@ public class TestIdentity {
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("SSN", "Social Security Number", null, null, null, "\\d{3}-\\d{2}-\\d{4}",
+		plugins.add(new PluginDefinition("SSN", "Social Security Number", null, null, "\\d{3}-\\d{2}-\\d{4}",
 				new PluginLocaleEntry[] { new PluginLocaleEntry("en-US", ".*(SSN|social).*" , 100, "\\d{3}-\\d{2}-\\d{4}") },
 						true, 98, FTAType.STRING));
 

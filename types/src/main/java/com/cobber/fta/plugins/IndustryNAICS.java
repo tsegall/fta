@@ -19,6 +19,7 @@ import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.Content;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
 import com.cobber.fta.LogicalTypeInfinite;
@@ -53,7 +54,7 @@ public class IndustryNAICS extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		codesRef = new SingletonSet("resource", "/reference/naics_code.csv");
+		codesRef = new SingletonSet(new Content("resource", "/reference/naics_code.csv"));
 		codes = codesRef.getMembers();
 
 		return true;

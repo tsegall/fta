@@ -19,6 +19,7 @@ import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.Content;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
 import com.cobber.fta.KnownTypes;
@@ -80,7 +81,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		zipsRef = new SingletonSet("resource", "/reference/us_zips.csv");
+		zipsRef = new SingletonSet(new Content("resource", "/reference/us_zips.csv"));
 		zips = zipsRef.getMembers();
 
 		return true;

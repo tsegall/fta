@@ -58,8 +58,9 @@ public class Processor {
 			if (options.knownTypes != null)
 				context.withSemanticTypes(options.knownTypes.split(","));
 			final TextAnalyzer template = new TextAnalyzer(context);
-			options.apply(template);
 			recordAnalyzer = new RecordAnalyzer(template);
+			for (final TextAnalyzer analyzer : recordAnalyzer.getAnalyzers())
+				options.apply(analyzer);
 			return;
 		}
 

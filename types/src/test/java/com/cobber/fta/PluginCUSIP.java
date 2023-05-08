@@ -18,6 +18,6 @@ package com.cobber.fta;
 public class PluginCUSIP extends LogicalTypeFiniteSimple {
 	public PluginCUSIP(final PluginDefinition plugin) {
 		super(plugin, "\\p{Alnum}{9}", 99);
-		setContent("resource", "/CUSIP.txt");
+		setContent(new Content("resource", "/CUSIP.txt"));
 	}
 }

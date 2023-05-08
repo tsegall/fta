@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 14.0.0
+ - ENH: Format of plugins has changed - content is now true JSON as opposed to a String
+ - BUG: Fix --semanticType being ignored when using RecordAnalyzer
+
 ### 13.7.0
  - ENH: I18N - Add new Semantic Type - IDENTITY.NPI_US (National Provider Identifier (US))
  - ENH: DateTimeParser: Add support for date detection of the form yyyyMM and yyyyMMddHH (#39)

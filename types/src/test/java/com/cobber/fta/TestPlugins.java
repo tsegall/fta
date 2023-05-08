@@ -61,7 +61,6 @@ import com.cobber.fta.plugins.IPV4Address;
 import com.cobber.fta.plugins.PhoneNumberLT;
 import com.cobber.fta.plugins.URLLT;
 import com.cobber.fta.plugins.USZip5;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
@@ -3284,7 +3283,7 @@ public class TestPlugins {
 		final Locale portuguese = Locale.forLanguageTag("pt-BR");
 		analysis.setLocale(portuguese);
 		final List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("GENDER_PT", "Gender (Portuguese Language)", null, null, null, "\\d{3}-\\d{2}-\\d{4}",
+		plugins.add(new PluginDefinition("GENDER_PT", "Gender (Portuguese Language)", null, null, "\\d{3}-\\d{2}-\\d{4}",
 				new PluginLocaleEntry[] { new PluginLocaleEntry("pt", null, 90, "(?i)(FEMENINO|MASCULINO)") },
 				true, 98, FTAType.STRING));
 
@@ -3316,11 +3315,11 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testFinitePlugin() throws IOException, FTAException {
-		final InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
+		final Content planets = new Content(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
 
 		final PluginDefinition pluginDefinition = new PluginDefinition("PLANET", "One of the planets orbiting our Solar System",
-				null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*",
+				null, planets, "\\p{Alpha}*",
 				new PluginLocaleEntry[] { new PluginLocaleEntry("en", null, 90, null) }, true,  98, FTAType.STRING);
 
 
@@ -3360,11 +3359,11 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testFinitePluginBackout() throws IOException, FTAException {
-		final InlineContent planets = new InlineContent(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
+		final Content planets = new Content(new String[] { "MERCURY", "VENUS", "EARTH", "MARS", "JUPITER", "SATURN", "URANUS", "NEPTUNE", "PLUTO", "" });
 		final int SAMPLES = 100;
 
 		final PluginDefinition pluginDefinition = new PluginDefinition(
-				"PLANET", "One of the planets orbiting our Solar System", null, (new ObjectMapper()).writeValueAsString(planets), "inline", "\\p{Alpha}*",
+				"PLANET", "One of the planets orbiting our Solar System", null, planets, "\\p{Alpha}*",
 				new PluginLocaleEntry[] { new PluginLocaleEntry("en", null, 90, "\\p{Alpha}*") }, true, 98, FTAType.STRING);
 
 		final TextAnalyzer analysis = new TextAnalyzer("Planets");
@@ -3645,7 +3644,7 @@ public class TestPlugins {
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", "Another sort of CUSIP",
-				null, null, null, "[\\p{IsAlphabetic}\\d]{9}",
+				null, null, "[\\p{IsAlphabetic}\\d]{9}",
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*CUSIP.*", 100, "[\\p{IsAlphabetic}\\d]{9}") },
 				false, 98, FTAType.STRING));
 
@@ -3688,7 +3687,7 @@ public class TestPlugins {
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", "Another sort of CUSIP",
-				null, null, null, "[\\p{IsAlphabetic}\\d]{9}",
+				null, null, "[\\p{IsAlphabetic}\\d]{9}",
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*CUSIP.*", 100, "[\\p{IsAlphabetic}\\d]{9}") }, false, 98, FTAType.STRING));
 
 		try {
@@ -3764,7 +3763,7 @@ public class TestPlugins {
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		plugins.add(new PluginDefinition("CUSIP", "Another sort of CUSIP",
-				null, null, null, "[\\p{IsAlphabetic}\\d]{9}",
+				null, null, "[\\p{IsAlphabetic}\\d]{9}",
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 100, "[\\p{IsAlphabetic}\\d]{9}") }, false, 98, FTAType.STRING));
 
 		try {
@@ -3817,7 +3816,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("FUND_ID");
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("FUND_ID", "Fund Identifier", null, null, null, FUND_REGEXP,
+		plugins.add(new PluginDefinition("FUND_ID", "Fund Identifier", null, null, FUND_REGEXP,
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 90, FUND_REGEXP) }, false, 98, FTAType.STRING));
 
 		try {

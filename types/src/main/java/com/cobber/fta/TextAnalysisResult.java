@@ -761,24 +761,44 @@ public class TextAnalysisResult {
 		if (isSemanticType() || facts.getMatchTypeInfo().isDateType())
 			return null;
 
+		final ObjectNode plugin = MAPPER.createObjectNode();
+		ArrayNode arrayNode;
+
 		// Check to see if the Regular Expression is too boring to report - e.g. '.*' or '.{3,31}'
 		final String regExp = getRegExp();
-		if (regExp.charAt(0) == '.' && (regExp.length() == 2 || (regExp.length() > 1 && regExp.charAt(1) == '{')))
+		final boolean boringRegExp = regExp.charAt(0) == '.' && (regExp.length() == 2 || (regExp.length() > 1 && regExp.charAt(1) == '{'));
+
+		if (boringRegExp && facts.cardinality.size() > 100)
 			return null;
 
-		final ObjectWriter writer = MAPPER.writerWithDefaultPrettyPrinter();
-		final ObjectNode plugin = MAPPER.createObjectNode();
+
+//		"validLocales": [
+//		     			{ "localeTag": "en-NL,nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(gemeente).*", "confidence": 90 } ] }
+//		     		],
+
 		plugin.put("qualifier", name);
-		ArrayNode arrayNode = MAPPER.createArrayNode();
-		arrayNode.add(".*(?i)" + name);
-		plugin.set("headerRegExps", arrayNode);
-		arrayNode = MAPPER.createArrayNode();
-		arrayNode.add(70);
-		plugin.set("headerRegExpConfidence", arrayNode);
-		arrayNode = MAPPER.createArrayNode();
-		arrayNode.add(getRegExp());
-		plugin.set("regExpsToMatch", arrayNode);
-		plugin.put("regExpReturned", regExp);
+		if (boringRegExp) {
+			plugin.put("pluginType", "list");
+			final ObjectNode content = MAPPER.createObjectNode();
+			arrayNode = MAPPER.createArrayNode();
+			for (String element : facts.cardinality.keySet())
+				arrayNode.add(element);
+			content.put("type", "inline");
+			content.set("members", arrayNode);
+			plugin.set("content", content);
+		}
+		else {
+			arrayNode = MAPPER.createArrayNode();
+			arrayNode.add(".*(?i)" + name);
+			plugin.set("headerRegExps", arrayNode);
+			arrayNode = MAPPER.createArrayNode();
+			arrayNode.add(70);
+			plugin.set("headerRegExpConfidence", arrayNode);
+			arrayNode = MAPPER.createArrayNode();
+			arrayNode.add(getRegExp());
+			plugin.set("regExpsToMatch", arrayNode);
+			plugin.put("regExpReturned", regExp);
+		}
 
 		if (statisticsEnabled() && facts.matchCount > 100 && (facts.cardinality.size()*100)/facts.matchCount < 20 && !regExp.startsWith("(?i)(")) {
 			if (facts.getMinValue() != null)
@@ -787,8 +807,10 @@ public class TextAnalysisResult {
 				plugin.put("maximum", facts.getMaxValue());
 		}
 
+		plugin.put("threshold", 95);
 		plugin.put("baseType", facts.getMatchTypeInfo().getBaseType().toString());
 
+		final ObjectWriter writer = MAPPER.writerWithDefaultPrettyPrinter();
 		try {
 			return writer.writeValueAsString(plugin);
 		} catch (JsonProcessingException e) {

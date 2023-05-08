@@ -15,6 +15,7 @@
  */
 package com.cobber.fta.plugins;
 
+import com.cobber.fta.Content;
 import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginDefinition;
 
@@ -31,6 +32,6 @@ public class NAStateProvince extends LogicalTypeFiniteSimple {
 	 */
 	public NAStateProvince(final PluginDefinition plugin) {
 		super(plugin, "\\p{IsAlphabetic}{2}", plugin.threshold);
-		setContent("resource", "/reference/na_states_provinces.csv");
+		setContent(new Content("resource", "/reference/na_states_provinces.csv"));
 	}
 }

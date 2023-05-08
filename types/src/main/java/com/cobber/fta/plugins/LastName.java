@@ -21,6 +21,7 @@ import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.Content;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
 import com.cobber.fta.PluginAnalysis;
@@ -95,7 +96,7 @@ public class LastName extends PersonName {
 		super.initialize(analysisConfig);
 
 		language = locale.getLanguage();
-		suffixes = new SingletonSet("resource", "/reference/en_name_suffix.csv").getMembers();
+		suffixes = new SingletonSet(new Content("resource", "/reference/en_name_suffix.csv")).getMembers();
 
 		return true;
 	}

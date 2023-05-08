@@ -28,7 +28,7 @@ import com.cobber.fta.token.TokenStreams;
  * All Semantic Types that are backed by a simple list typically subclass this abstract class.
  */
 public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
-	protected String qualifier;
+	protected String semanticType;
 	protected String regExp;
 	protected String backout;
 	protected Reader reader;
@@ -36,13 +36,13 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	public LogicalTypeFiniteSimple(final PluginDefinition plugin, final String backout, final int threshold) {
 		super(plugin);
-		this.qualifier = plugin.semanticType;
+		this.semanticType = plugin.semanticType;
 		this.backout = backout;
 		this.threshold = threshold;
 	}
 
-	public void setContent(final String contentType, final String content) {
-		this.memberSet = new SingletonSet(contentType, content);
+	public void setContent(final Content content) {
+		this.memberSet = new SingletonSet(content);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 	@Override
 	public String getSemanticType() {
-		return qualifier;
+		return semanticType;
 	}
 
 	@Override

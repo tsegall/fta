@@ -66,7 +66,7 @@ public class City extends LogicalTypeInfinite {
 		if (!randomInitialized) {
 			// Check to see if we have been provided with a set of samples
 			if (defn.content != null && samples == null)
-				samples = new SingletonSet(defn.contentType, defn.content);
+				samples = new SingletonSet(defn.content);
 			randomInitialized = true;
 		}
 

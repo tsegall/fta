@@ -21,6 +21,7 @@ import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.Content;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
 import com.cobber.fta.LogicalTypeInfinite;
@@ -61,9 +62,9 @@ public class IndustryEN extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		hotWords = new SingletonSet("resource", "/reference/en_industry_hotwords.csv").getMembers();
+		hotWords = new SingletonSet(new Content("resource", "/reference/en_industry_hotwords.csv")).getMembers();
 
-		industriesRef = new SingletonSet("resource", "/reference/en_industries.csv");
+		industriesRef = new SingletonSet(new Content("resource", "/reference/en_industries.csv"));
 		industries = industriesRef.getMembers();
 
 		return true;

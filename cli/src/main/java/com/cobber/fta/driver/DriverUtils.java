@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.cobber.fta.Content;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.SemanticType;
 import com.cobber.fta.SingletonSet;
@@ -44,7 +45,7 @@ public class DriverUtils {
 		final String baseName = Utils.getBaseName(source.getName());
 		final SingletonSet memberSet;
 
-		memberSet = new SingletonSet("file", inputName);
+		memberSet = new SingletonSet(new Content("file", inputName));
 		final Set<String> newSet = new TreeSet<>(memberSet.getMembers());
 
 		for (final String member : memberSet.getMembers()) {

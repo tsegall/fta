@@ -297,7 +297,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		if (!randomInitialized) {
 			// Check to see if we have been provided with a set of samples
 			if (defn.content != null && samples == null)
-				samples = new SingletonSet(defn.contentType, defn.content);
+				samples = new SingletonSet(defn.content);
 			else {
 				final String regExp = getRegExp();
 				// Xeger cannot cope with things like 'zero-width negative lookahead' - '(?!X' - so give up in this case

@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.Content;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
 import com.cobber.fta.LogicalTypeFiniteSimple;
@@ -41,7 +42,7 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 
 	public PersonName(final PluginDefinition plugin, final String filename) {
 		super(plugin, ".*", plugin.threshold);
-		setContent("resource", "/reference/" + filename);
+		setContent(new Content("resource", "/reference/" + filename));
 	}
 
 	protected abstract boolean isPlausible(final String candidate);

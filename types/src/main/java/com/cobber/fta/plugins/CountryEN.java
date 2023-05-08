@@ -17,6 +17,7 @@ package com.cobber.fta.plugins;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.Content;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
 import com.cobber.fta.LogicalTypeFiniteSimple;
@@ -40,7 +41,7 @@ public class CountryEN extends LogicalTypeFiniteSimple {
 	 */
 	public CountryEN(final PluginDefinition plugin) {
 		super(plugin, BACKOUT, plugin.threshold);
-		setContent("resource", "/reference/en_countries.csv");
+		setContent(new Content("resource", "/reference/en_countries.csv"));
 	}
 
 	@Override

@@ -73,9 +73,7 @@ public class PluginDefinition {
 	/** Simple finite plugins: a set of strings that we should ignore when checking the known good list. */
 	public Set<String> ignoreList;
 	/** Simple finite plugins: the content with the set of valid elements. */
-	public String content;
-	/** ContentType describes the supplied content and must be one of 'inline', 'file' or 'resource'. */
-	public String contentType;
+	public Content content;
 	public String backout;
 
 	/** The required threshold to be matched (can be adjusted by presence of Hot Words. */
@@ -106,14 +104,13 @@ public class PluginDefinition {
 
 	// *** Only use this for internal testing ***
 	public PluginDefinition(final String semanticType, final String description, final String[] invalidList,
-			final String content, final String contentType, final String backout, final PluginLocaleEntry[] validLocales, final boolean localeSensitive,
+			final Content content, final String backout, final PluginLocaleEntry[] validLocales, final boolean localeSensitive,
 			final int threshold, final FTAType  baseType) {
 		this.semanticType = semanticType;
 		this.description = description;
 		this.pluginType = content != null ? "list" : "regex";
 		this.invalidList = invalidList == null ? null : new HashSet<>(Arrays.asList(invalidList));
 		this.content = content;
-		this.contentType = contentType;
 		this.backout = backout;
 		this.validLocales = validLocales;
 		this.localeSensitive = localeSensitive;

@@ -88,7 +88,6 @@ public class Plugins {
 			throw new FTAPluginException("Semantic type: " + logical.getSemanticType() + " already registered.");
 
 		registered.put(logical.getSemanticType(), logical);
-
 	}
 
 	/**

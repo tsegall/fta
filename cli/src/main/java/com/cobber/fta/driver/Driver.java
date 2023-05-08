@@ -103,7 +103,7 @@ public class Driver {
 					error.println(" --records <n> - The number of records to analyze");
 					error.println(" --replay <file>.fta - Replay the FTA trace file");
 					error.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
-					error.println(" --samples - If set then generate samples");
+					error.println(" --samples - If set then generate samples (see --faker for comprehensive support)");
 					error.println(" --semanticType <JSON representation of Semantic Types> - Can be inline or as a File");
 					error.println(" --signature - Output the Signature for the supplied pluginName");
 					error.println(" --skip <n> - Skip the initial <n> rows of the input");

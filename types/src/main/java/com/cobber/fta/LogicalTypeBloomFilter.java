@@ -54,7 +54,7 @@ public class LogicalTypeBloomFilter extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		try (InputStream filterStream = LogicalTypeBloomFilter.class.getResourceAsStream(defn.content + ".bf")) {
+		try (InputStream filterStream = LogicalTypeBloomFilter.class.getResourceAsStream(defn.content.reference + ".bf")) {
 			reference = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			throw new FTAPluginException("Failed to load BloomFilter", e);
@@ -69,7 +69,7 @@ public class LogicalTypeBloomFilter extends LogicalTypeInfinite {
 			synchronized (this) {
 				if (examples == null) {
 					examples = new ArrayList<>();
-					final String samplesName = defn.content + "_s.csv";
+					final String samplesName = defn.content.reference + "_s.csv";
 					final InputStream stream = LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(samplesName);
 					Reader reader;
 					if (stream == null)
