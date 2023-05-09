@@ -34,6 +34,10 @@ import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.univocity.parsers.common.TextParsingException;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -315,10 +319,20 @@ class FileProcessor {
 				else
 					output.printf("Field '%s' (%d) - ", sanitize(analyzer.getStreamName()), i);
 				output.printf("%s%n", result.asJSON(options.pretty, options.verbose));
+
 				if (options.pluginDefinition) {
-					final String pluginDefinition = result.asPlugin();
-					if (pluginDefinition != null)
-						output.printf("Plugin Definition - %s%n", pluginDefinition);
+					final ObjectNode pluginDefinition = result.asPlugin();
+					if (pluginDefinition != null) {
+						final ObjectMapper mapper = new ObjectMapper();
+
+						final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+						try {
+							output.printf("%s%n", writer.writeValueAsString(pluginDefinition));
+						} catch (JsonProcessingException e) {
+							error.printf("ERROR: JsonProcessing exception. %s%n", filename, e.getMessage());
+							System.exit(1);
+						}
+					}
 				}
 				if (result.getType() != null)
 					typesDetected++;

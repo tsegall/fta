@@ -24,6 +24,8 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
@@ -2487,6 +2489,8 @@ public class RandomTests {
 		assertEquals(result.getSampleCount(), matched);
 	}
 
+
+
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void viznet5B() throws IOException, FTAException {
 		final String[] samples = {
@@ -2534,6 +2538,48 @@ public class RandomTests {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertNull(result.getTypeModifier());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void pluginDefinitionRegex() throws IOException, FTAException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+		final String[] samples = {
+				"Animal", "Vegetable", "Mineral", "Animal", "Mineral", "Mineral",
+				"Mineral", "Vegetable", "Vegetable", "Vegetable", "Mineral", "Mineral",
+				"Mineral", "Mineral", "Animal", "Vegetable", "Animal", "Vegetable",
+				"Vegetable", "Mineral", "Animal", "Vegetable", "Mineral", "Mineral",
+				"Mineral", "Mineral", "Mineral", "Animal", "Vegetable",
+		};
+
+		final TextAnalyzer analyzer = new TextAnalyzer("Guess");
+		for (final String sample : samples)
+			analyzer.train(sample);
+
+		final TextAnalysisResult result = analyzer.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "(?i)(ANIMAL|MINERAL|VEGETABLE)");
+		assertNull(result.getSemanticType());
+
+		// Construct a new TextAnalyzer and add the Plugin Definition from the previous invocation
+		// This time we should detect the new Semantic Type: 'Guess'
+		final TextAnalyzer analyzerWithDefinition = new TextAnalyzer("Guess");
+		analyzerWithDefinition.getPlugins().registerPlugins(new StringReader("[" + result.asPlugin().toString() + "]"),
+				analyzerWithDefinition.getStreamName(), analyzerWithDefinition.getConfig());
+
+		for (final String sample : samples)
+			analyzerWithDefinition.train(sample);
+
+		final TextAnalysisResult resultWithDefinition = analyzerWithDefinition.getResult();
+
+		assertEquals(resultWithDefinition.getSampleCount(), samples.length);
+		assertEquals(resultWithDefinition.getBlankCount(), 0);
+		assertEquals(resultWithDefinition.getNullCount(), 0);
+		assertEquals(resultWithDefinition.getType(), FTAType.STRING);
+		assertEquals(resultWithDefinition.getRegExp(), "(?i)(ANIMAL|MINERAL|VEGETABLE)");
+		assertEquals(resultWithDefinition.getSemanticType(), "Guess");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })

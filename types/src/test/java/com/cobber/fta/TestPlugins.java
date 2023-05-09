@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.DateFormatSymbols;
@@ -3393,6 +3394,26 @@ public class TestPlugins {
 		assertEquals(result.getSampleCount(), SAMPLES + 2);
 
 		assertNull(result.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testBadPlugin() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("CC");
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+		final List<PluginDefinition> plugins = new ArrayList<>();
+		final PluginDefinition pluginDefinition = new PluginDefinition("CC", "com.cobber.fta.PluginBad");
+		pluginDefinition.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en") };
+		plugins.add(pluginDefinition);
+
+		boolean pluginExceptionThrown = false;
+		try {
+			analysis.getPlugins().registerPluginList(plugins, "Ignore", analysis.getConfig());
+		} catch (FTAPluginException e) {
+			pluginExceptionThrown = true;
+		} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+		}
+
+		assertTrue(pluginExceptionThrown);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })

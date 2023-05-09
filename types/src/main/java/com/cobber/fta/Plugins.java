@@ -109,16 +109,16 @@ public class Plugins {
 	private void registerLogicalTypeClass(final PluginDefinition plugin, final AnalysisConfig analysisConfig) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
 		Class<?> newLogicalType;
 		Constructor<?> ctor;
-		LogicalType logical;
+		Object logical;
 
 		newLogicalType = Class.forName(plugin.clazz);
 		ctor = newLogicalType.getConstructor(PluginDefinition.class);
-		logical = (LogicalType)ctor.newInstance(plugin);
+		logical = ctor.newInstance(plugin);
 
 		if (!(logical instanceof LogicalType))
 			throw new FTAPluginException("Semantic type: " + plugin.clazz + " does not appear to be a Semantic Type.");
 
-		registerLogicalType(logical, analysisConfig);
+		registerLogicalType((LogicalType)logical, analysisConfig);
 	}
 
 	/**

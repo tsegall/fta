@@ -2655,12 +2655,16 @@
 	{
 		"semanticType": "EPOCH.SECONDS",
 		"description": "Unix Epoch (Timestamp) - seconds",
-		"pluginType": "regex",
+		"pluginType": "java",
 		"signature": "SDOVIb658Bu1vG5h1htbJj0PMqg=",
+		"clazz": "com.cobber.fta.plugins.EpochSeconds",
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(timestamp|_ts).*", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [
+					{ "regExp": ".*(?i)(timestamp|_ts).*", "confidence": 99, "mandatory": true },
+					{ "regExp": ".*(?i)(time|date).*", "confidence": 85, "mandatory": true }
+				],
 				"matchEntries": [ {
 					"regExpReturned": "\\d{10}",
 					"isRegExpComplete": false
@@ -2672,19 +2676,21 @@
 		],
 		"threshold": 99,
 		"baseType": "LONG",
-		"minimum": "0",
-		"maximum": "1672531199",
 		"priority": 272
 	},
 	{
 		"semanticType": "EPOCH.MILLISECONDS",
 		"description": "Unix Epoch (Timestamp) - milliseconds",
-		"pluginType": "regex",
+		"pluginType": "java",
 		"signature": "viRZbKzQgIqtkppDhoCbAFLXEag=",
+		"clazz": "com.cobber.fta.plugins.EpochMilliseconds",
 		"validLocales": [
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(timestamp|_ts).*", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [
+					{ "regExp": ".*(?i)(timestamp|_ts).*", "confidence": 99, "mandatory": true },
+					{ "regExp": ".*(?i)(time|date).*", "confidence": 85, "mandatory": true }
+				],
 				"matchEntries": [ {
 					"regExpReturned": "\\d{13}",
 					"isRegExpComplete": false
@@ -2696,8 +2702,6 @@
 		],
 		"threshold": 99,
 		"baseType": "LONG",
-		"minimum": "1000000000000",
-		"maximum": "1672531199000",
 		"priority": 273
 	},
 	{

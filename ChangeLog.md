@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 14.1.0
+ - ENH: Flip EPOCH.SECONDS and EPOCH.MILLISECONDS from RegEx to Java - improves detection (#40)
+ - BUG: Fix --pluginDetection to generate valid plugins from Training data (also associated test case)
+ - BUG: Fix poor validation of Java plugin at registration time (#41)
+
 ### 14.0.0
  - ENH: Format of plugins has changed - content is now true JSON as opposed to a String
  - BUG: Fix --semanticType being ignored when using RecordAnalyzer

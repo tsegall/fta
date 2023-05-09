@@ -756,7 +756,7 @@ public class TextAnalysisResult {
 	 * A plugin definition to use to match this type.
 	 * @return A JSON representation of the analysis.
 	 */
-	public String asPlugin() {
+	public ObjectNode asPlugin() {
 		// Already a Semantic type or date type - so nothing interesting to report as a Plugin
 		if (isSemanticType() || facts.getMatchTypeInfo().isDateType())
 			return null;
@@ -771,51 +771,57 @@ public class TextAnalysisResult {
 		if (boringRegExp && facts.cardinality.size() > 100)
 			return null;
 
+		plugin.put("semanticType", name);
 
-//		"validLocales": [
-//		     			{ "localeTag": "en-NL,nl-NL", "headerRegExps": [ { "regExp": ".*(?i)(gemeente).*", "confidence": 90 } ] }
-//		     		],
+		final ArrayNode localeArray = MAPPER.createArrayNode();
 
-		plugin.put("qualifier", name);
+		final ObjectNode localeNode = MAPPER.createObjectNode();
+		localeNode.put("localeTag", facts.getLocale().toLanguageTag());
+
+		final ArrayNode headerArray = MAPPER.createArrayNode();
+		final ObjectNode headerNode = MAPPER.createObjectNode();
+		headerNode.put("regExp", ".*(?i)" + name);
+		headerNode.put("confidence", 90);
+		headerArray.add(headerNode);
+		localeNode.set("headerRegExps", headerArray);
+
+		if (!boringRegExp) {
+			plugin.put("pluginType", "regex");
+			final ArrayNode matchArray = MAPPER.createArrayNode();
+			final ObjectNode matchNode = MAPPER.createObjectNode();
+			matchNode.put("regExpReturned", regExp);
+			matchArray.add(matchNode);
+			localeNode.set("matchEntries", matchArray);
+		}
+
+		localeArray.add(localeNode);
+
+		plugin.set("validLocales", localeArray);
+
 		if (boringRegExp) {
 			plugin.put("pluginType", "list");
 			final ObjectNode content = MAPPER.createObjectNode();
 			arrayNode = MAPPER.createArrayNode();
 			for (String element : facts.cardinality.keySet())
-				arrayNode.add(element);
+				arrayNode.add(element.toUpperCase(facts.getLocale()));
 			content.put("type", "inline");
 			content.set("members", arrayNode);
 			plugin.set("content", content);
+			plugin.put("backout", ".*");
 		}
 		else {
-			arrayNode = MAPPER.createArrayNode();
-			arrayNode.add(".*(?i)" + name);
-			plugin.set("headerRegExps", arrayNode);
-			arrayNode = MAPPER.createArrayNode();
-			arrayNode.add(70);
-			plugin.set("headerRegExpConfidence", arrayNode);
-			arrayNode = MAPPER.createArrayNode();
-			arrayNode.add(getRegExp());
-			plugin.set("regExpsToMatch", arrayNode);
-			plugin.put("regExpReturned", regExp);
-		}
-
-		if (statisticsEnabled() && facts.matchCount > 100 && (facts.cardinality.size()*100)/facts.matchCount < 20 && !regExp.startsWith("(?i)(")) {
-			if (facts.getMinValue() != null)
-				plugin.put("minimum", facts.getMinValue());
-			if (facts.getMaxValue() != null)
-				plugin.put("maximum", facts.getMaxValue());
+			if (statisticsEnabled() && facts.matchCount > 100 && (facts.cardinality.size()*100)/facts.matchCount < 20 && !regExp.startsWith("(?i)(")) {
+				if (facts.getMinValue() != null)
+					plugin.put("minimum", facts.getMinValue());
+				if (facts.getMaxValue() != null)
+					plugin.put("maximum", facts.getMaxValue());
+			}
 		}
 
 		plugin.put("threshold", 95);
-		plugin.put("baseType", facts.getMatchTypeInfo().getBaseType().toString());
+		plugin.put("baseType", facts.getMatchTypeInfo().getBaseType().name());
 
-		final ObjectWriter writer = MAPPER.writerWithDefaultPrettyPrinter();
-		try {
-			return writer.writeValueAsString(plugin);
-		} catch (JsonProcessingException e) {
-			return jsonError(e.getMessage());
-		}
+		return plugin;
 	}
 
 	/**

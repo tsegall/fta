@@ -1031,7 +1031,7 @@ public class TestLongs {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
-	public void testEpochMilliseconds() throws IOException, FTAException {
+	public void testEpochSeconds() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Timestamp");
 
 		final String[] samples = {
@@ -1063,7 +1063,7 @@ public class TestLongs {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
-	public void testEpochNanoseconds() throws IOException, FTAException {
+	public void testEpochMilliseconds() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Timestamp");
 
 		final String[] samples = {
