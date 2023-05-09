@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 14.2.0
+ - ENH: Support 'yyyy/MM/dd HH' and friends in the DateTimeParser (and hence TextAnalyzer) (#36)
+
 ### 14.1.0
  - ENH: Flip EPOCH.SECONDS and EPOCH.MILLISECONDS from RegEx to Java - improves detection (#40)
  - BUG: Fix --pluginDetection to generate valid plugins from Training data (also associated test case)

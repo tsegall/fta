@@ -81,6 +81,7 @@ public class DateTimeParser {
 	private static final String TIME_ONLY_HHMM = "d{2}:d{2}";
 	private static final String TIME_ONLY_HMM = "d:d{2}";
 	private static final String TIME_ONLY_PPHMM = "  d:d{2}";
+	private static final String TIME_ONLY_HH = "d{2}";
 
 	/** When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified. */
 	public enum DateResolutionMode {
@@ -1630,6 +1631,13 @@ public class DateTimeParser {
 		if (!timeFound && components > 3 && matchAtEnd(compressed, TIME_ONLY_HMM)) {
 			compressed = Utils.replaceFirst(compressed, TIME_ONLY_HMM, ampm ? "h:mm" : "H:mm");
 			components -= 2;
+			timeFound = true;
+		}
+
+		// Happy to strip off a trailing time but only if there is something meaningful to further process
+		if (!timeFound && components == 4 && matchAtEnd(compressed, TIME_ONLY_HH)) {
+			compressed = Utils.replaceLast(compressed, TIME_ONLY_HH, ampm ? "hh" : "HH");
+			components -= 1;
 			timeFound = true;
 		}
 
