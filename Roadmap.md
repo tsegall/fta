@@ -10,7 +10,7 @@
  - Improve PII detection (e.g. DOB, Age, ...)
  - Improve Semantic Type detection
 	- IDENTITY.VAT_<COUNTRY> (DONE)
-	- PERSON.DOB
+	- PERSON.YEAR_OF_BIRTH and PERSON.DATE_OF_BIRTH (DONE)
 	- PERSON.AGE_RANGE
 	- PERSON.RACE (Done)
 	- PERSON.AGE (Done)

@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 14.2.1
+ - BUG: Fix a small number issues discovered running entire Viznet suite
+
 ### 14.2.0
  - ENH: Support 'yyyy/MM/dd HH' and friends in the DateTimeParser (and hence TextAnalyzer) (#36)
 

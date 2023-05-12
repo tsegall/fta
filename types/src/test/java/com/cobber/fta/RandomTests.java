@@ -2453,6 +2453,22 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void viznet6() throws IOException, FTAException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("");
+		analysis.setDebug(1);
+
+		final long start = System.currentTimeMillis();
+		for (int i = 0; i < 20_000_000; i++)
+			analysis.train("0");
+
+		final TextAnalysisResult result = analysis.getResult();
+		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
+		assertEquals(result.getRegExp(), "\\d");
+	}
+
+
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void embeddedNumerics() throws IOException, FTAException {
 		final String[] samples = {
 				"hello 45.6", "world 89.9", "5.89 world 87.33", "9.89 world 87.33", "4.89 world 87.33",

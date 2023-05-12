@@ -954,10 +954,12 @@ public class TextAnalysisResult {
 			percentiles[100] = 1.0;
 			outputArray(detailQ, getValuesAtQuantiles(percentiles));
 
-			final ArrayNode detailH = analysis.putArray("histogram");
 			final Histogram.Entry[] histogram = getHistogram(10);
-			for (final Histogram.Entry e : histogram)
-				detailH.add(e.getCount());
+			if (histogram != null) {
+				final ArrayNode detailH = analysis.putArray("histogram");
+				for (final Histogram.Entry e : histogram)
+					detailH.add(e.getCount());
+			}
 		}
 
 		analysis.put("leadingWhiteSpace", getLeadingWhiteSpace());

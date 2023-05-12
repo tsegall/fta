@@ -120,6 +120,9 @@ public class PluginLocaleEntry {
 	 * @return An integer between 0 and 100 reflecting the confidence that this stream name is a valid header.
 	 */
 	public int getHeaderConfidence(final String dataStreamName) {
+		if (dataStreamName == null || dataStreamName.isBlank())
+			return 0;
+
 		if (headerRegExps != null)
 			for (final HeaderEntry headerEntry : headerRegExps) {
 				if (headerEntry.matches(dataStreamName))

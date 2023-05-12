@@ -144,7 +144,7 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 			return 0;
 
 		final String previousStreamName = context.getCompositeStreamNames()[current - 1];
-		if (previousStreamName.length() == 0)
+		if (previousStreamName == null || previousStreamName.isBlank())
 			return 0;
 
 		final char lastChar = dataStreamName.charAt(dataStreamName.length() - 1);

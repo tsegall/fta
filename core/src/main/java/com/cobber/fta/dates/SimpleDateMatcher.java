@@ -240,6 +240,8 @@ public class SimpleDateMatcher {
 						len = input.length();
 					}
 				}
+				if (monthReplaced)
+					break;
 			}
 		}
 		// We did not find the month so try a month abbreviation

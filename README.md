@@ -731,11 +731,11 @@ For example:
 
 `$ export FTA_TRACE="enabled=true,directory=/tmp,samples=10000"`
 
-This generates a file named &lt;Stream&gt;.fta with the inputs to the analysis for debugging.
+During execution a file named &lt;Stream&gt;.fta will be created with the inputs to the analysis.
 
 You can replay the trace file (assuming a local build) using:
 
-`$ types/build/install/fta/bin/types --replay <Stream>.fta`
+`$ cli/build/install/fta/bin/cli --replay <Stream>.fta`
 
 ## Background Reading ##
 
