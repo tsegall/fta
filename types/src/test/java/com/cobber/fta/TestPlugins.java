@@ -2937,6 +2937,7 @@ public class TestPlugins {
 		case 11:
 			expected = "[\\p{IsAlphabetic}\\.]{3,4}";
 			break;
+		case 17:
 		case 18:
 			expected = "[\\p{IsAlphabetic}\\.]{3,5}";
 			break;

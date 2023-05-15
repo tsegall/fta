@@ -180,6 +180,40 @@ class FileProcessor {
 		return b.toString();
 	}
 
+	class CircularBuffer {
+		final int depth;
+		final String[][] buffer;
+		int current = 0;
+		int records = 0;
+
+		CircularBuffer(final int depth) {
+			this.depth = depth;
+			this.buffer = new String[depth][];
+		}
+
+		boolean add(final String[] record) {
+			if (records == depth)
+				return false;
+			this.buffer[current] = record;
+			current = current == depth - 1 ? 0 : current + 1;
+			records++;
+			return true;
+		}
+
+		String[] get() {
+			if (records == 0)
+				return null;
+			records--;
+			current = current == 0 ? depth - 1 : current - 1;
+			final String[] ret = this.buffer[current];
+			return ret;
+		}
+
+		boolean isFull() {
+			return records == depth;
+		}
+	}
+
 	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException {
 		final long startTime = System.currentTimeMillis();
 		long initializedTime = -1;
@@ -219,15 +253,21 @@ class FileProcessor {
 			processor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
 			initializedTime = System.currentTimeMillis();
 
+			CircularBuffer buffer = new CircularBuffer(options.trailer + 1);
+
 			String[] row;
 
 			while ((row = parser.parseNext()) != null) {
-				thisRecord++;
 				if (row.length != numFields) {
 					error.printf("ERROR: File: '%s', record %d has %d fields, expected %d, skipping%n",
 							filename, thisRecord, row.length, numFields);
 					continue;
 				}
+				buffer.add(row);
+				if (!buffer.isFull())
+					continue;
+				row = buffer.get();
+				thisRecord++;
 				processor.consume(row);
 				if (thisRecord == options.recordsToProcess) {
 					parser.stopParsing();

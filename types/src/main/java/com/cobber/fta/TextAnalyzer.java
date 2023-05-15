@@ -982,20 +982,27 @@ public class TextAnalyzer {
 
 	private boolean trackDouble(final String rawInput, final TypeInfo typeInfo, final boolean register, final long count) {
 		final String input = rawInput.trim();
-		double d;
+		double d = 0.0;
+		boolean converted = false;
 
-		try {
-			// parseDouble is not locale sensitive, but it is fast!
-			if (typeInfo.isTrailingMinus()) {
-				final int digits = input.length();
-				if (digits >= 2 && input.charAt(digits - 1) == '-')
-					d = -Double.parseDouble(input.substring(0, digits - 1));
+		if (facts.decimalSeparator == '.')
+			try {
+				// parseDouble is not locale sensitive, but it is fast!
+				if (typeInfo.isTrailingMinus()) {
+					final int digits = input.length();
+					if (digits >= 2 && input.charAt(digits - 1) == '-')
+						d = -Double.parseDouble(input.substring(0, digits - 1));
+					else
+						d = Double.parseDouble(input);
+				}
 				else
 					d = Double.parseDouble(input);
+				converted = true;
+			} catch (NumberFormatException e) {
+				// IGNORE - note converted will be false
 			}
-			else
-				d = Double.parseDouble(input);
-		} catch (NumberFormatException e) {
+
+		if (!converted) {
 			// If we think we are a Non Localized number then no point in using the locale-aware parsing
 			if (typeInfo.isNonLocalized())
 				return false;
@@ -1005,7 +1012,7 @@ public class TextAnalyzer {
 			if (n == null || input.length() != pos.getIndex())
 				return false;
 			d = n.doubleValue();
-			if (input.indexOf(localeGroupingSeparator) != -1)
+			if (hasGroupingSeparator(input, localeGroupingSeparator, localeDecimalSeparator))
 				facts.groupingSeparators++;
 			// Make sure to track the decimal separator being used for doubles
 			if (localeDecimalSeparator != '.' && facts.decimalSeparator != localeDecimalSeparator && input.indexOf(localeDecimalSeparator) != -1)
@@ -2119,6 +2126,35 @@ public class TextAnalyzer {
 		facts.invalid.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
 	}
 
+	private boolean hasGroupingSeparator(final String input, final char groupingSeparator, final char decimalSeparator) {
+		int digitsLength = 0;
+		boolean decimalSeparatorSeen = false;
+		boolean groupingSeparatorSeen = false;
+		boolean exponentSeen = false;
+
+		for (int i = 0; i < input.length(); i++) {
+			final char ch = input.charAt(i);
+			if (Character.isDigit(ch))
+				digitsLength++;
+			else if (ch == groupingSeparator) {
+				if (decimalSeparatorSeen || digitsLength > 3 || (groupingSeparatorSeen && digitsLength != 3))
+					return false;
+				digitsLength = 0;
+				groupingSeparatorSeen = true;
+			}
+			else if (ch == decimalSeparator) {
+				if (decimalSeparatorSeen || digitsLength > 3 || (groupingSeparatorSeen && digitsLength != 3))
+					return false;
+				digitsLength = 0;
+				decimalSeparatorSeen = true;
+			}
+			else if (ch == 'e' || ch == 'E')
+				exponentSeen = true;
+		}
+
+		return groupingSeparatorSeen && (decimalSeparatorSeen || exponentSeen || digitsLength == 0 || digitsLength == 3);
+	}
+
 	class OutlierAnalysis {
 		long alphas;
 		long digits;
@@ -2128,6 +2164,7 @@ public class TextAnalyzer {
 		long nonAlphaNumeric;
 		boolean negative;
 		boolean exponent;
+		boolean grouping;
 
 		private boolean isDouble(final String input) {
 			try {
@@ -2137,6 +2174,8 @@ public class TextAnalyzer {
 				final Number n = doubleFormatter.parse(input, pos);
 				if (n == null || input.length() != pos.getIndex())
 					return false;
+				if (hasGroupingSeparator(input, localeGroupingSeparator, localeDecimalSeparator))
+					grouping = true;
 			}
 			return true;
 		}
@@ -2205,10 +2244,10 @@ public class TextAnalyzer {
 		else if (!facts.getMatchTypeInfo().isSemanticType() && facts.outliers.size() == analysis.doubles && FTAType.LONG.equals(current.getBaseType())) {
 			KnownTypes.ID id;
 			if (analysis.exponent)
-				id = analysis.negative ? KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT;
+				id = (current.isSigned() || analysis.negative) ? KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT;
 			else
-				id = analysis.negative ? KnownTypes.ID.ID_SIGNED_DOUBLE : KnownTypes.ID.ID_DOUBLE;
-			if (current.hasGrouping())
+				id = (current.isSigned() || analysis.negative) ? KnownTypes.ID.ID_SIGNED_DOUBLE : KnownTypes.ID.ID_DOUBLE;
+			if (current.hasGrouping() || analysis.grouping)
 				id = knownTypes.grouping(knownTypes.getByID(id).regexp).id;
 			backoutToPatternID(realSamples, id);
 			return true;

@@ -11,9 +11,9 @@
  - Improve Semantic Type detection
 	- IDENTITY.VAT_<COUNTRY> (DONE)
 	- PERSON.YEAR_OF_BIRTH and PERSON.DATE_OF_BIRTH (DONE)
-	- PERSON.AGE_RANGE
-	- PERSON.RACE (Done)
-	- PERSON.AGE (Done)
+	- PERSON.AGE_RANGE (DONE)
+	- PERSON.RACE (DONE)
+	- PERSON.AGE (DONE)
 	- Mime Type
 	- UserAgent
  - Outlier detection in numeric fields

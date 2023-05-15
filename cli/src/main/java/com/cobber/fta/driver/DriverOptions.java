@@ -65,6 +65,7 @@ public class DriverOptions {
 	protected int skip;
 	protected int threshold = -1;
 	protected String trace;
+	protected int trailer;
 	protected int validate;
 	protected int verbose;
 	protected int xMaxCharsPerColumn = -1;
@@ -110,6 +111,7 @@ public class DriverOptions {
 		this.skip = other.skip;
 		this.threshold = other.threshold;
 		this.trace = other.trace;
+		this.trailer = other.trailer;
 		this.validate = other.validate;
 		this.verbose = other.verbose;
 		this.xMaxCharsPerColumn = other.xMaxCharsPerColumn;
@@ -315,6 +317,8 @@ public class DriverOptions {
 					threshold = nextIntegerArg(args, idx++);
 				else if ("--trace".equals(args[idx]))
 					trace = nextStringArg(args, idx++);
+				else if ("--trailer".equals(args[idx]))
+					trailer = nextIntegerArg(args, idx++);
 				else if ("--validate".equals(args[idx]))
 					validate = nextIntegerArg(args, idx++);
 				else if ("--verbose".equals(args[idx]))

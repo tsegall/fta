@@ -2048,7 +2048,7 @@
 			},
 			{
 				"localeTag": "ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh",
-				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|leveysaste|breddegrad|breitengrad|latitudine|latitud|Широта|緯度|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(latitude|lattitude|leveysaste|breddegrad|breedtegraad|breitengrad|latitudine|latitud|Широта|緯度|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [
 				{
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],
@@ -2089,7 +2089,7 @@
 			},
 			{
 				"localeTag": "ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh",
-				"headerRegExps": [ { "regExp": ".*(?i)(?u)(longitude|pituusaste|længde|längengrad|laengengrad|longitudine|longitud|Долгота|經度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 99, "mandatory": true } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(longitude|pituusaste|længde|längengrad|lengtegraad|laengengrad|longitudine|longitud|Долгота|經度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [
 				{
 					"regExpsToMatch": [ "\\d*\\.?\\d+", "[+-]?\\d*\\.?\\d+" ],

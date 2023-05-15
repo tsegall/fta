@@ -879,7 +879,7 @@ public class TestLongs {
 			final Set<String> samples = new HashSet<>();
 			final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 
-//			logger.debuf("Locale '%s', negPrefix: %s, negSuffix: %s, min: %s, max: %s, absMax:%s.",
+//			logger.debug("Locale {}, negPrefix: {}, negSuffix: {}, min: {}, max: {}, absMax:{}.",
 //					locale.toLanguageTag(), negPrefix, negSuffix, String.valueOf(min), String.valueOf(max), absMinValue);
 
 			try {
@@ -888,6 +888,8 @@ public class TestLongs {
 					if (l % 2 == 0)
 						l = -l;
 					final String sample = nf.format(l);
+					if (KnownTypes.LEFT_TO_RIGHT_MARK == sample.charAt(0))
+						throw new FTAUnsupportedLocaleException("Locale uses Left-to-right Mark");
 
 					if (l < min) {
 						min = l;

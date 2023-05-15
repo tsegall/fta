@@ -44,6 +44,7 @@ import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 public class TestDoubles {
 	private static final SecureRandom random = new SecureRandom();
@@ -1114,7 +1115,7 @@ public class TestDoubles {
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-US"), Locale.forLanguageTag("hr-HR") };
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-AE") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("he") };
 
 		for (final Locale locale : locales) {
 			final TextAnalyzer analysis = new TextAnalyzer("Separator");
@@ -1131,7 +1132,9 @@ public class TestDoubles {
 			try {
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
 					final double d = random.nextDouble() * random.nextInt();
-					final String sample = nf.format(d);
+					String sample = nf.format(d);
+					if (KnownTypes.LEFT_TO_RIGHT_MARK == sample.charAt(0))
+						throw new FTAUnsupportedLocaleException("Locale uses Left-to-right Mark");
 					samples.add(sample);
 					analysis.train(sample);
 				}
@@ -1262,6 +1265,8 @@ public class TestDoubles {
 						d *= Math.pow(d,  -pow);
 
 					final String sample = df.format(d);
+					if (KnownTypes.LEFT_TO_RIGHT_MARK == sample.charAt(0))
+						throw new FTAUnsupportedLocaleException("Locale uses Left-to-right Mark");
 					samples.add(sample);
 					analysis.train(sample);
 				}
@@ -1768,6 +1773,52 @@ public class TestDoubles {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void dutchLocalized() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("X_COORD");
+		// For Dutch, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("nl-NL");
+		analysis.setLocale(locale);
+		final String nonLocalized = "120114.963735722";
+
+		final String[] inputs = {
+				"121725,84489347", "121258,298875078", "120898,328669664", "120718,710287902", "122615,928882987",
+				"120793,655243809", "121115,972636036", "121718,898590647", "120724,550131904", "120886,176838707",
+				"120513,472283841", "122103,160984525", "121695,764769605", "121748,427187895", "121701,209663187",
+				"122711,434683845", "123071,319201962", "120933,985450736", "120628,627456509", "120717,547663685",
+				"121553,945999326", "122309,278902156", "121421,043304069", "121310,146841934", "121075,795301121",
+				"121027,7347339", "122158,600785584", "121671,473438156", "121142,977894114", "121107,856228947",
+				"120256,857625212", "122556,814330651", "121866,52727883", nonLocalized, "120479,513662353"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getRegExp(), "\\d*,?\\d+");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "120256,857625212");
+		assertEquals(result.getMaxValue(), "120114963735722,0");
+		assertEquals(result.getDecimalSeparator(), ',');
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+//BUG		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
+			if (!nonLocalized.equals(input))
+				assertTrue(input.matches(result.getRegExp()));
+	}
+
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void nonLocalizedPortugueseDouble() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("notLocalizedPortugueseDouble");
 		analysis.setDebug(2);
@@ -2154,49 +2205,146 @@ public class TestDoubles {
 		}
 	}
 
-@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
-public void localeDoubleES_CO() throws IOException, FTAException {
-	final String[] ugly = {
-			"77.506.942,294", "55.466.183,606", "78.184.714,556", "52.225.004,254",
-			"49.728.440,901", "46.654.635,41", "44.855.131,454", "74.523.230,406",
-			"49.266.524,337", "21.683.364,918", "50.170.727,311", "45.015.038,753",
-			"77.374.136,348", "14.954.505,431", "67.357.001,775", "81.430.862,119",
-			"56.012.358,58", "49.427.706,653", "18.983.565,706", "76.804.973,122",
-			"82.300.559,154", "40.007.535,851", "48.120.618,984", "25.215.331,00",
-			"68.970.889,115", "98.530.458,063", "52.423.892,78", "51.938.286,39"
-	};
-	final Locale locale = Locale.forLanguageTag("es-CO");
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void simpleDoubleDE_DE() throws IOException, FTAException {
+		final String[] ugly = {
+				"0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+				"0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+				"0", "0", "-14.000,00", "10.000,00", "1.000,00", "1.000,00", "1.000,00", "1.000,00", "0", "0",
+				"0", "0", "0", "0", "0", "-4.000,00", "2.500,00", "1.500,00", "0", "-1.700,05",
+				"1,61", "141,63", "1.556,81", "0", "0", "0", "-263.000,00", "60.000,00", "50.000,00", "8.000,00", "120.000,00",
+				"25.000,00",
+		};
+		final Locale locale = Locale.forLanguageTag("de-DE");
+		final TextAnalyzer analysis = new TextAnalyzer("Zugang/Abgang");
+		analysis.setLocale(locale);
 
-	final TextAnalyzer analysis = new TextAnalyzer("Separator");
-	analysis.setLocale(locale);
+		for (final String sample : ugly)
+			analysis.train(sample);
 
-	for (final String sample : ugly)
-		analysis.train(sample);
+		final TextAnalysisResult result = analysis.getResult();
 
-	final TextAnalysisResult result = analysis.getResult();
-	TestUtils.checkSerialization(analysis);
+		TestUtils.checkSerialization(analysis);
 
-	assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
-	assertEquals(result.getTypeModifier(), "GROUPING");
-	assertNull(result.getSemanticType());
-	assertEquals(result.getSampleCount(), ugly.length);
-	assertEquals(result.getMatchCount(), ugly.length);
-	assertEquals(result.getNullCount(), 0);
-	assertEquals(result.getLeadingZeroCount(), 0);
-	final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+		assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
+		assertEquals(result.getTypeModifier(), "SIGNED,GROUPING");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), ugly.length);
+		assertEquals(result.getMatchCount(), ugly.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
 
-	final String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
-	final String dec = formatSymbols.getDecimalSeparator() == '.' ? "\\." : "" + formatSymbols.getDecimalSeparator();
+		result.asJSON(false, 0);
 
-	final String regExp = "[\\d" + grp + "]*" + dec + "?" + "[\\d" + grp +"]+";
-
-	assertEquals(result.getRegExp(), regExp);
-	assertEquals(result.getConfidence(), 1.0);
-
-	for (final String sample : ugly) {
-		assertTrue(sample.matches(regExp), sample + " " + regExp);
 	}
-}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void recordDoubleDE_DE() throws IOException, FTAException {
+		final String[] ugly = {
+				"0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+				"0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+				"0", "0", "-14.000,00", "10.000,00", "1.000,00", "1.000,00", "1.000,00", "1.000,00", "0", "0",
+				"0", "0", "0", "0", "0", "-4.000,00", "2.500,00", "1.500,00", "0", "-1.700,05",
+				"1,61", "141,63", "1.556,81", "0", "0", "0", "-263.000,00", "60.000,00", "50.000,00", "8.000,00", "120.000,00",
+				"25.000,00",
+		};
+		final Locale locale = Locale.forLanguageTag("de-DE");
+		AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", new String[] { "Zugang/Abgang" } );
+		TextAnalyzer template = new TextAnalyzer(context);
+		template.setLocale(locale);
+
+		RecordAnalyzer analysis = new RecordAnalyzer(template);
+
+		for (final String sample : ugly)
+			analysis.train(new String[] { sample });
+
+		RecordAnalysisResult recordResult = analysis.getResult();
+
+		final TextAnalysisResult result = recordResult.getStreamResults()[0];
+
+		assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
+		assertEquals(result.getTypeModifier(), "SIGNED,GROUPING");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), ugly.length);
+		assertEquals(result.getMatchCount(), ugly.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+
+		result.asJSON(false, 0);
+
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void negLongPosDoubles() throws IOException, FTAException {
+		final String[] ugly = {
+				"0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+				"0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+				"0", "0", "-14", "10.0", "100.00", "-900",
+				"-600", "43.456", "40.301"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("negLongPosDoubles");
+
+		for (final String sample : ugly)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeModifier(), "SIGNED");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), ugly.length);
+		assertEquals(result.getMatchCount(), ugly.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+
+		result.asJSON(false, 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void localeDoubleES_CO() throws IOException, FTAException {
+		final String[] ugly = {
+				"77.506.942,294", "55.466.183,606", "78.184.714,556", "52.225.004,254",
+				"49.728.440,901", "46.654.635,41", "44.855.131,454", "74.523.230,406",
+				"49.266.524,337", "21.683.364,918", "50.170.727,311", "45.015.038,753",
+				"77.374.136,348", "14.954.505,431", "67.357.001,775", "81.430.862,119",
+				"56.012.358,58", "49.427.706,653", "18.983.565,706", "76.804.973,122",
+				"82.300.559,154", "40.007.535,851", "48.120.618,984", "25.215.331,00",
+				"68.970.889,115", "98.530.458,063", "52.423.892,78", "51.938.286,39"
+		};
+		final Locale locale = Locale.forLanguageTag("es-CO");
+
+		final TextAnalyzer analysis = new TextAnalyzer("Separator");
+		analysis.setLocale(locale);
+
+		for (final String sample : ugly)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
+		assertEquals(result.getTypeModifier(), "GROUPING");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), ugly.length);
+		assertEquals(result.getMatchCount(), ugly.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
+
+		final String grp = formatSymbols.getGroupingSeparator() == '.' ? "\\." : "" + formatSymbols.getGroupingSeparator();
+		final String dec = formatSymbols.getDecimalSeparator() == '.' ? "\\." : "" + formatSymbols.getDecimalSeparator();
+
+		final String regExp = "[\\d" + grp + "]*" + dec + "?" + "[\\d" + grp +"]+";
+
+		assertEquals(result.getRegExp(), regExp);
+		assertEquals(result.getConfidence(), 1.0);
+
+		for (final String sample : ugly) {
+			assertTrue(sample.matches(regExp), sample + " " + regExp);
+		}
+	}
 
 //	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void decimalSeparatorTest_Period() throws IOException, FTAException {

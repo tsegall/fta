@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 14.3.0
+ - ENH: I18N - Improve support for COORDINATE.LATITUDE_DECIMAL and COORDINATE.LONGITUDE_DECIMAL (nl-NL)
+ - ENH: Fix up test suite to support compiling with Java 17
+ - CLI: Add support for --trailer to ignore the last <n> lines
+ - BUG: Fix a couple of cases of incorrect qualifiers (SIGNED and GROUPING)
+
 ### 14.2.1
  - BUG: Fix a small number issues discovered running entire Viznet suite
 

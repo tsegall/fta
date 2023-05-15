@@ -319,6 +319,11 @@ public class TypeInfo {
 	}
 
 	@JsonIgnore
+	public boolean isSigned() {
+		return (typeModifierFlags & SIGNED_FLAG) != 0;
+	}
+
+	@JsonIgnore
 	public boolean isTrailingMinus() {
 		return (typeModifierFlags & TRAILING_MINUS_FLAG) != 0;
 	}
