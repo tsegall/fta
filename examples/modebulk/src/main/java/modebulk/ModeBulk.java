@@ -17,6 +17,7 @@ package modebulk;
 
 import java.util.HashMap;
 
+import com.cobber.fta.LogicalType;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
@@ -36,7 +37,18 @@ public abstract class ModeBulk {
 		final TextAnalysisResult result = analysis.getResult();
 
 		System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
-
 		System.err.println("Detail: " + result.asJSON(true, 1));
+
+		// Given the Semantic Type we retrieve the associated plugin
+		LogicalType semanticType = analysis.getPlugins().getRegistered(result.getSemanticType());
+
+		// Use the plugin to get the non-localized description
+		System.err.printf("Description: %s%n", semanticType.getDescription());
+
+		// Use the plugin to generate a new random sample
+		System.err.printf("Sample: %s%n", semanticType.nextRandom());
+
+		// Use the plugin to validate a value
+		System.err.printf("IsValid: %s%n", semanticType.isValid("BLUE"));
 	}
 }

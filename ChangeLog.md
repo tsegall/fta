@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 14.3.3
+ - ENH: Improve ModeBulk example to demonstrate plugin retrieval for a Semantic Type (#42)
+
 ### 14.3.2
  - BUG: Add missing file from checkin
 

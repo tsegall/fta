@@ -204,7 +204,6 @@ public class Driver {
 						for (final PluginDocumentationEntry entry : defn.documentation)
 							System.err.printf("\t\t-> \"%s\": \"%s\"%n", entry.source, entry.reference);
 					}
-
 				}
 			}
 
