@@ -177,7 +177,10 @@ public class DriverOptions {
 	}
 
 	public void addFromFile(final String filePath) throws IOException {
-		addFromStringArray(Files.readString(Paths.get(filePath)).trim().split("[ \n]"));
+		final String args = Files.readString(Paths.get(filePath)).trim();
+		if (args.isEmpty())
+			return;
+		addFromStringArray(args.split("[ \n]"));
 	}
 
 	private int nextIntegerArg(final String[] args, final int index) {

@@ -757,9 +757,15 @@ public class TextAnalysisResult {
 	 * @return A JSON representation of the analysis.
 	 */
 	public ObjectNode asPlugin() {
-		// Already a Semantic type or date type - so nothing interesting to report as a Plugin
-		if (isSemanticType() || facts.getMatchTypeInfo().isDateType())
+		// A date type - so nothing interesting to report as a Plugin
+		if (facts.getMatchTypeInfo().isDateType())
 			return null;
+
+		// If it is a Semantic Type then just use the existing definition
+		if (isSemanticType()) {
+			// TODO
+			return null;
+		}
 
 		final ObjectNode plugin = MAPPER.createObjectNode();
 		ArrayNode arrayNode;

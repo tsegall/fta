@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -55,7 +56,7 @@ class FileProcessor {
 		this.options = new DriverOptions(cmdLineOptions);
 	}
 
-	protected void process() throws IOException, FTAPluginException, FTAUnsupportedLocaleException {
+	protected void process() throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException {
 		if (Files.exists(Paths.get(filename + ".options"))) {
 			options.addFromFile(filename + ".options");
 		}
@@ -86,16 +87,20 @@ class FileProcessor {
 
 		settings.setMaxColumns(options.xMaxColumns);
 
-		if (options.bulk)
-			processBulk(settings);
-		else
-			processAllFields(settings);
-
-		if (options.output)
-			output.close();
+		try {
+			if (options.bulk)
+				processBulk(settings);
+			else
+				processAllFields(settings);
+		}
+		catch (Exception e) {
+			if (options.output)
+				output.close();
+			throw e;
+		}
 	}
 
-	private void processBulk(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException {
+	private void processBulk(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException {
 		String[] header;
 		int numFields;
 		TextAnalyzer analyzer;
@@ -112,10 +117,10 @@ class FileProcessor {
 
 			header = parser.getRecordMetadata().headers();
 
-			if (header.length != 4) {
-				error.printf("ERROR: Expected input with four columns (key,fieldName,fieldValue,fieldCount).  %d field(s) in input.%n", header.length);
-				System.exit(1);
-			}
+			if (header.length != 4)
+				throw new FTAProcessingException(filename,
+						MessageFormat.format("Expected input with four columns (key,fieldName,fieldValue,fieldCount). {0} field(s) in input",
+								 header.length));
 
 			numFields = header.length;
 
@@ -214,7 +219,7 @@ class FileProcessor {
 		}
 	}
 
-	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException {
+	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException {
 		final long startTime = System.currentTimeMillis();
 		long initializedTime = -1;
 		long consumedTime = -1;
@@ -222,7 +227,7 @@ class FileProcessor {
 		Processor processor = null;
 		String[] header = null;
 		int numFields = 0;
-		long thisRecord = 0;
+		long rawRecordIndex = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
@@ -230,21 +235,20 @@ class FileProcessor {
 			if (options.skip != 0) {
 				for (int i = 0; i < options.skip; i++)
 					in.readLine();
+				rawRecordIndex += options.skip;
 			}
 
 			final CsvParser parser = new CsvParser(settings);
 			parser.beginParsing(in);
 
 			header = parser.getRecordMetadata().headers();
-			if (header == null) {
-				error.printf("ERROR: Cannot parse header for file '%s'%n", filename);
-				System.exit(1);
-			}
+			if (header == null)
+				throw new FTAProcessingException(filename, "Cannot parse header");
+
 			numFields = header.length;
-			if (options.col > numFields) {
-				error.printf("ERROR: Column %d does not exist.  Only %d field(s) in input.%n", options.col, numFields);
-				System.exit(1);
-			}
+			if (options.col > numFields)
+				throw new FTAProcessingException(filename, MessageFormat.format("Column {0} does not exist.  Only {1} field(s) in input.", options.col, numFields));
+
 			for (int i = 0; i < numFields; i++) {
 				if ((options.col == -1 || options.col == i) && options.verbose != 0 && options.noAnalysis)
 					System.out.println(header[i]);
@@ -256,20 +260,22 @@ class FileProcessor {
 			CircularBuffer buffer = new CircularBuffer(options.trailer + 1);
 
 			String[] row;
+			int processedRecords = 0;
 
 			while ((row = parser.parseNext()) != null) {
+				rawRecordIndex++;
 				if (row.length != numFields) {
 					error.printf("ERROR: File: '%s', record %d has %d fields, expected %d, skipping%n",
-							filename, thisRecord, row.length, numFields);
+							filename, rawRecordIndex, row.length, numFields);
 					continue;
 				}
 				buffer.add(row);
 				if (!buffer.isFull())
 					continue;
 				row = buffer.get();
-				thisRecord++;
+				processedRecords++;
 				processor.consume(row);
-				if (thisRecord == options.recordsToProcess) {
+				if (processedRecords == options.recordsToProcess) {
 					parser.stopParsing();
 					break;
 				}
@@ -277,12 +283,10 @@ class FileProcessor {
 			consumedTime = System.currentTimeMillis();
 		}
 		catch (FileNotFoundException e) {
-			error.printf("ERROR: Filename '%s' not found.%n", filename);
-			System.exit(1);
+			throw new FTAProcessingException(filename, "File not found");
 		}
 		catch (TextParsingException|ArrayIndexOutOfBoundsException e) {
-			error.printf("ERROR: Filename '%s' Univocity exception. %s%n", filename, e.getMessage());
-			System.exit(1);
+			throw new FTAProcessingException(filename, "Univocity exception", e);
 		}
 
 		if (options.noAnalysis)
@@ -309,11 +313,11 @@ class FileProcessor {
 					if (options.col == -1 || options.col == i)
 						patterns[i] = Pattern.compile(results[i].getRegExp());
 
-				thisRecord = 0;
+				rawRecordIndex = 0;
 				String[] row;
 
 				while ((row = parser.parseNext()) != null) {
-					thisRecord++;
+					rawRecordIndex++;
 					if (row.length != numFields)
 						continue;
 
@@ -330,7 +334,7 @@ class FileProcessor {
 								failures.add(value);
 						}
 					}
-					if (thisRecord == options.recordsToProcess) {
+					if (rawRecordIndex == options.recordsToProcess) {
 						parser.stopParsing();
 						break;
 					}
@@ -348,8 +352,8 @@ class FileProcessor {
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
 				final TextAnalyzer analyzer = processor.getAnalyzer(i);
-				if (thisRecord != options.recordsToProcess)
-					analyzer.setTotalCount(thisRecord);
+				if (rawRecordIndex != options.recordsToProcess)
+					analyzer.setTotalCount(rawRecordIndex);
 
 				result = results[i];
 				if (options.json) {
@@ -369,8 +373,7 @@ class FileProcessor {
 						try {
 							output.printf("%s%n", writer.writeValueAsString(pluginDefinition));
 						} catch (JsonProcessingException e) {
-							error.printf("ERROR: JsonProcessing exception. %s%n", filename, e.getMessage());
-							System.exit(1);
+							throw new FTAProcessingException(filename, "JsonProcessing exception", e);
 						}
 					}
 				}
@@ -382,12 +385,11 @@ class FileProcessor {
 				// Check the counts if we are validating
 				if (options.validate >= 1) {
 					final String ret = result.checkCounts();
-					if (ret != null) {
-						System.err.printf("Composite: %s, field: %s (%d), failed count validation - %s\n",
+					if (ret != null)
+						throw new FTAProcessingException(filename,
+								MessageFormat.format("Composite: {0}, field: {1} ({2}), failed count validation - {}",
 								analyzer.getContext().getCompositeName(), analyzer.getContext().getStreamName(),
-								analyzer.getContext().getStreamIndex(), ret);
-						System.exit(1);
-					}
+								analyzer.getContext().getStreamIndex(), ret));
 				}
 
 				if (options.validate == 2 && matched[i] != result.getMatchCount()) {
@@ -427,7 +429,7 @@ class FileProcessor {
 						sampleCount, confidence*100, usedMemory);
 			}
 			error.printf("Execution time (#fields: %d, #records: %d): initialization: %dms, consumption: %dms, results: %dms, total: %dms%n",
-					numFields, thisRecord, initializedTime - startTime, consumedTime - initializedTime, resultsTime - consumedTime, durationTime);
+					numFields, rawRecordIndex, initializedTime - startTime, consumedTime - initializedTime, resultsTime - consumedTime, durationTime);
 		}
 	}
 }

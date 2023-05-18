@@ -267,6 +267,11 @@ public class Driver {
 				final Locale activeLocale = cmdLineOptions.locale != null ? cmdLineOptions.locale : Locale.getDefault();
 				error.printf("ERROR: Unsupported Locale: %s, error: %s%n", activeLocale.toLanguageTag(), e.getMessage());
 				System.exit(1);
+			} catch (FTAProcessingException e) {
+				error.printf("ERROR: Filename: %s, error: %s%n", e.getFilename(), e.getMessage());
+			} catch (Throwable t) {
+				error.printf("ERROR: '%s' error: %s%n", filename, t.getMessage());
+				t.printStackTrace(error);
 			}
 		}
 	}

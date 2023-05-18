@@ -34,7 +34,7 @@ public class TypeInfo {
 		GROUPING,
 		EXPONENT,
 		NON_LOCALIZED,
-		TRAILING_MINUS,
+		SIGNED_TRAILING,
 		NULL,
 		BLANK,
 		BLANKORNULL,
@@ -54,7 +54,7 @@ public class TypeInfo {
 	public final static int GROUPING_FLAG = TypeModifier.GROUPING.getFlag();
 	public final static int EXPONENT_FLAG = TypeModifier.EXPONENT.getFlag();
 	public final static int NON_LOCALIZED_FLAG = TypeModifier.NON_LOCALIZED.getFlag();
-	public final static int TRAILING_MINUS_FLAG = TypeModifier.TRAILING_MINUS.getFlag();
+	public final static int SIGNED_TRAILING_FLAG = TypeModifier.SIGNED_TRAILING.getFlag();
 	public final static int NULL_FLAG = TypeModifier.NULL.getFlag();
 	public final static int BLANK_FLAG = TypeModifier.BLANK.getFlag();
 	public final static int BLANKORNULL_FLAG = TypeModifier.BLANKORNULL.getFlag();
@@ -325,7 +325,7 @@ public class TypeInfo {
 
 	@JsonIgnore
 	public boolean isTrailingMinus() {
-		return (typeModifierFlags & TRAILING_MINUS_FLAG) != 0;
+		return (typeModifierFlags & SIGNED_TRAILING_FLAG) != 0;
 	}
 
 	@JsonIgnore

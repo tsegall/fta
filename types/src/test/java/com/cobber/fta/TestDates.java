@@ -1455,6 +1455,42 @@ public class TestDates {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void longYear() throws IOException, FTAException {
+		final String[] samples = {
+				"1998", "2005", "2003", "1997", "1991", "1977", "2005", "2005", "2005", "2008",
+				"1988", "2010", "2010", "2003", "2010", "2000", "2005", "2014", "1983", "1995",
+				"2015", "2002", "1997", "2000", "2001", "1989", "1998", "2011", "1984", "1992",
+				"1998", "2010", "2005", "1998", "2008", "2007", "2007", "1980", "1983", "1994",
+				"2000", "2003", "1999", "1986", "2000", "0000", "2000", "1999", "2001", "2000",
+				"1980", "2005", "1990", "1996", "1992", "2006", "1999", "2000", "1996"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("Mobile_VehicleYear");
+		analysis.setDebug(1);
+
+		for (String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getRegExp(), "\\d{4}");
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "yyyy");
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), samples.length - 1);
+		assertEquals(result.getNullCount(), 0);
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String sample : samples)
+			assertTrue(sample.matches(result.getRegExp()), sample);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicBulgarianDate() throws IOException, FTAException {
 
 		final Set<String> samples = new HashSet<>();

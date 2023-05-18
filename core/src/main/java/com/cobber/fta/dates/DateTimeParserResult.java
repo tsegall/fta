@@ -683,11 +683,17 @@ public class DateTimeParserResult {
 			case YEARS_4:
 				if (upto + 4 > inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
+				boolean allZeroes = true;
 				for (int j = 0; j < 4; j++) {
-					if (!Character.isDigit(input.charAt(upto)))
+					final char ch = input.charAt(upto);
+					if (ch != '0')
+						allZeroes = false;
+					if (!Character.isDigit(ch))
 						throw new DateTimeParseException("Expecting digit", input, upto);
 					upto++;
 				}
+				if (allZeroes)
+					throw new DateTimeParseException("Invalid value for YearOfEra: 0000", input, upto);
 				break;
 
 			case PAD_2:

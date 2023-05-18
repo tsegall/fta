@@ -1,6 +1,15 @@
 
 ## Changes ##
 
+### 14.3.1
+ - BUG: Fix issue with late switches from DOUBLE_GROUPING to SIGNED_DOUBLE_GROUPING
+ - BUG: Fix issue with Switching from SIGNED_DOUBLE_TRAILING to SIGNED_DOUBLE_TRAILING_GROUPING
+ _ BUG: Fix issue with 0000 as a year (format: yyyy)
+ - ENH: Bump jackson
+ - ENH: Bump google phonenumber
+ - CLI: Defend against null option files
+ - CLI: Continue processing even if one of the files provided has fatal errors
+
 ### 14.3.0
  - ENH: I18N - Improve support for COORDINATE.LATITUDE_DECIMAL and COORDINATE.LONGITUDE_DECIMAL (nl-NL)
  - ENH: Fix up test suite to support compiling with Java 17

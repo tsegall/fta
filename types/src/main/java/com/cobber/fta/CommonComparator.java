@@ -36,6 +36,8 @@ public class CommonComparator<T extends Comparable> implements Comparator<String
 	@Override
 	public int compare(final String input1, final String input2) {
 		final T val1 = (T)stringConverter.getValue(input1);
+		if (val1 == null)
+			System.err.println("*** Failed to convert ... " + input1);
 		final T val2 = (T)stringConverter.getValue(input2);
 		final int value =  val1.compareTo(val2);
 

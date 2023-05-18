@@ -1012,8 +1012,11 @@ public class TextAnalyzer {
 			if (n == null || input.length() != pos.getIndex())
 				return false;
 			d = n.doubleValue();
-			if (hasGroupingSeparator(input, localeGroupingSeparator, localeDecimalSeparator))
+			if (input.indexOf(localeGroupingSeparator) != -1) {
+				if (!hasGroupingSeparator(input, localeGroupingSeparator, localeDecimalSeparator))
+					return false;
 				facts.groupingSeparators++;
+			}
 			// Make sure to track the decimal separator being used for doubles
 			if (localeDecimalSeparator != '.' && facts.decimalSeparator != localeDecimalSeparator && input.indexOf(localeDecimalSeparator) != -1)
 				facts.decimalSeparator = localeDecimalSeparator;

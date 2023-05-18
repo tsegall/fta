@@ -1799,18 +1799,17 @@ public class TestDoubles {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getNullCount(), 0);
 		assertNull(result.getTypeModifier());
 		assertEquals(result.getRegExp(), "\\d*,?\\d+");
-		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "120256,857625212");
-		assertEquals(result.getMaxValue(), "120114963735722,0");
+		assertEquals(result.getMaxValue(), "123071,319201962");
 		assertEquals(result.getDecimalSeparator(), ',');
 		assertNull(result.checkCounts());
 
 		TestSupport.checkHistogram(result, 10, true);
-//BUG		TestSupport.checkQuantiles(result);
+		TestSupport.checkQuantiles(result);
 
 		for (final String input : inputs)
 			if (!nonLocalized.equals(input))
@@ -2233,9 +2232,75 @@ public class TestDoubles {
 		assertEquals(result.getMatchCount(), ugly.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
-
 		result.asJSON(false, 0);
+	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void doublePeriodIT() throws IOException, FTAException {
+		final String[] ugly = {
+				"3219,53", "3528,67", "5342,12", "3891,63",
+				"5.373.99",
+				"2107,85", "1039.69", "3250,63", "6678,75",
+				"2540,35", "2500", "5041,7", "1626,89", "1881", "5427,42",
+				"200", "910,45", "1931,32", "5059,16", "47214,8", "2770,97"
+		};
+		final Locale locale = Locale.forLanguageTag("it-IT");
+		final TextAnalyzer analysis = new TextAnalyzer("Numero");
+		analysis.setLocale(locale);
+		analysis.setDebug(2);
+
+		for (final String sample : ugly)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
+
+		result.asJSON(true, 1);
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), ugly.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getInvalidCount(), 2);
+		assertEquals(result.getMatchCount(), ugly.length - 2);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void doubleTrailingGroupingDE() throws IOException, FTAException {
+		final String[] ugly = {
+				"8.722,69-", "1.166.158,26 ", "107.283,55-", "6.410.732,62 ", "6.865,73-",
+				"3.511.937,53 ", "1.403,91-", "319.310,77 ", "447.795,12-", "5.481.875,53 ",
+				"218.302,97-", "3.275.636,11 ", "189.504,92-", "6.159.988,43 ", "1.264.751,91-",
+				"7.729.399,20 ", "7.749,40-", "721.450,96 ", "11.482,18-", "690.129,01 ",
+				"26.400,67-", "749.507,72 ", "9.731,44-", "572.007,50 ", "9.086,90-",
+		};
+		final Locale locale = Locale.forLanguageTag("de-DE");
+		final TextAnalyzer analysis = new TextAnalyzer("Planung 2015");
+		analysis.setLocale(locale);
+		analysis.setDebug(2);
+
+		for (final String sample : ugly)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE, locale.toLanguageTag());
+
+		result.asJSON(true, 1);
+		assertEquals(result.getTypeModifier(), "SIGNED_TRAILING,GROUPING");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), ugly.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getOutlierCount(), 0);
+//BUG		assertEquals(result.getInvalidCount(), 0);
+//BUG		assertEquals(result.getMatchCount(), ugly.length);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
