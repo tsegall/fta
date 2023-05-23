@@ -11,7 +11,7 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P968" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Uniform_Resource_Identifier" }
+			{ "source": "wikipedia", "reference": "https://https://en.wikipedia.org/wiki/Email_address" }
 		],
 		"priority": 10
 	},
@@ -1848,8 +1848,8 @@
 			"reference": "/reference/ISO-3166-3.csv"
 		},
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P297" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P298" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3" }
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
 		"priority": 162
@@ -1867,8 +1867,8 @@
 			"reference": "/reference/ISO-3166-2.csv"
 		},
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P298" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P297" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 163

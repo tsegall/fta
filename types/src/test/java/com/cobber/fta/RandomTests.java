@@ -2582,7 +2582,7 @@ public class RandomTests {
 		// Construct a new TextAnalyzer and add the Plugin Definition from the previous invocation
 		// This time we should detect the new Semantic Type: 'Guess'
 		final TextAnalyzer analyzerWithDefinition = new TextAnalyzer("Guess");
-		analyzerWithDefinition.getPlugins().registerPlugins(new StringReader("[" + result.asPlugin().toString() + "]"),
+		analyzerWithDefinition.getPlugins().registerPlugins(new StringReader("[" + result.asPlugin(analyzer).toString() + "]"),
 				analyzerWithDefinition.getStreamName(), analyzerWithDefinition.getConfig());
 
 		for (final String sample : samples)

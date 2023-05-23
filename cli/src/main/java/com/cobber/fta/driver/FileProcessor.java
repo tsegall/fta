@@ -72,6 +72,7 @@ class FileProcessor {
 		settings.setUnescapedQuoteHandling(UnescapedQuoteHandling.STOP_AT_DELIMITER);
 //		settings.setNullValue("");
 		settings.setEmptyValue("");
+		settings.setSkipEmptyLines(false);
 		if (options.delimiter != null) {
 			settings.getFormat().setDelimiter(options.delimiter.charAt(0));
 			settings.setDelimiterDetectionEnabled(false);
@@ -97,6 +98,23 @@ class FileProcessor {
 			if (options.output)
 				output.close();
 			throw e;
+		}
+	}
+
+	class RowCount {
+		int numFields;
+		long firstRow;
+		long count;
+
+		RowCount(final int numFields, final long firstRow) {
+			this.numFields = numFields;
+			this.firstRow = firstRow;
+			this.count = 1;
+		}
+
+		RowCount inc() {
+			this.count++;
+			return this;
 		}
 	}
 
@@ -127,11 +145,16 @@ class FileProcessor {
 			long thisRecord = 0;
 			long totalCount = 0;
 			String[] row;
+			Map<Integer, RowCount> errors = new HashMap<>();
+
 			while ((row = parser.parseNext()) != null) {
 				thisRecord++;
 				if (row.length != numFields) {
-					error.printf("ERROR: File: '%s', record %d has %d fields, expected %d, skipping%n",
-							filename, thisRecord, row.length, numFields);
+					RowCount existing = errors.get(row.length);
+					if (existing == null)
+						errors.put(row.length, new RowCount(row.length, thisRecord));
+					else
+						errors.put(row.length, existing.inc());
 					continue;
 				}
 				key = row[0];
@@ -154,6 +177,12 @@ class FileProcessor {
 					previousName = name;
                 }
                 bulkMap.put(fieldValue, fieldCount);
+			}
+
+			if (!errors.isEmpty()) {
+				for (RowCount recordError : errors.values())
+					error.printf("ERROR: File: '%s', %d records skipped with %d fields, first occurrence %d, expected %d%n",
+							filename, recordError.count, recordError.numFields, recordError.firstRow, numFields);
 			}
 
 			if (!bulkMap.isEmpty()) {
@@ -228,6 +257,7 @@ class FileProcessor {
 		String[] header = null;
 		int numFields = 0;
 		long rawRecordIndex = 0;
+		Map<Integer, RowCount> errors = new HashMap<>();
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
@@ -264,9 +294,15 @@ class FileProcessor {
 
 			while ((row = parser.parseNext()) != null) {
 				rawRecordIndex++;
+				// Skip blank lines
+				if (row.length == 1 && row[0] == null)
+					continue;
 				if (row.length != numFields) {
-					error.printf("ERROR: File: '%s', record %d has %d fields, expected %d, skipping%n",
-							filename, rawRecordIndex, row.length, numFields);
+					RowCount existing = errors.get(row.length);
+					if (existing == null)
+						errors.put(row.length, new RowCount(row.length, rawRecordIndex));
+					else
+						errors.put(row.length, existing.inc());
 					continue;
 				}
 				buffer.add(row);
@@ -287,6 +323,18 @@ class FileProcessor {
 		}
 		catch (TextParsingException|ArrayIndexOutOfBoundsException e) {
 			throw new FTAProcessingException(filename, "Univocity exception", e);
+		}
+
+		if (!errors.isEmpty()) {
+			long toSkip = -1;
+			for (RowCount recordError : errors.values()) {
+				error.printf("ERROR: File: '%s', %d records skipped with %d fields, first occurrence %d, expected %d%n",
+						filename, recordError.count, recordError.numFields, recordError.firstRow, numFields);
+				if (rawRecordIndex > 20 && recordError.count > .8 * rawRecordIndex)
+					toSkip = recordError.firstRow;
+			}
+			if (toSkip != -1)
+				error.printf("ERROR: File: '%s', retry with --skip %d%n", filename, toSkip);
 		}
 
 		if (options.noAnalysis)
@@ -365,7 +413,7 @@ class FileProcessor {
 				output.printf("%s%n", result.asJSON(options.pretty, options.verbose));
 
 				if (options.pluginDefinition) {
-					final ObjectNode pluginDefinition = result.asPlugin();
+					final ObjectNode pluginDefinition = result.asPlugin(analyzer);
 					if (pluginDefinition != null) {
 						final ObjectMapper mapper = new ObjectMapper();
 

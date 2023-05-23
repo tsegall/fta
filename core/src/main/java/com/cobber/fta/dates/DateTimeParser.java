@@ -55,7 +55,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * </p>
  * <pre>
  * {@code
- *		DateTimeParser dtp = new DateTimeParser(false);
+ *		DateTimeParser dtp = new DateTimeParser();
  *
  *		dtp.train("2/7/2012 06:24:47");
  *		dtp.train("2/7/2012 09:44:04");
@@ -64,7 +64,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *		dtp.train("19/7/2012 17:49:53");
  *
  *		DateTimeParserResult result = dtp.getResult();
- *      // Expect "d/M/yyyy HH:mm:ss");
+ *		// Expect "d/M/yyyy HH:mm:ss");
  *		System.err.println(result.getFormatString());
  * }
  * </pre>
@@ -144,6 +144,7 @@ public class DateTimeParser {
 	/**
 	 * Set the DateResolutionMode on the Parser.
 	 * @param resolutionMode When we have ambiguity - should we prefer to conclude day first, month first, auto (based on locale) or unspecified.
+	 * Default is {@link DateResolutionMode#None}.
 	 * @return The DateTimeParser
 	 */
 	public DateTimeParser withDateResolutionMode(final DateResolutionMode resolutionMode) {

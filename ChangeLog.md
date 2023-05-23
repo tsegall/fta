@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 14.4.0
+ - ENH: Improve TextAnalysisResult.asPlugin() to support returning the plugin definition for known Semantic Types
+ - INT: upgrade version of TestNG
+ - CLI: attempt to detect if --skip should be utilized
+
 ### 14.3.3
  - ENH: Improve ModeBulk example to demonstrate plugin retrieval for a Semantic Type (#42)
 
@@ -10,7 +15,7 @@
 ### 14.3.1
  - BUG: Fix issue with late switches from DOUBLE_GROUPING to SIGNED_DOUBLE_GROUPING
  - BUG: Fix issue with Switching from SIGNED_DOUBLE_TRAILING to SIGNED_DOUBLE_TRAILING_GROUPING
- _ BUG: Fix issue with 0000 as a year (format: yyyy)
+ - BUG: Fix issue with 0000 as a year (format: yyyy)
  - ENH: Bump jackson
  - ENH: Bump google phonenumber
  - CLI: Defend against null option files

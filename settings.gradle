@@ -27,7 +27,7 @@ includeBuild 'examples/modestreaming'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '14.3.3')
+			version('fta', '14.4.0')
 			version('jacoco', '0.8.8')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
@@ -59,7 +59,7 @@ dependencyResolutionManagement {
 		}
 		testLibs {
 // https://mvnrepository.com/artifact/org.testng/testng
-			library('testng', 'org.testng:testng:7.5')
+			library('testng', 'org.testng:testng:7.8.0')
 		}
 	}
 }

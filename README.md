@@ -622,10 +622,10 @@ Note: The input presented to the merged analysis is the union of the data captur
 
 ## Frequently Asked Questions ##
 
-### Why is FTA not detecting the Semantic Type XXX? #
+### Why is FTA not detecting the Semantic Type XXX? ###
 Beware of synthetic data.  FTA assumes and is tuned to expect real world data.  For example, the 'Phone Numbers' 617.193.9182 and 781.192.1295 look real but have an invalid area code, exchange pair and hence cannot be Phone Numbers.
 
-### Why is FTA not detecting the Semantic Type CITY? #
+### Why is FTA not detecting the Semantic Type CITY? ###
 
 CITY is relatively unusual in that it is based  primarily on the header and not on the data. As per the discussion above there are fundamentally three types of plugins (regexp, list-backed, and Java). CITY is a regexp plugin where the Regular Expression is relatively forgiving.
 

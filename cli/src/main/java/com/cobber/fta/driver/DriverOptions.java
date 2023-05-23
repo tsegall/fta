@@ -180,7 +180,7 @@ public class DriverOptions {
 		final String args = Files.readString(Paths.get(filePath)).trim();
 		if (args.isEmpty())
 			return;
-		addFromStringArray(args.split("[ \n]"));
+		addFromStringArray(args.split("[ \n]+"));
 	}
 
 	private int nextIntegerArg(final String[] args, final int index) {

@@ -754,17 +754,18 @@ public class TextAnalysisResult {
 
 	/**
 	 * A plugin definition to use to match this type.
+	 * @param analyzer The TextAnalyzer used to produce this result
 	 * @return A JSON representation of the analysis.
 	 */
-	public ObjectNode asPlugin() {
+	public ObjectNode asPlugin(final TextAnalyzer analyzer) {
 		// A date type - so nothing interesting to report as a Plugin
 		if (facts.getMatchTypeInfo().isDateType())
 			return null;
 
 		// If it is a Semantic Type then just use the existing definition
 		if (isSemanticType()) {
-			// TODO
-			return null;
+			LogicalType semanticType = analyzer.getPlugins().getRegistered(getSemanticType());
+			return MAPPER.convertValue(semanticType.getPluginDefinition(), ObjectNode.class);
 		}
 
 		final ObjectNode plugin = MAPPER.createObjectNode();

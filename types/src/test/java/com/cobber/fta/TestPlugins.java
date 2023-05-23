@@ -98,9 +98,10 @@ public class TestPlugins {
 
 		assertNull(result.checkCounts());
 
-		for (final String input : inputs) {
+		System.err.printf("Plugin: %s%n", result.asPlugin(analysis));
+
+		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
-		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
