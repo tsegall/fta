@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 14.5.0
+ - ENH: Add new Semantic Type - FILENAME (Name of file)
+
 ### 14.4.0
  - ENH: Improve TextAnalysisResult.asPlugin() to support returning the plugin definition for known Semantic Types
  - INT: upgrade version of TestNG

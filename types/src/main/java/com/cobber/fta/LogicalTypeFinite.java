@@ -32,6 +32,10 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 
 	private final WordProcessor wordProcessor = new WordProcessor();
 
+	/**
+	 * The set of valid members for this Semantic Type.
+	 * @return The valid members for this Semantic Type.
+	 */
 	public abstract Set<String> getMembers();
 
 	public LogicalTypeFinite(final PluginDefinition plugin) {

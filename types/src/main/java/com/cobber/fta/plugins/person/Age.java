@@ -35,9 +35,8 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Age (Person).
  */
 public class Age extends LogicalTypeInfinite {
-	/** The Regular Expression for this Semantic type. */
-	public static final String LONG_REGEXP = "\\d{1,3}";
-	public static final String DOUBLE_REGEXP = "\\d{1,3}\\.\\d+";
+	private static final String LONG_REGEXP = "\\d{1,3}";
+	private static final String DOUBLE_REGEXP = "\\d{1,3}\\.\\d+";
 
 	private final static int MAX_AGE = 120;
 

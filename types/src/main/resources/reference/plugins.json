@@ -1989,6 +1989,20 @@
 		"priority": 169
 	},
 	{
+		"semanticType": "FILENAME",
+		"description": "Name of file",
+		"pluginType": "java",
+		"signature": "UkQ1ljXZ3ZmHjjp2cXuVE2gFLPw=",
+		"clazz": "com.cobber.fta.plugins.FileName",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(file.?name).*", "confidence": 99 } ]
+			}
+		],
+		"priority": 170
+	},
+	{
 		"semanticType": "PERSON.YEAR_OF_BIRTH",
 		"description": "Person - Year of Birth",
 		"pluginType": "java",

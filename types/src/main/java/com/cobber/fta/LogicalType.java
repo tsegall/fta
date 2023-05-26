@@ -174,6 +174,11 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 		return defn.baseType;
 	}
 
+	/**
+	 * Indicate if this Semantic Type will accept the supplied Base Type, defaults to the Base Type from the plugin definition.
+	 * @param type The underlying Base Type
+	 * @return A boolean indicating if this Semantic Type will accept the supplied Base Type
+	 */
 	public boolean acceptsBaseType(final FTAType type) {
 		return type == getBaseType();
 	}

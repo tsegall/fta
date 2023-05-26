@@ -18,7 +18,7 @@
 	- UserAgent
  - Outlier detection in numeric fields
  - Improved anomaly detection (see https://www.sciencedirect.com/science/article/pii/S0925231217309864)
- - Add Filename detection 
+ - Add Filename detection (DONE)
  - Add ContentFormat attribute: e.g. JSON, XML, base64 encoded, encrypted? (DONE)
  - Add Distribution attribute: uniform, normal, log-normal, exponential, other? (Kolmogorov-Smirnov test?)
  - Distinguish between HOME/WORK attributes (e.g. EMAIL, PHONE, ADDRESS)

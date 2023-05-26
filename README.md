@@ -305,6 +305,7 @@ DIRECTION|Cardinal Direction|*
 EMAIL|Email Address|*
 EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
 EPOCH.SECONDS|Unix Epoch (Timestamp) - seconds|*
+FILENAME|Name of file|*
 FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|bg, ca, de, en, es, fr, it, nl, pt, ru
 FULL_ADDRESS_EN|Full Address (English Language)|en
 GENDER.TEXT_&lt;Language&gt;|Gender|bg, ca, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr, zh
