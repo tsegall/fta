@@ -53,6 +53,7 @@ import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.dates.LocaleInfo;
+import com.cobber.fta.dates.LocaleInfoConfig;
 import com.cobber.fta.dates.SimpleDateMatcher;
 
 public class TestDates {
@@ -106,6 +107,7 @@ public class TestDates {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
 		final TextAnalyzer analysis = new TextAnalyzer("basicAMPMVietname");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		analysis.configure(TextAnalyzer.Feature.ALLOW_ENGLISH_AMPM, false);
 		analysis.setLocale(locale);
 		final String dateTimeFormat = "dd/MMM/yy h:mm a";
 		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat, locale);
@@ -128,7 +130,7 @@ public class TestDates {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), sampleCount);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "\\d{2}/[\\p{IsAlphabetic}\\p{IsDigit} ]{5,6}/\\d{2} \\d{1,2}:\\d{2} (?i)(SA|CH)");
+		assertEquals(result.getRegExp(), "\\d{2}/[\\p{IsAlphabetic}\\p{IsDigit} ]{5,6}/\\d{2} \\d{1,2}:\\d{2} (?i)(CH|SA)");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeModifier(), "dd/MMM/yy h:mm a");
@@ -274,6 +276,7 @@ public class TestDates {
 		final Locale locale = Locale.forLanguageTag("vi-VN");
 		final TextAnalyzer analysis = new TextAnalyzer("h:mm a dd/MM/yy", DateResolutionMode.DayFirst);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		analysis.configure(TextAnalyzer.Feature.ALLOW_ENGLISH_AMPM, false);
 		analysis.setLocale(locale);
 		final String dateTimeFormat = "h:mm a dd/MM/yy";
 		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateTimeFormat, locale);
@@ -293,7 +296,7 @@ public class TestDates {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getSampleCount(), sampleCount);
-		assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2} (?i)(SA|CH) \\d{2}/\\d{2}/\\d{2}");
+		assertEquals(result.getRegExp(), "\\d{1,2}:\\d{2} (?i)(CH|SA) \\d{2}/\\d{2}/\\d{2}");
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		assertEquals(result.getTypeModifier(), "h:mm a dd/MM/yy");
 		assertEquals(result.getMatchCount(), sampleCount);
@@ -3255,7 +3258,7 @@ public class TestDates {
 					unsupportedLocales.add(locale.toLanguageTag());
 					continue;
 				}
-				final LocaleInfo localeInfo = LocaleInfo.getInstance(locale, analysis.getConfig().isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION));
+				final LocaleInfo localeInfo = LocaleInfo.getInstance(new LocaleInfoConfig(locale, analysis.getConfig().isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION), analysis.getConfig().isEnabled(TextAnalyzer.Feature.ALLOW_ENGLISH_AMPM)));
 
 				if (localeInfo.getShortMonths() == null || localeInfo.getShortMonths().isEmpty()) {
 					countNoMonthAbbreviations++;

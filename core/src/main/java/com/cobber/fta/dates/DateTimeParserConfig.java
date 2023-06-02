@@ -15,10 +15,12 @@
  */
 package com.cobber.fta.dates;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Capture the Configuration of the DateTimeParser - this and the State are all we need to serialize()/deserialize()/merge the DateTimeParser.
@@ -34,9 +36,14 @@ public class DateTimeParserConfig {
 	public boolean strictMode;
 	/** If Numeric mode is set, any numeric-only input to train() will be tested to see if it appears to be a date (Default: true). */
 	public boolean numericMode = true;
-	/** If noAbbreviationPunctuation is set we should use Month Abbreviations without periods, for example in the
-	 * Canadian locale, Java returns 'AUG.', and similarly for the AM/PM string which are defined as A.M and P.M. (Default: true). */
+	/**
+	 * If noAbbreviationPunctuation is set we should use Month Abbreviations without periods, for example in the
+	 * Canadian locale, Java returns 'AUG.', and similarly for the AM/PM string which are defined as A.M and P.M. (Default: true).
+	 */
 	public boolean noAbbreviationPunctuation = true;
+	/* If allowEnglishAMPM is set then recognize "AM" and "PM" independent of the locale (Default: true). */
+	public boolean allowEnglishAMPM = true;
+
 	/** lenient allows dates of the form '00/00/00' etc to be viewed as valid for the purpose of Format detection (Default: true). */
 	public boolean lenient = true;
 
@@ -74,16 +81,23 @@ public class DateTimeParserConfig {
 		return locales.length == 1 ? locales[0] : null;
 	}
 
+	@JsonIgnore
+	public LocaleInfoConfig getLocaleInfoConfig() {
+		return new LocaleInfoConfig(getLocale(), noAbbreviationPunctuation, allowEnglishAMPM);
+	}
+
 	@Override
-	public boolean equals(final Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final DateTimeParserConfig other = (DateTimeParserConfig) obj;
-		return Objects.equals(locale, other.locale) && resolutionMode == other.resolutionMode
-				&& strictMode == other.strictMode;
+		DateTimeParserConfig other = (DateTimeParserConfig) obj;
+		return allowEnglishAMPM == other.allowEnglishAMPM && lenient == other.lenient
+				&& Objects.equals(locale, other.locale) && Arrays.equals(locales, other.locales)
+				&& noAbbreviationPunctuation == other.noAbbreviationPunctuation && numericMode == other.numericMode
+				&& resolutionMode == other.resolutionMode && strictMode == other.strictMode;
 	}
 }

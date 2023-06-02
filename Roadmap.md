@@ -7,7 +7,6 @@
 	 - Address Line 1, Address Line2, Zip, State, Country into Full Address
 
 # Field attributes
- - Improve PII detection (e.g. DOB, Age, ...)
  - Improve Semantic Type detection
 	- IDENTITY.VAT_<COUNTRY> (DONE)
 	- PERSON.YEAR_OF_BIRTH and PERSON.DATE_OF_BIRTH (DONE)

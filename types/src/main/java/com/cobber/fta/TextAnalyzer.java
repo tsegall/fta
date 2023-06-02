@@ -66,7 +66,6 @@ import com.cobber.fta.core.TraceException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
-import com.cobber.fta.dates.DateTimeParserConfig;
 import com.cobber.fta.dates.DateTimeParserResult;
 import com.cobber.fta.dates.LocaleInfo;
 import com.cobber.fta.token.Token;
@@ -160,6 +159,11 @@ public class TextAnalyzer {
 
 	/** Enumeration that defines all on/off features for parsers. */
 	public enum Feature {
+		/**
+		 * Allow recognition of "AM" and "PM" in dates that would otherwise be rejected based on the recognition of the
+		 * locale-specific AM/PM indicators. Feature is enabled by default.
+		 */
+		ALLOW_ENGLISH_AMPM,
 		/** Feature that determines whether to collect statistics or not. Feature is enabled by default. */
 		COLLECT_STATISTICS,
 		/** Feature that indicates whether to enable the built-in Semantic Types. Feature is enabled by default. */
@@ -1286,7 +1290,8 @@ public class TextAnalyzer {
 				.withDateResolutionMode(context.getDateResolutionMode())
 				.withLocale(locale)
 				.withNumericMode(false)
-				.withNoAbbreviationPunctuation(analysisConfig.isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION));
+				.withNoAbbreviationPunctuation(analysisConfig.isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION))
+				.withEnglishAMPM(analysisConfig.isEnabled(TextAnalyzer.Feature.ALLOW_ENGLISH_AMPM));
 
 		// If no trace options already set then pick them up from the environment (if set)
 		if (analysisConfig.getTraceOptions() == null) {
@@ -2478,7 +2483,7 @@ public class TextAnalyzer {
 			catch (DateTimeParseException reale) {
 				// The real parse threw an Exception, this does not give us enough facts to usefully determine if there are any
 				// improvements to our assumptions we could make to do better, so re-parse and handle our more nuanced exception
-				DateTimeParserResult result = DateTimeParserResult.asResult(facts.getMatchTypeInfo().format, context.getDateResolutionMode(), new DateTimeParserConfig(locale));
+				DateTimeParserResult result = DateTimeParserResult.asResult(facts.getMatchTypeInfo().format, context.getDateResolutionMode(), dateTimeParser.getConfig());
 				boolean success = false;
 				do {
 					try {
@@ -2531,7 +2536,7 @@ public class TextAnalyzer {
 						if (!updated)
 							break;
 
-						result = DateTimeParserResult.asResult(newFormatString, context.getDateResolutionMode(), new DateTimeParserConfig(locale));
+						result = DateTimeParserResult.asResult(newFormatString, context.getDateResolutionMode(), dateTimeParser.getConfig());
 						facts.setMatchTypeInfo(new TypeInfo(null, result.getRegExp(), facts.getMatchTypeInfo().getBaseType(), newFormatString, false, -1, -1, null, newFormatString));
 					}
 				} while (!success);

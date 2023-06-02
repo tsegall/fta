@@ -77,7 +77,7 @@ public class DateTimeParserResult {
 		this.resolutionMode = resolutionMode;
 		this.config = config;
 		this.locale = config.getLocale();
-		this.localeInfo = LocaleInfo.getInstance(config.getLocale(), config.noAbbreviationPunctuation);
+		this.localeInfo = LocaleInfo.getInstance(config.getLocaleInfoConfig());
 		this.timeElements = timeElements;
 		this.timeFieldLengths = timeFieldLengths;
 		this.timeFieldOffsets = timeFieldOffsets;

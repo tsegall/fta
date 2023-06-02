@@ -34,7 +34,7 @@ import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
 
 /**
- * Plugin to detect valid 5-digit Insee Codes.
+ * Plugin to detect valid 5-digit Insee Codes (French: les Codes INSEE).
  */
 public class InseeCodeFR extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */

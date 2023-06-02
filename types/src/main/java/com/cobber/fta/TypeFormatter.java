@@ -57,7 +57,11 @@ public class TypeFormatter {
 	@JsonIgnore
 	public DateTimeFormatter getDateFormatter() {
 		if (dateTimeFormatter == null) {
-			final DateTimeParser dateTimeParser = new DateTimeParser().withLocale(locale).withNumericMode(false).withNoAbbreviationPunctuation(analysisConfig.isEnabled(Feature.NO_ABBREVIATION_PUNCTUATION));
+			final DateTimeParser dateTimeParser = new DateTimeParser()
+					.withLocale(locale)
+					.withNumericMode(false)
+					.withNoAbbreviationPunctuation(analysisConfig.isEnabled(Feature.NO_ABBREVIATION_PUNCTUATION))
+					.withEnglishAMPM(analysisConfig.isEnabled(TextAnalyzer.Feature.ALLOW_ENGLISH_AMPM));
 			dateTimeFormatter = dateTimeParser.ofPattern(format);
 		}
 		return dateTimeFormatter;

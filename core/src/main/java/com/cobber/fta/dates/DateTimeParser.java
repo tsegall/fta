@@ -183,6 +183,19 @@ public class DateTimeParser {
 	}
 
 	/**
+	 * Set allowEnglishAMPM mode on the Parser - if set allow "AM" and "PM" independent of the locale.
+	 * This enables the recognition of "AM" and "PM" in dates that would otherwise be rejected based on
+	 * the recognition of the locale-specific AM/PM indicators.
+	 *
+	 * @param allowEnglishAMPM The new value for allowEnglishAMPM mode.
+	 * @return The DateTimeParser
+	 */
+	public DateTimeParser withEnglishAMPM(final boolean allowEnglishAMPM) {
+		config.allowEnglishAMPM = allowEnglishAMPM;
+		return this;
+	}
+
+	/**
 	 * Set NoAbbreviationPunctuation mode on the Parser - if set then use month abbreviations without periods.
 	 * This attempts to workaround the fact that Java will return things like Aug. for month abbreviation in Canada
 	 * (and other locales) whereas many dates are simply of the form '02-Aug-2013' (i.e. without the period).
@@ -254,7 +267,7 @@ public class DateTimeParser {
 	 * @return The corresponding DateTimeFormatter (note - this will be a case-insensitive parser).
 	 */
 	public DateTimeFormatter ofPattern(final String formatString) {
-		final String cacheKey = config.getLocale().toLanguageTag() + "---" + formatString + "---" + config.noAbbreviationPunctuation;
+		final String cacheKey = formatString + "---" + config.getLocaleInfoConfig().getCacheKey();
 		DateTimeFormatter formatter = formatterCache.get(cacheKey);
 
 		if (formatter != null)
@@ -290,7 +303,7 @@ public class DateTimeParser {
 			.toFormatter(config.getLocale());
 		else if (config.noAbbreviationPunctuation && (offset = formatString.indexOf("MMM")) != -1 && offset != formatString.indexOf("MMMM")) {
 			if (localeInfo == null)
-				localeInfo = LocaleInfo.getInstance(config.getLocale(), config.noAbbreviationPunctuation);
+				localeInfo = LocaleInfo.getInstance(config.getLocaleInfoConfig());
 
 			// Setup the Monthly abbreviations, in Java some countries (e.g. Canada) have the short months defined with a
 			// period after them, for example 'AUG.' - we compensate by removing the punctuation
@@ -665,7 +678,7 @@ public class DateTimeParser {
 		// If there is only one Locale then it is simple - just test it and call it a day
 		if (config.getLocale() != null) {
 			if (localeInfo == null)
-				localeInfo = LocaleInfo.getInstance(config.getLocale(), config.noAbbreviationPunctuation);
+				localeInfo = LocaleInfo.getInstance(config.getLocaleInfoConfig());
 			return determineFormatStringCore(input, resolutionMode);
 		}
 
@@ -673,7 +686,7 @@ public class DateTimeParser {
 		// then declare this to be the locale (effectively freezing it), and return the answer.
 		for (final Locale locale : config.locales) {
 			config.setLocale(locale);
-			localeInfo = LocaleInfo.getInstance(locale, config.noAbbreviationPunctuation);
+			localeInfo = LocaleInfo.getInstance(config.getLocaleInfoConfig());
 			final String ret = determineFormatStringCore(input, resolutionMode);
 			if (ret != null)
 				return ret;

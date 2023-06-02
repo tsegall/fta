@@ -115,6 +115,9 @@ public class AnalysisConfig {
 	 * similarly for the AM/PM string which are defined in Canada as A.M and P.M. */
 	private boolean noAbbreviationPunctuation = true;
 
+	/* If allowEnglishAMPM is set then recognize "AM" and "PM" independent of the locale. */
+	private boolean allowEnglishAMPM = true;
+
 	/** Should we should treat "NULL" (and similar) as Null values. */
 	private boolean nullAsText = false;
 
@@ -162,6 +165,9 @@ public class AnalysisConfig {
 	 */
 	public void configure(final Feature feature, final boolean state) {
 		switch (feature) {
+		case ALLOW_ENGLISH_AMPM:
+			allowEnglishAMPM = state;
+			break;
 		case COLLECT_STATISTICS:
 			collectStatistics = state;
 			break;
@@ -199,6 +205,8 @@ public class AnalysisConfig {
 	 */
 	public boolean isEnabled(final Feature feature) {
 		switch (feature) {
+		case ALLOW_ENGLISH_AMPM:
+			return allowEnglishAMPM;
 		case COLLECT_STATISTICS:
 			return collectStatistics;
 		case DEFAULT_SEMANTIC_TYPES:

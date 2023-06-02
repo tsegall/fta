@@ -364,6 +364,7 @@ STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH, fr-CH, it-CH
 STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH, fr-CH, it-CH
 STATE_PROVINCE.COMMUNE_IT|Italian Commune|it-IT
 STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-IE, en-UK, en-US, ga-IE, hu-HU
+STATE_PROVINCE.COUNTY_FIPS_US|US County FIPS code|en-US
 STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
 STATE_PROVINCE.DEPARTMENT_CO|Colombian Department|es-CO
 STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|pt-PT
@@ -374,9 +375,10 @@ STATE_PROVINCE.PREFECTURE_NAME_JP|Japanese Prefecture Name|ja
 STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA, en-US
 STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
 STATE_PROVINCE.PROVINCE_ZA|South African Province Code|en-ZA
-STATE_PROVINCE.PROVINCE_NAME_&lt;Country&gt;|Province Name|en-EI, en-CA, en-NL, en-US, en-ZA, es-EC, es-ES, it-IT, nl-NL
-STATE_PROVINCE.REGION_FR|French Region Name|fr-FR
+STATE_PROVINCE.PROVINCE_NAME_&lt;Country&gt;|Province Name|en-EI, en-CA, en-NL, en-US, en-ZA, es-EC, es-ES, es-PE, it-IT, nl-NL
+STATE_PROVINCE.REGION_NAME_&lt;Country&gt;|Region Name|en-TZ, es-PE, fr-FR, it-IT, sw-TZ
 STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US
+STATE_PROVINCE.STATE_FIPS_US|US State FIPS code|en-US
 STATE_PROVINCE.STATE_NAME_&lt;Country&gt;|State Name|en-AU, pt-BR, de-DE, es-MX, en-US
 STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA, en-US, es-MX
 STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA, en-US, es-MX

@@ -23,3 +23,28 @@
 		"threshold": 90,
 		"priority": 177
 	},
+	{
+		"semanticType": "STATE_PROVINCE.DISTRICT_NAME_DE",
+		"description": "German District Name",
+		"pluginType": "list",
+		"signature": "",
+		"validLocales": [
+			{
+				"localeTag": "de-DE",
+				"headerRegExps": [ { "regExp": ".*(?i)(bezirk).*", "confidence": 90 } ],
+				"matchEntries": [ {
+					"regExpReturned": "[ \\p{IsAlphabetic}]+"
+				} ]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/de_districts_full.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_districts_of_Germany" }
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 154
+	},
+

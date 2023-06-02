@@ -24,6 +24,7 @@ import java.util.Locale;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.LocaleInfo;
+import com.cobber.fta.dates.LocaleInfoConfig;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -68,7 +69,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 		this.analysisConfig = analysisConfig;
 		this.locale = analysisConfig.getLocale();
-		this.localeInfo = LocaleInfo.getInstance(locale, analysisConfig.isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION));
+		this.localeInfo = LocaleInfo.getInstance(new LocaleInfoConfig(locale, analysisConfig.isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION), analysisConfig.isEnabled(TextAnalyzer.Feature.ALLOW_ENGLISH_AMPM)));
 
 		pluginLocaleEntry = defn.getLocaleEntry(locale);
 

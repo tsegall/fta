@@ -1,6 +1,17 @@
 
 ## Changes ##
 
+### 14.6.0
+ - ENH: I18N - Add new Semantic Types - STATE_PROVINCE.REGION_NAME_PE (Peruvian Region/Department) + STATE_PROVINCE.PROVINCE_NAME_PE (Peruvian Province) + STATE_PROVINCE.REGION_NAME_TZ (Tanzanian Region)
+ - ENH: Add new Semantic Types - STATE_PROVINCE.STATE_FIPS_US (US State FIPS code) + STATE_PROVINCE.COUNTY_FIPS_US (US County FIPS code)
+ - ENH: I18N - Add "HEMBRA", "VARÓN" for Gender detection in Spanish
+ - ENH: I18N - Add withEnglishAMPM() to DateTimeParser and TextAnalyzer.Feature.ALLOW_ENGLISH_AMPM to allow recognition of "AM" and "PM" independent of the locale
+ - ENH: I18N - Improve recognition of STATE_PROVINCE.REGION_NAME_FR
+ - ENH: I18N - Improve recognition of STATE_PROVINCE.STATE_BR
+ - ENH: Bump jackson, google phonenumber and guava
+ - BUG: I18N - Fix header regexp for Age in french (improves PERSON.AGE and PERSON.AGE_RANGE detection)
+ - BUG: I18N - Change STATE_PROVINCE.REGION_IT to STATE_PROVINCE.REGION_NAME_IT (and hence signature)
+
 ### 14.5.0
  - ENH: Add new Semantic Type - FILENAME (Name of file)
 

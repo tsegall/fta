@@ -105,7 +105,8 @@
 		"signature": "VvLLosjm/N/z7zpF2IDSgpeT02c=",
 		"clazz": "com.cobber.fta.plugins.USZip5",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 } ] }
+			{ "localeTag":  "en-US,en-CA,fr-CA",
+				"headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
@@ -122,7 +123,7 @@
 		"signature": "97eQHR8swSv5+VyCVyYDNayMdy4=",
 		"clazz": "com.cobber.fta.plugins.USZipPlus4",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 } ] }
+			{ "localeTag":  "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
@@ -631,12 +632,16 @@
 		"clazz": "com.cobber.fta.plugins.person.Age",
 		"validLocales": [
 			{
-				"localeTag":  "en,fr",
+				"localeTag":  "en",
 				"headerRegExps": [ { "regExp": "(?i)(age|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true } ]
 			},
 			{
 				"localeTag":  "es",
 				"headerRegExps": [ { "regExp": "(?i)(edad)", "confidence": 90, "mandatory": true } ]
+			},
+			{
+				"localeTag":  "fr",
+				"headerRegExps": [ { "regExp": "(?i)(?u)([aâ]ge|[aâ]ge[_ ].*|.*[_ '][aâ]ge)", "confidence": 90, "mandatory": true } ]
 			},
 			{
 				"localeTag":  "it",
@@ -662,15 +667,22 @@
 		"clazz": "com.cobber.fta.plugins.person.AgeRange",
 		"validLocales": [
 			{
-				"localeTag":  "en,fr",
+				"localeTag":  "en",
 				"headerRegExps": [
-					{ "regExp": "(?i)(age|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true },
+					{ "regExp": "(?i)(age|ages|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true },
 					{ "regExp": "(?i)age.*", "confidence": 60, "mandatory": true }
 				 ]
 			},
 			{
 				"localeTag":  "es",
 				"headerRegExps": [ { "regExp": "(?i).*edad.*", "confidence": 90, "mandatory": true } ]
+			},
+			{
+				"localeTag":  "fr",
+				"headerRegExps": [
+					{ "regExp": "(?i)(?u)([aâ]ge|[aâ]ge[_ ].*|.*[_ '][aâ]ge)", "confidence": 90, "mandatory": true },
+					{ "regExp": "(?i)(?u)âge.*", "confidence": 60, "mandatory": true }
+				 ]
 			},
 			{
 				"localeTag":  "it",
@@ -1093,7 +1105,7 @@
 		"pluginType": "list",
 		"signature": "5B0N5wsZpS+g/ck2cXCQjtqYwXA=",
 		"validLocales": [
-			{ "localeTag": "pt-BR", "headerRegExps": [ { "regExp": ".*(?i)(estado|state).*", "confidence": 90 } ] }
+			{ "localeTag": "pt-BR", "headerRegExps": [ { "regExp": "(?i)uf", "confidence": 99 }, { "regExp": ".*(?i)(estado|state).*", "confidence": 90 } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -1154,7 +1166,7 @@
 		"signature": "f5Bx+omlv1xMG6Oq8XQo5RkrtmU=",
 		"validLocales": [
 			{
-				"localeTag": "en-US,en-CA,fr-CA,en-MX,es-MX",
+				"localeTag": "en-US,es-US,en-CA,fr-CA,en-MX,es-MX",
 				"headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ],
 				"matchEntries": [ {
 					"regExpReturned": "[ \\p{IsAlphabetic}]+"
@@ -1178,7 +1190,7 @@
 		"signature": "y0oxFvZb1RpG1UVwi/hSCEymwzc=",
 		"validLocales": [
 			{
-				"localeTag": "en-US,en-CA,fr-CA,en-MX",
+				"localeTag": "en-US,es-US,en-CA,fr-CA,en-MX",
 				"headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ],
 				"matchEntries": [ {
 					"regExpReturned": "[ \\p{IsAlphabetic}]+"
@@ -1202,7 +1214,7 @@
 		"signature": "KfDjCnkj/KmZglkvM32W3OBEwxU=",
 		"validLocales": [
 			{
-				"localeTag": "en-US,en-CA,fr-CA,en-MX",
+				"localeTag": "en-US,es-US,en-CA,fr-CA,en-MX",
 				"headerRegExps": [ { "regExp": ".*(?i)(state|province|estado).*", "confidence": 90 } ],
 				"matchEntries": [ {
 					"regExpReturned": "[\\p{IsAlphabetic} ]+"
@@ -1293,7 +1305,7 @@
 		"validLocales": [
 			{
 				"localeTag": "fr-FR",
-				"headerRegExps": [ { "regExp": ".*(?i)(department|Département).*", "confidence": 90 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(department|département).*", "confidence": 90 } ],
 				"matchEntries": [ {
 					"regExpReturned": "[-' \\p{IsAlphabetic}]+"
 				} ]
@@ -1314,6 +1326,9 @@
 		"clazz": "com.cobber.fta.plugins.InseeCodeFR",
 		"validLocales": [
 			{ "localeTag": "fr-FR", "headerRegExps": [ { "regExp": ".*(?i)(insee).*", "confidence": 95 } ] }
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/INSEE_code" }
 		],
 		"baseType": "LONG",
 		"backout": "\\d{5}",
@@ -1602,10 +1617,10 @@
 		"priority": 140
 	},
 	{
-		"semanticType": "STATE_PROVINCE.REGION_IT",
+		"semanticType": "STATE_PROVINCE.REGION_NAME_IT",
 		"description": "Italian Region",
 		"pluginType": "list",
-		"signature": "UzzWCvJr1W7TLdDlTUuiyJbrF2k=",
+		"signature": "B4v2+3XVmicFB1PR2TVBV6ikoig=",
 		"validLocales": [
 			{ "localeTag": "it-IT", "headerRegExps": [ { "regExp": ".*(?i)(regione).*", "confidence": 90 } ] }
 		],
@@ -1794,6 +1809,98 @@
 		],
 		"threshold": 95,
 		"priority": 151
+	},
+	{
+		"semanticType": "STATE_PROVINCE.REGION_NAME_PE",
+		"description": "Peruvian Region/Department",
+		"pluginType": "list",
+		"signature": "io6yqW4LXX2PIsoCvmxZnnPT1z8=",
+		"validLocales": [
+			{ "localeTag": "es-PE", "headerRegExps": [ { "regExp": ".*(?i)(DEPARTAMENTO).*", "confidence": 90 } ] }
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/pe_regions_full.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Regions_of_Peru" }
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 152
+	},
+	{
+		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_PE",
+		"description": "Peruvian Province",
+		"pluginType": "list",
+		"signature": "Vd/g5Nd1nVYMHINBmfqo2NKh8rs=",
+		"validLocales": [
+			{ "localeTag": "es-PE", "headerRegExps": [ { "regExp": ".*(?i)(provincia).*", "confidence": 90 } ] }
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/pe_provinces_full.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Peru" }
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 153
+	},
+	{
+		"semanticType": "STATE_PROVINCE.REGION_NAME_TZ",
+		"description": "Tanzanian Region",
+		"pluginType": "list",
+		"signature": "bZbn9evDcCJHly+8OSWNQKMgy9I=",
+		"validLocales": [
+			{ "localeTag": "en-TZ,sw-TZ", "headerRegExps": [ { "regExp": ".*(?i)(region|mkoa).*", "confidence": 90 } ] }
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/tz_regions.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Regions_of_Tanzania" }
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 154
+	},
+	{
+		"semanticType": "STATE_PROVINCE.STATE_FIPS_US",
+		"description": "US State FIPS code",
+		"pluginType": "list",
+		"signature": "O8b5Lowq3YNUDncXgb6o3mbAK24=",
+		"validLocales": [
+			{ "localeTag": "en-US", "headerRegExps": [ { "regExp": ".*(?i)(fips).*", "confidence": 99, "mandatory": true } ] }
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/us_states_fips.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_United_States_FIPS_codes_by_county" }
+		],
+		"baseType": "LONG",
+		"backout": "\\d{2}",
+		"priority": 155
+	},
+	{
+		"semanticType": "STATE_PROVINCE.COUNTY_FIPS_US",
+		"description": "US County FIPS code",
+		"pluginType": "list",
+		"signature": "NajwouqG0A46TSthygu44kw8ZiY=",
+		"validLocales": [
+			{ "localeTag": "en-US", "headerRegExps": [ { "regExp": ".*(?i)(fips).*", "confidence": 99, "mandatory": true } ] }
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/us_counties_fips.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code" }
+		],
+		"baseType": "LONG",
+		"backout": "\\d{5}",
+		"priority": 156
 	},
 	{
 		"semanticType": "CURRENCY_CODE.ISO-4217",
@@ -2029,15 +2136,15 @@
 		"validLocales": [
 			{
 				"localeTag": "es",
-				"headerRegExps": [ { "regExp": ".*(?i)(fecha.*nacimiento|date.*birth|birth.*date).*", "confidence": 99, "mandatory": true } ]
+				"headerRegExps": [ { "regExp": ".*(?i)(fecha.*nacimiento|date.*birth|birth.*date|birthday).*", "confidence": 99, "mandatory": true } ]
 			},
 			{
 				"localeTag": "nl",
-				"headerRegExps": [ { "regExp": ".*(?i)(geboortedatum|date.*birth|birth.*date).*", "confidence": 99, "mandatory": true } ]
+				"headerRegExps": [ { "regExp": ".*(?i)(geboortedatum|date.*birth|birth.*date|birthday).*", "confidence": 99, "mandatory": true } ]
 			},
 			{
 				"localeTag": "*",
-				"headerRegExps": [ { "regExp": ".*(?i)(date.*birth|birth.*date).*|DOB", "confidence": 99, "mandatory": true } ]
+				"headerRegExps": [ { "regExp": ".*(?i)(date.*birth|birth.*date|birthday).*|DOB", "confidence": 99, "mandatory": true } ]
 			}
 		],
 		"documentation": [

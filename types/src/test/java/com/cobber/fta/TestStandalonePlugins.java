@@ -160,7 +160,7 @@ public class TestStandalonePlugins {
 				Locale.forLanguageTag("da-DK"),
 				Locale.forLanguageTag("de-CH"), Locale.forLanguageTag("de-DE"),
 				Locale.forLanguageTag("en-AU"), Locale.forLanguageTag("en-CA"), Locale.forLanguageTag("en-GB"), Locale.forLanguageTag("en-IE"), Locale.forLanguageTag("en-US"),
-				Locale.forLanguageTag("es-CO"), Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("es-MX"), Locale.forLanguageTag("es-UY"),
+				Locale.forLanguageTag("es-CO"), Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("es-MX"), Locale.forLanguageTag("es-PE"), Locale.forLanguageTag("es-UY"),
 // TODO				Locale.forLanguageTag("fi-FI"),
 				Locale.forLanguageTag("fr-CA"), Locale.forLanguageTag("fr-CH"), Locale.forLanguageTag("fr-FR"),
 				Locale.forLanguageTag("ga-IE"),

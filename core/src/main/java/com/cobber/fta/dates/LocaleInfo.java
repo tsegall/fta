@@ -17,6 +17,7 @@ package com.cobber.fta.dates;
 
 import java.text.DateFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
@@ -59,13 +60,12 @@ public class LocaleInfo {
 
 	private String unsupportedReason;
 
-	private final Locale locale;
-	boolean noAbbreviationPunctuation;
+	private final LocaleInfoConfig localeInfoConfig;
 
 	private static Map<String, LocaleInfo> cache = new ConcurrentHashMap<>();
 
-	public static LocaleInfo getInstance(final Locale locale, final boolean noAbbreviationPunctuation) {
-		final String cacheKey = locale.toLanguageTag() + "---" + noAbbreviationPunctuation;
+	public static LocaleInfo getInstance(final LocaleInfoConfig localeInfoConfig) {
+		final String cacheKey = localeInfoConfig.getCacheKey();
 
 		// Check to see if we are already in the cache
 		if (cache.get(cacheKey) != null)
@@ -75,9 +75,9 @@ public class LocaleInfo {
 			if (cache.get(cacheKey) != null)
 				return cache.get(cacheKey);
 
-			final LocaleInfo ret = new LocaleInfo(locale, noAbbreviationPunctuation);
+			final LocaleInfo ret = new LocaleInfo(localeInfoConfig);
 
-			ret.initialize(locale);
+			ret.initialize(localeInfoConfig.getLocale());
 
 			cache.put(cacheKey, ret);
 
@@ -91,18 +91,17 @@ public class LocaleInfo {
 	 * @return String Return reason if not supported, otherwise null.
 	 */
 	public static String isSupported(final Locale locale) {
-		// We do not really care whether the second argument to getInstance is true or false, it does not
+		// We do not really care whether the other arguments to getInstance are true or false, it does not
 		// change whether the locals is supported.
-		return getInstance(locale, true).unsupportedReason;
+		return getInstance(new LocaleInfoConfig(locale, true, true)).unsupportedReason;
 	}
 
-	private LocaleInfo(final Locale locale, final boolean noAbbreviationPunctuation) {
-		this.locale = locale;
-		this.noAbbreviationPunctuation = noAbbreviationPunctuation;
+	private LocaleInfo(final LocaleInfoConfig localeInfoConfig) {
+		this.localeInfoConfig = localeInfoConfig;
 	}
 
 	public Locale getLocale() {
-		return locale;
+		return localeInfoConfig.getLocale();
 	}
 
 	class LengthComparator implements Comparator<String> {
@@ -162,7 +161,7 @@ public class LocaleInfo {
 		boolean useShortMonths = true;
 		for (int i = 0; i <= actualMonths; i++) {
 			final int len = shortMonthsArray[i].length();
-			if (noAbbreviationPunctuation && len != 0 && shortMonthsArray[i].charAt(len - 1) == '.')
+			if (localeInfoConfig.isNoAbbreviationPunctuation() && len != 0 && shortMonthsArray[i].charAt(len - 1) == '.')
 				shortMonthsArray[i] = shortMonthsArray[i].substring(0, len - 1);
 			final String shortMonth = shortMonthsArray[i].toUpperCase(locale);
 			shortMonthsLocale.put(shortMonth, i + 1);
@@ -185,7 +184,12 @@ public class LocaleInfo {
 			shortMonthsLength =  -1;
 		}
 
-		final String[] amPmStrings = dfs.getAmPmStrings();
+		final Set<String> amPmStrings = new TreeSet<>(Arrays.asList(dfs.getAmPmStrings()));
+		if (localeInfoConfig.isEnglishAMPMAllowed()) {
+			// Unconditionally add "AM" and "PM" since these are commonly seen even in locales where they are not the AM/PM strings
+			amPmStrings.add("AM");
+			amPmStrings.add("PM");
+		}
 
 		// Setup the AM/PM strings
 		final Set<String> ampmStringsLocale = new LinkedHashSet<>();
@@ -193,7 +197,7 @@ public class LocaleInfo {
 		for (String s : amPmStrings) {
 			// In Java some countries (e.g. CA) have the short AM/PM string defined as A.M. and P.M.
 			// if noAbbreviationPunctuation is set remove any embedded periods.
-			if (noAbbreviationPunctuation)
+			if (localeInfoConfig.isNoAbbreviationPunctuation())
 				s = s.replace(".", "");
 			if (ampmRegExpLocale.length() != 0)
 				ampmRegExpLocale += "|";
@@ -230,7 +234,7 @@ public class LocaleInfo {
 				continue;
 			// In Java some countries (e.g. CA) have the short days defined with a period after them,
 			// for example 'SUN.' - if useStandardAbbreviations is set just using the US definition of 'truth'
-			if (noAbbreviationPunctuation) {
+			if (localeInfoConfig.isNoAbbreviationPunctuation()) {
 				final int len = shortWeek.length();
 				if (len != 0 && shortWeek.charAt(len - 1) == '.')
 					shortWeek = shortWeek.substring(0, len - 1);
@@ -272,12 +276,12 @@ public class LocaleInfo {
 	}
 
 	public int shortMonthOffset(final String month) {
-		final Integer offset = getShortMonths().get(month.toUpperCase(locale));
+		final Integer offset = getShortMonths().get(month.toUpperCase(localeInfoConfig.getLocale()));
 		return offset == null ? -1 : offset;
 	}
 
 	public int monthOffset(final String month) {
-		final Integer offset = getMonths().get(month.toUpperCase(locale));
+		final Integer offset = getMonths().get(month.toUpperCase(localeInfoConfig.getLocale()));
 		return offset == null ? -1 : offset;
 	}
 
@@ -320,7 +324,7 @@ public class LocaleInfo {
 			}
 		}
 		if (!found) {
-			input = input.toUpperCase(locale);
+			input = input.toUpperCase(localeInfoConfig.getLocale());
 			for (final String monthName : getMonths().keySet()) {
 				if (input.startsWith(monthName)) {
 					found = true;
@@ -372,7 +376,7 @@ public class LocaleInfo {
 		}
 
 		for (final String monthAbbr : getShortMonths().keySet()) {
-			if (input.toUpperCase(locale).startsWith(monthAbbr)) {
+			if (input.toUpperCase(localeInfoConfig.getLocale()).startsWith(monthAbbr)) {
 				return monthAbbr;
 			}
 		}
@@ -445,11 +449,11 @@ public class LocaleInfo {
 	}
 
 	public boolean validDayOfWeek(final String dayOfWeek) {
-		return getWeekdays().contains(dayOfWeek.toUpperCase(locale));
+		return getWeekdays().contains(dayOfWeek.toUpperCase(localeInfoConfig.getLocale()));
 	}
 
 	public boolean validDayOfWeekAbbr(final String dayOfWeekAbbr) {
-		return getShortWeekdays().contains(dayOfWeekAbbr.toUpperCase(locale));
+		return getShortWeekdays().contains(dayOfWeekAbbr.toUpperCase(localeInfoConfig.getLocale()));
 	}
 
 	/**
@@ -471,7 +475,7 @@ public class LocaleInfo {
 		}
 
 		boolean found = false;
-		input = input.toUpperCase(locale);
+		input = input.toUpperCase(localeInfoConfig.getLocale());
 		for (final String dayOfWeek : getWeekdays()) {
 			if (input.startsWith(dayOfWeek)) {
 				found = true;
@@ -502,7 +506,7 @@ public class LocaleInfo {
 		}
 
 		boolean found = false;
-		input = input.toUpperCase(locale);
+		input = input.toUpperCase(localeInfoConfig.getLocale());
 		for (final String dayOfWeekAbbr : getShortWeekdays()) {
 			if (input.startsWith(dayOfWeekAbbr)) {
 				found = true;
@@ -540,7 +544,7 @@ public class LocaleInfo {
 		int upto = 0;
 
 		for (final String ampmIndicator : getAMPMStrings()) {
-			if (input.substring(upto).toUpperCase(locale).startsWith(ampmIndicator)) {
+			if (input.substring(upto).toUpperCase(localeInfoConfig.getLocale()).startsWith(ampmIndicator)) {
 				upto += ampmIndicator.length();
 				return upto;
 			}
