@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.RegExpSplitter;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.core.WordOffset;
 import com.cobber.fta.core.WordProcessor;
@@ -295,5 +296,29 @@ public class TestUtils {
 		assertEquals(words.get(0), "Tagalog");
 		assertEquals(words.get(1), "Pilipino");
 		assertEquals(words.get(2), "Filipino");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testRegExpSplitter_1_1() {
+		RegExpSplitter  splitter = RegExpSplitter.newInstance("{3,9}");
+
+		assertEquals(splitter.getMin(), 3);
+		assertEquals(splitter.getMax(), 9);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testRegExpSplitter_1_2() {
+		RegExpSplitter  splitter = RegExpSplitter.newInstance("{3,10}");
+
+		assertEquals(splitter.getMin(), 3);
+		assertEquals(splitter.getMax(), 10);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testRegExpSplitter_2_2() {
+		RegExpSplitter  splitter = RegExpSplitter.newInstance("{10,12}");
+
+		assertEquals(splitter.getMin(), 10);
+		assertEquals(splitter.getMax(), 12);
 	}
 }

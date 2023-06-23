@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 14.6.1
+ - BUG: RegExpSplitter.newInstance(String) Incorrectly Parses Ranges with Multiple Digits in the Max (Issue #44)
+
 ### 14.6.0
  - ENH: I18N - Add new Semantic Types - STATE_PROVINCE.REGION_NAME_PE (Peruvian Region/Department) + STATE_PROVINCE.PROVINCE_NAME_PE (Peruvian Province) + STATE_PROVINCE.REGION_NAME_TZ (Tanzanian Region)
  - ENH: Add new Semantic Types - STATE_PROVINCE.STATE_FIPS_US (US State FIPS code) + STATE_PROVINCE.COUNTY_FIPS_US (US County FIPS code)
