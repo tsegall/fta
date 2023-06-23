@@ -38,7 +38,7 @@ public class RegExpSplitter {
 		final int comma = input.indexOf(',');
 		RegExpSplitter facts;
 		if (comma != -1)
-			facts = new RegExpSplitter(Utils.getValue(input, 1, 1, comma - 1), Utils.getValue(input, comma + 1, 1, close - comma));
+			facts = new RegExpSplitter(Utils.getValue(input, 1, 1, comma - 1), Utils.getValue(input, comma + 1, 1, close - (comma + 1)));
 		else {
 			final int len = Utils.getValue(input, 1, 1, close - 1);
 			facts = new RegExpSplitter(len, len);
