@@ -64,19 +64,20 @@ public class Driver {
 					DriverUtils.createNormalizedOutput(unprocessed[idx + 1]);
 					System.exit(0);
 				}
-				else if ("--createSemanticHTML".equals(unprocessed[idx])) {
-					DriverUtils.createSemanticHTML(unprocessed[idx + 1]);
+				else if ("--createSemanticTypesMarkdown".equals(unprocessed[idx])) {
+					DriverUtils.createSemanticTypesMarkdown();
 					System.exit(0);
 				}
 				else if ("--help".equals(unprocessed[idx])) {
 					error.println("Usage: fta [OPTIONS] file ...");
 					error.println("Valid OPTIONS are:");
 					error.println(" --abbreviationPunctuation - Disable NO_ABBREVIATION_PUNCTUATION mode");
-					error.println(" --createBloomfilter <input> <type> - Create Bloom Filter from CSV input, type: 'integer'|'string'");
-					error.println(" --createNormalized <input> - Create Normalized output from CSV input");
 					error.println(" --bulk - Enable bulk mode");
 					error.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 					error.println(" --col <n> - Only analyze column <n>");
+					error.println(" --createBloomfilter <input> <type> - Create Bloom Filter from CSV input, type: 'integer'|'string'");
+					error.println(" --createNormalized <input> - Create Normalized output from CSV input");
+					error.println(" --createSemanticTypesMarkdown - Create MarkDown documenting the Semantic Types supported");
 					error.println(" --debug <n> - Set the debug level to <n>");
 					error.println(" --delimiter <ch> - Set the delimiter to the character <ch>");
 					error.println(" --detectWindow <n> - Set the size of the detect window to <n>");
@@ -239,6 +240,7 @@ public class Driver {
 			error.printf("\tDecimal Separator: '%c'%n", symbols.getDecimalSeparator());
 			error.printf("\tGrouping Separator: '%c'%n", symbols.getGroupingSeparator());
 			error.printf("\tMinus Sign: '%c'%n", symbols.getMinusSign());
+			error.printf("\tExponent Separator: '%s'%n", symbols.getExponentSeparator());
 			final NumberFormat simple = NumberFormat.getNumberInstance(locale);
 			if (simple instanceof DecimalFormat)
 				error.printf("\tNegative Prefix: '%s'%n", ((DecimalFormat) simple).getNegativePrefix());

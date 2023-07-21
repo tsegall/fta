@@ -33,7 +33,7 @@ public class RecordAnalyzer {
 
 		for (int i = 0; i < streamCount; i++) {
 			analyzers[i] = new TextAnalyzer(getStreamContext(template.getContext(), i));
-			analyzers[i].setConfig(template.getConfig());
+			analyzers[i].setConfig(new AnalysisConfig(template.getConfig()));
 		}
 	}
 

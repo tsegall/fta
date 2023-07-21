@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import com.cobber.fta.Content;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.SemanticType;
@@ -135,30 +137,24 @@ public class DriverUtils {
 		}
 	}
 
-	public static void createSemanticHTML(final String locale) throws UnsupportedEncodingException, FileNotFoundException, IOException {
-		final SemanticType semanticTypes = new SemanticType();
-		semanticTypes.initialize(null);
+	public static void createSemanticTypesMarkdown() throws UnsupportedEncodingException, FileNotFoundException, IOException {
+		System.err.println("|Semantic Type|Description|Documentation|Locale|");
+		System.err.println("|-------------|-----------|-------------|------|");
 
-		System.err.println("<table border=1>");
-		System.err.println("	<thead>");
-		System.err.println("		<tr>");
-		System.err.println("			<th>id</th>");
-		System.err.println("			<th>description</th>");
-		System.err.println("			<th>language</th>");
-		System.err.println("		</tr>");
-		System.err.println("	</thead>");
-
-		System.err.println("	<tbody>");
-
-		for (final SemanticType semanticType : semanticTypes.getAllSemanticTypes()) {
-			System.err.printf("		<tr>%n");
-			System.err.printf("			<th>%s</th>%n", semanticType.id);
-			System.err.printf("			<th>%s</th>%n", semanticType.description);
-			System.err.printf("			<th></th>%n");
-			System.err.printf("		</tr>%n");
+		for (final SemanticType semanticType : SemanticType.getAllSemanticTypes()) {
+			System.err.printf("|%s|%s|", StringEscapeUtils.escapeHtml4(semanticType.getId()), StringEscapeUtils.escapeHtml4(semanticType.getDescription()));
+			if (semanticType.getDocumentation() != null)
+				System.err.printf("%s", String.join(", ", semanticType.getDocumentation()));
+			System.err.print("|");
+			if (semanticType.getLanguages() != null)
+				System.err.printf("%s", String.join(", ", semanticType.getLanguages()));
+			System.err.println("|");
 		}
 
-		System.err.println("	</tbody>");
-		System.err.println("</table>");
+		System.err.println("Note:\n\n");
+		System.err.println("Any of the above Semantic Types suffixed with one of the following are locale-sensitive:\n");
+		System.err.println(" * &lt;LOCALE&gt; - replaced by the locale, for example, MONTH.FULL_fr-FR (Month Abbreviation in french)");
+		System.err.println(" * &lt;LANGUAGE&gt; - replaced by the language from the locale, for example, GENDER.TEXT_PT (Gender in Portuguese)");
+		System.err.println(" * &lt;COUNTRY&gt; - replaced by the country from the locale, for example, POSTAL_CODE.POSTAL_CODE_AU (Australian Postal Code)");
 	}
 }

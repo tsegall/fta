@@ -1500,6 +1500,84 @@ public class TestLongs {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void dutchLocalizedLong() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("D");
+		// For Dutch, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("nl-NL");
+		analysis.setLocale(locale);
+		analysis.setDebug(2);
+
+		final String[] inputs = {
+				"1.234", "8.078", "1.664", "12.902", "122.987",
+				"120.809", "12.036", "121.647", "120.904", "120.707",
+				"105.841", "1.525", "129.605", "1.895", "12.187",
+				"12.845", "1.962", "109.736", "120.509",
+				"1.201.685",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeModifier(), "GROUPING");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[\\d\\.]{5,9}");
+		assertEquals(result.getMinValue(), "1.234");
+		assertEquals(result.getMaxValue(), "1.201.685");
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	// This is questionable ... probably should be a non-localized Long with Grouping
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void dutchNonLocalizedLongWithGrouping() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("D");
+		// For Dutch, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("nl-NL");
+		analysis.setLocale(locale);
+		analysis.setDebug(2);
+
+		final String[] inputs = {
+				"1,234,900", "8,078", "1,664", "12,902", "122,987",
+				"120,809", "12,036", "121,647", "120,904", "120,707",
+				"105,841", "1,525", "129,605", "1,895", "12,187",
+				"12,845", "1,962", "109,736", "120,509",
+				"1,201,685",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length - 2);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d*,?\\d+");
+		assertEquals(result.getMinValue(), "1,525");
+		assertEquals(result.getMaxValue(), "129,605");
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void meanSD() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("meanSD");
 		final int SAMPLE_SIZE = 100;

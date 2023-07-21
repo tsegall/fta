@@ -102,17 +102,17 @@
 		"semanticType": "POSTAL_CODE.ZIP5_US",
 		"description": "Postal Code (US)",
 		"pluginType": "java",
-		"signature": "VvLLosjm/N/z7zpF2IDSgpeT02c=",
+		"signature": "/o1vxOzeSy+OB/GwjvwcCCv6ri0=",
 		"clazz": "com.cobber.fta.plugins.USZip5",
 		"validLocales": [
 			{ "localeTag":  "en-US,en-CA,fr-CA",
-				"headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
+				"headerRegExps": [ { "regExp": ".*(?i)(zip|postal|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ZIP_Code" }
 		],
-		"baseType": "LONG",
+		"baseType": "STRING",
 		"threshold": 90,
 		"priority": 60
 	},
@@ -123,7 +123,7 @@
 		"signature": "97eQHR8swSv5+VyCVyYDNayMdy4=",
 		"clazz": "com.cobber.fta.plugins.USZipPlus4",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postalcode|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
+			{ "localeTag":  "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postal|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
@@ -1901,6 +1901,25 @@
 		"baseType": "LONG",
 		"backout": "\\d{5}",
 		"priority": 156
+	},
+	{
+		"semanticType": "STATE_PROVINCE.MUNICIPALITY_CODE_BR",
+		"description": "Brazilian Municipality code",
+		"pluginType": "list",
+		"signature": "iLd8/9w+oQ6rSIDO2yP6kx/uJIg=",
+		"validLocales": [
+			{ "localeTag": "pt-BR", "headerRegExps": [ { "regExp": ".*(?i)(ibge).*", "confidence": 99 } ] }
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/br_municipalities_code.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Municipalities_of_Brazil" }
+		],
+		"baseType": "LONG",
+		"backout": "\\d{7}",
+		"priority": 157
 	},
 	{
 		"semanticType": "CURRENCY_CODE.ISO-4217",

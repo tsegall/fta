@@ -29,9 +29,11 @@ import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -42,6 +44,7 @@ import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.MinMax;
 import com.cobber.fta.core.Utils;
+import com.cobber.fta.dates.DateTimeParserResult.Token;
 import com.cobber.fta.dates.TimeDateElement.TimeDateElementType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -261,6 +264,7 @@ public class DateTimeParser {
 	 *    - Year only - "yyyy"
 	 *    - S{min,max} to reflect a variable number of digits in a fractional seconds component
 	 *    - Year month only - "MM/YYYY" or "MM-YYYY" or "YYYY/MM" or "YYYY-MM"
+	 *    - P (like 'a' for AM/PM indicator) except not localized
 	 *  - The formatter returned is always case-insensitive
 	 *
 	 * @param formatString A DateTimeString using DateTimeFormatter patterns
@@ -273,38 +277,29 @@ public class DateTimeParser {
 		if (formatter != null)
 			return formatter;
 
+		if (localeInfo == null)
+			localeInfo = LocaleInfo.getInstance(config.getLocaleInfoConfig());
+
 		final DateTimeParserResult result = DateTimeParserResult.asResult(formatString, config.resolutionMode, config);
+		final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder().parseCaseInsensitive();
+
+		if (result.dateElements == 1 && result.yearOffset != -1)
+			// The default formatter with "yyyy" will not default the month/day, make it so!
+			builder.parseDefaulting(ChronoField.MONTH_OF_YEAR, 1).parseDefaulting(ChronoField.DAY_OF_MONTH, 1);
+		else if (result.dateElements == 2 && result.yearOffset != -1 && result.monthOffset != -1)
+			// We have a Year and a Month but no day, so we need to default the day
+			builder.parseDefaulting(ChronoField.DAY_OF_MONTH, 1);
 
 		int offset = formatString.indexOf("S{");
 		if (offset != -1) {
 			final MinMax minMax = new MinMax(formatString.substring(offset, formatString.indexOf('}', offset)));
-			final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
-					.appendPattern(formatString.substring(0, offset))
+			builder.appendPattern(formatString.substring(0, offset))
 					.appendFraction(ChronoField.MICRO_OF_SECOND, minMax.getMin(), minMax.getMax(), false);
 			final int upto = offset + minMax.getPatternLength();
 			if (upto < formatString.length())
 				builder.appendPattern(formatString.substring(upto));
-			formatter = builder.toFormatter(config.getLocale());
 		}
-		else if (result.dateElements == 1 && result.yearOffset != -1)
-            // The default formatter with "yyyy" will not default the month/day, make it so!
-            formatter = new DateTimeFormatterBuilder()
-            .appendPattern(formatString)
-            .parseCaseInsensitive()
-            .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
-            .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
-            .toFormatter(config.getLocale());
-		else if (result.dateElements == 2 && result.yearOffset != -1 && result.monthOffset != -1)
-			// We have a Year and a Month but no day, so we need to default the day
-			formatter = new DateTimeFormatterBuilder()
-			.parseCaseInsensitive()
-			.parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
-			.append(DateTimeFormatter.ofPattern(formatString))
-			.toFormatter(config.getLocale());
 		else if (config.noAbbreviationPunctuation && (offset = formatString.indexOf("MMM")) != -1 && offset != formatString.indexOf("MMMM")) {
-			if (localeInfo == null)
-				localeInfo = LocaleInfo.getInstance(config.getLocaleInfoConfig());
-
 			// Setup the Monthly abbreviations, in Java some countries (e.g. Canada) have the short months defined with a
 			// period after them, for example 'AUG.' - we compensate by removing the punctuation
 			final Map<Long, String> lookup = new HashMap<>();
@@ -312,18 +307,24 @@ public class DateTimeParser {
 			for (final String month : localeInfo.getShortMonthsArray())
 				lookup.put(index++, month);
 
-			final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
-		            .parseCaseInsensitive()
-					.appendPattern(formatString.substring(0, offset))
+			builder.appendPattern(formatString.substring(0, offset))
 					.appendText(ChronoField.MONTH_OF_YEAR, lookup);
 			final int upto = offset + "MMM".length();
 			if (upto < formatString.length())
 				builder.appendPattern(formatString.substring(upto));
-			formatter = builder.toFormatter(config.getLocale());
+		}
+		else if (config.allowEnglishAMPM && (offset = formatString.lastIndexOf("P")) != -1) {
+			final Map<Long, String> lookup = new HashMap<>();
+			lookup.put(Long.valueOf(Calendar.AM), "AM");
+			lookup.put(Long.valueOf(Calendar.PM), "PM");
+
+			builder.appendPattern(formatString.substring(0, offset))
+					.appendText(ChronoField.AMPM_OF_DAY, lookup);
 		}
 		else
-			formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(formatString).toFormatter(config.getLocale());
+			builder.appendPattern(formatString);
 
+		formatter = builder.toFormatter(config.getLocale());
 		formatterCache.put(cacheKey, formatter);
 
 		return formatter;
@@ -402,7 +403,6 @@ public class DateTimeParser {
 			return null;
 
 		DateTimeParserResult answerResult = null;
-		StringBuilder answerBuffer = null;
 
 		// If there is only one result then it must be correct :-)
 		if (state.results.size() == 1) {
@@ -410,8 +410,6 @@ public class DateTimeParser {
 			// If we are fully bound then we are done!
 			if (!answerResult.isDateUnbound() || config.resolutionMode == DateResolutionMode.None)
 				return answerResult;
-			answerResult = DateTimeParserResult.newInstance(answerResult);
-			answerBuffer = new StringBuilder(answerResult.getFormatString());
 		}
 		else {
 			// Sort the results of our training by value so that we consider the most frequent first
@@ -423,8 +421,7 @@ public class DateTimeParser {
 				final DateTimeParserResult result = DateTimeParserResult.asResult(key, config.resolutionMode, config);
 
 				// First entry
-				if (answerBuffer == null) {
-					answerBuffer = new StringBuilder(key);
+				if (answerResult == null) {
 					answerResult = DateTimeParserResult.newInstance(result);
 					continue;
 				}
@@ -439,45 +436,34 @@ public class DateTimeParser {
 						answerResult.amPmIndicator = result.amPmIndicator;
 
 					// If we were H (0-23) and we have a k (1-24) then assume k
-					final char was = answerBuffer.charAt(answerResult.timeFieldOffsets[HOUR_INDEX]);
-					final char is = result.getFormatString().charAt(result.timeFieldOffsets[HOUR_INDEX]);
-					if (was == 'H' && is == 'k') {
-						final int start = answerResult.timeFieldOffsets[HOUR_INDEX];
-						answerResult.timeFieldLengths[0].merge(result.timeFieldLengths[HOUR_INDEX]);
-						final int len = answerResult.timeFieldLengths[HOUR_INDEX].getMin();
-						answerBuffer.replace(start, start + len, Utils.repeat('k', len));
+					final FormatterToken was = answerResult.tokenized.findByOffset(answerResult.timeFieldOffsets[HOUR_INDEX]);
+					final FormatterToken is = result.tokenized.findByOffset(result.timeFieldOffsets[HOUR_INDEX]);
+					if (was.getType() == Token.HOURS24 && is.getType() == Token.CLOCK24) {
+						answerResult = answerResult.updateStart();
+						final int index = result.tokenized.findIndexByDateField(FormatterToken.DateField.Hour);
+						answerResult.tokenized = answerResult.tokenized.update(index, new FormatterToken(Token.CLOCK24, answerResult.timeFieldLengths[HOUR_INDEX].getMin()));
+						answerResult = answerResult.updateEnd();
 					}
 
-					if (result.timeFieldLengths != null) {
+					if (result.timeFieldLengths != null && result.timeElements == answerResult.timeElements) {
 						// Shrink the Hours, Minutes, or Seconds fields if the length is shorter
 						// Expand the fractions of Seconds if the length is longer
 						for (int i = 0; i < result.timeFieldLengths.length; i++) {
-							if (!answerResult.timeFieldLengths[i].isSet())
+							if (result.timeFieldLengths[i].isSet() && !answerResult.timeFieldLengths[i].isSet())
 								answerResult.timeFieldLengths[i] = result.timeFieldLengths[i];
 							else {
-								// Hours, Minutes, or Seconds
-								if (i < result.timeFieldLengths.length - 1 && result.timeFieldLengths[i].getMin() < answerResult.timeFieldLengths[i].getMin()) {
-									final int start = answerResult.timeFieldOffsets[i];
-									final int len = answerResult.timeFieldLengths[i].getMin();
-									answerResult.timeFieldLengths[i].setMin(result.timeFieldLengths[i].getMin());
-
-									// Need to reset all the offsets in the answerResult
-									for (int j = i + 1; j < result.timeFieldLengths.length; j++)
-										answerResult.timeFieldOffsets[j]--;
-									if (result.dateElements != -1 && answerResult.timeFieldOffsets[0] < answerResult.dateFieldOffsets[0])
-										for (int j = 0; j < result.dateFieldLengths.length; j++)
-											answerResult.dateFieldOffsets[j]--;
-
-									// Fix up the String
-									answerBuffer.replace(start, start + len, Utils.repeat(answerBuffer.charAt(start), result.timeFieldLengths[i].getMin()));
-								}
-								// Fractions of Seconds
-								else if (i == FRACTION_INDEX && result.timeFieldLengths[FRACTION_INDEX].compareTo(answerResult.timeFieldLengths[FRACTION_INDEX]) != 0) {
-									final int start = answerResult.timeFieldOffsets[FRACTION_INDEX];
-									final int len = answerResult.timeFieldLengths[FRACTION_INDEX].getPatternLength();
-									// Fix up the String
-									answerResult.timeFieldLengths[i].merge(result.timeFieldLengths[FRACTION_INDEX]);
-									answerBuffer.replace(start, start + len, answerResult.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
+								if (
+										// Hours, Minutes, or Seconds
+										(i < result.timeFieldLengths.length - 1 && result.timeFieldLengths[i].getMin() < answerResult.timeFieldLengths[i].getMin()) ||
+										// Fractions of Seconds
+										(i == FRACTION_INDEX && result.timeFieldLengths[FRACTION_INDEX].compareTo(answerResult.timeFieldLengths[FRACTION_INDEX]) != 0)
+										) {
+									answerResult = answerResult.updateStart();
+									final int tokenIndex = answerResult.tokenized.findIndexByDateField(FormatterToken.DateField.get(i));
+									final FormatterToken newToken = new FormatterToken(answerResult.tokenized.get(tokenIndex));
+									newToken.merge(result.tokenized.get(tokenIndex));
+									answerResult.tokenized = answerResult.tokenized.update(tokenIndex, newToken);
+									answerResult = answerResult.updateEnd();
 								}
 							}
 						}
@@ -495,24 +481,37 @@ public class DateTimeParser {
 
 					if (answerResult.dayOffset == -1 && result.dayOffset != -1) {
 						// We did not know where the day was and now do
+						answerResult = answerResult.updateStart();
+						final int index = result.tokenized.findIndexByDateField(FormatterToken.DateField.Day);
+						answerResult.tokenized = answerResult.tokenized.update(index, new FormatterToken(Token.DAYS, answerResult.dateFieldLengths[result.dayOffset]));
 						answerResult.dayOffset = result.dayOffset;
-						final int start = answerResult.dateFieldOffsets[answerResult.dayOffset];
-						final int len = answerResult.dateFieldLengths[answerResult.dayOffset];
-						answerBuffer.replace(start, start + len, Utils.repeat('d', len));
+						answerResult = answerResult.updateEnd();
 					}
 					if (answerResult.monthOffset == -1 && result.monthOffset != -1) {
 						// We did not know where the month was and now do
+						answerResult = answerResult.updateStart();
+						final int index = result.tokenized.findIndexByDateField(FormatterToken.DateField.Month);
+						answerResult.tokenized = answerResult.tokenized.update(index, new FormatterToken(Token.MONTHS, answerResult.dateFieldLengths[result.monthOffset]));
 						answerResult.monthOffset = result.monthOffset;
-						final int start = answerResult.dateFieldOffsets[answerResult.monthOffset];
-						final int len = answerResult.dateFieldLengths[answerResult.monthOffset];
-						answerBuffer.replace(start, start + len, Utils.repeat('M', len));
+						answerResult = answerResult.updateEnd();
 					}
 					if (answerResult.yearOffset == -1 && result.yearOffset != -1) {
 						// We did not know where the year was and now do
+						answerResult = answerResult.updateStart();
+						final int index = result.tokenized.findIndexByDateField(FormatterToken.DateField.Year);
+						answerResult.tokenized = answerResult.tokenized.update(index, new FormatterToken(answerResult.dateFieldLengths[result.yearOffset] == 2 ? Token.YEARS_2 : Token.YEARS_4));
 						answerResult.yearOffset = result.yearOffset;
-						final int start = answerResult.dateFieldOffsets[answerResult.yearOffset];
-						final int len = answerResult.dateFieldLengths[answerResult.yearOffset];
-						answerBuffer.replace(start, start + len, Utils.repeat('y', len));
+						answerResult = answerResult.updateEnd();
+					}
+
+					final int unboundCount = (answerResult.dayOffset == -1 ? 1 : 0) + (answerResult.monthOffset == -1 ? 1 : 0) + (answerResult.yearOffset == -1 ? 1 : 0);
+					if (answerResult.dateElements == 3 && unboundCount == 1) {
+						final DateTimeParserResult.Token toPatch = answerResult.dayOffset == -1 ? Token.DAYS : (answerResult.monthOffset == -1 ? Token.MONTHS : Token.YEARS_2);
+						// We had two unbound fields, we now have one, so we are fully resolved
+						answerResult = answerResult.updateStart();
+						int resolvedIndex = answerResult.tokenized.findIndexByDateField(FormatterToken.DateField.Unbound1);
+						answerResult.tokenized = answerResult.tokenized.update(resolvedIndex, new FormatterToken(toPatch, answerResult.tokenized.get(resolvedIndex).getCount()));
+						answerResult = answerResult.updateEnd();
 					}
 
 					if (answerResult.dateElements == -1)
@@ -524,7 +523,7 @@ public class DateTimeParser {
 
 					// If the result we are looking at has the same format as the current answer then merge lengths
 					if (answerResult.yearOffset == result.yearOffset &&
-							(answerResult.monthOffset == result.monthOffset || result.monthOffset == -1))
+							(answerResult.monthOffset == result.monthOffset || result.monthOffset == -1)) {
 						for (int i = 0; i < result.dateFieldLengths.length; i++) {
 							if (answerResult.dateFieldLengths[i] == -1 && result.dateFieldLengths[i] != -1)
 								answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
@@ -536,57 +535,74 @@ public class DateTimeParser {
 								//  - MM (and M) -> M
 								//  - ?? (and ?) -> ?
 								//  - MMM (and MMMM) -> MMMM
-								final int start = answerResult.dateFieldOffsets[i];
-								final int len = answerResult.dateFieldLengths[i];
-								final String was = answerBuffer.substring(start, start + len);
-								String replacement;
-								if ("MMM".equals(was))
-									replacement = "MMMM";
-								else if ("??".equals(was) || "HH".equals(was) || "hh".equals(was) || "dd".equals(was) || "MM".equals(was)) {
-									replacement = result.dateFieldPad[i] != 0 ? "pp" : "";
-									replacement += was.charAt(0);
+								final int index = answerResult.tokenized.findIndexByOffset(answerResult.dateFieldOffsets[i]);
+								Token type = answerResult.tokenized.get(index).getType();
+								if (result.dateFieldLengths[i] < answerResult.dateFieldLengths[i] && (type == Token.DAYS || type == Token.DIGITS || type == Token.MONTHS)) {
+									answerResult = answerResult.updateStart();
+									FormatterToken newToken = new FormatterToken(answerResult.tokenized.get(index)).withCount(1);
+									if (type == Token.DAYS || type == Token.MONTHS)
+										newToken.setFieldWidth(Math.max(answerResult.dateFieldPad[i], result.dateFieldPad[i]));
+									answerResult.tokenized = answerResult.tokenized.update(index, newToken);
+									answerResult = answerResult.updateEnd();
 								}
-								else
-									continue;
-
-								// Need to reset all the offsets in the answerResult
-								final int delta = was.length() - replacement.length();
-								for (int j = i + 1; j < result.dateFieldLengths.length; j++)
-									 answerResult.dateFieldOffsets[j] -= delta;
-								if (result.timeFieldLengths != null && answerResult.dateFieldOffsets[0] < answerResult.timeFieldOffsets[0])
-									for (int j = 0; j < result.timeFieldLengths.length; j++)
-										answerResult.timeFieldOffsets[j] -= delta;
-
-								answerResult.dateFieldLengths[i] = result.dateFieldLengths[i];
-								answerBuffer.replace(start, start + len, replacement);
+								else if (type == Token.MONTH_ABBR) {
+									answerResult = answerResult.updateStart();
+									answerResult.tokenized = answerResult.tokenized.update(index, new FormatterToken(Token.MONTH));
+									answerResult = answerResult.updateEnd();
+								}
 							}
 						}
+					}
 				}
 			}
 		}
 
+
 		// If we are supposed to be fully bound and still have some ambiguities then fix them based on the mode
-		if (answerResult.isDateUnbound() && config.resolutionMode != DateResolutionMode.None)
-			if (answerResult.monthOffset != -1) {
-				int start = answerResult.dateFieldOffsets[0];
-				answerBuffer.replace(start, start + answerResult.dateFieldLengths[0], Utils.repeat('d', answerResult.dateFieldLengths[0]));
-				start = answerResult.dateFieldOffsets[2];
-				answerBuffer.replace(start, start + answerResult.dateFieldLengths[2], Utils.repeat('y', answerResult.dateFieldLengths[2]));
+		if (answerResult.isDateUnbound() && config.resolutionMode != DateResolutionMode.None) {
+			final int[] unbound = {
+					answerResult.tokenized.findIndexByDateField(FormatterToken.DateField.Unbound1),
+					answerResult.tokenized.findIndexByDateField(FormatterToken.DateField.Unbound2),
+					answerResult.tokenized.findIndexByDateField(FormatterToken.DateField.Unbound3)
+			};
+
+			int day = -1;
+			int month = -1;
+			int year = -1;
+
+			// If nothing is set then assume the Year is last
+			if (answerResult.yearOffset == -1 && answerResult.dayOffset == -1 && answerResult.monthOffset == -1)
+				year = answerResult.yearOffset = 2;
+
+			if (answerResult.yearOffset == 0) {
+				month = 0;
+				day = 1;
+			}
+			else if (answerResult.yearOffset == 1 || answerResult.yearOffset == 2) {
+				day = config.resolutionMode == DateResolutionMode.DayFirst ? 0 : 1;
+				month = config.resolutionMode == DateResolutionMode.DayFirst ? 1 : 0;
 			}
 			else {
-					final char firstField = config.resolutionMode == DateResolutionMode.DayFirst ? 'd' : 'M';
-					final char secondField = config.resolutionMode == DateResolutionMode.DayFirst ? 'M' : 'd';
-					final int idx = answerResult.yearOffset == 0 ? 1 : 0;
-					int start = answerResult.dateFieldOffsets[idx];
-					answerBuffer.replace(start, start + answerResult.dateFieldLengths[idx], Utils.repeat(firstField, answerResult.dateFieldLengths[idx]));
-					start = answerResult.dateFieldOffsets[idx + 1];
-					answerBuffer.replace(start, start + answerResult.dateFieldLengths[idx + 1], Utils.repeat(secondField, answerResult.dateFieldLengths[idx + 1]));
+				// yearOffset == -1 so monthOffset must be non-zero - three cases
+				// 1) MM/??/?? -> MM/dd/yy
+				// 2) ??/MM/?? -> dd/MM/yy
+				// 3) ??/??/MM -> dd/yy/MM
+				day = 0;
+				year = 1;
 			}
+
+			answerResult = answerResult.updateStart();
+			answerResult.tokenized = answerResult.tokenized.update(unbound[day], new FormatterToken(Token.DAYS, answerResult.tokenized.get(unbound[day]).getCount()));
+			if (month != -1)
+				answerResult.tokenized = answerResult.tokenized.update(unbound[month], new FormatterToken(Token.MONTHS, answerResult.tokenized.get(unbound[month]).getCount()));
+			if (year != -1)
+				answerResult.tokenized = answerResult.tokenized.update(unbound[year], new FormatterToken(answerResult.tokenized.get(unbound[year]).getCount() == 2 ? Token.YEARS_2 : Token.YEARS_4));
+			answerResult = answerResult.updateEnd();
+		}
 
 		if (answerResult.timeZone == null)
 			answerResult.timeZone = "";
 
-		answerResult.updateFormatString(answerBuffer.toString());
 		return answerResult;
 	}
 
@@ -632,28 +648,25 @@ public class DateTimeParser {
 
 
 	private static String dateFormat(final DateTracker tracker, final char separator, final DateResolutionMode resolutionMode, final boolean yearKnown, final boolean yearFirst) {
-		if (yearFirst)
-			switch (resolutionMode) {
-			case None:
+		if (yearFirst) {
+			if (resolutionMode == DateResolutionMode.None)
 				return Utils.repeat(yearKnown ? 'y' : '?', tracker.getDigit(0))  + separator + Utils.repeat('?', tracker.getDigit(1)) + separator + Utils.repeat('?', tracker.getDigit(2));
-			case DayFirst:
-				return  Utils.repeat('y', tracker.getDigit(0)) + separator + Utils.repeat('d', tracker.getDigit(1)) + separator + Utils.repeat('M', tracker.getDigit(2));
-			case MonthFirst:
-				return Utils.repeat('y', tracker.getDigit(0)) + separator + Utils.repeat('M', tracker.getDigit(1)) + separator + Utils.repeat('d', tracker.getDigit(2));
-			default:
+			if (resolutionMode == DateResolutionMode.Auto)
 				throw new InternalErrorException("unexpected resolutionMode: " + resolutionMode);
-			}
-		else
-			switch (resolutionMode) {
-			case None:
-				return Utils.repeat('?', tracker.getDigit(0)) + separator + Utils.repeat('?', tracker.getDigit(1)) + separator + Utils.repeat(yearKnown ? 'y' : '?', tracker.getDigit(2));
-			case DayFirst:
-				return Utils.repeat('d', tracker.getDigit(0)) + separator + Utils.repeat('M', tracker.getDigit(1)) + separator + Utils.repeat('y', tracker.getDigit(2));
-			case MonthFirst:
-				return Utils.repeat('M', tracker.getDigit(0)) + separator + Utils.repeat('d', tracker.getDigit(1)) + separator + Utils.repeat('y', tracker.getDigit(2));
-			default:
-				throw new InternalErrorException("unexpected resolutionMode: " + resolutionMode);
-			}
+
+			return Utils.repeat('y', tracker.getDigit(0)) + separator + Utils.repeat('M', tracker.getDigit(1)) + separator + Utils.repeat('d', tracker.getDigit(2));
+		}
+
+		switch (resolutionMode) {
+		case None:
+			return Utils.repeat('?', tracker.getDigit(0)) + separator + Utils.repeat('?', tracker.getDigit(1)) + separator + Utils.repeat(yearKnown ? 'y' : '?', tracker.getDigit(2));
+		case DayFirst:
+			return Utils.repeat('d', tracker.getDigit(0)) + separator + Utils.repeat('M', tracker.getDigit(1)) + separator + Utils.repeat('y', tracker.getDigit(2));
+		case MonthFirst:
+			return Utils.repeat('M', tracker.getDigit(0)) + separator + Utils.repeat('d', tracker.getDigit(1)) + separator + Utils.repeat('y', tracker.getDigit(2));
+		default:
+			throw new InternalErrorException("unexpected resolutionMode: " + resolutionMode);
+		}
 	}
 
 	/**
@@ -1010,7 +1023,7 @@ public class DateTimeParser {
 		private final int[] valueArray;
 		private final int[] digitsArray;
 		private final int[] padArray;
-		/** Has we seen the start of a Date/Time. */
+		/** Have we seen the start of a Date/Time. */
 		boolean seen;
 		/** Has the Date/Time been closed. */
 		boolean closed;
@@ -1146,6 +1159,14 @@ public class DateTimeParser {
 			case ':':
 				if ((dateTracker.seen() && !dateTracker.isClosed()) || (timeTracker.seen() && timeTracker.isClosed()) || timeTracker.components() == 3)
 					return null;
+
+				// If we have think we have padding on hours but we also have two digits then it must be extra space not padding (e.g. "2023-02-03  09:56:22")
+				if (timeTracker.lastSet() == -1 && tracker.digits == 2 && tracker.padding > 0) {
+					while (tracker.padding > 0) {
+						timeDateElements.add(TimeDateElement.WhiteSpace);
+						tracker.padding--;
+					}
+				}
 
 				if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
 					return null;
@@ -1313,7 +1334,12 @@ public class DateTimeParser {
 
 				if (timeTracker.seen()) {
 					final String rest = trimmed.substring(i).toUpperCase(config.getLocale());
-					for (final String s : localeInfo.getAMPMStrings()) {
+					LinkedHashSet<String> all = new LinkedHashSet<>(localeInfo.getAMPMStrings());
+					if (config.allowEnglishAMPM && !all.contains("AM"))
+						all.addAll(localeInfo.getAMPMStringsNonLocalized());
+					String[] indicators = all.toArray(new String[0]);
+					for (int indicator = 0; indicator < all.size(); indicator++) {
+						String s = indicators[indicator];
 						if (rest.startsWith(s)) {
 							if (!timeTracker.isClosed()) {
 								if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))
@@ -1322,7 +1348,7 @@ public class DateTimeParser {
 								timeTracker.close();
 								timeDateElements.add(TimeDateElement.Time);
 							}
-							timeDateElements.add(TimeDateElement.AMPM);
+							timeDateElements.add(indicator <= 1 ? TimeDateElement.AMPM : TimeDateElement.English_AMPM);
 							i += s.length() - 1;
 							ampmDetected = true;
 							// Eat the space after if it exists
@@ -1542,6 +1568,7 @@ public class DateTimeParser {
 			case Constant:
 			case WhiteSpace:
 			case Indicator_8601:
+			case English_AMPM:
 			case AMPM:
 				ret.append(elt.getRepresentation());
 				break;
@@ -1797,10 +1824,7 @@ public class DateTimeParser {
 
 		// So before we declare ultimate success - check that Java is happy with our conclusion
 		try {
-			// Check that the pattern we have determined can be used by Java
-			new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(compressed).toFormatter(config.getLocale());
-			// If we have any suspect characters then do a real check by attempting to parse the input
-			if (suspect != 0 && !dtpResult.isValid8(trimmed))
+			if (!dtpResult.isPlausible(trimmed, ofPattern(compressed)))
 				return null;
 		}
 		catch (IllegalArgumentException e) {

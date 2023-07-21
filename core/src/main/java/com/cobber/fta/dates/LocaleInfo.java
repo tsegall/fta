@@ -63,6 +63,7 @@ public class LocaleInfo {
 	private final LocaleInfoConfig localeInfoConfig;
 
 	private static Map<String, LocaleInfo> cache = new ConcurrentHashMap<>();
+	private static Set<String> amPmNonLocalized = new HashSet<>(Arrays.asList("AM", "PM"));
 
 	public static LocaleInfo getInstance(final LocaleInfoConfig localeInfoConfig) {
 		final String cacheKey = localeInfoConfig.getCacheKey();
@@ -185,20 +186,11 @@ public class LocaleInfo {
 		}
 
 		final Set<String> amPmStrings = new TreeSet<>(Arrays.asList(dfs.getAmPmStrings()));
-		if (localeInfoConfig.isEnglishAMPMAllowed()) {
-			// Unconditionally add "AM" and "PM" since these are commonly seen even in locales where they are not the AM/PM strings
-			amPmStrings.add("AM");
-			amPmStrings.add("PM");
-		}
 
 		// Setup the AM/PM strings
 		final Set<String> ampmStringsLocale = new LinkedHashSet<>();
 		String ampmRegExpLocale = "";
 		for (String s : amPmStrings) {
-			// In Java some countries (e.g. CA) have the short AM/PM string defined as A.M. and P.M.
-			// if noAbbreviationPunctuation is set remove any embedded periods.
-			if (localeInfoConfig.isNoAbbreviationPunctuation())
-				s = s.replace(".", "");
 			if (ampmRegExpLocale.length() != 0)
 				ampmRegExpLocale += "|";
 			ampmRegExpLocale += s;
@@ -519,11 +511,19 @@ public class LocaleInfo {
 	}
 
 	/**
-	 * Retrieve the Set containing the for this Locale
-	 * @return Set containing AM/PM strings  for this Locale
+	 * Retrieve the Set containing the AM/PM strings for this Locale
+	 * @return Set containing AM/PM strings for this Locale
 	 */
 	public Set<String> getAMPMStrings() {
 		return ampmStrings;
+	}
+
+	/**
+	 * Retrieve the non-localized Set containing "AM" and "PM"
+	 * @return Set containing "AM" and "PM"
+	 */
+	public Set<String> getAMPMStringsNonLocalized() {
+		return amPmNonLocalized;
 	}
 
 	/**
@@ -538,12 +538,14 @@ public class LocaleInfo {
 	 * Check that the input starts with a valid AM/PM string (case insensitive)
 	 * and if so return the offset of the end of match.
 	 * @param input The input string
+	 * @param localized Is the input string localized
 	 * @return Offset of the end of the matched input, or -1 if no match
 	 */
-	public int skipValidAMPM(final String input) {
+	public int skipValidAMPM(final String input, final boolean localized) {
 		int upto = 0;
+		final Set<String> indicators = localized ? getAMPMStrings() : getAMPMStringsNonLocalized();
 
-		for (final String ampmIndicator : getAMPMStrings()) {
+		for (final String ampmIndicator : indicators) {
 			if (input.substring(upto).toUpperCase(localeInfoConfig.getLocale()).startsWith(ampmIndicator)) {
 				upto += ampmIndicator.length();
 				return upto;

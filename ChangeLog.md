@@ -1,6 +1,20 @@
 
 ## Changes ##
 
+### 14.7.0
+ - ENH: I18N - Add new Semantic Types - STATE_PROVINCE.MUNICIPALITY_CODE_BR (Brazilian Municipality code)
+ - ENH: I18N - Improve detection of non-localized doubles
+ - ENH: Improve detection of 'yyyy'
+ - ENH: Improve POSTAL_CODE.ZIP5_US & POSTAL_CODE.ZIP5_PLUS4_US detection
+ - ENH: Bump logback-classic, google phonenumber, and guava
+ - ENH: Significantly improve detection rate of Date Types - both precision and recall (especially non-US)
+ - BUG: Handle yyyy-MMM *and* noAbbreviationPunctuation - e.g. 1954-JUN with locale en-CA
+ - BUG: Handle "2023-02-03  09:56:22" - i.e. multiple spaces between the date and the time
+ - BUG: Fix incorrect result for "Sep  6 2018  8:43AM" - correct result is "MMM ppd yyyy pph:mma"
+ - BUG: Fix date format detection for a set of cases with bogus data (commonly resulting in k instead of H)
+ - INT: Bump gradle to 8.2.1
+ - INT: Automatically generate the documentation (SemanticTypes.md) for the list of Semantic Types detected
+
 ### 14.6.1
  - BUG: RegExpSplitter.newInstance(String) Incorrectly Parses Ranges with Multiple Digits in the Max (Issue #44)
 

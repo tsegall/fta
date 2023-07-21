@@ -149,6 +149,10 @@
 		"validLocales": [
 			{ "localeTag": "en",
 				"headerRegExps": [ { "regExp": "(?i).*(period).*", "confidence": 90 } ] },
+			{ "localeTag": "es,pt",
+				"headerRegExps": [ { "regExp": "(?i)(?u).*(periodo|período).*", "confidence": 90 } ] },
+			{ "localeTag": "fr",
+				"headerRegExps": [ { "regExp": "(?i)(?u).*(période).*", "confidence": 90 } ] },
 			{ "localeTag": "nl",
 				"headerRegExps": [ { "regExp": "(?i).*(periode).*", "confidence": 90 } ] }
 		]

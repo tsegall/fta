@@ -390,7 +390,7 @@ public class SimpleDateMatcher {
 		final StringBuilder eating = new StringBuilder(input.toUpperCase(localeInfo.getLocale()));
 		boolean found;
 
-		for (final FormatterToken token : FormatterToken.tokenize(format)) {
+		for (final FormatterToken token : TokenList.getTokenList(format)) {
 			switch (token.getType()) {
 			case QUOTE:
 				break;
@@ -454,8 +454,10 @@ public class SimpleDateMatcher {
 				break;
 
 			case AMPM:
+			case AMPM_NL:
+				final Set<String> indicators = token.getType() == DateTimeParserResult.Token.AMPM ? localeInfo.getAMPMStrings() : localeInfo.getAMPMStringsNonLocalized();
 				found = false;
-				for (final String s : localeInfo.getAMPMStrings()) {
+				for (final String s : indicators) {
 					if (eating.indexOf(s) == 0) {
 						eating.delete(0, s.length());
 						found = true;
@@ -540,60 +542,58 @@ public class SimpleDateMatcher {
 				eating.delete(0, 2);
 				break;
 
-			case DAYS_1_OR_2:
-				if (eating.length() == 0)
+			case DAYS:
+				if (eating.length() < token.getCount())
 					return false;
-				if (eating.length() == 1 || !Character.isDigit(eating.charAt(1))) {
-					dayOfMonth = Utils.getValue(eating.toString(), 0, 1, 1);
-					dayLength = 1;
-					eating.delete(0, 1);
-					break;
+				if (token.getCount() == 1) {
+					if (eating.length() == 1 || !Character.isDigit(eating.charAt(1))) {
+						dayOfMonth = Utils.getValue(eating.toString(), 0, 1, 1);
+						dayLength = 1;
+						eating.delete(0, 1);
+						break;
+					}
 				}
-				// FALL THROUGH
-			case DAYS_2:
-				if (eating.length() < 2)
-					return false;
+
 				dayOfMonth = Utils.getValue(eating.toString(), 0, 2, 2);
 				dayLength = 2;
 				eating.delete(0, 2);
 				break;
 
-			case MONTHS_1_OR_2:
-				if (eating.length() == 0)
+			case MONTHS:
+				if (eating.length() < token.getCount())
 					return false;
-				if (eating.length() == 1 || !Character.isDigit(eating.charAt(1))) {
-					monthValue = Utils.getValue(eating.toString(), 0, 1, 1);
-					monthLength = 1;
-					eating.delete(0, 1);
-					break;
+				if (token.getCount() == 1) {
+					if (eating.length() == 1 || !Character.isDigit(eating.charAt(1))) {
+						monthValue = Utils.getValue(eating.toString(), 0, 1, 1);
+						monthLength = 1;
+						eating.delete(0, 1);
+						break;
+					}
 				}
-				// FALL THROUGH
-			case MONTHS_2:
-				if (eating.length() < 2)
-					return false;
+
 				monthValue = Utils.getValue(eating.toString(), 0, 2, 2);
 				monthLength = 2;
 				eating.delete(0, 2);
 				break;
 
-			case CLOCK24_1_OR_2:
-			case DIGITS_1_OR_2:
-			case HOURS12_1_OR_2:
-			case HOURS24_1_OR_2:
-				if (eating.length() == 0)
+			case CLOCK24:
+			case DIGITS:
+			case HOURS12:
+			case HOURS24:
+				if (eating.length() < token.getCount())
 					return false;
-				if (eating.length() == 1 || !Character.isDigit(eating.charAt(1)))
-					eating.delete(0, 1);
+				if (token.getCount() == 1) {
+					if (eating.length() == 1 || !Character.isDigit(eating.charAt(1)))
+						eating.delete(0, 1);
+					else
+						eating.delete(0, 2);
+				}
 				else
 					eating.delete(0, 2);
 				break;
 
-			case CLOCK24_2:
-			case DIGITS_2:
-			case HOURS12_2:
-			case HOURS24_2:
-			case MINS_2:
-			case SECS_2:
+			case MINS:
+			case SECS:
 				if (eating.length() < 2)
 					return false;
 				eating.delete(0, 2);

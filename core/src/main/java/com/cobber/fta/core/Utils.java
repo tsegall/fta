@@ -325,21 +325,49 @@ public final class Utils {
 		return Long.parseLong(lParse);
 	}
 
-	public static double parseDouble(final String input, final NumberFormat doubleFormatter) {
-		final String trimmed = input.trim();
-		final ParsePosition dPos = new ParsePosition(0);
-		final String dParse = trimmed.charAt(0) == '+' ? trimmed.substring(1) : trimmed;
-		final Number d = doubleFormatter.parse(dParse, dPos);
+	// NumberFormat.getInstance(locale) returns a parser that cannot cope with a set of sins including:
+	// Exponents with a wrong case 'e' (e.g. 1234.0e5) or with a '+ (e.g. or 123E+5) or with a trailing minus.
+	public static Double parseDouble(final String rawInput, final NumberFormat doubleFormatter) {
+		final String trimmed = rawInput.trim();
+		String cleaned = trimmed.charAt(0) == '+' ? trimmed.substring(1) : trimmed;
+		final ParsePosition pos = new ParsePosition(0);
+		Number n = doubleFormatter.parse(cleaned, pos);
+		final int upto = pos.getIndex();
+		final int len = cleaned.length();
+		if (n != null && upto == len)
+			return n.doubleValue();
 
-		if (d != null && dParse.length() == dPos.getIndex())
-			return d.doubleValue();
+		if (len >= 2 && cleaned.charAt(len - 1) == '-')
+			return -Double.parseDouble(cleaned.substring(0, len - 1));
 
-		// NumberFormat.getInstance(locale) returns a parser that cannot cope with a set of sins including:
-		// Exponents with a lower case 'e' (e.g. 1234.0e5) or with a '+ (e.g. or 123E+5) or with a trailing minus.
-		final int digits = dParse.length();
-		if (digits >= 2 && dParse.charAt(digits - 1) == '-')
-			return -Double.parseDouble(dParse.substring(0, digits - 1));
+		if (upto > len - 2)
+			return Double.parseDouble(cleaned);
 
-		return Double.parseDouble(dParse);
+		// Did we trip up on the Exponent?
+		final char exp = cleaned.charAt(upto);
+		if (exp != 'E' && exp != 'e')
+			return Double.parseDouble(cleaned);
+
+		// Handle <Digits>E+<Digits> which is not supported
+		if (upto <= len - 3 && cleaned.charAt(upto + 1) == '+' && Character.isDigit(cleaned.charAt(upto + 2))) {
+			pos.setIndex(0);
+			final String updatedInput = cleaned.substring(0, upto + 1) + cleaned.substring(upto + 2);
+			n = doubleFormatter.parse(updatedInput, pos);
+			if (pos.getIndex() == updatedInput.length())
+				return n.doubleValue();
+			cleaned = updatedInput;
+		}
+
+		// Handle the wrong case for the Exponentiation character which is not supported
+		if (Character.isDigit(cleaned.charAt(upto + 1))) {
+			final char newExp = exp == 'E' ? 'e' : 'E';
+			final String updatedInput = cleaned.substring(0, upto) + newExp + cleaned.substring(upto + 1);
+			pos.setIndex(0);
+			n = doubleFormatter.parse(updatedInput, pos);
+			if (pos.getIndex() == updatedInput.length())
+				return n.doubleValue();
+		}
+
+		return Double.parseDouble(cleaned);
 	}
 }

@@ -228,7 +228,6 @@ The following fields are *not* calculated by FTA (but may be set on the Analyzer
  * totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly).
  * totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly).
 
-
 Note 1: This field may be set on the Analyzer - and if so FTA attempts no further analysis.
 
 Note 2: quantiles are exact for any set where the cardinality is less than maxCardinality.  No support for quantiles for String types where maxCardinality is exceeded, for other types the quantiles are estimates that are within the relative-error guarantee.
@@ -254,156 +253,13 @@ In addition to detecting a set of Base types FTA will also, when enabled (defaul
 
 * Semantic Type detection is typically predicated on plausible input data, for example, a field that contains data that looks
 like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
+* The set of Semantic Types detected is dependent on the current locale
 * The data stream name (e.g. the database field name or CSV field name) is commonly used to bias the detection.  For example, if the locale language is English and the data stream matches the regular expression '.\*(?i)(surname|last.?name|lname|maiden.?name|name.?last|last_nm).\*|last' then the detection is more likely to declare this stream a NAME.LAST Semantic Type. The data stream name can also be negatively bias the detection.  Consult the plugins.json file for more details.
 * Assuming the entire set of stream names is available, Semantic Type detection of a particular column may be impacted by other stream names, for example the Semantic Type PERSON.AGE is detected if we detect another field of type GENDER or NAME.FIRST.
 * When using Record mode for Semantic Type analysis - the detection of Semantic Types for a stream may be impacted by prior determination of the Semantic Type of another Stream (either via detection or provided with the Context)
 * By default analysis is performed on the initial 4096 characters of the field (adjustable via setMaxInputLength()).
 
-
-The list of Semantic Types detected is dependent on the current locale as indicated below:
-
-<details>
-<summary><b>Semantic Types Supported</b></summary>
-
-Semantic Type|Description|Locale|
----------|-------------|--------|
-AIRLINE.IATA_CODE|IATA Airline Code|*
-AIRLINE.TEXT_EN|Airline Name|*
-AIRPORT_CODE.IATA|IATA Airport Code|*
-CHECKDIGIT.ABA|ABA Number (or Routing Transit Number (RTN))|*
-CHECKDIGIT.CUSIP|North American Security Identifier|*
-CHECKDIGIT.EAN13|EAN-13 Check digit (also UPC and ISBN-13)|*
-CHECKDIGIT.IBAN|International Bank Account Number|*
-CHECKDIGIT.ISBN|ISBN-13 identifiers (with hyphens)|*
-CHECKDIGIT.ISIN|International Securities Identification Number|*
-CHECKDIGIT.LUHN|Digit String that has a valid Luhn Check digit (and length between 8 and 30 inclusive)|*
-CHECKDIGIT.SEDOL|UK/Ireland Security Identifier|*
-CHECKDIGIT.UPC|Universal Product Code|*
-CITY|City/Town|en, nl
-COLOR.HEX|Hex Color code|*
-COLOR.TEXT_&lt;Language&gt;|Color name|en, nl
-COMPANY_NAME|Company Name|en, nl
-CONTINENT.CODE_EN|Continent Code|en
-CONTINENT.TEXT_EN|Continent Name|en
-COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|*
-COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|*
-COORDINATE.LATITUDE_DMS|Latitude (degrees/minutes/seconds)|*
-COORDINATE.LONGITUDE_DMS|Longitude (degrees/minutes/seconds)|*
-COORDINATE.EASTING|Coordinate - Easting|*
-COORDINATE.NORTHING|Coordinate - Northing|*
-COORDINATE_PAIR.DECIMAL|Coordinate Pair (Decimal degrees)|*
-COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2|*
-COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|*
-COUNTRY.TEXT_&lt;Language&gt;|Country as a string|de, en, es, nl
-CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|*
-CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|*
-CURRENCY.TEXT_EN|Currency Name|en
-DAY.DIGITS|Day represented as a number (1-31)|en, es, nl
-DAY.ABBR_&lt;Locale&gt;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
-DAY.FULL_&lt;Locale&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US|Current Locale
-DIRECTION|Cardinal Direction|*
-EMAIL|Email Address|*
-EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|*
-EPOCH.SECONDS|Unix Epoch (Timestamp) - seconds|*
-FILENAME|Name of file|*
-FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...|bg, ca, de, en, es, fr, it, nl, pt, ru
-FULL_ADDRESS_EN|Full Address (English Language)|en
-GENDER.TEXT_&lt;Language&gt;|Gender|bg, ca, de, en, es, fi, fr, hr, it, ja, ms, nl, pl, pt, ro, sv, tr, zh
-GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|*
-HASH.SHA1_HEX|SHA1 Hash - hexadecimal|*
-HASH.SHA256_HEX|SHA256 Hash - hexadecimal|*
-HONORIFIC_EN|Title (English language)|en
-IDENTITY.AADHAAR_IN|Aadhar|en-IN, hi-IN
-IDENTITY.BSN_NL|Burger Service Nummer|en-NL,nl-NL
-IDENTITY.DUNS|Data Universal Numbering System (Dun & Bradstreet)|*
-IDENTITY.EIN_US|Employer Identification Number|en-US
-IDENTITY.INDIVIDUAL_NUMBER_JA|Individual Number / My Number (Japan)|ja
-IDENTITY.NHS_UK|NHS Number|en-UK
-IDENTITY.NI_UK|National Insurance Number (UK)|en-UK
-IDENTITY.NPI_US|National Provider Identifier (US)|en-US
-IDENTITY.PERSONNUMMER_SE|Personal identity number (Sweden)|sv-SE
-IDENTITY.SSN_FR|Social Security Number (France)|fr-FR
-IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|de-CH, fr-CH, it-CH
-IDENTITY.VAT_&lt;Country&gt;|Value-added Tax Identification Number|de-AT, ca-ES, es-ES, fr-FR, it-IT, en-GB, en-NL, en-UK, nl-NL, pl-PL
-IMEI|International Mobile Equipment Identity|*
-INDUSTRY_CODE.NAICS|Industry Code - NAICS|en-CA,en-MX,en-US,es-MX
-INDUSTRY_EN|Industry Name|en
-IPADDRESS.IPV4|IP V4 Address|*
-IPADDRESS.IPV6|IP V6 Address|*
-JOB_TITLE_EN|Job Title|en
-LANGUAGE.ISO-639-1|Language code - ISO 639, three character|*
-LANGUAGE.ISO-639-2|Language code - ISO 639, two character|*
-LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...|en
-MACADDRESS|MAC Address|*
-MONTH.ABBR_&lt;Locale&gt;|Month Abbreviation &lt;LOCALE&gt; = Locale, for example, en-US for English language in US|Current Locale
-MONTH.DIGITS|Month represented as a number (1-12)|en, es, nl
-MONTH.FULL_&lt;Locale&gt;|Full Month name &lt;LOCALE&gt; = Locale, for example, en-US for English language in US|Current Locale
-NAME.FIRST|First Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
-NAME.FIRST_LAST|Merged Name (First Last)|br, de, do, en, es, fr, gt, mx, nl, pr, pt
-NAME.LAST|Last Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
-NAME.LAST_FIRST|Merged Name (Last, First)|br, de, do, en, es, fr, gt, mx, nl, pr, pt
-NAME.MIDDLE|Middle Name|br, de, do, en, es, fr, gt, mx, nl, pr, pt
-NAME.MIDDLE_INITIAL|Middle Initial|br, de, do, en, es, fr, gt, mx, nl, pr, pt
-NAME.SUFFIX|Name Suffix|en
-NATIONALITY_&lt;Language&gt;|Nationality|en, nl
-PERIOD.HALF|Half (Year)|*
-PERIOD.QUARTER|Quarter (Year)|*
-PERIOD.YEAR_RANGE|Year Range|*
-PERSON.AGE|Age (Person)|en, es, fr, it, nl, pt
-PERSON.AGE_RANGE|Age range (Person)|en, es, fr, it, nl, pt
-PERSON.DATE_OF_BIRTH|Date of Birth|en,es,nl
-PERSON.MARITAL_STATUS_&lt;Language&gt;|Marital Status|en
-PERSON.RACE_ABBR_EN|Race/Ethinicity abbreviation (person)|*
-PERSON.RACE_EN|Race/Ethinicity (person)|*
-PERSON.YEAR_OF_BIRTH|Year of Birth|en
-POSTAL_CODE.POSTAL_CODE_&lt;Country&gt;|Postal Code|AU, BG, CA, CO, FR, JA, NL, UK, ES, MX, PT, SE, UY
-POSTAL_CODE.ZIP5_US|Postal Code|en-CA, en-US
-POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4|en-CA, en-US
-SSN|Social Security Number (US)|en-US
-STATE_PROVINCE.CANTON_CH|Swiss Canton Code|de-CH, fr-CH, it-CH
-STATE_PROVINCE.CANTON_NAME_CH|Swiss Canton Name|de-CH, fr-CH, it-CH
-STATE_PROVINCE.COMMUNE_IT|Italian Commune|it-IT
-STATE_PROVINCE.COUNTY_&lt;Country&gt;|County|en-IE, en-UK, en-US, ga-IE, hu-HU
-STATE_PROVINCE.COUNTY_FIPS_US|US County FIPS code|en-US
-STATE_PROVINCE.DEPARTMENT_FR|French Department Name|fr-FR
-STATE_PROVINCE.DEPARTMENT_CO|Colombian Department|es-CO
-STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|pt-PT
-STATE_PROVINCE.INSEE_CODE_FR|French Insee Code (5 digit)|fr-FR
-STATE_PROVINCE.MUNICIPALITY_&lt;Country&gt;|Municipality|en-NL, es-CO, es-MX, nl-NL, pt-BR
-STATE_PROVINCE.MUNICIPALITY_CODE_NL|Dutch Municipality Code|en-NL,nl-NL
-STATE_PROVINCE.PREFECTURE_NAME_JP|Japanese Prefecture Name|ja
-STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|en-CA, en-US
-STATE_PROVINCE.PROVINCE_IT|Italian Province Code|it-IT
-STATE_PROVINCE.PROVINCE_ZA|South African Province Code|en-ZA
-STATE_PROVINCE.PROVINCE_NAME_&lt;Country&gt;|Province Name|en-EI, en-CA, en-NL, en-US, en-ZA, es-EC, es-ES, es-PE, it-IT, nl-NL
-STATE_PROVINCE.REGION_NAME_&lt;Country&gt;|Region Name|en-TZ, es-PE, fr-FR, it-IT, sw-TZ
-STATE_PROVINCE.STATE_&lt;Country&gt;|State Code|en-AU, pt-BR, es-MX, en-US
-STATE_PROVINCE.STATE_FIPS_US|US State FIPS code|en-US
-STATE_PROVINCE.STATE_NAME_&lt;Country&gt;|State Name|en-AU, pt-BR, de-DE, es-MX, en-US
-STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|en-CA, en-US, es-MX
-STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name|en-CA, en-US, es-MX
-STATE_PROVINCE.SUBURB_AU|Australian Suburb|en-AU
-STREET_ADDRESS_&lt;Language&gt;|Street Address|bg, ca, da, de, en, es, fi, fr, hr, it, lv, nl, pl, pt, ro, ru, sk
-STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)|en
-STREET_ADDRESS3_EN|Street Address - Line 3 (English Language)|en
-STREET_MARKER_EN| Street Suffix (English Language)|en
-STREET_NAME_EN|Street Name (English Language)|en
-STREET_NAME_BARE_&lt;Language&gt;|Street Name - no Marker|en, nl
-STREET_NUMBER|Street Number|en, nl
-TELEPHONE|Telephone Number (Generic)|*
-TIMEZONE.IANA|IANA Time Zone (Olson)|*
-URI.URL|URL - see RFC 3986|*
-VIN|Vehicle Identification Number|*
-
-Note:
-
-Any of the above Semantic Types suffixed with one of the following are locale-sensitive:
- * &lt;Locale&gt; - replaced by the locale, for example, MONTH.FULL_fr-FR (Month Abbreviation in french French)
- * &lt;Language&gt; - replaced by the language from the locale, for example, GENDER.TEXT_PT (Gender in Portuguese)
- * &lt;Country&gt; - replaced by the country from the locale, for example, POSTAL_CODE.POSTAL_CODE_AU (Australian Postal Code)
-
-
-</details>
+[Details of Semantic Types detected](SemanticTypes.md)
 
 ### Performance ###
 

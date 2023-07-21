@@ -1816,6 +1816,164 @@ public class TestDoubles {
 				assertTrue(input.matches(result.getRegExp()));
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void dutchNonLocalizedLong() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("L");
+		// For Dutch, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("nl-NL");
+		analysis.setLocale(locale);
+
+		final String[] inputs = {
+				"1.234", "8.078", "1.664", "12.902", "122.987",
+				"120.809", "12.036", "121.647", "120.904", "120.707",
+				"105.841", "1.525", "129.605", "1.895", "12.187",
+				"12.845", "1.962", "109.736", "120.509", "120.685",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTypeModifier(), "GROUPING");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[\\d\\.]{5,7}");
+		assertEquals(result.getMinValue(), "1.234");
+		assertEquals(result.getMaxValue(), "129.605");
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void dutchNonLocalizedDouble19() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("D");
+		// For Dutch, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("nl-NL");
+		analysis.setLocale(locale);
+		analysis.setDebug(2);
+
+		final String[] inputs = {
+				"1.234", "8.078", "1.664", "12.902", "122.987",
+				"120.809", "12.036", "121.647", "120.904", "120.707",
+				"105.841", "1.525", "129.605", "1.895", "12.187",
+				"12.845", "1.962", "109.736", "120.509",
+				// This one must be a double - hence we are all in on the Doubles
+				"1201.685",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeModifier(), "NON_LOCALIZED");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
+		assertEquals(result.getMinValue(), "1.234");
+		assertEquals(result.getMaxValue(), "1201.685");
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void usLongTosDouble20() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("D");
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
+		analysis.setDebug(2);
+
+		final String[] inputs = {
+				"1234", "8078", "1664", "12902", "122987",
+				"120809", "12036", "121647", "120904", "120707",
+				"105841", "1525", "129605", "1895", "12187",
+				"12845", "1962", "109736", "120509", "13134",
+				// This one must be a double - hence we are all in on the Doubles
+				"1201.685",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
+		assertEquals(result.getMinValue(), "1201.685");
+		assertEquals(result.getMaxValue(), "129605.0");
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void dutchNonLocalizedConfused() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("bed_zosmar");
+		// For Dutch, Decimal Sep = ',' and Thousands Sep = '.'
+		final Locale locale = Locale.forLanguageTag("nl-NL");
+		analysis.setLocale(locale);
+		analysis.setDebug(2);
+
+		final String[] inputs = {
+				"0.75", "3.125", "0.125", "1.875", "1.875",
+				"1.875", "0.75", "0.75", "0.125", "0.125",
+				"1.875", "0.125", "0.75", "1.875", "0.125",
+				"0.125", "0.75", "1.875", "0.75", "3.125",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.DOUBLE);
+		assertEquals(result.getTypeModifier(), "NON_LOCALIZED");
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
+		assertEquals(result.getMinValue(), "0.125");
+		assertEquals(result.getMaxValue(), "3.125");
+		assertEquals(result.getDecimalSeparator(), '.');
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
 	public void nonLocalizedPortugueseDouble() throws IOException, FTAException {

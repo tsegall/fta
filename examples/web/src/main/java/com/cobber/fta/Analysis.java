@@ -76,10 +76,7 @@ public class Analysis {
 		if (locale != null)
 			this.locale = locale.toLanguageTag();
 
-		final SemanticType semanticType = new SemanticType();
-		semanticType.initialize(locale);
-
-		allTypes = semanticType.getActiveSemanticTypes();
+		allTypes = SemanticType.getActiveSemanticTypes(locale);
 	}
 
 	private static String ftaVersion = Utils.getVersion();

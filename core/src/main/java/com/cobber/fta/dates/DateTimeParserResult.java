@@ -22,13 +22,15 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.MinMax;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
@@ -59,7 +61,7 @@ public class DateTimeParserResult {
 	public Character dateSeparator;
 	private String formatString;
 	public Boolean amPmIndicator;
-	public List<FormatterToken> tokenized;
+	public TokenList tokenized;
 
 	private final DateResolutionMode resolutionMode;
 	private final DateTimeParserConfig config;
@@ -72,7 +74,7 @@ public class DateTimeParserResult {
 	DateTimeParserResult(final String formatString, final DateResolutionMode resolutionMode, final DateTimeParserConfig config, final int timeElements,
 			final MinMax[] timeFieldLengths, final int[] timeFieldOffsets, final int[] timeFieldPad, final int hourLength, final int dateElements, final int[] dateFieldLengths,
 			final int[] dateFieldOffsets, final int[] dateFieldPad, final Boolean timeFirst, final Character dateTimeSeparator, final int yearOffset, final	int monthOffset,
-			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final List<FormatterToken> tokenized) {
+			final int dayOffset, final Character dateSeparator, final String timeZone, final Boolean amPmIndicator, final TokenList tokenized) {
 		this.formatString = formatString;
 		this.resolutionMode = resolutionMode;
 		this.config = config;
@@ -121,16 +123,41 @@ public class DateTimeParserResult {
 
 	}
 
+	DateTimeParserResult updateStart() {
+		MinMax[] timeFieldLengthsClone = null;
+		if (this.timeFieldLengths != null) {
+			timeFieldLengthsClone = new MinMax[this.timeFieldLengths.length];
+			for (int i = 0; i < this.timeFieldLengths.length; i++) {
+				timeFieldLengthsClone[i] = new MinMax(this.timeFieldLengths[i]);
+			}
+		}
+
+		return new DateTimeParserResult(this.formatString, this.resolutionMode, this.config, this.timeElements,
+				timeFieldLengthsClone,
+				this.timeFieldOffsets != null ? Arrays.copyOf(this.timeFieldOffsets, this.timeFieldOffsets.length) : null,
+				this.timeFieldPad != null ? Arrays.copyOf(this.timeFieldPad, this.timeFieldPad.length) : null,
+				this.hourLength, this.dateElements,
+				this.dateFieldLengths != null ? Arrays.copyOf(this.dateFieldLengths, this.dateFieldLengths.length) : null,
+				this.dateFieldOffsets != null ? Arrays.copyOf(this.dateFieldOffsets, this.dateFieldOffsets.length) : null,
+				this.dateFieldPad != null ? Arrays.copyOf(this.dateFieldPad, this.dateFieldPad.length) : null,
+				this.timeFirst, this.dateTimeSeparator, this.yearOffset, this.monthOffset, this.dayOffset,
+				this.dateSeparator, this.timeZone, this.amPmIndicator, this.tokenized);
+	}
+
+	DateTimeParserResult updateEnd() {
+		return DateTimeParserResult.asResult(tokenized.getFormatString(), config.resolutionMode, config);
+	}
+
 	enum Token {
-		AMPM("a"),
-		CLOCK24_1_OR_2("k"), CLOCK24_2("kk"),
+		AMPM("a"), AMPM_NL("P"),
+		CLOCK24("k"),
 		CONSTANT_CHAR,
 		QUOTE("'"),
-		DAYS_1_OR_2("d"), DAYS_2("dd"), DAY_OF_WEEK("EEEE"), DAY_OF_WEEK_ABBR("EEE"),
-		DIGITS_1_OR_2("?"), DIGITS_2("??"),
+		DAYS("d"), DAY_OF_WEEK("EEEE"), DAY_OF_WEEK_ABBR("EEE"),
+		DIGITS("?"),
 		ERA("G"),
-		MONTHS_1_OR_2("M"), MONTHS_2("MM"), MONTH("MMMM"), MONTH_ABBR("MMM"),
-		HOURS12_1_OR_2("h"), HOURS12_2("hh"), HOURS24_1_OR_2("H"), HOURS24_2("HH"), MINS_2("mm"), PAD_2("p"), SECS_2("ss"), FRACTION("S"),
+		MONTHS("M"), MONTH("MMMM"), MONTH_ABBR("MMM"),
+		HOURS12("h"), HOURS24("H"), MINS("mm"), SECS("ss"), FRACTION("S"),
 		YEARS_2("yy"), YEARS_4("yyyy"),
 		TIMEZONE_NAME("z"), TIMEZONE_OFFSET_Z("Z"),
 		LOCALIZED_TIMEZONE_OFFSET("O"),
@@ -170,17 +197,9 @@ public class DateTimeParserResult {
 		return bound < dateElements;
 	}
 
-	/*
-	 * Update the format string and recreate the cached tokenized form.
-	 */
-	public void updateFormatString(final String formatString) {
-		this.formatString = formatString;
-		this.tokenized =  FormatterToken.tokenize(formatString);
-	}
-
 	/**
 	 * Determine whether a string input matches this DateTimeParserResult.
-	 * @param input The string to validate (stripped of whitespace.
+	 * @param input The string to validate (stripped of whitespace).
 	 * @return A boolean indicating if the input is valid.
 	 */
 	public boolean isValid8(final String input) {
@@ -198,6 +217,37 @@ public class DateTimeParserResult {
 			else
 				OffsetDateTime.parse(input, dtf);
 			return true;
+		}
+		catch (DateTimeParseException exc) {
+			return false;
+		}
+	}
+
+	private boolean checkYear(Temporal t) {
+		final int year = t.get(ChronoField.YEAR);
+		return year >= DateTimeParser.EARLY_LONG_YYYY && year <= DateTimeParser.LATE_LONG_YYYY;
+	}
+
+	/**
+	 * Determine whether a string input matches the supplied DateTimeFormatter.
+	 * @param input The string to validate (stripped of whitespace).
+	 * @param dtf The DateTimeFormatter used to validate the input.
+	 * @return A boolean indicating if the input is valid.
+	 */
+	public boolean isPlausible(final String input, final DateTimeFormatter dtf) {
+		try {
+			if (FTAType.LOCALTIME.equals(getType())) {
+				LocalTime.parse(input, dtf);
+				return true;
+			}
+			else if (FTAType.LOCALDATE.equals(getType()))
+				return checkYear(LocalDate.parse(input, dtf));
+			else if (FTAType.LOCALDATETIME.equals(getType()))
+				return checkYear(LocalDateTime.parse(input, dtf));
+			else if (FTAType.ZONEDDATETIME.equals(getType()))
+				return checkYear(ZonedDateTime.parse(input, dtf));
+			else
+				return checkYear(OffsetDateTime.parse(input, dtf));
 		}
 		catch (DateTimeParseException exc) {
 			return false;
@@ -473,7 +523,7 @@ public class DateTimeParserResult {
 		// Add to cache
 		ret = new DateTimeParserResult(fullyBound ? formatString : null, resolutionMode, config, timeElements, timeFieldLengths, timeFieldOffsets, timeFieldPad,
 				hourLength, dateElements, dateFieldLengths, dateFieldOffsets, dateFieldPad, timeFirst, dateTimeSeparator,
-				yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator, FormatterToken.tokenize(formatString));
+				yearOffset, monthOffset, dayOffset, dateSeparator, timeZone, amPmIndicator, TokenList.getTokenList(formatString));
 		dtpCache.put(key, ret);
 
 		return newInstance(ret);
@@ -482,32 +532,29 @@ public class DateTimeParserResult {
 	@SuppressWarnings("incomplete-switch")
 	private void validateTokenValue(final Token token, final int value, final String input, final int upto) {
 		switch (token) {
-		case CLOCK24_1_OR_2:
-		case CLOCK24_2:
+		case CLOCK24:
 			if (value == 0 || value > 24)
 				throw new DateTimeParseException("Invalid value for hours (expected 1-24)", input, upto);
 			break;
 
-		case HOURS12_1_OR_2:
-		case HOURS12_2:
+		case HOURS12:
 			if (value == 0 || value > 12)
 				throw new DateTimeParseException("Invalid value for hours (expected 1-12)", input, upto);
 			break;
 
-		case HOURS24_1_OR_2:
-		case HOURS24_2:
+		case HOURS24:
 			if (value == 24)
 				throw new DateTimeParseException("Invalid value for hours: 24 (expected 0-23)", input, upto);
 			else if (value > 24)
 				throw new DateTimeParseException("Invalid value for hours (expected 0-23)", input, upto);
 			break;
 
-		case MINS_2:
+		case MINS:
 			if (value > 59)
 				throw new DateTimeParseException("Invalid value for minutes (expected 0-59)", input, upto);
 			break;
 
-		case SECS_2:
+		case SECS:
 			if (value > 59)
 				throw new DateTimeParseException("Invalid value for seconds (expected 0-59)", input, upto);
 			break;
@@ -525,13 +572,12 @@ public class DateTimeParserResult {
 	public void parse(final String input) {
 		final int inputLength = input.length();
 		int upto = 0;
-		int padding = 0;
 
 		if (formatString == null)
 			formatString = getFormatString();
 
 		if (tokenized == null)
-			tokenized = FormatterToken.tokenize(formatString);
+			tokenized = TokenList.getTokenList(formatString);
 
 		Token nextToken = null;
 		for (final FormatterToken token : tokenized) {
@@ -574,56 +620,72 @@ public class DateTimeParserResult {
 				upto += monthAbbr.length();
 				break;
 
-			case CLOCK24_1_OR_2:
-			case HOURS12_1_OR_2:
-			case HOURS24_1_OR_2:
-			case DIGITS_1_OR_2:
+			case CLOCK24:
+			case HOURS12:
+			case HOURS24:
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				inputChar = input.charAt(upto);
-				if (padding == 1 && inputChar == ' ' && upto < inputLength) {
-					padding--;
-					inputChar = input.charAt(++upto);
-				}
-				if (!Character.isDigit(inputChar))
-					throw new DateTimeParseException("Expecting digit", input, upto);
-				value = inputChar - '0';
-				upto++;
-				if (upto != inputLength && Character.isDigit(input.charAt(upto))) {
-					value = 10 * value + (input.charAt(upto) - '0');
+				if (token.getCount() == 1) {
+					if (token.getFieldWidth() != -1 && inputChar == ' ' && upto < inputLength) {
+						inputChar = input.charAt(++upto);
+					}
+					if (!Character.isDigit(inputChar))
+						throw new DateTimeParseException("Expecting digit", input, upto);
+					value = inputChar - '0';
 					upto++;
-					if (nextToken != Token.DIGITS_1_OR_2)
-						validateTokenValue(nextToken, value, input, upto - 2);
+					if (upto != inputLength && Character.isDigit(input.charAt(upto))) {
+						value = 10 * value + (input.charAt(upto) - '0');
+						upto++;
+						if (nextToken != Token.DIGITS)
+							validateTokenValue(nextToken, value, input, upto - 2);
+					}
+				}
+				else {
+					if (!Character.isDigit(inputChar))
+						throw new DateTimeParseException("Expecting digit", input, upto);
+					value = inputChar - '0';
+					upto++;
+					if (upto == inputLength)
+						throw new DateTimeParseException("Expecting digit, end of input", input, upto);
+					inputChar = input.charAt(upto);
+					if (nextToken == Token.HOURS12 && token.getCount() == 2 && upto < inputLength &&
+							input.charAt(upto) == ':')
+						throw new DateTimeParseException("Insufficient digits in input (h)", input, upto);
+					else if (nextToken == Token.HOURS24 && token.getCount() == 2 && upto < inputLength &&
+							input.charAt(upto) == ':')
+						throw new DateTimeParseException("Insufficient digits in input (H)", input, upto);
+					if (!Character.isDigit(inputChar))
+						throw new DateTimeParseException("Expecting digit", input, upto);
+					value = 10 * value + (inputChar - '0');
+					upto++;
+					validateTokenValue(nextToken, value, input, upto - 2);
 				}
 				break;
 
-			case DAYS_2:
-			case MONTHS_2:
-			case DAYS_1_OR_2:
-			case MONTHS_1_OR_2:
+			case DAYS:
+			case MONTHS:
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				inputChar = input.charAt(upto);
-				if (padding == 1 && inputChar == ' ' && upto < inputLength) {
-					padding--;
+				if (token.getFieldWidth() != -1 && inputChar == ' ' && upto < inputLength)
 					inputChar = input.charAt(++upto);
-				}
 				if (!Character.isDigit(inputChar))
 					throw new DateTimeParseException("Expecting digit", input, upto);
 				value = inputChar - '0';
 				upto++;
-				if (nextToken == Token.DAYS_2 && upto < inputLength &&
+				if (nextToken == Token.DAYS && token.getCount() == 2 && upto < inputLength &&
 						dateSeparator != null && dateSeparator == input.charAt(upto))
 					throw new DateTimeParseException("Insufficient digits in input (d)", input, upto);
-				else if (nextToken == Token.MONTHS_2 && upto < inputLength &&
+				else if (nextToken == Token.MONTHS && token.getCount() == 2 && upto < inputLength &&
 						dateSeparator != null && dateSeparator == input.charAt(upto))
 					throw new DateTimeParseException("Insufficient digits in input (M)", input, upto);
 
-				if ((nextToken == Token.DAYS_2 || nextToken == Token.MONTHS_2) && (upto == inputLength || !Character.isDigit(input.charAt(upto))))
+				if ((nextToken == Token.DAYS || nextToken == Token.MONTHS) && token.getCount() == 2 && (upto == inputLength || !Character.isDigit(input.charAt(upto))))
 					throw new DateTimeParseException("Expecting digit", input, upto);
 				if (upto < inputLength && Character.isDigit(input.charAt(upto))) {
 					value = 10 * value + (input.charAt(upto) - '0');
-					final int limit = (nextToken == Token.DAYS_1_OR_2  || nextToken == Token.DAYS_2) ? 31 : 12;
+					final int limit = (nextToken == Token.DAYS) ? 31 : 12;
 					if (value > limit)
 						throw new DateTimeParseException("Value too large for day/month", input, upto);
 					upto++;
@@ -650,13 +712,9 @@ public class DateTimeParserResult {
 				}
 				break;
 
-			case CLOCK24_2:
-			case HOURS12_2:
-			case HOURS24_2:
-			case MINS_2:
-			case SECS_2:
+			case MINS:
+			case SECS:
 			case YEARS_2:
-			case DIGITS_2:
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				inputChar = input.charAt(upto);
@@ -667,12 +725,6 @@ public class DateTimeParserResult {
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				inputChar = input.charAt(upto);
-				if (nextToken == Token.HOURS12_2 && upto < inputLength &&
-						input.charAt(upto) == ':')
-					throw new DateTimeParseException("Insufficient digits in input (h)", input, upto);
-				else if (nextToken == Token.HOURS24_2 && upto < inputLength &&
-						input.charAt(upto) == ':')
-					throw new DateTimeParseException("Insufficient digits in input (H)", input, upto);
 				if (!Character.isDigit(inputChar))
 					throw new DateTimeParseException("Expecting digit", input, upto);
 				value = 10 * value + (inputChar - '0');
@@ -696,10 +748,6 @@ public class DateTimeParserResult {
 					throw new DateTimeParseException("Invalid value for YearOfEra: 0000", input, upto);
 				break;
 
-			case PAD_2:
-				padding = 1;
-				break;
-
 			case QUOTE:
 				// Quote's are used to encapsulate a constant string - so we just ignore them on parsing
 				// and process the embedded sequence of CONSTANT_CHAR's that follow until the next QUOTE.
@@ -714,8 +762,9 @@ public class DateTimeParserResult {
 				break;
 
 			case AMPM:
+			case AMPM_NL:
 				start = upto;
-				final int ampmOffset = localeInfo.skipValidAMPM(input.substring(upto));
+				final int ampmOffset = localeInfo.skipValidAMPM(input.substring(upto), nextToken == Token.AMPM);
 				if (ampmOffset == -1)
 					throw new DateTimeParseException("Expecting am/pm indicator", input, start);
 				upto += ampmOffset;
@@ -847,7 +896,8 @@ public class DateTimeParserResult {
 	 */
 	public FTAType getType() {
 		if (tokenized == null)
-			tokenized =  FormatterToken.tokenize(formatString);
+			throw new InternalErrorException("Invoked getType() with no tokenized value");
+
 
 		for (final FormatterToken t : tokenized) {
 			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_ZERO) ||
@@ -866,7 +916,7 @@ public class DateTimeParserResult {
 	}
 
 	private void addDigits(final StringBuilder b, final int digitsMin, int digitsMax, int padding) {
-		if (padding != 0) {
+		if (padding > 0) {
 			digitsMax -= 1;
 			padding = 0;
 			b.append("[ \\d]\\d");
@@ -898,12 +948,12 @@ public class DateTimeParserResult {
 		if (formatString == null)
 			formatString = getFormatString();
 
-		for (final FormatterToken token : FormatterToken.tokenize(formatString)) {
+		for (final FormatterToken token : tokenized) {
 			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.QUOTE ||
-					token.getType() == Token.PAD_2 ||
 					token.getType() == Token.MONTH || token.getType() == Token.MONTH_ABBR ||
 					token.getType() == Token.DAY_OF_WEEK || token.getType() == Token.DAY_OF_WEEK_ABBR ||
-					token.getType() == Token.AMPM || token.getType() == Token.TIMEZONE_NAME ||
+					token.getType() == Token.AMPM ||  token.getType() == Token.AMPM_NL ||
+					token.getType() == Token.TIMEZONE_NAME ||
 					token.getType() == Token.TIMEZONE_OFFSET || token.getType() == Token.TIMEZONE_OFFSET_ZERO ||
 					token.getType() == Token.LOCALIZED_TIMEZONE_OFFSET) {
 				if (digitsMin != 0) {
@@ -919,10 +969,6 @@ public class DateTimeParserResult {
 
 				case CONSTANT_CHAR:
 					ret.append(RegExpGenerator.slosh(token.getValue()));
-					break;
-
-				case PAD_2:
-					padding = 1;
 					break;
 
 				case MONTH:
@@ -943,6 +989,10 @@ public class DateTimeParserResult {
 
 				case AMPM:
 					ret.append(localeInfo.getAMPMRegExp());
+					break;
+
+				case AMPM_NL:
+					ret.append("(AM|PM)");
 					break;
 
 				case TIMEZONE_NAME:
@@ -1018,25 +1068,21 @@ public class DateTimeParserResult {
 			}
 			else {
 				switch (token.getType()) {
-				case CLOCK24_1_OR_2:
-				case DAYS_1_OR_2:
-				case DIGITS_1_OR_2:
-				case MONTHS_1_OR_2:
-				case HOURS12_1_OR_2:
-				case HOURS24_1_OR_2:
-					digitsMin += 1;
+				case CLOCK24:
+				case DIGITS:
+				case DAYS:
+				case HOURS12:
+				case HOURS24:
+				case MONTHS:
+					digitsMin += token.getCount();
+					// FIXME should not really be 2 should be max
 					digitsMax += 2;
+					padding = token.getFieldWidth();
 					break;
 
-				case CLOCK24_2:
-				case DAYS_2:
-				case MONTHS_2:
 				case YEARS_2:
-				case HOURS12_2:
-				case HOURS24_2:
-				case MINS_2:
-				case SECS_2:
-				case DIGITS_2:
+				case MINS:
+				case SECS:
 					digitsMin += 2;
 					digitsMax += 2;
 					break;
@@ -1065,93 +1111,6 @@ public class DateTimeParserResult {
 	 * @return A String representation using DateTimeFormatter semantics.
 	 */
 	public String getFormatString() {
-		if (formatString != null)
-			return formatString;
-
-
-		String[] patch = new String[3];
-		if (dateElements != 0) {
-			if (yearOffset == -1) {
-				if (resolutionMode != DateResolutionMode.None)
-					if (resolutionMode == DateResolutionMode.DayFirst) {
-						patch = new String[] { "d", "M", "y" };
-					}
-					else {
-						patch = new String[] { "M", "d", "y" };
-					}
-				else {
-					patch = new String[] { "?", "?", "?" };
-				}
-			}
-			else if (yearOffset == 0) {
-				patch = new String[] { "?", "?" };
-			}
-			else {
-				if (resolutionMode != DateResolutionMode.None)
-					if (resolutionMode == DateResolutionMode.DayFirst) {
-						patch = new String[] { "d", "M" };
-					}
-					else {
-						patch = new String[] { "M", "d" };
-					}
-				else {
-					patch = new String[] { "?", "?" };
-				}
-			}
-		}
-
-
-		final StringBuilder ret = new StringBuilder();
-		int patchCount = 0;
-		for (final FormatterToken token : tokenized) {
-			final Token nextToken = token.getType();
-
-			switch (nextToken) {
-			case AMPM:
-			case CLOCK24_1_OR_2:
-			case CLOCK24_2:
-			case DAYS_1_OR_2:
-			case DAYS_2:
-			case DAY_OF_WEEK:
-			case DAY_OF_WEEK_ABBR:
-			case HOURS12_1_OR_2:
-			case HOURS12_2:
-			case HOURS24_1_OR_2:
-			case HOURS24_2:
-			case MINS_2:
-			case MONTH:
-			case MONTHS_1_OR_2:
-			case MONTHS_2:
-			case MONTH_ABBR:
-			case SECS_2:
-			case TIMEZONE_NAME:
-			case YEARS_2:
-			case YEARS_4:
-			case QUOTE:
-				ret.append(nextToken.getRepresentation());
-				break;
-			case FRACTION:
-			case LOCALIZED_TIMEZONE_OFFSET:
-			case TIMEZONE_OFFSET:
-			case TIMEZONE_OFFSET_ZERO:
-				ret.append(Utils.repeat(nextToken.getRepresentation().charAt(0), token.getCount()));
-				break;
-			case CONSTANT_CHAR:
-				ret.append(token.getValue());
-				break;
-			case DIGITS_2:
-				ret.append(patch[patchCount]);
-			case DIGITS_1_OR_2:
-				ret.append(patch[patchCount]);
-				patchCount++;
-				break;
-			case PAD_2:
-				break;
-			default:
-				break;
-			}
-		}
-
-		return ret.toString();
+		return tokenized.getFormatString();
 	}
 }

@@ -91,6 +91,11 @@ public class USZip5 extends LogicalTypeInfinite {
 	}
 
 	@Override
+	public boolean acceptsBaseType(final FTAType type) {
+		return type == FTAType.STRING || type == FTAType.LONG;
+	}
+
+	@Override
 	public boolean isValid(String input, final boolean detectMode, long count) {
 		final int len = input.length();
 

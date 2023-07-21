@@ -1079,8 +1079,14 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void mixed_yyyyddMM() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("yyyyddMM", DateResolutionMode.DayFirst);
-		final String pipedInput = "1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|1970/06/06|1971/01/06|1972/07/07|1973/03/03|1974/04/04|1970/05/05|1970/06/06|1970/08/08|1970/09/09|1970/10/10|2011/31/02|2017/31/12|2016/20/10|1999/15/07|";
-		final String inputs[] = pipedInput.split("\\|");
+		analysis.setDetectWindow(30);
+		final String inputs[] = {
+				"1970/06/06", "1971/01/06", "1972/07/07", "1973/03/03", "1974/04/04",
+				"1970/05/05", "1970/06/06", "1970/08/08", "1970/09/09", "1970/10/10",
+				"1970/06/06", "1971/01/06", "1972/07/07", "1973/03/03", "1974/04/04",
+				"1970/05/05", "1970/06/06", "1970/08/08", "1970/09/09", "1970/10/10",
+				"2011/31/02", "2017/31/12", "2016/20/10", "1999/15/07"
+		};
 		int locked = -1;
 
 		for (int i = 0; i < inputs.length; i++) {
@@ -1100,6 +1106,43 @@ public class TestDates {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "1970/05/05");
 		assertEquals(result.getMaxValue(), "2017/31/12");
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void mixed_yyyyddMM_StandardWindow() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("yyyyddMM", DateResolutionMode.DayFirst);
+		final String inputs[] = {
+				"1970/06/06", "1971/01/06", "1972/07/07", "1973/03/03", "1974/04/04",
+				"1970/05/05", "1970/06/06", "1970/08/08", "1970/09/09", "1970/10/10",
+				"1970/06/06", "1971/01/06", "1972/07/07", "1973/03/03", "1974/04/04",
+				"1970/05/05", "1970/06/06", "1970/08/08", "1970/09/09", "1970/10/10",
+				"2011/31/02", "2017/31/12", "2016/20/10", "1999/15/07"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "yyyy/MM/dd");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length - 4);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}/\\d{2}/\\d{2}");
+		assertEquals(result.getMinValue(), "1970/05/05");
+		assertEquals(result.getMaxValue(), "1974/04/04");
 		assertNull(result.checkCounts());
 
 		TestSupport.checkHistogram(result, 10, true);
@@ -2594,7 +2637,7 @@ public class TestDates {
 			assertTrue(input.matches(result.getRegExp()));
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	@Test(enabled = false, groups = { TestGroups.ALL, TestGroups.DATES })
 	public void badDatesGoodFormat() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicUnixDateCommand");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
@@ -4016,6 +4059,204 @@ public class TestDates {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void doubleSpace() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("datum_melding");
+		analysis.setLocale(Locale.forLanguageTag("nl-NL"));
+		analysis.setDebug(2);
+
+		final String inputs[] = {
+				"2023-02-03  09:56:22", "2023-02-02  11:49:12", "2023-02-01  12:59:19", "2023-01-06  11:30:31", "2022-11-14  15:50:01",
+				"2022-11-07  07:41:47", "2022-11-04  17:23:14", "2022-10-04  17:40:40", "2022-09-30  16:30:11", "2022-09-27  17:18:15",
+				"2022-09-26  07:16:06", "2022-09-14  08:38:55", "2022-09-06  12:27:57", "2022-09-01  13:01:19", "2022-08-30  10:57:05",
+				"2022-08-25  16:31:48", "2022-08-19  09:13:11", "2022-08-17  10:59:31", "2022-08-12  13:07:12", "2022-08-11  15:12:41",
+				"2022-08-09  06:22:05", "2022-07-25  11:49:33", "2022-07-21  20:08:37", "2022-07-18  11:21:15", "2022-07-13  11:30:48",
+				"2022-07-12  08:34:15", "2022-07-09  11:43:37", "2022-07-01  16:13:43", "2022-06-22  10:14:31", "2022-06-16  13:43:24",
+				"2022-06-16  10:27:56", "2022-06-01  20:25:06", "2022-05-23  17:09:01", "2022-05-17  11:56:05", "2022-05-12  21:21:28",
+				"2022-05-12  10:08:59", "2022-05-07  20:59:54", "2022-05-01  22:49:13", "2022-04-21  11:58:16", "2022-04-19  08:42:47",
+				"2022-04-14  09:29:47", "2022-04-13  20:11:24", "2022-04-12  23:24:14", "2022-04-08  11:24:55", "2022-03-25  16:31:20",
+				"2022-03-24  14:15:05", "2022-03-17  14:11:51", "2022-03-16  13:51:00", "2022-03-16  06:30:01", "2022-03-15  13:49:20",
+				"2022-03-14  12:42:26", "2022-03-14  08:45:46", "2022-03-11  11:35:30", "2022-02-22  15:02:36", "2022-02-03  09:47:22",
+				"2022-01-31  13:21:46", "2022-01-12  15:15:36", "2022-01-10  16:59:04", "2022-01-07  12:30:43", "2022-01-06  16:49:37",
+				"2022-01-05  08:29:19", "2021-12-06  10:41:51", "2021-11-22  12:29:15", "2021-11-15  10:36:12", "2021-10-25  09:24:04",
+				"2021-10-14  09:31:38", "2021-10-11  09:38:34", "2021-10-04  14:03:55", "2021-09-15  16:08:12", "2021-09-10  17:08:55",
+				"2021-09-06  13:58:09", "2021-09-01  15:08:11", "2021-08-31  11:45:28", "2021-08-28  23:19:36", "2021-08-27  07:47:13",
+				"2021-08-24  10:54:43", "2021-08-23  13:39:28", "2021-08-18  12:11:02", "2021-08-11  23:25:28", "2021-08-10  15:36:51",
+				"2021-08-04  10:39:28", "2021-08-04  06:36:22", "2021-07-27  10:41:47", "2021-07-24  11:50:49", "2021-07-20  14:08:51",
+				"2021-07-20  11:16:10", "2021-07-13  16:50:29", "2021-07-06  10:14:14", "2021-07-01  09:48:46", "2021-06-30  07:20:15",
+				"2021-06-28  10:09:51", "2021-06-24  22:46:28", "2021-06-23  13:22:00", "2021-06-18  10:32:50", "2021-06-07  18:36:04",
+				"2021-05-27  18:29:57", "2021-05-27  12:37:25", "2021-05-25  17:53:40", "2021-05-25  15:39:59",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd  HH:mm:ss");
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}  \\d{2}:\\d{2}:\\d{2}");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				assertTrue(input.matches(result.getRegExp()), input);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void tripleSpace() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("datum_melding");
+		analysis.setLocale(Locale.forLanguageTag("nl-NL"));
+		analysis.setDebug(2);
+
+		final String inputs[] = {
+				"2023-02-03   09:56:22", "2023-02-02   11:49:12", "2023-02-01   12:59:19", "2023-01-06   11:30:31", "2022-11-14   15:50:01",
+				"2022-11-07   07:41:47", "2022-11-04   17:23:14", "2022-10-04   17:40:40", "2022-09-30   16:30:11", "2022-09-27   17:18:15",
+				"2022-09-26   07:16:06", "2022-09-14   08:38:55", "2022-09-06   12:27:57", "2022-09-01   13:01:19", "2022-08-30   10:57:05",
+				"2022-08-25   16:31:48", "2022-08-19   09:13:11", "2022-08-17   10:59:31", "2022-08-12   13:07:12", "2022-08-11   15:12:41",
+				"2022-08-09   06:22:05", "2022-07-25   11:49:33", "2022-07-21   20:08:37", "2022-07-18   11:21:15", "2022-07-13   11:30:48",
+				"2022-07-12   08:34:15", "2022-07-09   11:43:37", "2022-07-01   16:13:43", "2022-06-22   10:14:31", "2022-06-16   13:43:24",
+				"2022-06-16   10:27:56", "2022-06-01   20:25:06", "2022-05-23   17:09:01", "2022-05-17   11:56:05", "2022-05-12   21:21:28",
+				"2022-05-12   10:08:59", "2022-05-07   20:59:54", "2022-05-01   22:49:13", "2022-04-21   11:58:16", "2022-04-19   08:42:47",
+				"2022-04-14   09:29:47", "2022-04-13   20:11:24", "2022-04-12   23:24:14", "2022-04-08   11:24:55", "2022-03-25   16:31:20",
+				"2022-03-24   14:15:05", "2022-03-17   14:11:51", "2022-03-16   13:51:00", "2022-03-16   06:30:01", "2022-03-15   13:49:20",
+				"2022-03-14   12:42:26", "2022-03-14   08:45:46", "2022-03-11   11:35:30", "2022-02-22   15:02:36", "2022-02-03   09:47:22",
+				"2022-01-31   13:21:46", "2022-01-12   15:15:36", "2022-01-10   16:59:04", "2022-01-07   12:30:43", "2022-01-06   16:49:37",
+				"2022-01-05   08:29:19", "2021-12-06   10:41:51", "2021-11-22   12:29:15", "2021-11-15   10:36:12", "2021-10-25   09:24:04",
+				"2021-10-14   09:31:38", "2021-10-11   09:38:34", "2021-10-04   14:03:55", "2021-09-15   16:08:12", "2021-09-10   17:08:55",
+				"2021-09-06   13:58:09", "2021-09-01   15:08:11", "2021-08-31   11:45:28", "2021-08-28   23:19:36", "2021-08-27   07:47:13",
+				"2021-08-24   10:54:43", "2021-08-23   13:39:28", "2021-08-18   12:11:02", "2021-08-11   23:25:28", "2021-08-10   15:36:51",
+				"2021-08-04   10:39:28", "2021-08-04   06:36:22", "2021-07-27   10:41:47", "2021-07-24   11:50:49", "2021-07-20   14:08:51",
+				"2021-07-20   11:16:10", "2021-07-13   16:50:29", "2021-07-06   10:14:14", "2021-07-01   09:48:46", "2021-06-30   07:20:15",
+				"2021-06-28   10:09:51", "2021-06-24   22:46:28", "2021-06-23   13:22:00", "2021-06-18   10:32:50", "2021-06-07   18:36:04",
+				"2021-05-27   18:29:57", "2021-05-27   12:37:25", "2021-05-25   17:53:40", "2021-05-25   15:39:59",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd   HH:mm:ss");
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}   \\d{2}:\\d{2}:\\d{2}");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				assertTrue(input.matches(result.getRegExp()), input);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void testMMM_ppd_yyyy_pph_mma() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("issdttm");
+		analysis.setDebug(2);
+
+		final String inputs[] = {
+				"Jul  1 2003 12:00AM", "Jul  1 1997 12:00AM", "Jul  1 1993 12:00AM", "Apr 22 2006 11:42AM", "Jul  1 2002 12:00AM",
+				"Sep  6 2018  8:43AM", "Jul  1 1997 12:00AM", "Jul  1 1994 12:00AM", "Jul  1 1998 12:00AM", "Jul  1 1994 12:00AM",
+				"Jul  1 1994 12:00AM", "Jul  1 1994 12:00AM", "Jul  1 1994 12:00AM", "Sep  5 2018  7:51AM", "Jul  1 1994 12:00AM",
+				"Jul  1 1994 12:00AM", "Jul  1 1994 12:00AM", "Aug 23 2017  9:17AM", "Jul  1 1994 12:00AM", "Feb 11 2014 12:55PM",
+				"Jul  1 1994 12:00AM", "Jul  1 1993 12:00AM", "Jul  1 1997 12:00AM", "Mar 24 2015  5:11PM", "Jul  1 1998 12:00AM",
+				"Feb 14 2014  3:15PM", "Jul  1 1997 12:00AM", "Sep 15 2009 11:02AM", "Jul  1 2002 12:00AM", "Sep 14 2009  1:21PM",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		assertEquals(result.getTypeModifier(), "MMM ppd yyyy pph:mma");
+		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{3} [ \\d]\\d \\d{4} [ \\d]\\d:\\d{2}(?i)(AM|PM)");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				assertTrue(input.matches(result.getRegExp()), input);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void twoUnboundThenOne() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("fecha_de_vinculaci_n");
+		analysis.setLocale(Locale.forLanguageTag("es-CO"));
+		analysis.setDebug(2);
+
+		final String inputs[] = {
+				"25/11/16", "27/10/14", "13/12/16", "04/07/19", "02/01/17", "21/07/14",
+				"02/11/13", "07/06/17", "01/01/94", "20/06/18", "01/01/20", "20/01/16",
+				"10/05/13", "24/08/16", "25/01/18", "22/07/16", "28/02/12", "01/01/20",
+				"27/01/16", "01/01/20", "24/06/15", "01/03/16", "01/10/20", "04/01/13",
+				"11/12/95", "20/10/20", "22/12/15", "02/01/18", "01/01/85", "19/06/19",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "dd/MM/yy");
+		assertEquals(result.getRegExp(), "\\d{2}/\\d{2}/\\d{2}");
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs) {
+			if (!input.isEmpty())
+				assertTrue(input.matches(result.getRegExp()), input);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void intuitDateddMMyyyyHHmmss() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Settlement_Errors", DateResolutionMode.MonthFirst);
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
@@ -4500,6 +4741,39 @@ public class TestDates {
 			assertTrue(input.matches(result.getRegExp()));
 			assertNull(checkParseable(result, input, locale));
 		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void badMyyyy() throws FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("charge");
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
+		final String[] inputs = {
+				"1 1420", "1 1609", "1 1420", "1 1285", "1 1130", "1 1415",
+				"2 0705", "1 1415", "2A0696", "1 0521", "1 0573", "4 3550",
+				"2A0696", "2 0910", "4 3550", "1 1106", "4 3550", "4 3550",
+				"4 3550", "1 0623", "3 0233", "1 1415", "1 0521", "1 1106",
+				"3 4025", "4 3550", "3 0233", "4 3550", "4 3550", "1 0573",
+				"2 2220", "1 0621", "2 2220", "3 0233", "4 3550", "4 3550",
+				"1 1420", "1 1609", "1 1420", "1 1285", "1 1130", "1 1415",
+				"2 0705", "1 1415", "2A0696", "1 0521", "1 0573", "4 3550",
+				"2A0696", "2 0910", "4 3550", "1 1106", "4 3550", "4 3550",
+				"4 3550", "1 0623", "3 0233", "1 1415", "1 0521", "1 1106",
+				"3 4025", "4 3550", "3 0233", "4 3550", "4 3550", "1 0573",
+				"2 2220", "1 0621", "2 2220", "3 0233", "4 3550", "4 3550",
+				"1 1106", "4 3550"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.STRING);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

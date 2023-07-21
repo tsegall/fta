@@ -211,7 +211,7 @@ public class TestStandalonePlugins {
 					final String[] testCases = new String[SAMPLE_SIZE];
 					for (int i = 0; i < SAMPLE_SIZE; i++) {
 						testCases[i] = logical.nextRandom();
-						if (!testCases[i].isEmpty())
+						if (testCases[i] != null && !testCases[i].isEmpty())
 							assertTrue(logical.isValid(testCases[i]), logical.getSemanticType() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
 					}
 					for (int i = 0; i < SAMPLE_SIZE; i++)

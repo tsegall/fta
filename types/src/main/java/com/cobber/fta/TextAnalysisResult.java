@@ -698,7 +698,7 @@ public class TextAnalysisResult {
 		if (!isSemanticType())
 			return facts.getMatchTypeInfo().getBaseType();
 
-		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(getTypeModifier());
+		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(getSemanticType());
 		if (pluginDefinition != null && pluginDefinition.baseType != null)
 			return pluginDefinition.baseType;
 

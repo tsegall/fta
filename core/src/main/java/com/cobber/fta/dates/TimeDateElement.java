@@ -20,6 +20,7 @@ class TimeDateElement {
 		Time,
 		Date,
 		AMPM,
+		English_AMPM,
 		WhiteSpace,
 		TimeZone,
 		Indicator_8601,
@@ -31,6 +32,7 @@ class TimeDateElement {
 	final static TimeDateElement TimeZone = new TimeDateElement(TimeDateElementType.TimeZone);
 
 	final static TimeDateElement AMPM = new TimeDateElement(TimeDateElementType.AMPM, "a");
+	final static TimeDateElement English_AMPM = new TimeDateElement(TimeDateElementType.English_AMPM, "P");
 	final static TimeDateElement WhiteSpace = new TimeDateElement(TimeDateElementType.WhiteSpace, " ");
 	final static TimeDateElement Indicator_8601 = new TimeDateElement(TimeDateElementType.Indicator_8601, "'T'");
 

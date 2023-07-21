@@ -228,9 +228,8 @@ public class DriverOptions {
 					unprocessed.add(args[idx]);
 					unprocessed.add(nextStringArg(args, idx++));
 				}
-				else if ("--createSemanticHTML".equals(args[idx])) {
+				else if ("--createSemanticTypesMarkdown".equals(args[idx])) {
 					unprocessed.add(args[idx]);
-					unprocessed.add(nextStringArg(args, idx++));
 				}
 				else if ("--debug".equals(args[idx]))
 					debug = nextIntegerArg(args, idx++);

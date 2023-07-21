@@ -220,6 +220,7 @@ public class TextAnalyzer {
 	 */
 	class Escalation {
 		StringBuilder[] level;
+		TypeInfo typeInfo;
 
 		@Override
 		public int hashCode() {
@@ -904,7 +905,6 @@ public class TextAnalyzer {
 					final double oldMean = facts.mean;
 					final long newCount = facts.matchCount + count;
 					facts.mean += (count * (l - oldMean)) / newCount;
-//					System.err.printf("Mean: %.2f\n", facts.mean);
 					facts.currentM2 += count * ((l - facts.mean) * (l - oldMean));
 				}
 
@@ -919,9 +919,9 @@ public class TextAnalyzer {
 		final String trimmedLower = trimmed.toLowerCase(locale);
 
 		final boolean isTrue = "true".equals(trimmedLower) || "yes".equals(trimmedLower) || "y".equals(trimmedLower) ||
-				(localizedYes != null && localizedYes.equals(trimmedLower));
+				(localizedYes != null && collator.compare(trimmed, localizedYes) == 0);
 		final boolean isFalse = !isTrue && ("false".equals(trimmedLower) || "no".equals(trimmedLower) || "n".equals(trimmedLower)) ||
-				(localizedNo != null && localizedNo.equals(trimmedLower));
+				(localizedNo != null && collator.compare(trimmed, localizedNo) == 0);
 
 		if (isTrue) {
 			if (facts.minBoolean == null)
@@ -1010,12 +1010,16 @@ public class TextAnalyzer {
 			// If we think we are a Non Localized number then no point in using the locale-aware parsing
 			if (typeInfo.isNonLocalized())
 				return false;
-			// Failed to parse using the naive parseDouble, so use the locale-sensitive Numberformat.parse
-			final ParsePosition pos = new ParsePosition(0);
-			final Number n = doubleFormatter.parse(input, pos);
-			if (n == null || input.length() != pos.getIndex())
+			Double dd;
+			try {
+				// Failed to parse using the naive parseDouble, so use the locale-sensitive Numberformat.parse
+				dd = Utils.parseDouble(input, doubleFormatter);
+			} catch (NumberFormatException e) {
 				return false;
-			d = n.doubleValue();
+			}
+			if (dd == null)
+				return false;
+			d = dd;
 			if (input.indexOf(localeGroupingSeparator) != -1) {
 				if (!hasGroupingSeparator(input, localeGroupingSeparator, localeDecimalSeparator))
 					return false;
@@ -1314,45 +1318,34 @@ public class TextAnalyzer {
 		initialized = true;
 	}
 
-	private StringBuilder[]
-	determineNumericPattern(final SignStatus signStatus, final int numericDecimalSeparators, final int possibleExponentSeen, final boolean nonLocalizedDouble) {
-		final StringBuilder[] result = new StringBuilder[2];
+	private void
+	updateNumericPattern(final Escalation escalation, final SignStatus signStatus, final int numericDecimalSeparators, final int possibleExponentSeen, final boolean nonLocalizedDouble) {
+		if (signStatus == SignStatus.TRAILING_MINUS)
+			escalation.typeInfo = knownTypes.getByID(numericDecimalSeparators == 1  ? KnownTypes.ID.ID_SIGNED_DOUBLE_TRAILING : KnownTypes.ID.ID_SIGNED_LONG_TRAILING);
+		else {
+			final boolean numericSigned = signStatus == SignStatus.LOCALE_STANDARD || signStatus == SignStatus.LEADING_SIGN;
 
-		if (signStatus == SignStatus.TRAILING_MINUS) {
-			result[0] = result[1] = new StringBuilder(numericDecimalSeparators == 1 ? knownTypes.PATTERN_SIGNED_DOUBLE_TRAILING : knownTypes.PATTERN_SIGNED_LONG_TRAILING);
-			return result;
-		}
-
-		final boolean numericSigned = signStatus == SignStatus.LOCALE_STANDARD || signStatus == SignStatus.LEADING_SIGN;
-
-		if (numericDecimalSeparators == 1) {
-			if (possibleExponentSeen == -1) {
-				if (nonLocalizedDouble) {
-					result[0] = new StringBuilder(numericSigned ? knownTypes.PATTERN_SIGNED_DOUBLE_NL : knownTypes.PATTERN_DOUBLE_NL);
-					result[1] = new StringBuilder(knownTypes.PATTERN_SIGNED_DOUBLE_NL);
+			if (numericDecimalSeparators == 1) {
+				if (possibleExponentSeen == -1) {
+					if (nonLocalizedDouble)
+						escalation.typeInfo = knownTypes.getByID(numericSigned ? KnownTypes.ID.ID_SIGNED_DOUBLE_NL : KnownTypes.ID.ID_DOUBLE_NL);
+					else
+						escalation.typeInfo = knownTypes.getByID(numericSigned ? KnownTypes.ID.ID_SIGNED_DOUBLE : KnownTypes.ID.ID_DOUBLE);
 				}
 				else {
-					result[0] = new StringBuilder(numericSigned ? knownTypes.PATTERN_SIGNED_DOUBLE : knownTypes.PATTERN_DOUBLE);
-					result[1] = new StringBuilder(knownTypes.PATTERN_SIGNED_DOUBLE);
+					escalation.typeInfo = knownTypes.getByID(numericSigned ? KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT);
 				}
 			}
 			else {
-				result[0] = new StringBuilder(numericSigned ? knownTypes.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT : knownTypes.PATTERN_DOUBLE_WITH_EXPONENT);
-				result[1] = new StringBuilder(knownTypes.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
-			}
-		}
-		else {
-			if (possibleExponentSeen == -1) {
-				result[0] = new StringBuilder(numericSigned ? knownTypes.PATTERN_SIGNED_LONG : knownTypes.PATTERN_LONG);
-				result[1] = new StringBuilder(knownTypes.PATTERN_SIGNED_LONG);
-			}
-			else {
-				result[0] = new StringBuilder(numericSigned ? knownTypes.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT : knownTypes.PATTERN_DOUBLE_WITH_EXPONENT);
-				result[1] = new StringBuilder(knownTypes.PATTERN_SIGNED_DOUBLE_WITH_EXPONENT);
+				if (possibleExponentSeen == -1)
+					escalation.typeInfo = knownTypes.getByID(numericSigned ? KnownTypes.ID.ID_SIGNED_LONG : KnownTypes.ID.ID_LONG);
+				else
+					escalation.typeInfo = knownTypes.getByID(numericSigned ? KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT : KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT);
 			}
 		}
 
-		return result;
+		escalation.level[1] = new StringBuilder(escalation.typeInfo.regexp);
+		escalation.level[2] = new StringBuilder(knownTypes.negation(escalation.typeInfo.regexp).regexp);
 	}
 
 	class Observation {
@@ -1612,7 +1605,8 @@ public class TextAnalyzer {
 				numericDecimalSeparators++;
 				if (numericDecimalSeparators > 1)
 					couldBeNumeric = false;
-			} else if (leadingZero == false && ch == localeGroupingSeparator && i + 3 < stopLooking) {
+			} else if (digitsSeen >= 0 && leadingZero == false && ch == localeGroupingSeparator && i + 3 < stopLooking &&
+					(i + 4 == stopLooking || !Character.isDigit(trimmed.charAt(i + 4)))) {
 				l0.append('G');
 				numericGroupingSeparators++;
 			} else if (Character.isAlphabetic(ch)) {
@@ -1745,9 +1739,7 @@ public class TextAnalyzer {
 
 		// Create the level 1 and 2
 		if (digitsSeen > 0 && couldBeNumeric && numericDecimalSeparators <= 1) {
-			final StringBuilder[] result = determineNumericPattern(numericSigned, numericDecimalSeparators, possibleExponentSeen, nonLocalizedDouble);
-			escalation.level[1] = result[0];
-			escalation.level[2] = result[1];
+			updateNumericPattern(escalation, numericSigned, numericDecimalSeparators, possibleExponentSeen, nonLocalizedDouble);
 		} else {
 			// Fast version of replaceAll("\\{\\d*\\}", "+"), e.g. replace \d{5} with \d+
 			final StringBuilder collapsed = new StringBuilder(compressedl0);
@@ -1845,13 +1837,38 @@ public class TextAnalyzer {
 		// Map from Escalation hash to Escalation
 		final Map<Integer, Escalation> observedSet = new HashMap<>();
 
+		int longCount = 0;
+		int doubleCount = 0;
+		int totalCount = 0;
+		Escalation eDouble = null;
+		for (final Escalation e : detectWindowEscalations) {
+			totalCount++;
+			if (e.typeInfo != null)
+				switch (e.typeInfo.getBaseType()) {
+					case LONG:
+						longCount++;
+						break;
+					case DOUBLE:
+						eDouble = e;
+						doubleCount++;
+						break;
+					default:
+						break;
+				}
+		}
+
+		// If we have a full complement of numerics which is a mix of longs and doubles - then we want to switch to doubles
+		final boolean switchToDouble = longCount != 0 && doubleCount != 0 && longCount + doubleCount == totalCount;
+
 		// Calculate the frequency of every element
 		for (final Escalation e : detectWindowEscalations) {
-			final int hash = e.hashCode();
+			// If we are switching to doubles and this entry is a long then just replace it with a random double entry
+			final Escalation eObserved = switchToDouble && e.typeInfo.getBaseType() == FTAType.LONG ? eDouble : e;
+			final int hash = eObserved.hashCode();
 			final Integer seen = observedFrequency.get(hash);
 			if (seen == null) {
 				observedFrequency.put(hash, 1);
-				observedSet.put(hash, e);
+				observedSet.put(hash, eObserved);
 			} else {
 				observedFrequency.put(hash, seen + 1);
 			}
@@ -2484,6 +2501,8 @@ public class TextAnalyzer {
 				// The real parse threw an Exception, this does not give us enough facts to usefully determine if there are any
 				// improvements to our assumptions we could make to do better, so re-parse and handle our more nuanced exception
 				DateTimeParserResult result = DateTimeParserResult.asResult(facts.getMatchTypeInfo().format, context.getDateResolutionMode(), dateTimeParser.getConfig());
+				String newFormatString = null;
+				TypeInfo newTypeInfo = facts.getMatchTypeInfo();
 				boolean success = false;
 				do {
 					try {
@@ -2500,35 +2519,34 @@ public class TextAnalyzer {
 						if (find != -1)
 							ditch = e.getMessage().charAt(insufficient.length());
 
-						String newFormatString = null;
 						if (ditch != '?') {
-							final int offset = facts.getMatchTypeInfo().format.indexOf(ditch);
+							final int offset = newTypeInfo.format.indexOf(ditch);
 
 							// S is a special case (unlike H, H, M, d) and is *NOT* handled by the default DateTimeFormatter.ofPattern
 							if (ditch == 'S') {
 								// The input is shorter than we expected so set the minimum length to 1 and then update
 								final int len = result.timeFieldLengths[FRACTION_INDEX].getPatternLength();
 								result.timeFieldLengths[FRACTION_INDEX].setMin(1);
-								newFormatString = Utils.replaceAt(facts.getMatchTypeInfo().format, offset, len,
+								newFormatString = Utils.replaceAt(newTypeInfo.format, offset, len,
 										result.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
 							}
 							else
-								newFormatString = new StringBuffer(facts.getMatchTypeInfo().format).deleteCharAt(offset).toString();
+								newFormatString = new StringBuffer(newTypeInfo.format).deleteCharAt(offset).toString();
 
 							updated = true;
 						}
 						else if (e.getMessage().equals("Expecting end of input, extraneous input found, last token (FRACTION)")) {
-							final int offset = facts.getMatchTypeInfo().format.indexOf('S');
+							final int offset = newTypeInfo.format.indexOf('S');
 							final int oldLength = result.timeFieldLengths[FRACTION_INDEX].getPatternLength();
 							result.timeFieldLengths[FRACTION_INDEX].set(result.timeFieldLengths[FRACTION_INDEX].getMin(),
 									result.timeFieldLengths[FRACTION_INDEX].getMax() + 1);
-							newFormatString = Utils.replaceAt(facts.getMatchTypeInfo().format, offset, oldLength,
+							newFormatString = Utils.replaceAt(newTypeInfo.format, offset, oldLength,
 									result.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
 							updated = true;
 						}
 						else if (e.getMessage().equals("Invalid value for hours: 24 (expected 0-23)")) {
-							final int offset = facts.getMatchTypeInfo().format.indexOf('H');
-							newFormatString = Utils.replaceAt(facts.getMatchTypeInfo().format, offset, result.timeFieldLengths[HOUR_INDEX].getMin(),
+							final int offset = newTypeInfo.format.indexOf('H');
+							newFormatString = Utils.replaceAt(newTypeInfo.format, offset, result.timeFieldLengths[HOUR_INDEX].getMin(),
 									result.timeFieldLengths[HOUR_INDEX].getMin() == 1 ? "k" : "kk");
 							updated = true;
 						}
@@ -2537,9 +2555,13 @@ public class TextAnalyzer {
 							break;
 
 						result = DateTimeParserResult.asResult(newFormatString, context.getDateResolutionMode(), dateTimeParser.getConfig());
-						facts.setMatchTypeInfo(new TypeInfo(null, result.getRegExp(), facts.getMatchTypeInfo().getBaseType(), newFormatString, false, -1, -1, null, newFormatString));
+						newTypeInfo = new TypeInfo(null, result.getRegExp(), facts.getMatchTypeInfo().getBaseType(), newFormatString, false, -1, -1, null, newFormatString);
 					}
 				} while (!success);
+
+				// If we succeeded in coming up with something better then make it so!
+				if (success && newFormatString != null)
+					facts.setMatchTypeInfo(newTypeInfo);
 
 				try {
 					trackDateTime(input, facts.getMatchTypeInfo(), true, count);
@@ -2560,19 +2582,18 @@ public class TextAnalyzer {
 		else {
 			addOutlier(input, count);
 
-			// We are about to blow the outliers - so validate that the Semantic Type we have declared is actually correct!
-			if (!facts.getMatchTypeInfo().isDateType() && facts.outliers.size() == analysisConfig.getMaxOutliers()) {
-				if (!facts.getMatchTypeInfo().isSemanticType()) {
-					// Need to evaluate if we got this wrong
-					conditionalBackoutToPattern(realSamples, facts.getMatchTypeInfo());
-				}
-				else if (!facts.getMatchTypeInfo().isForce()) {
+			if (facts.getMatchTypeInfo().isSemanticType()) {
+				if (facts.outliers.size() == analysisConfig.getMaxOutliers() && !facts.getMatchTypeInfo().isForce()) {
 					// Do we need to back out from any of our Infinite type determinations
 					final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
 					final PluginAnalysis pluginAnalysis = logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig);
 					if (!pluginAnalysis.isValid())
 						backout(logical, realSamples, pluginAnalysis);
 				}
+			}
+			else if (facts.outliers.size() == analysisConfig.getMaxOutliers() || (realSamples > reflectionSamples * 3 && (double)facts.matchCount / realSamples < .5)) {
+				// Need to evaluate if we got this wrong
+				conditionalBackoutToPattern(realSamples, facts.getMatchTypeInfo());
 			}
 		}
 
@@ -2898,7 +2919,7 @@ public class TextAnalyzer {
 
 		if (FTAType.LONG.equals(currentType))
 			finalizeLong(realSamples);
-		else if (FTAType.BOOLEAN.equals(currentType) && facts.getMatchTypeInfo().id == KnownTypes.ID.ID_BOOLEAN_Y_N && facts.cardinality.size() == 1)
+		else if (FTAType.BOOLEAN.equals(currentType))
 			finalizeBoolean(realSamples);
 		else if (FTAType.DOUBLE.equals(currentType) && !facts.getMatchTypeInfo().isSemanticType())
 			finalizeDouble(realSamples);
@@ -3244,9 +3265,9 @@ public class TextAnalyzer {
 		// this has the potential to pick up entries where the first <n> (by default 20 are misleading).
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType() && analysisConfig.getTrainingMode() == AnalysisConfig.TrainingMode.SIMPLE && pluginThreshold != 100) {
 			final TextAnalysisResult bulkResult = reAnalyze(facts.synthesizeBulk());
-			if (bulkResult.isSemanticType()) {
+			if (bulkResult.isSemanticType() || bulkResult.getType() != facts.getMatchTypeInfo().getBaseType()) {
 				result = bulkResult;
-				ctxdebug("Type determination", "was STRING, post Bulk analyis, matchTypeInfo - {}", facts.getMatchTypeInfo());
+				ctxdebug("Type determination", "was STRING, post Bulk analyis, matchTypeInfo - {}", bulkResult.getFacts().getMatchTypeInfo());
 			}
 		}
 
@@ -3328,7 +3349,8 @@ public class TextAnalyzer {
 				realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
 				(facts.minLongNonZero >= DateTimeParser.EARLY_LONG_YYYY && facts.maxLong <= DateTimeParser.LATE_LONG_YYYY &&
 				(keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) >= 90 ||
-				keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90));
+					keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90 ||
+					keywords.match(context.getStreamName(), "PERIOD", Keywords.MatchStyle.CONTAINS) >= 90));
 	}
 
 	private void switchToDate(final TypeInfo newTypeInfo, final LocalDate newMin, final LocalDate newMax) {
@@ -3460,8 +3482,11 @@ public class TextAnalyzer {
 	}
 
 	private void finalizeBoolean(final long realSamples) {
-		backoutToString(realSamples);
-		facts.confidence = (double) facts.matchCount / realSamples;
+		if ((facts.cardinality.size() == 1 && facts.getMatchTypeInfo().id == KnownTypes.ID.ID_BOOLEAN_Y_N)
+				|| (facts.confidence < .98 && facts.outliers.size() >= 2)) {
+			backoutToString(realSamples);
+			facts.confidence = (double) facts.matchCount / realSamples;
+		}
 	}
 
 	// Called to finalize a DOUBLE type determination when NOT a Semantic type

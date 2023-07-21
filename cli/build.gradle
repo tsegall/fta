@@ -28,6 +28,7 @@ dependencies {
 	implementation libs.univocity
 	implementation libs.jacksonDataBind
 	implementation libs.guava
+	implementation libs.commonsText
 
 	implementation libs.logbackClassic
 

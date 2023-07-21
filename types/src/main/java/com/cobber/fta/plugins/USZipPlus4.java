@@ -29,6 +29,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -42,6 +43,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	public static final String REGEXP_VARIABLE = "\\d{5}|\\d{9}";
 	private int minLength = Integer.MAX_VALUE;
 	private int maxLength = Integer.MIN_VALUE;
+	private boolean allDigits = true;
 	private SingletonSet zipsRef;
 	private Set<String> zips;
 
@@ -56,11 +58,14 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		final int len = trimmed.length();
-		if (len != 10 && len != 9 && len != 5 && len != 4 && len != 3)
+		if (len != 12 && len != 10 && len != 9 && len != 8 && len != 5 && len != 4 && len != 3)
 			return false;
 
 		final int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
 				charCounts['5'] + charCounts['6'] + charCounts['7'] + charCounts['8'] + charCounts['9'];
+		if (allDigits)
+			allDigits = digits == len;
+
 		switch (len) {
 		case 3:
 			return digits == 3 && zips.contains("00" + trimmed);
@@ -68,10 +73,14 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 			return digits == 4 && zips.contains("0" + trimmed);
 		case 5:
 			return digits == 5;
+		case 8:
+			return digits == 8;
 		case 9:
 			return digits == 9;
 		case 10:
-			return trimmed.charAt(5) == '-' && digits == 9;
+			return digits == 9 && (trimmed.charAt(5) == '-' || trimmed.charAt(5) == ' ');
+		case 12:
+			return digits == 9 && trimmed.charAt(5) == ' ' && trimmed.charAt(6) == '-' && trimmed.charAt(7) == ' ';
 		}
 
 		return false;
@@ -111,24 +120,34 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 	}
 
 	@Override
-	public boolean isValid(String input, final boolean detectMode, long count) {
-		final int len = input.length();
+	public boolean isValid(final String input, final boolean detectMode, long count) {
+		String trimmed = input.trim();
+		final int len = trimmed.length();
 
-		if (len != 10 && len != 9 && len != 5 && len != 4 && len != 3)
+		if (len != 12 && len != 10 && len != 9 && len != 8 && len != 5 && len != 4 && len != 3)
 			return false;
 
-		if (len == 9 || len == 10)
-			input = input.substring(0, 5);
+		if (len == 10 && trimmed.charAt(5) != '-' && trimmed.charAt(5) != ' ')
+			return false;
+		if (len == 12 && trimmed.charAt(6) != '-')
+			return false;
+
+		if (allDigits)
+			allDigits = Utils.isNumeric(input);
+
+		if (len < 5)
+			trimmed = (len == 3 ? "00" : "0") + trimmed;
+		else if (len == 8)
+			trimmed = "0" + input.substring(0, 4);
+		else if (len >= 9)
+			trimmed = input.substring(0, 5);
 
 		if (len < minLength)
 			minLength = len;
 		if (len > maxLength)
 			maxLength = len;
 
-		if (len < 5)
-			input = (len == 3 ? "00" : "0") + input;
-
-		return zips.contains(input);
+		return zips.contains(trimmed);
 	}
 
 	private String backout() {
@@ -153,7 +172,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 		double confidence = (double)matchCount/realSamples;
 
 		// If we do not have an embedded '-' then insist that the header is good
-		if (maxLength == 9 && getHeaderConfidence(dataStreamName) <= 0)
+		if (allDigits && getHeaderConfidence(dataStreamName) <= 0)
 			return 0;
 
 		// Boost by up to 20% if we like the header

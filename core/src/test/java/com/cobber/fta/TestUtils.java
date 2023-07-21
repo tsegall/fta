@@ -16,9 +16,12 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.testng.annotations.Test;
@@ -296,6 +299,59 @@ public class TestUtils {
 		assertEquals(words.get(0), "Tagalog");
 		assertEquals(words.get(1), "Pilipino");
 		assertEquals(words.get(2), "Filipino");
+	}
+
+	private void badDouble(final String input, final NumberFormat doubleFormatter) {
+		try {
+			Utils.parseDouble(input, doubleFormatter);
+			fail();
+		}
+		catch (NumberFormatException e) {
+			// Do NOTHING
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void exponentUS() {
+		// US Must be E not e and no +
+		final NumberFormat nf = NumberFormat.getInstance(Locale.forLanguageTag("en-US"));
+		nf.setParseIntegerOnly(false);
+
+		assertEquals(Utils.parseDouble("3.331E14", nf), 3.331E14);
+		assertEquals(Utils.parseDouble("3.331E-14", nf), 3.331E-14);
+		assertEquals(Utils.parseDouble("3.331E+14", nf), 3.331E14);
+		assertEquals(Utils.parseDouble("3.331e14", nf), 3.331E14);
+		assertEquals(Utils.parseDouble("3.331e+14", nf), 3.331E14);
+
+		assertEquals(Utils.parseDouble("3.331E9", nf), 3.331E9);
+		assertEquals(Utils.parseDouble("3.331E-9", nf), 3.331E-9);
+		assertEquals(Utils.parseDouble("3.331E+9", nf), 3.331E9);
+		assertEquals(Utils.parseDouble("3.331e9", nf), 3.331E9);
+
+		badDouble("3.331E", nf);
+		badDouble("3.331E+", nf);
+		badDouble("3.331e", nf);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void ExponentNL() {
+		// NL Must be E not e and no +
+		final NumberFormat nf = NumberFormat.getInstance(Locale.forLanguageTag("nl-NL"));
+		nf.setParseIntegerOnly(false);
+
+		assertEquals(Utils.parseDouble("3,331E14", nf), 3.331E14);
+		assertEquals(Utils.parseDouble("3,331E-14", nf), 3.331E-14);
+		assertEquals(Utils.parseDouble("3,331E+14", nf), 3.331E14);
+		assertEquals(Utils.parseDouble("3,331e14", nf), 3.331E14);
+
+		assertEquals(Utils.parseDouble("3,331E9", nf), 3.331E9);
+		assertEquals(Utils.parseDouble("3,331E-9", nf), 3.331E-9);
+		assertEquals(Utils.parseDouble("3,331E+9", nf), 3.331E9);
+		assertEquals(Utils.parseDouble("3,331e9", nf), 3.331E9);
+
+		badDouble("3.331E", nf);
+		badDouble("3.331E+", nf);
+		badDouble("3.331e", nf);
 	}
 
 	@Test(groups = { TestGroups.ALL })

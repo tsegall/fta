@@ -45,6 +45,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
+import com.cobber.fta.plugins.USZip5;
 import com.cobber.fta.plugins.USZipPlus4;
 
 public class RandomTests {
@@ -769,6 +770,42 @@ public class RandomTests {
 			if (!input.isEmpty())
 				assertTrue(input.matches(result.getRegExp()));
 		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void stringZip() throws IOException, FTAException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("zip_code");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final String[] inputs = {
+				"54814", "71644", "66016", /** leading I **/ "I2538", "78705", "37909", "39603", "32612", "65779", "49072",
+				"85013", "07452", "43828", "90714", /** leading I **/ "I7375", "45787", "12305", "23328", "65108", "09468",
+				"10028", "80621", "56382", /** leading I **/ "I0950", "24562", "57242", "35956", "96830", "19041", "75431",
+				"02121", "30711", "58771", "63783", "18966", "27629", "19367", "06840", "54519", "47226",
+				"57756", "56325", "05737", "07752", "72442", "98385", "45858", "27401", "69346", "17113",
+				"29031", "30124", "30527", "33322", "80219", "75503", "92273", "33514", "27858", "61737",
+				"18970", "80226", "76902", "98443", "71060", "50528", "76890", "94659", "25024", "93604",
+				"30537", "54655", "94624", "26323", "13603", "84171", "95003", "02493", "70660", "95052",
+				"66119", "65257", "62330", "55106", "08353", "63957", "12834", "49249", "12983", "92195",
+				"34205", "23694", "09316", "67550", "97127", "54467", "22195", "39108", "62926", "14785",
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getType(), FTAType.LONG);
+		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US");
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - 3);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), USZip5.REGEXP_ZIP5);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })

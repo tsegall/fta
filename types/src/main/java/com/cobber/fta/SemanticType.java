@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
-import com.cobber.fta.core.InternalErrorException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,24 +34,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * This class provides a wrapper for the semantic-types.json file.
  */
 public class SemanticType {
-	private static List<SemanticType> allSemanticTypes;
-	private static List<SemanticType> activeSemanticTypes;
+	private static List<SemanticType> allSemanticTypes = new ArrayList<>();
+	private static Boolean allSemanticTypesInitialized = false;
+	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	/** ID for the Semantic Type. */
-	public String id;
+	private String id;
 	/** Description of the Semantic Type. */
-	public String description;
+	private String description;
 	/** Languages supported by the Semantic Type. */
-	public String[] language;
+	private String[] languages;
 	/** Documentation for the Semantic Type. */
-	public String[] documentation;
+	private String[] documentation;
 
-	public SemanticType() {
-	}
+	private SemanticType(final PluginDefinition defn) {
+		id = defn.semanticType;
+		description = defn.description;
 
-	public SemanticType(final PluginDefinition defn) {
-		this.id = defn.semanticType;
-		this.description = defn.description;
+		List<String> languagesSupported = new ArrayList<>();
+		if (defn.validLocales != null) {
+			for (final PluginLocaleEntry validLocale : defn.validLocales)
+				languagesSupported.add(validLocale.localeTag);
+		}
+		languages = languagesSupported.toArray(new String[0]);
+
 		if (defn.documentation != null) {
 			final List<String> doco = new ArrayList<>();
 			for (final PluginDocumentationEntry entry : defn.documentation)
@@ -59,41 +66,52 @@ public class SemanticType {
 		}
 	}
 
-	/**
-	 * Initialize an instance of the set of SemanticType's with the locale.
-	 * @param locale The Locale we are currently using
-	 */
-	public void initialize(final Locale locale) {
-		// Populate the full set of Semantic Types
-		try (BufferedReader JSON = new BufferedReader(new InputStreamReader(SemanticType.class.getResourceAsStream("/reference/semantic-types.json"), StandardCharsets.UTF_8))) {
-			allSemanticTypes = new ObjectMapper().readValue(JSON, new TypeReference<List<SemanticType>>(){});
-		} catch (Exception e) {
-			throw new InternalErrorException("Issues with reference semantic-types file", e);
+	public static List<SemanticType> getAllSemanticTypes() {
+		if (allSemanticTypesInitialized)
+			return allSemanticTypes;
+
+		synchronized (allSemanticTypes) {
+			if (allSemanticTypesInitialized)
+				return allSemanticTypes;
+
+			// Populate the full set of Semantic Types
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
+				final Map<String, PluginDefinition> semanticTypes = new TreeMap<>();
+				final List<PluginDefinition> plugins = MAPPER.readValue(reader, new TypeReference<List<PluginDefinition>>(){});
+				// Sort the registered plugins by Qualifier
+				for (final PluginDefinition pluginDefn : plugins)
+					semanticTypes.put(pluginDefn.semanticType, pluginDefn);
+
+				allSemanticTypes = new ArrayList<>();
+				for (final Map.Entry<String, PluginDefinition> entry : semanticTypes.entrySet())
+					allSemanticTypes.add(new SemanticType(entry.getValue()));
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
+			}
+
+			allSemanticTypesInitialized = true;
+			return allSemanticTypes;
 		}
+	}
+
+	public static List<SemanticType> getActiveSemanticTypes(final Locale locale) {
+		final List<SemanticType> activeSemanticTypes = new ArrayList<>();
 
 		// Populate the active (based on Locale) set of Semantic Types
 		final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(locale);
 		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
-		final Set<String> qualifiers = new TreeSet<>();
-		activeSemanticTypes = new ArrayList<>();
+		final Set<String> semanticTypesNames = new TreeSet<>();
 
 		// Sort the registered plugins by Qualifier
 		for (final LogicalType logical : registered)
-			qualifiers.add(logical.getSemanticType());
+			semanticTypesNames.add(logical.getSemanticType());
 
 		if (!registered.isEmpty()) {
-			for (final String qualifier : qualifiers) {
-				final LogicalType logical = analyzer.getPlugins().getRegistered(qualifier);
+			for (final String semanticTypeName : semanticTypesNames) {
+				final LogicalType logical = analyzer.getPlugins().getRegistered(semanticTypeName);
 				activeSemanticTypes.add(new SemanticType(logical.getPluginDefinition()));
 			}
 		}
-	}
-
-	public List<SemanticType> getAllSemanticTypes() {
-		return allSemanticTypes;
-	}
-
-	public List<SemanticType> getActiveSemanticTypes() {
 		return activeSemanticTypes;
 	}
 
@@ -109,7 +127,16 @@ public class SemanticType {
 		return documentation;
 	}
 
-	public String[] getLanguage() {
-		return language;
+	public String[] getLanguages() {
+		return languages;
+	}
+
+	public String toJSONString() {
+		final StringBuilder b = new StringBuilder();
+		b.append("Id: ").append(id).append(", Description: ").append(description).append(", Languages: ");
+		for (String language : languages)
+			b.append(language).append(" ");
+
+		return b.toString();
 	}
 }

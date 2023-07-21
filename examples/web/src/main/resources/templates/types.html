@@ -33,7 +33,7 @@
 									<th>Id</th>
 									<th>Description</th>
 									<th>Documentation</th>
-									<th>Language</th>
+									<th>Languages</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -43,10 +43,10 @@
 										<td th:text="${semanticType.description}" />
 										<td>
 											<th:block th:each="link: ${semanticType.documentation}">
-												<a th:href="${link}"><span th:text="${link}"></span></a></td>
+												<a th:href="${link}"><span th:text="${link}"></span></a>
 											</th:block>
 										</td>
-										<td><span th:each="lang : ${semanticType.language}" th:text="${lang} + ' '"></td>
+										<td><span th:each="lang : ${semanticType.languages}" th:text="${lang} + ' '"></td>
 									</tr>
 								</th:block>
 							</tbody>
