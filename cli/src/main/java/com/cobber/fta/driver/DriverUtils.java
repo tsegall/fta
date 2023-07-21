@@ -151,7 +151,7 @@ public class DriverUtils {
 			System.err.println("|");
 		}
 
-		System.err.println("Note:\n\n");
+		System.err.println("\nNote:\n");
 		System.err.println("Any of the above Semantic Types suffixed with one of the following are locale-sensitive:\n");
 		System.err.println(" * &lt;LOCALE&gt; - replaced by the locale, for example, MONTH.FULL_fr-FR (Month Abbreviation in french)");
 		System.err.println(" * &lt;LANGUAGE&gt; - replaced by the language from the locale, for example, GENDER.TEXT_PT (Gender in Portuguese)");

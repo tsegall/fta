@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 14.7.1
+ - BUG: Missed a file on checkin
+ - INT: Bump jacoco
+
 ### 14.7.0
  - ENH: I18N - Add new Semantic Types - STATE_PROVINCE.MUNICIPALITY_CODE_BR (Brazilian Municipality code)
  - ENH: I18N - Improve detection of non-localized doubles

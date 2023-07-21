@@ -174,8 +174,8 @@
 |TIMEZONE.IANA|IANA Time Zone (Olson)|https://www.wikidata.org/wiki/Property:P6687, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones|*|
 |URI.URL|URL - see RFC 3986|https://www.wikidata.org/wiki/Property:P2699, https://en.wikipedia.org/wiki/Uniform_Resource_Identifier|*|
 |VIN|Vehicle Identification Number|https://en.wikipedia.org/wiki/Vehicle_identification_number|*|
-Note:
 
+Note:
 
 Any of the above Semantic Types suffixed with one of the following are locale-sensitive:
 
