@@ -78,9 +78,9 @@ public class SSN_CH extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		final String avh = String.format("756%04d%04d%d",
-				random.nextInt(10000),
-				random.nextInt(10000),
-				random.nextInt(10));
+				getRandom().nextInt(10000),
+				getRandom().nextInt(10000),
+				getRandom().nextInt(10));
 
 		String check = null;
 		try {

@@ -79,12 +79,12 @@ public class SSN_FR extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		final String inseeStr = String.format("%d%02d%02d%02d%03d%03d",
-				random.nextInt(2) + 1,			// Gender
-				random.nextInt(100),			// Birth Year
-				random.nextInt(12) + 1,			// Birth Month
-				21 + random.nextInt(75),		// Department (only use 21-75)
-				random.nextInt(990) + 1,		// City (001 - 990)
-				random.nextInt(999) + 1);		// Certificate (001 - 999)
+				getRandom().nextInt(2) + 1,			// Gender
+				getRandom().nextInt(100),			// Birth Year
+				getRandom().nextInt(12) + 1,		// Birth Month
+				21 + getRandom().nextInt(75),		// Department (only use 21-75)
+				getRandom().nextInt(990) + 1,		// City (001 - 990)
+				getRandom().nextInt(999) + 1);		// Certificate (001 - 999)
 
 		final long insee = Long.parseLong(inseeStr);
 

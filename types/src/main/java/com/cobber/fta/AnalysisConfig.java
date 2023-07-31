@@ -84,6 +84,8 @@ public class AnalysisConfig {
 	/** The current Locale tag. */
 	private String localeTag;
 
+	private Locale cachedLocale;
+
 	/** The current tracing options. */
 	private String traceOptions;
 
@@ -318,11 +320,22 @@ public class AnalysisConfig {
 	}
 
 	public Locale getLocale() {
-		return localeTag == null ? null : Locale.forLanguageTag(localeTag);
+		if (localeTag == null)
+			return null;
+		if (cachedLocale == null)
+			cachedLocale = Locale.forLanguageTag(localeTag);
+		return cachedLocale;
 	}
 
 	public void setLocale(final Locale locale) {
-		localeTag = locale == null ? null : locale.toLanguageTag();
+		if (locale == null) {
+			localeTag = null;
+			cachedLocale = null;
+		}
+		else {
+			localeTag = locale.toLanguageTag();
+			cachedLocale = locale;
+		}
 	}
 
 	public AnalysisConfig withLocale(final Locale locale) {

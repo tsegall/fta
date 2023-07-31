@@ -58,7 +58,7 @@ public class JobTitleEN extends LogicalTypeInfinite {
 				"CHIEF INFORMATION SECURITY OFFICER", "CHIEF EXECUTIVE OFFICER",
 		};
 
-		return examples[random.nextInt(examples.length)];
+		return examples[getRandom().nextInt(examples.length)];
 	}
 
 	@Override

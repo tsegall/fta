@@ -87,7 +87,7 @@ public class MunicipalityCodeNL extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return "GM" + Utils.getRandomDigits(random, 4);
+		return "GM" + Utils.getRandomDigits(getRandom(), 4);
 	}
 
 	@Override

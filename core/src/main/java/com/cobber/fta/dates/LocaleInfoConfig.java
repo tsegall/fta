@@ -4,10 +4,10 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class LocaleInfoConfig {
-	private Locale locale;
-	private boolean noAbbreviationPunctuation;
+	private final Locale locale;
+	private final boolean noAbbreviationPunctuation;
 	// Allow "AM" and "PM" since these are commonly seen even in locales where they are not the AM/PM strings
-	private boolean allowEnglishAMPM;
+	private final boolean allowEnglishAMPM;
 
 	public LocaleInfoConfig(final Locale locale, final boolean noAbbreviationPunctuation, final boolean allowEnglishAMPM) {
 		this.locale = locale;

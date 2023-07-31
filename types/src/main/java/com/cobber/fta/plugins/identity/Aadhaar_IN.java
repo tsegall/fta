@@ -79,9 +79,9 @@ public class Aadhaar_IN extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		final String aadhaar = String.format("%04d%04d%03d",
-				2000 + random.nextInt(8000),
-				random.nextInt(10_000),
-				random.nextInt(1000));
+				2000 + getRandom().nextInt(8000),
+				getRandom().nextInt(10_000),
+				getRandom().nextInt(1000));
 
 		String check = null;
 		try {

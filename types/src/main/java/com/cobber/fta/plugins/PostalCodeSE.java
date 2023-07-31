@@ -88,7 +88,7 @@ public class PostalCodeSE extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return examples[random.nextInt(examples.length)];
+		return examples[getRandom().nextInt(examples.length)];
 	}
 
 	@Override

@@ -60,9 +60,9 @@ public class IPV6Address extends LogicalTypeInfinite {
 		final StringBuilder ret = new StringBuilder(40);
 
 		for (int i = 0; i < 7; i++)
-			ret.append(String.format("%x", random.nextInt(0xFFFF))).append(':');
+			ret.append(String.format("%x", getRandom().nextInt(0xFFFF))).append(':');
 
-		ret.append(String.format("%x", random.nextInt(0xFFFF)));
+		ret.append(String.format("%x", getRandom().nextInt(0xFFFF)));
 
 		return ret.toString();
 	}

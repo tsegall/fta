@@ -18,8 +18,10 @@ package com.cobber.fta;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import com.cobber.fta.core.InternalErrorException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -48,12 +50,28 @@ public class Keywords {
 	public HeaderLocaleEntry[] validLocales;
 
 	private Locale locale;
+	private String languageTag;
+	private String language;
+
+	private static Map<String, Keywords> cache = new HashMap<>();
+
+	public static Keywords getInstance(final Locale locale) {
+		synchronized(cache) {
+			Keywords ret = cache.get(locale.toLanguageTag());
+			if (ret == null) {
+				ret = new Keywords().initialize(locale);
+				cache.put(locale.toLanguageTag(), ret);
+			}
+			return ret;
+		}
+
+	}
 
 	/**
 	 * Initialize an instance of the Keyword storage with the locale.
 	 * @param locale The Locale we are currently using
 	 */
-	public void initialize(final Locale locale) {
+	private Keywords initialize(final Locale locale) {
 		try (BufferedReader JSON = new BufferedReader(new InputStreamReader(Keywords.class.getResourceAsStream("/reference/keywords.json"), StandardCharsets.UTF_8))) {
 			keywords = new ObjectMapper().readValue(JSON, new TypeReference<List<Keywords>>(){});
 		} catch (Exception e) {
@@ -61,6 +79,10 @@ public class Keywords {
 		}
 
 		this.locale = locale;
+		this.languageTag = locale.toLanguageTag();
+		this.language = locale.getLanguage();
+
+		return this;
 	}
 
 	/**
@@ -114,9 +136,6 @@ public class Keywords {
 	private boolean isMatch(final String validLocale) {
 		if ("*".equals(validLocale))
 			return true;
-
-		final String languageTag = locale.toLanguageTag();
-		final String language = locale.getLanguage();
 
 		// Check to see if this keyword is valid for this locale
 		if (validLocale.indexOf('-') != -1) {

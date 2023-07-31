@@ -85,8 +85,6 @@ public class KnownTypes {
 	public static final String PATTERN_BOOLEAN_Y_N = "(?i)(N|Y)";
 	public static final String PATTERN_BOOLEAN_ONE_ZERO = "(0|1)";
 
-	private String EXPONENT_REGEXP;
-
 	public String PATTERN_LONG;
 	public String PATTERN_LONG_GROUPING;
 	public String PATTERN_SIGNED_LONG;
@@ -139,9 +137,7 @@ public class KnownTypes {
 		final char groupingSeparator = formatSymbols.getGroupingSeparator();
 		final char decimalSeparator = formatSymbols.getDecimalSeparator();
 		final char minusSign = formatSymbols.getMinusSign();
-		final Keywords keywords = new Keywords();
-
-		keywords.initialize(locale);
+		final Keywords keywords = Keywords.getInstance(locale);
 
 		String optionalSignPrefix = "";
 		String optionalSignSuffix = "";
@@ -176,7 +172,7 @@ public class KnownTypes {
 			optionalSignSuffix = "";
 		}
 
-		EXPONENT_REGEXP = "(?:[eE](" + optionalSignPrefix + "\\d+))?";
+		final String EXPONENT_REGEXP = "(?:[eE](" + optionalSignPrefix + "\\d+))?";
 		PATTERN_LONG = "\\d+";
 		PATTERN_SIGNED_LONG = optionalSignPrefix + "\\d+" + optionalSignSuffix;
 		PATTERN_SIGNED_LONG_TRAILING = PATTERN_LONG + "-?";

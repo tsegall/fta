@@ -34,7 +34,7 @@ public class DayDigits extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "[1-9]|0[1-9]|[12][0-9]|3[01]";
 
-	private final Keywords keywords = new Keywords();
+	private Keywords keywords;
 
 	private PluginLocaleEntry monthEntry;
 
@@ -51,15 +51,14 @@ public class DayDigits extends LogicalTypeInfinite {
 		super.initialize(analysisConfig);
 
 		monthEntry = PluginDefinition.findByQualifier("MONTH.DIGITS").getLocaleEntry(locale);
-
-		keywords.initialize(locale);
+		keywords = Keywords.getInstance(analysisConfig.getLocale());
 
 		return true;
 	}
 
 	@Override
 	public String nextRandom() {
-		return String.valueOf(random.nextInt(31) + 1);
+		return String.valueOf(getRandom().nextInt(31) + 1);
 	}
 
 	@Override

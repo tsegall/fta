@@ -73,7 +73,7 @@ public class EpochMilliseconds extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return String.valueOf(System.currentTimeMillis() - random.nextInt(26 * 60 * 60));
+		return String.valueOf(System.currentTimeMillis() - getRandom().nextInt(26 * 60 * 60));
 	}
 
 	@Override

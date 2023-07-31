@@ -40,7 +40,7 @@ public class AnalyzerContext {
 
 	private boolean nested;
 
-	AnalyzerContext() {
+	public AnalyzerContext() {
 	}
 
 	public AnalyzerContext(final String streamName, final DateResolutionMode dateResolutionMode, final String compositeName, final String[] compositeStreamNames) {
@@ -57,7 +57,7 @@ public class AnalyzerContext {
 			for (int i = 0; i < compositeStreamNames.length; i++) {
 				if (compositeStreamNames[i] == null)
 					compositeStreamNames[i] = "";
-				else if (getStreamName().equals(compositeStreamNames[i].trim())) {
+				else if (this.streamName.equals(compositeStreamNames[i].trim())) {
 					this.streamIndex = i;
 					break;
 				}

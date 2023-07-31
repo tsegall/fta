@@ -105,7 +105,7 @@ public class NI_UK extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return validPrefixesList[random.nextInt(validPrefixesList.length)] + Utils.getRandomDigits(random, 6) + "ABCD".charAt(random.nextInt(4));
+		return validPrefixesList[getRandom().nextInt(validPrefixesList.length)] + Utils.getRandomDigits(getRandom(), 6) + "ABCD".charAt(getRandom().nextInt(4));
 	}
 
 	@Override

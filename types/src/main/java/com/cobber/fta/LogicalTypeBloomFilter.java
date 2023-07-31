@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,12 +70,10 @@ public class LogicalTypeBloomFilter extends LogicalTypeInfinite {
 					examples = new ArrayList<>();
 					final String samplesName = defn.content.reference + "_s.csv";
 					final InputStream stream = LogicalTypeFiniteSimpleExternal.class.getResourceAsStream(samplesName);
-					Reader reader;
 					if (stream == null)
 						throw new IllegalArgumentException("Internal error: Issues with 'resource' content: " + samplesName);
-					reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
 
-					try (BufferedReader bufferedReader = new BufferedReader(reader)){
+					try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
 						String line;
 
 						while ((line = bufferedReader.readLine()) != null) {
@@ -88,7 +85,7 @@ public class LogicalTypeBloomFilter extends LogicalTypeInfinite {
 				}
 			}
 		}
-		return examples.get(random.nextInt(examples.size()));
+		return examples.get(getRandom().nextInt(examples.size()));
 	}
 
 	@Override

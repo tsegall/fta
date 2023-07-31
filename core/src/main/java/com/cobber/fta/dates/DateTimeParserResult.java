@@ -145,7 +145,7 @@ public class DateTimeParserResult {
 	}
 
 	DateTimeParserResult updateEnd() {
-		return DateTimeParserResult.asResult(tokenized.getFormatString(), config.resolutionMode, config);
+		return asResult(tokenized.getFormatString(), config.resolutionMode, config);
 	}
 
 	enum Token {
@@ -223,7 +223,7 @@ public class DateTimeParserResult {
 		}
 	}
 
-	private boolean checkYear(Temporal t) {
+	private boolean checkYear(final Temporal t) {
 		final int year = t.get(ChronoField.YEAR);
 		return year >= DateTimeParser.EARLY_LONG_YYYY && year <= DateTimeParser.LATE_LONG_YYYY;
 	}

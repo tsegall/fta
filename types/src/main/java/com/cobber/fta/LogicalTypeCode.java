@@ -23,7 +23,16 @@ import com.cobber.fta.core.FTAPluginException;
  * All Semantic Types implemented via Java code typically extend this class.
  */
 public abstract class LogicalTypeCode extends LogicalType {
-	protected SecureRandom random;
+	private SecureRandom random;
+	private byte[] seed = { 3, 1, 4, 1, 5, 9, 2 };
+
+	protected SecureRandom getRandom() {
+		if (random == null)
+			synchronized (this) {
+				random = new SecureRandom(seed);
+			}
+		return random;
+	}
 
 	public LogicalTypeCode(final PluginDefinition plugin) {
 		super(plugin);
@@ -33,14 +42,11 @@ public abstract class LogicalTypeCode extends LogicalType {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		random = new SecureRandom(new byte[] { 3, 1, 4, 1, 5, 9, 2 });
-
 		return true;
 	}
 
 	@Override
 	public void seed(final byte[] seed) {
-
-		random = new SecureRandom(seed);
+		this.seed = seed;
 	}
 }

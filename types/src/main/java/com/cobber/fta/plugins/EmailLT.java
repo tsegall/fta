@@ -46,6 +46,7 @@ public class EmailLT extends LogicalTypeInfinite {
 	private static String[] mailDomains = {
 			"gmail.com", "hotmail.com", "yahoo.com", "hotmail.com", "aol.com", "msn.com", "comcast.net", "live.com"
 	};
+	private boolean randomInitialized;
 
 	/**
 	 * Construct a plugin to detect Email addresses based on the Plugin Definition.
@@ -61,6 +62,9 @@ public class EmailLT extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
+		if (!initializeRandom())
+			return null;
+
 		String firstName;
 		do {
 			firstName = logicalFirst.nextRandom().toLowerCase(Locale.ROOT);
@@ -72,20 +76,36 @@ public class EmailLT extends LogicalTypeInfinite {
 		}
 		while (!isAscii(lastName));
 
-		return firstName + "." + lastName + "@" + mailDomains[random.nextInt(mailDomains.length)];
+		return firstName + "." + lastName + "@" + mailDomains[getRandom().nextInt(mailDomains.length)];
 	}
 
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		// The Email Plugin is happily supported by any locale, however, if we are generating
-		// random entries we use the first and last plugins (which may not be supported by the current locale)
-		final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
-		final AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
-		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, pluginConfig);
-		final PluginDefinition pluginLast = PluginDefinition.findByQualifier("NAME.LAST");
-		logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, pluginConfig);
+		return true;
+	}
+
+	private boolean initializeRandom() {
+		if (randomInitialized)
+			return true;
+
+		synchronized (this) {
+			if (!randomInitialized) {
+				try {
+					// The Email Plugin is happily supported by any locale, however, if we are generating
+					// random entries we use the first and last plugins (which may not be supported by the current locale)
+					final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
+					final AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
+					logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, pluginConfig);
+					final PluginDefinition pluginLast = PluginDefinition.findByQualifier("NAME.LAST");
+					logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, pluginConfig);
+				} catch (FTAPluginException e) {
+					return false;
+				}
+				randomInitialized = true;
+			}
+		}
 
 		return true;
 	}

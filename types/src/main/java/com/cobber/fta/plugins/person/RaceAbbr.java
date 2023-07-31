@@ -50,7 +50,7 @@ public class RaceAbbr extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		final String[] abbreviations = { "A", "B", "H", "I", "U", "W" };
-		return abbreviations[random.nextInt(abbreviations.length)];
+		return abbreviations[getRandom().nextInt(abbreviations.length)];
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class IMEI extends CheckDigitLuhn {
 
 	@Override
 	public String nextRandom() {
-		final String base = Utils.getRandomDigits(random, IMEI_LENGTH - 1);
+		final String base = Utils.getRandomDigits(getRandom(), IMEI_LENGTH - 1);
 		try {
 			return base + validator.calculate(base);
 		} catch (CheckDigitException e) {

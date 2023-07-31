@@ -101,7 +101,7 @@ public class Gender extends LogicalTypeFinite {
 
 	@Override
 	public String nextRandom() {
-		return random.nextInt(2) != 0 ? genderData.getWords()[0].feminine : genderData.getWords()[0].masculine;
+		return getRandom().nextInt(2) != 0 ? genderData.getWords()[0].feminine : genderData.getWords()[0].masculine;
 	}
 
 	public boolean initializeDelayed() {

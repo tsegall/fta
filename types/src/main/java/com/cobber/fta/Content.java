@@ -28,6 +28,8 @@ public class Content {
 	/** If type is 'file' or 'resource' then this provides the name of the file/resource. */
 	public String reference;
 
+	private static final String INLINE = "inline";
+
 	public Content() {
 	}
 
@@ -37,12 +39,12 @@ public class Content {
 	}
 
 	public Content(final String[] members) {
-		this.type = "inline";
+		this.type = INLINE;
 		this.members = members;
 	}
 
 	public String getCacheKey() {
-		if ("inline".equals(type))
+		if (INLINE.equals(type))
 			return type + "---" + Arrays.hashCode(members);
 
 		return type + "---" +  reference;

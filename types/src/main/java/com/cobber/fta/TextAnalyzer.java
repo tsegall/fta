@@ -73,6 +73,7 @@ import com.cobber.fta.token.TokenStream;
 import com.cobber.fta.token.TokenStreams;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -156,6 +157,8 @@ public class TextAnalyzer {
 	private boolean cacheCheck;
 
 	private Correlation correlation;
+
+	private static List<PluginDefinition> pluginDefinitions = new ArrayList<>();
 
 	/** Enumeration that defines all on/off features for parsers. */
 	public enum Feature {
@@ -264,7 +267,7 @@ public class TextAnalyzer {
 	private int[] candidateCounts;
 
 	private final KnownTypes knownTypes = new KnownTypes();
-	private final Keywords keywords = new Keywords();
+	private Keywords keywords;
 
 	private DateTimeParser dateTimeParser;
 
@@ -1189,10 +1192,19 @@ public class TextAnalyzer {
 	 * Note: The Locale (on the configuration)  will impact both the set of plugins registered as well as the behavior of the individual plugins
 	 */
 	public void registerDefaultPlugins(final AnalysisConfig analysisConfig) {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
-			plugins.registerPluginsInternal(reader, context.getStreamName(), analysisConfig);
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
+		synchronized (this) {
+			if (pluginDefinitions.isEmpty()) {
+				try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
+					pluginDefinitions = mapper.readValue(reader, new TypeReference<List<PluginDefinition>>(){});
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
+				}
+			}
+			try {
+				plugins.registerPluginsInternal(pluginDefinitions, context.getStreamName(), analysisConfig);
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
+			}
 		}
 	}
 
@@ -1271,7 +1283,7 @@ public class TextAnalyzer {
 
 		knownTypes.initialize(locale);
 
-		keywords.initialize(locale);
+		keywords = Keywords.getInstance(locale);
 
 		if (knownTypes.getByID(KnownTypes.ID.ID_BOOLEAN_YES_NO_LOCALIZED) != null) {
 			localizedYes = keywords.get("YES");
@@ -1312,8 +1324,8 @@ public class TextAnalyzer {
 
 		outliersSmashed.setMaxCapacity(analysisConfig.getMaxOutliers());
 
-		correlation = new Correlation(locale);
-		correlation.initialize();
+//		correlation = new Correlation(locale);
+//		correlation.initialize();
 
 		initialized = true;
 	}
@@ -3096,7 +3108,7 @@ public class TextAnalyzer {
 			if (facts.sampleCount > MIN_SAMPLES_FOR_KEY && analysisConfig.getMaxCardinality() >= MIN_SAMPLES_FOR_KEY / 2 &&
 					(facts.cardinality.size() == analysisConfig.getMaxCardinality() || facts.cardinality.size() == facts.sampleCount) &&
 					facts.blankCount == 0 && facts.nullCount == 0 &&
-					((facts.getMatchTypeInfo().isSemanticType() && facts.getMatchTypeInfo().getSemanticType().equals("GUID")) ||
+					((facts.getMatchTypeInfo().isSemanticType() && "GUID".equals(facts.getMatchTypeInfo().getSemanticType())) ||
 					(facts.getMatchTypeInfo().typeModifier == null &&
 					((FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && facts.minRawLength == facts.maxRawLength && facts.minRawLength < 32)
 							|| FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType()))))) {

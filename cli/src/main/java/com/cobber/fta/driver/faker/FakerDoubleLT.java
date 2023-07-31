@@ -55,7 +55,7 @@ public class FakerDoubleLT extends FakerLT {
 
 		double d = 0.0;
 		if (distribution.equals("random")) {
-			d = random.nextDouble();
+			d = getRandom().nextDouble();
 			d *= range;
 			if (low != null)
 				d += low;
@@ -78,7 +78,7 @@ public class FakerDoubleLT extends FakerLT {
 			}
 			d = last;
 		} else if (distribution.equals("gaussian")) {
-			d = random.nextGaussian();
+			d = getRandom().nextGaussian();
 			d += 5.0;				// Capture 5 SD's (basically convert [-5.0,5.0] to [0.0,10.0]
 			d = (d * range)/10;		// Scale up from [0.0,10.0] to the range
 			d += low;				// Shift origin to the low bound

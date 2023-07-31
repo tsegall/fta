@@ -75,10 +75,10 @@ public class NHS_UK extends LogicalTypeInfinite {
 	public String nextRandom() {
 		// Currently issued numbers for England, Wales and the Isle of Man are from 400 000 000 to 499 999 999 and 600 000 000 upwards.
 		String nhs = String.format("%c%02d%03d%03d",
-				"46789".charAt(random.nextInt(5)),
-				random.nextInt(100),
-				random.nextInt(1000),
-				random.nextInt(1000));
+				"46789".charAt(getRandom().nextInt(5)),
+				getRandom().nextInt(100),
+				getRandom().nextInt(1000),
+				getRandom().nextInt(1000));
 
 		String check = null;
 		try {

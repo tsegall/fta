@@ -70,7 +70,7 @@ public class URLLT extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return sitesList[random.nextInt(sitesList.length)];
+		return sitesList[getRandom().nextInt(sitesList.length)];
 	}
 
 	@Override

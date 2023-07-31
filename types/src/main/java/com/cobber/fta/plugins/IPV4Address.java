@@ -60,13 +60,13 @@ public class IPV4Address extends LogicalTypeInfinite {
 	public String nextRandom() {
 		final StringBuilder ret = new StringBuilder(36);
 
-		ret.append(random.nextInt(256))
+		ret.append(getRandom().nextInt(256))
 			.append('.')
-			.append(random.nextInt(256))
+			.append(getRandom().nextInt(256))
 			.append('.')
-			.append(random.nextInt(256))
+			.append(getRandom().nextInt(256))
 			.append('.')
-			.append(random.nextInt(256));
+			.append(getRandom().nextInt(256));
 
 		return ret.toString();
 	}

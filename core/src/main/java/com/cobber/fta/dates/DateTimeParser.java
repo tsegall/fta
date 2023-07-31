@@ -313,10 +313,10 @@ public class DateTimeParser {
 			if (upto < formatString.length())
 				builder.appendPattern(formatString.substring(upto));
 		}
-		else if (config.allowEnglishAMPM && (offset = formatString.lastIndexOf("P")) != -1) {
+		else if (config.allowEnglishAMPM && (offset = formatString.lastIndexOf('P')) != -1) {
 			final Map<Long, String> lookup = new HashMap<>();
-			lookup.put(Long.valueOf(Calendar.AM), "AM");
-			lookup.put(Long.valueOf(Calendar.PM), "PM");
+			lookup.put((long)Calendar.AM, "AM");
+			lookup.put((long)Calendar.PM, "PM");
 
 			builder.appendPattern(formatString.substring(0, offset))
 					.appendText(ChronoField.AMPM_OF_DAY, lookup);
@@ -943,7 +943,7 @@ public class DateTimeParser {
 					result.append(Utils.repeat(workingOn, digits));
 					// Need to check if this is an Era formatted date
 					if (workingOn == 'y' && i >= 1) {
-						final String maybeEra = String.valueOf(input.charAt(i - 1)) + String.valueOf(ch);
+						final String maybeEra = String.valueOf(input.charAt(i - 1)) + ch;
 						for (final JapaneseEra c : JapaneseEra.values()) {
 							final String era = c.getDisplayName(TextStyle.FULL, config.getLocale());
 							if (era.equals(maybeEra)) {

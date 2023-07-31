@@ -68,7 +68,7 @@ public class BSN_NL extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		final String base = Utils.getRandomDigits(random, 8);
+		final String base = Utils.getRandomDigits(getRandom(), 8);
 
 		return base + VAT.getCheckDigitNL(base);
 	}

@@ -77,7 +77,7 @@ public class NPI_US extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		try {
-			final String base = Utils.getRandomDigits(random, 9);
+			final String base = Utils.getRandomDigits(getRandom(), 9);
 			return base + validator.calculate(NPI_PREFIX + base);
 		} catch (CheckDigitException e) {
 			return null;

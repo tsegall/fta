@@ -56,7 +56,7 @@ public class BirthYear extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return String.valueOf(LocalDate.now().getYear() - random.nextInt(99) + 1);
+		return String.valueOf(LocalDate.now().getYear() - getRandom().nextInt(99) + 1);
 	}
 
 	@Override

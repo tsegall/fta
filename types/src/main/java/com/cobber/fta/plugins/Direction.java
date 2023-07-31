@@ -92,7 +92,7 @@ public class Direction extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return Form.CARDINAL.getMembers()[random.nextInt(4)];
+		return Form.CARDINAL.getMembers()[getRandom().nextInt(4)];
 	}
 
 	@Override

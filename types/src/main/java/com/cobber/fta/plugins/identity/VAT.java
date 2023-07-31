@@ -82,40 +82,40 @@ public class VAT extends LogicalTypeInfinite {
 		final String ret = prefixPresent == 0 ? "" : prefix;
 
 		if ("AT".equals(country)) {
-			final String noCheckDigit = Utils.getRandomDigits(random, 7);
+			final String noCheckDigit = Utils.getRandomDigits(getRandom(), 7);
 			return ret + "U" + noCheckDigit + getCheckDigitAT(noCheckDigit);
 		}
 
 		if ("ES".equals(country)) {
 			final String tester = "0123456789KLMNOPQRSWXYZ";
-			final String noCheckDigit = tester.charAt(random.nextInt(tester.length())) + Utils.getRandomDigits(random, 7);
+			final String noCheckDigit = tester.charAt(getRandom().nextInt(tester.length())) + Utils.getRandomDigits(getRandom(), 7);
 			return ret + noCheckDigit + getCheckDigitES(noCheckDigit);
 		}
 
 		if ("FR".equals(country)) {
-			final String noCheckDigit = Utils.getRandomDigits(random, 9);
+			final String noCheckDigit = Utils.getRandomDigits(getRandom(), 9);
 			return ret + getCheckDigitFR(noCheckDigit) + noCheckDigit;
 		}
 
 		if ("GB".equals(country))
-			return ret + Utils.getRandomDigits(random, 9);
+			return ret + Utils.getRandomDigits(getRandom(), 9);
 
 		if ("IT".equals(country)) {
-			final String noCheckDigit = Utils.getRandomDigits(random, 10);
+			final String noCheckDigit = Utils.getRandomDigits(getRandom(), 10);
 			try {
 				return ret + noCheckDigit + validator.calculate(noCheckDigit);
 			} catch (CheckDigitException e) {
-				throw new InternalErrorException("Should not have happened: " + random);
+				throw new InternalErrorException("Should not have happened: " + getRandom());
 			}
 		}
 
 		if ("NL".equals(country)) {
-			final String noCheckDigit = Utils.getRandomDigits(random, 8);
+			final String noCheckDigit = Utils.getRandomDigits(getRandom(), 8);
 			return ret + noCheckDigit + getCheckDigitNL(noCheckDigit) + "B00";
 		}
 
 		if ("PL".equals(country))
-			return ret + Utils.getRandomDigits(random, 9) + random.nextInt(100);
+			return ret + Utils.getRandomDigits(getRandom(), 9) + getRandom().nextInt(100);
 
 		return null;
 	}

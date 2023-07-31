@@ -41,7 +41,7 @@ public class CheckDigitLuhn extends CheckDigitLT {
 
 	@Override
 	public String nextRandom() {
-		final String base = Utils.getRandomDigits(random, 14 + random.nextInt(3));
+		final String base = Utils.getRandomDigits(getRandom(), 14 + getRandom().nextInt(3));
 		try {
 			return base + validator.calculate(base);
 		} catch (CheckDigitException e) {

@@ -56,7 +56,7 @@ public class DOWAbbr extends LogicalTypeFinite {
 		if (daysArray == null)
 			daysArray = days.toArray(new String[0]);
 
-		return daysArray[random.nextInt(days.size())];
+		return daysArray[getRandom().nextInt(days.size())];
 	}
 
 	@Override

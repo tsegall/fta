@@ -79,7 +79,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return "Q" + (1 + random.nextInt(4));
+		return "Q" + (1 + getRandom().nextInt(4));
 	}
 
 	@Override

@@ -87,14 +87,14 @@ public class DateTimeParserConfig {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		DateTimeParserConfig other = (DateTimeParserConfig) obj;
+		final DateTimeParserConfig other = (DateTimeParserConfig) obj;
 		return allowEnglishAMPM == other.allowEnglishAMPM && lenient == other.lenient
 				&& Objects.equals(locale, other.locale) && Arrays.equals(locales, other.locales)
 				&& noAbbreviationPunctuation == other.noAbbreviationPunctuation && numericMode == other.numericMode

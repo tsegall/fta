@@ -98,10 +98,10 @@ class FormatterToken {
 
 		private static final DateField values[] = values();
 
-		public static DateField get(int ordinal) { return values[ordinal]; }
+		public static DateField get(final int ordinal) { return values[ordinal]; }
 	}
 
-	public void merge(FormatterToken other) {
+	public void merge(final FormatterToken other) {
 		this.count = Math.min(this.count, other.count);
 		this.high = Math.max(this.high, other.high);
 		this.fieldWidth = Math.max(this.fieldWidth, other.fieldWidth);
@@ -140,7 +140,7 @@ class FormatterToken {
 	}
 
 	public String getRepresentation() {
-		StringBuilder ret = new StringBuilder();
+		final StringBuilder ret = new StringBuilder();
 		if (getFieldWidth() != -1)
 			ret.append(Utils.repeat('p', getFieldWidth()));
 		if (getCount() != 0)

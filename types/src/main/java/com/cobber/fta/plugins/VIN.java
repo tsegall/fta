@@ -68,27 +68,27 @@ public class VIN extends LogicalTypeInfinite {
 		final char[] ret = new char[17];
 
 		// World manufacturer identifier (1-3)
-		final String wmi = wmiNA[random.nextInt(wmiNA.length)];
+		final String wmi = wmiNA[getRandom().nextInt(wmiNA.length)];
 		ret[0] = wmi.charAt(0);
 		ret[1] = wmi.charAt(1);
 		ret[2] = wmi.charAt(2);
 
 		// Vehicle descriptor section (4-8)
 		for (int i = 3; i < 8; i++)
-			ret[i] = (char)('0' + random.nextInt(10));
+			ret[i] = (char)('0' + getRandom().nextInt(10));
 
 		// Check Digit (9)
 		ret[8] = '0';
 
 		// Model Year (10)
-		ret[9] = yearCode.charAt(random.nextInt(yearCode.length()));
+		ret[9] = yearCode.charAt(getRandom().nextInt(yearCode.length()));
 
 		// Plant Code (11)
-		ret[10] = (char)('0' + random.nextInt(10));
+		ret[10] = (char)('0' + getRandom().nextInt(10));
 
 		// Sequential number (12-17)
 		for (int i = 11; i < 17; i++)
-			ret[i] = (char)('0' + random.nextInt(10));
+			ret[i] = (char)('0' + getRandom().nextInt(10));
 
 		// Patch the check digit
 		ret[8] = generateCheckDigit(ret);

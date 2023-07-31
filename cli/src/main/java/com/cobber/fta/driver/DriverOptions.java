@@ -193,7 +193,7 @@ public class DriverOptions {
 			ret = Integer.parseInt(args[index + 1]);
 		}
 		catch (NumberFormatException e) {
-			throw new IllegalArgumentException("Expecting integer argument for '" + args[index] + "' option");
+			throw new IllegalArgumentException("Expecting integer argument for '" + args[index] + "' option", e);
 		}
 
 		return ret;

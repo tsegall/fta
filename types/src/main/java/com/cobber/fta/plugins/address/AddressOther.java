@@ -55,7 +55,7 @@ public class AddressOther extends LogicalTypeInfinite {
 		};
 		final String simpleAddressMarkers[] = { "Street", "St", "Road", "Rd", "Rd.", "Avenue", "Ave", "Terrace", "Drive" };
 
-		return String.valueOf(1 + random.nextInt(999)) + ' ' + streets[random.nextInt(streets.length)] + ' ' + simpleAddressMarkers[random.nextInt(simpleAddressMarkers.length)];
+		return String.valueOf(1 + getRandom().nextInt(999)) + ' ' + streets[getRandom().nextInt(streets.length)] + ' ' + simpleAddressMarkers[getRandom().nextInt(simpleAddressMarkers.length)];
 	}
 
 	@Override

@@ -81,7 +81,7 @@ public class PostalCodeUK extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		final String format = validPostalCodes[random.nextInt(validPostalCodes.length)];
+		final String format = validPostalCodes[getRandom().nextInt(validPostalCodes.length)];
 		final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		final String restrictedAlphabet = "ABCDEFGHKLMNOPQRSTUVWXY";
 		final StringBuilder result = new StringBuilder("");
@@ -92,12 +92,12 @@ public class PostalCodeUK extends LogicalTypeInfinite {
 				break;
 			case 'X':
 				if (i == 1)
-					result.append(restrictedAlphabet.charAt(random.nextInt(23)));
+					result.append(restrictedAlphabet.charAt(getRandom().nextInt(23)));
 				else
-					result.append(alphabet.charAt(random.nextInt(26)));
+					result.append(alphabet.charAt(getRandom().nextInt(26)));
 				break;
 			case '9':
-				result.append((char)('0' + random.nextInt(10)));
+				result.append((char)('0' + getRandom().nextInt(10)));
 				break;
 			}
 		}

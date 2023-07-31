@@ -145,12 +145,12 @@ class FileProcessor {
 			long thisRecord = 0;
 			long totalCount = 0;
 			String[] row;
-			Map<Integer, RowCount> errors = new HashMap<>();
+			final Map<Integer, RowCount> errors = new HashMap<>();
 
 			while ((row = parser.parseNext()) != null) {
 				thisRecord++;
 				if (row.length != numFields) {
-					RowCount existing = errors.get(row.length);
+					final RowCount existing = errors.get(row.length);
 					if (existing == null)
 						errors.put(row.length, new RowCount(row.length, thisRecord));
 					else
@@ -180,7 +180,7 @@ class FileProcessor {
 			}
 
 			if (!errors.isEmpty()) {
-				for (RowCount recordError : errors.values())
+				for (final RowCount recordError : errors.values())
 					error.printf("ERROR: File: '%s', %d records skipped with %d fields, first occurrence %d, expected %d%n",
 							filename, recordError.count, recordError.numFields, recordError.firstRow, numFields);
 			}
@@ -239,8 +239,7 @@ class FileProcessor {
 				return null;
 			records--;
 			current = current == 0 ? depth - 1 : current - 1;
-			final String[] ret = this.buffer[current];
-			return ret;
+			return this.buffer[current];
 		}
 
 		boolean isFull() {
@@ -257,7 +256,7 @@ class FileProcessor {
 		String[] header = null;
 		int numFields = 0;
 		long rawRecordIndex = 0;
-		Map<Integer, RowCount> errors = new HashMap<>();
+		final Map<Integer, RowCount> errors = new HashMap<>();
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
@@ -287,7 +286,7 @@ class FileProcessor {
 			processor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
 			initializedTime = System.currentTimeMillis();
 
-			CircularBuffer buffer = new CircularBuffer(options.trailer + 1);
+			final CircularBuffer buffer = new CircularBuffer(options.trailer + 1);
 
 			String[] row;
 			int processedRecords = 0;
@@ -298,7 +297,7 @@ class FileProcessor {
 				if (row.length == 1 && row[0] == null)
 					continue;
 				if (row.length != numFields) {
-					RowCount existing = errors.get(row.length);
+					final RowCount existing = errors.get(row.length);
 					if (existing == null)
 						errors.put(row.length, new RowCount(row.length, rawRecordIndex));
 					else
@@ -327,7 +326,7 @@ class FileProcessor {
 
 		if (!errors.isEmpty()) {
 			long toSkip = -1;
-			for (RowCount recordError : errors.values()) {
+			for (final RowCount recordError : errors.values()) {
 				error.printf("ERROR: File: '%s', %d records skipped with %d fields, first occurrence %d, expected %d%n",
 						filename, recordError.count, recordError.numFields, recordError.firstRow, numFields);
 				if (rawRecordIndex > 20 && recordError.count > .8 * rawRecordIndex)

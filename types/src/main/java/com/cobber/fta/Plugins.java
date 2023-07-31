@@ -52,8 +52,8 @@ public class Plugins {
 		registerPluginListCore(plugins, dataStreamName, analysisConfig, false);
 	}
 
-	protected void registerPluginsInternal(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
-		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, true);
+	protected void registerPluginsInternal(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+		registerPluginListCore(plugins, dataStreamName, analysisConfig, true);
 	}
 
 	protected void registerPluginListCore(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig, final boolean internal) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {

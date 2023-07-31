@@ -46,7 +46,7 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return String.valueOf(random.nextInt(1000) + 1);
+		return String.valueOf(getRandom().nextInt(1000) + 1);
 	}
 
 	@Override

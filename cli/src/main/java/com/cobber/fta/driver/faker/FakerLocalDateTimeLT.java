@@ -56,7 +56,7 @@ public class FakerLocalDateTimeLT extends FakerLT {
 			initialized = true;
 		}
 
-		final long offset = (long)(Math.abs(random.nextDouble() * range));
+		final long offset = (long)(Math.abs(getRandom().nextDouble() * range));
 		final LocalDateTime newDateTime = low.plusSeconds(offset);
 
         return dtf.format(newDateTime);

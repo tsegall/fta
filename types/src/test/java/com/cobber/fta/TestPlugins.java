@@ -56,7 +56,6 @@ import com.cobber.fta.plugins.CheckDigitISIN;
 import com.cobber.fta.plugins.CheckDigitSEDOL;
 import com.cobber.fta.plugins.CountryEN;
 import com.cobber.fta.plugins.EmailLT;
-import com.cobber.fta.plugins.FirstName;
 import com.cobber.fta.plugins.Gender;
 import com.cobber.fta.plugins.IPV4Address;
 import com.cobber.fta.plugins.PhoneNumberLT;
@@ -3575,7 +3574,7 @@ public class TestPlugins {
 		assertEquals(middleInitial.getSemanticType(), "NAME.MIDDLE_INITIAL");
 		assertEquals(middleInitial.getStructureSignature(), PluginDefinition.findByQualifier("NAME.MIDDLE_INITIAL").signature);
 
-		final LogicalType logicalFirst = analysis[0].getPlugins().getRegistered(FirstName.SEMANTIC_TYPE);
+		final LogicalType logicalFirst = analysis[0].getPlugins().getRegistered("NAME.FIRST");
 		assertTrue(logicalFirst.isValid("Harry"));
 	}
 

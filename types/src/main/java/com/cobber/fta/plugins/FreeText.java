@@ -91,14 +91,14 @@ public class FreeText extends LogicalTypeInfinite {
 		}
 
 		String getSample() {
-			return pronouns.get(random.nextInt(pronouns.size())) + " " +
-					verbs.get(random.nextInt(verbs.size())) +
+			return pronouns.get(getRandom().nextInt(pronouns.size())) + " " +
+					verbs.get(getRandom().nextInt(verbs.size())) +
 					definiteArticle +
-					nouns.get(random.nextInt(nouns.size())) +
+					nouns.get(getRandom().nextInt(nouns.size())) +
 					conjunction +
-					verbs.get(random.nextInt(verbs.size())) +
+					verbs.get(getRandom().nextInt(verbs.size())) +
 					indefiniteArticle +
-					nouns.get(random.nextInt(nouns.size())) +
+					nouns.get(getRandom().nextInt(nouns.size())) +
 					".";
 		}
 	}
@@ -144,9 +144,9 @@ public class FreeText extends LogicalTypeInfinite {
 		if (samples == null)
 			constructSamples();
 
-		final StringBuilder result = new StringBuilder(samples[random.nextInt(samples.length)]);
-		for (int i = 0; i < random.nextInt(4); i++)
-			result.append("  ").append(samples[random.nextInt(samples.length)]);
+		final StringBuilder result = new StringBuilder(samples[getRandom().nextInt(samples.length)]);
+		for (int i = 0; i < getRandom().nextInt(4); i++)
+			result.append("  ").append(samples[getRandom().nextInt(samples.length)]);
 
 		return result.toString();
 	}

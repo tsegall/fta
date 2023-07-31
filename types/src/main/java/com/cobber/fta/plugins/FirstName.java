@@ -30,9 +30,6 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect an individuals First Name.
  */
 public class FirstName extends PersonName {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "NAME.FIRST";
-
 	// This set covers the first two letters of ~92% of our first name list - assume this is a reasonable proxy for first names more generally
 	private final String plausibleStarters[] = {
 			"AB", "AD", "AL", "AM", "AN", "AR", "AS", "AU", "AY",

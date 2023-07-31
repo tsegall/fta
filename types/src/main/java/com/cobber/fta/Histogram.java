@@ -32,6 +32,11 @@ import com.cobber.fta.core.InternalErrorException;
  * MaxCardinality has been exceeded we add all the entries captured in the  Cardinality Map to the Sketch.
  */
 public class Histogram {
+	private NavigableMap<String, Long> typedMap;
+	private HistogramSPDT histogramOverflow;
+	private StringConverter stringConverter;
+	private int debug;
+
 	/**
 	 * A Histogram Entry captures the low and high bounds for each bucket along with the number of entries in the bucket.
 	 * NOTE: All the buckets except for the last are [low, high) the last bucket is [low,high].
@@ -84,11 +89,6 @@ public class Histogram {
 			return clusterPercent;
 		}
 	}
-
-	private NavigableMap<String, Long> typedMap;
-	private HistogramSPDT histogramOverflow;
-	private StringConverter stringConverter;
-	private int debug;
 
 	Histogram() {
 	}

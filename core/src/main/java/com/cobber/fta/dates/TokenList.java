@@ -404,13 +404,13 @@ public class TokenList implements Iterable<FormatterToken> {
 //		System.err.printf("Setting at index: %d, %s%n", index, token.getRepresentation());
 		final TokenList newTokenList = new TokenList(this);
 		newTokenList.tokens.set(index, token);
-		return TokenList.getTokenList(newTokenList.getFormatString());
+		return getTokenList(newTokenList.getFormatString());
 	}
 
 	class TokenIterator<FormatterToken> implements Iterator<FormatterToken> {
 		Iterator<FormatterToken> iter;
 
-	    public TokenIterator(List<FormatterToken> list) {
+	    public TokenIterator(final List<FormatterToken> list) {
 	    	iter = list.iterator();
 	    }
 
@@ -432,6 +432,6 @@ public class TokenList implements Iterable<FormatterToken> {
 
 	@Override
 	public Iterator<FormatterToken> iterator() {
-		return new TokenIterator<FormatterToken>(tokens);
+		return new TokenIterator<>(tokens);
 	}
 }

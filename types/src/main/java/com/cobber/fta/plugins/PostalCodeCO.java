@@ -74,7 +74,7 @@ public class PostalCodeCO extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return postalRef.getRandom(random);
+		return postalRef.getRandom(getRandom());
 	}
 
 	@Override

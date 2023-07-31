@@ -61,7 +61,7 @@ public class EIN extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return "43-" + Utils.getRandomDigits(random, 7);
+		return "43-" + Utils.getRandomDigits(getRandom(), 7);
 	}
 
 	@Override

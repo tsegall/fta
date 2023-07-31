@@ -32,6 +32,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class HistogramSPDT {
+	// The array of bins we use to track the Histogram
+	private List<Bin> bins;
+	// The configured maximum number of bins
+	private int maxBins;
+	// Minimum value ever observed
+	private double minValue = Double.MAX_VALUE;
+	// Maximum value ever observed
+	private double maxValue = Double.MIN_VALUE;
+	@JsonIgnore
+	private Random random;
+	private long observed;
+	private StringConverter stringConverter;
+
 	@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 	static class Bin implements Comparable<Object> {
 		double value;
@@ -50,19 +63,6 @@ public class HistogramSPDT {
 	    	return Double.compare(value, ((Bin)other).value);
 	    }
 	}
-
-	// The array of bins we use to track the Histogram
-	private List<Bin> bins;
-	// The configured maximum number of bins
-	private int maxBins;
-	// Minimum value ever observed
-	private double minValue = Double.MAX_VALUE;
-	// Maximum value ever observed
-	private double maxValue = Double.MIN_VALUE;
-	@JsonIgnore
-	private Random random;
-	private long observed;
-	private StringConverter stringConverter;
 
 	HistogramSPDT() {
 	}

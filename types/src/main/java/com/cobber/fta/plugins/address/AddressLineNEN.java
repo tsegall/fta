@@ -55,13 +55,13 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		switch (random.nextInt(10)) {
+		switch (getRandom().nextInt(10)) {
 		case 0:
-			return "APT " + random.nextInt(100);
+			return "APT " + getRandom().nextInt(100);
 		case 1:
-			return "APARTMENT #" + random.nextInt(100);
+			return "APARTMENT #" + getRandom().nextInt(100);
 		case 2:
-			return "PO BOX " + (1000 + random.nextInt(1000));
+			return "PO BOX " + (1000 + getRandom().nextInt(1000));
 		default:
 			return "";
 		}

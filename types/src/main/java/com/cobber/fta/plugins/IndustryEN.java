@@ -55,7 +55,7 @@ public class IndustryEN extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return industriesRef.getRandom(random);
+		return industriesRef.getRandom(getRandom());
 	}
 
 	@Override

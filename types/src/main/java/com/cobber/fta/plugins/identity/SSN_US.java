@@ -62,10 +62,10 @@ public class SSN_US extends LogicalTypeInfinite {
 	public String nextRandom() {
 		final StringBuilder b = new StringBuilder();
 		b.setLength(0);
-		int component = random.nextInt(899) + 1;
+		int component = getRandom().nextInt(899) + 1;
 		if (component == 666)
 			component = 667;
-		b.append(String.format("%03d", component)).append('-').append(String.format("%02d", random.nextInt(99) + 1)).append('-').append(String.format("%04d", random.nextInt(9999) + 1));
+		b.append(String.format("%03d", component)).append('-').append(String.format("%02d", getRandom().nextInt(99) + 1)).append('-').append(String.format("%04d", getRandom().nextInt(9999) + 1));
 
 		return b.toString();
 	}

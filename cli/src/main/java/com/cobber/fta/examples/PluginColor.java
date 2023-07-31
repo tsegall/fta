@@ -75,9 +75,9 @@ public class PluginColor extends LogicalTypeFinite {
 	@Override
 	public String nextRandom() {
 		if ("EN".equals(language))
-			return colorsEN[random.nextInt(colorsEN.length)];
+			return colorsEN[getRandom().nextInt(colorsEN.length)];
 		if ("FR".equals(language))
-			return colorsFR[random.nextInt(colorsFR.length)];
+			return colorsFR[getRandom().nextInt(colorsFR.length)];
 
 		return null;
 	}

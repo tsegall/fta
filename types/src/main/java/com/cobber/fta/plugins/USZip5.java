@@ -77,7 +77,7 @@ public class USZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return zipsRef.getRandom(random);
+		return zipsRef.getRandom(getRandom());
 	}
 
 	@Override

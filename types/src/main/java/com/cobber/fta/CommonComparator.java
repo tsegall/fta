@@ -29,7 +29,7 @@ import com.cobber.fta.core.FTAType;
 public class CommonComparator<T extends Comparable> implements Comparator<String> {
 	private final StringConverter stringConverter;
 
-	CommonComparator(final StringConverter stringConverter) {
+	public CommonComparator(final StringConverter stringConverter) {
 		this.stringConverter = stringConverter;
 	}
 

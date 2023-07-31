@@ -1,7 +1,7 @@
 # Semantic Type Detection and Data Profiling #
 
 Metadata/data identification Java library. Identifies Base Type (e.g. Boolean, Double, Long, String, LocalDate, LocalTime, ...) and 
-Semantic Type information (e.g. Gender, Age, Color, Country, ...).
+[Semantic Type](SemanticTypeDetection.md) (e.g. Gender, Age, Color, Country, ...).
 Extensive country/language support. Extensible via user-defined plugins. Comprehensive Profiling support.
 
 Design objectives:

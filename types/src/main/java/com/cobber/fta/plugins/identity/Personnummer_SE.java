@@ -130,9 +130,9 @@ public class Personnummer_SE extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		final int year = LocalDate.now().getYear() - random.nextInt(100);
-		final String ymd = String.format("%02d%02d%02d", year%100, random.nextInt(12) + 1, random.nextInt(28) + 1);
-		final String control = String.format("%03d", random.nextInt(999) + 1);
+		final int year = LocalDate.now().getYear() - getRandom().nextInt(100);
+		final String ymd = String.format("%02d%02d%02d", year%100, getRandom().nextInt(12) + 1, getRandom().nextInt(28) + 1);
+		final String control = String.format("%03d", getRandom().nextInt(999) + 1);
 
 		try {
 			return ymd + "-" + control + validator.calculate(ymd + control);

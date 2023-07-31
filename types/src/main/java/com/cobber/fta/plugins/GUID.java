@@ -63,7 +63,7 @@ public class GUID extends LogicalTypeInfinite {
 		for (int i = 0; i < 32; i++) {
 			if (i == 8 || i == 12 || i == 16 || i == 20)
 				ret.append('-');
-			ret.append(HEX[random.nextInt(16)]);
+			ret.append(HEX[getRandom().nextInt(16)]);
 		}
 
 		return ret.toString();

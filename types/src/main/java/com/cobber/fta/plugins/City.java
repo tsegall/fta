@@ -70,7 +70,7 @@ public class City extends LogicalTypeInfinite {
 			randomInitialized = true;
 		}
 
-		return samples != null ? samples.getRandom(random) : null;
+		return samples != null ? samples.getRandom(getRandom()) : null;
 	}
 
 

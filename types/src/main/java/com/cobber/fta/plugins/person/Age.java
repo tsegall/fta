@@ -76,7 +76,7 @@ public class Age extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return String.valueOf(random.nextInt(99) + 1);
+		return String.valueOf(getRandom().nextInt(99) + 1);
 	}
 
 	@Override

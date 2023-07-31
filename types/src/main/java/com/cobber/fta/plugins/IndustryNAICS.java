@@ -47,7 +47,7 @@ public class IndustryNAICS extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return codesRef.getRandom(random);
+		return codesRef.getRandom(getRandom());
 	}
 
 	@Override

@@ -68,6 +68,6 @@ public class CheckDigitEAN13 extends CheckDigitLT {
 
 	@Override
 	public String nextRandom() {
-		return SAMPLES[random.nextInt(SAMPLES.length)];
+		return SAMPLES[getRandom().nextInt(SAMPLES.length)];
 	}
 }

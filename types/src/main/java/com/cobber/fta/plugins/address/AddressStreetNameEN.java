@@ -57,7 +57,7 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 	public String nextRandom() {
 		final String simpleAddressMarkers[] = { "Street", "St", "Road", "Rd", "Rd.", "Avenue", "Ave", "Terrace", "Drive" };
 
-		return AddressCommon.sampleStreets[random.nextInt(AddressCommon.sampleStreets.length)] + ' ' + simpleAddressMarkers[random.nextInt(simpleAddressMarkers.length)];
+		return AddressCommon.sampleStreets[getRandom().nextInt(AddressCommon.sampleStreets.length)] + ' ' + simpleAddressMarkers[getRandom().nextInt(simpleAddressMarkers.length)];
 	}
 
 	@Override

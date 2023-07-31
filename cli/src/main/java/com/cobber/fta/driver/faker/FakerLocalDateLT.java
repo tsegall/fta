@@ -55,7 +55,7 @@ public class FakerLocalDateLT extends FakerLT {
 			initialized = true;
 		}
 
-		final long offset = random.nextInt((int)range);
+		final long offset = getRandom().nextInt((int)range);
 		final LocalDate newDateTime = low.plusDays(offset);
 
         return dtf.format(newDateTime);

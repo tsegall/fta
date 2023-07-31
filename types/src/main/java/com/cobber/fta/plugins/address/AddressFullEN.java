@@ -76,11 +76,11 @@ public class AddressFullEN extends LogicalTypeInfinite {
 		final String simpleAddressMarkers[] = { "Street", "St", "Road", "Rd", "Rd.", "Avenue", "Ave", "Terrace", "Drive" };
 
 		final StringBuilder b = new StringBuilder();
-		return b.append(1 + random.nextInt(999))
+		return b.append(1 + getRandom().nextInt(999))
 				.append(' ')
-				.append(streets[random.nextInt(streets.length)])
+				.append(streets[getRandom().nextInt(streets.length)])
 				.append(' ')
-				.append(simpleAddressMarkers[random.nextInt(simpleAddressMarkers.length)])
+				.append(simpleAddressMarkers[getRandom().nextInt(simpleAddressMarkers.length)])
 				.append(", ")
 				.append(logicalState.nextRandom())
 				.append(' ')

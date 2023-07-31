@@ -51,7 +51,7 @@ public class FileName extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return Utils.getRandomDigits(random, 8) + "." + extensionsRef.getRandom(random);
+		return Utils.getRandomDigits(getRandom(), 8) + "." + extensionsRef.getRandom(getRandom());
 	}
 
 	@Override

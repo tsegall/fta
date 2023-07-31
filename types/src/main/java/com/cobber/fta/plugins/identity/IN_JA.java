@@ -79,7 +79,7 @@ public class IN_JA extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		final String in = String.valueOf(random.nextInt(90000) + 10000) + String.format("%06d", random.nextInt(1000000));
+		final String in = String.valueOf(getRandom().nextInt(90000) + 10000) + String.format("%06d", getRandom().nextInt(1000000));
 		return in + calculateCheckDigit(in);
 	}
 

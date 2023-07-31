@@ -50,7 +50,7 @@ public class AddressStreetNameBare extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return AddressCommon.sampleStreets[random.nextInt(AddressCommon.sampleStreets.length)];
+		return AddressCommon.sampleStreets[getRandom().nextInt(AddressCommon.sampleStreets.length)];
 	}
 
 	@Override

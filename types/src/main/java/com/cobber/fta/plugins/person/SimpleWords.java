@@ -67,7 +67,7 @@ public abstract class SimpleWords extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return getWords()[random.nextInt(getWords().length)];
+		return getWords()[getRandom().nextInt(getWords().length)];
 	}
 
 	@Override

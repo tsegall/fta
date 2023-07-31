@@ -58,7 +58,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	public String nextRandom() {
 		String result;
 		do {
-			result = memberSet.getRandom(random);
+			result = memberSet.getRandom(getRandom());
 		} while ("FTAFTAFTA".equals(result));
 		return result;
 	}

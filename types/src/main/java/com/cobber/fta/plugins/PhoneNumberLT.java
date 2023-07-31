@@ -67,7 +67,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 		String attempt;
 		Phonenumber.PhoneNumber phoneNumber;
 		do {
-			attempt = Utils.getRandomDigits(random, nationalSignificantNumber.length());
+			attempt = Utils.getRandomDigits(getRandom(), nationalSignificantNumber.length());
 			try {
 				phoneNumber = phoneUtil.parse(attempt, country);
 			} catch (NumberParseException e) {

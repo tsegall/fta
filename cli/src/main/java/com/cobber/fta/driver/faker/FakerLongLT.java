@@ -62,7 +62,7 @@ public class FakerLongLT extends FakerLT {
 
 		long l = 0;
 		if (distribution.equals("random")) {
-			final double d = random.nextDouble();
+			final double d = getRandom().nextDouble();
 			l = Math.round(d * range);
 
 			if (low != null)
@@ -86,7 +86,7 @@ public class FakerLongLT extends FakerLT {
 			}
 			l = last;
 		} else if (distribution.equals("gaussian")) {
-			double d = random.nextGaussian();
+			double d = getRandom().nextGaussian();
 			d += 5.0;				// Capture 5 SD's
 			d = (d * range)/10;		// Scale up from ~0-10 to the range
 			d += low;				// Shift origin to the low bound

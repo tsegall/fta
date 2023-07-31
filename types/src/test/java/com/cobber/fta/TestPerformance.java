@@ -18,7 +18,10 @@ package com.cobber.fta;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -29,6 +32,9 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.dates.DateTimeParser;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 
 /**
  */
@@ -117,5 +123,40 @@ public class TestPerformance {
 		logger.info("Count {}, training: {}ms, result calc: {}ms, ~{} per second.",
 				SIZE, trained - start, completed - trained, Math.round(SIZE/((double)(completed - start)/1000)));
 
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PERFORMANCE })
+	public void wideRecord() throws IOException, FTAException {
+		final int iterations = 5;
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(true);
+
+		for (int i = 0; i < iterations; i++) {
+			long start = System.currentTimeMillis();
+			try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/enriched.csv"), StandardCharsets.UTF_8))) {
+
+				final CsvParser parser = new CsvParser(settings);
+				parser.beginParsing(in);
+
+				final String[] header = parser.getRecordMetadata().headers();
+
+				AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "profile", header);
+				TextAnalyzer textAnalyzer = new TextAnalyzer(context);
+				textAnalyzer.setLocale(Locale.getDefault());
+				RecordAnalyzer analyzer = new RecordAnalyzer(textAnalyzer);
+
+				String[] row;
+				int rows = 0;
+				while ((row = parser.parseNext()) != null) {
+					analyzer.train(row);
+					rows++;
+				}
+
+				RecordAnalysisResult result = analyzer.getResult();
+
+				System.out.printf("durations: %d ms, columns: %d, rows: %d%n",
+						System.currentTimeMillis() - start, header.length, rows);
+			}
+		}
 	}
 }

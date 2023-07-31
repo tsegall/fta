@@ -42,7 +42,7 @@ public class FakerEnumLT extends FakerLT {
 
 		String ret = null;
 		if (distribution.equals("random")) {
-			ret = options[random.nextInt(options.length)];
+			ret = options[getRandom().nextInt(options.length)];
 		} else if (distribution.equals("monotonic_increasing")) {
 			if (last == -1)
 				last = 0;

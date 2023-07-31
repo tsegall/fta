@@ -36,7 +36,7 @@ public class PeriodYearRange extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "\\d{4}-\\d{4}";
 
-	private final Keywords keywords = new Keywords();
+	private Keywords keywords;
 
 	/**
 	 * Construct a plugin based on the Plugin Definition.
@@ -49,7 +49,7 @@ public class PeriodYearRange extends LogicalTypeInfinite {
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
-		keywords.initialize(analysisConfig.getLocale());
+		keywords = Keywords.getInstance(analysisConfig.getLocale());
 
 		return true;
 	}
@@ -58,8 +58,8 @@ public class PeriodYearRange extends LogicalTypeInfinite {
 	public String nextRandom() {
 		final StringBuilder ret = new StringBuilder(9);
 
-		final int yearOne = 1980 + random.nextInt(40);
-		final int yearTwo = yearOne + random.nextInt(20);
+		final int yearOne = 1980 + getRandom().nextInt(40);
+		final int yearTwo = yearOne + getRandom().nextInt(20);
 		return ret.append(yearOne).append('-').append(yearTwo).toString();
 	}
 

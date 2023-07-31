@@ -51,8 +51,8 @@ import com.cobber.fta.token.TokenStreams;
 public class AgeRange extends LogicalTypeInfinite {
 	private static final int MAX_AGE = 120;
 	private final String symbols = "<>+≤≥";
-	private final Keywords keywords = new Keywords();
 	private final static Set<String> agesPUF = new HashSet<>();
+	private Keywords keywords;
 
 	static {
 		agesPUF.add("AGE011");
@@ -97,14 +97,14 @@ public class AgeRange extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		keywords.initialize(locale);
+		keywords = Keywords.getInstance(analysisConfig.getLocale());
 
 		return true;
 	}
 
 	@Override
 	public String nextRandom() {
-		final int low = random.nextInt(15);
+		final int low = getRandom().nextInt(15);
 		return String.valueOf(low * 5) + " - " + String.valueOf((low + 1) * 5);
 	}
 

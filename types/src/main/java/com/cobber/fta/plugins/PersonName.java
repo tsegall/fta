@@ -67,12 +67,12 @@ public abstract class PersonName extends LogicalTypeFiniteSimple {
 			for (int i = 0; i < iterators.length; i++) {
 				iterators[i] = new Dodge();
 				iterators[i].iter = getMembers().iterator();
-				final int offset = random.nextInt(getMembers().size() / 2);
+				final int offset = getRandom().nextInt(getMembers().size() / 2);
 				for (int j = 0; j < offset; j++)
 					iterators[i].iter.next();
 			}
 		}
-		final Dodge any = iterators[random.nextInt(ITERS)];
+		final Dodge any = iterators[getRandom().nextInt(ITERS)];
 		if (!any.iter.hasNext())
 			any.iter = getMembers().iterator();
 		return any.iter.next();

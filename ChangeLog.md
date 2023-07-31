@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 14.7.2
+ - BUG: Numerous performance improvements, mostly impacting RecordAnalyzer with large number of columns (Issue #46)
+
 ### 14.7.1
  - BUG: Missed a file on checkin
  - INT: Bump jacoco
