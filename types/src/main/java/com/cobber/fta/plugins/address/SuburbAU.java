@@ -1,4 +1,4 @@
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.address;
 
 import com.cobber.fta.LogicalTypeBloomFilter;
 import com.cobber.fta.PluginDefinition;

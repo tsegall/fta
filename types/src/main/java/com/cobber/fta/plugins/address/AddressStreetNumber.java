@@ -53,7 +53,7 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		directionEntry = PluginDefinition.findByQualifier("DIRECTION").getLocaleEntry(locale);
+		directionEntry = PluginDefinition.findByName("DIRECTION").getLocaleEntry(locale);
 
 		return true;
 	}

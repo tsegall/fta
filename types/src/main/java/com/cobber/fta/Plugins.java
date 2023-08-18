@@ -153,10 +153,10 @@ public class Plugins {
 
 	/**
 	 * Return the plugin associated with this named Semantic Type.
-	 * @param qualifier Name of this Semantic Type.
+	 * @param semanticTypeName Name of this Semantic Type.
 	 * @return A Collection of the currently registered Semantic Types.
 	 */
-	public LogicalType getRegistered(final String qualifier) {
-		return registered.get(qualifier);
+	public LogicalType getRegistered(final String semanticTypeName) {
+		return registered.get(semanticTypeName);
 	}
 }

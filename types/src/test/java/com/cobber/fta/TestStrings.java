@@ -802,7 +802,7 @@ public class TestStrings {
 		final TextAnalysisResult result1 = analysis1.getResult();
 		final TextAnalysisResult result2 = analysis2.getResult();
 
-		assertEquals(result1.getStructureSignature(), PluginDefinition.findByQualifier("COUNTRY.TEXT_EN").signature);
+		assertEquals(result1.getStructureSignature(), PluginDefinition.findByName("COUNTRY.TEXT_EN").signature);
 		assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 		assertEquals(result1.getSemanticType(), result2.getSemanticType());

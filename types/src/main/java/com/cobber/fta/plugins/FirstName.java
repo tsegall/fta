@@ -59,6 +59,7 @@ public class FirstName extends PersonName {
 	};
 	private final Set<String> plausibleSet = new HashSet<>();
 	private long bad = 0;
+	private long recognized = 0;
 
 	/**
 	 * Construct a First Name plugin based on the Plugin Definition.
@@ -101,16 +102,20 @@ public class FirstName extends PersonName {
 			return false;
 		}
 
-		if (getMembers().contains(trimmedUpper))
+		if (getMembers().contains(trimmedUpper)) {
+			recognized += count;
 			return true;
+		}
 
 		final int space = trimmedUpper.indexOf(' ');
 		if (space != -1 && getMembers().contains(trimmedUpper.substring(0, space)) && Character.isAlphabetic(trimmedUpper.charAt(space + 1))) {
 			final int len = trimmedUpper.length();
 			if (len == space + 2 ||
 					(len == space + 3 && trimmedUpper.charAt(space + 2) == '.') ||
-					getMembers().contains(trimmedUpper.substring(space + 1)))
+					getMembers().contains(trimmedUpper.substring(space + 1))) {
+				recognized += count;
 				return true;
+			}
 		}
 
 		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
@@ -139,8 +144,9 @@ public class FirstName extends PersonName {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
 			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		// We do not expect to see much true rubbish
-		if (getHeaderConfidence(context.getStreamName()) < 90 && realSamples > 10 && (100*bad)/realSamples > 1)
+		// We do not expect to see much true rubbish or less than 20% names that we do not recognize
+		if (getHeaderConfidence(context.getStreamName()) < 90 &&
+				(realSamples > 10 && (((100*bad)/realSamples > 1) || ((recognized*100)/realSamples < 2))))
 			return PluginAnalysis.SIMPLE_NOT_OK;
 		return super.analyzeSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig);
 	}

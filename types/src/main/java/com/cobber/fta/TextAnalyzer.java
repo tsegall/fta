@@ -1942,7 +1942,7 @@ public class TextAnalyzer {
 		final String semanticType = semanticTypes[context.getStreamIndex()];
 
 		if (isInteresting(semanticType)) {
-			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
+			final PluginDefinition pluginDefinition = PluginDefinition.findByName(semanticType);
 			if (pluginDefinition == null) {
 				debug("ERROR: Failed to locate plugin named '{}'", semanticType);
 				return false;
@@ -2878,7 +2878,7 @@ public class TextAnalyzer {
 	public TextAnalysisResult getResult() throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Normally we will initialize as a consequence of the first call to train() but just in case no training happens!
 		if (!initialized)
-			initialize(AnalysisConfig.TrainingMode.NONE);
+			initialize(AnalysisConfig.TrainingMode.UNSET);
 
 		// If we have not already determined the type, now we need to
 		if (facts.getMatchTypeInfo() == null)

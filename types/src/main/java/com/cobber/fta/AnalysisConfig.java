@@ -124,12 +124,16 @@ public class AnalysisConfig {
 	private boolean nullAsText = false;
 
 	public enum TrainingMode {
+		/** Training is doing via train() - i.e. one sample at a time. */
 		SIMPLE,
+		/** Training is doing via trainBulk() - i.e. a set of samples and an associated count. */
 		BULK,
-		NONE
+		/** Training mode is initially unset and will be set on the first call to train() or trainBulk(). */
+		UNSET
 	}
-	/** How was training performed for this analysis. */
-	private TrainingMode trainingMode = TrainingMode.NONE;
+
+	/** How was training performed for this analysis? */
+	private TrainingMode trainingMode = TrainingMode.UNSET;
 
 	public AnalysisConfig() {
 		this(Locale.getDefault());

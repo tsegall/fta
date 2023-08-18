@@ -45,8 +45,8 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
-import com.cobber.fta.plugins.USZip5;
-import com.cobber.fta.plugins.USZipPlus4;
+import com.cobber.fta.plugins.address.USZip5;
+import com.cobber.fta.plugins.address.USZipPlus4;
 
 public class RandomTests {
 	private static final SecureRandom random = new SecureRandom();
@@ -306,7 +306,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US");
+		final PluginDefinition defn = PluginDefinition.findByName("POSTAL_CODE.ZIP5_US");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(locked, -1);
 		assertEquals(result.getSampleCount(), COUNT);
@@ -476,7 +476,7 @@ public class RandomTests {
 
 		for (int copy = 0; copy < COPIES; copy++)
 			for (int i = 0; i < demos.length; i++) {
-				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(demos[i]);
+				final PluginDefinition pluginDefinition = PluginDefinition.findByName(demos[i]);
 				final int index = copy * demos.length + i;
 				logicals[index] = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 				analyzers[index] = new TextAnalyzer(demos[i]);
@@ -705,7 +705,7 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_PLUS4_US");
+		final PluginDefinition defn = PluginDefinition.findByName("POSTAL_CODE.ZIP5_PLUS4_US");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
@@ -757,7 +757,7 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_PLUS4_US");
+		final PluginDefinition defn = PluginDefinition.findByName("POSTAL_CODE.ZIP5_PLUS4_US");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
@@ -799,7 +799,7 @@ public class RandomTests {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LONG);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US");
+		final PluginDefinition defn = PluginDefinition.findByName("POSTAL_CODE.ZIP5_US");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
@@ -2355,7 +2355,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("FREE_TEXT");
+		final PluginDefinition defn = PluginDefinition.findByName("FREE_TEXT");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getRegExp(), ".{36,185}");
 		assertEquals(result.getConfidence(), 1.0);
@@ -2388,7 +2388,7 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("FREE_TEXT");
+		final PluginDefinition defn = PluginDefinition.findByName("FREE_TEXT");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getRegExp(), ".{16,25}");
 		assertEquals(result.getConfidence(), 1.0);
@@ -2792,7 +2792,7 @@ public class RandomTests {
 			System.err.printf("%s: %d%n", semanticType, index);
 			final TextAnalyzer analysis = new TextAnalyzer(heading);
 			analysis.setLocale(Locale.US);
-			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(semanticType);
+			final PluginDefinition pluginDefinition = PluginDefinition.findByName(semanticType);
 			final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, analysis.getConfig());
 
 			final int length = 30 + random.nextInt(10000);
@@ -2935,7 +2935,7 @@ public class RandomTests {
 			do {
 				final String semanticType = someSemanticTypes[random.nextInt(someSemanticTypes.length)];
 				try {
-					final PluginDefinition defn = PluginDefinition.findByQualifier(semanticType);
+					final PluginDefinition defn = PluginDefinition.findByName(semanticType);
 					if (!defn.isLocaleSupported(locale))
 						System.err.println("Attempting to create an intance of LogicalType: " + defn.semanticType + " in an unsupported Locale");
 					logical = LogicalTypeFactory.newInstance(defn, new AnalysisConfig(locale));

@@ -322,7 +322,7 @@ public class TestRegExpPlugins {
 
 		final TextAnalysisResult result = analysis[0].getResult();
 		assertEquals(result.getSemanticType(), "MACADDRESS");
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("MACADDRESS").signature);
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("MACADDRESS").signature);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getSampleCount(), 1000);
@@ -364,7 +364,7 @@ public class TestRegExpPlugins {
 
 		final TextAnalysisResult result = analysis[0].getResult();
 		assertEquals(result.getSemanticType(), "COLOR.HEX");
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("COLOR.HEX").signature);
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("COLOR.HEX").signature);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getSampleCount(), 20000);
@@ -429,7 +429,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertNull(result.checkCounts());
 
-		final LogicalTypeCode logical = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("CITY"), new AnalysisConfig(Locale.forLanguageTag("en-US")));
+		final LogicalTypeCode logical = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("CITY"), new AnalysisConfig(Locale.forLanguageTag("en-US")));
 
 		for (final String sample : samples) {
 			if (!sample.matches(result.getRegExp()))

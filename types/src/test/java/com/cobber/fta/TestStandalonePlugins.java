@@ -33,7 +33,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomIPV4Address() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("IPADDRESS.IPV4"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("IPADDRESS.IPV4"), new AnalysisConfig());
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -43,7 +43,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomIPV6Address() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("IPADDRESS.IPV6"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("IPADDRESS.IPV6"), new AnalysisConfig());
 
 		assertTrue(logical.isValid("::"), "::");
 		assertTrue(logical.isValid("::1"), "::1");
@@ -57,7 +57,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomPhoneNumber() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("TELEPHONE"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("TELEPHONE"), new AnalysisConfig());
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -70,7 +70,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomEmail() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("EMAIL"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("EMAIL"), new AnalysisConfig());
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -80,7 +80,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomFirst() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("NAME.FIRST"), new AnalysisConfig());
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -90,7 +90,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomLast() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.LAST"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("NAME.LAST"), new AnalysisConfig());
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -103,7 +103,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomURL() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("URI.URL"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("URI.URL"), new AnalysisConfig());
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -113,7 +113,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomZip() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US"), new AnalysisConfig(Locale.forLanguageTag("en-US")));
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("POSTAL_CODE.ZIP5_US"), new AnalysisConfig(Locale.forLanguageTag("en-US")));
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -123,7 +123,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomGUID() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("GUID"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("GUID"), new AnalysisConfig());
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -133,7 +133,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomGender() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("GENDER.TEXT_<LANGUAGE>"), new AnalysisConfig(Locale.forLanguageTag("nl-NL")));
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("GENDER.TEXT_<LANGUAGE>"), new AnalysisConfig(Locale.forLanguageTag("nl-NL")));
 
 		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
 
@@ -143,7 +143,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomCountry() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("COUNTRY.TEXT_EN"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("COUNTRY.TEXT_EN"), new AnalysisConfig());
 
 		for (int i = 0; i < 100; i++) {
 			final String example = logical.nextRandom();
@@ -224,7 +224,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomCOORDINATE_LATITUDE_DECIMAL() throws IOException, FTAPluginException {
-		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("COORDINATE.LATITUDE_DECIMAL");
+		final PluginDefinition pluginDefinition = PluginDefinition.findByName("COORDINATE.LATITUDE_DECIMAL");
 		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
 		final String[] validSamples = { "12.43", "13.49", "90.0", "-69.4", "-90.0" };
@@ -240,7 +240,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomCOORDINATE_LONGITUDE_DECIMAL() throws IOException, FTAPluginException {
-		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("COORDINATE.LONGITUDE_DECIMAL");
+		final PluginDefinition pluginDefinition = PluginDefinition.findByName("COORDINATE.LONGITUDE_DECIMAL");
 		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
 		final String[] validSamples = { "12.43", "13.49", "180.0", "90.0", "-69.4", "-90.0", "-170.0",  };
@@ -256,7 +256,7 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomCITY() throws IOException, FTAPluginException {
-		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("CITY");
+		final PluginDefinition pluginDefinition = PluginDefinition.findByName("CITY");
 		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
 		final String[] validSamples = {

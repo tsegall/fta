@@ -157,7 +157,7 @@ public class FreeText extends LogicalTypeInfinite {
 
 		processor = new TextProcessor(locale);
 
-		final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
+		final PluginDefinition pluginFirst = PluginDefinition.findByName("NAME.FIRST");
 		// The FreeText Plugin is pseudo supported by any locale, however, if we are generating
 		// random entries we use the first name plugins (which may not be supported by the current locale)
 		final AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);

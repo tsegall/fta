@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.plugins.USZip5;
+import com.cobber.fta.plugins.address.USZip5;
 
 /**
  * Test support for the invalid concept new with 11.0.
@@ -160,7 +160,7 @@ public class TestInvalidSupport {
 	public void openSemanticTypeStringFinite() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("openSemanticTypeStringFinite");
 		analyzer.setLocale(Locale.US);
-		final LogicalTypeCode logical = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), new AnalysisConfig(Locale.US));
+		final LogicalTypeCode logical = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("NAME.FIRST"), new AnalysisConfig(Locale.US));
 		final int SIZE = 1000;
 
 		for (int i = 0; i < SIZE; i++) {
@@ -203,7 +203,7 @@ public class TestInvalidSupport {
 	@Test(groups = { TestGroups.ALL, TestGroups.INVALID_SUPPORT })
 	public void openSemanticTypeStringInfinite() throws IOException, FTAException {
 		final TextAnalyzer analyzer = new TextAnalyzer("openSemanticTypeStringInfinite");
-		final LogicalTypeCode logical = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("GUID"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("GUID"), new AnalysisConfig());
 		final int SIZE = 1000;
 
 		for (int i = 0; i < SIZE; i++) {
@@ -260,7 +260,7 @@ public class TestInvalidSupport {
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.LONG);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US");
+		final PluginDefinition defn = PluginDefinition.findByName("POSTAL_CODE.ZIP5_US");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertNull(result.getTypeModifier());
 		assertEquals(result.getStructureSignature(), defn.signature);

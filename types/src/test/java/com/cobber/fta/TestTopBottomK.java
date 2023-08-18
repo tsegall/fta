@@ -355,7 +355,7 @@ public class TestTopBottomK {
 		final Set<String> topK = new HashSet<>(Arrays.asList(new String[] {
 				"ÉLIA", "ÉLINA", "ÉLYAS", "ÉLÉA", "ÉLÉNA", "ÉMILIA", "ÉRICA", "ÍRIS", "ÍSIS", "ÖMER" } ));
 
-		final LogicalTypeCode logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("NAME.FIRST"), new AnalysisConfig());
+		final LogicalTypeCode logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("NAME.FIRST"), new AnalysisConfig());
 
 		for (int i = 0; i < 100000; i++)
 			t.observe(logicalFirst.nextRandom());

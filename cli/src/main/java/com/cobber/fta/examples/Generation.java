@@ -33,7 +33,7 @@ public abstract class Generation {
 		final String demos[] = { "EMAIL", "COORDINATE.LATITUDE_DECIMAL", "CITY" };
 
 		for (final String s: demos) {
-			final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(s);
+			final PluginDefinition pluginDefinition = PluginDefinition.findByName(s);
 			final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
 			if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())

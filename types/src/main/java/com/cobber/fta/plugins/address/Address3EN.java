@@ -28,6 +28,7 @@ public class Address3EN extends AddressLineNEN {
 	public Address3EN(final PluginDefinition plugin) {
 		super(plugin);
 	}
+
 	@Override
 	protected char getIndicator() {
 		return '3';

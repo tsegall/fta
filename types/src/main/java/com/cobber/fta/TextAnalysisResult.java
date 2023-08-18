@@ -116,13 +116,13 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * Get the optional Type Modifier (which modifies the Base Type - see {@link#getType}  Predefined qualifiers are:
+	 * Get the optional Type Modifier (which modifies the Base Type - see {@link#getType}  Predefined modifiers are:
 	 * <ul>
 	 *  <li>Type: BOOLEAN - "TRUE_FALSE", "YES_NO", "Y_N", "ONE_ZERO"</li>
 	 *  <li>Type: STRING - "BLANK", "BLANKORNULL", "NULL"</li>
 	 *  <li>Type: LONG - "GROUPING", "SIGNED", "SIGNED_TRAILING".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
 	 * 	<li>Type: DOUBLE - "GROUPING", "SIGNED", "SIGNED_TRAILING", "NON_LOCALIZED".  Note: "GROUPING" and "SIGNED" are independent and can both be present.</li>
-	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The qualifier is the detailed date format string</li>
+	 * 	<li>Type: DATE, TIME, DATETIME, ZONEDDATETIME, OFFSETDATETIME - The modifier is the detailed date format string</li>
 	 * </ul>
 	 *
 	 * Note: Boolean TRUE_FALSE is not localized, i.e. it will only be detected if the field contains true/false respectively.
@@ -698,7 +698,7 @@ public class TextAnalysisResult {
 		if (!isSemanticType())
 			return facts.getMatchTypeInfo().getBaseType();
 
-		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(getSemanticType());
+		final PluginDefinition pluginDefinition = PluginDefinition.findByName(getSemanticType());
 		if (pluginDefinition != null && pluginDefinition.baseType != null)
 			return pluginDefinition.baseType;
 

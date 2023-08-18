@@ -103,7 +103,7 @@
 		"description": "Postal Code (US)",
 		"pluginType": "java",
 		"signature": "/o1vxOzeSy+OB/GwjvwcCCv6ri0=",
-		"clazz": "com.cobber.fta.plugins.USZip5",
+		"clazz": "com.cobber.fta.plugins.address.USZip5",
 		"validLocales": [
 			{ "localeTag":  "en-US,en-CA,fr-CA",
 				"headerRegExps": [ { "regExp": ".*(?i)(zip|postal|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
@@ -121,7 +121,7 @@
 		"description": "Postal Code + 4 (US)",
 		"pluginType": "java",
 		"signature": "97eQHR8swSv5+VyCVyYDNayMdy4=",
-		"clazz": "com.cobber.fta.plugins.USZipPlus4",
+		"clazz": "com.cobber.fta.plugins.address.USZipPlus4",
 		"validLocales": [
 			{ "localeTag":  "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postal|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
 		],
@@ -137,7 +137,7 @@
 		"description": "Postal Code (UK)",
 		"pluginType": "java",
 		"signature": "0m+ny+TVuhGGP1RGw3XKoni4Qyo=",
-		"clazz": "com.cobber.fta.plugins.PostalCodeUK",
+		"clazz": "com.cobber.fta.plugins.address.PostalCodeUK",
 		"validLocales": [ { "localeTag":  "en-GB,en-UK" } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postcodes_in_the_United_Kingdom" }
@@ -149,7 +149,7 @@
 		"description": "Postal Code (CA)",
 		"pluginType": "java",
 		"signature": "PJdCrn71buwdG4wyhlOpLSrc1+M=",
-		"clazz": "com.cobber.fta.plugins.PostalCodeCA",
+		"clazz": "com.cobber.fta.plugins.address.PostalCodeCA",
 		"validLocales": [
 			{
 				"localeTag":  "en-US,en-CA,fr-CA",
@@ -215,7 +215,7 @@
 		"description": "Postal Code (FR)",
 		"pluginType": "java",
 		"signature": "NBx2UhY9b1E8PKjEPXxorgBew1s=",
-		"clazz": "com.cobber.fta.plugins.PostalCodeFR",
+		"clazz": "com.cobber.fta.plugins.address.PostalCodeFR",
 		"validLocales": [
 			{
 				"localeTag":  "fr-FR",
@@ -234,7 +234,7 @@
 		"description": "Postal Code (JA)",
 		"pluginType": "java",
 		"signature": "90grIf//XH2xAcARIKYJPzmfhJg=",
-		"clazz": "com.cobber.fta.plugins.PostalCodeJA",
+		"clazz": "com.cobber.fta.plugins.address.PostalCodeJA",
 		"validLocales": [ { "localeTag":  "ja" } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
@@ -311,7 +311,7 @@
 		"description": "Postal Code (SE)",
 		"pluginType": "java",
 		"signature": "pfVf2x3vraje4ycWyo87F5A6e38=",
-		"clazz": "com.cobber.fta.plugins.PostalCodeSE",
+		"clazz": "com.cobber.fta.plugins.address.PostalCodeSE",
 		"validLocales": [
 			{ "localeTag":  "sv-SE", "headerRegExps": [ { "regExp": ".*(?i)(postnummer).*", "confidence": 99 } ] }
 		],
@@ -348,7 +348,7 @@
 		"description": "Postal Code (MX)",
 		"pluginType": "java",
 		"signature": "z0MBnHNCyrDo8blnBUAqjNDVwdw=",
-		"clazz": "com.cobber.fta.plugins.PostalCodeMX",
+		"clazz": "com.cobber.fta.plugins.address.PostalCodeMX",
 		"validLocales": [
 			{ "localeTag":  "es-MX", "headerRegExps": [ { "regExp": ".*(?i)(c.digo.*postal).*", "confidence": 99 } ] }
 		],
@@ -386,7 +386,7 @@
 		"description": "Postal Code (CO)",
 		"pluginType": "java",
 		"signature": "nb4TdG9sqJZTuLyvoOUywb1lA4s=",
-		"clazz": "com.cobber.fta.plugins.PostalCodeCO",
+		"clazz": "com.cobber.fta.plugins.address.PostalCodeCO",
 		"validLocales": [
 			{
 				"localeTag":  "es-CO",
@@ -815,7 +815,7 @@
 			"reference": "/reference/de_countries.csv"
 		},
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://en.wikipedia.org/wiki/Choronym" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Choronym" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
@@ -834,7 +834,7 @@
 			"reference": "/reference/es_countries.csv"
 		},
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://en.wikipedia.org/wiki/Choronym" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Choronym" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" }
 		],
 		"threshold": 90,
@@ -854,7 +854,7 @@
 			"reference": "/reference/nl_countries.csv"
 		},
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://en.wikipedia.org/wiki/Choronym" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Choronym" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" }
 		],
 		"threshold": 90,
@@ -1730,7 +1730,7 @@
 		"description": "Australian Suburb",
 		"pluginType": "java",
 		"signature": "VR2/cf7EOxcm7ed9eGp8A2j1fn4=",
-		"clazz": "com.cobber.fta.plugins.SuburbAU",
+		"clazz": "com.cobber.fta.plugins.address.SuburbAU",
 		"validLocales": [
 			{ "localeTag": "en-AU", "headerRegExps": [ { "regExp": ".*(?i)(suburb).*", "confidence": 90 } ] }
 		],
@@ -2141,7 +2141,8 @@
 			}
 		],
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://www.wikidata.org/wiki/Property:P569" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P569" },
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q2389905" }
 		],
 		"baseType": "LOCALDATE",
 		"priority": 180
@@ -2167,7 +2168,8 @@
 			}
 		],
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://www.wikidata.org/wiki/Property:P569" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P569" },
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q2389905" }
 		],
 		"priority": 181
 	},
@@ -2204,7 +2206,8 @@
 		],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Geographic_coordinate_system" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Latitude" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Latitude" },
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q34027" }
 		],
 		"threshold": 98,
 		"baseType": "DOUBLE",
@@ -2245,7 +2248,8 @@
 		],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Geographic_coordinate_system" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Longitude" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Longitude" },
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q36477" }
 		],
 		"threshold": 98,
 		"baseType": "DOUBLE",
@@ -3074,7 +3078,7 @@
 		"pluginOptions": "words=all",
 		"signature": "CIsljBWEmutE4EulPJgCkQZyzMU=",
 		"validLocales": [
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(color|colour).*", "confidence": 90, "mandatory": true } ] }
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(color|colour).*", "confidence": 90 } ] }
 		],
 		"ignoreList": [ "N/A", "OTHER" ],
 		"content": {
@@ -3152,7 +3156,7 @@
 			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] }
 		],
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://en.wikipedia.org/wiki/Personal_name" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Personal_name" }
 		],
 		"threshold": 90,
 		"priority": 370
@@ -3173,7 +3177,7 @@
 			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(nome).*", "confidence": 60 } ] }
 		],
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://en.wikipedia.org/wiki/Personal_name" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Personal_name" }
 		],
 		"priority": 371
 	},

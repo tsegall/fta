@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.address;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,50 +34,47 @@ import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
 
 /**
- * Plugin to detect valid Swedish Postal Codes.
+ * Plugin to detect valid Mexican Postal Codes.
  */
-public class PostalCodeSE extends LogicalTypeInfinite {
+public class PostalCodeMX extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
-	public static final String REGEXP_POSTAL_CODE = "\\d{3} \\d{2}";
+	public static final String REGEXP_POSTAL_CODE_5 = "\\d{5}";
+	public static final String REGEXP_POSTAL_CODE_45 = "\\d{4,5}";
+
+	private String regExp = REGEXP_POSTAL_CODE_5;
 
 	private BloomFilter<CharSequence> reference;
 	private static final String examples[] = {
-			"186 00", "186 01", "186 03", "186 21", "186 22", "186 23", "186 24", "186 25", "186 26", "186 30",
-			"186 31", "186 32", "186 33", "186 34", "186 35", "186 36", "186 37", "186 38", "186 39", "186 40",
-			"186 41", "186 42", "186 43", "186 44", "186 45", "186 46", "186 49", "186 50", "186 51", "186 52",
-			"186 53", "186 54", "186 55", "186 60", "186 70", "186 86", "186 91", "186 92", "186 93", "186 94",
-			"186 95", "186 96", "186 97", "184 86", "103 86", "107 86", "111 86", "112 86", "113 86", "114 86",
-			"117 86", "118 86", "121 86", "122 86", "123 86", "125 86", "126 86", "127 86", "141 86", "161 86",
-			"164 86", "169 86", "152 86", "131 86", "171 86", "109 86", "110 86", "173 86", "181 86", "186 20",
-			"186 47", "186 56", "191 86", "194 86", "901 86", "905 86", "931 86", "930 86", "971 86", "941 86",
-			"961 86", "981 86", "751 86", "745 86", "611 86", "631 86", "581 86", "586 00", "586 43", "586 44",
-			"586 46", "586 47", "586 48", "586 62", "586 63", "586 65", "586 66", "601 86", "603 86", "591 86",
-			"551 86", "351 86", "386 01", "386 21", "386 22", "386 23", "386 30", "386 31", "386 32", "386 33",
-			"386 34", "386 35", "386 50", "386 63", "386 64", "386 90", "386 92", "386 93", "386 96", "391 86",
-			"598 86", "386 94", "386 95", "386 20", "593 86", "621 86", "371 86", "375 86", "286 01", "286 21",
-			"686 25", "686 26", "686 28", "686 29", "686 30", "686 31", "686 33", "686 35", "686 80", "686 91",
-			"686 92", "686 93", "686 94", "686 95", "686 96", "686 98", "651 86", "686 97", "686 20", "686 34",
-			"701 86", "691 86", "702 86", "721 86", "786 02", "786 21", "786 31", "786 32", "786 33", "786 71"
+			"80279", "80302", "80347", "80377", "80380", "80415", "80419", "80466", "80537", "80553",
+			"29957", "30129", "30134", "30136", "30362", "30396", "30409", "30441", "30503", "30533",
+			"08500", "08830", "09110", "09360", "09366", "09438", "09620", "09704", "09760", "1048",
+			"60095", "60130", "60143", "60215", "60255", "60581", "60597", "60656", "60677", "60786",
+			"92550", "92605", "92625", "92656", "92663", "92708", "92740", "92883", "92900", "92913",
+			"11100", "1139", "11470", "11529", "11587", "11850", "13129", "14273", "14327", "14388",
+			"40314", "40409", "40417", "40429", "40482", "40500", "40509", "40573", "40640", "40678",
+			"59697", "59699", "59704", "59770", "59793", "59935", "59950", "59958", "59975", "59991",
+			"79913", "79983", "79994", "79995", "80014", "80016", "80093", "80101", "80225", "80249",
+			"92920", "92943", "92975", "93068", "93152", "93157", "93182", "93194", "93260", "93310"
 	};
 
 	/**
-	 * Construct a Swedish Postal code plugin based on the Plugin Definition.
+	 * Construct a Mexican Postal code plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public PostalCodeSE(final PluginDefinition plugin) {
+	public PostalCodeMX(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return REGEXP_POSTAL_CODE.equals(compressed.toString()) || "\\d{5}".equals(compressed.toString());
+		return REGEXP_POSTAL_CODE_5.equals(compressed.toString()) || REGEXP_POSTAL_CODE_45.equals(compressed.toString());
 	}
 
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		try (InputStream filterStream = PostalCodeSE.class.getResourceAsStream("/reference/se_postal_code.bf")) {
+		try (InputStream filterStream = PostalCodeMX.class.getResourceAsStream("/reference/mx_postal_code.bf")) {
 			reference = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			throw new FTAPluginException("Failed to load BloomFilter", e);
@@ -93,22 +90,27 @@ public class PostalCodeSE extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return REGEXP_POSTAL_CODE;
+		return regExp;
 	}
 
 	@Override
 	public FTAType getBaseType() {
-		return FTAType.STRING;
+		return FTAType.LONG;
 	}
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final int len = input.length();
 
-		if (len < 5 || len > 6)
+		if (len < 4 || len > 5)
 			return false;
 
-		return len == 5 ? reference.mightContain(input.substring(0, 3) + " " + input.substring(3)) : reference.mightContain(input);
+		if (len == 4) {
+			regExp = REGEXP_POSTAL_CODE_45;
+			return reference.mightContain("0" + input);
+		}
+
+		return reference.mightContain(input);
 	}
 
 	private String backout() {

@@ -38,14 +38,13 @@ import com.cobber.fta.token.TokenStreams;
 public abstract class SimpleWords extends LogicalTypeInfinite {
 	private Set<String> keywordsHash;
 	private final WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("_=");
+	private String regExp = "[-\\p{IsAlphabetic} /]+";
+	private final Set<String> rejected = new HashSet<>();
 
 	protected abstract String[] getWords();
 	protected int getMaxWords() {
 		return 3;
 	}
-
-	private String regExp = "[-\\p{IsAlphabetic} /]+";
-	private final Set<String> rejected = new HashSet<>();
 
 	/**
 	 * Construct an Race plugin based on the Plugin Definition.

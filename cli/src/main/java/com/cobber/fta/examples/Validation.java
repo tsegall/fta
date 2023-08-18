@@ -40,7 +40,7 @@ public abstract class Validation {
 	 * Validation based on an a-priori known Semantic Type
 	 */
 	public static void validateKnown() throws FTAPluginException {
-		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("EMAIL");
+		final PluginDefinition pluginDefinition = PluginDefinition.findByName("EMAIL");
 		final LogicalType knownSemanticType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
 
 		// Make sure we can successfully validate a good and bad email
@@ -120,7 +120,7 @@ public abstract class Validation {
 	 * Validation based on input where the Semantic Type has a Locale component
 	 */
 	public static void validateSemanticTypeWithLocale() throws FTAPluginException {
-		final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier("DAY.ABBR_<LOCALE>");
+		final PluginDefinition pluginDefinition = PluginDefinition.findByName("DAY.ABBR_<LOCALE>");
 		final LogicalType knownSemanticType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(Locale.forLanguageTag("en-US")));
 
 		// Make sure we can successfully validate a good and bad Day abbreviation

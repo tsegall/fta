@@ -46,7 +46,7 @@ public class PluginDefinition {
 
 	private static List<PluginDefinition> builtinPlugins;
 
-	/** Semantic Type of Plugin (Qualifier). */
+	/** Semantic Type name of Plugin. */
 	public String semanticType;
 	/** English language description of the Semantic Type. */
 	public String description;
@@ -54,7 +54,7 @@ public class PluginDefinition {
 	public String pluginType;
 	/** Plugin-specific options - format key1=value1, key2=value2, ... */
 	public String pluginOptions;
-	/** Signature (structure) - the MD5 Hash of the Qualifier and the Base Type. */
+	/** Signature (structure) - the MD5 Hash of the Semantic Type name and the Base Type. */
 	public String signature;
 	/** locales this plugin applies to - empty set, implies all locales.  Can use just language instead of tag, e.g. "en" rather than "en_US". */
 	public PluginLocaleEntry[] validLocales;
@@ -119,12 +119,12 @@ public class PluginDefinition {
 	}
 
 	/**
-	 * Retrieve the Plugin Definition associated with this Qualifier.
+	 * Retrieve the Plugin Definition associated with this Semantic Type name.
 	 *
-	 * @param qualifier The Qualifier for this Semantic Type
-	 * @return The Plugin Definition associated with the supplied Qualifier.
+	 * @param semanticTypeName The name for this Semantic Type
+	 * @return The Plugin Definition associated with the supplied name.
 	 */
-	public static PluginDefinition findByQualifier(final String qualifier) {
+	public static PluginDefinition findByName(final String semanticTypeName) {
 		synchronized (PluginDefinition.class) {
 			if (builtinPlugins == null) {
 				try (BufferedReader JSON = new BufferedReader(new InputStreamReader(PluginDefinition.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
@@ -136,7 +136,7 @@ public class PluginDefinition {
 		}
 
 		for (final PluginDefinition pluginDefinition : builtinPlugins)
-			if (pluginDefinition.semanticType.equalsIgnoreCase(qualifier))
+			if (pluginDefinition.semanticType.equalsIgnoreCase(semanticTypeName))
 				return pluginDefinition;
 
 		return null;

@@ -78,7 +78,7 @@ public class SemanticType {
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
 				final Map<String, PluginDefinition> semanticTypes = new TreeMap<>();
 				final List<PluginDefinition> plugins = MAPPER.readValue(reader, new TypeReference<List<PluginDefinition>>(){});
-				// Sort the registered plugins by Qualifier
+				// Sort the registered plugins by the Semantic Type name
 				for (final PluginDefinition pluginDefn : plugins)
 					semanticTypes.put(pluginDefn.semanticType, pluginDefn);
 
@@ -102,7 +102,7 @@ public class SemanticType {
 		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
 		final Set<String> semanticTypesNames = new TreeSet<>();
 
-		// Sort the registered plugins by Qualifier
+		// Sort the registered plugins by by the Semantic Type name
 		for (final LogicalType logical : registered)
 			semanticTypesNames.add(logical.getSemanticType());
 

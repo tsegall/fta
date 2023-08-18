@@ -81,6 +81,83 @@ public class FileName extends LogicalTypeInfinite {
 		return validate(trimmed, true, 0);
 	}
 
+	/**
+	 * This is NOT a test for filename validity - it is a credibility test.
+	 * @param input The input to test
+	 * @return True if we 'think' this is likely a filename.
+	 */
+	private boolean credibleFilename(final String input) {
+		final int len = input.length();
+		if (len < 5 || len > 300)
+			return false;
+
+		// Cheap test for a Windows filename if the Drive is present
+		if (Utils.isSimpleAlpha(input.charAt(0)) && input.charAt(1) == ':' && (input.charAt(2) == '/' || input.charAt(2) == '\\'))
+			return true;
+
+		int sepCount = 0;
+		int letters = 0;
+		int sepIndex = -1;
+		int doubled = 1;
+		char sep = '\0';
+		char lastCh = '\0';
+		for (int i = 0; i < len; i++) {
+			final char ch = input.charAt(i);
+			if (sep == '\0' && (ch == '/' || ch == '\\'))
+				sep = ch;
+			if (Character.isISOControl(ch))
+				return false;
+			if (Character.isLetter(ch))
+				letters++;
+			switch (ch) {
+			case '/':
+				if (sep == '\\')
+					return false;
+				if (lastCh != '\0' && lastCh == '/')
+					return false;
+				if (letters == 0)
+					return false;
+				sepCount++;
+				sepIndex = i;
+				letters = 0;
+				break;
+			case '\\':
+				if (sep == '/')
+					return false;
+				if (lastCh == '\\') {
+					doubled = 2;
+					if (i > 2 && input.charAt(i = 2) == '\\')
+						return false;
+				}
+				if (letters == 0)
+					return false;
+				sepCount++;
+				sepIndex = i;
+				letters = 0;
+				break;
+			case '<':
+			case '>':
+			case '?':
+			case '*':
+				// These are valid in Unix filenames - just not very likely!
+				return false;
+			case ':':
+			case '"':
+			case '|':
+				if (sep == '\\')
+					return false;
+				break;
+			}
+			lastCh = ch;
+			if (i > sepIndex + 30)
+				return false;
+		}
+
+		final int segments = sepCount/doubled;
+
+		return segments > 0 && segments < 10;
+	}
+
 	public boolean validate(final String input, final boolean detectMode, final long count) {
 		final int length = input.length();
 		if (length < 3)
@@ -98,7 +175,7 @@ public class FileName extends LogicalTypeInfinite {
 
 		final String extension = input.substring(extensionIndex + 1).toUpperCase(Locale.ENGLISH);
 
-		return extensions.contains(extension);
+		return extensions.contains(extension) || credibleFilename(input);
 	}
 
 	@Override

@@ -77,7 +77,7 @@ public class TestIdentity {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}");
 		assertTrue(result.isSemanticType());
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByQualifier("SSN").signature);
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("SSN").signature);
 		assertEquals(result.getConfidence(), 0.998);
 		assertNull(result.checkCounts());
 
@@ -204,7 +204,7 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.SSN_FR");
+		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.SSN_FR");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
@@ -245,7 +245,7 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.PERSONNUMMER_SE");
+		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.PERSONNUMMER_SE");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
@@ -286,7 +286,7 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.PERSONNUMMER_SE");
+		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.PERSONNUMMER_SE");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
@@ -326,7 +326,7 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.INDIVIDUAL_NUMBER_JA");
+		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.INDIVIDUAL_NUMBER_JA");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
@@ -366,7 +366,7 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.SSN_CH");
+		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.SSN_CH");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);
@@ -399,7 +399,7 @@ public class TestIdentity {
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
 
-		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.NHS_UK");
+		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.NHS_UK");
 
 				assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
@@ -446,7 +446,7 @@ public class TestIdentity {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByQualifier("IDENTITY.AADHAAR_IN");
+		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.AADHAAR_IN");
 		assertEquals(result.getSemanticType(), defn.semanticType);
 		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getConfidence(), 1.0);

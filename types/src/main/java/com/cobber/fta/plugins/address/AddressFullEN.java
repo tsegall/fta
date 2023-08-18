@@ -125,20 +125,20 @@ public class AddressFullEN extends LogicalTypeInfinite {
 		poBox = Pattern.compile(AddressCommon.POBOX);
 
 		if ("US".equals(country)) {
-			logicalPostCode = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_US"), analysisConfig);
-			logicalZipPlus = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.ZIP5_PLUS4_US"), analysisConfig);
-			logicalState = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_NAME_US"), analysisConfig);
+			logicalPostCode = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("POSTAL_CODE.ZIP5_US"), analysisConfig);
+			logicalZipPlus = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("POSTAL_CODE.ZIP5_PLUS4_US"), analysisConfig);
+			logicalState = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("STATE_PROVINCE.STATE_NAME_US"), analysisConfig);
 		}
 		else if ("CA".equals(country)) {
-			logicalPostCode = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.POSTAL_CODE_CA"), analysisConfig);
-			logicalState = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STATE_PROVINCE.PROVINCE_NAME_CA"), analysisConfig);
+			logicalPostCode = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("POSTAL_CODE.POSTAL_CODE_CA"), analysisConfig);
+			logicalState = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("STATE_PROVINCE.PROVINCE_NAME_CA"), analysisConfig);
 		}
 		else if ("AU".equals(country)) {
-			logicalPostCode = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("POSTAL_CODE.POSTAL_CODE_AU"), analysisConfig);
-			logicalState = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("STATE_PROVINCE.STATE_NAME_AU"), analysisConfig);
+			logicalPostCode = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("POSTAL_CODE.POSTAL_CODE_AU"), analysisConfig);
+			logicalState = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("STATE_PROVINCE.STATE_NAME_AU"), analysisConfig);
 		}
 
-		logicalCountry = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("COUNTRY.TEXT_EN"), analysisConfig);
+		logicalCountry = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("COUNTRY.TEXT_EN"), analysisConfig);
 
 		addressMarkers = new SingletonSet(new Content("resource", "/reference/en_street_markers.csv")).getMembers();
 

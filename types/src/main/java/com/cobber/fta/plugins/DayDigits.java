@@ -50,7 +50,7 @@ public class DayDigits extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		monthEntry = PluginDefinition.findByQualifier("MONTH.DIGITS").getLocaleEntry(locale);
+		monthEntry = PluginDefinition.findByName("MONTH.DIGITS").getLocaleEntry(locale);
 		keywords = Keywords.getInstance(analysisConfig.getLocale());
 
 		return true;

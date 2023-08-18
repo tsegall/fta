@@ -15,6 +15,10 @@
  */
 package com.cobber.fta.plugins;
 
+import java.net.IDN;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.apache.commons.validator.routines.UrlValidator;
 
 import com.cobber.fta.AnalysisConfig;
@@ -34,6 +38,8 @@ import com.cobber.fta.token.TokenStreams;
 public class URLLT extends LogicalTypeInfinite {
 	public static final String REGEXP_PROTOCOL = "(https?|ftp|file)";
 	public static final String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+	private static final int MAX_AUTHORITY_LENGTH = 255;
+	private static final int MAX_URL_LENGTH = 2000;
 	private static UrlValidator validator;
 	private static String[] sitesList = {
 			"www.jnj.com", "http://www.medifast1.com/index.jsp", "graybar.com", "johnsoncontrols.com", "commscope.com", "www.energizer.com", "ashland.com", "hersheys.com", "www.flowserve.com", "www.exxonmobil.com",
@@ -92,6 +98,39 @@ public class URLLT extends LogicalTypeInfinite {
 		return FTAType.STRING;
 	}
 
+	private static String convertUnicodeURLToAscii(String url) {
+		if (url == null || url.length() > MAX_URL_LENGTH)
+			return null;
+
+		try {
+			url = url.trim();
+			URI uri = new URI(url);
+			boolean includeScheme = true;
+
+			// URI needs a scheme to work properly with authority parsing
+			if (uri.getScheme() == null) {
+				uri = new URI("http://" + url);
+				includeScheme = false;
+			}
+
+			String scheme = uri.getScheme() != null ? uri.getScheme() + "://" : null;
+			String authority = uri.getRawAuthority() != null ? uri.getRawAuthority() : ""; // includes domain and port
+			if (authority.length() > MAX_AUTHORITY_LENGTH)
+				return null;
+			String path = uri.getRawPath() != null ? uri.getRawPath() : "";
+			String queryString = uri.getRawQuery() != null ? "?" + uri.getRawQuery() : "";
+			String fragment = uri.getRawFragment() != null ? "#" + uri.getRawFragment() : "";
+
+			// Must convert domain to punycode separately from the path
+			url = (includeScheme ? scheme : "") + IDN.toASCII(authority) + path + queryString + fragment;
+
+			// Convert path from unicode to ascii encoding
+			return new URI(url).normalize().toASCIIString();
+		} catch (URISyntaxException|IllegalArgumentException e) {
+			return null;
+		}
+	}
+
 	@Override
 	public boolean isValid(String input, final boolean detectMode, long count) {
 		int index = 0;
@@ -100,7 +139,7 @@ public class URLLT extends LogicalTypeInfinite {
 			index = 1;
 		}
 
-		final boolean ret = validator.isValid(input.trim());
+		final boolean ret = validator.isValid(convertUnicodeURLToAscii(input));
 		if (ret)
 			protocol[index]++;
 
@@ -117,7 +156,15 @@ public class URLLT extends LogicalTypeInfinite {
 		if (charCounts[' '] != 0)
 			return false;
 
-		return validator.isValid("http://" + trimmed);
+		if (trimmed.length() > MAX_URL_LENGTH)
+			return false;
+
+		final String cleaned = convertUnicodeURLToAscii(trimmed);
+
+		if (cleaned == null)
+			return false;
+
+		return validator.isValid("http://" + cleaned);
 	}
 
 	@Override

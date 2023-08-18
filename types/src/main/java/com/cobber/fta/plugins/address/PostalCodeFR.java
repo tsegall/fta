@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.plugins;
+package com.cobber.fta.plugins.address;
 
 import java.util.Set;
 
@@ -32,41 +32,39 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * Plugin to detect valid Colombian Postal Codes.
+ * Plugin to detect valid French Postal Codes.
  * Note: we used an Infinite :-) Semantic Type since the domains is so large.
  */
-public class PostalCodeCO extends LogicalTypeInfinite {
-	private static final String REGEXP_POSTAL_CODE = "\\d{6}";
-	private static final String REGEXP_POSTAL_CODE_56 = "\\d{5,6}";
+public class PostalCodeFR extends LogicalTypeInfinite {
+	private static final String REGEXP_POSTAL_CODE = "\\d{5}";
 	private SingletonSet postalRef;
 	private Set<String> postals;
-	private String regExp = REGEXP_POSTAL_CODE;
 
 	/**
-	 * Construct a Colombian Postal code plugin based on the Plugin Definition.
+	 * Construct a French Postal code plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public PostalCodeCO(final PluginDefinition plugin) {
+	public PostalCodeFR(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		final int len = trimmed.length();
-		if (len != 5 && len != 6)
+		if (len != 5)
 			return false;
 
 		final int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
 				charCounts['5'] + charCounts['6'] + charCounts['7'] + charCounts['8'] + charCounts['9'];
 
-		return digits == len;
+		return digits == 5;
 	}
 
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		postalRef = new SingletonSet(new Content("resource", "/reference/co_postal_code.csv"));
+		postalRef = new SingletonSet(new Content("resource", "/reference/fr_postal_code.csv"));
 		postals = postalRef.getMembers();
 
 		return true;
@@ -79,7 +77,7 @@ public class PostalCodeCO extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		return regExp;
+		return REGEXP_POSTAL_CODE;
 	}
 
 	@Override
@@ -91,19 +89,10 @@ public class PostalCodeCO extends LogicalTypeInfinite {
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final int len = input.length();
 
-		if (len != 5 && len != 6)
+		if (len != 5)
 			return false;
 
-		boolean ret = false;
-		if (len == 5) {
-			ret = postals.contains("0" + input);
-			if (ret)
-				regExp = REGEXP_POSTAL_CODE_56;
-		}
-		else
-			ret = postals.contains(input);
-
-		return ret;
+		return postals.contains(input);
 	}
 
 	private String backout() {

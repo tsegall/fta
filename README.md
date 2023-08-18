@@ -286,7 +286,7 @@ Note: The Context (the current Stream Name and other field names) can be used to
 ```json
 [
         {
-                "qualifier": "PII.SSN",
+                "semanticType": "PII.SSN",
                 "description": "Naive SSN detection",
                 "pluginType": "regex",
                 "validLocales": [
@@ -300,7 +300,7 @@ Note: The Context (the current Stream Name and other field names) can be used to
                 "baseType": "STRING"
         },
         {
-                "qualifier": "AIRPORT_CODE.IATA",
+                "semanticType": "AIRPORT_CODE.IATA",
                 "description": "IATA Airport Code",
                 "pluginType": "java",
                 "clazz": "com.cobber.fta.plugins.IATA",
@@ -313,7 +313,7 @@ Note: The Context (the current Stream Name and other field names) can be used to
                 "baseType": "STRING"
         },
         {
-                "qualifier" : "PLANET_JA",
+                "semanticType" : "PLANET_JA",
                 "description": "Planets in Japanese (Kanji) via an inline list",
                 "pluginType": "list",
                 "validLocales": [
@@ -342,7 +342,7 @@ In all cases the plugin definition and locale are passed as arguments.
 
 ### All Plugins ###
 
-The mandatory 'qualifier' tag is the name of this Semantic Type.
+The mandatory 'semanticType' tag is the name of this Semantic Type.
 
 The 'threshold' tag is the percentage of valid samples required by this plugin to establish the Stream Data as a a valid instance of this Semantic Type.
 The threshold will default to 95% if not specified.

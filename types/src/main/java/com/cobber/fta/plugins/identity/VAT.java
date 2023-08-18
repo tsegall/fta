@@ -105,7 +105,7 @@ public class VAT extends LogicalTypeInfinite {
 			try {
 				return ret + noCheckDigit + validator.calculate(noCheckDigit);
 			} catch (CheckDigitException e) {
-				throw new InternalErrorException("Should not have happened: " + getRandom());
+				throw new InternalErrorException("Should not have happened: " + getRandom(), e);
 			}
 		}
 

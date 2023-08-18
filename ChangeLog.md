@@ -1,6 +1,14 @@
 
 ## Changes ##
 
+### 15.0.0
+ - **ENH:** PluginDefinition.findByQualifier() has changed to PluginDefinition.findByName()
+ - ENH: Bump logback-classic, google phonenumber, and guava
+ - ENH: Minor improvements to NAME.FIRST, URI.URL, FILENAME detection
+ - ENH: Improve detection for list-based Semantic Types with small numbers of records
+ - BUG: Fix up documentation to align with qualifier to semantic type switch (Issue #47)
+ - INT: Bump gradle to 8.3
+
 ### 14.7.2
  - BUG: Numerous performance improvements, mostly impacting RecordAnalyzer with large number of columns (Issue #46)
 
@@ -77,7 +85,7 @@
  - BUG: Fix poor validation of Java plugin at registration time (#41)
 
 ### 14.0.0
- - ENH: Format of plugins has changed - content is now true JSON as opposed to a String
+ - **ENH:** Format of plugins has changed - content is now true JSON as opposed to a String
  - BUG: Fix --semanticType being ignored when using RecordAnalyzer
 
 ### 13.7.0

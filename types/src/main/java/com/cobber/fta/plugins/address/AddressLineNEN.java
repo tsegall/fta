@@ -72,8 +72,8 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 		super.initialize(analysisConfig);
 
 		addressMarkers = new SingletonSet(new Content("resource", "/reference/en_street_markers.csv")).getMembers();
-		addressLine1Entry = PluginDefinition.findByQualifier("STREET_ADDRESS_EN").getLocaleEntry(locale);
-		cityEntry = PluginDefinition.findByQualifier("CITY").getLocaleEntry(locale);
+		addressLine1Entry = PluginDefinition.findByName("STREET_ADDRESS_EN").getLocaleEntry(locale);
+		cityEntry = PluginDefinition.findByName("CITY").getLocaleEntry(locale);
 
 		return true;
 	}

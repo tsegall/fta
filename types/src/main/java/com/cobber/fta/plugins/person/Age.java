@@ -60,14 +60,14 @@ public class Age extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		logicalGender = (LogicalTypeFinite) LogicalTypeFactory.newInstance(PluginDefinition.findByQualifier("GENDER.TEXT_<LANGUAGE>"), analysisConfig);
+		logicalGender = (LogicalTypeFinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("GENDER.TEXT_<LANGUAGE>"), analysisConfig);
 
-		final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
+		final PluginDefinition pluginFirst = PluginDefinition.findByName("NAME.FIRST");
 		final AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
 		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, pluginConfig);
 
 		raceSemanticType = analysisConfig.bindSemanticType("PERSON.RACE_<LANGUAGE>");
-		final PluginDefinition pluginRace = PluginDefinition.findByQualifier(raceSemanticType);
+		final PluginDefinition pluginRace = PluginDefinition.findByName(raceSemanticType);
 		if (pluginRace != null)
 			logicalRace = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginRace, pluginConfig);
 

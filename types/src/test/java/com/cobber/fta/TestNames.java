@@ -12,8 +12,8 @@ import com.cobber.fta.core.FTAException;
 
 public class TestNames {
 
-	final PluginDefinition pluginLastName = PluginDefinition.findByQualifier("NAME.LAST");
-	final PluginDefinition pluginLastFirstName = PluginDefinition.findByQualifier("NAME.LAST_FIRST");
+	final PluginDefinition pluginLastName = PluginDefinition.findByName("NAME.LAST");
+	final PluginDefinition pluginLastFirstName = PluginDefinition.findByName("NAME.LAST_FIRST");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void nameLast() throws IOException, FTAException {

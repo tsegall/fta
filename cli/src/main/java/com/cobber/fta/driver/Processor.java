@@ -43,7 +43,7 @@ public class Processor {
 
 		if (options.pluginName != null && options.pluginMode != null) {
 			if (logicalType == null) {
-				final PluginDefinition pluginDefinition = PluginDefinition.findByQualifier(options.pluginName);
+				final PluginDefinition pluginDefinition = PluginDefinition.findByName(options.pluginName);
 				if (pluginDefinition == null) {
 					logger.printf("ERROR: Failed to locate plugin named '%s', use --help%n", options.pluginName);
 					System.exit(1);

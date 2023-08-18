@@ -50,7 +50,7 @@ public class TestPerformance {
 		testCase.put("RED", SIZE/4);
 		testCase.put("BLUE", SIZE/4);
 		testCase.put("GREEN", SIZE/4);
-		testCase.put("BLACK", SIZE/4);
+		testCase.put("BLAK", SIZE/4);
 
 		analyzer.trainBulk(testCase);
 
@@ -62,7 +62,7 @@ public class TestPerformance {
 		assertEquals(result.getInvalidCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getRegExp(), "(?i)(BLACK|BLUE|GREEN|RED)");
+		assertEquals(result.getRegExp(), "(?i)(BLAK|BLUE|GREEN|RED)");
 		assertNull(result.getTypeModifier());
 	}
 

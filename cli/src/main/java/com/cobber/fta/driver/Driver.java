@@ -176,16 +176,16 @@ public class Driver {
 		if (helpRequested && cmdLineOptions.verbose != 0) {
 			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
-			final Set<String> qualifiers = new TreeSet<>();
+			final Set<String> names = new TreeSet<>();
 
-			// Sort the registered plugins by Qualifier
+			// Sort the registered plugins by the Semantic Type name
 			for (final LogicalType logical : registered)
-				qualifiers.add(logical.getSemanticType());
+				names.add(logical.getSemanticType());
 
 			if (!registered.isEmpty()) {
 				error.println("\nRegistered Semantic Types:");
-				for (final String qualifier : qualifiers) {
-					final LogicalType logical = analyzer.getPlugins().getRegistered(qualifier);
+				for (final String name : names) {
+					final LogicalType logical = analyzer.getPlugins().getRegistered(name);
 					if (logical instanceof LogicalTypeFinite) {
 						final LogicalTypeFinite finite = (LogicalTypeFinite)logical;
 						error.printf("\t%s (Finite): Priority: %d, Cardinality: %d, MaxLength: %d, MinLength: %d",

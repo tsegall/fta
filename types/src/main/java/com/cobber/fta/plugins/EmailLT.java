@@ -95,10 +95,10 @@ public class EmailLT extends LogicalTypeInfinite {
 				try {
 					// The Email Plugin is happily supported by any locale, however, if we are generating
 					// random entries we use the first and last plugins (which may not be supported by the current locale)
-					final PluginDefinition pluginFirst = PluginDefinition.findByQualifier("NAME.FIRST");
+					final PluginDefinition pluginFirst = PluginDefinition.findByName("NAME.FIRST");
 					final AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
 					logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, pluginConfig);
-					final PluginDefinition pluginLast = PluginDefinition.findByQualifier("NAME.LAST");
+					final PluginDefinition pluginLast = PluginDefinition.findByName("NAME.LAST");
 					logicalLast = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginLast, pluginConfig);
 				} catch (FTAPluginException e) {
 					return false;
