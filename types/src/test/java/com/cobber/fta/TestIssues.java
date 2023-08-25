@@ -31,6 +31,32 @@ public class TestIssues {
 		return ret;
 	}
 
+	@Test
+	public void issue48() throws Exception {
+		final String[] fieldnames = { "AddressLine2" };
+		final String[][] values = new String[][] {
+				{ "MIDDLEBURY, CT 06762" }, { "DANVERS, MA 01923-3782" },
+				{ "SAN JOSE, CA 95123-3696" }, { "JACKSONVILLE, FL 32202-1031" },
+				{ "MORIARTY, NM 87035" }, { "ALEXANDRIA, MO 63430-9801" },
+				{ "BROOKSHIRE, TX 77423-9440" }, { "CARROLL, IA 51401-9167" },
+				{ "BUFFALO, NY 14223" }, { "HOUSTON, TX 77002-2526" } };
+
+		final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "issue48",
+				fieldnames);
+		final TextAnalyzer textAnalyzer = new TextAnalyzer(context);
+		textAnalyzer.setLocale(Locale.getDefault());
+		final RecordAnalyzer analyzer = new RecordAnalyzer(textAnalyzer);
+
+		for (final String[] value : values)
+			analyzer.train(value);
+
+		final TextAnalysisResult result = analyzer.getResult().getStreamResults()[0];
+		assertEquals(result.getSemanticType(), "STREET_ADDRESS2_EN");
+		// Header asserts with high confidence that this is a STREET ADDRESS 2, it is clearly not!
+		// First entry is detected as a STREET ADDRESS 2 because CT looks like Court
+		assertEquals(result.getInvalidCount(), 9);
+	}
+
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void issue24() throws IOException, FTAException {
 		final int LONGEST = 40;

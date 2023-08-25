@@ -1,3 +1,8 @@
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.cobber.fta/fta.svg?label=Maven%20Central)](https://search.maven.org/artifact/com.cobber.fta/fta)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/tsegall/fta?logo=GitHub)](https://github.com/tsegall/fta/releases)
+[![CodeQL](https://github.com/tsegall/fta/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/tsegall/fta/actions/workflows/codeql-analysis.yml)
+
 # Semantic Type Detection and Data Profiling #
 
 Metadata/data identification Java library. Identifies Base Type (e.g. Boolean, Double, Long, String, LocalDate, LocalTime, ...) and 
@@ -441,9 +446,12 @@ There are multiple Semantic Types associated with addresses:
  - FULL_ADDRESS - A full address, typically this includes a Postal Code (Zip Code) and/or a State/Province as well as a Street number and Street name.
  - STREET_ADDRESS - First line of an address
  - STREET_ADDRESS2 - Second line of an address
+ - STREET_ADDRESS3 - Third line of an address
+ - STREET_ADDRESS4 - Fourth line of an address
  - STREET_MARKER - The Street qualifier, e.g. Road, Street, Avenue, Boulevard, etc.
  - STREET_NAME - Street name with no number, e.g. Penaton Avenue
  - STREET_NAME_BARE - Street name with no number and no Marker, e.g. Main, Lakeside
+ - STREET_NUMBER - House number within street
 
 ## Faker ##
 

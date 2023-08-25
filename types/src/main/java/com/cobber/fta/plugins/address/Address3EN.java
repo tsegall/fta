@@ -30,7 +30,7 @@ public class Address3EN extends AddressLineNEN {
 	}
 
 	@Override
-	protected char getIndicator() {
-		return '3';
+	protected int getAddressLine() {
+		return 3;
 	}
 }

@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 15.0.1
+ - ENH: Bump google phonenumber
+ - ENH: Add new Semantic Type - STREET_ADDRESS4_EN (Fourth line of an address) (Issue #49)
+ - ENH: Improve US address detection (Issue #49)
+
 ### 15.0.0
  - **ENH:** PluginDefinition.findByQualifier() has changed to PluginDefinition.findByName()
  - ENH: Bump logback-classic, google phonenumber, and guava

@@ -20,9 +20,9 @@
 |CONTINENT.CODE_EN|Continent Code||en|
 |CONTINENT.TEXT_EN|Continent|https://www.wikidata.org/wiki/Property:P30|en|
 |COORDINATE.EASTING|Latitude - easting||en|
-|COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude|*, ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh|
+|COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://www.wikidata.org/wiki/Q34027|*, ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh|
 |COORDINATE.LATITUDE_DMS|Latitude (degrees/minutes/seconds)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude|*|
-|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude|*, ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh|
+|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude, https://www.wikidata.org/wiki/Q36477|*, ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh|
 |COORDINATE.LONGITUDE_DMS|Longitude (degrees/minutes/seconds)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude|*|
 |COORDINATE.NORTHING|Longitude - northing||en|
 |COORDINATE_PAIR.DECIMAL|Coordinate Pair Lat,Long - Decimal degrees|https://en.wikipedia.org/wiki/Geographic_coordinate_system|*|
@@ -92,11 +92,11 @@
 |PERIOD.YEAR_RANGE|Year Range||*|
 |PERSON.AGE|Age (person)||en, es, fr, it, nl, pt|
 |PERSON.AGE_RANGE|Age range (person)||en, es, fr, it, nl, pt|
-|PERSON.DATE_OF_BIRTH|Person - Date of Birth|https://www.wikidata.org/wiki/Property:P569|es, nl, *|
+|PERSON.DATE_OF_BIRTH|Person - Date of Birth|https://www.wikidata.org/wiki/Property:P569, https://www.wikidata.org/wiki/Q2389905|es, nl, *|
 |PERSON.MARITAL_STATUS_EN|Marital Status (person)|https://en.wikipedia.org/wiki/Marital_status|*|
 |PERSON.RACE_ABBR_EN|Race/Ethnicity (person)||*|
 |PERSON.RACE_EN|Race/Ethnicity (person)||*|
-|PERSON.YEAR_OF_BIRTH|Person - Year of Birth|https://www.wikidata.org/wiki/Property:P569|*|
+|PERSON.YEAR_OF_BIRTH|Person - Year of Birth|https://www.wikidata.org/wiki/Property:P569, https://www.wikidata.org/wiki/Q2389905|*|
 |POSTAL_CODE.POSTAL_CODE_AU|Postal Code (AU)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postcodes_in_Australia|en-AU|
 |POSTAL_CODE.POSTAL_CODE_BG|Postal Code (BG)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Bulgaria|bg-BG|
 |POSTAL_CODE.POSTAL_CODE_CA|Postal Code (CA)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Canada|en-US,en-CA,fr-CA|
@@ -163,6 +163,7 @@
 |STATE_PROVINCE.SUBURB_AU|Australian Suburb|https://en.wikipedia.org/wiki/Suburbs_and_localities_(Australia)|en-AU|
 |STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)||en|
 |STREET_ADDRESS3_EN|Street Address - Line 3 (English Language)||en|
+|STREET_ADDRESS4_EN|Street Address - Line 4 (English Language)||en|
 |STREET_ADDRESS_&lt;LANGUAGE&gt;|Street Address||bg, ca, da, de, es, fi, fr, hr, it, lv, nl, pl, pt, ro, ru, sk|
 |STREET_ADDRESS_EN|Street Address (English Language)||en|
 |STREET_MARKER_EN|Street Marker (English Language)|https://en.wikipedia.org/wiki/Street_suffix|en|

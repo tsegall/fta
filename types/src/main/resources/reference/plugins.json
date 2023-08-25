@@ -358,7 +358,7 @@
 		],
 		"threshold": 99,
 		"baseType": "LONG",
-		"priority": 72
+		"priority": 73
 	},
 	{
 		"semanticType": "POSTAL_CODE.POSTAL_CODE_BG",
@@ -379,7 +379,7 @@
 		"threshold": 99,
 		"baseType": "LONG",
 		"backout": "\\d{4}",
-		"priority": 73
+		"priority": 74
 	},
 	{
 		"semanticType": "POSTAL_CODE.POSTAL_CODE_CO",
@@ -398,7 +398,7 @@
 		],
 		"baseType": "LONG",
 		"threshold": 98,
-		"priority": 74
+		"priority": 75
 	},
 	{
 		"semanticType": "FULL_ADDRESS_EN",
@@ -410,7 +410,7 @@
 			{ "localeTag":  "en-CA,en-US", "headerRegExps": [ { "regExp": ".*(?i)(address)", "confidence": 99 }, { "regExp": ".*(?i)(addr|location).*", "confidence": 95 } ] }
 		],
 		"threshold": 90,
-		"priority": 75
+		"priority": 80
 	},
 	{
 		"semanticType": "STREET_ADDRESS_EN",
@@ -422,7 +422,7 @@
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i).*(address|addr)(.*1)?", "confidence": 99 }, { "regExp": ".*(?i)(addr).*", "confidence": 95 }, { "regExp": ".*(?i)(street|location).*", "confidence": 85 } ] }
 		],
 		"threshold": 90,
-		"priority": 76
+		"priority": 81
 	},
 	{
 		"semanticType": "STREET_NAME_EN",
@@ -434,7 +434,7 @@
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(street|road).?name", "confidence": 99 }, { "regExp": "(?i)(street|road)", "confidence": 95 }, { "regExp": ".*(?i)(street|road).*", "confidence": 90 }, { "regExp": ".*(?i)(location).*", "confidence": 85 } ] }
 		],
 		"threshold": 90,
-		"priority": 77
+		"priority": 82
 	},
 	{
 		"semanticType": "STREET_NAME_BARE_EN",
@@ -446,7 +446,7 @@
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i).*(street|road).?name", "confidence": 99, "mandatory": true }, { "regExp": "(?i).*(name|street)", "confidence": 60, "mandatory": true } ] }
 		],
 		"threshold": 90,
-		"priority": 78
+		"priority": 83
 	},
 	{
 		"semanticType": "STREET_MARKER_EN",
@@ -464,7 +464,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Street_suffix" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 79
+		"priority": 84
 	},
 	{
 		"semanticType": "STREET_ADDRESS2_EN",
@@ -476,7 +476,7 @@
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*2", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
 		],
 		"threshold": 90,
-		"priority": 80
+		"priority": 85
 	},
 	{
 		"semanticType": "STREET_ADDRESS3_EN",
@@ -485,10 +485,22 @@
 		"signature": "swnXMC+o9QcQEBdo3yHQEeExVxo=",
 		"clazz": "com.cobber.fta.plugins.address.Address3EN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*2", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*3", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
 		],
 		"threshold": 90,
-		"priority": 81
+		"priority": 86
+	},
+	{
+		"semanticType": "STREET_ADDRESS4_EN",
+		"description": "Street Address - Line 4 (English Language)",
+		"pluginType": "java",
+		"signature": "1lNQdFYXnmRkNzRqwofC40ZHx9Q=",
+		"clazz": "com.cobber.fta.plugins.address.Address4EN",
+		"validLocales": [
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*4", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
+		],
+		"threshold": 90,
+		"priority": 87
 	},
 	{
 		"semanticType": "STREET_NUMBER",
@@ -501,7 +513,7 @@
 			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)(huisnummer|huisnr.*)", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 95,
-		"priority": 82
+		"priority": 88
 	},
 	{
 		"semanticType": "STREET_ADDRESS_<LANGUAGE>",
@@ -528,7 +540,7 @@
 			{ "localeTag":  "sk", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 90,
-		"priority": 83
+		"priority": 89
 	},
 	{
 		"semanticType": "STREET_NAME_BARE_<LANGUAGE>",
@@ -540,7 +552,7 @@
 			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)^(straat|straatnaam)$", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 90,
-		"priority": 84
+		"priority": 90
 	},
 	{
 		"semanticType": "GENDER.TEXT_<LANGUAGE>",
@@ -570,7 +582,7 @@
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P21" },
 			{ "source": "schema", "reference": "https://schema.org/version/latest#term_GenderType" }
 		],
-		"priority": 85
+		"priority": 95
 	},
 	{
 		"semanticType" : "GENDER.TEXT_JA",
@@ -596,7 +608,7 @@
 		],
 		"backout": ".*",
 		"baseType" : "STRING",
-		"priority": 86
+		"priority": 96
 	},
 	{
 		"semanticType" : "GENDER.TEXT_ZH",
@@ -622,7 +634,7 @@
 		],
 		"backout": ".*",
 		"baseType" : "STRING",
-		"priority": 87
+		"priority": 97
 	},
 	{
 		"semanticType" : "PERSON.AGE",
@@ -657,7 +669,7 @@
 			}
 		],
 		"baseType" : "LONG",
-		"priority": 88
+		"priority": 98
 	},
 	{
 		"semanticType" : "PERSON.AGE_RANGE",
@@ -697,7 +709,7 @@
 				"headerRegExps": [ { "regExp": "(?i)idade.*", "confidence": 90, "mandatory": true } ]
 			}
 		],
-		"priority": 89
+		"priority": 99
 	},
 	{
 		"semanticType" : "PERSON.RACE_EN",
@@ -711,7 +723,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(race|ethnic).*", "confidence": 95, "mandatory": true } ]
 			}
 		],
-		"priority": 90
+		"priority": 100
 	},
 	{
 		"semanticType" : "PERSON.RACE_ABBR_EN",
@@ -725,7 +737,7 @@
 				"headerRegExps": [ { "regExp": "(?i)(race|ethnic).*|.*(?i)(race|ethnicity)", "confidence": 95, "mandatory": true } ]
 			}
 		],
-		"priority": 91
+		"priority": 101
 	},
 	{
 		"semanticType" : "PERSON.MARITAL_STATUS_EN",
@@ -742,7 +754,7 @@
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Marital_status" }
 		],
-		"priority": 92
+		"priority": 102
 	},
 	{
 		"semanticType": "NATIONALITY_EN",
@@ -761,7 +773,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Nationality" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 93
+		"priority": 103
 	},
 	{
 		"semanticType": "NATIONALITY_NL",
@@ -780,7 +792,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Nationality" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 94
+		"priority": 104
 	},
 	{
 		"semanticType": "HONORIFIC_EN",
@@ -800,7 +812,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/English_honorifics" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 95
+		"priority": 105
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_DE",
@@ -819,7 +831,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 96
+		"priority": 106
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_ES",
@@ -839,7 +851,7 @@
 		],
 		"threshold": 90,
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 97
+		"priority": 107
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_NL",
@@ -859,7 +871,7 @@
 		],
 		"threshold": 90,
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 98
+		"priority": 108
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_EN",
@@ -881,7 +893,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" }
 		],
 		"threshold": 85,
-		"priority": 99
+		"priority": 109
 	},
 	{
 		"semanticType": "MONTH.ABBR_<LOCALE>",
@@ -890,7 +902,7 @@
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.MonthAbbr",
 		"validLocales": [ { "localeTag":  "*" } ],
-		"priority": 100
+		"priority": 110
 	},
 	{
 		"semanticType": "MONTH.FULL_<LOCALE>",
@@ -902,7 +914,7 @@
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Month" }
 		],
-		"priority": 101
+		"priority": 111
 	},
 	{
 		"semanticType": "DAY.ABBR_<LOCALE>",
@@ -911,7 +923,7 @@
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.DOWAbbr",
 		"validLocales": [ { "localeTag":  "*" } ],
-		"priority": 102
+		"priority": 112
 	},
 	{
 		"semanticType": "DAY.FULL_<LOCALE>",
@@ -923,7 +935,7 @@
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Names_of_the_days_of_the_week" }
 		],
-		"priority": 103
+		"priority": 113
 	},
 	{
 		"semanticType": "PERIOD.QUARTER",
@@ -940,7 +952,7 @@
 				"localeTag":  "nl",
 				"headerRegExps": [ { "regExp": ".*(?i)(periode).*", "confidence": 99, "mandatory": true } ]
 			} ],
-		"priority": 104
+		"priority": 114
 	},
 	{
 		"semanticType": "PERIOD.HALF",
@@ -957,7 +969,7 @@
 				} ]
 			}
 		],
-		"priority": 105
+		"priority": 115
 	},
 	{
 		"semanticType": "PERIOD.YEAR_RANGE",
@@ -966,7 +978,7 @@
 		"signature": "nA7JzkjHCLvvRAfhvJv12v4FNgU=",
 		"clazz": "com.cobber.fta.plugins.PeriodYearRange",
 		"validLocales": [ { "localeTag":  "*" } ],
-		"priority": 106
+		"priority": 116
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_CA",
@@ -984,7 +996,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_and_territories_of_Canada" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 110
+		"priority": 120
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_MX",
@@ -1002,7 +1014,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_of_Mexico" }
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 111
+		"priority": 121
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_US",
@@ -1020,7 +1032,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 112
+		"priority": 122
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_PROVINCE_NA",
@@ -1037,7 +1049,7 @@
 				} ]
 			}
 		],
-		"priority": 113
+		"priority": 123
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_AU",
@@ -1061,7 +1073,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_and_territories_of_Australia" }
 		],
 		"backout": "\\p{IsAlphabetic}{2,3}",
-		"priority": 114
+		"priority": 124
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_IT",
@@ -1079,7 +1091,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Italy" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 115
+		"priority": 125
 	},
 	{
 		"semanticType": "STATE_PROVINCE.CANTON_CH",
@@ -1097,7 +1109,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Cantons_of_Switzerland" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 116
+		"priority": 126
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_BR",
@@ -1115,7 +1127,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Federative_units_of_Brazil" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 117
+		"priority": 127
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_ZA",
@@ -1133,7 +1145,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_South_Africa" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 118
+		"priority": 128
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_CA",
@@ -1157,7 +1169,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_and_territories_of_Canada" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 120
+		"priority": 130
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_NAME_MX",
@@ -1181,7 +1193,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_of_Mexico" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 121
+		"priority": 131
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_NAME_US",
@@ -1205,7 +1217,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 122
+		"priority": 132
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_PROVINCE_NAME_NA",
@@ -1226,7 +1238,7 @@
 			"reference": "/reference/na_states_provinces_full.csv"
 		},
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 123
+		"priority": 133
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_NAME_AU",
@@ -1250,7 +1262,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_and_territories_of_Australia" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 124
+		"priority": 134
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_NAME_DE",
@@ -1274,7 +1286,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_of_Germany" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 125
+		"priority": 135
 	},
 	{
 		"semanticType": "STATE_PROVINCE.REGION_NAME_FR",
@@ -1295,7 +1307,7 @@
 			"reference": "/reference/fr_regions.csv"
 		},
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 126
+		"priority": 136
 	},
 	{
 		"semanticType": "STATE_PROVINCE.DEPARTMENT_NAME_FR",
@@ -1316,7 +1328,7 @@
 			"reference": "/reference/fr_department.csv"
 		},
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 127
+		"priority": 137
 	},
 	{
 		"semanticType": "STATE_PROVINCE.INSEE_CODE_FR",
@@ -1332,7 +1344,7 @@
 		],
 		"baseType": "LONG",
 		"backout": "\\d{5}",
-		"priority": 128
+		"priority": 138
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_IT",
@@ -1356,7 +1368,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Italy" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 129
+		"priority": 139
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_ES",
@@ -1380,7 +1392,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Spain" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 130
+		"priority": 140
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_NL",
@@ -1404,7 +1416,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_the_Netherlands" }
 		],
 		"backout": "[- \\p{IsAlphabetic}]+",
-		"priority": 131
+		"priority": 141
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COUNTY_US",
@@ -1428,7 +1440,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/County_(United_States)" }
 		],
 		"backout": "[-,\\.,' \\p{IsAlphabetic}]+",
-		"priority": 132
+		"priority": 142
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COUNTY_UK",
@@ -1452,7 +1464,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Counties_of_the_United_Kingdom" }
 		],
 		"backout": "[-,& \\p{IsAlphabetic}]+",
-		"priority": 133
+		"priority": 143
 	},
 	{
 		"semanticType": "STATE_PROVINCE.CANTON_NAME_CH",
@@ -1476,7 +1488,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Cantons_of_Switzerland" }
 		],
 		"backout": "[-\\. \\p{IsAlphabetic}]+",
-		"priority": 134
+		"priority": 144
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_NAME_BR",
@@ -1500,7 +1512,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Federative_units_of_Brazil" }
 		],
 		"backout": "[-\\. \\p{IsAlphabetic}]+",
-		"priority": 135
+		"priority": 145
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PREFECTURE_NAME_JA",
@@ -1524,7 +1536,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Prefectures_of_Japan" }
 		],
 		"backout": "[-\\. \\p{IsAlphabetic}]+",
-		"priority": 136
+		"priority": 146
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_ZA",
@@ -1548,7 +1560,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_South_Africa" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 137
+		"priority": 147
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_EC",
@@ -1572,7 +1584,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Ecuador" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 138
+		"priority": 148
 	},
 	{
 		"semanticType": "STATE_PROVINCE.DISTRICT_NAME_PT",
@@ -1596,7 +1608,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_municipalities_of_Portugal" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 139
+		"priority": 149
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_BR",
@@ -1614,7 +1626,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Municipalities_of_Brazil" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 140
+		"priority": 150
 	},
 	{
 		"semanticType": "STATE_PROVINCE.REGION_NAME_IT",
@@ -1632,7 +1644,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Regions_of_Italy" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 141
+		"priority": 151
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COMMUNE_IT",
@@ -1651,7 +1663,7 @@
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"threshold": 85,
-		"priority": 142
+		"priority": 152
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COUNTY_HU",
@@ -1669,7 +1681,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Counties_of_Hungary" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 143
+		"priority": 153
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COUNTY_IE",
@@ -1687,7 +1699,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Counties_of_Ireland" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 144
+		"priority": 154
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_IE",
@@ -1705,7 +1717,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Ireland" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 145
+		"priority": 155
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_MX",
@@ -1723,7 +1735,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Municipalities_of_Mexico" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 146
+		"priority": 156
 	},
 	{
 		"semanticType": "STATE_PROVINCE.SUBURB_AU",
@@ -1742,7 +1754,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Suburbs_and_localities_(Australia)" }
 		],
 		"backout": "[' \\p{IsAlphabetic}]+",
-		"priority": 147
+		"priority": 157
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_CO",
@@ -1760,7 +1772,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Municipalities_of_Colombia" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 148
+		"priority": 158
 	},
 	{
 		"semanticType": "STATE_PROVINCE.DEPARTMENT_CO",
@@ -1778,7 +1790,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Departments_of_Colombia" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 149
+		"priority": 159
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_NL",
@@ -1796,7 +1808,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Municipalities_of_the_Netherlands" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 150
+		"priority": 160
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_CODE_NL",
@@ -1808,7 +1820,7 @@
 			{ "localeTag":  "en-NL,nl-NL", "headerRegExps": [ { "regExp": ".*(?i)gemeente.?(code|nummer|nr).*", "confidence": 95, "mandatory": true } ] }
 		],
 		"threshold": 95,
-		"priority": 151
+		"priority": 161
 	},
 	{
 		"semanticType": "STATE_PROVINCE.REGION_NAME_PE",
@@ -1826,7 +1838,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Regions_of_Peru" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 152
+		"priority": 162
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_PE",
@@ -1844,7 +1856,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Peru" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 153
+		"priority": 163
 	},
 	{
 		"semanticType": "STATE_PROVINCE.REGION_NAME_TZ",
@@ -1862,7 +1874,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Regions_of_Tanzania" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 154
+		"priority": 164
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_FIPS_US",
@@ -1881,7 +1893,7 @@
 		],
 		"baseType": "LONG",
 		"backout": "\\d{2}",
-		"priority": 155
+		"priority": 165
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COUNTY_FIPS_US",
@@ -1900,7 +1912,7 @@
 		],
 		"baseType": "LONG",
 		"backout": "\\d{5}",
-		"priority": 156
+		"priority": 166
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_CODE_BR",
@@ -1919,7 +1931,7 @@
 		],
 		"baseType": "LONG",
 		"backout": "\\d{7}",
-		"priority": 157
+		"priority": 167
 	},
 	{
 		"semanticType": "CURRENCY_CODE.ISO-4217",
@@ -1938,7 +1950,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_4217" }
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 160
+		"priority": 170
 	},
 	{
 		"semanticType": "CURRENCY.TEXT_EN",
@@ -1959,7 +1971,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Currency" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 161
+		"priority": 171
 	},
 	{
 		"semanticType": "COUNTRY.ISO-3166-3",
@@ -1978,7 +1990,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3" }
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 162
+		"priority": 172
 	},
 	{
 		"semanticType": "COUNTRY.ISO-3166-2",
@@ -1997,7 +2009,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 163
+		"priority": 173
 	},
 	{
 		"semanticType": "TIMEZONE.IANA",
@@ -2016,7 +2028,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" }
 		],
 		"backout": "[-_/A-Za-z]+",
-		"priority": 164
+		"priority": 174
 	},
 	{
 		"semanticType": "CONTINENT.TEXT_EN",
@@ -2034,7 +2046,7 @@
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P30" }
 		],
-		"priority": 165
+		"priority": 175
 	},
 	{
 		"semanticType": "CONTINENT.CODE_EN",
@@ -2049,7 +2061,7 @@
 			"reference": "/reference/en_continent_code.csv"
 		},
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 166
+		"priority": 176
 	},
 	{
 		"semanticType": "AIRPORT_CODE.IATA",
@@ -2071,7 +2083,7 @@
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
 		"threshold": 97,
-		"priority": 167
+		"priority": 177
 	},
 	{
 		"semanticType": "AIRLINE.IATA_CODE",
@@ -2093,7 +2105,7 @@
 		],
 		"backout": "\\p{Alnum}{2}",
 		"threshold": 97,
-		"priority": 168
+		"priority": 178
 	},
 	{
 		"semanticType": "AIRLINE.TEXT_EN",
@@ -2112,7 +2124,7 @@
 		},
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"threshold": 85,
-		"priority": 169
+		"priority": 179
 	},
 	{
 		"semanticType": "FILENAME",
@@ -2126,7 +2138,7 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(file.?name).*", "confidence": 99 } ]
 			}
 		],
-		"priority": 170
+		"priority": 180
 	},
 	{
 		"semanticType": "PERSON.YEAR_OF_BIRTH",
@@ -2145,7 +2157,7 @@
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q2389905" }
 		],
 		"baseType": "LOCALDATE",
-		"priority": 180
+		"priority": 181
 	},
 	{
 		"semanticType": "PERSON.DATE_OF_BIRTH",
@@ -2171,7 +2183,7 @@
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P569" },
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q2389905" }
 		],
-		"priority": 181
+		"priority": 182
 	},
 	{
 		"semanticType": "COORDINATE.LATITUDE_DECIMAL",

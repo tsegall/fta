@@ -18,19 +18,19 @@ package com.cobber.fta.plugins.address;
 import com.cobber.fta.PluginDefinition;
 
 /**
- * Plugin to detect the third line of an Address. (English-language only).
+ * Plugin to detect the fourth line of an Address. (English-language only).
  */
-public class Address2EN extends AddressLineNEN {
+public class Address4EN extends AddressLineNEN {
 	/**
-	 * Construct a plugin to detect the second line of an Address based on the Plugin Definition.
+	 * Construct a plugin to detect the third line of an Address based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public Address2EN(final PluginDefinition plugin) {
+	public Address4EN(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
 	@Override
 	protected int getAddressLine() {
-		return 2;
+		return 4;
 	}
 }
