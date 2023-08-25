@@ -10,7 +10,7 @@ Metadata/data identification Java library. Identifies Base Type (e.g. Boolean, D
 Extensive country/language support. Extensible via user-defined plugins. Comprehensive Profiling support.
 
 Design objectives:
-* Large set of built-in Semantic Types (extensible via JSON defined plugins).  See list below.
+* Large set of built-in Semantic Types (extensible via JSON defined plugins).  [Details](SemanticTypes.md).
 * Extensive Profiling metrics (e.g. Min, Max, Distinct, signatures, …)
 * Sufficiently fast to be used inline.   See Speed notes below.
 * Minimal false positives for Semantic type detection. See Performance notes below.
