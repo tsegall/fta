@@ -370,4 +370,22 @@ public final class Utils {
 
 		return Double.parseDouble(cleaned);
 	}
+
+	/**
+	 * Calculate the probability that the set of size 'samples' is unique give the sampleSample size.
+	 * @param sampleSpace Size of the Sample Space
+	 * @param samples number of samples observed
+	 * @return The probability that the sample set is unique.
+	 */
+	public static double uniquenessProbability(final int sampleSpace, final int samples) {
+		double result = 1.0;
+		double sampleSpaceD = sampleSpace;
+		double numerator = sampleSpaceD;
+		for (int i = sampleSpace; i > sampleSpace - samples; i--) {
+			result = result * numerator / sampleSpaceD;
+			numerator -= 1.0;
+		}
+
+		return 1.0 - result;
+	}
 }

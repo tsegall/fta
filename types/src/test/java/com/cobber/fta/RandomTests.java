@@ -343,10 +343,11 @@ public class RandomTests {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{1,2}");
 		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), "99");
 		assertNull(result.getTypeModifier());
-		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getConfidence(), 0.95);
 		assertEquals(result.getMean(), (double)sum/COUNT);
 		assertEquals(result.getStandardDeviation(), 28.86607004772212);
 	}
@@ -1938,10 +1939,12 @@ public class RandomTests {
 		int locked = -1;
 
 		analysis.train("A");
-		for (int i = start; i < end; i++) {
+		for (int i = start; i < end - 1; i++) {
 			if (analysis.train(String.valueOf(i)) && locked == -1)
 				locked = i - start;
 		}
+		// Two copies of end - 2 so the field does not look like an IDENTIFIER
+		analysis.train(String.valueOf(end - 2));
 		analysis.train("B");
 		analysis.train("C");
 		analysis.train("D");
@@ -1961,6 +1964,7 @@ public class RandomTests {
 
 		assertEquals(result.getRegExp(), "\\d{5}");
 		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getSemanticType());
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), invalids);
 		assertEquals(result.getSampleCount(), invalids + end - start);
@@ -2178,21 +2182,24 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testCardinalitySortedLong() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testCardinalitySortedLong");
+		analysis.setDebug(2);
 		final int start = 1000;
 		final int end = 100;
 
-		for (int i = start; i >= end; i--) {
+		for (int i = start; i > end; i--) {
 			analysis.train(String.valueOf(i));
 		}
 		analysis.train("-2");
 		analysis.train("10000");
+		analysis.train("10000");
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getSampleCount(), start - end + 3);
-		assertEquals(result.getCardinality(), start - end + 3);
-		assertEquals(result.getRegExp(), "[+-]?\\d{1,5}");
 		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), start - end + 3);
+		assertEquals(result.getCardinality(), start - end + 2);
+		assertEquals(result.getRegExp(), "[+-]?\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-2");
 		assertEquals(result.getMaxValue(), "10000");

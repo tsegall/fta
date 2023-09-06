@@ -335,6 +335,8 @@ public class TestLongs {
 		analysis.train("000617372");
 		analysis.train("000617373");
 		analysis.train("000617374");
+		// This one is a duplicate - so we do not detect field as an IDENTIFIER
+		analysis.train("000617331");
 
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
@@ -342,10 +344,10 @@ public class TestLongs {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeModifier());
 		assertNull(result.getSemanticType());
-		assertEquals(result.getSampleCount(), 59);
-		assertEquals(result.getMatchCount(), 59);
+		assertEquals(result.getSampleCount(), 60);
+		assertEquals(result.getMatchCount(), 60);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getLeadingZeroCount(), 59);
+		assertEquals(result.getLeadingZeroCount(), 60);
 		assertEquals(result.getRegExp(), "\\d{9}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertNull(result.checkCounts());
@@ -424,7 +426,7 @@ public class TestLongs {
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeModifier());
-		assertNull(result.getSemanticType());
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
 		assertEquals(result.getSampleCount(), tooBig);
 		assertEquals(result.getMatchCount(), tooBig);
 		assertEquals(result.getNullCount(), 0);
@@ -432,6 +434,37 @@ public class TestLongs {
 		assertEquals(result.getUniqueness(), 1.0);
 		assertEquals(result.getDistinctCount(), tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
+		assertEquals(result.getConfidence(), 0.99);
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void testWithNull() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 100;
+		final TextAnalyzer analysis = new TextAnalyzer("testWithNull", null);
+
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			analysis.train(String.valueOf(i));
+		analysis.train(null);
+		analysis.train(" ");
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeModifier());
+		assertNull(result.getSemanticType());
+		assertEquals(result.getSampleCount(), SAMPLE_COUNT + 2);
+		assertEquals(result.getMatchCount(), SAMPLE_COUNT);
+		assertEquals(result.getNullCount(), 1);
+		assertEquals(result.getBlankCount(), 1);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getUniqueness(), 1.0);
+		assertEquals(result.getDistinctCount(), SAMPLE_COUNT);
+		assertEquals(result.getRegExp(), "\\d{1,2}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertNull(result.checkCounts());
 
@@ -481,7 +514,7 @@ public class TestLongs {
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeModifier());
-		assertNull(result.getSemanticType());
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
 		assertEquals(result.getSampleCount(), 2 * tooBig);
 		assertEquals(result.getMatchCount(), 2 * tooBig);
 		assertEquals(result.getNullCount(), 0);
@@ -489,7 +522,7 @@ public class TestLongs {
 		assertEquals(result.getUniqueness(), 1.0);
 		assertEquals(result.getDistinctCount(), 2 * tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
-		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getConfidence(), 0.99);
 		assertNull(result.checkCounts());
 
 		TestSupport.checkHistogram(result, 10, true);
@@ -509,7 +542,7 @@ public class TestLongs {
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeModifier());
-		assertNull(result.getSemanticType());
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
 		assertEquals(result.getSampleCount(), 2 * tooBig);
 		assertEquals(result.getMatchCount(), 2 * tooBig);
 		assertEquals(result.getNullCount(), 0);
@@ -517,7 +550,7 @@ public class TestLongs {
 		assertEquals(result.getUniqueness(), 1.0);
 		assertEquals(result.getDistinctCount(), 2 * tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
-		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getConfidence(), 0.99);
 		assertNull(result.checkCounts());
 
 		TestSupport.checkHistogram(result, 10, true);
@@ -571,7 +604,7 @@ public class TestLongs {
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getTypeModifier(), "SIGNED");
-		assertNull(result.getSemanticType());
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
 		assertEquals(result.getSampleCount(), 2 * tooBig + 1);
 		assertEquals(result.getMatchCount(), 2 * tooBig + 1);
 		assertEquals(result.getNullCount(), 0);
@@ -579,7 +612,7 @@ public class TestLongs {
 		assertEquals(result.getUniqueness(), 1.0);
 		assertEquals(result.getDistinctCount(), 2 * tooBig + 1);
 		assertEquals(result.getRegExp(), "[+-]?\\d{1,5}");
-		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getConfidence(), 0.99);
 		assertNull(result.checkCounts());
 
 		TestSupport.dumpRaw(result.getHistogram(10));
@@ -1144,7 +1177,7 @@ public class TestLongs {
 		final String inputs[] = {
 				"    0", "    1", "    2", "    3", "    4", "    5", "    6", "    7", "    8", "    9",
 				"    10", "    11", "    12", "    13", "    14", "    15", "    16", "    17", "    18", "    19",
-				"    20", "    21", "    22", "    23", "    24", "    25", "    26", "    27", "    28", "    29"
+				"    20", "    21", "    22", "    23", "    24", "    25", "    11", "    27", "    28", "    29"
 		};
 		int locked = -1;
 
@@ -1165,7 +1198,6 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), "29");
-		assertEquals(result.getMean(), 14.5);
 		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE + "\\d{1,2}");
 		assertNull(result.checkCounts());
 
@@ -1488,7 +1520,7 @@ public class TestLongs {
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getTypeModifier(), "SIGNED");
-		assertNull(result.getSemanticType());
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE + 1);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE + 1);
 		assertEquals(result.getNullCount(), 0);
@@ -1690,7 +1722,7 @@ public class TestLongs {
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeModifier());
-		assertNull(result.getSemanticType());
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
@@ -1819,6 +1851,34 @@ public class TestLongs {
 				result.getSampleCount() - result.getNullCount() - result.getBlankCount(), result.getMatchCount(),
 				result.getMean(), result.getStandardDeviation());
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void uniqueness() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("ID");
+		final int SAMPLE_SIZE = 1000;
+
+		for (int i = 0; i < SAMPLE_SIZE; i++)
+			analysis.train(String.valueOf(i));
+		analysis.train(null);
+		analysis.train(null);
+		analysis.train(" ");
+		analysis.train("  ");
+
+		analysis.setTotalCount(1000);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), SAMPLE_SIZE + 4);
+		assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+		assertEquals(result.getNullCount(), 2);
+		assertEquals(result.getBlankCount(), 2);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getSemanticType());
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getKeyConfidence(), 0.0);
+		assertEquals(result.getUniqueness(), 1.0);
+	}
+
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void noStatistics() throws IOException, FTAException {

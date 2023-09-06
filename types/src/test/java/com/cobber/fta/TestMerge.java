@@ -128,6 +128,47 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void testMonotonicIncreasing() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 100;
+
+		final List<String> samplesLong100 = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesLong100.add(String.valueOf(i));
+		samplesLong100.add(null);
+
+		final List<String> samplesLong200 = new ArrayList<>();
+		for (int i = SAMPLE_COUNT; i < 2 * SAMPLE_COUNT; i++)
+			samplesLong200.add(String.valueOf(i));
+		samplesLong200.add(null);
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesLong100, samplesLong200, "monotonicIncreasing", null, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+		assertNull(mergedResult.getSemanticType());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void testMonotonicIncreasingIdentifier() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 100;
+
+		final List<String> samplesLong100 = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesLong100.add(String.valueOf(i));
+
+		final List<String> samplesLong200 = new ArrayList<>();
+		for (int i = SAMPLE_COUNT; i < 2 * SAMPLE_COUNT; i++)
+			samplesLong200.add(String.valueOf(i));
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesLong100, samplesLong200, "monotonicIncreasing", null, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+		assertEquals(mergedResult.getSemanticType(), "IDENTIFIER");
+		assertEquals(mergedResult.getKeyConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void testBulkLongNoStats() throws IOException, FTAException {
 		final long SAMPLE_COUNT = 100L;
 
@@ -814,7 +855,7 @@ public class TestMerge {
 		samplesTwo.add(null);
 
 		// The challenge is that the topK/bottomK has '0' in it which is not in the set of samples registered above
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "localtime_localtime", null, true);
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesOne, samplesTwo, "strangeZeroes", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getSampleCount(), 10);

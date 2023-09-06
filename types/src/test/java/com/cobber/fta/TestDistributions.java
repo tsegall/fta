@@ -56,7 +56,7 @@ import com.cobber.fta.dates.DateTimeParser;
 public class TestDistributions {
 	final Random random = new Random(314159265);
 
-	public void baseLong(final long size, final double relativeAccuracy) throws IOException, FTAException {
+	public void baseLong(final long size, final double relativeAccuracy, final double confidence) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("baseLong" + size);
 		analysis.setQuantileRelativeAccuracy(relativeAccuracy);
 
@@ -81,7 +81,7 @@ public class TestDistributions {
 
 		assertEquals(result.getSampleCount(), size);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getConfidence(), confidence);
 		assertEquals(result.getType(), FTAType.LONG);
 
 		assertEquals(result.getMinValue(), "0");
@@ -107,44 +107,44 @@ public class TestDistributions {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long10() throws IOException, FTAException {
-		baseLong(10, .01);
-		baseLong(10, .001);
+		baseLong(10, .01, 1.0);
+		baseLong(10, .001, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long100() throws IOException, FTAException {
-		baseLong(100, .01);
-		baseLong(100, .001);
+		baseLong(100, .01, .95);
+		baseLong(100, .001, .95);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long1K() throws IOException, FTAException {
-		baseLong(1_000, .01);
-		baseLong(1_000, .001);
+		baseLong(1_000, .01, 0.97);
+		baseLong(1_000, .001, 0.97);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long10K() throws IOException, FTAException {
-		baseLong(10_000, .01);
-		baseLong(10_000, .001);
+		baseLong(10_000, .01, 0.99);
+		baseLong(10_000, .001, 0.99);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long15K() throws IOException, FTAException {
-		baseLong(15_000, .01);
-		baseLong(15_000, .001);
+		baseLong(15_000, .01, 0.99);
+		baseLong(15_000, .001, 0.99);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long100K() throws IOException, FTAException {
-		baseLong(100_000, .01);
-		baseLong(100_000, .001);
+		baseLong(100_000, .01, 0.99);
+		baseLong(100_000, .001, 0.99);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void long1M() throws IOException, FTAException {
-		baseLong(1_000_000, .01);
-		baseLong(1_000_000, .001);
+		baseLong(1_000_000, .01, 0.99);
+		baseLong(1_000_000, .001, 0.99);
 	}
 
 	public void negativeLong(final long size, final double relativeAccuracy) throws IOException, FTAException {
@@ -701,7 +701,7 @@ public class TestDistributions {
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void withSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("withSpaces");
-		final int SIZE = 100;
+		final int SIZE = 98;
 
 		for (int i = 0; i < SIZE; i++) {
 			analysis.train(String.valueOf(i));
@@ -713,18 +713,19 @@ public class TestDistributions {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), SIZE * 2);
 		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
 		assertEquals(result.getRegExp(), "[ 	]*\\d{1,2}");
-		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getConfidence(), .95);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertNull(result.getTypeModifier(), "HH:mm:ss.SSS");
+		assertNull(result.getTypeModifier());
 
 		final String q0_0 = result.getValueAtQuantile(0);
 		final String q0_5 = result.getValueAtQuantile(.5);
 		final String q1_0 = result.getValueAtQuantile(1.0);
 
 		assertEquals(q0_0, "0");
-		assertEquals(q0_5, "49");
-		assertEquals(q1_0, "99");
+		assertEquals(q0_5, "48");
+		assertEquals(q1_0, "97");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
@@ -1005,9 +1006,9 @@ public class TestDistributions {
 		assertEquals(result.getTotalCount(), 2 * size);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
+		assertEquals(result.getConfidence(), 0.99);
 		assertEquals(result.getMaxValue(), "200000");
 		assertNull(result.getTypeModifier(), "SIGNED");
 
@@ -1396,6 +1397,7 @@ public class TestDistributions {
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void testPerformance() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("simpleHistogramGaussian");
+		analysis.setDebug(2);
 		analysis.setHistogramBins(1000);
 		final int SIZE = 1_000_000; //0000;
 

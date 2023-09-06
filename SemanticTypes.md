@@ -53,6 +53,7 @@
 |HASH.SHA1_HEX|SHA1 Hash - hexadecimal|https://en.wikipedia.org/wiki/SHA-1|*|
 |HASH.SHA256_HEX|SHA256 Hash - hexadecimal|https://en.wikipedia.org/wiki/SHA-2|*|
 |HONORIFIC_EN|Honorific (English Language)|https://www.wikidata.org/wiki/Property:P511, https://en.wikipedia.org/wiki/English_honorifics|en|
+|IDENTIFIER|Unique Identifier|https://en.wikipedia.org/wiki/Identifier|*|
 |IDENTITY.AADHAAR_IN|Aadhaar (India)|https://en.wikipedia.org/wiki/Aadhaar|en-IN|
 |IDENTITY.BSN_NL|BSN (Netherlands)|https://en.wikipedia.org/wiki/National_identification_number#Netherlands|en-NL,nl-NL|
 |IDENTITY.DUNS|Data Universal Numbering System (Dun &amp; Bradstreet)|https://www.wikidata.org/wiki/Property:P2771, https://en.wikipedia.org/wiki/Data_Universal_Numbering_System|*|

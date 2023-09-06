@@ -207,8 +207,8 @@ There are a large number of metrics detected, which vary based on the type of th
  * multiline - Does the observed set have leading multiline elements
  * isSemanticType - Does the observed stream, reflect a Semantic Type
  * semanticType - The Semantic Type detected (Only valid if isSemanticType is true)
- * uniqueness - The percentage (0.0-1.0) of elements in the stream with a cardinality of one, -1.0 if maxCardinality exceeded.  See Note 1.
- * keyConfidence - The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique).  See Note 1.
+ * uniqueness - The percentage (0.0-1.0) of non-null/non-blank elements in the stream with a cardinality of one, -1.0 if maxCardinality exceeded.  See Note 1.
+ * keyConfidence - The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique and non-null/non-blank).  See Note 1.
  * cardinalityDetail - Details on the valid set, list of elements and occurrence count
  * outlierDetail - Details on the invalid set, list of elements and occurrence count
  * shapesDetail - Details on the shapes set, list of elements and occurrence count. This will collapse all numerics to '9', and all alphabetics to 'X'

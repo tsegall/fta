@@ -598,6 +598,7 @@ public class TextAnalyzer {
 	 * @param keyConfidence The new keyConfidence
 	 */
 	public void setKeyConfidence(final double keyConfidence) {
+		facts.external.keyConfidence = keyConfidence;
 		facts.keyConfidence = keyConfidence;
 	}
 
@@ -607,6 +608,7 @@ public class TextAnalyzer {
 	 * @param uniqueness The new Uniqueness
 	 */
 	public void setUniqueness(final double uniqueness) {
+		facts.external.uniqueness = uniqueness;
 		facts.uniqueness = uniqueness;
 	}
 
@@ -1923,11 +1925,12 @@ public class TextAnalyzer {
 
 	void ctxdebug(final String area, final String format, final Object... arguments) {
 		if (analysisConfig.getDebug() >= 2) {
-			final StringBuilder formatWithContext = new StringBuilder().append(area).append(" ({}, {}) -- ").append(format);
-			final Object[] newArguments = new Object[2 + arguments.length];
+			final StringBuilder formatWithContext = new StringBuilder().append(area).append(" ({}, {}, {}) -- ").append(format);
+			final Object[] newArguments = new Object[3 + arguments.length];
 			int newIndex = 0;
 			newArguments[newIndex++] = context.getStreamName();
 			newArguments[newIndex++] = analysisConfig.getTrainingMode();
+			newArguments[newIndex++] = context.isNested();
 			for (final Object arg : arguments)
 				newArguments[newIndex++] = arg;
 			LoggerFactory.getLogger("com.cobber.fta").debug(formatWithContext.toString(), newArguments);
@@ -2860,7 +2863,7 @@ public class TextAnalyzer {
 	protected TextAnalysisResult reAnalyze(final Map<String, Long> details) throws FTAPluginException, FTAUnsupportedLocaleException {
 		final TextAnalyzer analysisBulk = new TextAnalyzer(getContext());
 		analysisBulk.setExternalFacts(getFacts().external);
-		analysisBulk.setConfig(getConfig());
+		analysisBulk.setConfig(new AnalysisConfig(getConfig()));
 		analysisBulk.getContext().setNested();
 
 		analysisBulk.trainBulk(details);
@@ -3198,6 +3201,7 @@ public class TextAnalyzer {
 				analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS) &&
 				FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType()) &&
 				!facts.getMatchTypeInfo().isSemanticType() &&
+				facts.cardinality.size() != analysisConfig.getMaxCardinality() &&
 				!getContext().isNested() && pluginThreshold != 100 && facts.matchCount >= 20) {
 			final Map<String, Long> details = facts.synthesizeBulk();
 			final Map<String, Long> outliers = new HashMap<>();
@@ -3271,6 +3275,26 @@ public class TextAnalyzer {
 						LocalDate.parse(String.valueOf(Double.valueOf(facts.maxDouble).longValue()), interimFormatter));
 				ctxdebug("Type determination", "was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
 			}
+		}
+
+		final PluginDefinition pluginDefinition = PluginDefinition.findByName("IDENTIFIER");
+		LogicalType identifier = LogicalTypeFactory.newInstance(pluginDefinition, analysisConfig);
+
+		if (!facts.getMatchTypeInfo().isSemanticType() && !getContext().isNested() &&
+				((facts.external.keyConfidence != null && facts.external.keyConfidence == 1.0) ||
+				(facts.uniqueness == 1.0 && facts.matchCount >= 20 &&
+					identifier.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().regexp, facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()))) {
+			facts.getMatchTypeInfo().regexp = facts.getRegExp();
+			facts.getMatchTypeInfo().setSemanticType(identifier.getSemanticType());
+			// If the keyConfidence was not set externally and we have concluded we have an IDENTIFIER set the keyConfidence to reflect this
+			if (facts.external.keyConfidence == null) {
+				facts.confidence = facts.external.totalCount == facts.sampleCount ? 1.0 : identifier.getConfidence(facts.matchCount, realSamples, context);
+				facts.keyConfidence = facts.confidence;
+			}
+			else
+				facts.confidence = 1.0;
+
+			ctxdebug("Type determination", "post Uniqueness analyis, matchTypeInfo - {}", facts.getMatchTypeInfo());
 		}
 
 		// If we are in SIMPLE mode (i.e. not Bulk) and we have not detected a Semantic Type - try replaying accumulated set in Bulk mode,
@@ -3755,10 +3779,14 @@ public class TextAnalyzer {
 		ret.facts.maxRawLength = Math.max(first.facts.maxRawLength, second.facts.maxRawLength);
 
 		// So if both sets are unique in their own right and the sets are non-overlapping then the merged set is unique
-		if (firstFacts.getMatchTypeInfo() != null && firstFacts.uniqueness != null && firstFacts.uniqueness == 1.0 &&
-				secondFacts.uniqueness != null && secondFacts.uniqueness == 1.0 &&
-				nonOverlappingRegions(firstFacts, secondFacts, ret.analysisConfig))
-			ret.facts.uniqueness = 1.0;
+		if (firstFacts.getMatchTypeInfo() != null && nonOverlappingRegions(firstFacts, secondFacts, ret.analysisConfig)) {
+			if (firstFacts.uniqueness != null && firstFacts.uniqueness == 1.0 && secondFacts.uniqueness != null && secondFacts.uniqueness == 1.0 )
+				ret.facts.uniqueness = 1.0;
+			if (firstFacts.monotonicIncreasing && secondFacts.monotonicIncreasing)
+				ret.facts.monotonicIncreasing = true;
+			else if (firstFacts.monotonicDecreasing && secondFacts.monotonicDecreasing)
+				ret.facts.monotonicDecreasing = true;
+		}
 
 		// Check to see if we have exceeded the cardinality on the the first, second, or the merge.
 		// If so the samples we have seen do not reflect the entirety of the input so we need to
@@ -3820,14 +3848,19 @@ public class TextAnalyzer {
 	}
 
 	private static boolean nonOverlappingRegions(final Facts firstFacts, final Facts secondFacts, final AnalysisConfig analysisConfig) {
-		final StringConverter stringConverter = new StringConverter(firstFacts.getMatchTypeInfo().getBaseType(), new TypeFormatter(firstFacts.getMatchTypeInfo(), analysisConfig));
-		if (stringConverter.toDouble(firstFacts.getMinValue()) == stringConverter.toDouble(secondFacts.getMinValue()))
+		String firstMin = firstFacts.getMinValue();
+		String secondMin = secondFacts.getMinValue();
+		if (firstMin == null || secondMin == null)
 			return false;
 
-		if (stringConverter.toDouble(firstFacts.getMinValue()) < stringConverter.toDouble(secondFacts.getMinValue()))
-			return stringConverter.toDouble(firstFacts.getMaxValue()) < stringConverter.toDouble(secondFacts.getMinValue());
+		final StringConverter stringConverter = new StringConverter(firstFacts.getMatchTypeInfo().getBaseType(), new TypeFormatter(firstFacts.getMatchTypeInfo(), analysisConfig));
+		if (stringConverter.toDouble(firstMin) == stringConverter.toDouble(secondMin))
+			return false;
 
-		return stringConverter.toDouble(secondFacts.getMaxValue()) < stringConverter.toDouble(firstFacts.getMinValue());
+		if (stringConverter.toDouble(firstMin) < stringConverter.toDouble(secondMin))
+			return stringConverter.toDouble(firstFacts.getMaxValue()) < stringConverter.toDouble(secondMin);
+
+		return stringConverter.toDouble(secondFacts.getMaxValue()) < stringConverter.toDouble(firstMin);
 	}
 
 	protected Facts getFacts() {

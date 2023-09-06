@@ -1154,6 +1154,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGUID() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("GUID");
+		analysis.setDebug(2);
 		final String[] inputs = {
 				"DAA3EDDE-5BCF-4D2A-8FB0-E120089343AF",
 				"B0613BE8-88AF-4591-A9A0-059F80413212",
@@ -2069,7 +2070,7 @@ public class TestPlugins {
 						"10996|10997|10998|10999|11000|11001|11002|11003|11004|11005|11006|11007|11008|11009|11010|11011|11012|" +
 						"11013|11014|11015|11016|11017|11018|11019|11020|11021|11022|11023|11024|11025|11026|11027|11028|11029|" +
 						"11030|11031|11032|11033|11034|11035|11036|11037|11038|11039|11040|11041|11042|11043|11044|11045|11046|" +
-						"11047|11048|11049|11050|11051|11052|11053|11054|11055|11056|11057|11058|11059|11060|11061|11062|11063|";
+						"11047|11048|11049|11050|11051|11052|11053|11054|11055|11056|11057|11058|11059|11060|11061|11063|11063|";
 		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
@@ -4594,5 +4595,125 @@ public class TestPlugins {
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameIDSample() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 1000;
+		baseID(new TextAnalyzer("ID"), SAMPLE_SIZE, -1, 0.99);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameID() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 1000;
+		baseID(new TextAnalyzer("ID"), SAMPLE_SIZE, SAMPLE_SIZE, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameROW_IDSample() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 1000;
+		baseID(new TextAnalyzer("ROW_ID"), SAMPLE_SIZE, -1, 0.99);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameROW_IDSampleExternal() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 1000;
+		final TextAnalyzer analyzer = new TextAnalyzer("ROW_ID");
+		analyzer.setKeyConfidence(1.0);
+		baseID(analyzer, SAMPLE_SIZE, -1, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameROW_ID() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 1000;
+		baseID(new TextAnalyzer("ROW_ID"), SAMPLE_SIZE, SAMPLE_SIZE, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameOIDSample() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 1000;
+		baseID(new TextAnalyzer("OID"), SAMPLE_SIZE, -1, 0.95);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameOID() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 1000;
+		baseID(new TextAnalyzer("OID"), SAMPLE_SIZE, SAMPLE_SIZE, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameREG_NRSample_200() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 200;
+		baseID(new TextAnalyzer("REG_NR_200"), SAMPLE_SIZE, -1, 0.95);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameREG_NR_200() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 200;
+		baseID(new TextAnalyzer("REG_NR_200"), SAMPLE_SIZE, SAMPLE_SIZE, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameREG_NRSample_1K() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 1000;
+		baseID(new TextAnalyzer("REG_NR_1000"), SAMPLE_SIZE, -1, 0.97);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameREG_NR_1K() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 1000;
+		baseID(new TextAnalyzer("REG_NR_1000"), SAMPLE_SIZE, SAMPLE_SIZE, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameREG_NRSample10K() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 10000;
+		baseID(new TextAnalyzer("REG_NR_10000"), SAMPLE_SIZE, -1, 0.99);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameREG_NR10K() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 10000;
+		baseID(new TextAnalyzer("REG_NR_10000"), SAMPLE_SIZE, SAMPLE_SIZE, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nameREG_NR10K_withNull() throws IOException, FTAException {
+		final int SAMPLE_SIZE = 10000;
+		final TextAnalyzer analyzer = new TextAnalyzer("REG_NR");
+		analyzer.train(null);
+
+		for (int i = 0; i < SAMPLE_SIZE; i++)
+			analyzer.train(String.valueOf(i));
+
+		final TextAnalysisResult result = analyzer.getResult();
+
+		assertEquals(result.getSampleCount(), SAMPLE_SIZE + 1);
+		assertEquals(result.getMatchCount(), SAMPLE_SIZE);
+		assertEquals(result.getNullCount(), 1);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getSemanticType());
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getKeyConfidence(), 0.0);
+	}
+
+	public void baseID(final TextAnalyzer analyzer, final int sampleSize, final int totalCount, final double confidence) throws IOException, FTAException {
+		for (int i = 0; i < sampleSize; i++)
+			analyzer.train(String.valueOf(i));
+
+		if (totalCount != -1)
+			analyzer.setTotalCount(totalCount);
+
+		final TextAnalysisResult result = analyzer.getResult();
+
+		assertEquals(result.getSampleCount(), sampleSize);
+		assertEquals(result.getMatchCount(), sampleSize);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
+		assertEquals(result.getConfidence(), confidence);
+		assertEquals(result.getKeyConfidence(), confidence);
 	}
 }

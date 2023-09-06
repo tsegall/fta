@@ -215,7 +215,7 @@ public class TestStandalonePlugins {
 							assertTrue(logical.isValid(testCases[i]), logical.getSemanticType() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
 					}
 					for (int i = 0; i < SAMPLE_SIZE; i++)
-						if (!testCases[i].isEmpty())
+						if (testCases[i] != null && !testCases[i].isEmpty())
 							assertTrue(testCases[i].matches(logical.getRegExp()), logical.getSemanticType() + ": '" + testCases[i] + "', RE: " + logical.getRegExp());
 				}
 			}

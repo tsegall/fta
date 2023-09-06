@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 15.1.0
+ - ENH: Add new Semantic Type - IDENTIFIER (Unique Identifier)
+ - ENH: Bump slf4jAPI, google phonenumber
+ - BUG: Add missing file - br_municipalities_code.csv
+ - BUG: Nested analysis was not using new copy of the AnalysisConfig
+ - BUG: Don't do nested analysis by removing outliers if Max Cardinality blown
+
 ### 15.0.1
  - ENH: Bump google phonenumber
  - ENH: Add new Semantic Type - STREET_ADDRESS4_EN (Fourth line of an address) (Issue #49)

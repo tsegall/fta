@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.core.Utils;
 
 public class TestUtils {
 	public final static double EPSILON = 0.00000001;
@@ -234,5 +236,18 @@ public class TestUtils {
 			return 8;
 
 		return Integer.parseInt(javaVersion);
+	}
+
+
+	@Test(groups = { TestGroups.ALL })
+	public void testUniqueness() throws IOException {
+		double d = 0.0;
+
+		// Birthday paradox - with 23 people in a room, 2 should have the same birthday
+		d = Utils.uniquenessProbability(365, 23);
+		assertTrue(d > .50 && d < .51);
+
+		d = Utils.uniquenessProbability(99999, 1000);
+		assertTrue(d > .99);
 	}
 }

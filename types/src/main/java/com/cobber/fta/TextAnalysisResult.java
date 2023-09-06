@@ -321,23 +321,7 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression.
 	 */
 	public String getRegExp() {
-		if (facts.getMatchTypeInfo().isSemanticType() || (!facts.leadingWhiteSpace && !facts.trailingWhiteSpace))
-			return facts.getMatchTypeInfo().regexp;
-
-		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
-		StringBuilder answer = new StringBuilder();
-		if (facts.leadingWhiteSpace)
-			answer.append(KnownTypes.PATTERN_WHITESPACE);
-		final boolean optional = facts.getMatchTypeInfo().regexp.indexOf('|') != -1;
-		if (optional)
-			answer.append('(');
-		answer.append(facts.getMatchTypeInfo().regexp);
-		if (optional)
-			answer.append(')');
-		if (facts.trailingWhiteSpace)
-			answer.append(KnownTypes.PATTERN_WHITESPACE);
-
-		return answer.toString();
+		return facts.getRegExp();
 	}
 
 	/**
@@ -590,7 +574,7 @@ public class TextAnalysisResult {
 	}
 
 	/**
-	 * How unique is this field, i.e. the number of elements in the set with a cardinality of one / cardinality.
+	 * How unique is this field, i.e. the number of non-null/non-blank elements in the set with a cardinality of one / cardinality.
 	 * Note: Only supported if the cardinality presented is less than Max Cardinality.
 	 * @return A Double (0.0 ... 1.0) representing the uniqueness of this field.
 	 */

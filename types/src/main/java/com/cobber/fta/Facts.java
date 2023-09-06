@@ -181,6 +181,8 @@ public class Facts {
 			this.totalMaxValue = external.totalMaxValue;
 			this.totalMinLength = external.totalMinLength;
 			this.totalMaxLength = external.totalMaxLength;
+			this.keyConfidence = external.keyConfidence;
+			this.uniqueness = external.uniqueness;
 		}
 
 		/** The total number of samples in the stream (typically -1 to indicate unknown). */
@@ -201,6 +203,28 @@ public class Facts {
 		public int totalMinLength = -1;
 		/** totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
 		public int totalMaxLength = -1;
+		/** The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique and non-null/non-blank). */
+		public Double keyConfidence;
+		/** The percentage (0.0-1.0) of non-null/non-blank elements in the stream with a cardinality of one. */
+		public Double uniqueness;
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ExternalFacts other = (ExternalFacts) obj;
+			return Objects.equals(keyConfidence, other.keyConfidence) && totalBlankCount == other.totalBlankCount
+					&& totalCount == other.totalCount && totalMaxLength == other.totalMaxLength
+					&& Objects.equals(totalMaxValue, other.totalMaxValue) && Objects.equals(totalMean, other.totalMean)
+					&& totalMinLength == other.totalMinLength && Objects.equals(totalMinValue, other.totalMinValue)
+					&& totalNullCount == other.totalNullCount
+					&& Objects.equals(totalStandardDeviation, other.totalStandardDeviation)
+					&& Objects.equals(uniqueness, other.uniqueness);
+		}
 	}
 	public ExternalFacts external = new ExternalFacts();
 
@@ -646,6 +670,27 @@ public class Facts {
 		return ret;
 	}
 
+	@JsonIgnore
+	public String getRegExp() {
+		if (matchTypeInfo.isSemanticType() || (!leadingWhiteSpace && !trailingWhiteSpace))
+			return matchTypeInfo.regexp;
+
+		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
+		StringBuilder answer = new StringBuilder();
+		if (leadingWhiteSpace)
+			answer.append(KnownTypes.PATTERN_WHITESPACE);
+		final boolean optional = matchTypeInfo.regexp.indexOf('|') != -1;
+		if (optional)
+			answer.append('(');
+		answer.append(matchTypeInfo.regexp);
+		if (optional)
+			answer.append(')');
+		if (trailingWhiteSpace)
+			answer.append(KnownTypes.PATTERN_WHITESPACE);
+
+		return answer.toString();
+	}
+
 	protected Map<String, Long> synthesizeBulk() {
 		final Map<String, Long> details = new HashMap<>(cardinality);
 		if (nullCount != 0)
@@ -698,22 +743,11 @@ public class Facts {
 				&& invalid.equals(other.invalid)
 				&& sampleCount == other.sampleCount
 				&& trailingWhiteSpace == other.trailingWhiteSpace
-				&& external.totalCount == other.external.totalCount
-				&& external.totalNullCount == other.external.totalNullCount && external.totalBlankCount == other.external.totalBlankCount
-				&& external.totalMean == other.external.totalMean && external.totalStandardDeviation == other.external.totalStandardDeviation
-				&& safeEquals(external.totalMinValue, other.external.totalMinValue)
-				&& safeEquals(external.totalMaxValue, other.external.totalMaxValue)
-				&& external.totalMinLength == other.external.totalMinLength && external.totalMaxLength == other.external.totalMaxLength
+				&& external.equals(other.external)
 				&& Objects.equals(uniqueness, other.uniqueness)
 				&& Objects.equals(distinctCount, other.distinctCount)
 				&& Objects.equals(streamFormat, other.streamFormat)
 				&& ((mean == 0.0 && other.mean == 0.0) || Math.abs(mean - other.mean) < epsilon)
 				&& ((variance == null && other.variance == null) || (variance == 0.0 && other.variance == 0.0) || Math.abs(variance - other.variance) < epsilon);
-	}
-
-	private boolean safeEquals(final String one, final String two) {
-		if (one == null)
-			return two == null;
-		return one.equals(two);
 	}
 }

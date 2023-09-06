@@ -44,6 +44,8 @@ public class TestInvalidSupport {
 		for (long i = 0; i < SIZE; i++)
 			analyzer.train(String.valueOf(i));
 
+		// Train a second instance of SIZE - 1 so that this set does not look like an IDENTIFIER
+		analyzer.train(String.valueOf(SIZE - 1));
 		analyzer.train(null);
 
 		// The letter 'O' not the number '0'
@@ -51,8 +53,9 @@ public class TestInvalidSupport {
 
 		final TextAnalysisResult result = analyzer.getResult();
 
-		assertEquals(result.getSampleCount(), SIZE + 2);
-		assertEquals(result.getMatchCount(), SIZE);
+		assertEquals(result.getSampleCount(), SIZE + 3);
+		assertEquals(result.getMatchCount(), SIZE + 1);
+		assertNull(result.getSemanticType());
 		assertEquals(result.getNullCount(), 1);
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getNullCount()));
 		assertEquals(result.getType(), FTAType.LONG);

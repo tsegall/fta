@@ -3450,5 +3450,22 @@
 		"threshold": 70,
 		"baseType": "STRING",
 		"priority": 390
+	},
+	{
+		"semanticType": "IDENTIFIER",
+		"description": "Unique Identifier",
+		"pluginType": "java",
+		"signature": "RKNrRP3/trxIfbpsaz9soam8suY=",
+		"clazz": "com.cobber.fta.plugins.Identifier",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": "(?i)(id|.*_id)", "confidence": 99 }, { "regExp": "(?i).*id", "confidence": 95 } ]
+			}
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Identifier" }
+		],
+		"priority": 400
 	}
 ]
