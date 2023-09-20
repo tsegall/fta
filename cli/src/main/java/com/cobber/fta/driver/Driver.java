@@ -269,7 +269,8 @@ public class Driver {
 				error.printf("ERROR: Unsupported Locale: %s, error: %s%n", activeLocale.toLanguageTag(), e.getMessage());
 				System.exit(1);
 			} catch (FTAProcessingException e) {
-				error.printf("ERROR: Filename: %s, error: %s%n", e.getFilename(), e.getMessage());
+				final String message = cmdLineOptions.verbose != 0 && e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+				error.printf("ERROR: Filename: %s, error: %s%n", e.getFilename(), message);
 			} catch (Throwable t) {
 				error.printf("ERROR: '%s' error: %s%n", filename, t.getMessage());
 				t.printStackTrace(error);

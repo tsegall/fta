@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -213,7 +214,33 @@ public class TestTokenStreams {
 		assertEquals(tokenStreams.getRegExp(true),  "[\\p{IsAlphabetic}\\d]{8}-[\\p{IsAlphabetic}\\d]{4}-4[\\p{IsAlphabetic}\\d]{3}-[\\p{IsAlphabetic}\\d]{4}-[\\p{IsAlphabetic}\\d]{12}");
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
+    @Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
+	public void geneBases() throws IOException {
+		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
+		final String[] inputs = {
+				"ATACCTAGCACACAGATCCCTCTCCAATGCATGAAAGTGA",
+				"TTAAACGGGAGATAAAGCTCGAATGAAATGAAATACTCTC",
+				"CCCCATAGACGGCAGCCCACAGAGAAATATCTGGGAAGAA",
+				"TAATAAAAAATTAAAATGATGACAGGGAGGCCTGGCGTGC",
+				"GCTAAATTCACCCATTCCAGTATGTCCGCATCTCTTTCTG",
+				"TTGACCTAAAAATTCAAGTTTCTTAGATACCATGCCCCCA",
+				"ATCTTGTCAAGAAAGTGTCAGCTAAAAAGGGAAAACTTTA",
+				"CTGTTAAACATACTAAGCAATCTCTATTGTTTCCCTCAGA",
+				"GGAATAGAATGAATGTTTAATAGTTGCCTAGATGTTGGCC",
+				"AATCGTATACAACTAAACACTGGCAAAACATATTCAGAAG",
+				"AATTATGATCTTTCACTAGACAGTACTATTGCCTGGAAAA",
+				"GAACCCTGTATACAGGTCAAGAAACCTGCTCAGTGTTACA",
+				"GTGTCTGGCACACAGTCAGCGGTCTTTTCCGATGAGTTGG"
+		};
+
+		for (final String input : inputs)
+			tokenStreams.track(input, 1);
+
+		assertEquals(tokenStreams.getRegExp(false), "\\p{IsAlphabetic}{40}");
+		assertFalse(tokenStreams.getBest().matches("[0-9A-Fa-f]{40}"));
+	}
+
+    @Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testBlank() throws IOException {
 		final TokenStreams tokenStreams = new TokenStreams(MAX_STREAMS);
 

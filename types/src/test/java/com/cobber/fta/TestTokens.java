@@ -200,6 +200,17 @@ public class TestTokens {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
+	public void testSimple() throws IOException, FTAException {
+		final TokenStreams ts = new TokenStreams(10);
+		ts.track("09:19", 1);
+		ts.track("09:04", 1);
+
+		assertEquals(ts.size(), 1);
+		final TokenStream tokenStream = ts.getStreams().values().iterator().next();
+		assertTrue(tokenStream.matches("[0-9][0-9]:[0-9][0-9]"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })
 	public void testNotAllNumeric() throws IOException, FTAException {
 		final TokenStreams ts = new TokenStreams(10);
 		ts.track("09:09:08:07:04:05", 1);

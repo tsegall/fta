@@ -628,6 +628,8 @@ public class SimpleDateMatcher {
 					i++;
 					do {
 						i++;
+						if (i == len)
+							return 0;
 					} while (compressed.charAt(i) != '}');
 				}
 			}

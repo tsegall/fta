@@ -434,7 +434,7 @@ class FileProcessor {
 					final String ret = result.checkCounts();
 					if (ret != null)
 						throw new FTAProcessingException(filename,
-								MessageFormat.format("Composite: {0}, field: {1} ({2}), failed count validation - {}",
+								MessageFormat.format("Composite: {0}, field: {1} ({2}), failed count validation - {3}",
 								analyzer.getContext().getCompositeName(), analyzer.getContext().getStreamName(),
 								analyzer.getContext().getStreamIndex(), ret));
 				}

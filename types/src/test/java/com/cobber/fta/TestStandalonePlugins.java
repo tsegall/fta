@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 import com.cobber.fta.core.FTAPluginException;
 
 public class TestStandalonePlugins {
-	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
+	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomIPV4Address() throws IOException, FTAPluginException {

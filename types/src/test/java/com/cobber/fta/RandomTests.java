@@ -2039,7 +2039,7 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
-	public void setMaxInvalids() throws IOException, FTAException {
+	public void setMaxOutliers() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
 		final int start = 10000;
 		final int end = 12000;
@@ -2079,6 +2079,47 @@ public class RandomTests {
 		assertEquals(result.getSampleCount(), outliers + end - start);
 		//BUG		assertEquals(result.getCardinality(), TextAnalyzer.MAX_CARDINALITY_DEFAULT);
 		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void setMaxInvalids() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
+		final int start = 10000;
+		final int end = 12000;
+		final int outliers = 15;
+		final int newMaxInvalids = 12;
+
+		int locked = -1;
+
+		analysis.setMaxInvalids(newMaxInvalids);
+
+		analysis.train("A");
+		for (int i = start; i < end; i++) {
+			if (analysis.train(String.valueOf(i)) && locked == -1)
+				locked = i - start;
+		}
+		analysis.train("B");
+		analysis.train("C");
+		analysis.train("D");
+		analysis.train("E");
+		analysis.train("F");
+		analysis.train("G");
+		analysis.train("H");
+		analysis.train("I");
+		analysis.train("J");
+		analysis.train("K");
+		analysis.train("L");
+		analysis.train("M");
+		analysis.train("N");
+		analysis.train("O");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getRegExp(), "\\d{5}");
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(analysis.getMaxInvalids(), newMaxInvalids);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getSampleCount(), outliers + end - start);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })

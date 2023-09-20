@@ -946,19 +946,20 @@ public class TextAnalyzer {
 	private boolean trackString(final String rawInput, final String trimmed, final TypeInfo typeInfo, final boolean register, final long count) {
 		if (register && analysisConfig.getDebug() >= 2 && rawInput.length() > 0 && rawInput.charAt(0) == '¶' && "¶ xyzzy ¶".equals(rawInput))
 			throw new NullPointerException("¶ xyzzy ¶");
-		if (!typeInfo.isSemanticType()) {
+
+		if (typeInfo.isSemanticType()) {
+			// If it is a registered Infinite Semantic Type then validate it
+			final LogicalType logical = plugins.getRegistered(typeInfo.getSemanticType());
+			if (logical.acceptsBaseType(FTAType.STRING) && !logical.isValid(rawInput, false, count))
+				return false;
+		}
+		else {
 			for (int i = 0; i < trimmed.length(); i++) {
 				if (typeInfo.isAlphabetic() && !Character.isAlphabetic(trimmed.charAt(i)))
 					return false;
 				if (typeInfo.isAlphanumeric() && !Character.isLetterOrDigit((trimmed.charAt(i))))
 					return false;
 			}
-		}
-		else if (typeInfo.isSemanticType()) {
-			// If it is a registered Infinite Semantic Type then validate it
-			final LogicalType logical = plugins.getRegistered(typeInfo.getSemanticType());
-			if (logical.acceptsBaseType(FTAType.STRING) && !logical.isValid(rawInput, false, count))
-				return false;
 		}
 
 		return updateStats(rawInput);
@@ -1607,7 +1608,7 @@ public class TextAnalyzer {
 
 			if ((ch == localeMinusSign || ch == '+') && i == 0)
 				numericSigned = SignStatus.LEADING_SIGN;
-			else if (!hasNegativeSuffix && numericSigned == SignStatus.NONE && ch == '-' && i == stopLooking - 1) {
+			else if (!hasNegativeSuffix && numericSigned == SignStatus.NONE && ch == '-' && i == stopLooking - 1 && possibleExponentSeen == -1) {
 				numericSigned = SignStatus.TRAILING_MINUS;
 			} else if (Character.isDigit(ch)) {
 				l0.append('d');
@@ -1671,12 +1672,18 @@ public class TextAnalyzer {
 			else {
 				int offset = possibleExponentSeen + 1;
 				// parseInt cannot cope with UTF-8 minus sign, which is used in some locales, so just skip sign
-				final char ch = trimmed.charAt(possibleExponentSeen + 1);
-				if (ch == localeMinusSign || ch == '-' || ch == '+')
+				char ch = trimmed.charAt(possibleExponentSeen + 1);
+				if (ch == localeMinusSign || ch == '-' || ch == '+') {
 					offset++;
-				final int exponentSize = Integer.parseInt(trimmed.substring(offset, stopLooking));
-				if (exponentSize > 308)
+					ch = trimmed.charAt(offset);
+				}
+				if (!Utils.isSimpleNumeric(ch))
 					couldBeNumeric = false;
+				else {
+					final int exponentSize = Integer.parseInt(trimmed.substring(offset, stopLooking));
+					if (exponentSize > 308)
+						couldBeNumeric = false;
+				}
 			}
 		}
 

@@ -306,6 +306,8 @@ public class TokenList implements Iterable<FormatterToken> {
 				break;
 			case CONSTANT_CHAR:
 				ret.append(token.getValue());
+				if (token.getValue() == '\'')
+					ret.append(token.getValue());
 				break;
 			case DIGITS:
 				ret.append(Utils.repeat('?', token.getCount()));

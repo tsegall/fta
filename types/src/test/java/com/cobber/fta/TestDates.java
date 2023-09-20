@@ -1153,6 +1153,47 @@ public class TestDates {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void withSingleQuote() throws IOException, FTAException {
+
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
+		assertEquals(dtp.determineFormatString("16 Feb' 21"), "dd MMM'' yy");
+
+		final TextAnalyzer analysis = new TextAnalyzer("yyyyddMM", DateResolutionMode.DayFirst);
+		final String inputs[] = {
+				"16 Feb' 21", "14 Feb' 11", "14 Jun' 23", "14 Jul' 15", "14 Feb' 13",
+				"24 Apr' 21", "14 Jun' 22", "14 Feb' 21", "14 Feb' 14", "14 Sep' 22",
+				"11 Feb' 13", "14 Feb' 21", "14 Dec' 23", "14 Jan' 21", "14 Feb' 23",
+				"24 Jan' 11", "14 Feb' 12", "14 Feb' 21", "14 Nov' 13", "14 Oct' 21",
+				"11 Nov' 22", "14 Sep' 21", "14 Mar' 22", "14 Jan' 11", "14 Feb' 21"
+		};
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "dd MMM'' yy");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{2} \\p{IsAlphabetic}{3}' \\d{2}");
+		assertEquals(result.getMinValue(), "14 Jan' 11");
+		assertEquals(result.getMaxValue(), "14 Dec' 23");
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void mixed_ddMMyyyy() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("ddMMyyyy", DateResolutionMode.DayFirst);
 		final String pipedInput = "06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|06/06/1970|01/06/1971|07/07/1972|03/03/1973|04/04/1974|05/05/1970|06/06/1970|08/08/1970|09/09/1970|10/10/1970|31/02/2011|31/12/2017|20/10/2016|15/07/1999|";

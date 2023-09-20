@@ -695,6 +695,8 @@ public class DateTimeParserResult {
 				break;
 
 			case FRACTION:
+				if (upto == inputLength)
+					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				for (int i = 0; i < token.getHigh(); i++) {
 					if (upto == inputLength) {
 						if (i < token.getCount())

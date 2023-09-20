@@ -302,6 +302,13 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void lineNoise() {
+		final DateTimeParser dtp = new DateTimeParser();
+
+		assertNull(dtp.determineFormatString("a quick Internet also reveals:<p>life:{3=a-x*4=a:2{+(0+&"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void digits6() {
 		final DateTimeParser dtpNumericDayFirst = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
 

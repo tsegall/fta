@@ -89,7 +89,7 @@ public class IPV6Address extends LogicalTypeInfinite {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return validator.isValidInet6Address(trimmed);
+		return charCounts[':'] >= 2 && validator.isValidInet6Address(trimmed);
 	}
 
 	@Override

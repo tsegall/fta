@@ -104,7 +104,6 @@ public abstract class Token {
 	public static String generateKey(final String trimmed) {
 		final int len = trimmed.length();
 
-
 		if (len > MAX_LENGTH)
 			return "ANY";
 

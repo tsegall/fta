@@ -520,31 +520,29 @@ public class TokenStream {
 		// cover this range for example 1-1, 2-9).
 		// In the latter case (partial coverage) - we split the range and then validate that the split ranges are both covered
 		for (final Range range : ranges) {
-			nextRange:
-				for (final Transition transition : transitions) {
-
-					if (isCoveredBy(range, transition)) {
-						if (done.contains(transition.hashCode())) {
-							continue nextRange;
-						}
-						if (satisfied == null)
-							satisfied = true;
-						if (!matches(transition.getDest(), tokenIndex + 1))
+			satisfied = null;
+			nextRange: for (final Transition transition : transitions) {
+				if (isCoveredBy(range, transition)) {
+					if (satisfied == null)
+						satisfied = true;
+					if (done.contains(transition.hashCode())) {
+						continue nextRange;
+					}
+					if (!matches(transition.getDest(), tokenIndex + 1))
+						return false;
+					done.add(transition.hashCode());
+				} else if ((splits = isPartiallyCoveredBy(range, transition)) != null) {
+					for (final Range splitRange : splits)
+						if (!checkRanges(Collections.singleton(splitRange), transitions, tokenIndex, level + 1))
 							return false;
-						done.add(transition.hashCode());
-					}
-					else if ((splits = isPartiallyCoveredBy(range, transition)) != null) {
-						for (final Range splitRange : splits)
-							if (!checkRanges(Collections.singleton(splitRange), transitions, tokenIndex, level + 1))
-								return false;
-						if (satisfied == null)
-							satisfied = true;
-					}
+					if (satisfied == null)
+						satisfied = true;
 				}
+			}
 			// We need to see one successful transition for every range
 			if (satisfied == null)
 				return false;
-		 }
+		}
 		 return satisfied != null && satisfied;
 	}
 

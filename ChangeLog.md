@@ -1,6 +1,15 @@
 
 ## Changes ##
 
+### 15.1.1
+ - ENH: Bump google phonenumber
+ - BUG: GitTables - correctly reconstruct format string with single quote in it - e.g. "dd MMM'' yy"
+ - BUG: GitTables - do not error out if receive time of the form 12:35:43.
+ - BUG: GitTables - fix misdetection of "ATACCTAGCACACAGATCCCTCTCCAATGCATGAAAGTGA" as HASH.SHA1_HEX
+ - BUG: GitTables - fix StringIndexOutOfBoundsException in SimpleDateMatcher
+ - BUG: GitTables - fix issues with input of the form '8E5-' or '451E.'
+ - BUG: Fix getMaxInvalids()
+
 ### 15.1.0
  - ENH: Add new Semantic Type - IDENTIFIER (Unique Identifier)
  - ENH: Bump slf4jAPI, google phonenumber

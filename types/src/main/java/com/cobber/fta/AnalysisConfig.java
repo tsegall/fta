@@ -36,7 +36,7 @@ public class AnalysisConfig {
 	public static final int HISTOGRAM_BINS_DEFAULT = 1000;
 
 	/** The default value for the maximum # of outliers tracked. */
-	public static final int MAX_OUTLIERS_DEFAULT = 200;
+	public static final int MAX_OUTLIERS_DEFAULT = 300;
 
 	/** The default value for the maximum # of invalid entries tracked. */
 	public static final int MAX_INVALID_DEFAULT = 200;
@@ -296,7 +296,7 @@ public class AnalysisConfig {
 	}
 
 	public int getMaxInvalids() {
-		return maxOutliers;
+		return maxInvalids;
 	}
 
 	public int setMaxInvalids(final int maxInvalids) {

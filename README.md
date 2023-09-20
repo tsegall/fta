@@ -606,6 +606,7 @@ You can replay the trace file (assuming a local build) using:
 
 ## Background Reading ##
 
+* GitTables: A Large-Scale Corpus of Relational Tables (https://arxiv.org/pdf/2106.07258.pdf)
 * Extracting Syntactic Patterns from Databases (https://arxiv.org/abs/1710.11528v2)
 * Sherlock: A Deep Learning Approach to Semantic Data Type Detection (https://arxiv.org/pdf/1905.10688.pdf)
 * Synthesizing Type-Detection Logic for Rich Semantic Data Types using Open-source Code (https://congyan.org/autotype.pdf)
