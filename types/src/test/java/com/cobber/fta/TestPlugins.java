@@ -4204,8 +4204,8 @@ public class TestPlugins {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getSemanticType(), "NAME.LAST_FIRST");
-		assertEquals(result.getMatchCount(), 6);
-		assertEquals(result.getConfidence(), .3);
+		assertEquals(result.getMatchCount(), 11);
+		assertEquals(result.getConfidence(), .55);
 		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getInvalidCount());
 		assertEquals(result.getNullCount(), 0);
 

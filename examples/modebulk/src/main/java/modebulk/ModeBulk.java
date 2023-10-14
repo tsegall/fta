@@ -16,17 +16,18 @@
 package modebulk;
 
 import java.util.HashMap;
+import java.util.Map;
 
-import com.cobber.fta.LogicalType;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
+import com.fasterxml.jackson.databind.type.LogicalType;
 
 public abstract class ModeBulk {
 	public static void main(final String[] args) throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
-		final HashMap<String, Long> basic = new HashMap<>();
+		final Map<String, Long> basic = new HashMap<>();
 
 		basic.put("Male", 2_000_000L);
 		basic.put("Female", 1_000_000L);

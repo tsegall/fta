@@ -19,7 +19,7 @@ public class FiniteMap implements Map<String, Long> {
 		impl = new HashMap<>();
 	}
 
-	FiniteMap(final int maxCapacity) {
+	public FiniteMap(final int maxCapacity) {
 		impl = new HashMap<>();
 		this.maxCapacity = maxCapacity;
 	}

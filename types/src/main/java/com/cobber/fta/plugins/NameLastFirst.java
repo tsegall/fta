@@ -92,8 +92,10 @@ public class NameLastFirst extends LogicalTypeInfinite {
 		final int len = trimmed.length();
 		int spaces = 0;
 		int dashes = 0;
+		int periods = 0;
 		int apostrophe = 0;
 		int alphas = 0;
+		int end = len;
 		for (int i = 0; i < len; i++) {
 			if (i == comma) {
 				processingLast = false;
@@ -127,13 +129,24 @@ public class NameLastFirst extends LogicalTypeInfinite {
 					return false;
 				continue;
 			}
-			if (ch == '.' && alphas == 1)
-				continue;
+			if (ch == '.') {
+				periods++;
+				if (periods == alphas)
+					continue;
+			}
+
+			// If the last character is a comma or period then just ignore it
+			if (i + 1 == len) {
+				if (ch == ',' || ch == '.') {
+					end = len - 1;
+					break;
+				}
+			}
 
 			return false;
 		}
 
-		String firstName = trimmed.substring(comma + 1).trim();
+		String firstName = trimmed.substring(comma + 1, end).trim();
 		final int middleName = firstName.indexOf(' ');
 		if (middleName != -1)
 			firstName = firstName.substring(0, middleName);

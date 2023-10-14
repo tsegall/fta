@@ -2,6 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.cobber.fta/fta.svg?label=Maven%20Central)](https://search.maven.org/artifact/com.cobber.fta/fta)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/tsegall/fta?logo=GitHub)](https://github.com/tsegall/fta/releases)
 [![CodeQL](https://github.com/tsegall/fta/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/tsegall/fta/actions/workflows/codeql-analysis.yml)
+[![javadoc](https://javadoc.io/badge2/com.cobber.fta/fta/javadoc.svg)](https://javadoc.io/doc/com.cobber.fta/fta)
 
 # Semantic Type Detection and Data Profiling #
 

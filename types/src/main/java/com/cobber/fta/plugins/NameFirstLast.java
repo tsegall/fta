@@ -43,8 +43,8 @@ public class NameFirstLast extends LogicalTypeInfinite {
 	private LogicalTypeFiniteSimple logicalLast;
 	private static final int MAX_FIRST_NAMES = 1000;
 	private static final int MAX_LAST_NAMES = 1000;
-	private Set<String> lastNames;
-	private Set<String> firstNames;
+	private FiniteMap lastNames;
+	private FiniteMap firstNames;
 	private int maxExpectedNames;
 	private static Set<String> excludes;
 
@@ -70,8 +70,8 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("NAME.FIRST"), analysisConfig);
 		logicalLast = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("NAME.LAST"), analysisConfig);
 
-		firstNames = new HashSet<>();
-		lastNames = new HashSet<>();
+		firstNames = new FiniteMap(MAX_FIRST_NAMES);
+		lastNames =  new FiniteMap(MAX_LAST_NAMES);
 
 		// Set the number of reasonable parts of a name - Spanish commonly has more than English
 		maxExpectedNames = 4;
@@ -112,6 +112,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		boolean processingLast = false;
 		final int len = trimmed.length();
 		int dashes = 0;
+		int periods = 0;
 		int spaces = 0;
 		int apostrophe = 0;
 		boolean ampersandSeen = false;
@@ -140,8 +141,11 @@ public class NameFirstLast extends LogicalTypeInfinite {
 					return false;
 				continue;
 			}
-			if (ch == '.' && alphas == 1)
-				continue;
+			if (ch == '.') {
+				periods++;
+				if (periods == alphas)
+					continue;
+			}
 
 			// Strictly speaking this is not correct since it rejects 'Oscar de la Renta'
 			// OTOH if we lose one or two it should not matter and it dramatically helps with the false positives
@@ -168,10 +172,8 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		if (excludes.contains(lastName))
 			return false;
 
-		if (firstNames.size() < MAX_FIRST_NAMES)
-			firstNames.add(firstName);
-		if (lastNames.size() < MAX_LAST_NAMES)
-			lastNames.add(lastName);
+		firstNames.mergeIfSpace(firstName, count, Long::sum);
+		lastNames.mergeIfSpace(lastName, count, Long::sum);
 
 		// So if we only have a few names insist it is found, otherwise use the isValid() test
 		if (firstNames.size() < 10 ? logicalFirst.isMember(firstName) : logicalFirst.isValid(firstName, detectMode, count))
@@ -197,8 +199,11 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		}
 
 		// We expect a decent spread of last names relative to first names - stops us tripping on names of things
-		if (firstNames.size() > 10 && (double)lastNames.size()/firstNames.size() < 0.70)
-			return new PluginAnalysis(BACKOUT);
+		if (matchCount > 50 || firstNames.size() > 10) {
+			final double spread = (double)lastNames.size()/firstNames.size();
+			if (spread < 0.60 || spread > 5)
+				return new PluginAnalysis(BACKOUT);
+		}
 
 		// Reject if there is not a reasonable spread of values
 		if (getHeaderConfidence(context.getStreamName()) <= 0 && cardinality.size() < analysisConfig.getMaxCardinality() && (double)cardinality.size()/matchCount < .2)
@@ -228,7 +233,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		if (matchCount == realSamples || getHeaderConfidence(context.getStreamName()) <= 0)
 			return confidence;
 
-		return Math.min(confidence + 0.10, 1.0);
+		return Math.min(confidence + 0.15, 1.0);
 	}
 }
 

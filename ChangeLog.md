@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 15.1.2
+ - ENH: Bump google phonenumber, and guava, jackson-databind
+ - ENH: Improve mapping to schema.org Semantic Types
+ - ENH: Minor improvements to NAME.LAST_FIRST and NAME.FIRST_LAST
+ - INT: Bump gradle to 8.4
+
 ### 15.1.1
  - ENH: Bump google phonenumber
  - BUG: GitTables - correctly reconstruct format string with single quote in it - e.g. "dd MMM'' yy"

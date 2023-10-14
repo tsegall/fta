@@ -11,7 +11,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P968" },
-			{ "source": "wikipedia", "reference": "https://https://en.wikipedia.org/wiki/Email_address" }
+			{ "source": "wikipedia", "reference": "https://https://en.wikipedia.org/wiki/Email_address" },
+			{ "source": "schema", "reference": "https://schema.org/email" }
 		],
 		"priority": 10
 	},
@@ -24,7 +25,8 @@
 		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(url|web).*", "confidence": 90 } ] } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P2699" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Uniform_Resource_Identifier" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Uniform_Resource_Identifier" },
+			{ "source": "schema", "reference": "https://schema.org/url" }
 		],
 		"priority": 15
 	},
@@ -65,7 +67,8 @@
 		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|mobiel|móvil|movil|telephone|telefono|telefon|telefoon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P1329" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Telephone_number" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Telephone_number" },
+			{ "source": "schema", "reference": "https://schema.org/telephone" }
 		],
 		"baseType": "STRING",
 		"priority": 40
@@ -80,6 +83,7 @@
 			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(guid).*", "confidence": 99 } ] }
 		],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q254972" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Universally_unique_identifier" }
 		],
 		"threshold": 99,
@@ -93,6 +97,7 @@
 		"clazz": "com.cobber.fta.plugins.VIN",
 		"validLocales": [ { "localeTag":  "*" } ],
 		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P6322" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Vehicle_identification_number" }
 		],
 		"threshold": 98,
@@ -110,7 +115,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ZIP_Code" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ZIP_Code" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"baseType": "STRING",
 		"threshold": 90,
@@ -127,7 +133,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ZIP_Code" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ZIP_Code" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 90,
 		"priority": 61
@@ -140,7 +147,8 @@
 		"clazz": "com.cobber.fta.plugins.address.PostalCodeUK",
 		"validLocales": [ { "localeTag":  "en-GB,en-UK" } ],
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postcodes_in_the_United_Kingdom" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postcodes_in_the_United_Kingdom" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"priority": 62
 	},
@@ -158,7 +166,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Canada" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Canada" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 95,
 		"baseType": "STRING",
@@ -180,7 +189,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postcodes_in_Australia" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postcodes_in_Australia" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 98,
 		"baseType": "LONG",
@@ -204,7 +214,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_the_Netherlands" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_the_Netherlands" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 95,
 		"baseType": "STRING",
@@ -223,7 +234,8 @@
 			} ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_France" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_France" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"baseType": "LONG",
 		"threshold": 98,
@@ -238,7 +250,8 @@
 		"validLocales": [ { "localeTag":  "ja" } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Japan" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Japan" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"priority": 67
 	},
@@ -258,7 +271,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Portugal" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Portugal" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 99,
 		"baseType": "STRING",
@@ -278,7 +292,8 @@
 		},
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Germany" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Germany" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 99,
 		"baseType": "LONG",
@@ -299,7 +314,8 @@
 		},
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Spain" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Spain" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 99,
 		"baseType": "LONG",
@@ -317,7 +333,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Sweden" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Sweden" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 99,
 		"baseType": "STRING",
@@ -336,7 +353,8 @@
 			"reference": "/reference/uy_postal_code.csv"
 		},
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 99,
 		"baseType": "LONG",
@@ -354,7 +372,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Mexico" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Mexico" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 99,
 		"baseType": "LONG",
@@ -374,7 +393,8 @@
 		},
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Bulgaria" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Bulgaria" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"threshold": 99,
 		"baseType": "LONG",
@@ -394,7 +414,8 @@
 			} ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Colombia" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Colombia" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
 		],
 		"baseType": "LONG",
 		"threshold": 98,
@@ -512,6 +533,9 @@
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street|house|address).?(number|num|no)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(number|no|num)", "confidence": 80, "mandatory": true } ] },
 			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)(huisnummer|huisnr.*)", "confidence": 99, "mandatory": true } ] }
 		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/House_numbering" }
+		],
 		"threshold": 95,
 		"priority": 88
 	},
@@ -580,7 +604,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P21" },
-			{ "source": "schema", "reference": "https://schema.org/version/latest#term_GenderType" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Gender" },
+			{ "source": "schema", "reference": "https://schema.org/gender" }
 		],
 		"priority": 95
 	},
@@ -604,7 +629,8 @@
 		},
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P21" },
-			{ "source": "schema", "reference": "https://schema.org/version/latest#term_GenderType" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Gender" },
+			{ "source": "schema", "reference": "https://schema.org/gender" }
 		],
 		"backout": ".*",
 		"baseType" : "STRING",
@@ -630,7 +656,8 @@
 		},
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P21" },
-			{ "source": "schema", "reference": "https://schema.org/version/latest#term_GenderType" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Gender" },
+			{ "source": "schema", "reference": "https://schema.org/gender" }
 		],
 		"backout": ".*",
 		"baseType" : "STRING",
@@ -723,6 +750,9 @@
 				"headerRegExps": [ { "regExp": ".*(?i)(race|ethnic).*", "confidence": 95, "mandatory": true } ]
 			}
 		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Race_(human_categorization)" }
+		],
 		"priority": 100
 	},
 	{
@@ -736,6 +766,9 @@
 				"localeTag":  "*",
 				"headerRegExps": [ { "regExp": "(?i)(race|ethnic).*|.*(?i)(race|ethnicity)", "confidence": 95, "mandatory": true } ]
 			}
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Race_(human_categorization)" }
 		],
 		"priority": 101
 	},
@@ -770,7 +803,8 @@
 			"reference": "/reference/en_nationality.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Nationality" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Nationality" },
+			{ "source": "schema", "reference": "https://schema.org/nationality" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
 		"priority": 103
@@ -789,7 +823,8 @@
 			"reference": "/reference/nl_nationality.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Nationality" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Nationality" },
+			{ "source": "schema", "reference": "https://schema.org/nationality" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
 		"priority": 104
@@ -809,7 +844,8 @@
 		},
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P511" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/English_honorifics" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/English_honorifics" },
+			{ "source": "schema", "reference": "https://schema.org/honorificPrefix" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
 		"priority": 105
@@ -828,7 +864,8 @@
 		},
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Choronym" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" },
+			{ "source": "schema", "reference": "https://schema.org/Country" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
 		"priority": 106
@@ -847,7 +884,8 @@
 		},
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Choronym" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" },
+			{ "source": "schema", "reference": "https://schema.org/Country" }
 		],
 		"threshold": 90,
 		"backout": "[\\p{IsAlphabetic}\\.]+",
@@ -867,7 +905,8 @@
 		},
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Choronym" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" },
+			{ "source": "schema", "reference": "https://schema.org/Country" }
 		],
 		"threshold": 90,
 		"backout": "[\\p{IsAlphabetic}\\.]+",
@@ -890,7 +929,8 @@
 		],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Choronym" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" },
+			{ "source": "schema", "reference": "https://schema.org/Country" }
 		],
 		"threshold": 85,
 		"priority": 109
@@ -993,7 +1033,8 @@
 			"reference": "/reference/ca_provinces.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_and_territories_of_Canada" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_and_territories_of_Canada" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 120
@@ -1011,7 +1052,8 @@
 			"reference": "/reference/mx_states.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_of_Mexico" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_of_Mexico" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
 		"priority": 121
@@ -1029,7 +1071,8 @@
 			"reference": "/reference/us_states.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 122
@@ -1048,6 +1091,9 @@
 					"regExpReturned": "\\p{Alpha}{2}"
 				} ]
 			}
+		],
+		"documentation": [
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"priority": 123
 	},
@@ -1070,7 +1116,8 @@
 			"members": [ "ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA" ]
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_and_territories_of_Australia" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_and_territories_of_Australia" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "\\p{IsAlphabetic}{2,3}",
 		"priority": 124
@@ -1088,7 +1135,8 @@
 			"reference": "/reference/it_provinces.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Italy" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Italy" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 125
@@ -1106,7 +1154,8 @@
 			"reference": "/reference/ch_cantons.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Cantons_of_Switzerland" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Cantons_of_Switzerland" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 126
@@ -1124,7 +1173,8 @@
 			"reference": "/reference/br_states.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Federative_units_of_Brazil" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Federative_units_of_Brazil" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 127
@@ -1142,7 +1192,8 @@
 			"reference": "/reference/za_provinces.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_South_Africa" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_South_Africa" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 128
@@ -1166,7 +1217,8 @@
 			"reference": "/reference/ca_provinces_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_and_territories_of_Canada" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_and_territories_of_Canada" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 130
@@ -1190,7 +1242,8 @@
 			"reference": "/reference/mx_states_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_of_Mexico" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_of_Mexico" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 131
@@ -1214,7 +1267,8 @@
 			"reference": "/reference/us_states_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 132
@@ -1237,6 +1291,9 @@
 			"type": "resource",
 			"reference": "/reference/na_states_provinces_full.csv"
 		},
+		"documentation": [
+			{ "source": "schema", "reference": "https://schema.org/State" }
+		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 133
 	},
@@ -1259,7 +1316,8 @@
 			"reference": "/reference/au_states_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_and_territories_of_Australia" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_and_territories_of_Australia" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 134
@@ -1283,7 +1341,8 @@
 			"reference": "/reference/de_states_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_of_Germany" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_of_Germany" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 135
@@ -1365,7 +1424,8 @@
 			"reference": "/reference/it_provinces_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Italy" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Italy" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 139
@@ -1389,7 +1449,8 @@
 			"reference": "/reference/es_provinces_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Spain" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Spain" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 140
@@ -1413,7 +1474,8 @@
 			"reference": "/reference/nl_provinces_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_the_Netherlands" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_the_Netherlands" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[- \\p{IsAlphabetic}]+",
 		"priority": 141
@@ -1509,7 +1571,8 @@
 			"reference": "/reference/br_states_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Federative_units_of_Brazil" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Federative_units_of_Brazil" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[-\\. \\p{IsAlphabetic}]+",
 		"priority": 145
@@ -1557,7 +1620,8 @@
 			"reference": "/reference/za_provinces_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_South_Africa" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_South_Africa" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 147
@@ -1581,7 +1645,8 @@
 			"reference": "/reference/ec_provinces_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Ecuador" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Ecuador" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 148
@@ -1714,7 +1779,8 @@
 			"reference": "/reference/ie_provinces_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Ireland" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Ireland" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 155
@@ -1853,7 +1919,8 @@
 			"reference": "/reference/pe_provinces_full.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Peru" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_of_Peru" },
+			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 163
@@ -1947,7 +2014,8 @@
 		},
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P498" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_4217" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_4217" },
+			{ "source": "schema", "reference": "https://schema.org/priceCurrency" }
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
 		"priority": 170
@@ -2006,7 +2074,8 @@
 		},
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P297" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" },
+			{ "source": "schema", "reference": "https://schema.org/eligibleRegion" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 173
@@ -2079,7 +2148,8 @@
 			"reference": "/reference/IATA.txt"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/IATA_airport_code" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/IATA_airport_code" },
+			{ "source": "schema", "reference": "https://schema.org/iataCode" }
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
 		"threshold": 97,
@@ -2101,7 +2171,8 @@
 			"reference": "/reference/IATA_airline.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Airline_codes#IATA_airline_designator" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Airline_codes#IATA_airline_designator" },
+			{ "source": "schema", "reference": "https://schema.org/iataCode" }
 		],
 		"backout": "\\p{Alnum}{2}",
 		"threshold": 97,
@@ -2137,6 +2208,9 @@
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(file.?name).*", "confidence": 99 } ]
 			}
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Filename" }
 		],
 		"priority": 180
 	},
@@ -2181,7 +2255,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P569" },
-			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q2389905" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q2389905" },
+			{ "source": "schema", "reference": "https://schema.org/birthDate" }
 		],
 		"priority": 182
 	},
@@ -2219,7 +2294,8 @@
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Geographic_coordinate_system" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Latitude" },
-			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q34027" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q34027" },
+			{ "source": "schema", "reference": "https://schema.org/latitude" }
 		],
 		"threshold": 98,
 		"baseType": "DOUBLE",
@@ -2261,7 +2337,8 @@
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Geographic_coordinate_system" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Longitude" },
-			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q36477" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q36477" },
+			{ "source": "schema", "reference": "https://schema.org/longitude" }
 		],
 		"threshold": 98,
 		"baseType": "DOUBLE",
@@ -2280,7 +2357,8 @@
 		],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Geographic_coordinate_system" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Latitude" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Latitude" },
+			{ "source": "schema", "reference": "https://schema.org/latitude" }
 		],
 		"threshold": 99,
 		"priority": 192
@@ -2296,7 +2374,8 @@
 		],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Geographic_coordinate_system" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Longitude" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Longitude" },
+			{ "source": "schema", "reference": "https://schema.org/longitude" }
 		],
 		"threshold": 99,
 		"priority": 193
@@ -2315,6 +2394,10 @@
 					"isRegExpComplete": true
 				} ]
 			}
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Projected_coordinate_system" },
+			{ "source": "schema", "reference": "https://schema.org/latitude" }
 		],
 		"threshold": 98,
 		"baseType": "LONG",
@@ -2335,6 +2418,10 @@
 					"isRegExpComplete": true
 				} ]
 			}
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Projected_coordinate_system" },
+			{ "source": "schema", "reference": "https://schema.org/longitude" }
 		],
 		"threshold": 98,
 		"baseType": "LONG",
@@ -2425,7 +2512,8 @@
 			"reference": "/reference/en_city_samples.csv"
 		},
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/City" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/City" },
+			{ "source": "schema", "reference": "https://schema.org/City" }
 		],
 		"baseType": "STRING",
 		"priority": 210
@@ -2442,6 +2530,10 @@
 			"type": "resource",
 			"reference": "/reference/CCType.csv"
 		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Credit_card" },
+			{ "source": "schema", "reference": "https://schema.org/CreditCard" }
+		],
 		"backout": "[ \\p{Alpha}]+",
 		"priority": 220
 	},
@@ -2636,7 +2728,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P2771" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Data_Universal_Numbering_System" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Data_Universal_Numbering_System" },
+			{ "source": "schema", "reference": "https://schema.org/duns" }
 		],
 		"baseType": "LONG",
 		"priority": 239
@@ -2939,7 +3032,8 @@
 		"validLocales": [ { "localeTag":  "*" } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P212" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISBN" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISBN" },
+			{ "source": "schema", "reference": "https://schema.org/gtin13" }
 		],
 		"baseType": "LONG",
 		"priority": 294
@@ -2990,7 +3084,8 @@
 		"clazz": "com.cobber.fta.plugins.CheckDigitISBN",
 		"validLocales": [ { "localeTag":  "*" } ],
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISBN" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISBN" },
+			{ "source": "schema", "reference": "https://schema.org/isbn" }
 		],
 		"priority": 298
 	},
@@ -3002,6 +3097,11 @@
 		"clazz": "com.cobber.fta.plugins.JobTitleEN",
 		"validLocales": [
 			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(job.title).*", "confidence": 99 }, { "regExp": ".*(?i)(title|position|occupation|profession|role).*", "confidence": 90 } ] }
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Work_(human_activity)" },
+			{ "source": "schema", "reference": "https://schema.org/jobTitle" },
+			{ "source": "schema", "reference": "https://schema.org/title" }
 		],
 		"threshold": 60,
 		"priority": 300
@@ -3078,7 +3178,9 @@
 		],
 		"threshold": 99,
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P465" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P465" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Web_colors" },
+			{ "source": "schema", "reference": "https://schema.org/color" }
 		],
 		"baseType": "STRING",
 		"priority": 304
@@ -3098,7 +3200,9 @@
 			"reference": "/reference/en_color.csv"
 		},
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P462" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P462" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Web_colors" },
+			{ "source": "schema", "reference": "https://schema.org/color" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 305
@@ -3118,7 +3222,9 @@
 			"reference": "/reference/nl_color.csv"
 		},
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P462" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P462" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Web_colors" },
+			{ "source": "schema", "reference": "https://schema.org/color" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 306
@@ -3132,6 +3238,9 @@
 		"validLocales": [
 			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(direction).*", "confidence": 99 },
 			 { "regExp": ".*(?i)(dir|suffix|prefix).*", "confidence": 90 } ] }
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Cardinal_direction" }
 		],
 		"baseType": "STRING",
 		"priority": 307
@@ -3147,7 +3256,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P3224" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/North_American_Industry_Classification_System" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/North_American_Industry_Classification_System" },
+			{ "source": "schema", "reference": "https://schema.org/naics" }
 		],
 		"baseType": "LONG",
 		"priority": 308
@@ -3159,7 +3269,7 @@
 		"signature": "WlXF9TSnYBDQXbOMhceVK9XCxAk=",
 		"clazz": "com.cobber.fta.plugins.NameLastFirst",
 		"validLocales": [
-			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name|contact).*", "confidence": 60 } ] },
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name|contact|author).*", "confidence": 60 } ] },
 			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
 			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
 			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(nom).*", "confidence": 60 } ] },
@@ -3180,7 +3290,7 @@
 		"signature": "pJJS+kSfyNDRb2T7SXIWhZhlH3c=",
 		"clazz": "com.cobber.fta.plugins.NameFirstLast",
 		"validLocales": [
-			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name|contact).*", "confidence": 60 } ] },
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(name|contact|author).*", "confidence": 60 } ] },
 			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(name).*", "confidence": 60 } ] },
 			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(nombre).*", "confidence": 60 } ] },
 			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(nom).*", "confidence": 60 } ] },
@@ -3253,7 +3363,8 @@
 			}
 		],
 		"documentation": [
-			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P735" }
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P735" },
+			{ "source": "schema", "reference": "https://schema.org/givenName" }
 		],
 		"priority": 372
 	},
@@ -3318,7 +3429,8 @@
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P734" },
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/https://en.wikipedia.org/wiki/Surname" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/https://en.wikipedia.org/wiki/Surname" },
+			{ "source": "schema", "reference": "https://schema.org/familyName" }
 		],
 		"priority": 373
 	},
@@ -3338,7 +3450,8 @@
 			}
 		],
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Middle_name" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Middle_name" },
+			{ "source": "schema", "reference": "https://schema.org/additionalName" }
 		],
 		"priority": 374
 	},
@@ -3426,6 +3539,10 @@
 			"type": "resource",
 			"reference": "/reference/us_companies_samples.csv"
 		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://https://en.wikipedia.org/wiki/Company" },
+			{ "source": "schema", "reference": "https://schema.org/Corporation" }
+		],
 		"baseType": "STRING",
 		"priority": 380
 	},
@@ -3464,7 +3581,8 @@
 			}
 		],
 		"documentation": [
-			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Identifier" }
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Identifier" },
+			{ "source": "schema", "reference": "https://schema.org/identifier" }
 		],
 		"priority": 400
 	}
