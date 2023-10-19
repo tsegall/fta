@@ -18,10 +18,10 @@ package modebulk;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cobber.fta.LogicalType;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
-import com.fasterxml.jackson.databind.type.LogicalType;
 
 public abstract class ModeBulk {
 	public static void main(final String[] args) throws FTAException {

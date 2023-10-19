@@ -64,7 +64,7 @@
 		"pluginType": "java",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
 		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|mobiel|móvil|movil|telephone|telefono|telefon|telefoon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
+		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|contact.?number|mobiel|móvil|movil|telephone|telefono|telefon|telefoon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P1329" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Telephone_number" },

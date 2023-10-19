@@ -47,6 +47,8 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	private int nonLocal;
 	private boolean onlyDigits = true;
 
+	private final String initialValid = "0123456789(+";
+
 	/**
 	 * Construct a Phone Number plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
@@ -112,13 +114,20 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
+		if (input == null)
+			return false;
+
+		final String trimmed = input.trim();
+		if (trimmed.length() < 6)
+			return false;
+
 		try {
 			// The Google library is very permissive and generally strips punctuation, we want to be
-			// a little more discerning so that we don't treat ordinary numbers as phone numbers
-			if (input == null || input.indexOf(',') != -1 || input.chars().filter(ch -> ch == '.').count() == 1)
+			// a little more discerning so that we don't treat ordinary numbers (or rubbish) as phone numbers
+			if (trimmed.indexOf(',') != -1 || trimmed.chars().filter(ch -> ch == '.').count() == 1 || initialValid.indexOf(trimmed.charAt(0)) == -1)
 				return false;
 
-			return validTest(input);
+			return validTest(trimmed);
 		}
 		catch (NumberParseException e) {
 			return false;
@@ -150,7 +159,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
-		return trimmed.length() > 5 && isValid(trimmed, true, -1);
+		return trimmed.length() >= 6 && isValid(trimmed, true, -1);
 	}
 
 	@Override

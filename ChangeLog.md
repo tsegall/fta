@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.1.3
+ - ENH: Minor improvements to TELEPHONE plugin (be more picky to reduce false positives) and accept Contact?Number as a positive header (to detect more valid items)
+ - BUG: Examples should be dependent on 15.+ of FTA not 14.+
+
 ### 15.1.2
  - ENH: Bump google phonenumber, and guava, jackson-databind
  - ENH: Improve mapping to schema.org Semantic Types
