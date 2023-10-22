@@ -68,3 +68,11 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+
+    - name: Install dependencies, run tests, and collect coverage
+      run: gradle build
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4-beta
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}      
