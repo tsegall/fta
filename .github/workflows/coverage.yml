@@ -9,7 +9,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'correto'
+          distribution: 'corretto'
           java-version: 17
       - name: Install dependencies, run tests, and collect coverage
         run: gradle build
