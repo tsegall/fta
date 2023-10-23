@@ -179,8 +179,10 @@ public class PluginDefinition {
 		for (final PluginLocaleEntry validLocale : validLocales) {
 			final String[] localeTags = validLocale.localeTag.split(",");
 			for (final String localeTag : localeTags) {
-				if ("*".equals(localeTag))
+				if ("*".equals(localeTag)) {
 					wildcard = validLocale;
+					continue;
+				}
 				if (localeTag.indexOf('-') != -1) {
 					if (localeTag.equals(languageTag))
 						return validLocale;

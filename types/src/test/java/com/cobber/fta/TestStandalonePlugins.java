@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
@@ -57,9 +58,11 @@ public class TestStandalonePlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void randomPhoneNumber() throws IOException, FTAPluginException {
-		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("TELEPHONE"), new AnalysisConfig());
+		final LogicalTypeCode logical = (LogicalTypeCode) LogicalTypeFactory.newInstance(PluginDefinition.findByName("TELEPHONE"), new AnalysisConfig(Locale.forLanguageTag("en-US")));
+		final String initialCheck = logical.nextRandom();
 
-		assertTrue(logical.nextRandom().matches(logical.getRegExp()));
+		assertNotNull(initialCheck);
+		assertTrue(initialCheck.matches(logical.getRegExp()));
 
 		for (int i = 0; i < 100; i++) {
 			final String sample = logical.nextRandom();

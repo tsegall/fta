@@ -1926,8 +1926,9 @@ public class RandomTests {
 		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
 		assertEquals(result.getRegExp(), "\\d{5}");
 		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getKeyConfidence(), 0.9);
-		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
+		assertEquals(result.getKeyConfidence(), 0.99);
+		assertEquals(result.getConfidence(), 0.99);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })

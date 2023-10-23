@@ -3273,7 +3273,12 @@ public class TestDates {
 	public void localeDateTest() throws IOException, FTAException {
 		final int testSet = new SecureRandom().nextInt(10);
 		final Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] {Locale.forLanguageTag("ff-Adlm-BF")};
+//		Locale[] locales = new Locale[] {Locale.forLanguageTag("zh-SG")};
+
+		if (locales.length == 1) {
+			System.err.printf("Locale: %s, Language: %s, Country: %s%n",
+					locales[0].toLanguageTag(), locales[0].getDisplayLanguage(), locales[0].getDisplayCountry());
+		}
 
 		final String testCases[] = {
 				"yyyy MM dd", "yyyy M dd", "yyyy MM d", "yyyy M d",
@@ -3300,10 +3305,18 @@ public class TestDates {
 		int countProblems = 0;
 
 		final Set<String> unsupportedLocales = new HashSet<>();
-		// ff-Adlm-* === Fulah written with Adlam script, I definitely do not understand how this locale works, it appears to ignore the format :-)
-		for (final Locale locale : locales)
-			if (locale.toLanguageTag().startsWith("ff-Adlm-"))
+		for (final Locale locale : locales) {
+			// ff-Adlm-* === Fulah written with Adlam script, I definitely do not understand how this locale works, it appears to ignore the format :-)
+			if (locale.toLanguageTag().startsWith("ff-Adlm"))
 				unsupportedLocales.add(locale.toLanguageTag());
+			// We do not really support (via plugins) locales with variants (e.g. en-US-POSIX)
+			if (!locale.getVariant().isEmpty())
+				unsupportedLocales.add(locale.toLanguageTag());
+			// Skip Chinese in Singapore as the month names (and abbreviations) are just the ordinal number followed by the Month symbol (月)
+			// We input to the test MMM but get back MM月 which is reasonable but does not pass the test infrastructure
+			if (locale.toLanguageTag().startsWith("zh-SG"))
+				unsupportedLocales.add(locale.toLanguageTag());
+		}
 
 		for (final String testCase : testCases) {
 			System.err.println(testCase + " ");

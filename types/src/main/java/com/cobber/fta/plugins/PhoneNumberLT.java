@@ -60,6 +60,9 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	@Override
 	public String nextRandom() {
 		final String country = locale.getCountry();
+		if (country.isEmpty())
+			return null;
+
 		final PhoneNumber sample = phoneUtil.getExampleNumberForType(country, PhoneNumberUtil.PhoneNumberType.MOBILE);
 		if (sample == null)
 			return null;
@@ -114,7 +117,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
-		if (input == null)
+		if (country.isEmpty() || input == null)
 			return false;
 
 		final String trimmed = input.trim();

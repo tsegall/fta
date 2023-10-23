@@ -192,6 +192,13 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void zhSG() {
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.forLanguageTag("zh-SG"));
+
+		assertEquals(dtp.determineFormatString("10月-22-2023"), "MM月-dd-yyyy");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void dutch() {
 		final DateTimeParser dtpMonthFirst = new DateTimeParser().withLocale(Locale.forLanguageTag("nl-NL")).withDateResolutionMode(DateResolutionMode.MonthFirst);
 

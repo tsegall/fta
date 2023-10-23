@@ -868,7 +868,7 @@ public class TestLongs {
 	public void localeLongTest() throws IOException, FTAException {
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("ar-EH") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-Latn-US") };
 
 		for (final Locale locale : locales) {
 			long min = Long.MAX_VALUE;
@@ -879,6 +879,12 @@ public class TestLongs {
 			String absMaxValue = String.valueOf(max);
 			final TextAnalyzer analysis = new TextAnalyzer("Separator");
 			analysis.setLocale(locale);
+
+//			final String languageTag = locale.toLanguageTag();
+//			if (languageTag.indexOf('-') != languageTag.lastIndexOf('-')) {
+//				logger.debug("Skipping locale '{}' as it has a script.", locale);
+//				continue;
+//			}
 
 			final boolean simple = NumberFormat.getNumberInstance(locale).format(0).matches("\\d");
 

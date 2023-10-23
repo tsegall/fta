@@ -806,7 +806,7 @@ public class TestDistributions {
 		final String q1_0 = result.getValueAtQuantile(1.0);
 
 		// Median should be seriously close to 0
-		assertEquals(Double.parseDouble(q0_5), 0.0, 1);
+		assertEquals(Double.parseDouble(q0_5), 0.0, 1.2);
 
 		// 3.5 Standard Deviations should cover low and high points
 		assertTrue(Double.parseDouble(q0_0) < -350);

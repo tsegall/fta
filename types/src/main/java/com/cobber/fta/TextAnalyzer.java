@@ -2440,10 +2440,16 @@ public class TextAnalyzer {
 		// Move the longs from the outlier set to the cardinality set
 		facts.matchCount += otherLongs;
 		facts.outliers.entrySet().removeAll(longOutliers.entrySet());
+
+		// So if all the values observed to date have been monotic increasing (or decreasing) then we should preserve this fact
+		final boolean saveMonitonicIncreasing = facts.monotonicIncreasing;
+		final boolean saveMonitonicDecreasing = facts.monotonicDecreasing;
 		for (final Map.Entry<String, Long> entry : longOutliers.entrySet()) {
 			trackLong(entry.getKey().trim(), knownTypes.getByID(KnownTypes.ID.ID_LONG), true, entry.getValue());
 			addValid(entry.getKey(), entry.getValue());
 		}
+		facts.monotonicIncreasing = saveMonitonicIncreasing;
+		facts.monotonicDecreasing = saveMonitonicDecreasing;
 
 		if ((double) facts.matchCount / realSamples > analysisConfig.getThreshold()/100.0) {
 			facts.setMatchTypeInfo(knownTypes.getByID(KnownTypes.ID.ID_LONG));

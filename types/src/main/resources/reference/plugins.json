@@ -110,7 +110,7 @@
 		"signature": "/o1vxOzeSy+OB/GwjvwcCCv6ri0=",
 		"clazz": "com.cobber.fta.plugins.address.USZip5",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-CA,fr-CA",
+			{ "localeTag":  "en-US,en-Latn-US,en-CA,fr-CA",
 				"headerRegExps": [ { "regExp": ".*(?i)(zip|postal|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
 		],
 		"documentation": [
@@ -1064,7 +1064,7 @@
 		"pluginType": "list",
 		"signature": "JD5jeXHLzGctpqicY44B9iJzyXU=",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-CA,fr-CA,en-MX", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] }
+			{ "localeTag":  "en-US,en-Latn-US,en-CA,fr-CA,en-MX", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] }
 		],
 		"content": {
 			"type": "resource",
