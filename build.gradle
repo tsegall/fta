@@ -43,6 +43,13 @@ subprojects {
 		toolVersion = libs.versions.jacoco.get()
 	}
 
+	jacocoTestReport {
+		dependsOn test
+		reports {
+			xml.required = true
+		}
+	}
+
 	artifacts {
 		archives javadocJar, sourcesJar
 	}
