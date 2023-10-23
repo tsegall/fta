@@ -14,7 +14,7 @@ jobs:
           distribution: 'corretto'
           java-version: 17
       - name: Install dependencies, run tests, and collect coverage
-        run: gradle build
+        run: gradle build jacocoTestReport
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4-beta
         env:
