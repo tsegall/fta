@@ -27,8 +27,8 @@ includeBuild 'examples/modestreaming'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '15.1.4')
-			version('jacoco', '0.8.10')
+			version('fta', '15.1.5')
+			version('jacoco', '0.8.11')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
 			library('univocity', 'com.univocity:univocity-parsers:2.9.1')

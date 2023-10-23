@@ -156,7 +156,14 @@ public class URLLT extends LogicalTypeInfinite {
 		if (charCounts[' '] != 0)
 			return false;
 
-		if (trimmed.length() > MAX_URL_LENGTH)
+		final int length = trimmed.length();
+		if (length > MAX_URL_LENGTH)
+			return false;
+
+		// Quick rule out a simple long or double
+		final int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
+				+ charCounts['5'] + charCounts['6'] + charCounts['7'] + charCounts['8'] + charCounts['9'];
+		if (digits == length || (digits == length - 1 && charCounts['.'] == 1))
 			return false;
 
 		final String cleaned = convertUnicodeURLToAscii(trimmed);

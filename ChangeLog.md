@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 15.1.5
+ - BUG: Examples should be dependent on 15.+ of FTA not 14.+
+ - BUG: equals() on Facts should have been <= epsilon not < epsilon (matters if epsilon is 0.0)
+ - BUG: Make TestDistribution.normalCurve() more robust by using equals as opposed to comparing serialized versions strings
+ - INT: Work on code coverage
+ - INT: Bump jacoco
+
 ### 15.1.4
  - ENH: Minor changes to support Java 17
  - BUG: Given monotonic increasing input (which looks like a ZIP) then backing out incorrectly set monotonicIncreasing to false

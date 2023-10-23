@@ -777,7 +777,7 @@ public class TestDistributions {
 		// Test pre getResult()
 		String serialized = analysis.serialize();
 		final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
-		assertEquals(serialized, hydrated.serialize());
+		assertTrue(analysis.equals(hydrated));
 
 		// Test a hydrated object
 		serialized = hydrated.serialize();
