@@ -292,6 +292,24 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void badTXOffsets() {
+		final DateTimeParser dtp = new DateTimeParser();
+		assertEquals(dtp.determineFormatString("2012-08-29 10:17:30 +12"), "yyyy-MM-dd HH:mm:ss x");
+		assertNull(dtp.determineFormatString("2012-08-29 10:17:30 +19"));
+
+		assertEquals(dtp.determineFormatString("2012-08-29 10:17:30 +00:30"), "yyyy-MM-dd HH:mm:ss xxx");
+		assertNull(dtp.determineFormatString("2012-08-29 10:17:30 +00:63"));
+
+		assertEquals(dtp.determineFormatString("2012-08-29 10:17:30 +00:30:30"), "yyyy-MM-dd HH:mm:ss xxxxx");
+		assertNull(dtp.determineFormatString("2012-08-29 10:17:30 +00:30:63"));
+
+		assertEquals(dtp.determineFormatString("2012-08-29 10:17:30 +003030"), "yyyy-MM-dd HH:mm:ss xxxx");
+		assertNull(dtp.determineFormatString("2012-08-29 10:17:30 +003063"));
+
+		assertNull(dtp.determineFormatString("2012-08-29 10:17:30 +0030300"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void digits4() {
 		final DateTimeParser dtp = new DateTimeParser();
 

@@ -3,6 +3,7 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/tsegall/fta?logo=GitHub)](https://github.com/tsegall/fta/releases)
 [![CodeQL](https://github.com/tsegall/fta/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/tsegall/fta/actions/workflows/codeql-analysis.yml)
 [![javadoc](https://javadoc.io/badge2/com.cobber.fta/fta/javadoc.svg)](https://javadoc.io/doc/com.cobber.fta/fta)
+[![codecov](https://codecov.io/gh/tsegall/fta/graph/badge.svg?token=EV1PTKU4S7)](https://codecov.io/gh/tsegall/fta)
 
 # Semantic Type Detection and Data Profiling #
 
