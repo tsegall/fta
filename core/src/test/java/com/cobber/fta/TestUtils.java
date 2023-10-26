@@ -16,8 +16,13 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
+import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +31,7 @@ import java.util.Map;
 
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.core.WordOffset;
@@ -74,6 +80,14 @@ public class TestUtils {
 
 		final String result = Utils.determineStreamFormat(mapper, cardinality);
 		assertEquals(result, "HTML");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void noSamples() {
+		final Map<String, Long> cardinality = new HashMap<>();
+
+		final String result = Utils.determineStreamFormat(mapper, cardinality);
+		assertNull(result);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -376,5 +390,205 @@ public class TestUtils {
 
 		assertEquals(splitter.getMin(), 10);
 		assertEquals(splitter.getMax(), 12);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testUniqueness() throws IOException {
+		double d = 0.0;
+
+		// Birthday paradox - with 23 people in a room, 2 should have the same birthday
+		d = Utils.uniquenessProbability(365, 23);
+		assertTrue(d > .50 && d < .51);
+
+		d = Utils.uniquenessProbability(99999, 1000);
+		assertTrue(d > .99);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void randomDigits() {
+		final byte[] seed = { 3, 1, 4, 1, 5, 9, 2 };
+		final SecureRandom random = new SecureRandom(seed);
+
+		for (int i = 0; i < 100; i++) {
+			final String random9 = Utils.getRandomDigits(random, 1 + i%10);
+			assertEquals(random9.length(), 1 + i%10);
+			assertTrue(Utils.isNumeric(random9));
+			assertTrue(random9.charAt(0) != '0');
+		}
+
+		assertFalse(Utils.isNumeric(null));
+		assertFalse(Utils.isNumeric(""));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testAllZeroes() {
+		assertTrue(Utils.allZeroes("0"));
+		assertTrue(Utils.allZeroes("00000000"));
+		assertFalse(Utils.allZeroes(""));
+		assertFalse(Utils.allZeroes(null));
+		assertFalse(Utils.allZeroes("."));
+		assertFalse(Utils.allZeroes("10000000"));
+		assertFalse(Utils.allZeroes("00000001"));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testIsSimpleAlphaNumeric() {
+		assertTrue(Utils.isSimpleAlphaNumeric('0'));
+		assertTrue(Utils.isSimpleAlphaNumeric('9'));
+		assertTrue(Utils.isSimpleAlphaNumeric('a'));
+		assertTrue(Utils.isSimpleAlphaNumeric('z'));
+		assertTrue(Utils.isSimpleAlphaNumeric('A'));
+		assertTrue(Utils.isSimpleAlphaNumeric('Z'));
+		assertFalse(Utils.isSimpleAlphaNumeric('å'));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testIsSimpleAlpha() {
+		assertTrue(Utils.isSimpleAlpha('a'));
+		assertTrue(Utils.isSimpleAlpha('z'));
+		assertTrue(Utils.isSimpleAlpha('A'));
+		assertTrue(Utils.isSimpleAlpha('Z'));
+		assertFalse(Utils.isSimpleAlpha('0'));
+		assertFalse(Utils.isSimpleAlpha('9'));
+		assertFalse(Utils.isSimpleAlpha('å'));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testIsSimpleNumeric() {
+		assertTrue(Utils.isSimpleNumeric('0'));
+		assertTrue(Utils.isSimpleNumeric('9'));
+		assertFalse(Utils.isSimpleNumeric('０'));
+		assertFalse(Utils.isSimpleNumeric('a'));
+		assertFalse(Utils.isSimpleNumeric('z'));
+		assertFalse(Utils.isSimpleNumeric('A'));
+		assertFalse(Utils.isSimpleNumeric('Z'));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testIsAlphas() {
+		assertTrue(Utils.isAlphas("Hello"));
+		assertFalse(Utils.isAlphas("Number9"));
+		assertFalse(Utils.isAlphas("Period."));
+		assertFalse(Utils.isAlphas(""));
+		assertFalse(Utils.isAlphas(null));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testCleanse() {
+		assertEquals(Utils.cleanse("“–“ U+2013 En Dash Unicode Character"), "\"-\" U+2013 En Dash Unicode Character");
+		assertEquals(Utils.cleanse("“—” U+2014 Em Dash Unicode Character"), "\"-\" U+2014 Em Dash Unicode Character");
+		assertEquals(Utils.cleanse("““” U+201C Left Double Quotation Mark Unicode Character"), "\"\"\" U+201C Left Double Quotation Mark Unicode Character");
+		assertEquals(Utils.cleanse("Unicode Character “”” (U+201D)"), "Unicode Character \"\"\" (U+201D)");
+		assertEquals(Utils.cleanse("“`” U+0060 Grave Accent Unicode Character"), "\"'\" U+0060 Grave Accent Unicode Character");
+		assertEquals(Utils.cleanse("‘ U+2018 Left Single Quotation Mark Unicode Character"), "' U+2018 Left Single Quotation Mark Unicode Character");
+		assertEquals(Utils.cleanse("nothing to do"), "nothing to do");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testreplaceFirst() {
+		assertEquals(Utils.replaceFirst("one three three four", "three", "two"), "one two three four");
+		assertEquals(Utils.replaceFirst("one three three four", "thrre", "two"), "one three three four");
+
+		assertEquals(Utils.replaceLast("one two two four", "two", "three"), "one two three four");
+		assertEquals(Utils.replaceLast("one three three four", "thrre", "two"), "one three three four");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testgetBaseName() {
+		assertEquals(Utils.getBaseName("zoom.pdf"), "zoom");
+		assertEquals(Utils.getBaseName("zoompdf"), "zoompdf");
+		assertEquals(Utils.getBaseName("zoom.pdf.pdf"), "zoom.pdf");
+	}
+
+
+	@Test(groups = { TestGroups.ALL })
+	public void testRegExpGenerator() {
+		 RegExpGenerator generator = new RegExpGenerator();
+		 for (int i = 0; i < 100; i++) {
+			 generator.train("Red");
+			 generator.train("Green");
+			 generator.train("Blue");
+		 }
+		 assertEquals(generator.getResult(), "\\p{IsAlphabetic}{3,5}");
+
+		 generator = new RegExpGenerator(20, Locale.getDefault());
+		 for (int i = 0; i < 100; i++) {
+			 generator.train("Red");
+			 generator.train("Green");
+			 generator.train("Blue");
+		 }
+		 assertEquals(generator.getResult(), "(?i)(BLUE|GREEN|RED)");
+
+		 RegExpGenerator zip5 = new RegExpGenerator(20, Locale.getDefault());
+		 final SecureRandom random = new SecureRandom();
+		 for (int i = 0; i < 100; i++)
+			 zip5.train(Utils.getRandomDigits(random, 5));
+		 assertEquals(zip5.getResult(), "\\p{IsDigit}{5}");
+
+		 final String zipPlus4 = "\\p{IsDigit}{5}-\\\\p{IsDigit}{4}";
+		 assertEquals(RegExpGenerator.merge(zip5.getResult(), zipPlus4), "\\p{IsDigit}{5}(-\\\\p{IsDigit}{4})?");
+		 assertEquals(RegExpGenerator.merge(zipPlus4, zip5.getResult()), "\\p{IsDigit}{5}(-\\\\p{IsDigit}{4})?");
+
+		 assertEquals(RegExpGenerator.merge("\\p{IsDigit}{5}", "(?i)(BLUE|GREEN|RED)"), "(?i)(BLUE|GREEN|RED)|\\p{IsDigit}{5}");
+
+		 generator = new RegExpGenerator();
+		 for (int i = 0; i < 100; i++) {
+			 generator.train(" ");
+			 generator.train("  ");
+			 generator.train("   ");
+		 }
+		 assertEquals(generator.getResult(), " {1,3}");
+
+		 generator = new RegExpGenerator();
+		 for (int i = 0; i < 100; i++) {
+			 generator.train(" ");
+			 generator.train("  ");
+			 generator.train("            ");
+		 }
+		 assertEquals(generator.getResult(), " +");
+
+		 generator = new RegExpGenerator(20, Locale.getDefault());
+		 for (int i = 0; i < 100; i++) {
+			 generator.train("A");
+			 generator.train("B");
+			 generator.train("C");
+			 generator.train("D");
+			 generator.train("E");
+		 }
+		 assertEquals(generator.getResult(), "[A-E]");
+
+		 generator = new RegExpGenerator();
+		 for (int i = 0; i < 100; i++) {
+			 generator.train("0-9");
+		 }
+		 assertEquals(generator.getResult(), "[\\p{IsDigit}\\-]{3}");
+
+		 generator = new RegExpGenerator();
+		 for (int i = 0; i < 100; i++) {
+			 generator.train("0_9");
+		 }
+		 assertEquals(generator.getResult(), "[\\p{IsDigit}_]{3}");
+
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testSlosh() {
+		assertEquals(RegExpGenerator.slosh("Hello"), "Hello");
+		assertEquals(RegExpGenerator.slosh("0.9"), "0\\.9");
+		assertEquals(RegExpGenerator.slosh("0..9"), "\\Q0..9\\E");
+		assertEquals(RegExpGenerator.slosh("."), "\\.");
+		assertEquals(RegExpGenerator.slosh("0"), "0");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testKnownTypes() {
+		final KnownTypes knownTypes = new KnownTypes();
+		knownTypes.initialize(Locale.US);
+		assertEquals(knownTypes.PATTERN_LONG, knownTypes.getByID(KnownTypes.ID.ID_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, "[\\d,]+");
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).regexp);
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.grouping(KnownTypes.ID.ID_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_DOUBLE, "\\d*\\.?\\d+");
+		assertEquals(KnownTypes.PATTERN_ALPHA, "\\p{IsAlphabetic}");
 	}
 }

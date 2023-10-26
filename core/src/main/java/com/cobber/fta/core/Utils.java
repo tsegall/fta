@@ -121,7 +121,7 @@ public final class Utils {
 	 * @return True if input is a string of 0's.
 	 */
 	public static boolean allZeroes(final String input) {
-		if (input == null)
+		if (input == null || input.isEmpty())
 			return false;
 
 		for (int i = 0; i < input.length(); i++)
@@ -190,8 +190,9 @@ public final class Utils {
 	/**
 	 * Clean a string.
 	 * Replacing evil characters:
-	 *  - like LEFT and RIGHT SINGLE QUOTATION MARK and backticks - with a standard quote.
-	 *  - like en-dash and em-dash with a simple hyphen.
+	 *  - LEFT and RIGHT SINGLE QUOTATION MARK and backticks - with a standard quote.
+	 *  - LEFT and RIGHT DOUBLE QUOTATION MARK
+	 *  - en-dash and em-dash with a simple hyphen.
 	 * Note: We delay allocating a StringBuilder until we find out it is required.
 	 * @param input String to cleanse
 	 * @return The original String if no cleansing required - or a cleansed copy if necessary.
@@ -209,6 +210,15 @@ public final class Utils {
 					b = new StringBuilder(input.substring(0, i));
 				b.append('\'');
 			}
+			// (U+201C) LEFT DOUBLE QUOTATION MARK
+			// (U+201D) RIGHT DOUBLE QUOTATION MARK
+			else if (ch == '\u201C' || ch == '\u201D') {
+				if (b == null)
+					b = new StringBuilder(input.substring(0, i));
+				b.append('\"');
+			}
+			// (U+2013) ENDASH
+			// (U+2014) EMDASH
 			else if (ch == '\u2013' || ch == '\u2014') {
 				if (b == null)
 					b = new StringBuilder(input.substring(0, i));
