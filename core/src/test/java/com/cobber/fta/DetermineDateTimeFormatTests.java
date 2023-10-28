@@ -55,6 +55,7 @@ import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.dates.DateTimeParserConfig;
 import com.cobber.fta.dates.DateTimeParserResult;
+import com.cobber.fta.dates.SimpleDateMatcher;
 
 public class DetermineDateTimeFormatTests {
 	private static final SecureRandom random = new SecureRandom();
@@ -307,6 +308,37 @@ public class DetermineDateTimeFormatTests {
 		assertNull(dtp.determineFormatString("2012-08-29 10:17:30 +003063"));
 
 		assertNull(dtp.determineFormatString("2012-08-29 10:17:30 +0030300"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void goodTZOffsets() {
+		DateTimeParser dtp = new DateTimeParser();
+		final String xTest = "2012-08-29 10:17:30 +12";
+		dtp.train(xTest);
+		assertEquals(dtp.getResult().getFormatString(), "yyyy-MM-dd HH:mm:ss x");
+		assertEquals(dtp.getResult().getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2} [-+][0-9]{2}([0-9]{2})?");
+		assertTrue(xTest.matches(dtp.getResult().getRegExp()));
+
+		dtp = new DateTimeParser();
+		final String xxxTest = "2012-08-29 10:17:30 +00:30";
+		dtp.train(xxxTest);
+		assertEquals(dtp.getResult().getFormatString(), "yyyy-MM-dd HH:mm:ss xxx");
+		assertEquals(dtp.getResult().getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2} [-+][0-9]{2}:[0-9]{2}");
+		assertTrue(xxxTest.matches(dtp.getResult().getRegExp()));
+
+		dtp = new DateTimeParser();
+		final String xxxxxTest = "2012-08-29 10:17:30 +00:30:30";
+		dtp.train(xxxxxTest);
+		assertEquals(dtp.getResult().getFormatString(), "yyyy-MM-dd HH:mm:ss xxxxx");
+		assertEquals(dtp.getResult().getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2} [-+][0-9]{2}:[0-9]{2}(:[0-9]{2})?");
+		assertTrue(xxxxxTest.matches(dtp.getResult().getRegExp()));
+
+		dtp = new DateTimeParser();
+		final String xxxxTest = "2012-08-29 10:17:30 +003030";
+		dtp.train(xxxxTest);
+		assertEquals(dtp.getResult().getFormatString(), "yyyy-MM-dd HH:mm:ss xxxx");
+		assertEquals(dtp.getResult().getRegExp(), "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2} [-+][0-9]{4}([0-9]{2})?");
+		assertTrue(xxxxTest.matches(dtp.getResult().getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
@@ -3155,4 +3187,45 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(result.timeFieldLengths[3].getMin(), 1);
 		assertEquals(result.timeFieldLengths[3].getMax(), 1);
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void badFormats() {
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.US);
+
+		// yyyy tests
+		assertNull(dtp.determineFormatString("1020"));
+		assertNull(dtp.determineFormatString("3020"));
+
+		// yyyyMM tests
+		assertNull(dtp.determineFormatString("202013"));
+		assertNull(dtp.determineFormatString("102012"));
+		assertNull(dtp.determineFormatString("302012"));
+
+		// yyyyMMddHH tests
+		assertNull(dtp.determineFormatString("2020023104"));
+		assertNull(dtp.determineFormatString("2020123134"));
+		assertNull(dtp.determineFormatString("2020123214"));
+		assertNull(dtp.determineFormatString("1020120914"));
+		assertNull(dtp.determineFormatString("3020120914"));
+
+		assertNull(dtp.determineFormatString("2023-01-45 234:12"));
+		assertNull(dtp.determineFormatString("1970-01-01T"));
+
+		assertNull(dtp.determineFormatString("1970010112 11"));
+
+		assertEquals(SimpleDateMatcher.getType("dd MMMM yyyy"), FTAType.LOCALDATE);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void testPlausibleDateLong() {
+		assertTrue(DateTimeParser.plausibleDateLong(20201216, 4));
+		assertTrue(DateTimeParser.plausibleDateLong(201216, 2));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void testTooLong() {
+		assertTrue(DateTimeParser.plausibleDateLong(20201216, 4));
+		assertTrue(DateTimeParser.plausibleDateLong(201216, 2));
+	}
+
 }

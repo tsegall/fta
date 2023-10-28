@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.1.6
+ - ENH: Bump google phonenumber
+ - INT: Work on code coverage
+
 ### 15.1.5
  - BUG: Examples should be dependent on 15.+ of FTA not 14.+
  - BUG: equals() on Facts should have been <= epsilon not < epsilon (matters if epsilon is 0.0)

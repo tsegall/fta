@@ -116,7 +116,7 @@ public class MonthDigits extends LogicalTypeInfinite {
 			final String previousStreamName = context.getCompositeStreamNames()[myIndex - 1];
 			if (dayEntry.getHeaderConfidence(previousStreamName) >= 99)
 				return PluginAnalysis.OK;
-			if (keywords.match(previousStreamName, "YEAR", Keywords.MatchStyle.EQUALS) >= 90)
+			if (keywords.match(previousStreamName, "YEAR") >= 90)
 				return PluginAnalysis.OK;
 			if (getHeaderConfidence(previousStreamName) >= 99)
 				return PluginAnalysis.OK;
@@ -127,7 +127,7 @@ public class MonthDigits extends LogicalTypeInfinite {
 			final String nextStreamName = context.getCompositeStreamNames()[myIndex + 1];
 			if (dayEntry.getHeaderConfidence(nextStreamName) >= 99)
 				return PluginAnalysis.OK;
-			if (keywords.match(nextStreamName, "YEAR", Keywords.MatchStyle.EQUALS) >= 90)
+			if (keywords.match(nextStreamName, "YEAR") >= 90)
 				return PluginAnalysis.OK;
 			if (getHeaderConfidence(nextStreamName) >= 99)
 				return PluginAnalysis.OK;

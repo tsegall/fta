@@ -24,7 +24,7 @@ public class AnyInputToken extends Token {
 	}
 
 	@Override
-	public AnyInputToken newInstance() {
+	public AnyInputToken newCopy() {
 		return new AnyInputToken();
 	}
 

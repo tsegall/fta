@@ -54,11 +54,11 @@ public class CharClassToken extends Token {
 		}
 
 		if (type.equals(Token.Type.DIGIT_CLASS))
-			maxSetASCII = 10;
+			maxSetASCII = 10;								// 0-9
 		else if (type.equals(Token.Type.ALPHA_CLASS))
-			maxSetASCII = 52;
+			maxSetASCII = 52;								// a-zA-Z
 		else if (type.equals(Token.Type.ALPHADIGIT_CLASS))
-			maxSetASCII = 62;
+			maxSetASCII = 62;								// 0-9a-zA-Z
 	}
 
 	private CharClassToken(final Token.Type type) {
@@ -66,7 +66,7 @@ public class CharClassToken extends Token {
 	}
 
 	@Override
-	public CharClassToken newInstance() {
+	public CharClassToken newCopy() {
 		final CharClassToken ret = new CharClassToken(this.type);
 
 		ret.countASCII = this.countASCII;
@@ -160,7 +160,7 @@ public class CharClassToken extends Token {
 		for (final CharClassToken token : kids) {
 			enumerateRanges = Token.Type.DIGIT_CLASS.equals(token.type) && token.countASCII != token.maxSetASCII;
 			if (lastToken == null) {
-				lastToken = token.newInstance();
+				lastToken = token.newCopy();
 				continue;
 			}
 
@@ -168,7 +168,7 @@ public class CharClassToken extends Token {
 				lastToken.coalesce(token);
 			else {
 				b.append(lastToken.getSimpleRegExp(enumerateRanges) + RegExpSplitter.qualify(lastToken.minObserved, lastToken.maxObserved));
-				lastToken = token.newInstance();
+				lastToken = token.newCopy();
 			}
         }
 		b.append(lastToken.getSimpleRegExp(enumerateRanges)).append(RegExpSplitter.qualify(lastToken.minObserved, lastToken.maxObserved));
@@ -199,7 +199,7 @@ public class CharClassToken extends Token {
 	public CharClassToken coalesce(final CharClassToken other) {
 		if (children == null) {
 			children = new ArrayList<>();
-			children.add(this.newInstance());
+			children.add(this.newCopy());
 		}
 		children.add(other);
 

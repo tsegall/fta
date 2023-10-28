@@ -26,7 +26,7 @@ public class SimpleToken extends Token {
 	}
 
 	@Override
-	public SimpleToken newInstance() {
+	public SimpleToken newCopy() {
 		return new SimpleToken(ch);
 	}
 

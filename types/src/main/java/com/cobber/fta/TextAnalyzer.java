@@ -1536,7 +1536,7 @@ public class TextAnalyzer {
 	}
 
 	protected boolean isNullEquivalent(final String input) {
-		return input == null || (analysisConfig.isEnabled(TextAnalyzer.Feature.NULL_AS_TEXT) && keywords.match(input, "NO_DATA", Keywords.MatchStyle.EQUALS) == 100);
+		return input == null || (analysisConfig.isEnabled(TextAnalyzer.Feature.NULL_AS_TEXT) && keywords.match(input, "NO_DATA") == 100);
 	}
 
 	enum SignStatus {
@@ -3397,9 +3397,9 @@ public class TextAnalyzer {
 		return (facts.minLongNonZero > DateTimeParser.RECENT_EARLY_LONG_YYYY && facts.maxLong <= DateTimeParser.LATE_LONG_YYYY &&
 				realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
 				(facts.minLongNonZero >= DateTimeParser.EARLY_LONG_YYYY && facts.maxLong <= DateTimeParser.LATE_LONG_YYYY &&
-				(keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) >= 90 ||
-					keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90 ||
-					keywords.match(context.getStreamName(), "PERIOD", Keywords.MatchStyle.CONTAINS) >= 90));
+				(keywords.match(context.getStreamName(), "YEAR") >= 90 ||
+					keywords.match(context.getStreamName(), "DATE") >= 90 ||
+					keywords.match(context.getStreamName(), "PERIOD") >= 90));
 	}
 
 	private void switchToDate(final TypeInfo newTypeInfo, final LocalDate newMin, final LocalDate newMax) {
@@ -3420,7 +3420,7 @@ public class TextAnalyzer {
 
 		if (facts.minLongNonZero > EARLY_LONG_YYYYMMDD && facts.maxLong < LATE_LONG_YYYYMMDD &&
 				DateTimeParser.plausibleDateLong(facts.minLongNonZero, 4) && DateTimeParser.plausibleDateLong(facts.maxLong, 4) &&
-				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) >= 90)) {
+				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || keywords.match(context.getStreamName(), "DATE") >= 90)) {
 			// Sometimes a Long is not a Long but it is really a date (yyyyMMdd)
 			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, 8, 8, null, "yyyyMMdd");
 			final DateTimeFormatter dtf = dateTimeParser.ofPattern(newTypeInfo.format);
@@ -3430,7 +3430,7 @@ public class TextAnalyzer {
 
 		if (facts.minLongNonZero > EARLY_LONG_YYYYMMDD/100 && facts.maxLong < LATE_LONG_YYYYMMDD/100 &&
 				DateTimeParser.plausibleDateLong(facts.minLongNonZero * 100 + 1, 4) && DateTimeParser.plausibleDateLong(facts.maxLong * 100 + 1, 4) &&
-				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || keywords.match(context.getStreamName(), "PERIOD", Keywords.MatchStyle.CONTAINS) >= 90)) {
+				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || keywords.match(context.getStreamName(), "PERIOD") >= 90)) {
 			// Sometimes a Long is not a Long but it is really a date (yyyyMM)
 			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{6}", FTAType.LOCALDATE, "yyyyMM", false, 6, 6, null, "yyyyMM");
 			final DateTimeFormatter dtf = dateTimeParser.ofPattern(newTypeInfo.format);

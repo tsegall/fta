@@ -27,7 +27,7 @@ public class FloatToken extends Token {
 	}
 
 	@Override
-	public FloatToken newInstance() {
+	public FloatToken newCopy() {
 		return new FloatToken(signed);
 	}
 

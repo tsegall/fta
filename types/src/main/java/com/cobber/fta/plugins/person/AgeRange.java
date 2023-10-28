@@ -119,12 +119,12 @@ public class AgeRange extends LogicalTypeInfinite {
 	}
 
 	private boolean isYear(final String word) {
-		return keywords.match(word, "YEARS", Keywords.MatchStyle.EQUALS) >= 90;
+		return keywords.match(word, "YEARS") >= 90;
 	}
 
 	private boolean isDateQualifier(final String word) {
-		return keywords.match(word, "MONTHS", Keywords.MatchStyle.EQUALS) >= 90 ||
-				keywords.match(word, "WEEKS", Keywords.MatchStyle.EQUALS) >= 90;
+		return keywords.match(word, "MONTHS") >= 90 ||
+				keywords.match(word, "WEEKS") >= 90;
 	}
 
 	private boolean isAgeModifier(final String modifier) {
@@ -132,8 +132,8 @@ public class AgeRange extends LogicalTypeInfinite {
 		if (len == 1 && symbols.indexOf(modifier.charAt(0)) != -1)
 			return true;
 
-		if (keywords.match(modifier, "UNDER", Keywords.MatchStyle.EQUALS) >= 90 ||
-				keywords.match(modifier, "OVER", Keywords.MatchStyle.EQUALS) >= 90)
+		if (keywords.match(modifier, "UNDER") >= 90 ||
+				keywords.match(modifier, "OVER") >= 90)
 			return true;
 
 		return false;

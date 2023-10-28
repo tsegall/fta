@@ -144,13 +144,13 @@ public class TokenStream {
 	public TokenStream(final TokenStream other) {
 		tokens = new Token[other.tokens.length];
 		for (int i = 0; i < tokens.length;i++)
-			tokens[i] = other.tokens[i].newInstance();
+			tokens[i] = other.tokens[i].newCopy();
 
 		this.isCompressed = other.isCompressed;
 		if (isCompressed) {
 			compressedTokens = new Token[other.compressedTokens.length];
 			for (int i = 0; i < compressedTokens.length;i++)
-				compressedTokens[i] = other.compressedTokens[i].newInstance();
+				compressedTokens[i] = other.compressedTokens[i].newCopy();
 			compressedKey = other.compressedKey;
 		}
 
@@ -326,7 +326,7 @@ public class TokenStream {
 		// Coalesce multiple numerics or alphas into one
 		for (final Token token : tokens) {
 			if (lastToken == null) {
-				lastToken = token.newInstance();
+				lastToken = token.newCopy();
 				newTokens.add(lastToken);
 				continue;
 			}
@@ -334,7 +334,7 @@ public class TokenStream {
 			if (token instanceof CharClassToken && lastToken instanceof CharClassToken && token.type == lastToken.type)
 				((CharClassToken)lastToken).coalesce((CharClassToken)token);
 			else {
-				lastToken = token.newInstance();
+				lastToken = token.newCopy();
 				newTokens.add(lastToken);
 			}
 		}

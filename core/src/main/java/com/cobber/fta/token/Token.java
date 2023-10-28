@@ -73,7 +73,7 @@ public abstract class Token {
 
 	abstract public Token merge(Token o);
 	abstract public int charactersUsed();
-	abstract public Token newInstance();
+	abstract public Token newCopy();
 
 	/**
 	 * Get the Regular Expression for this Token.

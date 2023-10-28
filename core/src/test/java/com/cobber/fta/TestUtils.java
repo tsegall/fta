@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 import com.cobber.fta.core.Utils;
@@ -581,7 +582,7 @@ public class TestUtils {
 	}
 
 	@Test(groups = { TestGroups.ALL })
-	public void testKnownTypes() {
+	public void testKnownTypesUS() {
 		final KnownTypes knownTypes = new KnownTypes();
 		knownTypes.initialize(Locale.US);
 		assertEquals(knownTypes.PATTERN_LONG, knownTypes.getByID(KnownTypes.ID.ID_LONG).regexp);
@@ -590,5 +591,109 @@ public class TestUtils {
 		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.grouping(KnownTypes.ID.ID_LONG).regexp);
 		assertEquals(knownTypes.PATTERN_DOUBLE, "\\d*\\.?\\d+");
 		assertEquals(KnownTypes.PATTERN_ALPHA, "\\p{IsAlphabetic}");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testKnownTypesDE() {
+		final KnownTypes knownTypes = new KnownTypes();
+		knownTypes.initialize(Locale.GERMAN);
+		assertEquals(knownTypes.PATTERN_LONG, knownTypes.getByID(KnownTypes.ID.ID_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, "[\\d\\.]+");
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).regexp);
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.grouping(KnownTypes.ID.ID_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_SIGNED_LONG, knownTypes.negation(knownTypes.PATTERN_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_DOUBLE, "\\d*,?\\d+");
+		assertEquals(KnownTypes.PATTERN_ALPHA, "\\p{IsAlphabetic}");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testKnownTypesSV() {
+		final KnownTypes knownTypes = new KnownTypes();
+		knownTypes.initialize(Locale.forLanguageTag("se-SV"));
+		assertEquals(knownTypes.PATTERN_LONG, knownTypes.getByID(KnownTypes.ID.ID_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, "[\\d ]+");
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).regexp);
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.grouping(KnownTypes.ID.ID_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_SIGNED_LONG, knownTypes.negation(knownTypes.PATTERN_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_DOUBLE, "\\d*,?\\d+");
+		assertEquals(KnownTypes.PATTERN_ALPHA, "\\p{IsAlphabetic}");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void typeInfo() {
+		final KnownTypes knownTypes = new KnownTypes();
+		knownTypes.initialize(Locale.US);
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_LONG).equals(knownTypes.getByID(KnownTypes.ID.ID_LONG)));
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).equals(knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING)));
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).equals(null));
+
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).hasGrouping());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isSigned());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).hasExponent());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isTrailingMinus());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isNull());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isBlank());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isBlankOrNull());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isSemanticType());
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_LONG).isNumeric());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isAlphabetic());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isAlphanumeric());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isDateType());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isForce());
+		assertEquals(knownTypes.getByID(KnownTypes.ID.ID_LONG).getBaseType(), FTAType.LONG);
+		assertNull(knownTypes.getByID(KnownTypes.ID.ID_LONG).getSemanticType());
+		assertEquals(knownTypes.getByID(KnownTypes.ID.ID_LONG).getMinLength(), -1);
+		assertEquals(knownTypes.getByID(KnownTypes.ID.ID_LONG).getMaxLength(), -1);
+
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_BLANK).isNull());
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_BLANK).isBlank());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_BLANK).isBlankOrNull());
+
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_NULL).isNull());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_NULL).isBlank());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_NULL).isBlankOrNull());
+
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_BLANKORNULL).isNull());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_BLANKORNULL).isBlank());
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_BLANKORNULL).isBlankOrNull());
+
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).hasGrouping());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).isSigned());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).hasExponent());
+
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG).hasGrouping());
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG).isSigned());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG).hasExponent());
+
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG_GROUPING).hasGrouping());
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG_GROUPING).isSigned());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG_GROUPING).hasExponent());
+
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_ALPHA_VARIABLE).isNumeric());
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_ALPHA_VARIABLE).isAlphabetic());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_ALPHA_VARIABLE).isAlphanumeric());
+
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_ALPHANUMERIC_VARIABLE).isNumeric());
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_ALPHANUMERIC_VARIABLE).isAlphabetic());
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_ALPHANUMERIC_VARIABLE).isAlphanumeric());
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testKeyWords() {
+		final Keywords keywordsUS = Keywords.getInstance(Locale.US);
+		assertEquals(keywordsUS.get("YES"), "yes");
+		assertNull(keywordsUS.get("YODEL"));
+		assertEquals(keywordsUS.match("year", "YEAR"), 90);
+		assertEquals(keywordsUS.match("yearly", "YEAR"), 90);
+		assertEquals(keywordsUS.match(null, "YEAR"), 0);
+		assertEquals(keywordsUS.match("", "YEAR"), 0);
+		assertEquals(keywordsUS.match("rubbish", "YEAR"), 0);
+		assertEquals(keywordsUS.match("yodel", "YODEL"), 0);
+		assertEquals(keywordsUS.match("yodel", "YES"), 0);
+
+		final Keywords keywordsFR = Keywords.getInstance(Locale.FRANCE);
+		assertEquals(keywordsFR.get("YES"), "oui");
+		assertEquals(keywordsFR.match("année", "YEAR"), 90);
+		assertEquals(keywordsFR.match("year", "YEAR"), 90);
 	}
 }

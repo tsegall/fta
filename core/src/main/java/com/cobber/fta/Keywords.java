@@ -33,11 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * the current locale.
  */
 public class Keywords {
-	public enum MatchStyle {
-		CONTAINS,
-		EQUALS
-	}
-
 	private static List<Keywords> keywords;
 
 	/** Keyword Tag. */
@@ -111,7 +106,7 @@ public class Keywords {
 	 * @param matchStyle Either CONTAINS or EQUALS
 	 * @return An integer (1-100) indicating how well the input 'matches' the supplied tag.
 	 */
-	public int match(final String input, final String keyTag, MatchStyle matchStyle) {
+	public int match(final String input, final String keyTag) {
 		if (input == null)
 			return 0;
 

@@ -98,8 +98,8 @@ public class PeriodYearRange extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if (keywords.match(context.getStreamName(), "YEAR", Keywords.MatchStyle.CONTAINS) < 90 &&
-				keywords.match(context.getStreamName(), "DATE", Keywords.MatchStyle.CONTAINS) < 90)
+		if (keywords.match(context.getStreamName(), "YEAR") < 90 &&
+				keywords.match(context.getStreamName(), "DATE") < 90)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
