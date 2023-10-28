@@ -103,7 +103,6 @@ public class Keywords {
 	 *
 	 * @param input The input string to match against.
 	 * @param keyTag The well-defined Tag - that we are going to search for a locale specific match for
-	 * @param matchStyle Either CONTAINS or EQUALS
 	 * @return An integer (1-100) indicating how well the input 'matches' the supplied tag.
 	 */
 	public int match(final String input, final String keyTag) {
