@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.1.7
+ - INT: Work on code coverage
+ - INT: Automatically publish to maven when release is created
+
 ### 15.1.6
  - ENH: Bump google phonenumber
  - INT: Work on code coverage

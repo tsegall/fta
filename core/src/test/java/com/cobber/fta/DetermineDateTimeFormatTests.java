@@ -3189,8 +3189,23 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void strange() {
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.US);
+		assertEquals(dtp.determineFormatString("2023-02-27  09:56:22"), "yyyy-MM-dd  HH:mm:ss");
+		assertEquals(dtp.determineFormatString("2023-02-27  9:56:22"), "yyyy-MM-dd ppH:mm:ss");
+		assertEquals(dtp.determineFormatString("21_12_1959 04:12:30.123"), "dd_MM_yyyy HH:mm:ss.SSS");
+
+		final DateTimeParser dtpBG = new DateTimeParser().withLocale(Locale.forLanguageTag("bg-BG"));
+		// Bulgarian years are often written with a trailing 'г.', for example "18/03/2018г."
+		assertEquals(dtpBG.determineFormatString("18/03/2018г."), "dd/MM/yyyy'г.'");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void badFormats() {
 		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.US);
+		assertNull(dtp.determineFormatString("9.33.2020"));
+		assertNull(dtp.determineFormatString("33.9.2020"));
+		assertNull(dtp.determineFormatString("13.13.2020"));
 
 		// yyyy tests
 		assertNull(dtp.determineFormatString("1020"));
