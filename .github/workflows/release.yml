@@ -13,6 +13,6 @@ jobs:
           distribution: 'corretto'
           java-version: 11
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@1
+        uses: gradle/wrapper-validation-action@v1
       - name: Publish package
         run: ./gradlew -PossrhUsername=${{ secrets.OSSRH_USERNAME }} -PossrhPassword=${{ secrets.OSSRH_PASSWORD }} -PsigningKeyId=${{ secrets.SIGNING_KEY_ID }}  -PsigningKey=${{ secrets.SIGNING_KEY }}  -PsigningPassword=${{ secrets.SIGNING_PASSWORD }} publish
