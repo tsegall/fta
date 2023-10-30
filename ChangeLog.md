@@ -3,6 +3,7 @@
 
 ### 15.1.7
  - ENH: Bump commons-text
+ - ENH: Checkin gradle wrapper files
  - INT: Remove useless minLength/maxLength/generalPatter on TypeInfo
  - INT: Automatically publish to maven when release is created
  - INT: Work on code coverage
