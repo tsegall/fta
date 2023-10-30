@@ -15,4 +15,4 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Publish package
-        run: ./gradlew -PossrhUsername=${{ secrets.OSSRH_USERNAME }} -PossrhPassword=${{ secrets.OSSRH_PASSWORD }} -PsigningKeyId=${{ secrets.SIGNING_KEY_ID }}  -PsigningKey=${{ secrets.SIGNING_KEY }}  -PsigningPassword=${{ secrets.SIGNING_PASSWORD }} publish
+        run: ./gradlew -PossrhUsername="${{ secrets.OSSRH_USERNAME }}" -PossrhPassword="${{ secrets.OSSRH_PASSWORD }}" -PsigningKeyId="${{ secrets.SIGNING_KEY_ID }}"  -PsigningKey="${{ secrets.SIGNING_KEY }}"  -PsigningPassword="${{ secrets.SIGNING_PASSWORD }}" publish
